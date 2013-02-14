@@ -1,0 +1,111 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#ifndef BREAKPOINTMODEL_H
+#define BREAKPOINTMODEL_H
+
+#include "../common/sharedStructures.h"
+
+#include <qabstractitemmodel.h>
+#include <qlist.h>
+
+#include <qstring.h>
+#include <QDebug>
+
+using namespace ito;
+
+//! item of BreakPointModel
+/*! 
+    this struct corresponds to one item in the BreakPointModel 
+    Only BreakPoints will be stored here, Bookmark and SyntaxError are only registered by QScintilla-instance
+*/
+struct BreakPointItem
+{
+    /*! constructor fills struct with default values */
+    BreakPointItem(): filename(""), lineno(-1), enabled(true), temporary(false), conditioned(false), condition(""), ignoreCount(0), pythonDbgBpNumber(-1)  {};
+    QString filename;       /*!<  filename of corresponding python file */
+    int lineno;             /*!<  line number */
+    bool enabled;           /*!<  indicates whether breakpoint is actually enabled */
+    bool temporary;         /*!<  indicates whether breakpoint is temporary. If yes, debugger only stops one time at this breakpoint */
+    bool conditioned;       /*!<  indicates whether breakpoint is conditioned */
+    QString condition;      /*!<  if conditioned==true, the condition, which is evaluated by the debugger to check, whether to stop or not */
+    int ignoreCount;        /*!<  number of times the debugger should ignore this breakpoint before stopping. If 0, debugger always stops at this breakpoint */
+    int pythonDbgBpNumber;  /*!<  corresponding breakpoint number in the python debugger */
+};
+
+
+
+class BreakPointModel : public QAbstractItemModel
+{
+    Q_OBJECT
+
+public:
+    BreakPointModel();
+    ~BreakPointModel();
+
+    QVariant data(const QModelIndex &index, int role) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+    QModelIndex parent(const QModelIndex &index) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+	RetVal addBreakPoint(BreakPointItem bp);
+    RetVal deleteBreakPoint(QModelIndex index);
+	RetVal deleteBreakPoints(QModelIndexList indizes);
+
+	QModelIndex getFirstBreakPointIndex(const QString filename, int lineNo) const;
+	QModelIndexList getBreakPointIndizes(const QString filename, int lineNo) const;
+	QModelIndexList getBreakPointIndizes(const QString filename) const;
+
+	BreakPointItem getBreakPoint(const QString filename, int lineNo) const;
+	BreakPointItem getBreakPoint(const QModelIndex index) const;
+	QList<BreakPointItem> getBreakPoints(const QModelIndexList indizes) const;
+
+	RetVal changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged = true);
+	RetVal changeBreakPoints(const QModelIndexList indizes, QList<BreakPointItem> bps, bool emitBreakPointChanged = true);
+
+    QList<BreakPointItem> const getBreakpoints() { return m_breakpoints; };
+
+    RetVal resetAllPyBpNumbers();
+    RetVal setPyBpNumber(int row, int pyBpNumber);
+
+protected:
+
+private:
+
+    //! helper-method for sorting different breakpoints with respect to row-index of both given QModelIndex
+    static inline bool compareRow(QModelIndex a, QModelIndex b) { return a.row()>b.row(); };    
+
+    QList<BreakPointItem> m_breakpoints;    /*!<  list of breakpoints (BreakPointItem) which are currently available in this application */
+    QList<QString> m_headers;               /*!<  string list of names of column headers */
+    QList<QVariant> m_alignment;            /*!<  list of alignments for the corresponding headers */
+
+signals:
+    void breakPointAdded(BreakPointItem bp, int row);                       /*!<  emitted if breakpoint has been added to model at position row */
+    void breakPointDeleted(QString filename, int lineNo, int pyBpNumber);   /*!<  emitted if breakpoint in file filename at line lineNo with python internal debugger number has been deleted from model */
+	void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     /*!<  emitted if breakpoint oldBp has been changed to newBp */
+};
+
+
+#endif

@@ -1,0 +1,29 @@
+                ITO LGPL Exception version 1.0
+               ===================================
+
+Additional rights granted beyond the LGPL (the "Exception").
+
+As a special exception to the terms and conditions of version 2.0 of the LGPL,
+ITO hereby grants you the rights described below, provided you agree to
+the terms and conditions in this Exception, including its obligations and
+restrictions on use.
+
+Nothing in this Exception gives you or anyone else the right to change the
+licensing terms of the itom Software.
+
+Below, "Licensed Software" shall refer to the software licensed under the LGPL
+and this exception.
+
+1) The right to use Open Source Licenses not compatible with the GNU
+Library General Public License: Your software (hereafter referred to as "Your
+Software") may import the Licensed Software and/or distribute binaries of Your
+Software that imports the Licensed Software.
+
+2) The right to link non-Open Source applications with pre-installed versions of
+the Licensed Software: You may link applications with binary pre-installed
+versions of the Licensed Software.
+
+3) The right to subclass from classes of the licensed software: Classes that are 
+subclassed from classes of the licensed software are not considered to be
+constituting derivative work and therefore the author of such classes does 
+not need to provide source code for this classes.

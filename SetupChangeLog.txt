@@ -1,0 +1,39 @@
+Versions-Verwaltung itom
+------------------------
+
+Der Verantwortliche für die Versions-Nummern-Vergabe bei 'itom' ist Heiko Bieger.
+
+Jedes Mal, wenn ein neues Setup von 'itom' herauskommt, wird die Patch-Nummer der
+'itom'-Version inkrementiert. Versions-Inkrementierungen bei Major und Minor erfolgen
+nur bei größeren Änderungen und werden durch die Core-Entwickler mitfestgelegt.
+
+Inkrementierung der 'itom'-Versions-Nummer:
+-------------------------------------------
+
+In 'global.h' sowohl die Zahl ITOM_VERSION_PATCH inkrementieren als auch den String
+ITOM_VERSION_STR anpassen.
+
+Die String-Versionsnummer im INNO-SETUP eintragen (gemäß ITOM_VERSION_STR).
+
+Überprüfung der AddInInterface-Versionsnummer:
+----------------------------------------------
+
+Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface vorkam. Dies führt
+zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterface.h
+vergeben werden.
+
+Doku erstellen:
+---------------
+
+1. \trunk\iTOM\documentation\itom_doxygen.dox mit doxywizard (Doxygen GUI frontend) öffnen
+2. Versionsnummer auf ITOM_VERSION_STR setzen
+3. Doxygen-Dokumentation erstellen
+4. itom_doxygen.dox abspeichern
+5. itom starten
+6. in trunk/itom/documentation/itom_documentation die python-Datei "create_doc.py" ausführen
+
+
+CHANGE-LOG
+----------
+
+Setup 1.0.6 - Rev. 4048 - Erstellt am 18.01.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"

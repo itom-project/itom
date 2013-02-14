@@ -1,0 +1,551 @@
+numpy.ALLOW_THREADS
+numpy.BUFSIZE
+numpy.CLIP
+numpy.ComplexWarning(??) [doc: ]
+numpy.DataSource(??) [doc: ]
+numpy.ERR_CALL
+numpy.ERR_DEFAULT
+numpy.ERR_DEFAULT2
+numpy.ERR_IGNORE
+numpy.ERR_LOG
+numpy.ERR_PRINT
+numpy.ERR_RAISE
+numpy.ERR_WARN
+numpy.FLOATING_POINT_SUPPORT
+numpy.FPE_DIVIDEBYZERO
+numpy.FPE_INVALID
+numpy.FPE_OVERFLOW
+numpy.FPE_UNDERFLOW
+numpy.False_
+numpy.Inf
+numpy.Infinity
+numpy.MAXDIMS
+numpy.MachAr(??) [doc: ]
+numpy.NAN
+numpy.NINF
+numpy.NZERO
+numpy.NaN
+numpy.PINF
+numpy.PZERO
+numpy.PackageLoader(??) [class]
+numpy.RAISE
+numpy.RankWarning(??) [doc: ]
+numpy.SHIFT_DIVIDEBYZERO
+numpy.SHIFT_INVALID
+numpy.SHIFT_OVERFLOW
+numpy.SHIFT_UNDERFLOW
+numpy.ScalarType
+numpy.Tester(??) [doc: ]
+numpy.True_
+numpy.UFUNC_BUFSIZE_DEFAULT
+numpy.UFUNC_PYVALS_NAME
+numpy.WRAP
+numpy._import_tools:: [module]
+numpy._mat:: [module]
+numpy.abs
+numpy.absolute(x[, out])
+numpy.add(x1, x2[, out])
+numpy.add_docstring
+numpy.add_newdoc(??) [doc: Adds documentation to obj which is in module place.]
+numpy.add_newdocs:: [module]
+numpy.alen(??) [doc: ]
+numpy.all(??) [doc: ]
+numpy.allclose(??) [doc: ]
+numpy.alltrue(??) [doc: ]
+numpy.alterdot(??) [doc: Change `dot`, `vdot`, and `innerproduct` to use accelerated BLAS functions.]
+numpy.amax(??) [doc: ]
+numpy.amin(??) [doc: ]
+numpy.angle(??) [doc: ]
+numpy.any(??) [doc: ]
+numpy.append(??) [doc: ]
+numpy.apply_along_axis(??) [doc: ]
+numpy.apply_over_axes(??) [doc: ]
+numpy.arange([start,] stop[, step,], dtype=None)
+numpy.arccos(x[, out])
+numpy.arccosh(x[, out])
+numpy.arcsin(x[, out])
+numpy.arcsinh(x[, out])
+numpy.arctan(x[, out])
+numpy.arctan2(x1, x2[, out])
+numpy.arctanh(x[, out])
+numpy.argmax(??) [doc: ]
+numpy.argmin(??) [doc: ]
+numpy.argsort(??) [doc: ]
+numpy.argwhere(??) [doc: ]
+numpy.around(??) [doc: ]
+numpy.array(object, dtype=None, copy=True, order=None, subok=False, ndmin=0)
+numpy.array2string(??) [doc: ]
+numpy.array_equal(??) [doc: ]
+numpy.array_equiv(??) [doc: ]
+numpy.array_repr(??) [doc: ]
+numpy.array_split(??) [doc: ]
+numpy.array_str(??) [doc: ]
+numpy.asanyarray(??) [doc: ]
+numpy.asarray(??) [doc: ]
+numpy.asarray_chkfinite(??) [doc: ]
+numpy.ascontiguousarray(??) [doc: ]
+numpy.asfarray(??) [doc: ]
+numpy.asfortranarray(??) [doc: ]
+numpy.asmatrix(??) [doc: ]
+numpy.asscalar(??) [doc: ]
+numpy.atleast_1d(??) [doc: ]
+numpy.atleast_2d(??) [doc: ]
+numpy.atleast_3d(??) [doc: ]
+numpy.average(??) [doc: ]
+numpy.bartlett(??) [doc: ]
+numpy.base_repr(??) [doc: ]
+numpy.bench
+numpy.binary_repr(??) [doc: ]
+numpy.bincount(x, weights=None, minlength=None)
+numpy.bitwise_and(x1, x2[, out])
+numpy.bitwise_not
+numpy.bitwise_or(x1, x2[, out])
+numpy.bitwise_xor(x1, x2[, out])
+numpy.blackman(??) [doc: ]
+numpy.bmat(??) [doc: ]
+numpy.bool(x) -> bool
+numpy.bool8(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool8]
+numpy.bool_(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool8]
+numpy.broadcast(??) [doc: Produce an object that mimics broadcasting.]
+numpy.broadcast_arrays(??) [doc: ]
+numpy.byte(??) [doc: 8-bit integer. Character code ``b``. C char compatible.]
+numpy.byte_bounds(??) [doc: ]
+numpy.bytes0(??) [class]
+numpy.bytes_(??) [class]
+numpy.c_
+numpy.can_cast(from, totype, casting = 'safe')
+numpy.cast
+numpy.cdouble(??) [doc: Composed of two 64 bit floats]
+numpy.ceil(x[, out])
+numpy.cfloat(??) [doc: Composed of two 64 bit floats]
+numpy.char:: [module]
+numpy.character(??) [class]
+numpy.chararray(??) [doc: ]
+numpy.choose(??) [doc: ]
+numpy.clip(??) [doc: ]
+numpy.clongdouble(??) [doc: Composed of two 96 bit floats]
+numpy.clongfloat(??) [doc: Composed of two 96 bit floats]
+numpy.column_stack(??) [doc: ]
+numpy.common_type(??) [doc: ]
+numpy.compare_chararrays
+numpy.compat:: [module]
+numpy.complex(real[, imag]) -> complex number
+numpy.complex128(??) [doc: Composed of two 64 bit floats]
+numpy.complex192(??) [doc: Composed of two 96 bit floats]
+numpy.complex64(??) [doc: Composed of two 32 bit floats]
+numpy.complex_(??) [doc: Composed of two 64 bit floats]
+numpy.complexfloating(??) [class]
+numpy.compress(??) [doc: ]
+numpy.concatenate((a1, a2, ...), axis=0)
+numpy.conj
+numpy.conjugate(x[, out])
+numpy.convolve(??) [doc: ]
+numpy.copy(??) [doc: ]
+numpy.copysign(x1, x2[, out])
+numpy.core:: [module]
+numpy.corrcoef(??) [doc: ]
+numpy.correlate(??) [doc: ]
+numpy.cos(x[, out])
+numpy.cosh(x[, out])
+numpy.count_nonzero(a)
+numpy.cov(??) [doc: ]
+numpy.cross(??) [doc: ]
+numpy.csingle(??) [doc: Composed of two 32 bit floats]
+numpy.ctypeslib:: [module]
+numpy.cumprod(??) [doc: ]
+numpy.cumproduct(??) [doc: ]
+numpy.cumsum(??) [doc: ]
+numpy.datetime64(??) [class]
+numpy.datetime_(??) [class]
+numpy.datetime_data(??) [doc: Return (unit, numerator, denominator, events) from a datetime dtype]
+numpy.deg2rad(x[, out])
+numpy.degrees(x[, out])
+numpy.delete(??) [doc: ]
+numpy.deprecate(??) [doc: ]
+numpy.deprecate_with_doc(??) [function]
+numpy.diag(??) [doc: ]
+numpy.diag_indices(??) [doc: ]
+numpy.diag_indices_from(??) [doc: ]
+numpy.diagflat(??) [doc: ]
+numpy.diagonal(??) [doc: ]
+numpy.diff(??) [doc: ]
+numpy.digitize(x, bins)
+numpy.disp(??) [doc: ]
+numpy.divide
+numpy.dot(a, b, out=None)
+numpy.double(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
+numpy.dsplit(??) [doc: ]
+numpy.dstack(??) [doc: ]
+numpy.dtype(obj, align=False, copy=False)
+numpy.e
+numpy.ediff1d(??) [doc: ]
+numpy.einsum(subscripts, *operands, out=None, dtype=None, order='K', casting='safe')
+numpy.emath:: [module]
+numpy.empty(shape, dtype=float, order='C')
+numpy.empty_like(a, dtype=None, order='K', subok=True)
+numpy.equal(x1, x2[, out])
+numpy.errstate(??) [doc: ]
+numpy.exp(x[, out])
+numpy.exp2(x[, out])
+numpy.expand_dims(??) [doc: ]
+numpy.expm1(x[, out])
+numpy.extract(??) [doc: ]
+numpy.eye(??) [doc: ]
+numpy.fabs(x[, out])
+numpy.fastCopyAndTranspose
+numpy.fft:: [module]
+numpy.fill_diagonal(??) [doc: ]
+numpy.find_common_type(??) [doc: ]
+numpy.finfo(??) [doc: ]
+numpy.fix(??) [doc: ]
+numpy.flatiter(??) [doc: Flat iterator object to iterate over arrays.]
+numpy.flatnonzero(??) [doc: ]
+numpy.flexible(??) [class]
+numpy.fliplr(??) [doc: ]
+numpy.flipud(??) [doc: ]
+numpy.float(x) -> floating point number
+numpy.float16(??) [class]
+numpy.float32(??) [doc: 32-bit floating-point number. Character code 'f'. C float compatible.]
+numpy.float64(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
+numpy.float96(??) [class]
+numpy.float_(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
+numpy.floating(??) [class]
+numpy.floor(x[, out])
+numpy.floor_divide(x1, x2[, out])
+numpy.fmax(x1, x2[, out])
+numpy.fmin(x1, x2[, out])
+numpy.fmod(x1, x2[, out])
+numpy.format_parser(??) [doc: ]
+numpy.frexp(x[, out1, out2])
+numpy.frombuffer(buffer, dtype=float, count=-1, offset=0)
+numpy.fromfile(file, dtype=float, count=-1, sep='')
+numpy.fromfunction(??) [doc: ]
+numpy.fromiter(iterable, dtype, count=-1)
+numpy.frompyfunc(func, nin, nout)
+numpy.fromregex(??) [doc: ]
+numpy.fromstring(string, dtype=float, count=-1, sep='')
+numpy.fv(??) [doc: ]
+numpy.generic(??) [doc: Base class for numpy scalar types.]
+numpy.genfromtxt(??) [doc: ]
+numpy.get_array_wrap(??) [doc: Find the wrapper for the array with the highest priority.]
+numpy.get_include(??) [doc: ]
+numpy.get_numarray_include(??) [doc: ]
+numpy.get_printoptions(??) [doc: ]
+numpy.getbufsize(??) [doc: Return the size of the buffer used in ufuncs.]
+numpy.geterr(??) [doc: ]
+numpy.geterrcall(??) [doc: ]
+numpy.geterrobj()
+numpy.gradient(??) [doc: ]
+numpy.greater(x1, x2[, out])
+numpy.greater_equal(x1, x2[, out])
+numpy.half(??) [class]
+numpy.hamming(??) [doc: ]
+numpy.hanning(??) [doc: ]
+numpy.histogram(??) [doc: ]
+numpy.histogram2d(??) [doc: ]
+numpy.histogramdd(??) [doc: ]
+numpy.hsplit(??) [doc: ]
+numpy.hstack(??) [doc: ]
+numpy.hypot(x1, x2[, out])
+numpy.i0(??) [doc: ]
+numpy.identity(??) [doc: ]
+numpy.iinfo(??) [doc: ]
+numpy.imag(??) [doc: ]
+numpy.in1d(??) [doc: ]
+numpy.index_exp
+numpy.indices(??) [doc: ]
+numpy.inexact(??) [class]
+numpy.inf
+numpy.info(??) [doc: ]
+numpy.infty
+numpy.inner(a, b)
+numpy.insert(??) [doc: ]
+numpy.int(x[, base]) -> integer
+numpy.int0(??) [class]
+numpy.int16(??) [doc: 16-bit integer. Character code ``h``. C short compatible.]
+numpy.int32(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
+numpy.int64(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
+numpy.int8(??) [doc: 8-bit integer. Character code ``b``. C char compatible.]
+numpy.int_(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
+numpy.int_asbuffer
+numpy.intc(??) [class]
+numpy.integer(??) [class]
+numpy.interp(??) [doc: ]
+numpy.intersect1d(??) [doc: ]
+numpy.intp(??) [class]
+numpy.invert(x[, out])
+numpy.ipmt(??) [doc: ]
+numpy.irr(??) [doc: ]
+numpy.iscomplex(??) [doc: ]
+numpy.iscomplexobj(??) [doc: ]
+numpy.isfinite(x[, out])
+numpy.isfortran(??) [doc: ]
+numpy.isinf(x[, out])
+numpy.isnan(x[, out])
+numpy.isneginf(??) [doc: ]
+numpy.isposinf(??) [doc: ]
+numpy.isreal(??) [doc: ]
+numpy.isrealobj(??) [doc: ]
+numpy.isscalar(??) [doc: ]
+numpy.issctype(??) [doc: ]
+numpy.issubclass_(??) [doc: ]
+numpy.issubdtype(??) [doc: ]
+numpy.issubsctype(??) [doc: ]
+numpy.iterable(??) [doc: ]
+numpy.ix_(??) [doc: ]
+numpy.kaiser(??) [doc: ]
+numpy.kron(??) [doc: ]
+numpy.ldexp(x1, x2[, out])
+numpy.left_shift(x1, x2[, out])
+numpy.less(x1, x2[, out])
+numpy.less_equal(x1, x2[, out])
+numpy.lexsort(keys, axis=-1)
+numpy.lib:: [module]
+numpy.linalg:: [module]
+numpy.linspace(??) [doc: ]
+numpy.little_endian
+numpy.load(??) [doc: ]
+numpy.loads(input, *, fix_imports=True, encoding='ASCII', errors='strict') -> object
+numpy.loadtxt(??) [doc: ]
+numpy.log(x[, out])
+numpy.log10(x[, out])
+numpy.log1p(x[, out])
+numpy.log2(x[, out])
+numpy.logaddexp(x1, x2[, out])
+numpy.logaddexp2(x1, x2[, out])
+numpy.logical_and(x1, x2[, out])
+numpy.logical_not(x[, out])
+numpy.logical_or(x1, x2[, out])
+numpy.logical_xor(x1, x2[, out])
+numpy.logspace(??) [doc: ]
+numpy.long(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
+numpy.longcomplex(??) [doc: Composed of two 96 bit floats]
+numpy.longdouble(??) [class]
+numpy.longfloat(??) [class]
+numpy.longlong(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
+numpy.lookfor(??) [doc: ]
+numpy.ma:: [module]
+numpy.mafromtxt(??) [doc: ]
+numpy.mask_indices(??) [doc: ]
+numpy.mat(??) [doc: ]
+numpy.math:: [module]
+numpy.matrix(??) [doc: ]
+numpy.matrixlib:: [module]
+numpy.max(??) [doc: ]
+numpy.maximum(x1, x2[, out])
+numpy.maximum_sctype(??) [doc: ]
+numpy.may_share_memory(??) [doc: ]
+numpy.mean(??) [doc: ]
+numpy.median(??) [doc: ]
+numpy.memmap(??) [doc: ]
+numpy.meshgrid(??) [doc: ]
+numpy.mgrid
+numpy.min(??) [doc: ]
+numpy.min_scalar_type(a)
+numpy.minimum(x1, x2[, out])
+numpy.mintypecode(??) [doc: ]
+numpy.mirr(??) [doc: ]
+numpy.mod
+numpy.modf(x[, out1, out2])
+numpy.msort(??) [doc: ]
+numpy.multiply(x1, x2[, out])
+numpy.nan
+numpy.nan_to_num(??) [doc: ]
+numpy.nanargmax(??) [doc: ]
+numpy.nanargmin(??) [doc: ]
+numpy.nanmax(??) [doc: ]
+numpy.nanmin(??) [doc: ]
+numpy.nansum(??) [doc: ]
+numpy.nbytes
+numpy.ndarray(??) [doc: ndarray(shape, dtype=float, buffer=None, offset=0,]
+numpy.ndenumerate(??) [doc: ]
+numpy.ndfromtxt(??) [doc: ]
+numpy.ndim(??) [doc: ]
+numpy.ndindex(??) [doc: ]
+numpy.nditer(??) [doc: Efficient multi-dimensional iterator object to iterate over arrays.]
+numpy.negative(x[, out])
+numpy.nested_iters
+numpy.newaxis
+numpy.nextafter(x1, x2[, out])
+numpy.nonzero(??) [doc: ]
+numpy.not_equal(x1, x2[, out])
+numpy.nper(??) [doc: ]
+numpy.npv(??) [doc: ]
+numpy.number(??) [class]
+numpy.obj2sctype(??) [doc: ]
+numpy.object(??) [doc: The most base type]
+numpy.object0(??) [doc: Any Python object.  Character code: 'O'.]
+numpy.object_(??) [doc: Any Python object.  Character code: 'O'.]
+numpy.ogrid
+numpy.ones(??) [doc: ]
+numpy.ones_like(x[, out])
+numpy.outer(??) [doc: ]
+numpy.packbits(myarray, axis=None)
+numpy.percentile(??) [doc: ]
+numpy.pi
+numpy.piecewise(??) [doc: ]
+numpy.pkgload(??) [doc: Load one or more packages into parent package top-level namespace.]
+numpy.place(??) [doc: ]
+numpy.pmt(??) [doc: ]
+numpy.poly(??) [doc: ]
+numpy.poly1d(??) [doc: ]
+numpy.polyadd(??) [doc: ]
+numpy.polyder(??) [doc: ]
+numpy.polydiv(??) [doc: ]
+numpy.polyfit(??) [doc: ]
+numpy.polyint(??) [doc: ]
+numpy.polymul(??) [doc: ]
+numpy.polynomial:: [module]
+numpy.polysub(??) [doc: ]
+numpy.polyval(??) [doc: ]
+numpy.power(x1, x2[, out])
+numpy.ppmt(??) [doc: ]
+numpy.prod(??) [doc: ]
+numpy.product(??) [doc: ]
+numpy.promote_types(type1, type2)
+numpy.ptp(??) [doc: ]
+numpy.put(??) [doc: ]
+numpy.putmask(a, mask, values)
+numpy.pv(??) [doc: ]
+numpy.r_
+numpy.rad2deg(x[, out])
+numpy.radians(x[, out])
+numpy.random:: [module]
+numpy.rank(??) [doc: ]
+numpy.rate(??) [doc: ]
+numpy.ravel(??) [doc: ]
+numpy.ravel_multi_index(multi_index, dims, mode='raise', order='C')
+numpy.real(??) [doc: ]
+numpy.real_if_close(??) [doc: ]
+numpy.rec:: [module]
+numpy.recarray(??) [doc: ]
+numpy.recfromcsv(??) [doc: ]
+numpy.recfromtxt(??) [doc: ]
+numpy.reciprocal(x[, out])
+numpy.record(??) [doc: A data-type scalar that allows field access as attribute lookup.]
+numpy.remainder(x1, x2[, out])
+numpy.repeat(??) [doc: ]
+numpy.require(??) [doc: ]
+numpy.reshape(??) [doc: ]
+numpy.resize(??) [doc: ]
+numpy.restoredot(??) [doc: Restore `dot`, `vdot`, and `innerproduct` to the default non-BLAS]
+numpy.result_type(*arrays_and_dtypes)
+numpy.right_shift(x1, x2[, out])
+numpy.rint(x[, out])
+numpy.roll(??) [doc: ]
+numpy.rollaxis(??) [doc: ]
+numpy.roots(??) [doc: ]
+numpy.rot90(??) [doc: ]
+numpy.round(??) [doc: ]
+numpy.round_(??) [doc: ]
+numpy.row_stack(??) [doc: ]
+numpy.s_
+numpy.safe_eval(??) [doc: ]
+numpy.save(??) [doc: ]
+numpy.savetxt(??) [doc: ]
+numpy.savez(??) [doc: ]
+numpy.savez_compressed(??) [doc: ]
+numpy.sctype2char(??) [doc: ]
+numpy.sctypeDict
+numpy.sctypeNA
+numpy.sctypes
+numpy.searchsorted(??) [doc: ]
+numpy.select(??) [doc: ]
+numpy.set_numeric_ops(op1=func1, op2=func2, ...)
+numpy.set_printoptions(??) [doc: ]
+numpy.set_string_function(??) [doc: ]
+numpy.setbufsize(??) [doc: ]
+numpy.setdiff1d(??) [doc: ]
+numpy.seterr(??) [doc: ]
+numpy.seterrcall(??) [doc: ]
+numpy.seterrobj(errobj)
+numpy.setxor1d(??) [doc: ]
+numpy.shape(??) [doc: ]
+numpy.short(??) [doc: 16-bit integer. Character code ``h``. C short compatible.]
+numpy.show_config(??) [function]
+numpy.sign(x[, out])
+numpy.signbit(x[, out])
+numpy.signedinteger(??) [class]
+numpy.sin(x[, out])
+numpy.sinc(??) [doc: ]
+numpy.single(??) [doc: 32-bit floating-point number. Character code 'f'. C float compatible.]
+numpy.singlecomplex(??) [doc: Composed of two 32 bit floats]
+numpy.sinh(x[, out])
+numpy.size(??) [doc: ]
+numpy.sometrue(??) [doc: ]
+numpy.sort(??) [doc: ]
+numpy.sort_complex(??) [doc: ]
+numpy.source(??) [doc: ]
+numpy.spacing(x[, out])
+numpy.split(??) [doc: ]
+numpy.sqrt(x[, out])
+numpy.square(x[, out])
+numpy.squeeze(??) [doc: ]
+numpy.std(??) [doc: ]
+numpy.str(string[, encoding[, errors]]) -> str
+numpy.str0(??) [class]
+numpy.str_(??) [class]
+numpy.string_(??) [class]
+numpy.subtract(x1, x2[, out])
+numpy.sum(??) [doc: ]
+numpy.swapaxes(??) [doc: ]
+numpy.take(??) [doc: ]
+numpy.tan(x[, out])
+numpy.tanh(x[, out])
+numpy.tensordot(??) [doc: ]
+numpy.test
+numpy.testing:: [module]
+numpy.tile(??) [doc: ]
+numpy.timedelta64(??) [class]
+numpy.timedelta_(??) [class]
+numpy.timeinteger(??) [class]
+numpy.trace(??) [doc: ]
+numpy.transpose(??) [doc: ]
+numpy.trapz(??) [doc: ]
+numpy.tri(??) [doc: ]
+numpy.tril(??) [doc: ]
+numpy.tril_indices(??) [doc: ]
+numpy.tril_indices_from(??) [doc: ]
+numpy.trim_zeros(??) [doc: ]
+numpy.triu(??) [doc: ]
+numpy.triu_indices(??) [doc: ]
+numpy.triu_indices_from(??) [doc: ]
+numpy.true_divide(x1, x2[, out])
+numpy.trunc(x[, out])
+numpy.typeDict
+numpy.typeNA
+numpy.typecodes
+numpy.typename(??) [doc: ]
+numpy.ubyte(??) [class]
+numpy.ufunc(??) [doc: Functions that operate element by element on whole arrays.]
+numpy.uint(??) [class]
+numpy.uint0(??) [class]
+numpy.uint16(??) [class]
+numpy.uint32(??) [class]
+numpy.uint64(??) [class]
+numpy.uint8(??) [class]
+numpy.uintc(??) [class]
+numpy.uintp(??) [class]
+numpy.ulonglong(??) [class]
+numpy.unicode(??) [class]
+numpy.unicode_(??) [class]
+numpy.union1d(??) [doc: ]
+numpy.unique(??) [doc: ]
+numpy.unpackbits(myarray, axis=None)
+numpy.unravel_index(indices, dims, order='C')
+numpy.unsignedinteger(??) [class]
+numpy.unwrap(??) [doc: ]
+numpy.ushort(??) [class]
+numpy.vander(??) [doc: ]
+numpy.var(??) [doc: ]
+numpy.vdot(??) [doc: Return the dot product of two vectors.]
+numpy.vectorize(??) [doc: ]
+numpy.version:: [module]
+numpy.void(??) [class]
+numpy.void0(??) [class]
+numpy.vsplit(??) [doc: ]
+numpy.vstack(??) [doc: ]
+numpy.where(condition, [x, y])
+numpy.who(??) [doc: ]
+numpy.zeros(shape, dtype=float, order='C')
+numpy.zeros_like(??) [doc: ]

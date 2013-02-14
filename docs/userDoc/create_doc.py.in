@@ -1,0 +1,81 @@
+# coding=iso-8859-15 
+
+# -*- coding: utf-8 -*-
+
+
+import os
+import sys
+from os import path
+from sphinx.util import format_exception_cut_frames, save_traceback
+from sphinx.util.console import darkred, nocolor
+
+from sphinx.application import Sphinx
+from docutils.utils import SystemMessage
+import subprocess
+import itom
+import __main__
+
+def process_docstring(app, what, name, obj, options, lines):
+    pass
+    
+def process_signature(app, what, name, obj, options, signature, return_annotation):
+    pass
+
+all_files = True
+filenames = False
+confoverrides = {}
+freshenv = False
+
+basedir = getCurrentPath()
+srcdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"                #basedir + "\\source"
+confdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"               #basedir + "\\source"
+aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"    #basedir + "\\source\\AboutItom"
+
+__main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
+
+buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex"]
+
+for buildername in buildernames:
+    outdir = basedir + "\\build\\" + buildername
+    doctreedir = basedir + "\\build\\doctrees"	
+
+
+    app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
+                 confoverrides, sys.stdout, sys.stderr, freshenv)
+
+    app.connect('autodoc-process-docstring',process_docstring)
+    app.connect('autodoc-process-signature',process_signature)
+
+    nocolor()
+
+    if not app.builder:
+        raise RuntimeError
+
+    if all_files:
+        app.builder.build_all()
+    elif filenames:
+        app.builder.build_specific(filenames)
+    else:
+        app.builder.build_update()
+
+    if(buildername == "qthelp"):
+        ret = subprocess.call(["qcollectiongenerator", "build\\qthelp\\ITOMDocumentation.qhcp"],shell=True)
+        if(ret == -1):
+            raise RuntimeError("qcollectiongenerator failed")
+        else:
+            print("qcollectiongenerator successfully executed")
+            
+        ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
+        if(ret[0] == ui.MsgBoxYes):
+            #subprocess.call( ["assistant", "-collectionFile", "build\qthelp\itom.qhc"] )
+            subprocess.check_call(["assistant", "-collectionFile", "build\qthelp\ITOMDocumentation.qhc"])
+            
+    elif(buildername == "htmlhelp"):
+        print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
+        print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
+
+del __main__.__dict__["__doxygen__xml"]
+
+
+
+    

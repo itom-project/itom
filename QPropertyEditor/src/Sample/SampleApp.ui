@@ -1,0 +1,77 @@
+<ui version="4.0" >
+ <class>SampleApp</class>
+ <widget class="QMainWindow" name="SampleApp" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="m_centralwidget" >
+   <layout class="QVBoxLayout" />
+  </widget>
+  <widget class="QMenuBar" name="m_menuBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="m_actionQuit" />
+   </widget>
+   <addaction name="menu_File" />
+  </widget>
+  <widget class="QStatusBar" name="m_statusBar" />
+  <widget class="QDockWidget" name="m_dockWidget" >
+   <property name="windowTitle" >
+    <string>Property Editor</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QPropertyEditorWidget" name="m_propertyEditor" />
+  </widget>
+  <action name="m_actionQuit" >
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QPropertyEditorWidget</class>
+   <extends>QTreeView</extends>
+   <header location="global" >QPropertyEditor/QPropertyEditorWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>SampleApp</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,0 +1,17 @@
+
+#ifndef SNV_VERSION_H
+#define SNV_VERSION_H
+ 
+/// Highest SVN version in itomfolder repository
+#define SVN_REVISION "$WCREV$"
+
+/// Date of highest revision
+#define SVN_REVISION_DATE "$WCDATE$"
+
+/// URL of project archive
+#define SVN_REPOSITORY_URL "$WCURL$"
+
+/// If WCMODS == TText, this is not a clean build
+#define SVN_CLEAN_BUILD_FLAG $WCMODS?0:1$
+
+#endif // SNV_VERSION_H

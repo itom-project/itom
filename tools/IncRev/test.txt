@@ -1,0 +1,7 @@
+NAME = IncRev
+CC = cc
+LN = ln
+DEL = Delete
+REV =  79
+
+$(NAME): ram:$(NAME).o

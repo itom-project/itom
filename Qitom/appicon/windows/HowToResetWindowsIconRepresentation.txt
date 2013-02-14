@@ -1,0 +1,28 @@
+I found a solution for this. At least it worked for me (win 7 x64).
+
+ 
+
+First, open Notepad and paste the below code:
+
+ 
+
+taskkill /F /IM explorer.exe
+cd /d %userprofile%\AppData\Local
+attrib –h IconCache.db
+del IconCache.db
+start explorer
+
+save the file as a .bat file on your desktop.
+Then open explorer and navigate to C:\users\username\appdata\local\ (make sure you've select to view hidden folders) and delete IconCache.db.
+
+ 
+
+Lastly, double click on the .bat file that you saved on your desktop and all icons should be restored.
+
+
+
+
+
+
+
+http://answers.microsoft.com/en-us/windows/forum/windows_7-system/wrong-or-missing-program-icons-in-windows-7-start/3fb5be69-105a-40ca-a0ca-695b8bad41f8

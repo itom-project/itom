@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetPropConsoleWrap</class>
+ <widget class="QWidget" name="WidgetPropConsoleWrap">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>611</width>
+    <height>506</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QGroupBox" name="groupLineWrap">
+     <property name="title">
+      <string>Line Wrap</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="radioWrapMode1">
+        <property name="text">
+         <string>Lines are not wrapped</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioWrapMode2">
+        <property name="text">
+         <string>Lines are wrapped at word boundaries</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioWrapMode3">
+        <property name="text">
+         <string>Lines are wrapped at character boundaries</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupVisualFlags">
+     <property name="title">
+      <string>Visual Appearance</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Flag at start of every wrapped line</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboFlagStart">
+        <item>
+         <property name="text">
+          <string>No wrap flag</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Wrap flag displayed by the text</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Wrap flag displayed by the border</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Flag at end of every wrapped line</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboFlagEnd">
+        <item>
+         <property name="text">
+          <string>No wrap flag</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Wrap flag displayed by the text</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Wrap flag displayed by the border</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Number of characters a wrapped line is indented by</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="spinFlagIndent">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777214</height>
+         </size>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupWrapIndentMode">
+     <property name="title">
+      <string>Wrap Indentation Mode</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="radioIndentMode1">
+        <property name="text">
+         <string>Wrapped sub-lines are indented by the amount indicated above</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioIndentMode2">
+        <property name="text">
+         <string>Wrapped sub-lines are indented by the same amount as the first sub-line</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioIndentMode3">
+        <property name="text">
+         <string>Wrapped sub-lines are indented by the same amount as the first sub-line plus one mor level of indentation</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

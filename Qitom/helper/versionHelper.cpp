@@ -1,0 +1,141 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "versionHelper.h"
+#include "../global.h"
+#include "version.h"
+#include "opencv2/core/version.hpp"
+#include "../../designerPluginSource/qwt/src/qwt_global.h"
+
+#if ITOM_POINTCLOUDLIBRARY > 0
+#include <pcl/pcl_config.h>
+#endif
+
+//python
+// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+#ifdef _DEBUG
+    #undef _DEBUG
+    #if (defined linux) | (defined CMAKE)
+        #include "patchlevel.h"
+    #else
+        #include "patchlevel.h"
+    #endif
+    #define _DEBUG
+#else
+#ifdef linux
+    #include "patchlevel.h"
+#else
+    #include "patchlevel.h"
+#endif
+#endif
+
+#ifndef PCL_REVISION_VERSION
+	#define PCL_REVISION_VERSION 0
+#endif
+
+QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
+{
+    QList<QPair<QString, QString> > newList;
+    QPair<QString, QString> newPair;
+
+    char buf[7] = {0};
+    _snprintf(buf, 7, "%i.%i.%i", ITOM_VERSION_MAJOR, ITOM_VERSION_MINOR, ITOM_VERSION_PATCH);
+
+    newPair.first = "itom_Version";
+    newPair.second = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
+    newList.append(newPair);
+
+    newPair.first = "itom_SysType";
+    
+#if (defined linux)
+    newPair.second = "Q_OS_LINUX";
+#elif (defined Q_OS_WIN32)
+    #if (defined Q_OS_WIN64)
+        newPair.second = "Windows 64-Bit";
+    #else
+        newPair.second = "Windows 32-Bit";
+    #endif
+    #ifdef _DEBUG
+        newPair.second.append(" DEBUG");
+    #endif
+#else
+    newPair.second = "undefined system";
+#endif
+     
+    newList.append(newPair);
+
+    newPair.first = "itom_SVNRevision";
+    newPair.second = SVN_REVISION;
+    newList.append(newPair);
+
+    newPair.first = "itom_SVNRevision_Date";
+    newPair.second = SVN_REVISION_DATE;
+    newList.append(newPair);
+
+    newPair.first = "ito_SVNRevision_URL";
+    newPair.second = SVN_REPOSITORY_URL;
+    newList.append(newPair);
+
+    
+    newPair.first = "version_Warnings";
+    QString warning("");
+    bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
+    if(!isClean)
+    {
+        warning.append(QObject::tr("Warning: The version contains locally changed code!\n"));
+    }
+    newPair.second = warning;
+    newList.append(newPair);
+
+    newPair.first = "openCV_Version";
+    newPair.second = CV_VERSION;
+    newList.append(newPair);
+
+#if ITOM_POINTCLOUDLIBRARY > 0
+    _snprintf(buf, 7, "%i.%i.%i", PCL_MAJOR_VERSION, PCL_MINOR_VERSION, PCL_REVISION_VERSION);
+    newPair.first = "PCL_Version";
+    newPair.second = buf;
+#else
+	newPair.first = "PCL_Version";
+	newPiar.second = "not compiled";
+#endif
+    newList.append(newPair);
+    
+    newPair.first = "QT_Version";
+    newPair.second = QT_VERSION_STR;
+    newList.append(newPair);
+
+    newPair.first = "QT_Your_Version";
+    newPair.second = qVersion();
+    newList.append(newPair);
+
+    newPair.first = "Py_Version";
+    newPair.second = PY_VERSION;
+    newList.append(newPair);
+
+    newPair.first = "QwtPlot_Version";
+    newPair.second = QWT_VERSION_STR;
+    newList.append(newPair);
+
+    return newList;
+}
+

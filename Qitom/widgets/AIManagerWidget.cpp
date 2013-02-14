@@ -1,0 +1,817 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** *//* ********************************************************************
+   itom measurement system
+   URL: http://www.uni-stuttgart.de/ito
+   Copyright (C) 2012, Institut für Technische Optik (ITO),
+   Universität Stuttgart, Germany
+
+   This file is part of itom.
+
+   itom is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   itom is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "AIManagerWidget.h"
+
+
+#include "../organizer/addInManager.h"
+#include "../ui/dialogNewPluginInstance.h"
+
+#include "../global.h"
+#include "../AppManagement.h"
+
+#include <qdockwidget.h>
+#include <qaction.h>
+#include <qmessagebox.h>
+#include <qinputdialog.h>
+#include "../models/PlugInModel.h"
+
+namespace ito {
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle)
+    : AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+//AIManagerWidget::AIManagerWidget() :
+//    AbstractDockWidget(tr("Plugins")),
+    m_pContextMenu(NULL),
+    m_pShowConfDialog(NULL),
+    m_pActDockWidget(NULL),
+    m_pActNewInstance(NULL),
+    m_pActCloseInstance(NULL),
+    m_pActCloseAllInstances(NULL),
+    m_pActSendToPython(NULL),
+    m_pActLiveImage(NULL),
+    m_pActSnapDialog(NULL),
+    m_pActInfo(NULL),
+    m_pActOpenWidget(NULL),
+    m_pAIManagerView(NULL),
+    m_pSortFilterProxyModel(NULL),
+    m_pColumnWidth(NULL),
+    m_pMainToolbar(NULL),
+    m_pViewList(NULL),
+    m_pViewDetails(NULL)
+{
+    int size = 0;
+    ito::AddInManager *aim = ito::AddInManager::getInstance();
+
+    m_pAIManagerView = new QTreeView(this);
+    m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_pAIManagerView->setSortingEnabled(true);
+    connect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+
+    m_pContextMenu = new QMenu(this);
+
+    m_pShowConfDialog = new QAction(QIcon(":/plugins/icons/pluginConfigure.png"), tr("Configuration Dialog"), this);
+    connect(m_pShowConfDialog, SIGNAL(triggered()), this, SLOT(mnuShowConfdialog()));
+    m_pContextMenu->addAction(m_pShowConfDialog);
+
+    m_pActDockWidget = new QAction(QIcon(":/plugins/icons/pluginToolbox.png"), tr("Show Plugin Toolbox"), this);
+    m_pActDockWidget->setCheckable(true);
+    connect(m_pActDockWidget, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
+    m_pContextMenu->addAction(m_pActDockWidget);
+
+    m_pActNewInstance = new QAction(QIcon(":/plugins/icons/pluginNewInstance.png"), tr("New Instance..."), this);
+    connect(m_pActNewInstance, SIGNAL(triggered()), this, SLOT(mnuCreateNewInstance()));
+    m_pContextMenu->addAction(m_pActNewInstance);
+
+    m_pActCloseInstance = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close Instance"), this);
+    connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
+    m_pContextMenu->addAction(m_pActCloseInstance);
+
+    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
+    connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActSendToPython);
+
+    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close all"), this);
+//    connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActCloseAllInstances);
+
+    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Live Image..."), this);
+//    connect(m_pActLiveImage, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActLiveImage);
+
+    m_pActSnapDialog = new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Snap Dialog..."), this);
+//    connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActSnapDialog);
+
+    m_pActInfo = new QAction(QIcon(":/plugins/icons/info.png"), tr("Info..."), this);
+//    connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActInfo);
+
+    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Open Widget..."), this);
+    connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
+    m_pContextMenu->addAction(m_pActOpenWidget);
+
+    m_pSortFilterProxyModel = new QSortFilterProxyModel(this);
+    m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
+    m_pAIManagerView->setModel(m_pSortFilterProxyModel);
+    m_pAIManagerView->sortByColumn(1,Qt::AscendingOrder);
+
+    // expanding DataIO node
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+    QModelIndex index = plugInModel->getTypeNode(typeDataIO);
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapFromSource(index);
+        m_pAIManagerView->expand(index);
+    }
+    
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("AIManagerWidget");
+    size = settings.beginReadArray("ColWidth");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        m_pAIManagerView->setColumnWidth(i, settings.value("width", 100).toInt());
+        m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
+    }
+    settings.endArray();
+
+    m_pColumnWidth = new int[plugInModel->columnCount()];
+    size = settings.beginReadArray("StandardColWidth");
+    if (size != plugInModel->columnCount())
+    {
+        m_pColumnWidth[0] = 200;
+        for (int i = 1; i < plugInModel->columnCount(); ++i) 
+        {
+            m_pColumnWidth[i] = 120;
+        }
+    }
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        m_pColumnWidth[i] = settings.value("width", 100).toInt();
+        if (m_pColumnWidth[i] == 0)
+        {
+            m_pColumnWidth[i] = 120;
+        }
+    }
+    settings.endArray();
+    settings.endGroup();
+
+    AbstractDockWidget::init();
+    setContentWidget(m_pAIManagerView);
+
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AIManagerWidget::~AIManagerWidget()
+{
+    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("AIManagerWidget");
+    settings.beginWriteArray("ColWidth");
+    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("width", m_pAIManagerView->columnWidth(i));
+    }
+    settings.endArray();
+
+    settings.beginWriteArray("StandardColWidth");
+    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("width", m_pColumnWidth[i]);
+    }
+    settings.endArray();
+    settings.endGroup();
+
+    DELETE_AND_SET_NULL(m_pSortFilterProxyModel);
+    DELETE_AND_SET_NULL(m_pAIManagerView);
+    DELETE_AND_SET_NULL(m_pContextMenu);
+    DELETE_AND_SET_NULL(m_pShowConfDialog);
+    DELETE_AND_SET_NULL(m_pActNewInstance);
+    DELETE_AND_SET_NULL(m_pActDockWidget);
+    DELETE_AND_SET_NULL(m_pActCloseInstance);
+    DELETE_AND_SET_NULL(m_pActCloseAllInstances);
+    DELETE_AND_SET_NULL(m_pActSendToPython);
+    DELETE_AND_SET_NULL(m_pActLiveImage);
+    DELETE_AND_SET_NULL(m_pActSnapDialog);
+    DELETE_AND_SET_NULL(m_pActInfo);
+    DELETE_AND_SET_NULL(m_pActOpenWidget);
+    DELETE_AND_SET_NULL(m_pAIManagerViewSettingMenu);
+    DELETE_AND_SET_NULL(m_pColumnWidth);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::createActions()
+{
+    m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
+    m_pViewList->connectTrigger(this, SLOT(showList()));
+    m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.ico"), tr("Details"), this);
+    m_pViewDetails->connectTrigger(this, SLOT(showDetails()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::createMenus()
+{
+    m_pAIManagerViewSettingMenu = new QMenu(tr("settings"), this);
+    m_pAIManagerViewSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
+    m_pAIManagerViewSettingMenu->addAction(m_pViewList->action());
+    m_pAIManagerViewSettingMenu->addAction(m_pViewDetails->action());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::createToolBars()
+{
+    QWidget *spacerWidget = new QWidget();
+    QHBoxLayout *spacerLayout = new QHBoxLayout();
+    spacerLayout->addItem(new QSpacerItem(5, 5, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    spacerLayout->setStretch(0, 2);
+    spacerWidget->setLayout(spacerLayout);
+
+    m_pMainToolbar = new QToolBar(tr("plugins"), this);
+    m_pMainToolbar->setFloatable(false);
+    addAndRegisterToolBar(m_pMainToolbar, "mainToolBar");
+
+    m_pMainToolbar->addWidget(spacerWidget);
+    m_pMainToolbar->addAction(m_pAIManagerViewSettingMenu->menuAction());
+    connect(m_pAIManagerViewSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::updateActions()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*QList<QAction*> AIManagerWidget::getAlgoWidgetActions(const ito::AddInInterfaceBase *aib)
+{
+    QList<QAction*> actions;
+    QAction* action = NULL;
+    QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> awList;
+//    if (aib->getType() != ito::typeAlgo) return actions;
+
+    QList<ito::AddInBase*> instList = aib->getInstList();
+    if (instList.size() == 0) return actions;
+
+    ito::AddInBase* ab = instList[0];
+    ito::AddInAlgo *aia = static_cast<ito::AddInAlgo *>(ab);
+
+    if (aia == NULL) return actions;
+
+    aia->getAlgoWidgetList(awList);
+
+    foreach (const QString &key, awList.keys())
+    {
+        action = new QAction(QIcon(":/plugins/icons/window.png"), key, this);
+        action->setData(key);
+        actions.append(action);
+    }
+
+    return actions;
+}*/
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        PlugInModel::tItemType itemType;
+        size_t itemInternalData;
+        PlugInModel *plugInModel = (PlugInModel*)(index.model());
+
+//        int itemType = plugInModel->data(index, Qt::UserRole + 3).toInt();
+        if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
+        {
+//            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
+            bool isPlugInNode = itemType == PlugInModel::itemPlugin;
+            bool isPlugInAlgoNode = isPlugInNode && plugInModel->getIsAlgoPlugIn(itemInternalData);
+            bool isInstanceNode = itemType == PlugInModel::itemInstance;
+            bool isPlugInGrabberNode = isInstanceNode && plugInModel->getIsGrabberInstance(itemInternalData);
+            bool isFilterNode = itemType == PlugInModel::itemFilter;
+            bool isWidgetNode = itemType == PlugInModel::itemWidget;
+
+            m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
+            m_pActCloseInstance->setVisible(isInstanceNode);
+            m_pActDockWidget->setVisible(isInstanceNode);
+            m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
+            m_pActLiveImage->setVisible(isPlugInGrabberNode);
+            m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
+            m_pActOpenWidget->setVisible(isWidgetNode);
+            m_pActSendToPython->setVisible(isInstanceNode);
+            m_pActSnapDialog->setVisible(isPlugInGrabberNode);
+            m_pShowConfDialog->setVisible(isInstanceNode);
+
+            if (isInstanceNode)
+            {
+                m_pActCloseInstance->setEnabled(true); //should be changed in future
+
+                QObject *engine = AppManagement::getPythonEngine();
+                m_pActSendToPython->setEnabled(engine);
+
+                ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+
+                m_pShowConfDialog->setEnabled(ais->hasConfDialog());
+                m_pActDockWidget->setEnabled(ais->hasDockWidget());
+
+                if (m_pActDockWidget->isEnabled())
+                {
+                    if (ais->getDockWidget() && ais->getDockWidget()->toggleViewAction()->isChecked())
+                    {
+                        m_pActDockWidget->setText(tr("Hide Plugin Toolbox"));
+                        m_pActDockWidget->setChecked(true);
+                    }
+                    else
+                    {
+                        m_pActDockWidget->setText(tr("Show Plugin Toolbox"));
+                        m_pActDockWidget->setChecked(false);
+                    }
+                }
+            }
+
+            m_pActInfo->setEnabled(false);  // TODO
+            m_pActCloseAllInstances->setEnabled(false);  // TODO
+            m_pActLiveImage->setEnabled(false);  // TODO
+            m_pActSnapDialog->setEnabled(false);  // TODO
+            m_pActInfo->setEnabled(false);  // TODO
+
+            m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuShowConfdialog()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais && ais->hasConfDialog())
+        {
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, ais));
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuToggleDockWidget()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais)
+        {
+            QDockWidget* dockWidget = ais->getDockWidget();
+            if (dockWidget)
+            {
+                dockWidget->toggleViewAction()->trigger();
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuCreateNewInstance()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInManager *aim = ito::AddInManager::getInstance();
+//        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)aim->getAddInPtr(index.row());
+        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)index.internalPointer();
+
+        DialogNewPluginInstance *dialog = new DialogNewPluginInstance(index, aib);
+        if (dialog->exec() == 1) //accepted
+        {
+            QVector<ito::ParamBase> paramsMandNew, paramsOptNew;
+            QString pythonVarName = dialog->getPythonVariable();
+            ito::RetVal retValue = ito::retOk;
+            ito::AddInBase *basePlugin = NULL;
+
+            retValue += dialog->getFilledMandParams(paramsMandNew);
+            retValue += dialog->getFilledOptParams(paramsOptNew);
+
+            DELETE_AND_SET_NULL(dialog);
+
+            if (retValue.containsError())
+            {
+                char* msg = retValue.errorMessage();
+                QString message = tr("error while creating new instance. \nMessage: %1").arg(msg);
+                QMessageBox::critical(this, tr("Error while creating new instance"), message);
+                return;
+            }
+
+            int itemNum = aim->getItemIndexInList((void*)aib);
+            if (itemNum < 0)
+            {
+                return;
+            }
+
+            if (aib->getType() & ito::typeDataIO)
+            {
+                ito::AddInDataIO *plugin = NULL;
+                retValue += aim->initAddIn(itemNum, aib->objectName(), &plugin, &paramsMandNew, &paramsOptNew, false, NULL);
+                basePlugin = (ito::AddInBase*)(plugin);
+
+            }
+            else if (aib->getType() & ito::typeActuator)
+            {
+                ito::AddInActuator *plugin = NULL;
+                retValue += aim->initAddIn(itemNum, aib->objectName(), &plugin, &paramsMandNew, &paramsOptNew, false, NULL);
+                basePlugin = (ito::AddInBase*)(plugin);
+            }
+
+            if (retValue.containsWarning())
+            {
+                char* msg = retValue.errorMessage();
+                QString message = tr("warning while creating new instance. Message: %1").arg(msg);
+                QMessageBox::warning(this, tr("Warning while creating new instance"), message);
+            }
+            else if (retValue.containsError())
+            {
+                char* msg = retValue.errorMessage();
+                QString message = tr("error while creating new instance. Message: %1").arg(msg);
+                QMessageBox::critical(this, tr("Error while creating new instance"), message);
+            }
+
+            if (basePlugin != NULL)
+            {
+                basePlugin->setCreatedByGUI(1);
+
+                if (pythonVarName != "")
+                {
+                    QObject *engine = AppManagement::getPythonEngine();
+                    if (engine)
+                    {
+                        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                        ito::RetVal retValue = retOk;
+
+                        QMetaObject::invokeMethod(engine, "registerAddInInstance", Q_ARG(QString,pythonVarName), Q_ARG(ito::AddInBase*,basePlugin), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+                        if (!locker.getSemaphore()->wait(PLUGINWAIT))
+                        {
+                            QMessageBox::warning(this, tr("Timeout"), tr("Python did not response to the request within a certain timeout."));
+                        }
+
+                        retValue = locker.getSemaphore()->returnValue;
+
+                        if (retValue.containsWarning())
+                        {
+                            char* msg = retValue.errorMessage();
+                            QString message = tr("warning while sending instance to python. Message: %1").arg(msg);
+                            QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
+                        }
+                        else if (retValue.containsError())
+                        {
+                            char* msg = retValue.errorMessage();
+                            QString message = tr("error while sending instance to python. Message: %1").arg(msg);
+                            QMessageBox::critical(this, tr("Error while sending instance to python"), message);
+                        }
+                    }
+                    else
+                    {
+                        QMessageBox::warning(this, tr("Python not available"), tr("The Python engine is not available"));
+                    }
+                }
+            }
+            m_pAIManagerView->expand(m_pAIManagerView->currentIndex());
+        }
+        else
+        {
+            DELETE_AND_SET_NULL(dialog);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuCloseInstance()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais)
+        {
+            if (ais->createdByGUI() == 0)
+            {
+                QMessageBox::warning(this, tr("closing not possible"), tr("this instance cannot be closed by GUI since it has been created by Python"));
+            }
+            else if (ais->getRefCount() > 1)
+            {
+                QMessageBox::warning(this, tr("closing not possible"), tr("this instance can temporarily not be closed since it is still in use by another element."));
+            }
+            else
+            {
+                //it may be that an instance has been created by gui and then a reference has been created in python. If we now close the instance
+                //in the GUI, python still holds it, therefore the createdByGUI-flag must be false after that the instance is closed by the GUI-side
+                ais->setCreatedByGUI(false);
+
+                if (ais->getRefCount() > 0)
+                {
+                    QMessageBox::information(this, tr("final closing not possible"), tr("This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables."));
+                }
+
+                ito::AddInManager *aim = ito::AddInManager::getInstance();
+                ito::RetVal retValue = aim->closeAddIn(&ais,NULL);
+
+                if (retValue.containsWarning())
+                {
+                    char* msg = retValue.errorMessage();
+                    QString message = tr("warning while closing instance. Message: %1").arg(msg);
+                    QMessageBox::warning(this, tr("Warning while closing instance"), message);
+                }
+                else if (retValue.containsError())
+                {
+                    char* msg = retValue.errorMessage();
+                    QString message = tr("error while closing instance. Message: %1").arg(msg);
+                    QMessageBox::critical(this, tr("Error while closing instance"), message);
+                }
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuSendToPython()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais)
+        {
+            QObject *engine = AppManagement::getPythonEngine();
+            if (engine)
+            {
+                bool ok = false;
+                QString varname = QInputDialog::getText(this, tr("Python variable name"), tr("Python variable name for saving this instance in global workspace"), QLineEdit::Normal, tr("instance"), &ok);
+                if (ok && varname != "")
+                {
+
+                    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                    ito::RetVal retValue = retOk;
+
+                    QMetaObject::invokeMethod(engine, "registerAddInInstance", Q_ARG(QString,varname), Q_ARG(ito::AddInBase*,ais), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+                    if (!locker.getSemaphore()->wait(PLUGINWAIT))
+                    {
+                        QMessageBox::warning(this, tr("Timeout"), tr("Python did not response to the request within a certain timeout."));
+                    }
+
+                    retValue = locker.getSemaphore()->returnValue;
+
+                    if (retValue.containsWarning())
+                    {
+                        char* msg = retValue.errorMessage();
+                        QString message = tr("warning while sending instance to python. Message: %1").arg(msg);
+                        QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
+                    }
+                    else if (retValue.containsError())
+                    {
+                        char* msg = retValue.errorMessage();
+                        QString message = tr("error while sending instance to python. Message: %1").arg(msg);
+                        QMessageBox::critical(this, tr("Error while sending instance to python"), message);
+                    }
+                }
+            }
+            else
+            {
+                QMessageBox::warning(this, tr("Python not available"), tr("The Python engine is not available"));
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuOpenWidget()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)index.internalPointer();
+        mnuShowAlgoWidget(awd);
+    }
+
+//        ito::AddInBase *ais = (ito::AddInBase *)aib->getInstList()[index.row()];
+
+//        m_pActNewInstance->setVisible(false);
+//        QList<QAction*> actions = getAlgoWidgetActions(aib);
+//        if (actions.size() > 0)
+//        {
+////            QAction *selectedAction = QMenu::exec( actions, pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
+//            QAction *selectedAction = QMenu::exec( actions, m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
+//            if (selectedAction)
+//            {
+//                QString key = awd->m_name; //selectedAction->data().toString();
+
+//                if (key != "")
+//                {
+                    //ito::AddInAlgo *aia = static_cast<ito::AddInAlgo*>((aib->getInstList())[0]);
+                    //if (aia)
+                    //{
+//                        mnuShowAlgoWidget(awd);
+//                    }
+//                }
+//            }
+//        }
+
+    //    while (!actions.isEmpty())
+    //    {
+    //        delete actions.takeFirst();
+    //    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
+{
+    QMessageBox msgBox;
+    
+    ito::RetVal retValue(retOk);
+
+    QVector<ito::Param> paramsMand;
+    QVector<ito::Param> paramsOpt;
+    QVector<ito::Param> paramsOut;
+    QVector<ito::ParamBase> paramsMandBase;
+    QVector<ito::ParamBase> paramsOptBase;
+
+    retValue += awd->m_paramFunc(&paramsMand, &paramsOpt, &paramsOut);
+
+    if (!retValue.containsError())
+    {
+        if (paramsMand.size() > 0 || paramsOpt.size() > 0)
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters").toAscii().data());
+        }
+        else
+        {
+            UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+            QSharedPointer<unsigned int> dialogHandle(new unsigned int);
+            QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+            QSharedPointer<int> retCodeIfModal(new int);
+            QSharedPointer<unsigned int> objectID(new unsigned int);
+            QSharedPointer<QByteArray> className(new QByteArray());
+            *objectID = 0;
+            *dialogHandle = 0;
+            *initSlotCount = 0;
+
+            if (uiOrganizer)
+            {
+                retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
+                if (!retValue.containsError())
+                {
+                    if (*dialogHandle > 0)
+                    {
+                        retValue += uiOrganizer->setAttribute(*dialogHandle, Qt::WA_DeleteOnClose, true, NULL); //forces the dialog to delete itself if the user closes the dialog, since no other instance/itom-component is holding a reference to it.
+                        retValue += uiOrganizer->showDialog(*dialogHandle,false,retCodeIfModal,NULL);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, tr("User interface of plugin could not be created. Returned handle is invalid.").toAscii().data());
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toAscii().data());
+            }
+
+        }
+    }
+     
+    if (retValue.containsError())
+    {
+        msgBox.setText(tr("Error while opening user interface from plugin."));
+        if (retValue.errorMessage())
+        {
+            msgBox.setDetailedText( retValue.errorMessage() );
+        }
+        msgBox.setIcon( QMessageBox::Critical );
+        msgBox.exec();
+    }
+    else if (retValue.containsWarning())
+    {
+        msgBox.setText(tr("Warning while opening user interface from plugin."));
+        if (retValue.errorMessage())
+        {
+            msgBox.setDetailedText( retValue.errorMessage() );
+        }
+        msgBox.setIcon( QMessageBox::Warning );
+        msgBox.exec();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCount)
+{
+    for (int i = 1; i < colCount; ++i) 
+    {
+        m_pAIManagerView->setColumnHidden(i, hide);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::showList()
+{
+    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+    bool isList = true;
+
+    for (int i = 1; i < plugInModel->columnCount(); ++i)
+    {
+        isList = isList && m_pAIManagerView->isColumnHidden(i);
+    }
+
+    if (!isList)
+    {
+        for (int i = 0; i < plugInModel->columnCount(); ++i)
+        {
+            m_pColumnWidth[i] = m_pAIManagerView->columnWidth(i);
+        }
+    }
+
+    setTreeViewHideColumns(true, plugInModel->columnCount());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::showDetails()
+{
+    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+    bool isList = true;
+
+    for (int i = 1; i < plugInModel->columnCount(); ++i)
+    {
+        isList = isList && m_pAIManagerView->isColumnHidden(i);
+    }
+
+    setTreeViewHideColumns(false, plugInModel->columnCount());
+
+    if (isList)
+    {
+        for (int i = 0; i < plugInModel->columnCount(); ++i) 
+        {
+            m_pAIManagerView->setColumnWidth(i, m_pColumnWidth[i]);
+        }
+    }
+}
+
+} //end namespace ito
