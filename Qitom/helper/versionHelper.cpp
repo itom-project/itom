@@ -24,7 +24,7 @@
 #include "../global.h"
 #include "version.h"
 #include "opencv2/core/version.hpp"
-#include "../../designerPluginSource/qwt/src/qwt_global.h"
+//#include "../../designerPluginSource/qwt/src/qwt_global.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include <pcl/pcl_config.h>
@@ -132,9 +132,9 @@ QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
     newPair.second = PY_VERSION;
     newList.append(newPair);
 
-    newPair.first = "QwtPlot_Version";
-    newPair.second = QWT_VERSION_STR;
-    newList.append(newPair);
+    //newPair.first = "QwtPlot_Version";
+    //newPair.second = QWT_VERSION_STR;
+    //newList.append(newPair);
 
     return newList;
 }
