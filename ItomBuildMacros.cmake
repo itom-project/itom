@@ -6,7 +6,7 @@
 if(CMAKE_HOST_WIN32)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
-	else()
+	else() 
 		#ok
 	endif()
 endif()

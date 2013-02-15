@@ -8,6 +8,18 @@ SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
+if (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 8)
+else (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 4)
+endif (BUILD_TARGET64)
+
+#set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
+#if(NOT CMAKE_SIZEOF_VOID_P)
+#   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
+#   set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
+#endif()
+
 ADD_SUBDIRECTORY(DataObject)
 ADD_SUBDIRECTORY(PointCloud)
 ADD_SUBDIRECTORY(QPropertyEditor)
