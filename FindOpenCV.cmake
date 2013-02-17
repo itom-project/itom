@@ -51,7 +51,9 @@ find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV")
 
 set(CVLIB_LIBSUFFIX "/lib")
 
-
+IF(OpenCV_FIND_COMPONENTS)
+    message(STATUS "OpenCV components: ${OpenCV_FIND_COMPONENTS}")
+ENDIF()
 
 ##====================================================
 ## Find OpenCV libraries
@@ -60,16 +62,23 @@ if(EXISTS "${OpenCV_DIR}")
 
         #When its possible to use the Config script use it.
         if(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
+            
+            ## Include the standard CMake script
+            include("${OpenCV_DIR}/OpenCVConfig.cmake")
 
-                ## Include the standard CMake script
-                include("${OpenCV_DIR}/OpenCVConfig.cmake")
-
-                ## Search for a specific version
-                set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+            ## Search for a specific version
+            set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
         
         elseif(EXISTS "${OpenCV_DIR}/include" AND EXISTS "${OpenCV_DIR}/x86" AND EXISTS "${OpenCV_DIR}/x64")
-            #the OpenCV_DIR seems to point to a build version of OpenCV 2.3
-            set(OPENCV_LIB_COMPONENTS opencv_core opencv_ml opencv_highgui opencv_imgproc)
+            #the OpenCV_DIR seems to point to a build version of OpenCV 2.3 on a windows pc
+            if(NOT OpenCV_FIND_COMPONENTS)
+                set(OPENCV_LIB_COMPONENTS opencv_core opencv_ml opencv_highgui opencv_imgproc)
+            else()
+                foreach(__CVLIB ${OpenCV_FIND_COMPONENTS})
+                    set(OPENCV_LIB_COMPONENTS ${OPENCV_LIB_COMPONENTS} "opencv_${__CVLIB}")
+                endforeach(__CVLIB)
+            endif()
+            
             find_path(OpenCV_INCLUDE_DIR "cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" "include/opencv" DOC "")
             get_filename_component(OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIR}/.." REALPATH)
             if(EXISTS  ${OpenCV_INCLUDE_DIRS})
@@ -103,20 +112,27 @@ if(EXISTS "${OpenCV_DIR}")
             
         #Otherwise it try to guess it.
         else(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
-
+        
+            if(NOT OpenCV_FIND_COMPONENTS)
                 set(OPENCV_LIB_COMPONENTS cxcore cv ml highgui cvaux imgproc)
-                find_path(OpenCV_INCLUDE_DIR "cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" "include/opencv" DOC "")
-                if(EXISTS  ${OpenCV_INCLUDE_DIRS})
-                        include_directories(${OpenCV_INCLUDE_DIR})
-                endif(EXISTS  ${OpenCV_INCLUDE_DIRS})
+            else()
+                foreach(__CVLIB ${OpenCV_FIND_COMPONENTS})
+                    set(OPENCV_LIB_COMPONENTS ${OPENCV_LIB_COMPONENTS} "${__CVLIB}")
+                endforeach(__CVLIB)
+            endif()
+            set(OPENCV_LIB_COMPONENTS cxcore cv ml highgui cvaux imgproc)
+            find_path(OpenCV_INCLUDE_DIR "cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" "include/opencv" DOC "")
+            if(EXISTS  ${OpenCV_INCLUDE_DIRS})
+                    include_directories(${OpenCV_INCLUDE_DIR})
+            endif(EXISTS  ${OpenCV_INCLUDE_DIRS})
 
-                #Find OpenCV version by looking at cvver.h
-                file(STRINGS ${OpenCV_INCLUDE_DIR}/cvver.h OpenCV_VERSIONS_TMP REGEX "^#define CV_[A-Z]+_VERSION[ \t]+[0-9]+$")
-                string(REGEX REPLACE ".*#define CV_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MAJOR ${OpenCV_VERSIONS_TMP})
-                string(REGEX REPLACE ".*#define CV_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MINOR ${OpenCV_VERSIONS_TMP})
-                string(REGEX REPLACE ".*#define CV_SUBMINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_PATCH ${OpenCV_VERSIONS_TMP})
-                set(OpenCV_VERSION ${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR}.${OpenCV_VERSION_PATCH} CACHE STRING "" FORCE)
-                set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+            #Find OpenCV version by looking at cvver.h
+            file(STRINGS ${OpenCV_INCLUDE_DIR}/cvver.h OpenCV_VERSIONS_TMP REGEX "^#define CV_[A-Z]+_VERSION[ \t]+[0-9]+$")
+            string(REGEX REPLACE ".*#define CV_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MAJOR ${OpenCV_VERSIONS_TMP})
+            string(REGEX REPLACE ".*#define CV_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MINOR ${OpenCV_VERSIONS_TMP})
+            string(REGEX REPLACE ".*#define CV_SUBMINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_PATCH ${OpenCV_VERSIONS_TMP})
+            set(OpenCV_VERSION ${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR}.${OpenCV_VERSION_PATCH} CACHE STRING "" FORCE)
+            set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
 
         endif(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
 
@@ -148,7 +164,7 @@ if(EXISTS "${OpenCV_DIR}")
                 #no library found
                 else()
                         set(OpenCV_FOUND_TMP false)
-                        #message(STATUS "${OpenCV_DIR} -- ${OPENCV_LIB_COMPONENTS} --  ${__CVLIB}${CVLIB_SUFFIX}d not found")
+                        message(STATUS "$[lib]{__CVLIB}${CVLIB_SUFFIX}[d] or not found")
                 endif()
                 
                 #Add to the general list
