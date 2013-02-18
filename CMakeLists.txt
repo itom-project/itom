@@ -14,6 +14,19 @@ else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
+if (MSVC)
+	# set some optimization compiler flags
+	# i.e.:
+	#   - Ox full optimization (replaces standard O2 set by cmake)
+	#	- Oi enable intrinsic functions
+	#	- Ot favor fast code
+	#	- Oy omit frame pointers
+	#	- GL whole program optimization
+	# 	- GT fibre safe optimization
+	#	- openmp enable openmp support
+	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Oi -Ot -Oy -GL -GT -openmp" )
+endif (MSVC)
+
 #set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #if(NOT CMAKE_SIZEOF_VOID_P)
 #   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
