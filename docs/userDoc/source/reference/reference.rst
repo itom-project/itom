@@ -1,28 +1,32 @@
 .. include:: ../include/global.inc
 
-.. _ITOM-Script-Reference:
+.. _itom-Script-Reference:
 
-ITOM Script Reference
-##########################################
+itom Script Reference
+#####################
 
-Contents:
+This reference gives a full reference for all script commands that are contained in the python module |pyItom|.
+
+Content:
  
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    itom_general.rst
    dataObject.rst
-   npDataObject.rst   
-   itom_pointClouds.rst
+   npDataObject.rst 
+   point.rst
+   pointCloud.rst
+   polygonMesh.rst
    itom_GUI
    dataIO.rst
    actuator.rst
    algo.rst
- 
-Indices and tables
-==================
- 
+
+For an alphabetic index see:
+
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+If you need help about other important |python| modules, like **Numpy**, **Scipy**, **Matplotlib**, see the corresponding
+references in the internet.
 

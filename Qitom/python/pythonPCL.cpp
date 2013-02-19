@@ -104,22 +104,32 @@ PyObject* PythonPCL::PyPointCloud_new(PyTypeObject *type, PyObject* /*args*/, Py
 
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pointCloudInit_doc,"pointCloud([type] | pointCloud [,indices] | width, height [,point] | point) -> creates new point cloud.  \n\
-                                Parameters can be: \n\
-                                1. - type-number (e.g. point.PointXYZ) \n\
-                                2. - another pointCloud instance which is appended at this point cloud \n\
-                                   - sequence of indices (optional), only the indices of the given pointCloud will be appended to this point cloud \n\
-                                3. - width is the width of the new point cloud \n\
-                                   - height is the height of the new point cloud (the point cloud is dense if height > 1) \n\
-                                   - point (optional) which is copied at each position \n\
-                                4. - single point which is used as single point of this point cloud \n\
-                                \n\
-                                types are: \n\
-                                - point.PointXYZ \n\
-                                - point.PointXYZI \n\
-                                - point.PointXYZRGBA \n\
-                                - point.PointXYZNormal \n\
-                                - point.PointXYZINormal \n\
-                                - point.PointXYZRGBNormal");
+\n\
+Parameters \n\
+----------- \n\
+type : point-type (e.g. point.PointXYZ, see Notes) \n\
+pointCloud : pointCloud \n\
+	another pointCloud instance which is appended at this point cloud \n\
+indices : sequence, optional \n\
+	only the indices of the given pointCloud will be appended to this point cloud \n\
+width : int \n\
+	width of the new point cloud \n\
+height : int \n\
+	height of the new point cloud (the point cloud is dense if height > 1) \n\
+point : point \n\
+	single point instance. This point cloud is filled up with elements of this point. If width and height \n\
+	are given, every element is set to this point, else the point cloud only consists of this single point. \n\
+\n\
+Notes \n\
+------ \n\
+Possible types: \n\
+\n\
+* point.PointXYZ \n\
+* point.PointXYZI \n\
+* point.PointXYZRGBA \n\
+* point.PointXYZNormal \n\
+* point.PointXYZINormal \n\
+* point.PointXYZRGBNormal");
 int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * /*kwds*/)
 {
 
@@ -3072,7 +3082,7 @@ PyMappingMethods PythonPCL::PyPoint_mappingProtocol = {
 //------------------------------------------------------------------------------------------------------
 PyTypeObject PythonPCL::PyPointType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
-    "itom.Point",             /* tp_name */
+    "itom.point",             /* tp_name */
     sizeof(PyPoint),             /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor)PythonPCL::PyPoint_dealloc, /* tp_dealloc */

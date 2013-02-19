@@ -152,11 +152,10 @@ Example:\n\
     dObjROICopy[0, 0, 0] = 127\n\
     \n\
     \n\
-Constructor \n\
-------------\n\
+**Constructor** \n\
 The function dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]])\n\
 creates a new itom-dataObject filled with undefined data.\n\
-If no parameter a given, an uninitilized DataObject (dims = 0, no sizes) is created.\n\
+If no parameters are given, an uninitilized DataObject (dims = 0, no sizes) is created.\n\
 \n\
 As second possibility you can also use the copy-constructor 'dataObject(AnyArray)', \n\
 where AnyArray must be any array-like structure which is parsable by the numpy-interface.\n\
