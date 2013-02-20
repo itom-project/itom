@@ -325,8 +325,17 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.  \n\
-                                  - slotOrPublicMethod is the name of the slot or method (string)\n\
-                                  - arguments are the required arguments for this slot, separated by comma");
+\n\
+Use this method, to invoke any public slot or wrapped method of the underlying *uiItem*. For instance, see the Qt-help for slots of \n\
+the widget of element you are wrapping by this instance of *uiItem*. \n\
+\n\
+Parameters \n\
+----------- \n\
+slotOrPublicMethod : string \n\
+	name of the slot or method \n\
+arguments : various types \n\
+	Here you must indicate every argument, that the definition of the slot indicates. The type must be convertable into the \n\
+	requested C++ based argument type.");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
     int argsSize = PyTuple_Size(args);
@@ -485,7 +494,22 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method \n\
-                                     The signalSignature must be a valid Qt-signature, the callable method is the name of a bounded or unbounded python method.");
+\n\
+This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
+about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
+callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : string \n\
+	This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : python method or function \n\
+	valid method or function that is called if the signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+disconnect, invokeKeyboardInterrupt");
 PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 {
     const char* signalSignature;
@@ -558,7 +582,18 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal. \n\
-                                                      signalSignature must be a valid Qt-signature string, e.g. 'clicked(bool)'");
+\n\
+If you use the connect method to link a signal with a python method or function, this method can only be executed if python is in an idle status. \n\
+However, if you want raise the python interrupt signal if a specific signal is emitted, this interruption should be immediately invoked. Therefore \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : string \n\
+	This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+\n\
+See Also \n\
+--------- \n\
+connect");
 PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args)
 {
     const char* signalSignature;
@@ -1271,20 +1306,34 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type(TYPEDIALOG|TYPEWINDOW|TYPEDOCKWIDGET), dialogButtonBar(BUTTONBAR_NO|BUTTONBAR_HORIZONTAL|BUTTONBAR_VERTICAL), dialogButtons, childOfMainWindow, deleteOnClose]) -> new instance of user defined dialog \n\
-                                Parameters: \n\
-                                filename [string]: path to user interface file (*.ui) \n\
-                                type [int]: display type: \n\
-                                    - 0 (TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
-                                    - 1 (TYPEWINDOW): ui-file is handled as main window, \n\
-                                    - 2 (TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
-                                dialogButtonBar [int]: Only for type TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
-                                    - 0 (BUTTONBAR_NO): do not add any buttons \n\
-                                    - 1 (BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
-                                    - 2 (BUTTONBAR_VERTICAL): add vertical button bar \n\
-                                dialogButtons [dict]: every dictionary-entry is one button. key is the role, value is the button text \n\
-                                childOfMainWindow [bool]: for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
-                                deleteOnClose [bool]: Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
+PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface \n\
+\n\
+The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
+chose *ui.TYPEWINDOW* as type, if the user interface is a widget (simplest case), chose *ui.TYPEDIALOG* and your widget \n\
+will be embedded in a dialog, provided by *itom*. This dialog can be equiped with a button bar, whose buttons are already \n\
+connected to *itom* internal methods. If you then show your dialog in a modal mode, *itom* knows which button has been \n\
+clicked in order to accept or reject the dialog. \n\
+\n\
+Parameters \n\
+----------- \n\
+filename : string \n\
+	path to user interface file (*.ui), absolute or relative to current directory \n\
+type : int, optional \n\
+	display type: \n\
+    * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
+    * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
+    * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
+dialogButtonBar :  int, optional \n\
+	Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    * 0 (ui.BUTTONBAR_NO): do not add any buttons \n\
+    * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
+    * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
+dialogButtons : dict, optional \n\
+	every dictionary-entry is one button. key is the role, value is the button text \n\
+childOfMainWindow :  bool, optional \n\
+	for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
+deleteOnClose : bool, optional \n\
+	Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", NULL};

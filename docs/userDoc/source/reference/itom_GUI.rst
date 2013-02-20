@@ -1,27 +1,26 @@
 ui-elements (GUI)
-===================
-
-.. toctree::
-   :maxdepth: 1
+=================
    
 ui-Class
 ---------
 
 .. autoclass:: itom.ui
-	:member-order: bysource
-	:members:
-	:inherited-members:
+    :show-inheritance:
+    :member-order: groupwise
+    :members:
     
     
 uiItem-Class
 ------------------
  
 .. autoclass:: itom.uiItem
-	:members:
+    :member-order: groupwise
+    :members:
     
     
 uiTimer-Class
 ------------------
 
 .. autoclass:: itom.uiTimer
-	:members:
+    :member-order: groupwise
+    :members:

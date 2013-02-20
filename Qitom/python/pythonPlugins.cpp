@@ -366,7 +366,7 @@ detailLevel : {dict}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
+None or Dict : depending on the value of *detailLevel*.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -2900,7 +2900,7 @@ Parameters \n\
 ----------- \n\
 count : {unsigned integer}, optional, default: 1, if count > 1, startDevice is executed 'count' times, in order to increment the grabber internal start counter. \n\
 \n\
-Return \n\
+Returns \n\
 ----------- \n\
 None");
 
@@ -2957,12 +2957,13 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_stopDevice_doc,"stopDevice([count=1]) -> stops the given dataIO-plugin. \n\
 Usually no acquisition is possible, if the device is not started. \n\
+\n\
 Parameters \n\
 ----------- \n\
 count : {Integer > 0}, optional, default: 1, if count > 1, stopDevice is executed 'count' times, in order to decrement the grabber internal start counter. \n\
         You can also use -1 as count argument, then stopDevice is repeated until the internal start counter is 0. The number of effective counts is then returned \n\
 \n\
-Return \n\
+Returns \n\
 ----------- \n\
 None or the number of cycles that have been necessary to finally decrement the grabber's internal start counter to 0 (only if count==-1)");
 
@@ -3059,7 +3060,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire() -> triggers the camera-plugin \n\
-                                            such that the image acquisition process will start in this moment.");
+	such that the image acquisition process will start in this moment.");
 
 /** acquire data with a dataIO device
 *   @param [in] self    the dataIO object (python)

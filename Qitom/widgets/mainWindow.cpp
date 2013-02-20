@@ -673,10 +673,18 @@ void MainWindow::mnuShowAssistant()
         }
         else
         {
+			QString collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();            
+			QStringList args;
+			QFileInfo collectionFileInfo(collectionFile);
 
-            QStringList args;
+			if(collectionFileInfo.exists() == false)
+			{
+				m_pHelpSystem->rebuildHelpIfNotUpToDate();
+				collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
+			}
+			
             args << QLatin1String("-collectionFile");
-            args << QLatin1String(m_pHelpSystem->getHelpCollectionAbsFileName().toAscii().data());
+            args << QLatin1String(collectionFile.toAscii().data());
             args << QLatin1String("-enableRemoteControl");
             process->start(QLatin1String("assistant"), args);
 
