@@ -20,6 +20,11 @@ endif()
 #compile as static library (always)
 SET(LIBRARY_TYPE STATIC)
 
+#if QPropertyEditor is static, add -fPIC as compiler flag for linux
+IF(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF(UNIX)
+
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
