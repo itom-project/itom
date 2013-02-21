@@ -2,7 +2,6 @@ project(qitom)
 
 cmake_minimum_required(VERSION 2.8)
 
-#OPTION(BUILD_SHARED "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
@@ -34,12 +33,6 @@ SET (QT_USE_QTOPENGL TRUE)
 SET (QT_USE_QTXML TRUE)
 SET (QT_USE_QTSVG TRUE)
 SET (QT_USE_QTNETWORK TRUE)
-
-IF(BUILD_SHARED)
-	SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED)
-	SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)

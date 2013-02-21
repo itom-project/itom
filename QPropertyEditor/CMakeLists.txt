@@ -5,7 +5,6 @@ project(${target_name})
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_SHARED "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
@@ -18,15 +17,8 @@ if(CMAKE_HOST_WIN32)
 	endif()
 endif()
 
-IF (WIN32)
-	SET (BUILD_SHARED OFF)
-ENDIF (WIN32)
-
-IF(BUILD_SHARED)
-	SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED)
-	SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED)
+#compile as static library (always)
+SET(LIBRARY_TYPE STATIC)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 

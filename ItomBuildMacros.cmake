@@ -11,10 +11,21 @@ if(CMAKE_HOST_WIN32)
 	endif()
 endif()
 
-#on MSVC enable build using OpenMP
-if(MSVC_IDE)
+#on MSVC enable build using OpenMP for compiling
+if(MSVC)
 	ADD_DEFINITIONS(/MP)
-endif(MSVC_IDE)
+
+	# set some optimization compiler flags
+	# i.e.:
+	#   - Ox full optimization (replaces standard O2 set by cmake)
+	#	- Oi enable intrinsic functions
+	#	- Ot favor fast code
+	#	- Oy omit frame pointers
+	#	- GL whole program optimization
+	# 	- GT fibre safe optimization
+	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
+	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Oi -Ot -Oy -GL -GT -openmp" )
+endif (MSVC)
 
 # using custom macro for qtCreator compability, i.e. put ui files into GeneratedFiles/ folder
 MACRO (QT4_WRAP_UI_ITOM outfiles)

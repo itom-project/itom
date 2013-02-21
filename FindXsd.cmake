@@ -57,13 +57,14 @@ FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
 
 FIND_PROGRAM(XSD_EXECUTABLE 
   NAMES xsdcxx xsd
-  PATHS "[HKEY_CURRENT_USER\\xsd\\bin]" $ENV{XSDDIR}/bin
+  PATHS "${XSD_ROOT_DIR}"
+  "${XSD_ROOT_DIR}/bin"
+  "[HKEY_CURRENT_USER\\software\\xsd\\bin]" 
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
   "$ENV{PATH}"
-  "${XSD_ROOT_DIR}"
-  "${XSD_ROOT_DIR}/bin"
+  "$ENV{XSDDIR}/bin"
 )
 
 IF (NOT XSD_INCLUDE_DIR)
