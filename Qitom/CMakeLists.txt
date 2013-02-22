@@ -343,7 +343,10 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 	set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
+
 ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC})
+set_target_properties(qitom PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
+set_target_properties(qitom PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 
 #IF (CMAKE_HOST_WIN32) #32 or 64bit windows system
 #	

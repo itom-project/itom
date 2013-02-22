@@ -26,7 +26,7 @@ if(MSVC)
 	#	- GL whole program optimization
 	# 	- GT fibre safe optimization
 	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
-	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /GT /openmp" )
+	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" ) # /openmp recently breaks a release build
 endif (MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
