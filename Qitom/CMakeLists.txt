@@ -16,6 +16,7 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
+find_package(HTMLHelp)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
@@ -384,7 +385,7 @@ ENDIF(MSVC)
 
 # copy some folders and files during generate
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itomSettings          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itomSettings/itomDefault.ini          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../itomSettings)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)

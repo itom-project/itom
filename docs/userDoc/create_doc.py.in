@@ -14,6 +14,7 @@ from docutils.utils import SystemMessage
 import subprocess
 import itom
 import __main__
+import shutil
 
 def process_docstring(app, what, name, obj, options, lines):
     pass
@@ -71,8 +72,20 @@ for buildername in buildernames:
             subprocess.check_call(["assistant", "-collectionFile", "build\qthelp\ITOMDocumentation.qhc"])
             
     elif(buildername == "htmlhelp"):
-        print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
-        print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
+        hhc = "${HTML_HELP_COMPILER}" #"C:\\Program Files (x86)\\HTML Help Workshop\\hhc.exe"
+        
+        if( os.path.exists( hhc )):
+            print("Compile chm with", hhc, "...")
+            ret = subprocess.call([hhc, "build\htmlhelp\itom_doc.hhp"])
+            if(ret != 1):
+                raise RuntimeError("html help workshop failed")
+            else:
+                print("html help workshop successfully executed")
+                shutil.copy2("build\htmlhelp\itom_doc.chm","..")
+        else:
+            print("HTML Help Workshop (hhc.exe) could not be found.")
+            print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
+            print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
 
 del __main__.__dict__["__doxygen__xml"]
 
