@@ -1,6 +1,8 @@
 #SET(ITOM_SDK_DIR "${ITOM_DIR}/SDK" CACHE PATH "base path to the sdk directory of itom")
 
+#########################################################################
 #set general things
+#########################################################################
 
 #on windows systems, replace WIN32 preprocessor by _WIN64 if on 64bit
 if(CMAKE_HOST_WIN32)
@@ -26,6 +28,19 @@ if(MSVC)
 	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
 	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Oi -Ot -Oy -GL -GT -openmp" )
 endif (MSVC)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+  message(STATUS "GNUCXX pipe flag enabled")
+  set_target_properties(qitom PROPERTIES COMPILE_FLAGS "-pipe")
+endif(CMAKE_COMPILER_IS_GNUCXX)
+
+
+###########################################################################
+# useful macros
+###########################################################################
+
+
+
 
 # using custom macro for qtCreator compability, i.e. put ui files into GeneratedFiles/ folder
 MACRO (QT4_WRAP_UI_ITOM outfiles)
@@ -84,17 +99,6 @@ MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
 	# message(STATUS "target: ${target}")
-	# IF ( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-		# GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION_DEBUG)
-		# LIST(APPEND ${sources} ${VAR_LOCATION})
-		# LIST(APPEND ${destinations} ${ITOM_DIR}/designer)
-	# ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-
-	# IF ( ${CMAKE_BUILD_TYPE} STREQUAL "Release" )
-		# GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION_RELEASE)
-		# LIST(APPEND ${sources} ${VAR_LOCATION})
-		# LIST(APPEND ${destinations} ${ITOM_DIR}/designer)
-	# ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL "Release" )
 	
 	#GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
 	#STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
@@ -123,17 +127,6 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
 	IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	# IF ( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-		# GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION_DEBUG)
-		# LIST(APPEND ${sources} ${VAR_LOCATION})
-		# LIST(APPEND ${destinations} ${ITOM_DIR}/plugins/${target})
-	# ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-
-	# IF ( ${CMAKE_BUILD_TYPE} STREQUAL "Release" )
-		# GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION_RELEASE)
-		# LIST(APPEND ${sources} ${VAR_LOCATION})
-		# LIST(APPEND ${destinations} ${ITOM_DIR}/plugins/${target})
-	# ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL "Release" )
 	
 	#GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
 	#STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
@@ -160,6 +153,10 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
         SET(SDK_COMPILER "vc10")
     ELSEIF(MSVC9)
         SET(SDK_COMPILER "vc9")
+    ELSEIF(MSVC8)
+        SET(SDK_COMPILER "vc8")
+    ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
+	SET(SDK_COMPILER "gnucxx")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
