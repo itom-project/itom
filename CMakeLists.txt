@@ -58,5 +58,8 @@ IF(MSVC10)
     ENDIF(CMAKE_CL_64)
 ENDIF(MSVC10)
 
+#ADD a batch file for itom-release
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/itom.bat )
+
 #ADD_SUBDIRECTORY(designerPluginSource)
 #ADD_SUBDIRECTORY(pluginSource)
