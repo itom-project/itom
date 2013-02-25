@@ -7,6 +7,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 
 if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
@@ -25,6 +26,12 @@ ADD_SUBDIRECTORY(DataObject)
 ADD_SUBDIRECTORY(PointCloud)
 ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(Qitom)
+
+IF(BUILD_UNITTEST)
+	#put this as last, since gtest is globally changing many compiler flags
+	ADD_SUBDIRECTORY(gtest-1.6.0)
+	ADD_SUBDIRECTORY(itom_unittests)
+ENDIF(BUILD_UNITTEST)
 
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
