@@ -17,6 +17,14 @@
 #
 #----------------------------------------------------------
 
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+
+if (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 8)
+else (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 4)
+endif (BUILD_TARGET64)
+
 IF(EXISTS "${ITOM_SDK_DIR}")
     #message(FATAL_ERROR "blub - ${ITOM_SDK_INCLUDE_DIRS} - ${ITOM_SDK_DIR}")
     #find include directory
@@ -46,6 +54,7 @@ IF(EXISTS "${ITOM_SDK_DIR}")
     ENDIF(MSVC10)
     
     SET(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
+	#message(STATUS "ITOM_SDK_LIBSUFFIX ${ITOM_SDK_LIBSUFFIX} ${CMAKE_SIZEOF_VOID_P}")
     
     
     
