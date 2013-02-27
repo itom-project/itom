@@ -3,6 +3,14 @@
 #########################################################################
 #set general things
 #########################################################################
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+
+if (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 8)
+else (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 4)
+endif (BUILD_TARGET64)
+
 
 #on windows systems, replace WIN32 preprocessor by _WIN64 if on 64bit
 if(CMAKE_HOST_WIN32)
