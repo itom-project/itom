@@ -25,12 +25,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PCLFUNCTIONS_H
-#define PCLFUNCTIONS_H
+#ifndef PCLFUNCTIONS_IMPL_H
+#define PCLFUNCTIONS_IMPL_H
 
-#include "pclStructures.h"
+#include "../../common/sharedStructures.h"
 
-#include "../common/sharedStructures.h"
+#include "../../common/typeDefs.h"
+#include "../../DataObject/dataobj.h"
 
 namespace ito 
 {
@@ -39,21 +40,56 @@ class DataObject; //forward declaration
 
 namespace pclHelper
 {
-    void PointXYZRGBtoXYZRGBA (pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out);
-    void PointXYZRGBAtoXYZRGB (pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
-    void PointCloudXYZRGBtoXYZRGBA( pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
+    template<typename _Tp, int _Rows, int _Cols> ito::RetVal eigenMatrixToDataObj(const Eigen::Matrix<_Tp,_Rows,_Cols> &mat, DataObject &out)
+    {
+        ito::RetVal retval;
+        ito::tDataType type;
 
-    ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject *mapI, PCLPointCloud &out, bool deleteNaN = false);
+        try
+        {
+            type = ito::getDataType2<_Tp*>();
+        }
+        catch(...)
+        {
+            retval += ito::RetVal(ito::retError,0,"eigen matrix type cannot be converted to dataObject");
+        }
 
-    ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out);
+        if(!retval.containsError())
+        {
+            const _Tp *data = mat.data();
+            _Tp *rowPtr = NULL;
+            size_t c = 0;
+            size_t rows = mat.rows();
+            size_t cols = mat.cols();
+            out = ito::DataObject(rows, cols, type);
 
-    ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out);
-    ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out);
+            if(mat.Options & Eigen::RowMajor)
+            {
+                for(size_t m = 0 ; m < rows ; m++)
+                {
+                    rowPtr = (_Tp*)out.rowPtr(0,m);
+                    for(size_t n = 0 ; n < cols ; n++)
+                    {
+                        rowPtr[n] = data[c++];
+                    }
+                }
+            }
+            else
+            {
+                for(size_t m = 0 ; m < rows ; m++)
+                {
+                    rowPtr = (_Tp*)out.rowPtr(0,m);
+                    for(size_t n = 0 ; n < cols ; n++)
+                    {
+                        rowPtr[n] = data[m + n * rows];
+                    }
+                }
+            }
 
-    //template<typename _Tp, int _Rows, int _Cols> ito::RetVal eigenMatrixToDataObj(const Eigen::Matrix<_Tp,_Rows,_Cols> &mat, DataObject &out);
+        }
+
+        return retval;
+    }
 
     //ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud);
     //ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud);

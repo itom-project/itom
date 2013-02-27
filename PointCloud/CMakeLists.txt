@@ -45,6 +45,7 @@ set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pclFunctions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclFunctions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/impl/pclFunctionsImpl.h
 )
 
 add_library(pointcloud ${LIBRARY_TYPE} ${libSrcs}) # ../dataobject)
@@ -52,6 +53,7 @@ add_library(pointcloud ${LIBRARY_TYPE} ${libSrcs}) # ../dataobject)
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud/pclStructures.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/PointCloud)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud/pclFunctions.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/PointCloud)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud/impl/pclFunctionsImpl.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/PointCloud/impl)
 
 # COPY SECTION
 set(COPY_SOURCES "")

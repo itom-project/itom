@@ -626,6 +626,12 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
     RetVal retval;
     out = DataObject();
     retval += out.eye(4, ito::tFloat32);
+
+    if(in->Options & Eigen::ColMajor)
+    {
+        retval += ito::RetVal(ito::retError,0,"affine3f object must be rowMajor");
+    }
+
     if(!retval.containsError())
     {
         ito::float32 *r0 = (ito::float32*)out.rowPtr(0,0);
@@ -659,6 +665,8 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
 
     return retval;
 }
+
+
 
 ////------------------------------------------------------------------------------------------------------------------------------
 //ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud)
