@@ -143,7 +143,7 @@ if(EXISTS "${OpenCV_DIR}")
 	set(GLOBAL OpenCV_LIBS "")
 	set(OpenCV_FOUND_TMP true)
 
-	set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin")
+	set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
 	
 	#message(STATUS "this ${OpenCV_BIN_DIR} vs ${OpenCV_DIR}${CVLIB_LIBSUFFIX}")
 	
