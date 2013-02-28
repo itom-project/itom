@@ -147,7 +147,7 @@ Source: "{#SourceDirITOM}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\c
 Source: "{#SourceDirITOM}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
 Source: "{#SourceDirITOM}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
 Source: "{#SourceDirITOM}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirITOM}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirITOM}\SDK\lib\vc10_x86\*.*"; DestDir: "{app}\SDK\lib\vc10_x86"; Components: SDK;  Flags: promptifolder
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
