@@ -871,9 +871,10 @@ const PCLPointCloud PCLPointCloud::operator+ (const PCLPointCloud &rhs)
     }
     else
     {
-        PCLPointCloud result(rhs.getType());
-        PCLPointCloud temp(rhs.getType());
-        int idx = getFuncListIndex();
+        const ito::tPCLPointType newType = rhs.getType();
+        PCLPointCloud result(newType);
+        PCLPointCloud temp(newType);
+        int idx = getFuncListIndex(newType);
         if(idx >= 0)
         {
             fListPcAddFunc[idx](&temp, &rhs, &result);

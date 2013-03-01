@@ -3,6 +3,14 @@
 #########################################################################
 #set general things
 #########################################################################
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+
+if (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 8)
+else (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 4)
+endif (BUILD_TARGET64)
+
 
 #on windows systems, replace WIN32 preprocessor by _WIN64 if on 64bit
 if(CMAKE_HOST_WIN32)
@@ -26,7 +34,7 @@ if(MSVC)
 	#	- GL whole program optimization
 	# 	- GT fibre safe optimization
 	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
-	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" ) # /openmp recently breaks a release build
+	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" )
 endif (MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCXX)

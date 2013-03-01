@@ -288,6 +288,20 @@ private:
         }
     };
 
+    inline int getFuncListIndex(const ito::tPCLPointType &type) const
+    {
+        switch(type)
+        {
+        case ito::pclXYZ: return 0;
+        case ito::pclXYZI: return 1;
+        case ito::pclXYZRGBA: return 2;
+        case ito::pclXYZNormal: return 3;
+        case ito::pclXYZINormal: return 4;
+        case ito::pclXYZRGBNormal: return 5;
+        default: return -1;
+        }
+    };
+
     template<typename _Tp> friend pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc);
     template<typename _Tp> friend const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc);
     template<typename _Tp> friend std_msgs::Header GetHeaderFunc(ito::PCLPointCloud &pc);

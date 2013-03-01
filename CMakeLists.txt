@@ -33,8 +33,21 @@ IF(BUILD_UNITTEST)
 	ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)
 
+
+#find current itom version from qitom/global.h
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
+string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
+
+message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
+message(STATUS "")
+message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "")
+
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
+
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 
 IF(WIN32)
     SET(CHMSource "${CMAKE_CURRENT_SOURCE_DIR}/docs/itom_doc.chm")
