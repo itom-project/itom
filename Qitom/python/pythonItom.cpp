@@ -3208,6 +3208,33 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 
 }
 
+PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
+{
+    int i = -1;
+    if (!PyArg_ParseTuple(pArgs, "|i", &i))
+    {
+        return NULL;
+    }
+
+    if(i > Qt::LastCursor)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "Cursor number must be in range [-1,%i]", Qt::LastCursor);
+    }
+
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if(i >= 0 && pyEngine)
+    {
+        Qt::CursorShape shape = (Qt::CursorShape)i;
+        emit pyEngine->pythonSetCursor( shape );
+    }
+    else if(pyEngine)
+    {
+        emit pyEngine->pythonResetCursor();
+    }
+    Py_RETURN_NONE;
+}
+
 ///*static*/ PyObject* PythonItom::PyGetGlobalDict(PyObject* /*pSelf*/)
 //{
 //	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -3278,6 +3305,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"gcEndTracking", (PyCFunction)PythonItom::PyGCEndTracking, METH_NOARGS, "gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list."},
 	//{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
     {"getScreenInfo", (PyCFunction)PythonItom::PyGetScreenInfo, METH_NOARGS, getScreenInfo_doc},
+    {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

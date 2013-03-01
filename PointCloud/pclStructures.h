@@ -347,6 +347,10 @@ public:
     PCLPolygonMesh & operator= (const PCLPolygonMesh &copy);
 
     inline bool valid() { return m_valid; }
+
+    size_t height() const;
+    size_t width() const;
+    std::string getFieldsList() const;
     
 protected:
 

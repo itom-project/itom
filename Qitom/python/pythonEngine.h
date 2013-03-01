@@ -239,6 +239,9 @@ signals:
 	void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
 	void deleteCallStack();
 
+    void pythonSetCursor(const Qt::CursorShape cursor);
+    void pythonResetCursor();
+
 public slots:
     void pythonRunString(QString cmd);
     void pythonDebugString(QString cmd);

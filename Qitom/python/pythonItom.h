@@ -117,6 +117,9 @@ public:
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
+    static PyObject* setApplicationCursor(PyObject* pSelf, PyObject* pArgs);
+
+
 protected:
     static QHash<unsigned int, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
 };
