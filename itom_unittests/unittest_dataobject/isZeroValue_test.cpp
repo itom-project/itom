@@ -12,9 +12,12 @@
 #include "commonChannel.h"
 
 
+/*! \class IsZeroValueRealTest
+	\brief Test for isZeroValue method for all real data types
 
+	This test checks the functionality of isZeroValue(...) method with different variables of real datatypes.
+*/
 template <typename _Tp> class IsZeroValueRealTest : public ::testing::Test { };
-
 
 TYPED_TEST_CASE(IsZeroValueRealTest, ItomRealDataTypes);
 
@@ -50,8 +53,12 @@ TYPED_TEST(IsZeroValueRealTest, checkZeroValueReal_Test)
 }
 
 
-template <typename _Tp> class IsZeroValueComplexTest : public ::testing::Test { };
+/*! \class IsZeroValueComplexTest
+	\brief Test for isZeroValue method for complex types
 
+	This test checks the functionality of isZeroValue(...) method with different variables of complex datatypes.
+*/
+template <typename _Tp> class IsZeroValueComplexTest : public ::testing::Test { };
 
 TYPED_TEST_CASE(IsZeroValueComplexTest, ItomComplexDataTypes);
 
@@ -78,8 +85,7 @@ TYPED_TEST(IsZeroValueComplexTest, checkZeroValueComplex_Test)
 	}
     else
     {
-		//!< Test fo isZeroValue() function.
-        EXPECT_TRUE( ito::isZeroValue<TypeParam>(ZeroVal1, epsilon1 ) );			/*!< Test of isZeroValue() function for real part of Complex Type Variable with zero value.  */
+	    EXPECT_TRUE( ito::isZeroValue<TypeParam>(ZeroVal1, epsilon1 ) );			/*!< Test of isZeroValue() function for real part of Complex Type Variable with zero value.  */
 		EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal1, epsilon1 ) );		/*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero positive value. */	
 		EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal2, epsilon1) );			/*!< Test of isZeroValue() function for Complex Type variable with zero real part and nonzero negative imaginary part. */
 		EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal3, epsilon1 ) );		/*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero negative value. */

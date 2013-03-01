@@ -61,7 +61,8 @@ set(unittest_dataobject_HEADERS
 
 set(unittest_dataobject_SOURCES 
 	${CMAKE_CURRENT_SOURCE_DIR}/adjustROI_func_test.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test1.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/convertCmplxTypeToRealType_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/dimsAndtype_Test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/DObj_copy_tests.cpp

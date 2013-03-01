@@ -21,7 +21,7 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "IsZeroValueRealTest/*.checkZeroValueReal_Test"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	::testing::FLAGS_gtest_filter = "copyTests/*.*"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     ::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
 	

@@ -10,13 +10,13 @@
 #include "gtest/gtest.h"
 #include "commonChannel.h"
 
-template <typename _Tp> class getDataTypeTest : public ::testing::Test { };
-
 /*! \class getDataTypetest
 	\brief Test for getDataType and getDataType2 methods for all real data types
 
 	This test contains 2 test cases for getDataType and getDataType2 functions each and checks the outputs of them when they are applied with respective data types.
 */
+template <typename _Tp> class getDataTypeTest : public ::testing::Test { };
+
 TYPED_TEST_CASE(getDataTypeTest, ItomDataTypes);
 
 //! getDataType_Test

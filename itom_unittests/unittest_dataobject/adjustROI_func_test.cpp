@@ -8,7 +8,6 @@
 #include "opencv/cv.h"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
-//#include "test_global.h"
 #include "commonChannel.h"
 
 
@@ -40,6 +39,10 @@ public:
  
 	virtual void TearDown(void) {};
 
+	//! calcUniqueValue5D()
+	/*!
+		 This function generates unique values for each element of 5 dimensional data object for test purpose.
+	*/
 	int calcUniqueValue5D(int d1, int d2, int d3, int d4, int d5)
 	{
 		return  d5 + d4 * 10 + d3 * 100 + d2 * 1000 + d1 * 10000 ;
@@ -161,7 +164,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
 	dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
 	dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
-	int test_res5d[] = {12,22,112,122,212,222,312,322,412,422};		//!< Expected result vector for dObj3 after adjustROI method using 2 parameter (general) implementation
+	int test_res5d[] = {12,22,112,122,212,222,312,322,412,422};		//!< Expected result vector for dObj4 after adjustROI method using 2 parameter (general) implementation
 	unsigned int idx[] = {0,0,0,0,0};
 	TypeParam v1;
 	TypeParam v2;

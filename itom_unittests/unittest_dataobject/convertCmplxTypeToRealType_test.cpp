@@ -12,9 +12,11 @@
 #include "commonChannel.h"
 
 
-
+/*! \class complexToReal_Test
+	\brief Test for convertCmplxTypeToRealType(...) method for different datatypes. 
+	This test converts different complex type variables into different real type variables using convertCmplxTypeToRealType(...) method and checks if the method works as desired.
+*/
 template <typename _Tp> class complexToReal_Test : public ::testing::Test { };
-
 
 TYPED_TEST_CASE(complexToReal_Test, ItomDataTypes);
 

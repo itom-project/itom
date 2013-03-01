@@ -98,7 +98,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_1[] = {-4,-6};			//!< defining offsets for ROI 
 	int matLimits2d_1[] = {-4,-4,-1,-4};		//!< defining offsets for ROI 
 	int matLimits3d_1[] = {-1,-1,-1,-1,-2,-1};
-	int matLimits5d_1[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_1[] = {-1,-1,-1,0,-2,-1,-1,-1,-2,-1};
 
 	dObj1_sr.adjustROI(0,matLimits1d_1);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d_1);   //!< adjust ROI (shrinking because offset values are negative)
@@ -118,7 +118,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_2[] = {-3,-7};				//!< defining offsets for ROI 
 	int matLimits2d_2[] = {-3,-3,-2,-5};		//!< defining offsets for ROI 
 	int matLimits3d_2[] = {-1,-1,-1,-1,-1,-2};
-	int matLimits5d_2[] = {-4,-4,-2,-3,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_2[] = {-1,-1,-1,-1,-1,-1,-1,-1,-2,-1};
 
 	dObj1_dr1.adjustROI(0,matLimits1d_2);	//!< adjust ROI (shrinking because offset values are negative)
 	dObj2_dr1.adjustROI(2,matLimits2d_2);   //!< adjust ROI (shrinking because offset values are negative)
@@ -133,7 +133,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_3[] = {-2,-2};				//!< defining offsets for ROI 
 	int matLimits2d_3[] = {-2,-2,-2,-5};		//!< defining offsets for ROI 
 	int matLimits3d_3[] = {-1,0,-1,-1,-1,-2};
-	int matLimits5d_3[] = {-4,-4,-2,-2,-2,-3,-1,0,-2,-1};
+	int matLimits5d_3[] = {0,0,-2,0,-2,0,-1,0,-2,-1};
 
 	dObj1_dr2.adjustROI(0,matLimits1d_3);	//!< adjust ROI (shrinking because offset values are negative)
 	dObj2_dr2.adjustROI(2,matLimits2d_3);   //!< adjust ROI (shrinking because offset values are negative)
@@ -144,6 +144,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	EXPECT_ANY_THROW(dObj2_sr.deepCopyPartial(dObj2_dr2));
 	EXPECT_ANY_THROW(dObj3_sr.deepCopyPartial(dObj3_dr2));
 	EXPECT_ANY_THROW(dObj4_sr.deepCopyPartial(dObj4_dr2));
+
 
 }
 
