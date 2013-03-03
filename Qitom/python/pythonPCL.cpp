@@ -971,12 +971,12 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
 
         switch(type)
         {
-        case ito::pclXYZ: return PyUnicode_FromFormat("PointCloud (type: PointXYZ, size: %d, height: %d, width: %d)", size, height, width);
-        case ito::pclXYZI: return PyUnicode_FromFormat("PointCloud (type: PointXYZI, size: %d, height: %d, width: %d)", size, height, width);
-        case ito::pclXYZRGBA: return PyUnicode_FromFormat("PointCloud (type: PointXYZRGBA, size: %d, height: %d, width: %d)", size, height, width);
-        case ito::pclXYZNormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZNormal, size: %d, height: %d, width: %d)", size, height, width);
-        case ito::pclXYZINormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZINormal, size: %d, height: %d, width: %d)", size, height, width);
-        case ito::pclXYZRGBNormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZRGBNormal, size: %d, height: %d, width: %d)", size, height, width);
+        case ito::pclXYZ: return PyUnicode_FromFormat("PointCloud (type: PointXYZ, size: %d, [%d x %d])", size, height, width);
+        case ito::pclXYZI: return PyUnicode_FromFormat("PointCloud (type: PointXYZI, size: %d, [%d x %d])", size, height, width);
+        case ito::pclXYZRGBA: return PyUnicode_FromFormat("PointCloud (type: PointXYZRGBA, size: %d, [%d x %d])", size, height, width);
+        case ito::pclXYZNormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZNormal, size: %d, [%d x %d])", size, height, width);
+        case ito::pclXYZINormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZINormal, size: %d, [%d x %d])", size, height, width);
+        case ito::pclXYZRGBNormal: return PyUnicode_FromFormat("PointCloud (type: PointXYZRGBNormal, size: %d, [%d x %d])", size, height, width);
         default: return PyUnicode_FromString("PointCloud (type: PointInvalid)");
         }
     }
@@ -3211,7 +3211,7 @@ PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
     }
     else
     {
-        return PyUnicode_FromString("PolygonMesh");
+        return PyUnicode_FromFormat("PolygonMesh (size: [%u x %u], fields: %s)", self->polygonMesh->height(), self->polygonMesh->width(), self->polygonMesh->getFieldsList().data() );
     }
 }
 

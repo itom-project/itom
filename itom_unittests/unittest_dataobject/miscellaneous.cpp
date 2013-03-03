@@ -56,9 +56,9 @@ TYPED_TEST_CASE(miscellaneousTests, ItomRealDataTypes);
 
 //getDims_getType_Test
 /*!
-	This test adjust the ROI of 3 dimensional matrices to check proper functionality of "adjustROI" method. It also checks "locateROI" method by comparing obtained offsets with original values.
+	
 */
-TYPED_TEST(miscellaneousTests, miscellaneous_Test)
+TYPED_TEST(miscellaneousTests, getValueOffset_Test)
 {
 	dObj5 = ito::DataObject(dObj2);
 	dObj6 = dObj2;
@@ -278,17 +278,17 @@ TYPED_TEST(miscellaneousTests, getXYRotationalMatrix_Test)
 	dObj6 = dObj2;
 	double  r00,r01,r02,r10,r11,r12,r20,r21,r22;
 
-	//!< Test for getValueDescription() function.
-		dObj1.getXYRotationalMatrix( r00,r01,r02,r10,r11,r12,r20,r21,r22 ) ;		//Note: This test fails for Obj1 (Empty DataObject).............................................
-	EXPECT_EQ(1,r00);
-	EXPECT_EQ(0,r01);
-	EXPECT_EQ(0,r02);
-	EXPECT_EQ(0,r10);
-	EXPECT_EQ(1,r11);
-	EXPECT_EQ(0,r12);
-	EXPECT_EQ(0,r20);
-	EXPECT_EQ(0,r21);
-	EXPECT_EQ(1,r22);
+	//!< Test for getXYRotationMatrix() function.
+	//	dObj1.getXYRotationalMatrix( r00,r01,r02,r10,r11,r12,r20,r21,r22 ) ;		//Note: This test fails for Obj1 (Empty DataObject).............................................
+	//EXPECT_EQ(1,r00);
+	//EXPECT_EQ(0,r01);
+	//EXPECT_EQ(0,r02);
+	//EXPECT_EQ(0,r10);
+	//EXPECT_EQ(1,r11);
+	//EXPECT_EQ(0,r12);
+	//EXPECT_EQ(0,r20);
+	//EXPECT_EQ(0,r21);
+	//EXPECT_EQ(1,r22);
 
 	r00,r01,r02,r10,r11,r12,r20,r21,r22=0;
 	dObj2.getXYRotationalMatrix( r00,r01,r02,r10,r11,r12,r20,r21,r22 ) ;

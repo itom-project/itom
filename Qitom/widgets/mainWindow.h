@@ -138,6 +138,9 @@ public slots:
     void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename);
     void pythonRemoveMenuElement(QString key);
 
+    void setCursor(const Qt::CursorShape cursor);
+    void resetCursor();
+
     void currentDirectoryChanged();
 
     void showInfoMessageLine( QString text, QString winKey = "" );

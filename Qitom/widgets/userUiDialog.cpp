@@ -102,6 +102,16 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
             retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toAscii().data());
         }
 
+		if( contentWidget->windowTitle() != "" )
+		{
+			setWindowTitle( contentWidget->windowTitle() );
+		}
+		else
+		{
+			setWindowTitle( tr("itom") );
+		}
+		
+
         QObject *child = NULL;
         foreach(child, contentWidget->children())
         {

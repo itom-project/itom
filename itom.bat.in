@@ -1,4 +1,4 @@
 @echo off
-PATH=@QT_BINARY_DIR@;@OpenCV_DIR@\bin\release;%PATH%
+PATH=@QT_BINARY_DIR@;@OpenCV_BIN_DIR@\release;%PATH%
 start qitom.exe
 exit

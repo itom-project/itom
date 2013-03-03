@@ -98,7 +98,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_1[] = {-4,-6};			//!< defining offsets for ROI 
 	int matLimits2d_1[] = {-4,-4,-1,-4};		//!< defining offsets for ROI 
 	int matLimits3d_1[] = {-1,-1,-1,-1,-2,-1};
-	int matLimits5d_1[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_1[] = {-1,-1,-1,0,-2,-1,-1,-1,-2,-1};
 
 	dObj1_sr.adjustROI(0,matLimits1d_1);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d_1);   //!< adjust ROI (shrinking because offset values are negative)
@@ -118,7 +118,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_2[] = {-3,-7};				//!< defining offsets for ROI 
 	int matLimits2d_2[] = {-3,-3,-2,-5};		//!< defining offsets for ROI 
 	int matLimits3d_2[] = {-1,-1,-1,-1,-1,-2};
-	int matLimits5d_2[] = {-4,-4,-2,-3,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_2[] = {-1,-1,-1,-1,-1,-1,-1,-1,-2,-1};
 
 	dObj1_dr1.adjustROI(0,matLimits1d_2);	//!< adjust ROI (shrinking because offset values are negative)
 	dObj2_dr1.adjustROI(2,matLimits2d_2);   //!< adjust ROI (shrinking because offset values are negative)
@@ -133,7 +133,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	int matLimits1d_3[] = {-2,-2};				//!< defining offsets for ROI 
 	int matLimits2d_3[] = {-2,-2,-2,-5};		//!< defining offsets for ROI 
 	int matLimits3d_3[] = {-1,0,-1,-1,-1,-2};
-	int matLimits5d_3[] = {-4,-4,-2,-2,-2,-3,-1,0,-2,-1};
+	int matLimits5d_3[] = {0,0,-2,0,-2,0,-1,0,-2,-1};
 
 	dObj1_dr2.adjustROI(0,matLimits1d_3);	//!< adjust ROI (shrinking because offset values are negative)
 	dObj2_dr2.adjustROI(2,matLimits2d_3);   //!< adjust ROI (shrinking because offset values are negative)
@@ -144,6 +144,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 	EXPECT_ANY_THROW(dObj2_sr.deepCopyPartial(dObj2_dr2));
 	EXPECT_ANY_THROW(dObj3_sr.deepCopyPartial(dObj3_dr2));
 	EXPECT_ANY_THROW(dObj4_sr.deepCopyPartial(dObj4_dr2));
+
 
 }
 
@@ -179,7 +180,6 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 
 	dObj2_s.deepCopyPartial(dObj2_d);
 	dObj3_s.deepCopyPartial(dObj3_d);
-	//dObj4_s.deepCopyPartial(dObj4_d);
 
 	for(int i =0;i<10;i++) 
 		{
@@ -201,31 +201,25 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 	dObj1_sr = dObj1_s; 
 	dObj2_sr = dObj2_s;
 	dObj3_sr = dObj3_s;
-	//dObj4_sr = dObj4_s;
 	
 	int matLimits1d_1[] = {-4,-6};			//!< defining offsets for ROI 
 	int matLimits2d_1[] = {-4,-4,-1,-4};		//!< defining offsets for ROI 
 	int matLimits3d_1[] = {-1,-1,-1,-1,-2,-1};
-	//int matLimits5d_1[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
 
 	dObj1_sr.adjustROI(0,matLimits1d_1);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d_1);   //!< adjust ROI (shrinking because offset values are negative)
 	dObj3_sr.adjustROI(3,matLimits3d_1);   //!< adjust ROI (shrinking because offset values are negative)
-	//dObj4_sr.adjustROI(5,matLimits5d_1);   //!< adjust ROI (shrinking because offset values are negative)
 
 	dObj1_dr = dObj1_d; 
 	dObj2_dr = dObj2_d;
 	dObj3_dr = dObj3_d;
-	//dObj4_dr = dObj4_d;
 
 	dObj1_dr.adjustROI(0,matLimits1d_1);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_dr.adjustROI(2,matLimits2d_1);   //!< adjust ROI (shrinking because offset values are negative)
 	dObj3_dr.adjustROI(3,matLimits3d_1);   //!< adjust ROI (shrinking because offset values are negative)
-//	dObj4_dr.adjustROI(5,matLimits5d_1);   //!< adjust ROI (shrinking because offset values are negative)
 
 	dObj2_sr.deepCopyPartial(dObj2_dr);
 	dObj3_sr.deepCopyPartial(dObj3_dr);
-//	dObj4_sr.deepCopyPartial(dObj4_dr);
 
 	for(int i =0;i<2;i++) 
 	{
@@ -251,7 +245,6 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 	dObj1_dr.adjustROI(0,matLimits1d_2);			 //!< adjust ROI (expanding because offset values are negative)
 	dObj2_dr.adjustROI(2,matLimits2d_2);   //!< adjust ROI (expanding because offset values are negative)
 	dObj3_dr.adjustROI(3,matLimits3d_2);   //!< adjust ROI (expanding because offset values are negative)
-//	dObj4_dr.adjustROI(5,matLimits5d_2);   //!< adjust ROI (expanding because offset values are negative)
 
 	//!< Values of dObj1_dr can not be verified again after adjusting ROI because it is an empty Dataobject.
 
@@ -272,18 +265,18 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 			}
 		}
 	}
-
-
-	
-	std::cout << "dObj4_s"<< dObj4_s << std::endl;
 }
 
+// deepCopyPartial_Test3
+/*!
+	This test checks functionality of deepCopyPartial() method on 5 dimensional data objects
+*/
 TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 {
 	std::size_t planeId; 
-	TypeParam *rowPtr  = NULL; 
+	TypeParam *rowPtr  = NULL;	//!< Row pointer to locate each element of 5 dimensional data object dObj4_s at each row
 	std::size_t planeId_d; 
-	TypeParam *rowPtr_d  = NULL;
+	TypeParam *rowPtr_d  = NULL;	//!< Row pointer to locate each element of 5 dimensional data object dObj4_d at each row
 	
 	std::size_t dim1 = dObj4_s.getSize(0);
 	std::size_t dim2 = dObj4_s.getSize(1);
@@ -309,7 +302,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 
 					for(int m=0; m<dim5;m++)
 					{
-						rowPtr[m] = cv::saturate_cast<TypeParam>( i*10000 + j*1000 + k*100 + l*10 + m );			
+						rowPtr[m] = cv::saturate_cast<TypeParam>( i*10000 + j*1000 + k*100 + l*10 + m );	//!< Assigning unique value to each element of dObj4_s	
 					}
 				}
 			}
@@ -317,7 +310,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 	}
 
 
-	dObj4_s.deepCopyPartial(dObj4_d);
+	dObj4_s.deepCopyPartial(dObj4_d);		//!< Creating a deep copy of dObj4_s into dObj4_d using deepCopyPartial() funtion
 
 	std::size_t dim1_d = dObj4_d.getSize(0);
 	std::size_t dim2_d = dObj4_d.getSize(1);
@@ -340,7 +333,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 
 					for(int m=0; m<dim5_d;m++)
 					{
-						EXPECT_EQ( rowPtr_d[m],cv::saturate_cast<TypeParam>(i*10000 + j*1000 + k*100 + l*10 + m) );
+						EXPECT_EQ( rowPtr_d[m],cv::saturate_cast<TypeParam>(i*10000 + j*1000 + k*100 + l*10 + m) );	//!< checking if the values of elements are same as original data object after applying deepCopyPartial() function.
 					}
 				}
 			}
@@ -381,7 +374,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
 
 					for(int m=0; m<dim5;m++)
 					{
-						rowPtr[m] = cv::saturate_cast<TypeParam>( i*10000 + j*1000 + k*100 + l*10 + m );			
+						rowPtr[m] = cv::saturate_cast<TypeParam>( i*10000 + j*1000 + k*100 + l*10 + m );	//!< Assigning unique value to each element of data object dObj4_s		
 					}
 				}
 			}
@@ -415,7 +408,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
 					rowPtr_d = (TypeParam*)dObj4_dr.rowPtr(planeId_d,l);
 					for(int m=0; m<dim5_d;m++)
 					{
-						EXPECT_EQ( rowPtr_d[m],cv::saturate_cast<TypeParam>(i*10000 + j*1000 + k*100 + l*10 + m) );
+						EXPECT_EQ( rowPtr_d[m],cv::saturate_cast<TypeParam>(i*10000 + j*1000 + k*100 + l*10 + m) ); //!< checking the element values of dObj4_dr are same as the original data object after adjusting ROI back to original size same as original data object dObj4_s
 					}
 				}
 			}

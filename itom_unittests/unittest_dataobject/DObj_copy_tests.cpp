@@ -12,10 +12,10 @@
 #include "commonChannel.h"
 
 
-/*! \class ROITest
-	\brief ROI methods test for real data types
+/*! \class copyTests
+	\brief test for copyTo(...) method 
 
-	This test class checks functionality of different methods dealing with ROI for data objects.
+	This test class checks functionality of copyTo(...) method with its regionOnly parameter as "true" and "false" both.
 */
 template <typename _Tp> class copyTests : public ::testing::Test 
 	{ 
@@ -36,6 +36,13 @@ public:
 		temp_size[3] = 18;
 		temp_size[4] = 10;
 		dObj4_s = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+		size_t *temp_size3 = new size_t[5];
+		temp_size3[0] = 4;
+		temp_size3[1] = 5;
+		temp_size3[2] = 5;
+		temp_size3[3] = 4;
+		temp_size3[4] = 3;
+		dObj4_s2 = ito::DataObject(5,temp_size3,ito::getDataType( (const _Tp *) NULL ));
 		size_t *temp_size2 = new size_t[5];
 		temp_size2[0] = 1;
 		temp_size2[1] = 1;
@@ -51,12 +58,24 @@ public:
 	};
  
 	virtual void TearDown(void) {};
+
+	//! calcUniqueValue5D()
+	/*!
+		 This function generates unique values for each element of 5 dimensional data object for test purpose.
+	*/
+	int calcUniqueValue5D(int d1, int d2, int d3, int d4, int d5)
+	{
+		return  d5 + d4 * 10 + d3 * 100 + d2 * 1000 + d1 * 10000 ;
+	}
+
+
 	typedef _Tp valueType;	
 	ito::DataObject dObj1_s;
 	ito::DataObject dObj2_s;
 	ito::DataObject dObj3_s;
 	ito::DataObject dObj4_s;
 	ito::DataObject dObj4_s1;
+	ito::DataObject dObj4_s2;
 
 	ito::DataObject dObj1_sr;
 	ito::DataObject dObj2_sr;
@@ -81,9 +100,11 @@ public:
 	
 TYPED_TEST_CASE(copyTests, ItomRealDataTypes);
 
-//getDims_getType_Test
+//copyTo_True_Test
 /*!
-	This test adjust the ROI of 3 dimensional matrices to check proper functionality of "adjustROI" method. It also checks "locateROI" method by comparing obtained offsets with original values.
+	This test checks the functionality of copyTo(...) method with its parameter regionOnly=true.
+	After applying copyTo(...) method, the destination object must have the same size and number of dimensions as the ROI of the source.
+	Values in ROI of source and destination must be equal.
 */
 TYPED_TEST(copyTests, copyTo_True_Test)
 {
@@ -107,15 +128,15 @@ TYPED_TEST(copyTests, copyTo_True_Test)
 			}
 		}
 
-	dObj1_sr = dObj1_s; 
-	dObj2_sr = dObj2_s;
-	dObj3_sr = dObj3_s;
-	dObj4_sr = dObj4_s;
+	dObj1_sr = dObj1_s;		//!< copying dObj1_s into dObj1_sr with assignment operator.
+	dObj2_sr = dObj2_s;		//!< copying dObj2_s into dObj2_sr with assignment operator.
+	dObj3_sr = dObj3_s;		//!< copying dObj3_s into dObj3_sr with assignment operator.
+	dObj4_sr = dObj4_s;		//!< copying dObj4_s into dObj4_sr with assignment operator.
 			
-	int matLimits1d[] = {-4,-6};			//!< defining offsets for ROI 
-	int matLimits2d[] = {-4,-4,-1,-4};		//!< defining offsets for ROI 
-	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};
-	int matLimits5d[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
+	int matLimits1d[] = {-4,-6};			//!< defining offsets for ROI of empty data object dObj1_sr
+	int matLimits2d[] = {-4,-4,-1,-4};		//!< defining offsets for ROI of 2 dimensional data object dObj2_sr
+	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};		//!< defining offsets for ROI of 3 dimensional data object dObj3_sr
+	int matLimits5d[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};		//!< defining offsets for ROI of 5 dimensional data object dObj4_sr
 
 	dObj1_sr.adjustROI(0,matLimits1d);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d);   //!< adjust ROI (shrinking because offset values are negative)
@@ -143,24 +164,23 @@ TYPED_TEST(copyTests, copyTo_True_Test)
 	EXPECT_EQ(dObj4_s.getSize(), dObj4_d.getSize() );    //!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
 
 	//!< Testing functionality of copyTo() function for empty Data Object with regionOnly parameter = True.
-	dObj1_sr.copyTo(dObj1_dr,true);
+	dObj1_sr.copyTo(dObj1_dr,true);		
 	EXPECT_EQ(0,dObj1_dr.getDims());
 	EXPECT_EQ(dObj1_sr.getSize(), dObj1_dr.getSize() ); 
 
 	//!< Testing functionality of copyTo() function for 2 dimensional Data Object with regionOnly parameter = True.
-	dObj2_sr.copyTo(dObj2_dr,true);   //!< Copying only ROI from dObj2_sr to dObj2_dr.
+	dObj2_sr.copyTo(dObj2_dr,true);   //!< Copying only ROI from dObj2_sr to dObj2_dr using copyto(...) method with its regionOnly parameter as "true".
 	EXPECT_EQ(dObj2_sr.getDims() ,dObj2_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj2_sr.getSize(), dObj2_dr.getSize() );    //!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
 	for(int i =0;i<2;i++) 
 		{
-			for(int j=0;j<5;j++)EXPECT_EQ(dObj2_dr.at<TypeParam>(i,j),cv::saturate_cast<TypeParam>(res1_str[i*5+j])); //!< Check if the values of elements in ROI are same as in the original				
+			for(int j=0;j<5;j++)EXPECT_EQ(dObj2_dr.at<TypeParam>(i,j),cv::saturate_cast<TypeParam>(res1_str[i*5+j])); //!< Check if the values of elements in ROI of dObj2_dr are same as in the original dObj2_s.				
 		}
 
 	//!< Testing functionality of copyTo() function for 3 dimensional Data Object with regionOnly parameter = True.
-	dObj3_sr.copyTo(dObj3_dr,true);
+	dObj3_sr.copyTo(dObj3_dr,true);						//!< copying dObj3_sr into dObj3_dr using copyTo(...) method with its regionOnly parameter as "true".
 	EXPECT_EQ(dObj3_sr.getDims() ,dObj3_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj3_sr.getSize() ,dObj3_dr.getSize() );	 //!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
-	std::cout<<"dObj3_dr"<<dObj3_dr<<std::endl;
 
 	temp=0;
 	for(int i =0;i<2;i++) 
@@ -175,7 +195,7 @@ TYPED_TEST(copyTests, copyTo_True_Test)
 		}
 
 	//!< Testing functionality of copyTo() function for 5 dimensional Data Object with regionOnly parameter = True.
-	dObj4_sr.copyTo(dObj4_dr,true);
+	dObj4_sr.copyTo(dObj4_dr,true);						//!< copying dObj4_sr into dObj4_dr using copyTo(...) function with its regionOnly parameter as "true".
 	EXPECT_EQ(dObj4_sr.getDims(),dObj4_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj4_sr.getSize() ,dObj4_dr.getSize() );	//!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
 }
@@ -223,25 +243,9 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 	temp=0;
 
 	// NOTE: How to assign values to 5d Data Objects.
-	for(int i =0;i<10;i++) 
-		{
-			for(int j=0;j<12;j++)
-			{  
-				for(int k=0;k<16;k++)
-				{
-					for(int l=0;l<18;l++)
-					{
-						for(int m=0;m<10;m++)
-						{
-						//	dObj4_s.at<TypeParam>(temp_index[0,0,0,0,0]) = cv::saturate_cast<TypeParam>(temp++);   //!< assigning unique value to each element of 3 dimensional Data Object dObj3_s
-						
-						}
-					}
-				}
-			}
-		}
 
-	std::cout<<"Data Object 4:"<<dObj4_s1<<std::endl;
+	
+
 	dObj1_sr = dObj1_s; 
 	dObj2_sr = dObj2_s;
 	dObj3_sr = dObj3_s;
@@ -252,12 +256,13 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 	int matLimits2d_2[] = {4,4,1,4};
 	int matLimits3d_1[] = {-1,-1,-1,-1,-2,-1};
 	int matLimits3d_2[]	= {1,1,1,1,2,1};
-	int matLimits5d[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_1[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};
+	int matLimits5d_2[] = {4,4,1,4,2,3,1,1,2,1};
 
 	dObj1_sr.adjustROI(0,matLimits1d);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d_1);   //!< adjust ROI (shrinking because offset values are negative)
 	dObj3_sr.adjustROI(3,matLimits3d_1);   //!< adjust ROI (shrinking because offset values are negative)
-	dObj4_sr.adjustROI(5,matLimits5d);   //!< adjust ROI (shrinking because offset values are negative)
+	dObj4_sr.adjustROI(5,matLimits5d_1);   //!< adjust ROI (shrinking because offset values are negative)
 	
 	//!< Testing functionality of copyTo() function for empty Data Object with regionOnly parameter = False.
 	dObj1_s.copyTo(dObj1_d,false);					
@@ -309,7 +314,6 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 	dObj3_sr.copyTo(dObj3_dr,false);
 	EXPECT_EQ(dObj3_sr.getDims() ,dObj3_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj3_sr.getSize() ,dObj3_dr.getSize() );	 //!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
-	//std::cout<<"dObj3_dr"<<dObj3_dr<<std::endl;
 
 	temp=0;
 	for(int i =0;i<2;i++) 
@@ -345,5 +349,119 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 	dObj4_sr.copyTo(dObj4_dr,false);
 	EXPECT_EQ(dObj4_sr.getDims(),dObj4_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj4_sr.getSize() ,dObj4_dr.getSize() );	//!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
+
+		
+	
+
+
 }
 
+TYPED_TEST(copyTests, copyTo_False_Test1)
+{							
+	int matLimits5d_1[] = {0,-3,0,-4,0,0,-1,-1,-2,0};
+	int matLimits5d_2[] = {0,3,0,4,0,0,1,1,2,0};
+	int temp=0;
+	
+	TypeParam *rowPtr1= NULL; 
+	TypeParam *rowPtr_d1= NULL;	
+	size_t dim1 = dObj4_s2.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	size_t dim2 = dObj4_s2.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	size_t dim3 = dObj4_s2.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	size_t dim4 = dObj4_s2.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	size_t dim5 = dObj4_s2.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	size_t dataIdx = 0;					
+	size_t dataIdx_d = 0; 
+	temp=0;
+	for(int i=0; i<dim1; i++)
+	{
+		for(int j=0; j<dim2;j++)
+		{
+			for(int k=0; k<dim3;k++)
+			{
+				dataIdx = i*(dim2*dim3) + j*dim3 + k;
+
+				for(int l=0; l<dim4;l++)
+				{		
+					rowPtr1= (TypeParam*)dObj4_s2.rowPtr(dataIdx,l);
+
+					for(int m=0; m<dim5;m++)
+					{
+						rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));	//!< assign unique value to each element of data object dObj4	
+					}
+				}
+			}
+		}
+	}
+	dObj4_sr = dObj4_s2;
+
+	dObj4_sr.adjustROI(5,matLimits5d_1);   //!< adjust ROI (shrinking because offset values are negative)
+
+	dObj4_sr.copyTo(dObj4_dr,false);
+	EXPECT_EQ(dObj4_sr.getDims(),dObj4_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
+	EXPECT_EQ(dObj4_sr.getSize() ,dObj4_dr.getSize() );	//!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
+	dim1 = dObj4_dr.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	dim2 = dObj4_dr.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	dim3 = dObj4_dr.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	dim4 = dObj4_dr.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	dim5 = dObj4_dr.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	int test_res5d[] = {12,22,112,122,212,222,312,322,412,422};		//!< Expected result vector for dObj4 after adjustROI method using 2 parameter (general) implementation
+	unsigned int idx[] = {0,0,0,0,0};
+	TypeParam v1;
+	TypeParam v2;
+	temp=0;
+	for(int i=0; i<dim1; i++)
+	{
+		idx[0] = i;
+		for(int j=0; j<dim2;j++)
+		{
+			idx[1] = j;
+			for(int k=0; k<dim3;k++)
+			{
+				idx[2] = k;
+				for(int l=0; l<dim4;l++)
+				{		
+					idx[3] = l;
+					for(int m=0; m<dim5;m++)
+					{
+						idx[4] = m;
+						v1 = dObj4_dr.at<TypeParam>(idx);
+						v2 = cv::saturate_cast<TypeParam>(test_res5d[temp++]);
+						EXPECT_EQ(v1,v2);			//!< Testing if the elements within the ROI contains same original value after adjustROI method.
+					}
+				}
+			}
+		}
+	}
+
+		dObj4_dr.adjustROI(5,matLimits5d_2);	//!< adjusting ROI of dObj5 with general 2 parameter adjustROI method to desired position
+
+	TypeParam *rowPtr1_dr= NULL; 
+	dim1 = dObj4_dr.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	dim2 = dObj4_dr.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	dim3 = dObj4_dr.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	dim4 = dObj4_dr.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	dim5 = dObj4_dr.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	dataIdx = 0;					
+	dataIdx_d = 0; 
+	temp=0;
+	for(int i=0; i<dim1; i++)
+	{
+		for(int j=0; j<dim2;j++)
+		{
+			for(int k=0; k<dim3;k++)
+			{
+				dataIdx = i*(dim2*dim3) + j*dim3 + k;
+
+				for(int l=0; l<dim4;l++)
+				{		
+					rowPtr1_dr= (TypeParam*)dObj4_dr.rowPtr(dataIdx,l);
+
+					for(int m=0; m<dim5;m++)
+					{
+						EXPECT_EQ(rowPtr1_dr[m],cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m)));	//!< assign unique value to each element of data object dObj4	
+					}
+				}
+			}
+		}
+	}
+}

@@ -8,14 +8,13 @@
 #include "opencv/cv.h"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
-//#include "test_global.h"
 #include "commonChannel.h"
 
 
-/*! \class ROITest
-	\brief ROI methods test for real data types
+/*! \class adjustROI_func_test
+	\brief Test for adjustROI method for real data types
 
-	This test class checks functionality of different methods dealing with ROI for data objects.
+	This test class checks functionality of adjustROI method for different Data Objects of different real datatypes.
 */
 template <typename _Tp> class adjustROI_func_test : public ::testing::Test 
 	{ 
@@ -40,6 +39,10 @@ public:
  
 	virtual void TearDown(void) {};
 
+	//! calcUniqueValue5D()
+	/*!
+		 This function generates unique values for each element of 5 dimensional data object for test purpose.
+	*/
 	int calcUniqueValue5D(int d1, int d2, int d3, int d4, int d5)
 	{
 		return  d5 + d4 * 10 + d3 * 100 + d2 * 1000 + d1 * 10000 ;
@@ -54,20 +57,18 @@ public:
 	
 TYPED_TEST_CASE(adjustROI_func_test, ItomRealDataTypes);
 
-
 //!< This test checks the functionality of adjustROI function with four parameter implementation and general implementation.
 TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 {			
-	int matLimits1d[] = {-4,-6};			//!< defining offsets for ROI 
-	int matLimits2d[] = {-4,-4,-1,-3};		//!< defining offsets for ROI 
-	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};
-	int matLimits5d[] = {-2,0,-1,-2,0,0,-1,-1,-2,0};
-	int test_res[] = {21,22,23,24,25,26,27,31,32,33,34,35,36,37,41,42,43,44,45,46,47,51,52,53,54,55,56,57,61,62,63,64,65,66,67,71,72,73,74,75,76,77,81,82,83,84,85,86,87};
+	int matLimits1d[] = {-4,-6};			//!< defining ROI offsets for empty Data Object dObj1  
+	int matLimits2d[] = {-4,-4,-1,-3};		//!< defining ROI offsets for 2 Dimensional Data Object dObj2 
+	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};	//!< defining ROI offsets for 3 Dimensional Data Object dObj3
+	int matLimits5d[] = {0,-3,0,-4,0,0,-1,-1,-2,0}; //!< defining ROI offsets for 5 Dimensional Data Object dObj5
+	int test_res[] = {21,22,23,24,25,26,27,31,32,33,34,35,36,37,41,42,43,44,45,46,47,51,52,53,54,55,56,57,61,62,63,64,65,66,67,71,72,73,74,75,76,77,81,82,83,84,85,86,87}; //!< Expected result vector for dObj2 after adjustROI method with 4 parameters implementation.
+	int test_res2d[] = {41,42,43,44,45,46,51,52,53,54,55,56}; //!< Expected result vector for dObj2 after adjustROI method using 2 parameter (general) implementation
+	int test_res3d[] = {32,33,37,38,42,43,57,58,62,63,67,68};	//!< Expected result vector for dObj3 after adjustROI method using 2 parameter (general) implementation
 
-	int test_res2d[] = {41,42,43,44,45,46,51,52,53,54,55,56};
-	int test_res3d[] = {32,33,37,38,42,43,57,58,62,63,67,68};
-	//int test_res5d[] = {};
-
+	//!< Initializing 2 dimensional data object dObj2.
 	for(int i = 0; i <10; i++)
 	{
 		for(int j = 0; j <10; j++)
@@ -77,7 +78,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	}
 
 	//!< Initializing 3 dimensional data object dObj3.
-	int temp=0;
+	int temp=0;	
 	for(int i=0;i<4;i++)
 	{
 		for(int j=0;j<5;j++)
@@ -89,56 +90,19 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 		}
 	}
 
-	temp=0;
-	//!< Initializing 5 dimensional data object dObj5.
-	std::size_t planeId; 
-	TypeParam *rowPtr  = NULL; 
-	std::size_t planeId_d; 
-	TypeParam *rowPtr_d  = NULL;	
-	std::size_t dim1 = dObj4.getSize(0);
-	std::size_t dim2 = dObj4.getSize(1);
-	std::size_t dim3 = dObj4.getSize(2);
-	std::size_t dim4 = dObj4.getSize(3);
-	std::size_t dim5 = dObj4.getSize(4);	
-	size_t dataIdx = 0;
-	size_t dataIdx_d = 0;
-	for(int i=0; i<dim1; i++)
-	{
-		for(int j=0; j<dim2;j++)
-		{
-			for(int k=0; k<dim3;k++)
-			{
-				dataIdx = i*(dim1*dim2) + j*dim2 + k;
-				planeId = dObj4.seekMat(dataIdx);
-
-				for(int l=0; l<dim4;l++)
-				{		
-					rowPtr = (TypeParam*)dObj4.rowPtr(planeId,l);
-
-					for(int m=0; m<dim5;m++)
-					{
-						rowPtr[m] = 10000 *i + 1000 * j+ 100 *k + 10 *l +m;			
-					}
-				}
-			}
-		}
-	}
-
 	dObj2.adjustROI(-2,-1,-1,-2);	//!< Adjusting the ROI of 2 dimensional data object dObj2 with four parameter implementation.
 	temp=0;
 	for(int i = 0; i <7; i++)
 	{
 		for(int j = 0; j <7; j++)
 		{
-			EXPECT_EQ(dObj2.at<TypeParam>(i,j), test_res[temp++]); //!< Testing if the ROI has been adjusted to desired position.
+			EXPECT_EQ(dObj2.at<TypeParam>(i,j), test_res[temp++]); //!< Testing if the elements within the ROI contains same original value after adjustROI method.
 		}
 	}
 	
 	dObj2.adjustROI(2,1,1,2);	//!< Adjusting back the ROI back to normal position.
-	dObj2.adjustROI(2,matLimits2d);
-	dObj3.adjustROI(3,matLimits3d);
-	dObj4.adjustROI(5,matLimits5d);
-	std::cout<< dObj4 << std::endl;
+	dObj2.adjustROI(2,matLimits2d);	//!< adjusting ROI of dObj2 with general 2 parameter adjustROI method to desired position
+	dObj3.adjustROI(3,matLimits3d);	//!< adjusting ROI of dObj3 with general 3 parameter adjustROI method to desired position
 
 	//!< Checking values of 2 dimensional data object dObj2 after applying adjustROI().
 	temp=0;
@@ -146,7 +110,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	{
 		for(int j = 0; j < 6; j++)
 		{
-			EXPECT_EQ( cv::saturate_cast<TypeParam>(test_res2d[temp++]), dObj2.at<TypeParam>(i,j) );
+			EXPECT_EQ( cv::saturate_cast<TypeParam>(test_res2d[temp++]), dObj2.at<TypeParam>(i,j) );	//!< Testing if the elements within the ROI contains same original value after adjustROI method.
 		}
 	}
 
@@ -158,24 +122,22 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 		{
 			for(int k=0;k<2;k++)
 			{
- 				EXPECT_EQ( cv::saturate_cast<TypeParam>(test_res3d[temp++]), dObj3.at<TypeParam>(i,j,k) );
+ 				EXPECT_EQ( cv::saturate_cast<TypeParam>(test_res3d[temp++]), dObj3.at<TypeParam>(i,j,k) );	//!< Testing if the elements within the ROI contains same original value after adjustROI method.
 			}
 		}
 	}
-
 	
-	//!< Checking values of  5 dimensional data object dObj5 after applying adjustROI().
-
+	//!< test for checking values of  5 dimensional data object dObj5 after applying adjustROI().
 	TypeParam *rowPtr1= NULL; 
 	TypeParam *rowPtr_d1= NULL;	
-dim1 = dObj4.getSize(0);
-dim2 = dObj4.getSize(1);
-dim3 = dObj4.getSize(2);
-dim4 = dObj4.getSize(3);
-dim5 = dObj4.getSize(4);	
-dataIdx = 0;
-dataIdx_d = 0;
-temp=0;
+	size_t dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	size_t dim2 = dObj4.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	size_t dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	size_t dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	size_t dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	size_t dataIdx = 0;					
+	size_t dataIdx_d = 0; 
+	temp=0;
 	for(int i=0; i<dim1; i++)
 	{
 		for(int j=0; j<dim2;j++)
@@ -183,7 +145,6 @@ temp=0;
 			for(int k=0; k<dim3;k++)
 			{
 				dataIdx = i*(dim2*dim3) + j*dim3 + k;
-				//planeId = dObj4.seekMat(dataIdx);
 
 				for(int l=0; l<dim4;l++)
 				{		
@@ -191,16 +152,23 @@ temp=0;
 
 					for(int m=0; m<dim5;m++)
 					{
-						rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));			
+						rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));	//!< assign unique value to each element of data object dObj4	
 					}
 				}
 			}
 		}
 	}
-
+	dObj4.adjustROI(5,matLimits5d);	//!< adjusting ROI of dObj5 with general 2 parameter adjustROI method to desired position
+	dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	dim2 = dObj4.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	int test_res5d[] = {12,22,112,122,212,222,312,322,412,422};		//!< Expected result vector for dObj4 after adjustROI method using 2 parameter (general) implementation
 	unsigned int idx[] = {0,0,0,0,0};
 	TypeParam v1;
 	TypeParam v2;
+	temp=0;
 	for(int i=0; i<dim1; i++)
 	{
 		idx[0] = i;
@@ -217,115 +185,56 @@ temp=0;
 					{
 						idx[4] = m;
 						v1 = dObj4.at<TypeParam>(idx);
-						v2 = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));
-						EXPECT_EQ(v1,v2);			
+						v2 = cv::saturate_cast<TypeParam>(test_res5d[temp++]);
+						EXPECT_EQ(v1,v2);			//!< Testing if the elements within the ROI contains same original value after adjustROI method.
 					}
 				}
 			}
 		}
 	}
-
-
 }
 
 //!< This test checks the functionality of adjustROI function with wrong number of arguments to check if exception is raised or not.
 TYPED_TEST(adjustROI_func_test, adjustROI_Test2)
 {
-	int matLimits2d[] = {-1,-2,-1,0,0,0};
-	int matLimits3d[] = {-2,-3,-5,-1};
-	int matLimits5d[] = {-1,-2,-1,0};
-	//EXPECT_ANY_THROW(dObj1.adjustROI(-1,-3,-2,0));
-	//EXPECT_ANY_THROW(dObj2.adjustROI(-1,-3,0,0));
-	//EXPECT_ANY_THROW(dObj3.adjustROI(-1,-2,-2,-1));
-	//EXPECT_ANY_THROW(dObj4.adjustROI(-1,0));
+	int matLimits2d[] = {-1,-2,-1,0,0,0};		//!< defining ROI offsets for dObj2 with wrong number of offset values intending to raise an exception while test
+	int matLimits3d[] = {-2,-3,-5,-1};			//!< defining ROI offsets for dObj3 with wrong number of offset values intending to raise an exception while test
+	int matLimits5d[] = {-1,-2,-1,0};			//!< defining ROI offsets for dObj5 with wrong number of offset values intending to raise an exception while test
 
-	//EXPECT_ANY_THROW(dObj1.adjustROI(0,matLimits2d));
-	//EXPECT_ANY_THROW(dObj2.adjustROI(2,matLimits2d));
-	//EXPECT_ANY_THROW(dObj3.adjustROI(3,matLimits3d));
-	//EXPECT_ANY_THROW(dObj4.adjustROI(5,matLimits5d));
+	EXPECT_NO_THROW(dObj1.adjustROI(0,matLimits2d));	//!< Does not throw any exception as the data object dObj1 is empty
+	EXPECT_ANY_THROW(dObj2.adjustROI(1,matLimits2d));	//!< expect an exception as the dimension and offset limits for ROI are intensionally wrong declared
+	EXPECT_ANY_THROW(dObj3.adjustROI(2,matLimits3d));	//!< expect an exception as the dimension and offset limits for ROI are intensionally wrong declared
+	EXPECT_ANY_THROW(dObj4.adjustROI(3,matLimits5d));	//!< expect an exception as the dimension and offset limits for ROI are intensionally wrong declared
 }
 
 //!< This test checks the range of valid ROI.
 TYPED_TEST(adjustROI_func_test, adjustROI_Test3)
 {
 //!< Defining ROI partially outside the valid matrix-region.
-	int matLimits1d[] = {-4,1};			//!< defining offsets for ROI 
-	int matLimits2d[] = {-4,1,-1,-3};		//!< defining offsets for ROI 
-	int matLimits3d[] = {-6,4,1,-7,2,-9};
-	int matLimits5d[] = {-2,0,-1,-2,1,0,1,-1,2,0};
+	int matLimits1d[] = {-4,1};						//!< defining ROI offsets for dObj1 (empty data object) which resides partially outside the original size of data object
+	int matLimits2d[] = {-4,1,-1,-3};				//!< defining ROI offsets for dObj2 which resides partially outside the original size of data object
+	int matLimits3d[] = {-6,4,1,-7,2,-9};			//!< defining ROI offsets for dObj3 which resides partially outside the original size of data object
+	int matLimits5d[] = {-2,0,-1,-2,1,0,1,-1,2,0};	//!< defining ROI offsets for dObj4 which resides partially outside the original size of data object
 
-	EXPECT_NO_THROW(dObj1.adjustROI(0,matLimits1d)); //is ok, since the dimension is 0
-	EXPECT_ANY_THROW(dObj1.adjustROI(1,matLimits1d));
-	EXPECT_ANY_THROW(dObj2.adjustROI(2,matLimits2d));
-	EXPECT_ANY_THROW(dObj2.adjustROI(1,matLimits1d)); 
-	EXPECT_ANY_THROW(dObj3.adjustROI(3,matLimits3d));
-	EXPECT_ANY_THROW(dObj4.adjustROI(5,matLimits5d));
+	EXPECT_NO_THROW(dObj1.adjustROI(0,matLimits1d));	//!< Does not throw any exception as the data object dObj1 is empty
+	EXPECT_ANY_THROW(dObj1.adjustROI(1,matLimits1d));	//!< expect an exception as the offset limits for ROI are intensionally declared partially outside of the valied matrix-region.
+	EXPECT_ANY_THROW(dObj2.adjustROI(2,matLimits2d));	//!< expect an exception as the offset limits for ROI are intensionally declared partially outside of the valied matrix-region.
+	EXPECT_ANY_THROW(dObj3.adjustROI(3,matLimits3d));	//!< expect an exception as the offset limits for ROI are intensionally declared partially outside of the valied matrix-region.
+	EXPECT_ANY_THROW(dObj4.adjustROI(5,matLimits5d));	//!< expect an exception as the offset limits for ROI are intensionally declared partially outside of the valied matrix-region.
 }
 
 //!< This test checks the range of valid ROI.
 TYPED_TEST(adjustROI_func_test, adjustROI_Test4)
 {
 //!< Defining ROI completely outside the valid matrix-region.
-	int matLimits1d[] = {4,1};			//!< defining offsets for ROI 
-	int matLimits2d[] = {-12,4,-13,5};		//!< defining offsets for ROI 
-	int matLimits3d[] = {-1,1,-1,-1,2,-1};
-	int matLimits5d[] = {2,-9,-10,15,1,-13,-12,17,2,-11};
+	int matLimits1d[] = {4,1};			//!< defining ROI offsets for dObj1 (empty data object) which resides fully outside the original size of data object
+	int matLimits2d[] = {-12,4,-13,5};		//!< defining ROI offsets for dObj2 which resides fully outside the original size of data object
+	int matLimits3d[] = {-1,1,-1,-1,2,-1};	//!< defining ROI offsets for dObj3 which resides fully outside the original size of data object
+	int matLimits5d[] = {2,-9,-10,15,1,-13,-12,17,2,-11};	//!< defining ROI offsets for dObj4 which resides fully outside the original size of data object
 
-
-	//EXPECT_NO_THROW(dObj1.adjustROI(0,matLimits1d)); //is ok, since the dimension is 0
-	//EXPECT_ANY_THROW(dObj1.adjustROI(1,matLimits1d));
-	EXPECT_ANY_THROW(dObj2.adjustROI(2,matLimits2d));
-	//EXPECT_ANY_THROW(dObj2.adjustROI(1,matLimits1d)); 
-	EXPECT_ANY_THROW(dObj3.adjustROI(3,matLimits3d));
-	EXPECT_ANY_THROW(dObj4.adjustROI(5,matLimits5d));
+	EXPECT_NO_THROW(dObj1.adjustROI(0,matLimits1d));	//!< Does not throw any exception as the data object dObj1 is empty
+	EXPECT_ANY_THROW(dObj2.adjustROI(2,matLimits2d));	//!< expect an exception as the offset limits for ROI are intensionally declared fully outside of the valied matrix-region.
+	EXPECT_ANY_THROW(dObj3.adjustROI(3,matLimits3d));	//!< expect an exception as the offset limits for ROI are intensionally declared fully outside of the valied matrix-region.
+	EXPECT_ANY_THROW(dObj4.adjustROI(5,matLimits5d));	//!< expect an exception as the offset limits for ROI are intensionally declared fully outside of the valied matrix-region.
 }
 
-//!< This test checks the functionality of at(ito::Range *ranges) function.
-TYPED_TEST(adjustROI_func_test, adjustROI_Test5)
-{
-//!< Defining ROI completely outside the valid matrix-region.
-	int matLimits1d[] = {4,1};			//!< defining offsets for ROI 
-	int matLimits2d[] = {-1,4,-13,5};		//!< defining offsets for ROI 
-	int matLimits3d[] = {-1,1,-1,-1,2,-1};
-	int matLimits5d[] = {2,-9,-10,15,1,-13,-12,17,2,-11};
-
-	for(int i =0; i<10;i++)
-	{
-		for(int j=0; j<10;j++)
-		{
-			dObj2.at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);
-		}
-	}
-
-	//!< Test code with valid ranges less than dObj2
-	ito::DataObject dObj2_test;
-	ito::Range ranges[2];
-	ranges[0].start = 0;
-	ranges[0].end =3;
-	ranges[1].start = 0;
-	ranges[1].end =3;
-
-	dObj2_test=dObj2.at(ranges);
-	int test_dim= dObj2_test.getDims();
-	size_t test_size = dObj2_test.getSize(0);
-	std::cout<<dObj2_test<<std::endl;
-	std::cout<<test_dim<<std::endl;
-	std::cout<<test_size<<std::endl;
-	
-	//!< Test code with full ranges
-	ito::DataObject dObj2_test1;
-	ito::Range ranges1[2];
-	ranges1[0] = ranges1[0].all();
-	ranges1[1] = ranges1[1].all();
-
-	dObj2_test1 = dObj2.at(ranges1);
-	int test_dim1 = dObj2_test1.getDims();
-	size_t test_size1 = dObj2_test1.getSize(0);
-
-	std::cout<<dObj2_test1<<std::endl;
-	std::cout<<test_dim1<<std::endl;
-	std::cout<<test_size1<<std::endl;
-
-
-
-}

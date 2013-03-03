@@ -5,7 +5,6 @@
 #include "operatorTest.h"
 #include "addressTest.h"
 #include "saturateTest_real.h"
-#include "saturateTest_real1.h"
 #include "functions_ROITest.h"
 #include "complexDataTest.h"
 #include "dataObjectTag_Test.h"
@@ -22,12 +21,12 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "at_func_test/*.at_Test"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	::testing::FLAGS_gtest_filter = "copyTests/*.*"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     ::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
 	
-	ito::DataObject obj(4,5,6,ito::tInt16);
-	cv::Mat_<float> mat;
+	//ito::DataObject obj(4,5,6,ito::tInt16);
+	//cv::Mat_<float> mat;
 
 	RUN_ALL_TESTS();   // To start Test check
 

@@ -871,9 +871,10 @@ const PCLPointCloud PCLPointCloud::operator+ (const PCLPointCloud &rhs)
     }
     else
     {
-        PCLPointCloud result(rhs.getType());
-        PCLPointCloud temp(rhs.getType());
-        int idx = getFuncListIndex();
+        const ito::tPCLPointType newType = rhs.getType();
+        PCLPointCloud result(newType);
+        PCLPointCloud temp(newType);
+        int idx = getFuncListIndex(newType);
         if(idx >= 0)
         {
             fListPcAddFunc[idx](&temp, &rhs, &result);
@@ -1334,6 +1335,49 @@ PCLPolygonMesh & PCLPolygonMesh::operator= (const PCLPolygonMesh &copy)
 {
     m_polygonMesh = copy.m_polygonMesh;
     return *this;
+}
+
+size_t PCLPolygonMesh::height() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return 0;
+    }
+    return mesh->cloud.height;
+}
+
+size_t PCLPolygonMesh::width() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return 0;
+    }
+    return mesh->cloud.width;
+}
+
+std::string PCLPolygonMesh::getFieldsList() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return "";
+    }
+    
+    std::vector<::sensor_msgs::PointField> fields = mesh->cloud.fields;
+    std::string output;
+    for(int i=0;i<fields.size();i++)
+    {
+        output += fields[i].name + ";";
+    }
+
+    if(output.size() > 0)
+    {
+        output.pop_back(); //remove last ;
+    }
+
+    return output;
 }
 
 } //end namespace ito

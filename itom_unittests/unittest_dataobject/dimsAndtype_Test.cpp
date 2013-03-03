@@ -12,10 +12,10 @@
 #include "commonChannel.h"
 
 
-/*! \class ROITest
-	\brief ROI methods test for real data types
+/*! \class DimAndTypeTest
+	\brief Test to check functionality of getDims() and getType() methods
 
-	This test class checks functionality of different methods dealing with ROI for data objects.
+	This test class checks functionality of getDims() and getType() methods on different data objects of different sizes and types.
 */
 template <typename _Tp> class DimAndTypeTest : public ::testing::Test 
 	{ 
@@ -26,17 +26,17 @@ public:
 		//dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		size_t *temp_size1 = new size_t[1];
 		temp_size1[0] =10;
-		dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-		dObj2 = ito::DataObject(1,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-		dObj3 = ito::DataObject(5,10,ito::getDataType( (const _Tp *) NULL ));
-		dObj4 = ito::DataObject(2,3,4,ito::getDataType( (const _Tp *) NULL ));
+		dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));	//!< Empty Data Object
+		dObj2 = ito::DataObject(1,temp_size1,ito::getDataType( (const _Tp *) NULL ));	//!< 1 dimensional data object
+		dObj3 = ito::DataObject(5,10,ito::getDataType( (const _Tp *) NULL ));			//!< 2 dimensional data object 
+		dObj4 = ito::DataObject(2,3,4,ito::getDataType( (const _Tp *) NULL ));			//!< 3 dimensional data object
 		size_t *temp_size = new size_t[5];
 		temp_size[0] = 3;
 		temp_size[1] = 4;
 		temp_size[2] = 2;
 		temp_size[3] = 10;
 		temp_size[4] = 10;
-		dObj5 = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+		dObj5 = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));	//!< 5 dimensional data object
 	};
  
 	virtual void TearDown(void) {};
@@ -51,33 +51,31 @@ public:
 	
 TYPED_TEST_CASE(DimAndTypeTest, ItomRealDataTypes);
 
-//getDims_getType_Test
+//getDims_Test
 /*!
-	This test adjust the ROI of 3 dimensional matrices to check proper functionality of "adjustROI" method. It also checks "locateROI" method by comparing obtained offsets with original values.
+	This test checks the functionality of getDims() method on different data objects of different sizes and types.
 */
 TYPED_TEST(DimAndTypeTest, getDims_Test)
 {
 	ito::tDataType testType = ito::getDataType( (const TypeParam *) NULL);
-	EXPECT_EQ(0,dObj1.getDims() );
-	EXPECT_EQ(2,dObj2.getDims() );
-	EXPECT_EQ(2,dObj3.getDims() );
-	EXPECT_EQ(3,dObj4.getDims() );
-	EXPECT_EQ(5,dObj5.getDims() );
-
-	EXPECT_EQ(testType,dObj1.getType() );           
-	EXPECT_EQ(testType,dObj2.getType() );
-	EXPECT_EQ(testType,dObj3.getType() );
-	EXPECT_EQ(testType,dObj4.getType() );
-	EXPECT_EQ(testType,dObj5.getType() );
+	EXPECT_EQ(0,dObj1.getDims() );		//!< checking dimensions of empty data object using getDims() function which should return 0
+	EXPECT_EQ(2,dObj2.getDims() );		//!< checking dimensions of 1 dimensional data object using getDims() function which should return value 2 because there is no existance of 1 dimensional data object and if they are defined, they should be taken as 2 dimensional data object automatically.
+	EXPECT_EQ(2,dObj3.getDims() );		//!< checking dimensions of 2 dimensional data object using getDims() function which should return value 2
+	EXPECT_EQ(3,dObj4.getDims() );		//!< checking dimensions of 3 dimensional data object using getDims() function which should return value 3
+	EXPECT_EQ(5,dObj5.getDims() );		//!< checking dimensions of 5 dimensional data object using getDims() function which should return value 5
 }
 
+//getType_Test
+/*!
+	This test checks the fucntionality of getType() method on differnt data objects of different types and sizes.
+*/
 TYPED_TEST(DimAndTypeTest, getType_Test)
 {
 	ito::tDataType testType = ito::getDataType( (const TypeParam *) NULL);
 
-	EXPECT_EQ(testType,dObj1.getType() );           
-	EXPECT_EQ(testType,dObj2.getType() );
-	EXPECT_EQ(testType,dObj3.getType() );
-	EXPECT_EQ(testType,dObj4.getType() );
-	EXPECT_EQ(testType,dObj5.getType() );
+	EXPECT_EQ(testType,dObj1.getType() );	//!< checking expected data type of dObj1  
+	EXPECT_EQ(testType,dObj2.getType() );	//!< checking expected data type of dObj2 	
+	EXPECT_EQ(testType,dObj3.getType() );	//!< checking expected data type of dObj3 
+	EXPECT_EQ(testType,dObj4.getType() );	//!< checking expected data type of dObj4 
+	EXPECT_EQ(testType,dObj5.getType() );	//!< checking expected data type of dObj5 
 }

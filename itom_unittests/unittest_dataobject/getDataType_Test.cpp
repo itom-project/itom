@@ -8,15 +8,20 @@
 #include "opencv/cv.h"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
-//#include "test_global.h"
 #include "commonChannel.h"
 
+/*! \class getDataTypetest
+	\brief Test for getDataType and getDataType2 methods for all real data types
+
+	This test contains 2 test cases for getDataType and getDataType2 functions each and checks the outputs of them when they are applied with respective data types.
+*/
 template <typename _Tp> class getDataTypeTest : public ::testing::Test { };
 
 TYPED_TEST_CASE(getDataTypeTest, ItomDataTypes);
-//! checkSaturateBoundaries
+
+//! getDataType_Test
 /*!
-	This test checks if the saturation limits for for all real data types as defined in std library and openCv library match or not .
+	This test checks the functionality of getDataType() function with different supported data types.
 */
 TYPED_TEST(getDataTypeTest, getDataType_Test)
 {
@@ -30,6 +35,7 @@ TYPED_TEST(getDataTypeTest, getDataType_Test)
 	ito::tDataType testType_var8 = ito::tComplex64;
 	ito::tDataType testType_var9 = ito::tComplex128;
 
+	//!< the following tests check if the getDataType() method returns the correct expected data types	
 	EXPECT_EQ( testType_var1, ito::getDataType( (const ito::int8 *) NULL )	);
 	EXPECT_EQ( testType_var2, ito::getDataType( (const ito::int16 *) NULL )	);
 	EXPECT_EQ( testType_var3, ito::getDataType( (const ito::int32 *) NULL )	);
@@ -41,9 +47,9 @@ TYPED_TEST(getDataTypeTest, getDataType_Test)
 	EXPECT_EQ( testType_var9, ito::getDataType( (const ito::complex128 *) NULL ) );
 }
 
-//! checkSaturateBoundaries
+//! getDataType2
 /*!
-	This test checks if the saturation limits for for all real data types as defined in std library and openCv library match or not .
+	This test checks the functionality of getDataType2() function with different supported data types.
 */
 TYPED_TEST(getDataTypeTest, getDataType2_Test)
 {
@@ -57,6 +63,7 @@ TYPED_TEST(getDataTypeTest, getDataType2_Test)
 	ito::tDataType testType_var8 = ito::tComplex64;
 	ito::tDataType testType_var9 = ito::tComplex128;
 
+	//!< the following tests check if the getDataType2() method returns the correct expected data types		
 	EXPECT_EQ( testType_var4, ito::getDataType2<ito::uint8*>() );				
 	EXPECT_EQ( testType_var2, ito::getDataType2<ito::int16 *>() );
 	EXPECT_EQ( testType_var3, ito::getDataType2<ito::int32 *>() );
