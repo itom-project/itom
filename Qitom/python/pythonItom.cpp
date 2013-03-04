@@ -2654,7 +2654,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 if (PyArray_Check(value))
                 {
-                    if (PyArray_SIZE(value) == 1) //this is either a single value or a matlab-struct
+                    if (PyArray_SIZE( (PyArrayObject*)value ) == 1) //this is either a single value or a matlab-struct
                     {
                         PyObject *item = PyArray_ToList((PyArrayObject*)value); //new ref
 
@@ -2662,10 +2662,10 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                         {
                             PyDict_SetItem(resultLoadMat, key, item);
                         }
-                        else if (value && PyArray_HASFIELDS(value))
+                        else if (value && PyArray_HASFIELDS( (PyArrayObject*)value ))
                         {
                             //it may be that this is a struct which has been generated earlier from a npDataObject or dataObject
-                            PyArray_Descr * descr = PyArray_DESCR(value);
+                            PyArray_Descr * descr = PyArray_DESCR( (PyArrayObject*)value );
 
                             if (descr->fields != NULL) //fields is a dictionary with "fieldname" => type-description for this field
                             {

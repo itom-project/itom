@@ -176,7 +176,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         self = (PyNpDataObject*)PyArray_View((PyArrayObject*)arr, NULL, type);
         Py_DECREF(arr);
 
-        int dims = self->base.nd;
+        int dims = PyArray_NDIM(&(self->base)); //.nd;
         if(dims == 1) dims = 2;
         self->tags = PyDict_New();
         self->axisScales = PyList_New(dims);
@@ -334,7 +334,7 @@ PyObject* PythonNpDataObject::PyNpDataObject_Array_Finalize(PyNpDataObject *self
     }
     else if(obj && Py_TYPE(obj) == &PyArray_Type)
     {
-        int dims = ((PyArrayObject*)obj)->nd;
+        int dims = PyArray_NDIM((PyArrayObject*)obj); // ((PyArrayObject*)obj)->nd;
         if(dims == 1) dims = 2;
         self->tags = PyDict_New();
         self->axisScales = PyList_New(dims);
@@ -700,7 +700,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisScales(PyNpDataObject *self, PyObj
         return -1;
     }
 
-    int dims = self->base.nd;
+    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -744,7 +744,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisOffsets(PyNpDataObject *self, PyOb
         return -1;
     }
 
-    int dims = self->base.nd;
+    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -788,7 +788,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisDescriptions(PyNpDataObject *self,
         return -1;
     }
 
-    int dims = self->base.nd;
+    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -823,7 +823,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisUnits(PyNpDataObject *self, PyObje
         return -1;
     }
 
-    int dims = self->base.nd;
+    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))

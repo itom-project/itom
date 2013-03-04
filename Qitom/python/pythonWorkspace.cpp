@@ -366,12 +366,12 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
             }
             item->m_compatibleParamBaseType = ito::ParamBase::String;
         }
-        else if(PyArray_Check(value) && PyArray_SIZE(value) > 10)
+        else if(PyArray_Check(value) && PyArray_SIZE( (PyArrayObject*)value ) > 10)
         {
             PyArrayObject *a = (PyArrayObject*)value;
             //long array
             item->m_extendedValue = "";
-            item->m_value = QString("[dims: %1, total: %2]").arg(a->nd).arg(PyArray_SIZE(value));
+            item->m_value = QString("[dims: %1, total: %2]").arg( PyArray_NDIM(a) ).arg(PyArray_SIZE( a ));
             item->m_compatibleParamBaseType = ito::ParamBase::DObjPtr;
         }
         else if(Py_TYPE(value)->tp_repr == NULL) //no detailed information provided by this type

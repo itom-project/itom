@@ -2051,8 +2051,12 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
         PyErr_Format(PyExc_RuntimeError, "the number of required rows must be between 1 and 7");
         return NULL;
     }
-
+#if (NPY_FEATURE_VERSION < 0x00000007)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
+#else
+    PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
+#endif
+    
     if (arr == NULL)
     {
         PyErr_Format(PyExc_RuntimeError, "argument cannot be interpreted as float32, c-contiguous numpy.ndarray");
@@ -2060,25 +2064,25 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
     }
 
     //check arr
-    if (PyArray_NDIM(arr) != 2)
+    if (PyArray_NDIM( (PyArrayObject*)arr) != 2)
     {
         Py_XDECREF(arr);
         PyErr_Format(PyExc_RuntimeError, "input array must have two dimensions");
         return NULL;
     }
-    if (PyArray_DIM(arr,0) != mRequired)
+    if (PyArray_DIM( (PyArrayObject*)arr,0) != mRequired)
     {
         Py_XDECREF(arr);
         PyErr_Format(PyExc_RuntimeError, "ndArray must have %c rows", mRequired);
         return NULL;
     }
 
-    n = PyArray_DIM(arr,1);
-    npy_intp strideDim0 = PyArray_STRIDE(arr,0);
+    n = PyArray_DIM( (PyArrayObject*)arr,1);
+    npy_intp strideDim0 = PyArray_STRIDE( (PyArrayObject*)arr,0);
 
     for(npy_intp i = 0; i<mRequired;i++)
     {
-        elemRows[i] = reinterpret_cast<float32*>(PyArray_BYTES(arr) + i*strideDim0);
+        elemRows[i] = reinterpret_cast<float32*>(PyArray_BYTES( (PyArrayObject*)arr) + i*strideDim0);
     }
     
     return arr;
@@ -2093,7 +2097,12 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
         return NULL;
     }
 
+#if (NPY_FEATURE_VERSION < 0x00000007)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
+#else
+    PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
+#endif
+    
     if (arr == NULL)
     {
         PyErr_Format(PyExc_RuntimeError, "argument cannot be interpreted as uint8, c-contiguous numpy.ndarray");
@@ -2101,25 +2110,25 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
     }
 
     //check arr
-    if (PyArray_NDIM(arr) != 2)
+    if (PyArray_NDIM( (PyArrayObject*)arr) != 2)
     {
         Py_XDECREF(arr);
         PyErr_Format(PyExc_RuntimeError, "input array must have two dimensions");
         return NULL;
     }
-    if (PyArray_DIM(arr,0) != mRequired)
+    if (PyArray_DIM( (PyArrayObject*)arr,0) != mRequired)
     {
         Py_XDECREF(arr);
         PyErr_Format(PyExc_RuntimeError, "ndArray must have %c rows", mRequired);
         return NULL;
     }
 
-    n = PyArray_DIM(arr,1);
-    npy_intp strideDim0 = PyArray_STRIDE(arr,0);
+    n = PyArray_DIM( (PyArrayObject*)arr,1);
+    npy_intp strideDim0 = PyArray_STRIDE( (PyArrayObject*)arr,0);
 
     for(npy_intp i = 0; i<mRequired;i++)
     {
-        elemRows[i] = reinterpret_cast<uint8_t*>(PyArray_BYTES(arr) + i*strideDim0);
+        elemRows[i] = reinterpret_cast<uint8_t*>(PyArray_BYTES( (PyArrayObject*)arr) + i*strideDim0);
     }
 
     return arr;

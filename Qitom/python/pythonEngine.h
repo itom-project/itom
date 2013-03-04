@@ -31,6 +31,8 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
+#define NPY_NO_DEPRECATED_API 0x00000007
+
 //python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #ifdef _DEBUG
