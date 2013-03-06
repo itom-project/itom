@@ -125,7 +125,7 @@ namespace ito
                 if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
                 {
                     hwRefPtr = param->getVal<void *>();
-                    if(hwRefPtr)
+                    if (hwRefPtr)
                     {
                         /*if (!(param->getFlags() & ito::ParamBase::Axis))
                         {*/
@@ -152,7 +152,7 @@ namespace ito
                 if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
                 {
                     hwRefPtr = param->getVal<void *>();
-                    if(hwRefPtr)
+                    if (hwRefPtr)
                     {
                         /*if (!(param->getFlags() & ito::ParamBase::Axis))
                         {*/
@@ -236,7 +236,7 @@ namespace ito
                 pluginsDir.cdUp();
             }
 #endif
-            if(!pluginsDir.cd("plugins"))
+            if (!pluginsDir.cd("plugins"))
 			{
 				//plugins-folder could not be found.
 				pluginsFolderExists = false;
@@ -247,12 +247,12 @@ namespace ito
             pluginsDir.setPath(path);
         }
 
-        if (pluginsDir.exists() == false )
+        if (pluginsDir.exists() == false)
         {
             QString dirErr = tr("directory %1 could not be found").arg(pluginsDir.canonicalPath());
             retValue += RetVal(retError, 0, dirErr.toAscii().data());
         }
-		else if(!pluginsFolderExists)
+		else if (!pluginsFolderExists)
 		{
 			retValue += RetVal(retWarning, 0, tr("plugins folder could not be found").toAscii().data());
 		}
@@ -263,13 +263,13 @@ namespace ito
 
             foreach (const QString &folderName, pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
             {
-                absoluteAddInPath = QDir::cleanPath( pluginsDir.absoluteFilePath(folderName) );
+                absoluteAddInPath = QDir::cleanPath(pluginsDir.absoluteFilePath(folderName));
                 retValue += scanAddInDir(absoluteAddInPath);
             }
 
             foreach (const QString &fileName, pluginsDir.entryList(QDir::Files))
             {
-                absoluteAddInPath = QDir::cleanPath( pluginsDir.absoluteFilePath(fileName) );
+                absoluteAddInPath = QDir::cleanPath(pluginsDir.absoluteFilePath(fileName));
                 if (QLibrary::isLibrary(absoluteAddInPath))
                 {
                     retValue += loadAddIn(absoluteAddInPath);
@@ -277,7 +277,7 @@ namespace ito
             }
         }
 
-        if(firstStart)
+        if (firstStart)
         {
             m_plugInModel.resetModel(false);
         }
@@ -318,7 +318,7 @@ namespace ito
                     //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
                     //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
                     //also is necessary if any methods of the plugin are directly called from itom).
-                    QEvent evt( (QEvent::Type)(QEvent::User+123) );
+                    QEvent evt((QEvent::Type)(QEvent::User+123));
                     QCoreApplication::sendEvent(ain, &evt);
 
                     switch (ain->getType()&(ito::typeDataIO|ito::typeAlgo|ito::typeActuator))
@@ -339,31 +339,31 @@ namespace ito
                         message = tr("AddIn with filename '%1'is unknown.").arg(filename);
                         qDebug() << message;
                         //retValue += RetVal(retError, 1003, message.toAscii().data());
-                        pls.messages.append( QPair<ito::tRetValue, QString>( retError, message ) );
+                        pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
                         break;
                     }
-                    m_pluginLoadStatus.append( pls );
+                    m_pluginLoadStatus.append(pls);
                 }
                 else
                 {
                     //check whether this instance is an older or newer version of AddInInterface
-                    QObject *obj = qobject_cast<QObject*>( plugin );
-                    if(obj)
+                    QObject *obj = qobject_cast<QObject*>(plugin);
+                    if (obj)
                     {
-                        if(obj->qt_metacast( "ito::AddInInterfaceBase" ) != NULL)
+                        if (obj->qt_metacast("ito::AddInInterfaceBase") != NULL)
                         {
                             int i = 0;
                             const char* oldName = ito_AddInInterface_OldVersions[0];
                             while(oldName != NULL)
                             {
-                                if(obj->qt_metacast( oldName ) != NULL)
+                                if (obj->qt_metacast(oldName) != NULL)
                                 {
                                     message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
                                     break;
                                 }
                                 oldName = ito_AddInInterface_OldVersions[++i];
                             }
-                            if(oldName == NULL)
+                            if (oldName == NULL)
                             {
                                 message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
                             }
@@ -379,8 +379,8 @@ namespace ito
                     }
                     qDebug() << message;
                     //retValue += RetVal(retError, 1003, message.toAscii().data());
-                    pls.messages.append( QPair<ito::tRetValue, QString>( retError, message ) );
-                    m_pluginLoadStatus.append( pls );
+                    pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
+                    m_pluginLoadStatus.append(pls);
                 }
             }
             else
@@ -389,8 +389,8 @@ namespace ito
                 qDebug() << message;
                 //retValue += RetVal(retError, 1003, message.toAscii().data());
                 pls.filename = filename;
-                pls.messages.append( QPair<ito::tRetValue, QString>( retError, message ) );
-                m_pluginLoadStatus.append( pls );
+                pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
+                m_pluginLoadStatus.append(pls);
             }
 
         }
@@ -403,12 +403,12 @@ namespace ito
         if (!m_addInListDataIO.contains(plugin))
         {
             m_addInListDataIO.append(plugin);
-            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retOk, QString("%1 (DataIO) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("%1 (DataIO) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retWarning, QString("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, QString("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
         
@@ -419,12 +419,12 @@ namespace ito
         if (!m_addInListAct.contains(plugin))
         {
             m_addInListAct.append(plugin);
-            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retOk, QString("%1 (Actuator) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("%1 (Actuator) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retWarning, QString("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, QString("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
         return retOk;
@@ -446,7 +446,7 @@ namespace ito
                 message = tr("error initializing plugin: %1").arg(plugin->objectName());
                 qDebug() << message;
                 retValue += RetVal(retError, 1002, message.toAscii().data());
-                pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retError, message ) );
+                pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retError, message));
             }
             else
             {
@@ -469,25 +469,25 @@ namespace ito
                         message = tr("Filter '%1' rejected since a filter with the same name already exists in global filter list").arg(it.key());
                         qDebug() << message;
                         retValue += RetVal(retWarning, 1004, message.toAscii().data());
-                        pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retWarning, message ) );
+                        pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, message));
                     }
                     else
                     {
                         //1. first check if filter has a valid interface (if indicated)
                         validRet = ito::retOk;
                         tags.clear();
-                        if(fd->m_interface == 0 || m_algoInterfaceValidator->isValidFilter(*fd,validRet,tags))
+                        if (fd->m_interface == 0 || m_algoInterfaceValidator->isValidFilter(*fd,validRet,tags))
                         {
 
                             //2. hash the mand, opt and out param vectors from the filter (if not yet done, since multiple filters can use the same paramFunc-function.
                             paramsMand.clear();
                             paramsOpt.clear();
                             paramsOut.clear();
-                            if(! filterParamHash.contains( (void*)fd->m_paramFunc ))
+                            if (! filterParamHash.contains((void*)fd->m_paramFunc))
                             {
                                 validRet += fd->m_paramFunc(&paramsMand, &paramsOpt, &paramsOut);
 
-                                if(!validRet.containsError())
+                                if (!validRet.containsError())
                                 {
                                     ito::FilterParams *fp = new ito::FilterParams();
                                     fp->paramsMand = paramsMand;
@@ -497,23 +497,23 @@ namespace ito
                                 }
                             }
 
-                            if(!validRet.containsError())
+                            if (!validRet.containsError())
                             {
                                 fd->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                                 fd->m_name = it.key();
                                 m_filterList.insert(it.key(), fd);
-                                pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retOk, QString("Filter %1 loaded").arg(it.key()) ));
+                                pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("Filter %1 loaded").arg(it.key())));
 
-                                if(tags.size() == 0) tags.append("");
+                                if (tags.size() == 0) tags.append("");
                                 foreach(const QString &tag, tags)
                                 {
-                                    m_filterListInterfaceTag.insert( QString::number(fd->m_interface) + "_" + tag, fd);
+                                    m_filterListInterfaceTag.insert(QString::number(fd->m_interface) + "_" + tag, fd);
                                 }
                             }
                             else
                             {
                                 algoInst->rejectFilter(it.key());
-                                if(validRet.errorMessage())
+                                if (validRet.errorMessage())
                                 {
                                     message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded: " + QString(validRet.errorMessage());
                                 }
@@ -522,13 +522,13 @@ namespace ito
                                     message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded.";
                                 }
                                 qDebug() << message;
-                                pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retError, message ) );
+                                pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retError, message));
                             }
                         }
-                        else if(validRet.containsError())
+                        else if (validRet.containsError())
                         {
                             algoInst->rejectFilter(it.key());
-                            if(validRet.errorMessage())
+                            if (validRet.errorMessage())
                             {
                                 message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
                             }
@@ -537,7 +537,7 @@ namespace ito
                                 message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface.";
                             }
                             qDebug() << message;
-                            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retError, message ) );
+                            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retError, message));
                         }
                     }
                     ++it;
@@ -563,14 +563,14 @@ namespace ito
                         //1. first check if filter has a valid interface (if indicated)
                         validRet = ito::retOk;
                         tags.clear();
-                        if(ad->m_interface == 0 || m_algoInterfaceValidator->isValidWidget(*ad, validRet,tags))
+                        if (ad->m_interface == 0 || m_algoInterfaceValidator->isValidWidget(*ad, validRet,tags))
                         {
 
                             //2. hash the mand, opt and out param vectors from the widget  (if not yet done, since multiple filters can use the same paramFunc-function.
                             paramsMand.clear();
                             paramsOpt.clear();
                             paramsOut.clear();
-                            if(! filterParamHash.contains( (void*)ad->m_paramFunc ))
+                            if (! filterParamHash.contains((void*)ad->m_paramFunc))
                             {
                                 ad->m_paramFunc(&paramsMand, &paramsOpt, &paramsOut);
                                 ito::FilterParams *fp = new ito::FilterParams();
@@ -583,12 +583,12 @@ namespace ito
                             ad->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                             ad->m_name = jt.key();
                             m_algoWidgetList.insert(jt.key(), ad);
-                            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retOk, QString("Widget %1 loaded").arg(jt.key()) ));
+                            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("Widget %1 loaded").arg(jt.key())));
                         }
-                        else if(validRet.containsError())
+                        else if (validRet.containsError())
                         {
                             algoInst->rejectAlgoWidget(jt.key());
-                            if(validRet.errorMessage())
+                            if (validRet.errorMessage())
                             {
                                 message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
                             }
@@ -597,7 +597,7 @@ namespace ito
                                 message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface.";
                             }
                             qDebug() << message;
-                            pluginLoadStatus.messages.append( QPair<ito::tRetValue,QString>( ito::retError, message ) );
+                            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retError, message));
                         }
                     }
                     ++jt;
@@ -821,7 +821,7 @@ namespace ito
             dockWidget->setFloating(floating);
             dockWidget->setVisible(visible);
 
-			/*bool restored =*/ win->restoreDockWidget( dockWidget );
+			/*bool restored =*/ win->restoreDockWidget(dockWidget);
         }
 
         return ito::retOk;
@@ -859,7 +859,7 @@ namespace ito
         }
 
         aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[pluginNum]);
-        m_plugInModel.insertInstance( aib, true ); //begin insert
+        m_plugInModel.insertInstance(aib, true); //begin insert
         retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
         if ((!addIn) || (!*addIn))
         {
@@ -868,7 +868,7 @@ namespace ito
         }
 
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if(aib->getRef(*addIn) != 0)
+        if (aib->getRef(*addIn) != 0)
         {
             retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
@@ -910,47 +910,48 @@ namespace ito
             (*addIn)->MoveToThread();
         }
 
-        if(timeoutOccurred == true)
+        if (timeoutOccurred == true)
         {
+            //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
+            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
             retval += registerPluginAsDeadPlugin(*addIn);
             *addIn = NULL;
-            goto end;
         }
         else
         {
-            if ( !((*addIn)->getBasePlugin()->getType() & ito::typeDataIO ) || retval.containsError())
+            //no timeout
+
+            if (!((*addIn)->getBasePlugin()->getType() & ito::typeDataIO) || retval.containsError())
             {
                 if (*addIn != NULL)
                 {
                     retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
                 }
                 *addIn = NULL;
-                goto end;
+            }
+            else
+            {
+                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
+                policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
+
+                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                {
+                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
+                }
+
+                if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                {
+                    retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                }
             }
         }
-
-        
-
-        incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-        policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-        if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-        {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
-        }
-
-        if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
-        {
-            retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
-        }
-
-        
 
         //updateModel();
 
 end:
-        m_plugInModel.insertInstance( aib, false ); //end insert
+        m_plugInModel.insertInstance(aib, false); //end insert
 
         if (aimWait)
         {
@@ -993,7 +994,7 @@ end:
         }
 
         aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[pluginNum]);
-        m_plugInModel.insertInstance( aib, true ); //begin insert
+        m_plugInModel.insertInstance(aib, true); //begin insert
         retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
         if ((!addIn) || (!*addIn))
         {
@@ -1002,12 +1003,12 @@ end:
         }
 
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if(aib->getRef(*addIn) != 0)
+        if (aib->getRef(*addIn) != 0)
         {
             retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
 
-        if ( (*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
+        if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
         {
             retval += ito::RetVal(ito::retError, 2000, tr("Base plugin or appropriate plugin type not indicated for this plugin.").toAscii().data());
             goto end;
@@ -1043,46 +1044,47 @@ end:
             (*addIn)->MoveToThread();
         }
 
-        if(timeoutOccurred == true)
+        if (timeoutOccurred == true)
         {
+            //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
+            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
             retval += registerPluginAsDeadPlugin(*addIn);
             *addIn = NULL;
-            goto end;
         }
         else
         {
-            if ( !((*addIn)->getBasePlugin()->getType() & ito::typeActuator) || retval.containsError())
+            if (!((*addIn)->getBasePlugin()->getType() & ito::typeActuator) || retval.containsError())
             {
                 if (*addIn != NULL)
                 {
                     retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
                 }
                 *addIn = NULL;
-                goto end;
             }
-        }
+            else
+            {
+                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
 
-        
+                policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
-        incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                {
+                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
+                }
 
-        policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-        if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-        {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
-        }
-
-        if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
-        {
-            retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                {
+                    retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                }
+            }
         }
 
         //updateModel();
         
 
 end:
-        m_plugInModel.insertInstance( aib, false ); //end insert
+        m_plugInModel.insertInstance(aib, false); //end insert
 
         if (aimWait)
         {
@@ -1129,7 +1131,7 @@ end:
         }
 
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if(aib->getRef(*addIn) != 0)
+        if (aib->getRef(*addIn) != 0)
         {
             retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
@@ -1138,7 +1140,7 @@ end:
 //        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
 //        *addIn = qobject_cast<ito::AddInAlgo *>(m_addInListAlg[pluginNum]);
 
-        if ( !((*addIn)->getBasePlugin()->getType() & ito::typeAlgo) || retval.containsError())
+        if (!((*addIn)->getBasePlugin()->getType() & ito::typeAlgo) || retval.containsError())
         {
             if (*addIn != NULL)
             {
@@ -1154,7 +1156,7 @@ end:
         }
 
 //        incRefParamPlugins(paramsMand, paramsOpt);
-        //m_plugInModel.insertInstance( (*addIn)->getBasePlugin(), *addIn, true ); //begin insert
+        //m_plugInModel.insertInstance((*addIn)->getBasePlugin(), *addIn, true); //begin insert
 
         policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
@@ -1169,7 +1171,7 @@ end:
         }
 
         //updateModel();
-        //m_plugInModel.insertInstance( (*addIn)->getBasePlugin(), *addIn, false ); //end insert
+        //m_plugInModel.insertInstance((*addIn)->getBasePlugin(), *addIn, false); //end insert
 
     end:
         if (aimWait)
@@ -1210,13 +1212,13 @@ end:
                 retval += saveParamVals(*addIn);
             }
 
-            m_plugInModel.deleteInstance( (*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
 
             retval += decRefParamPlugins(*addIn);
             retval += aib->closeInst(addIn);
             aim = ito::AddInManager::getInstance();
 
-            m_plugInModel.deleteInstance( (*addIn)->getBasePlugin(), (*addIn), false); //end remove
+            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
             //aim->m_pAddInManager->updateModel();
 
         }
@@ -1547,8 +1549,8 @@ end:
         QList<ito::AddInBase *> instList;
         ito::AddInAlgo *algo = NULL;
 
-        if ( ( ((aib->getType() == ito::typeDataIO) || (aib->getType() == ito::typeActuator)) && (aib->getInstCount() != 0) )
-            || ((aib->getType() == ito::typeAlgo) && (aib->getInstCount() != 1)) )
+        if ((((aib->getType() == ito::typeDataIO) || (aib->getType() == ito::typeActuator)) && (aib->getInstCount() != 0))
+            || ((aib->getType() == ito::typeAlgo) && (aib->getInstCount() != 1)))
         {
             return ito::RetVal(ito::retError, 0, "Reference counter not zero. Only unused plugins can be reloaded.");
         }
@@ -1602,7 +1604,7 @@ end:
     }
 
 	//----------------------------------------------------------------------------------------------------------------------------------
-    const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef( QString algoWidgetName, QString algoPluginName)
+    const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString algoWidgetName, QString algoPluginName)
     {
         //at the moment algoPluginName do not really influence the search, but maybe it might become necessary to also search for plugin-widgets by "pluginName.widgetName"
 
@@ -1631,8 +1633,8 @@ end:
 	//----------------------------------------------------------------------------------------------------------------------------------
     const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const
     {
-        QHash<void*,ito::FilterParams*>::ConstIterator it = AddInManager::filterParamHash.constFind( (void*)filterParam );
-        if(it != AddInManager::filterParamHash.constEnd())
+        QHash<void*,ito::FilterParams*>::ConstIterator it = AddInManager::filterParamHash.constFind((void*)filterParam);
+        if (it != AddInManager::filterParamHash.constEnd())
         {
             return *it;
         }
@@ -1654,9 +1656,9 @@ end:
             {
                 it = m_deadPlugins.erase(it);
             }
-            else if (aib->isInitialized()) //plugin finished init-method (late, but finally it did finish ;) ), we can kill it now
+            else if (aib->isInitialized()) //plugin finished init-method (late, but finally it did finish ;)), we can kill it now
             {
-                retval += closeAddIn( &aib, NULL );
+                retval += closeAddIn(&aib, NULL);
                 it = m_deadPlugins.erase(it);
             }
             else
@@ -1677,7 +1679,7 @@ end:
     RetVal AddInManager::registerPluginAsDeadPlugin(ito::AddInBase *addIn)
     {
         QWeakPointer< ito::AddInBase > ptr(addIn);
-        m_deadPlugins.push_back( ptr );
+        m_deadPlugins.push_back(ptr);
 
         if (m_deadPluginTimer.isActive() == false)
         {
@@ -1686,16 +1688,29 @@ end:
         return ito::retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
+    {
+        foreach(const QWeakPointer<ito::AddInBase> ptr, m_deadPlugins)
+        {
+            if (!ptr.isNull() && ptr.data() == plugin)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 	//----------------------------------------------------------------------------------------------------------------------------------
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag) const
     {
-        if(tag.isNull())
+        if (tag.isNull())
         {
             QList<ito::AddInAlgo::FilterDef *> res;
             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator it = m_filterList.constBegin();
             while(it != m_filterList.constEnd())
             {
-                if( it.value()->m_interface == iface ) res.append(*it);
+                if (it.value()->m_interface == iface) res.append(*it);
                 ++it;
             }
             return res;
@@ -1714,7 +1729,7 @@ end:
         QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator it = m_filterList.constBegin();
         while(it != m_filterList.constEnd())
         {
-            if( it.value()->m_category == cat ) res.append(*it);
+            if (it.value()->m_category == cat) res.append(*it);
             ++it;
         }
         return res;
@@ -1727,7 +1742,7 @@ end:
         QList<ito::AddInAlgo::FilterDef *> res2;
         for(int i=0; i<res.size(); i++)
         {
-            if(res[i]->m_category == cat) res2.append(res[i]);
+            if (res[i]->m_category == cat) res2.append(res[i]);
         }
         return res2;
     }

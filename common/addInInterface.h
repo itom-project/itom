@@ -454,7 +454,7 @@ namespace ito
             int m_uniqueID;										//!< uniqueID (the plugin is responsible to make it unique)
             int m_refCount;										//!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
             int m_createdByGUI;									//!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
-            QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whos refcounter was incremented
+            QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
             QMap<QString, ExecFuncParams> m_execFuncList;		//!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
         
         private:

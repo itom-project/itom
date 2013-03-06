@@ -309,62 +309,65 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
         size_t itemInternalData;
         PlugInModel *plugInModel = (PlugInModel*)(index.model());
 
-//        int itemType = plugInModel->data(index, Qt::UserRole + 3).toInt();
-        if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
+        if (plugInModel->flags(index) & Qt::ItemIsEnabled)
         {
-//            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
-            bool isPlugInNode = itemType == PlugInModel::itemPlugin;
-            bool isPlugInAlgoNode = isPlugInNode && plugInModel->getIsAlgoPlugIn(itemInternalData);
-            bool isInstanceNode = itemType == PlugInModel::itemInstance;
-            bool isPlugInGrabberNode = isInstanceNode && plugInModel->getIsGrabberInstance(itemInternalData);
-            bool isFilterNode = itemType == PlugInModel::itemFilter;
-            bool isWidgetNode = itemType == PlugInModel::itemWidget;
-
-            m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
-            m_pActCloseInstance->setVisible(isInstanceNode);
-            m_pActDockWidget->setVisible(isInstanceNode);
-            m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
-            m_pActLiveImage->setVisible(isPlugInGrabberNode);
-            m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
-            m_pActOpenWidget->setVisible(isWidgetNode);
-            m_pActSendToPython->setVisible(isInstanceNode);
-            m_pActSnapDialog->setVisible(isPlugInGrabberNode);
-            m_pShowConfDialog->setVisible(isInstanceNode);
-
-            if (isInstanceNode)
+    //        int itemType = plugInModel->data(index, Qt::UserRole + 3).toInt();
+            if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
             {
-                m_pActCloseInstance->setEnabled(true); //should be changed in future
+    //            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
+                bool isPlugInNode = itemType == PlugInModel::itemPlugin;
+                bool isPlugInAlgoNode = isPlugInNode && plugInModel->getIsAlgoPlugIn(itemInternalData);
+                bool isInstanceNode = itemType == PlugInModel::itemInstance;
+                bool isPlugInGrabberNode = isInstanceNode && plugInModel->getIsGrabberInstance(itemInternalData);
+                bool isFilterNode = itemType == PlugInModel::itemFilter;
+                bool isWidgetNode = itemType == PlugInModel::itemWidget;
 
-                QObject *engine = AppManagement::getPythonEngine();
-                m_pActSendToPython->setEnabled(engine);
+                m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
+                m_pActCloseInstance->setVisible(isInstanceNode);
+                m_pActDockWidget->setVisible(isInstanceNode);
+                m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
+                m_pActLiveImage->setVisible(isPlugInGrabberNode);
+                m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
+                m_pActOpenWidget->setVisible(isWidgetNode);
+                m_pActSendToPython->setVisible(isInstanceNode);
+                m_pActSnapDialog->setVisible(isPlugInGrabberNode);
+                m_pShowConfDialog->setVisible(isInstanceNode);
 
-                ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-
-                m_pShowConfDialog->setEnabled(ais->hasConfDialog());
-                m_pActDockWidget->setEnabled(ais->hasDockWidget());
-
-                if (m_pActDockWidget->isEnabled())
+                if (isInstanceNode)
                 {
-                    if (ais->getDockWidget() && ais->getDockWidget()->toggleViewAction()->isChecked())
+                    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+
+                    m_pActCloseInstance->setEnabled(ais->createdByGUI() > 0);
+
+                    QObject *engine = AppManagement::getPythonEngine();
+                    m_pActSendToPython->setEnabled(engine);
+
+                    m_pShowConfDialog->setEnabled(ais->hasConfDialog());
+                    m_pActDockWidget->setEnabled(ais->hasDockWidget());
+
+                    if (m_pActDockWidget->isEnabled())
                     {
-                        m_pActDockWidget->setText(tr("Hide Plugin Toolbox"));
-                        m_pActDockWidget->setChecked(true);
-                    }
-                    else
-                    {
-                        m_pActDockWidget->setText(tr("Show Plugin Toolbox"));
-                        m_pActDockWidget->setChecked(false);
+                        if (ais->getDockWidget() && ais->getDockWidget()->toggleViewAction()->isChecked())
+                        {
+                            m_pActDockWidget->setText(tr("Hide Plugin Toolbox"));
+                            m_pActDockWidget->setChecked(true);
+                        }
+                        else
+                        {
+                            m_pActDockWidget->setText(tr("Show Plugin Toolbox"));
+                            m_pActDockWidget->setChecked(false);
+                        }
                     }
                 }
+
+                m_pActInfo->setEnabled(false);  // TODO
+                m_pActCloseAllInstances->setEnabled(false);  // TODO
+                m_pActLiveImage->setEnabled(false);  // TODO
+                m_pActSnapDialog->setEnabled(false);  // TODO
+                m_pActInfo->setEnabled(false);  // TODO
+
+                m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
             }
-
-            m_pActInfo->setEnabled(false);  // TODO
-            m_pActCloseAllInstances->setEnabled(false);  // TODO
-            m_pActLiveImage->setEnabled(false);  // TODO
-            m_pActSnapDialog->setEnabled(false);  // TODO
-            m_pActInfo->setEnabled(false);  // TODO
-
-            m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
         }
     }
 }

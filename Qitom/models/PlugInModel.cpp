@@ -91,6 +91,30 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
     {
         return 0;
     }
+
+    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    
+    tItemType itemType;
+    size_t itemInternalData;
+
+    if (!getModelIndexInfo(index, itemType, itemInternalData) )
+    {
+        return 0;
+    }
+    
+    if(itemType == itemInstance)
+    {
+        ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
+        if(aim->isPluginInstanceDead( aib ))
+        {
+            return Qt::ItemIsSelectable;
+        }
+        else
+        {
+            return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+        }
+    }
+
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 

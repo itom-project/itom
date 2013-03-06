@@ -217,6 +217,8 @@ namespace ito
             const RetVal incRef(ito::AddInBase *plugin);
             const RetVal decRef(ito::AddInBase **plugin);
 
+            bool isPluginInstanceDead(const ito::AddInBase *plugin) const;
+
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag = QString::Null()) const;
             const QList<ito::AddInAlgo::FilterDef *> getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const;
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag = QString::Null()) const;
