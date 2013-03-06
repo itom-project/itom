@@ -200,7 +200,7 @@ class DataObjectTagType
             else
             {
                 double dVal = std::numeric_limits<double>::signaling_NaN();
-                dVal = atof(m_strValue.c_str());
+                //dVal = atof(m_strValue.c_str()); //sometimes the result of that line has been arbitrary, therefore this conversion should fail.
                 return dVal;
             }
         }
@@ -869,18 +869,19 @@ class DataObject
         }
 
         //!< Function returns the axis-unit-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline const std::string getAxisUnit(const int axisNum, bool &validOpteration, const bool considerTransposeFlag = true) const
+        inline const std::string getAxisUnit(const int axisNum, bool &validOperation, const bool considerTransposeFlag = true) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
+				validOperation = false;
                 cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
             }
             if(!m_pDataObjectTags)
             {
-                validOpteration = false;
+                validOperation = false;
                 return std::string(); //error
             }
-            validOpteration = true;
+            validOperation = true;
             if(considerTransposeFlag && isT() && axisNum >= m_dims - 2)
             {
                 return m_pDataObjectTags->m_axisUnit[axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2];
@@ -889,19 +890,20 @@ class DataObject
         }
 
         //!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        const inline std::string getAxisDescription(const int axisNum, bool &validOpteration, const bool considerTransposeFlag = true) const
+        const inline std::string getAxisDescription(const int axisNum, bool &validOperation, const bool considerTransposeFlag = true) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
+				validOperation = false;
                 cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
             }
             if(!m_pDataObjectTags)
             {
-                validOpteration = false;
+                validOperation = false;
                 return std::string(); //error
             }
 
-            validOpteration = true;
+            validOperation = true;
             if(considerTransposeFlag && isT() && axisNum >= m_dims - 2)
             {
                 return m_pDataObjectTags->m_axisDescription[axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2];
@@ -927,9 +929,9 @@ class DataObject
             return std::string();
         }*/
 
-        inline DataObjectTagType getTag(const std::string key, bool &validOpteration) const
+        inline DataObjectTagType getTag(const std::string key, bool &validOperation) const
         {
-            validOpteration = false;
+            validOperation = false;
             if(!m_pDataObjectTags)
             {
                 return DataObjectTagType(); //error
@@ -938,7 +940,7 @@ class DataObject
             std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
             if(it != m_pDataObjectTags->m_tags.end())
             {
-                validOpteration = true;
+                validOperation = true;
                 return it->second;
             }
             return DataObjectTagType();
