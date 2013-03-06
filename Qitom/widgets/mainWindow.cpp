@@ -177,6 +177,9 @@ MainWindow::MainWindow() :
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect( this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+
+        connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
+        connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
     }
 
     // signal mapper for user defined actions
@@ -1107,6 +1110,16 @@ void MainWindow::currentDirectoryChanged()
     }
 
     if (m_fileSystemDock)    m_fileSystemDock->changeBaseDirectory(cd);
+}
+
+void MainWindow::setCursor(const Qt::CursorShape cursor)
+{
+    QApplication::setOverrideCursor(QCursor(cursor));
+}
+
+void MainWindow::resetCursor()
+{
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::userDefinedActionTriggered(const QString &pythonCode)

@@ -1684,6 +1684,69 @@ namespace dObjHelper
         return ito::retOk;
     }
     //-----------------------------------------------------------------------------------------------
+    /*! \fn dObjCopyLastNAxisTags 
+        \detail  Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
+        \param[in]       DataObjectIn   Input-Object / Source
+        \param[in|out]   DataObjectOut  Preallocated Output-Object / Destination
+        \param[in]       copyLastNDims  Number of dimensions to copy, counted from the last Dimension
+        \param[in]       includeValueTags  Toggle copying of value tags (default = true)
+        \param[in]       includeRotationMatrix  Toggle copying of rotation matrix-meta-data (default = true)
+
+        \return ito::retOk or ito::retError
+        \author  Lyda
+        \sa  
+        \date    03.2013 
+    */
+    ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags, const bool includeRotationMatrix)
+    {
+        int nDimOut = DataObjectOut.getDims();
+        int nDimIn = DataObjectIn.getDims();
+
+        if(nDimOut < 2)
+        {
+            return ito::RetVal(ito::retError, 0, "dataObjectOut is empty");
+        }
+        if(nDimIn < 2)
+        {
+            return ito::RetVal(ito::retError, 0, "DataObjectIn is empty");
+        }
+
+        if(nDimOut < copyLastNDims )
+        {
+            return ito::RetVal(ito::retError, 0, "Requested dimensions exceeded number of dataObjectOut dims");
+        }
+        if(nDimIn < copyLastNDims )
+        {
+            return ito::RetVal(ito::retError, 0, "Requested dimensions exceeded number of dataObjectIn dims");
+        }
+
+        bool test;
+
+        for(int i = copyLastNDims; i > 0; i--)
+        {
+            DataObjectOut.setAxisDescription(nDimOut - i, DataObjectIn.getAxisDescription(nDimIn - i, test, true), true);
+            DataObjectOut.setAxisUnit(nDimOut - i, DataObjectIn.getAxisUnit(nDimIn - i, test, true), true);
+            DataObjectOut.setAxisOffset(nDimOut - i, DataObjectIn.getAxisOffset(nDimIn - i, true), true);
+            DataObjectOut.setAxisScale(nDimOut - i, DataObjectIn.getAxisScale(nDimIn - i, true), true);
+        }
+        
+        if(includeValueTags)
+        {
+            DataObjectOut.setValueDescription(DataObjectIn.getValueDescription());
+            DataObjectOut.setValueUnit(DataObjectIn.getValueUnit());            
+        }
+
+        if(includeRotationMatrix)
+        {
+            double r11, r12, r13, r21, r22, r23, r31, r32, r33;
+            DataObjectIn.getXYRotationalMatrix(r11, r12, r13, r21, r22, r23, r31, r32, r33);
+            DataObjectOut.setXYRotationalMatrix(r11, r12, r13, r21, r22, r23, r31, r32, r33);
+        }
+        
+        return ito::retOk;
+    }
+
+    //-----------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------
     /*! \fn minMaxValueHelper 
         \brief  Helpfunction to find min and maxValue in a dataObject

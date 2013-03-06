@@ -33,19 +33,19 @@
     #undef _DEBUG
     #if (defined linux) | (defined CMAKE)
         #include "Python.h"
-        #include "numpy/arrayobject.h"
+        //#include "numpy/arrayobject.h"
     #else
         #include "Python.h"
-        #include "../Lib\site-packages\numpy\core\include\numpy\arrayobject.h" //for numpy arrays
+        //#include "../Lib\site-packages\numpy\core\include\numpy\arrayobject.h" //for numpy arrays
     #endif
     #define _DEBUG
 #else
     #ifdef linux
         #include "Python.h"
-        #include "numpy/arrayobject.h"
+        //#include "numpy/arrayobject.h"
     #else
         #include "Python.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
 #endif
 #endif
@@ -116,6 +116,9 @@ public:
     static PyObject* getAppPath(PyObject* pSelf);
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
+
+    static PyObject* setApplicationCursor(PyObject* pSelf, PyObject* pArgs);
+
 
 protected:
     static QHash<unsigned int, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.

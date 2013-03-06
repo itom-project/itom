@@ -145,6 +145,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
+    qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
 
     bpModel = new BreakPointModel();
 

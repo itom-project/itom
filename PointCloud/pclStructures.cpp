@@ -1337,4 +1337,47 @@ PCLPolygonMesh & PCLPolygonMesh::operator= (const PCLPolygonMesh &copy)
     return *this;
 }
 
+size_t PCLPolygonMesh::height() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return 0;
+    }
+    return mesh->cloud.height;
+}
+
+size_t PCLPolygonMesh::width() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return 0;
+    }
+    return mesh->cloud.width;
+}
+
+std::string PCLPolygonMesh::getFieldsList() const
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(mesh == NULL)
+    {
+        return "";
+    }
+    
+    std::vector<::sensor_msgs::PointField> fields = mesh->cloud.fields;
+    std::string output;
+    for(int i=0;i<fields.size();i++)
+    {
+        output += fields[i].name + ";";
+    }
+
+    if(output.size() > 0)
+    {
+        output.pop_back(); //remove last ;
+    }
+
+    return output;
+}
+
 } //end namespace ito

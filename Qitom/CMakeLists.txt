@@ -310,6 +310,14 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
 )
 
+#handle translations
+# see e.g. http://stackoverflow.com/questions/5630155/how-to-integrate-qt-internationalization-to-cmake
+set(qitom_ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
+)
+
+QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
 ADD_SOURCE_GROUP(helper)
@@ -344,7 +352,7 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
-ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC})
+ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${qitom_ts})
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 

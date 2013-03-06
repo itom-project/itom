@@ -454,7 +454,7 @@ namespace ito
             int m_uniqueID;										//!< uniqueID (the plugin is responsible to make it unique)
             int m_refCount;										//!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
             int m_createdByGUI;									//!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
-            QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whos refcounter was incremented
+            QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
             QMap<QString, ExecFuncParams> m_execFuncList;		//!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
         
         private:
@@ -1008,10 +1008,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.6",//version from 2012-12-20 - 2012-12-20 (added paramBase metatype)
     "ito.AddIn.InterfaceBase/1.1.7",//version from 2012-12-20 - 2013-01-17 (last version for itom version 1.0.5)
     "ito.AddIn.InterfaceBase/1.1.8",//version from 2013-01-17 - 2013-01-23 (changes in auto-grabbing of cameras, first interface for itom version 1.0.6)
+    "ito.AddIn.InterfaceBase/1.1.9",//version from 2013-01-23 - 2013-03-04 (changes in dataObjectHelper)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.9";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.10";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

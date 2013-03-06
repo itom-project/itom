@@ -33,19 +33,19 @@
     #undef _DEBUG
     #if (defined linux) | (defined CMAKE)
         #include "Python.h"
-        #include "numpy/arrayobject.h"
+        //#include "numpy/arrayobject.h"
     #else
         #include "Python.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
     #define _DEBUG
 #else
     #ifdef linux
         #include "Python.h"
-        #include "numpy/arrayobject.h"
+        //#include "numpy/arrayobject.h"
     #else
         #include "Python.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
 #endif
 #endif

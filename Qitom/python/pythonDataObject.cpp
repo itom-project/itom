@@ -244,7 +244,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         uchar* data = NULL;
 
         //at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is compatible but has to be converted, 3. it is incompatible
-        if(! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && PyArray_NATBYTE == NPY_LITTLE)))
+        if(! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
         {
             retValue += RetVal(retError);
             PyErr_Format(PyExc_TypeError,"Given ndarray or ndDataObject has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
@@ -268,7 +268,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 else
                 {
                     descr = PyArray_DESCR(ndArray);
-                    dimensions = ndArray->nd;
+                    dimensions = PyArray_NDIM(ndArray); //->nd;
                 }
             }
             else
@@ -283,7 +283,11 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 }
                 else
                 {
-                    ndArray = (PyArrayObject*)PyArray_FROM_OTF( (PyObject*)ndArray, newNumpyTypeNum, NPY_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+#if (NPY_FEATURE_VERSION < 0x00000007)
+                    ndArray = (PyArrayObject*)PyArray_FROM_OTF( (PyObject*)ndArray, newNumpyTypeNum, NPY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+#else
+                    ndArray = (PyArrayObject*)PyArray_FROM_OTF( (PyObject*)ndArray, newNumpyTypeNum, NPY_ARRAY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+#endif
                     if(ndArray == NULL)
                     {
                         retValue += RetVal(retError);
@@ -293,7 +297,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     else
                     {
                         descr = PyArray_DESCR(ndArray);
-                        dimensions = ndArray->nd;
+                        dimensions = PyArray_NDIM(ndArray); //->nd;
 
                         typeno = parseTypeNumberInverse(descr->kind , PyArray_ITEMSIZE(ndArray));
                         if(typeno == -1)
@@ -506,7 +510,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     }
                                     else
                                     {
-                                        void *data = PyArray_DATA(npArray);
+                                        void *data = PyArray_DATA( (PyArrayObject*)npArray );
 
                                         size_t numMats = self->dataObject->calcNumMats();
                                         size_t matIndex = 0;
@@ -4728,13 +4732,22 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     }
 
     parseTypeNumber(selfDO->getType(), inter->typekind, inter->itemsize);
-
+#if (NPY_FEATURE_VERSION < 0x00000007)
     inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)
+#else
+    inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED | NPY_ARRAY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)
+#endif
+
+
 
     //check if size and osize are totally equal, then set continuous flag
     if(selfDO->getTotal() == selfDO->getOriginalTotal())
     {
+#if (NPY_FEATURE_VERSION < 0x00000007)
         inter->flags |= NPY_C_CONTIGUOUS;
+#else
+        inter->flags |= NPY_ARRAY_C_CONTIGUOUS;
+#endif
     }
 
     inter->descr = NULL;
@@ -4953,7 +4966,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
         Py_DECREF(newDO);
     }
 
-    if ((newtype == NULL) || PyArray_EquivTypes(newArray->descr, newtype)) 
+    if ((newtype == NULL) || PyArray_EquivTypes(PyArray_DESCR(newArray) /*->descr*/, newtype)) 
     {
         return (PyObject *)newArray;
     }
