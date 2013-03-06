@@ -89,6 +89,7 @@ namespace ito
             void mnuSendToPython();
             void mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd);
             void mnuOpenWidget();
+            void mnuToggleView();
             void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
             void showDetails();
