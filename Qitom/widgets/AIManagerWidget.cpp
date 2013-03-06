@@ -795,6 +795,19 @@ void AIManagerWidget::showList()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuToggleView()
+{
+    if(m_pAIManagerView->isColumnHidden(1))
+    {
+        showDetails();
+    }
+    else
+    {
+        showList();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showDetails()
 {
     ito::AddInManager *aim = ito::AddInManager::getInstance();
