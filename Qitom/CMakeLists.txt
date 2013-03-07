@@ -312,11 +312,11 @@ set(qitom_SOURCES
 
 #handle translations
 # see e.g. http://stackoverflow.com/questions/5630155/how-to-integrate-qt-internationalization-to-cmake
-set(qitom_ts
-    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
-)
+#set(qitom_ts
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
+#)
 
-QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+#QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
@@ -328,6 +328,25 @@ ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 #end add filters to visual studio
 
+
+#handle translations BEGIN
+set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
+
+file (GLOB TRANSLATIONS_FILES "../translation/*.ts") #test_qitom_de.ts") #*.ts")
+
+option (UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+if (UPDATE_TRANSLATIONS)
+	QT4_CREATE_TRANSLATION_ITOM(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+endif (UPDATE_TRANSLATIONS) 
+
+QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${TRANSLATIONS_FILES})
+
+add_custom_target (qitom_translation DEPENDS ${QM_FILES})
+
+#install(FILES ${QM_FILES} DESTINATION
+#${CMAKE_INSTALL_PREFIX}/translations)
+
+#handle translations END
 
 
 if(MSVC)
@@ -352,22 +371,10 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
-ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${qitom_ts})
+ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${TRANSLATIONS_FILES} )
+add_dependencies(qitom qitom_translation)
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_RELEASE "qitom")
-
-#IF (CMAKE_HOST_WIN32) #32 or 64bit windows system
-#	
-#	
-##	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES RELWITHDEBINFO "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES MINSIZEREL "/SUBSYSTEM:WINDOWS")
-##	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-#ELSE (CMAKE_HOST_WIN32)
-#	ADD_EXECUTABLE(qitom ${qitom_SOURCES} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC})
-#ENDIF (CMAKE_HOST_WIN32)
 
 SET( WINICONRES "" )
 
@@ -380,16 +387,8 @@ IF(MSVC)
 	ENDIF(CMAKE_CL_64)
 ENDIF(MSVC)
 
-#message(SEND_ERROR ${VISUALLEAKDETECTOR_LIBRARIES})
-#IF (WIN32)
-#	set(SUBSYS "/SUBSYSTEM:WINDOWS")
-#	set(CMAKE_EXE_LINKERS_FLAG 	${SUBSYS})
-#	set(CMAKE_SHARED_LINKER_FLAGS ${SUBSYS})
-#	set(CMAKE_MODULE_LINKER_FLAGS ${SUBSYS})
-	TARGET_LINK_LIBRARIES(qitom ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
-#ELSE (WIN32)
-	#TARGET_LINK_LIBRARIES(qitom ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_opencv_core_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
-#ENDIF (WIN32)
+TARGET_LINK_LIBRARIES(qitom ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
+
 
 
 #

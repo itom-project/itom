@@ -1697,7 +1697,7 @@ namespace dObjHelper
         \sa  
         \date    03.2013 
     */
-    inline ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags, const bool includeRotationMatrix)
+    ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags, const bool includeRotationMatrix)
     {
         int nDimOut = DataObjectOut.getDims();
         int nDimIn = DataObjectIn.getDims();

@@ -875,7 +875,7 @@ namespace dObjHelper
     }
 
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
-    inline ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
+    ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
 }
 }
 
