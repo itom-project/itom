@@ -1,0 +1,20 @@
+
+#ifndef GIT_VERSION_H
+#define GIT_VERSION_H
+
+/// Repository Type
+#define USING_GIT 1
+ 
+/// The current Hash Tag of this Version
+#define GIT_HASHTAG "$REV$"
+
+/// Date of the last commit
+#define GIT_REVISION_DATE "$DATE$"
+
+/// URL of project archive
+#define GIT_REPOSITORY_URL "$URL$"
+
+/// If WCMODS == TText, this is not a clean build
+#define GIT_CLEAN_BUILD_FLAG $MODS$
+
+#endif // GIT_VERSION_H
