@@ -185,4 +185,7 @@
         <file>icons/matplotlib/subplots.png</file>
         <file>icons/matplotlib/zoom_to_rect.png</file>
     </qresource>
+    <qresource prefix="/license">
+        <file>about.html</file>
+    </qresource>
 </RCC>

@@ -2,7 +2,10 @@ project(qitom)
 
 cmake_minimum_required(VERSION 2.8)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
+OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
+
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
@@ -424,21 +427,33 @@ if(MSVC)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
 ENDIF (MSVC)
 
+UNSET(GIT_FOUND CACHE)
+find_package(Git)
 UNSET(SUBWCREV_FOUND CACHE)
-#FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
+FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
 
-IF(SUBWCREV_FOUND)
+IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+    MESSAGE(STATUS "Using GIT as repository information")
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
+    ADD_CUSTOM_COMMAND (
+        TARGET qitom
+        PRE_BUILD
+        COMMAND    ${PYTHON_EXECUTABLE}
+        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+    )
+ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
+    MESSAGE(STATUS "Using SVN as repository information")
     ADD_CUSTOM_COMMAND (
         TARGET qitom
         PRE_BUILD
         COMMAND    subwcrev
         ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
     )
-ELSE(SUBWCREV_FOUND)
+ELSE(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
     MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
     FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-ENDIF(SUBWCREV_FOUND)
+ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
 
 MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked

@@ -157,6 +157,7 @@ namespace ito
             QString m_author;                                //!< the plugin author
             QString m_description;                          //!< a brief descrition of the plugin
             QString m_detaildescription;                    //!< a detail descrition of the plugin
+            QString m_license;                              //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
             QList<ito::AddInBase *> m_InstList;             //!< vector holding a list of the actual instantiated classes of the plugin
             QVector<ito::Param> m_initParamsMand;          //!< vector with the mandatory initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
             QVector<ito::Param> m_initParamsOpt;           //!< vector with the optional initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
@@ -175,7 +176,7 @@ namespace ito
             AddInInterfaceBase() :
                 m_type(0), m_version(CREATEVERSION(0,0,0)), m_filename(""),
                 m_maxItomVer(MAXVERSION), m_minItomVer(MINVERSION),
-                m_author(""), m_description(""), m_detaildescription(""),
+                m_author(""), m_description(""), m_detaildescription(""), m_license("LGPL with ITO itom-exception"),
                 /*m_enableAutoLoad(false),*/ m_autoLoadPolicy(ito::autoLoadNever),
                 m_autoSavePolicy(ito::autoSaveNever),  m_callInitInNewThread(true), m_apiFunctionsBasePtr(NULL), m_apiFunctionsGraphBasePtr(NULL)
             { }
@@ -204,6 +205,8 @@ namespace ito
             const QString getDescription(void) const { return m_description; }
             //! returns a detailed description of the plugin
             const QString getDetailDescription(void) const { return m_detaildescription; }
+            //! returns a detailed description of the plugin
+            const QString getLicenseInfo(void) const { return m_license; }
             //! returns the plugin's filename
             const QString getFilename(void) const { return m_filename; }
 

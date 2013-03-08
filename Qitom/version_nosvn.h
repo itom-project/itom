@@ -19,19 +19,8 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#ifndef SNV_VERSION_H
-#define SNV_VERSION_H
+#ifndef SNV_NO_H
+#define SNV_NO_H
  
-/// Highest SVN version in itomfolder repository
-#define SVN_REVISION "0"
 
-/// Date of highest revision
-#define SVN_REVISION_DATE "1970/01/01 00:00:00"
-
-/// URL of project archive
-#define SVN_REPOSITORY_URL "unknown"
-
-/// If WCMODS == TText, this is not a clean build
-#define SVN_CLEAN_BUILD_FLAG 0
-
-#endif // SNV_VERSION_H
+#endif // SNV_NO_H

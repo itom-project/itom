@@ -1,0 +1,134 @@
+'''
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom and its software development toolkit (SDK).
+
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+   
+    In addition, as a special exception, the Institut für Technische
+    Optik (ITO) gives you certain additional rights.
+    These rights are described in the ITO LGPL Exception version 1.0,
+    which can be found in the file LGPL_EXCEPTION.txt in this package.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+This is a wrapper to convert GIT-version informations to a c++-header.
+For this file the repositoryPath, the destinationFolder, the gitLocation are needed.
+'''
+
+import os
+import sys
+from os import path
+import subprocess
+
+repositoryPath = '${CMAKE_CURRENT_SOURCE_DIR}/..'
+destinationFolder = '${CMAKE_CURRENT_BINARY_DIR}/..'
+gitLocation = '${GIT_EXECUTABLE}'
+
+repDate = 'failed'
+repHash = 'failed'
+repURL = 'failed'
+repIsDirty = 4
+
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+(out,error)=pr.communicate()
+
+if(len(error) > 0):
+    raise RuntimeError("Calling GIT for local changes failed" + error)
+else:
+    if(len(out) < 1):
+        repIsDirty = 0
+    else:
+        repIsDirty = 0
+        if(out.find(b'??') > -1):
+            repIsDirty = 2
+        if(out.find(b'M ') > -1):
+            repIsDirty = repIsDirty + 1
+
+del out
+del error
+
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+(log,error)=pr.communicate()
+
+if(len(log) < 1 or len(error) > 0):
+    raise RuntimeError("Calling GIT for log failed" + error)
+else:
+    first = log.find(b'Date')
+    if(first > -1):
+        last = log.find(b'\n', first)
+        if(last > first + 8):
+            repDate = log[first + 8:last].decode("utf-8")
+
+del log
+del error
+
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+(hash,error)=pr.communicate()
+
+if(len(hash) < 1 or len(error) > 0):
+    raise RuntimeError("Calling GIT for hashTag failed" + error)
+else:
+    first = hash.find(b'\n')
+    if(first > -1):
+        hash = hash[0:first]
+    repHash = hash.decode("utf-8")
+
+del hash
+del error
+
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+(url,error)=pr.communicate()
+
+if(len(url) < 1 or len(error) > 0):
+    raise RuntimeError("Calling GIT for url failed" + error)
+else:
+    first = url.find(b'\n')
+    if(first > -1):
+        url = url[0:first]
+    repURL = url.decode("utf-8")
+
+inputString = ''
+
+try:
+    inputFile = open(repositoryPath+"/qitom/version.h.in", "r")
+    inputString = inputFile.read()
+    inputFile.close()
+except:
+    raise RuntimeError("Reading templatefile failed")
+
+inputString = inputString.replace('$REV$', repHash)
+inputString = inputString.replace('$DATE$', repDate)
+inputString = inputString.replace('$URL$', repURL)
+inputString = inputString.replace('$MODS$', str(repIsDirty))
+
+try:
+    outputFile = open(destinationFolder+"/qitom/version.h", "w")
+    outputFile.write(inputString)
+    outputFile.close()
+except:
+    raise RuntimeError("Writing new version.h failed")
+
+
+
+
+
+

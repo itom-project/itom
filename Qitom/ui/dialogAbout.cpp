@@ -26,21 +26,64 @@
 DialogAboutQItom::DialogAboutQItom(QList<QPair<QString, QString> > versionMap)
 {
     m_VersionString.clear();
+    QFile file(":/license/about.html");
+    if(!file.open(QIODevice::ReadOnly)) 
+    {
+        QMessageBox::information(0, "error", file.errorString());
+    }
+
+    QTextStream in(&file);
+    QString currTxt(in.readAll());
+    file.close();
+
+    bool hasGIT = false;
+    bool hasSVN = false;
 
     ui.setupUi(this);
     ui.itomLogo->setPixmap( QPixmap(QString::fromUtf8(":/application/icons/itomicon/q_itoM64.png")));
     ui.ITOLogo->setPixmap( QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
-    QString currTxt = ui.infoText->toHtml();
-
     for( int i = 0; i < versionMap.size(); i++)
     {
         m_VersionString.append(QString("%1: %2\n").arg(versionMap[i].first, versionMap[i].second));
-        QString keyWord(QString("[%1]").arg(versionMap[i].first));
+        QString keyWord(QString("$%1$").arg(versionMap[i].first));
         if(currTxt.contains(keyWord))
         {
             currTxt = currTxt.replace(keyWord, versionMap[i].second.replace('\n', "<p>"));
         }
+        if(versionMap[i].first.compare("itom_GITHASH") == 0)
+        {
+            hasGIT = true;
+        }
+        if(versionMap[i].first.compare("itom_SVNRevision") == 0)
+        {
+            hasSVN = true;
+        }
+    }
+
+    int x0 = currTxt.indexOf("$USINGSVN$");
+    int x1 = currTxt.lastIndexOf("$USINGSVN$");
+    if(!hasSVN)
+    {
+        currTxt.remove(x0, x1-x0+10);
+    }
+    else
+    {
+        currTxt.remove(x0, 10);
+        x1 = currTxt.lastIndexOf("$USINGSVN$");
+        currTxt.remove(x1-10, 10);
+    }
+
+    x0 = currTxt.indexOf("$USINGGIT$");
+    x1 = currTxt.lastIndexOf("$USINGGIT$");
+    if(!hasGIT)
+    {
+        currTxt.remove(x0, x1-x0+10);
+    }
+    else
+    {
+        currTxt.remove(x0, 10);
+        currTxt.remove(x1-10, 10);    
     }
 
     ui.infoText->setHtml(currTxt);
