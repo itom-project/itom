@@ -34,6 +34,8 @@
 //
 #include "widgets/mainWindow.h"
 
+#include <qtranslator.h>
+
 //using namespace ito;
 
 class MainApplication : public QObject
@@ -67,14 +69,14 @@ class MainApplication : public QObject
         MainWindow* m_mainWin;                                /*!<  pointer to the main window */
 
         static MainApplication* mainApplicationInstance;      /*!<  static pointer to the (singleton) instance of MainApplication */
-        PaletteOrganizer* m_paletteOrganizer;                   /*!<  pointer to figureOrganizer */
+        PaletteOrganizer* m_paletteOrganizer;                 /*!<  pointer to figureOrganizer */
         UiOrganizer* m_uiOrganizer;                           /*!<  pointer to uiOrganizer */
-        DesignerWidgetOrganizer* m_designerWidgetOrganizer;    /*!< designerWidgetOrganizer */
+        DesignerWidgetOrganizer* m_designerWidgetOrganizer;   /*!< designerWidgetOrganizer */
 
         ito::ProcessOrganizer* m_processOrganizer;            /*!< pointer to processOrganizer */
 //        bool m_hasGIL;                                        /*!< python global interpreter lock GIL */
 
-        QTranslator m_Translator;                           /*!< pointer to a language-translation, different than the standard language (en) */
+        QTranslator m_Translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;
 
     signals:

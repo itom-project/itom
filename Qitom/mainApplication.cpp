@@ -81,7 +81,7 @@ MainApplication::MainApplication(tGuiType guiType) :
 
     QString settingsFile;
     QDir appDir(QCoreApplication::applicationDirPath());
-    if(!appDir.cd("itomSettings"))
+    if (!appDir.cd("itomSettings"))
     {
         appDir.mkdir("itomSettings");
         appDir.cd("itomSettings");
@@ -131,7 +131,7 @@ void MainApplication::setupApplication()
 
     //1. try to load qt-translations from qt-folder
     m_qtTranslator.load("qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    if(m_qtTranslator.isEmpty())
+    if (m_qtTranslator.isEmpty())
     {
         //qt-folder is not available, then try itom translation folder
         m_qtTranslator.load("qt_" + local.name(), itomTranslationFolder);
@@ -144,7 +144,7 @@ void MainApplication::setupApplication()
 
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
-    if(textCodec == NULL)
+    if (textCodec == NULL)
     {
         textCodec = QTextCodec::codecForName("UTF-8");
     }
@@ -156,7 +156,7 @@ void MainApplication::setupApplication()
     QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
     settings.endGroup();
 
-    if(m_guiType == standard || m_guiType == console)
+    if (m_guiType == standard || m_guiType == console)
     {
         //set styles (if available)
         settings.beginGroup("ApplicationStyle");
@@ -164,18 +164,18 @@ void MainApplication::setupApplication()
         QString cssFile = settings.value("cssFile", "").toString();
         settings.endGroup();
 
-        if(styleName != "")
+        if (styleName != "")
         {
             QApplication::setStyle(styleName);
         }
 
-        if(cssFile != "")
+        if (cssFile != "")
         {
             QDir styleFolder = QCoreApplication::applicationDirPath();
-            if(styleFolder.exists(cssFile))
+            if (styleFolder.exists(cssFile))
             {
                 QFile css(styleFolder.filePath(cssFile));
-                if(css.open(QFile::ReadOnly))
+                if (css.open(QFile::ReadOnly))
                 {
                     QString cssContent(css.readAll());
                     qApp->setStyleSheet(cssContent);
@@ -211,7 +211,7 @@ void MainApplication::setupApplication()
 
     qDebug("..python engine moved to new thread");
 
-    if(m_guiType == standard || m_guiType == console)
+    if (m_guiType == standard || m_guiType == console)
     {
         m_mainWin = new MainWindow();
         AppManagement::setMainWindow(qobject_cast<QObject*>(m_mainWin));
@@ -239,7 +239,7 @@ void MainApplication::setupApplication()
 
     qDebug("..script editor started");
 
-    if(m_mainWin != NULL)
+    if (m_mainWin != NULL)
     {
         connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addScriptDock(AbstractDockWidget*,Qt::DockWidgetArea)));
         connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeScriptDock(AbstractDockWidget*)));
@@ -262,7 +262,7 @@ void MainApplication::setupApplication()
     settings.endArray();
     settings.endGroup();
 
-    if(startupScripts.count()>0)
+    if (startupScripts.count()>0)
     {
         QMetaObject::invokeMethod(m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
     }
@@ -279,9 +279,9 @@ void MainApplication::setupApplication()
     //QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
     //settings.endGroup();
 
-    if(retValue.containsError())
+    if (retValue.containsError())
     {
-		if(retValue.errorMessage())
+		if (retValue.errorMessage())
 		{
 			std::cout << "Error when starting the application: " << retValue.errorMessage() << std::endl;
 		}
@@ -290,9 +290,9 @@ void MainApplication::setupApplication()
 			std::cout << "An unspecified error occurred when starting the application." << std::endl;
 		}
     }
-	else if(retValue.containsWarning())
+	else if (retValue.containsWarning())
 	{
-		if(retValue.errorMessage())
+		if (retValue.errorMessage())
 		{
 			std::cout << "Warning when starting the application: " << retValue.errorMessage() << std::endl;
 		}
@@ -382,7 +382,7 @@ void MainApplication::mainWindowCloseRequest()
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
-    if(settings.value("askBeforeClose", false).toBool())
+    if (settings.value("askBeforeClose", false).toBool())
     {
         QMessageBox msgBox;
             msgBox.setText("Do you really want to exit the application?");
@@ -391,7 +391,7 @@ void MainApplication::mainWindowCloseRequest()
             msgBox.setIcon(QMessageBox::Question);
             int ret = msgBox.exec();
 
-            if(ret == QMessageBox::Cancel)
+            if (ret == QMessageBox::Cancel)
             {
                 settings.endGroup();
                 return;
@@ -399,9 +399,9 @@ void MainApplication::mainWindowCloseRequest()
     }
     settings.endGroup();
 
-    if(m_pyEngine != NULL)
+    if (m_pyEngine != NULL)
     {
-        if(m_pyEngine->isPythonBusy())
+        if (m_pyEngine->isPythonBusy())
         {
             QMessageBox msgBox;
             msgBox.setText(tr("Python is still running. Please close it first before shutting down this application"));
@@ -410,13 +410,13 @@ void MainApplication::mainWindowCloseRequest()
         }
     }
 
-    if(retValue.containsError()) return;
+    if (retValue.containsError()) return;
 
     retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(m_mainWin)
+        if (m_mainWin)
         {
             m_mainWin->hide();
         }
@@ -432,12 +432,12 @@ void MainApplication::mainWindowCloseRequest()
 int MainApplication::exec()
 {
 
-    if(m_guiType == standard)
+    if (m_guiType == standard)
     {
         m_mainWin->show();
         return QApplication::instance()->exec();
     }
-    else if(m_guiType == console)
+    else if (m_guiType == console)
     {
         m_mainWin->show();
         return QApplication::instance()->exec();

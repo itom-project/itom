@@ -179,8 +179,8 @@ MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
 	#SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
 	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
 	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
-	message(STATUS "sources:  ${${sources}}")
-	message(STATUS "destinations:  ${${destinations}}")
+#	message(STATUS "sources:  ${${sources}}")
+#	message(STATUS "destinations:  ${${destinations}}")
 
 ENDMACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST)
 
@@ -212,7 +212,7 @@ ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
 
 
 MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
-    message(STATUS "target: ${target} ${ITOM_SDK_DIR} ${CMAKE_SIZEOF_VOID_P}")
+#    message(STATUS "target: ${target} ${ITOM_SDK_DIR} ${CMAKE_SIZEOF_VOID_P}")
     
     IF(${ITOM_SDK_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
@@ -265,7 +265,7 @@ MACRO (POST_BUILD_COPY_FILES target sources destinations)
 	endforeach(dest ${${destinations}})
 	LIST(REMOVE_DUPLICATES destPathes)
 	
-	message(STATUS "destPathes: ${destPathes}")
+#	message(STATUS "destPathes: ${destPathes}")
 	
 	#try to create all pathes
 	foreach(destPath ${destPathes})
@@ -279,7 +279,7 @@ MACRO (POST_BUILD_COPY_FILES target sources destinations)
 	foreach(val RANGE ${len1})
 		list(GET ${sources} ${val} val1)
 		list(GET ${destinations} ${val} val2)
-		message(STATUS "POST_BUILD: COPY ${val1} TO ${val2}")
+#		message(STATUS "POST_BUILD: COPY ${val1} TO ${val2}")
 		
 		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different  			   # which executes "cmake - E copy_if_different..."
@@ -305,7 +305,7 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 	
 	foreach(val RANGE ${len1})
 		list(GET ${sources} ${val} val1)
-		message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
+#		message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
 		
 		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different  			   # which executes "cmake - E copy_if_different..."
