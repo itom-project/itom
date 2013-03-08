@@ -18,7 +18,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */#ifndef ITOM_SDK_H
+*********************************************************************** */
+#ifndef ITOM_SDK_H
 #define ITOM_SDK_H
 
 //this file is copied to the SDK/include folder.

@@ -869,7 +869,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../Qitom/mainApplication.cpp" line="392"/>
+        <location filename="../Qitom/mainApplication.cpp" line="407"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -877,105 +877,105 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="455"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="453"/>
         <source>deadlock in python setup.</source>
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="545"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="543"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="637"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="635"/>
         <source>method name not found in builtin itom</source>
         <translation type="unfinished">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="780"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="778"/>
         <source>main dictionary is empty</source>
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="800"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="798"/>
         <source>exiting desired.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="805"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="803"/>
         <source>error while evaluating python string.</source>
         <translation type="unfinished">Fehler beim Evaluieren eines Python-Strings.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="873"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="871"/>
         <source>file does not exist</source>
         <translation type="unfinished">Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="941"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="939"/>
         <source>file could not be opened in readonly-mode</source>
         <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1003"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1111"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1195"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1001"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1109"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1193"/>
         <source>Error while clearing all breakpoints in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1290"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1288"/>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
         <translation type="unfinished">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1338"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1336"/>
         <source>Error while editing breakpoint in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Editiern eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="1370"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="1368"/>
         <source>Error while clearing breakpoint in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3364"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3363"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3368"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3473"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3367"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3472"/>
         <source>it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3393"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3392"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3401"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3400"/>
         <source>name &apos;%s&apos; already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3409"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3408"/>
         <source>error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3469"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3468"/>
         <source>The number of names and types must be equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3498"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3497"/>
         <source>values cannot be obtained since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3507"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3506"/>
         <source>item &apos;%s&apos; does not exist in workspace.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -984,60 +984,60 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3576"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3575"/>
         <source>It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3606"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3668"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3605"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3667"/>
         <source>Dictionary is not available</source>
         <translation type="unfinished">Wörterbuch ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3613"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3612"/>
         <source>variable name &apos;%1&apos; is no valid python variable name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3620"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3619"/>
         <source>variable name &apos;%1&apos; already exists in dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3631"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3630"/>
         <source>No instance of python class dataIO could be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3647"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3646"/>
         <source>No instance of python class actuator could be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3659"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3658"/>
         <source>AddIn must be of type dataIO or actuator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3717"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3788"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3716"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3787"/>
         <source>it is not allowed to get modules if python is currently executed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3733"/>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3804"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3732"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3803"/>
         <source>the script itomFunctions.py is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3741"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3740"/>
         <source>error while loading the modules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonEngine.cpp" line="3815"/>
+        <location filename="../Qitom/python/pythonEngine.cpp" line="3814"/>
         <source>error while reloading the modules</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1045,67 +1045,67 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../common/helperCommon.cpp" line="40"/>
+        <location filename="../common/helperCommon.cpp" line="45"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="50"/>
+        <location filename="../common/helperCommon.cpp" line="55"/>
         <source>mandatory parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="54"/>
+        <location filename="../common/helperCommon.cpp" line="59"/>
         <source>optional parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="58"/>
+        <location filename="../common/helperCommon.cpp" line="63"/>
         <source>output parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="83"/>
-        <location filename="../common/helperCommon.cpp" line="104"/>
+        <location filename="../common/helperCommon.cpp" line="88"/>
+        <location filename="../common/helperCommon.cpp" line="109"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
         <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="182"/>
-        <location filename="../common/helperCommon.cpp" line="305"/>
+        <location filename="../common/helperCommon.cpp" line="187"/>
+        <location filename="../common/helperCommon.cpp" line="310"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="189"/>
-        <location filename="../common/helperCommon.cpp" line="312"/>
+        <location filename="../common/helperCommon.cpp" line="194"/>
+        <location filename="../common/helperCommon.cpp" line="317"/>
         <source>the parameter name &apos;%1&apos; in invald</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="213"/>
+        <location filename="../common/helperCommon.cpp" line="218"/>
         <source>array index of parameter out of bounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="220"/>
-        <location filename="../common/helperCommon.cpp" line="345"/>
+        <location filename="../common/helperCommon.cpp" line="225"/>
+        <location filename="../common/helperCommon.cpp" line="350"/>
         <source>given index of parameter name ignored since parameter is no array type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="227"/>
-        <location filename="../common/helperCommon.cpp" line="352"/>
+        <location filename="../common/helperCommon.cpp" line="232"/>
+        <location filename="../common/helperCommon.cpp" line="357"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="338"/>
+        <location filename="../common/helperCommon.cpp" line="343"/>
         <source>array index out of bounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/helperCommon.cpp" line="393"/>
+        <location filename="../common/helperCommon.cpp" line="398"/>
         <source>invalid parameter name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1230,312 +1230,312 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="62"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="66"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="71"/>
         <source>No unit specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="208"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="213"/>
         <source>Pluginname undefined. No xml file loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="242"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="247"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="253"/>
-        <location filename="../common/sharedFunctionsQt.cpp" line="378"/>
-        <location filename="../common/sharedFunctionsQt.cpp" line="571"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="258"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="383"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="576"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="641"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="646"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="645"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="650"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="672"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="677"/>
         <source>%1
 Obsolete parameter %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="676"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="681"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="685"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="690"/>
         <source>%1
 Parameter %2 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="689"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="694"/>
         <source>XML-Import warnings:
 Parameter %1 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="714"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="719"/>
         <source>%1
 Parameter not loadable %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="718"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="723"/>
         <source>XML-Import warnings:
 Parameter not loadable %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="728"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="733"/>
         <source>%1
 Type conflict for %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="732"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="737"/>
         <source>XML-Import warnings:
 Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="805"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="810"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1100"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1105"/>
         <source>Save object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1105"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1110"/>
         <source>Save object failed: object seems empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1112"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1117"/>
         <source>Save object failed: evaluate transpose failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1140"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1145"/>
         <source>Save object failed: file not writeable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1233"/>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1262"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1238"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1267"/>
         <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1299"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1304"/>
         <source>Load object failed: Number of dims smaller 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1307"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1312"/>
         <source>Not enough memory to alloc sizes vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1323"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1328"/>
         <source>Load object failed: dimension size missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1337"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1342"/>
         <source>Load object failed: dimX not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1348"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1353"/>
         <source>Load object failed: dimY not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1360"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1365"/>
         <source>Load object failed: isTransposed not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1418"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1423"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1427"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1432"/>
         <source>Load object failed: Error during allocating memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1473"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1478"/>
         <source>Load object failed: file corrupted at metaData (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1480"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1485"/>
         <source>Load object warning: file has invalid metaData for v1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1498"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1503"/>
         <source>Load object warning: DoubleExportType for v1.0 invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1503"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1508"/>
         <source>Load object warning: DoubleExportType for v1.0 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1540"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1545"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1573"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1578"/>
         <source>Load object warning: MetaData for dimX missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1603"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1608"/>
         <source>Load object warning: MetaData for dimY missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1633"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1638"/>
         <source>Load object warning: MetaData for values missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1662"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1667"/>
         <source>Load object warning: MetaData import for Rotation Matrix failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1698"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1703"/>
         <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1703"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1708"/>
         <source>Load object failed: tag space not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1717"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1722"/>
         <source>Load object failed: tags Space invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1755"/>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1761"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1760"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1766"/>
         <source>Load object warning: invalid tagType found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1767"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1772"/>
         <source>Load object warning: tagsSpace invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1807"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1812"/>
         <source>Load object failed: dataSpace missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1812"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1817"/>
         <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1822"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1827"/>
         <source>Load object warning: dataSpace and dataObject are not equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1827"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1832"/>
         <source>Load object warning: dataSpace attributes corrupted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1840"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1845"/>
         <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1851"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1856"/>
         <source>Load object failed: dataStream ended before finished reading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1881"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1886"/>
         <source>Load object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1914"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1919"/>
         <source>Load object failed: file not readable or does not exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1928"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1933"/>
         <source>Load object failed: file seems corrupt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1936"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1941"/>
         <source>Load object failed: wrong xml version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1944"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1949"/>
         <source>Load object failed: wrong document encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1950"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1955"/>
         <source>Load object failed: unexpected file ending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1969"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1974"/>
         <source>Load object failed: file is no itomDataObjectFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1988"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1993"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../common/sharedFunctionsQt.cpp" line="1993"/>
+        <location filename="../common/sharedFunctionsQt.cpp" line="1998"/>
         <source>Load object failed: object header not valied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonCommon.cpp" line="211"/>
         <location filename="../Qitom/api/apiFunctions.cpp" line="131"/>
+        <location filename="../Qitom/python/pythonCommon.cpp" line="211"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1681,42 +1681,42 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonPlugins.cpp" line="3270"/>
+        <location filename="../Qitom/python/pythonPlugins.cpp" line="3335"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonPlugins.cpp" line="3646"/>
+        <location filename="../Qitom/python/pythonPlugins.cpp" line="3750"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonPlugins.cpp" line="4067"/>
+        <location filename="../Qitom/python/pythonPlugins.cpp" line="4171"/>
         <source>Itom AlgorithmPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonUi.cpp" line="2119"/>
+        <location filename="../Qitom/python/pythonUi.cpp" line="2168"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonUi.cpp" line="2134"/>
+        <location filename="../Qitom/python/pythonUi.cpp" line="2183"/>
         <source>no addin-manager found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonUi.cpp" line="2142"/>
+        <location filename="../Qitom/python/pythonUi.cpp" line="2191"/>
         <source>the first parameter must contain the widget name as string</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonUi.cpp" line="2149"/>
+        <location filename="../Qitom/python/pythonUi.cpp" line="2198"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/python/pythonUi.cpp" line="2156"/>
+        <location filename="../Qitom/python/pythonUi.cpp" line="2205"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1819,50 +1819,50 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.h" line="204"/>
+        <location filename="../plot/AbstractNode.h" line="209"/>
         <source>Live data source for plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.h" line="274"/>
+        <location filename="../plot/AbstractNode.h" line="279"/>
         <source>parameters in list could not be found in channels, in updateChannels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.h" line="318"/>
+        <location filename="../plot/AbstractNode.h" line="323"/>
         <source>channel is not a sender in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.h" line="323"/>
+        <location filename="../plot/AbstractNode.h" line="328"/>
         <source>unknown channel in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="54"/>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="98"/>
+        <location filename="../plot/AbstractFigure.cpp" line="59"/>
+        <location filename="../plot/AbstractFigure.cpp" line="103"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="62"/>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="69"/>
+        <location filename="../plot/AbstractFigure.cpp" line="67"/>
+        <location filename="../plot/AbstractFigure.cpp" line="74"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="74"/>
+        <location filename="../plot/AbstractFigure.cpp" line="79"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="88"/>
+        <location filename="../plot/AbstractFigure.cpp" line="93"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="113"/>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="138"/>
+        <location filename="../plot/AbstractFigure.cpp" line="118"/>
+        <location filename="../plot/AbstractFigure.cpp" line="143"/>
         <source>channel does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1875,17 +1875,17 @@ Type conflict for %1</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.cpp" line="99"/>
+        <location filename="../plot/AbstractNode.cpp" line="104"/>
         <source>Parameter: does not exist in updateParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.cpp" line="105"/>
+        <location filename="../plot/AbstractNode.cpp" line="110"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractNodeV2.cpp" line="107"/>
+        <location filename="../plot/AbstractNode.cpp" line="112"/>
         <source>Channel is already updating</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1895,12 +1895,12 @@ Type conflict for %1</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractDObjFigure.h" line="53"/>
+        <location filename="../plot/AbstractDObjFigure.h" line="58"/>
         <source>Source data for plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractDObjFigure.h" line="54"/>
+        <location filename="../plot/AbstractDObjFigure.h" line="59"/>
         <source>Actual output data of plot</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1926,173 +1926,173 @@ Type conflict for %1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="220"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="240"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen &amp;umschalten</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="221"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="241"/>
         <source>next bookmark</source>
         <translation>Nächstes Lesezeichen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="222"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="242"/>
         <source>previous bookmark</source>
         <translation>Vorheriges Lesezeichen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="223"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="243"/>
         <source>clear all bookmarks</source>
         <translation>Alle Lesezeichen löschen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="228"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="248"/>
         <source>&amp;toggle breakpoint</source>
         <translation type="unfinished">Haltepunkt &amp;umschalten</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="229"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="353"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="249"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="373"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="230"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="250"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="231"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="251"/>
         <source>&amp;next breakpoint</source>
         <translation>&amp;Nächste Haltepunkt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="232"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="252"/>
         <source>&amp;previous breakpoint</source>
         <translation>&amp;Vorheriger Haltepunkt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="233"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="253"/>
         <source>&amp;clear all breakpoint</source>
         <translation>Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="238"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="258"/>
         <source>&amp;cut</source>
         <translation>&amp;Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="239"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="259"/>
         <source>cop&amp;y</source>
         <translation>&amp;Kopieren</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="240"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="260"/>
         <source>&amp;paste</source>
         <translation>&amp;Einfügen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="242"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="262"/>
         <source>&amp;indent</source>
         <translation>Ein&amp;rücken</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="243"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="263"/>
         <source>&amp;unindent</source>
         <translation type="unfinished">&amp;Ausrücken</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="244"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="264"/>
         <source>&amp;comment</source>
         <translation type="unfinished">Ko&amp;mmentieren</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="245"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="265"/>
         <source>unc&amp;omment</source>
         <translation type="unfinished">&amp;Auskommentiert</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="251"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="271"/>
         <source>&amp;run script</source>
         <translation>Skript &amp;starten</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="252"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="272"/>
         <source>&amp;debug script</source>
         <translation>Skript im &amp;Debug-Modus starten</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="253"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="273"/>
         <source>sto&amp;p script</source>
         <translation>Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="357"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="377"/>
         <source>&amp;enable breakpoint</source>
         <translation>Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="750"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="818"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="854"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="770"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="838"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="874"/>
         <source>unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="750"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="854"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="770"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="874"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="818"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="838"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="767"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="787"/>
         <source>error while opening file</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="767"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="787"/>
         <source>file %1 could not be loaded</source>
         <translation>Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="834"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="881"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="854"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="901"/>
         <source>error while accessing file</source>
         <translation>Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="834"/>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="881"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="854"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="901"/>
         <source>file %1 could not be accessed</source>
         <translation>Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="868"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="888"/>
         <source>save as...</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1410"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1430"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1411"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1431"/>
         <source>Keep this file in editor?</source>
         <translation>Diese Datei im Editor belassen?</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1429"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1449"/>
         <source>The file &apos;%1&apos; has been modified by another programm.</source>
         <translation>Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1430"/>
+        <location filename="../Qitom/widgets/scriptEditorWidget.cpp" line="1450"/>
         <source>Do you want to reload it?</source>
         <translation>Soll diese neu geladen werden?</translation>
     </message>
@@ -2104,9 +2104,13 @@ Type conflict for %1</source>
         <translation type="obsolete">Dateiname existiert nicht</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/userUiDialog.cpp" line="86"/>
         <source>filename &apos;%1&apos; does not exist</source>
-        <translation>Dateiname &apos;%1&apos; existiert nicht</translation>
+        <translation type="obsolete">Dateiname &apos;%1&apos; existiert nicht</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/userUiDialog.cpp" line="86"/>
+        <source>filename &apos;%s&apos; does not exist</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Qitom/widgets/userUiDialog.cpp" line="102"/>
@@ -2114,12 +2118,17 @@ Type conflict for %1</source>
         <translation>UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/userUiDialog.cpp" line="130"/>
+        <location filename="../Qitom/widgets/userUiDialog.cpp" line="111"/>
+        <source>itom</source>
+        <translation type="unfinished">itom</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/userUiDialog.cpp" line="141"/>
         <source>content-widget is empty.</source>
         <translation type="unfinished">Element ist leer.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/userUiDialog.cpp" line="145"/>
+        <location filename="../Qitom/widgets/userUiDialog.cpp" line="156"/>
         <source>dialog button role is unknown</source>
         <translation type="unfinished">Unbekannte Rolle des Dialog-Button</translation>
     </message>
@@ -2707,13 +2716,13 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="73"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="93"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="77"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="335"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="97"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="357"/>
         <source>Show Plugin Toolbox</source>
         <translation type="unfinished">Plugin-Toolbox anzeigen</translation>
     </message>
@@ -2722,7 +2731,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="86"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="106"/>
         <source>Close Instance</source>
         <translation type="unfinished">Instanz schließen</translation>
     </message>
@@ -2731,234 +2740,234 @@ Type conflict for %1</source>
         <translation type="obsolete">An Python senden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="82"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="102"/>
         <source>New Instance...</source>
         <translation type="unfinished">Neue Instanz...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="90"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="110"/>
         <source>Send to Python...</source>
         <translation type="unfinished">An Python senden...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="94"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="114"/>
         <source>Close all</source>
         <translation type="unfinished">Alles schließen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="98"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="118"/>
         <source>Live Image...</source>
         <translation type="unfinished">Livebild...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="102"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="122"/>
         <source>Snap Dialog...</source>
         <translation type="unfinished">Aufnahmedialog...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="106"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="126"/>
         <source>Info...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="110"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="130"/>
         <source>Open Widget...</source>
         <translation type="unfinished">Fenster öffnen...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="211"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="231"/>
         <source>List</source>
         <translation type="unfinished">Liste</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="213"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="233"/>
         <source>Details</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="220"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="240"/>
         <source>settings</source>
         <translation type="unfinished">Einstellungen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="235"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="255"/>
         <source>plugins</source>
         <translation type="unfinished">Plugins</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="330"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="352"/>
         <source>Hide Plugin Toolbox</source>
         <translation type="unfinished">Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="425"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="448"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="426"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="460"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="449"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="483"/>
         <source>Error while creating new instance</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="453"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="476"/>
         <source>warning while creating new instance. Message: %1</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="454"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="477"/>
         <source>Warning while creating new instance</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="459"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="482"/>
         <source>error while creating new instance. Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="478"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="592"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="501"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="615"/>
         <source>Timeout</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="478"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="592"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="501"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="615"/>
         <source>Python did not response to the request within a certain timeout.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="486"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="600"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="509"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="623"/>
         <source>warning while sending instance to python. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Senden der Instanz an Python. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="487"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="601"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="510"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="624"/>
         <source>Warning while sending instance to python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="492"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="606"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="515"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="629"/>
         <source>error while sending instance to python. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Senden der Instanz an Python. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="493"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="607"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="516"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="630"/>
         <source>Error while sending instance to python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="498"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="613"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="521"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="636"/>
         <source>Python not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Python nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="498"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="613"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="521"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="636"/>
         <source>The Python engine is not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="527"/>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="531"/>
-        <source>closing not possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="527"/>
-        <source>this instance cannot be closed by GUI since it has been created by Python</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="531"/>
-        <source>this instance can temporarily not be closed since it is still in use by another element.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="541"/>
-        <source>final closing not possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="541"/>
-        <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="550"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="554"/>
+        <source>closing not possible</source>
+        <translation type="unfinished">Schließen nicht möglich</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="550"/>
+        <source>this instance cannot be closed by GUI since it has been created by Python</source>
+        <translation type="unfinished">Diese Instanz kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="554"/>
+        <source>this instance can temporarily not be closed since it is still in use by another element.</source>
+        <translation type="unfinished">Diese Instanz kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="564"/>
+        <source>final closing not possible</source>
+        <translation type="unfinished">Endgültiges Schließen nicht möglich</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="564"/>
+        <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
+        <translation type="unfinished">Diese Instanz kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="573"/>
         <source>warning while closing instance. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Schließen der Instanz. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="551"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="574"/>
         <source>Warning while closing instance</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="556"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="579"/>
         <source>error while closing instance. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schließen der Instanz. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="557"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="580"/>
         <source>Error while closing instance</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="582"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="605"/>
         <source>Python variable name</source>
         <translation type="unfinished">Variablenname in Python</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="582"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="605"/>
         <source>Python variable name for saving this instance in global workspace</source>
         <translation type="unfinished">Variablenname in Python um diese Instanz in den globalen Workspace zu schreiben</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="582"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="605"/>
         <source>instance</source>
         <translation type="unfinished">Instanz</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="682"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="705"/>
         <source>Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="708"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="731"/>
         <source>User interface of plugin could not be created. Returned handle is invalid.</source>
         <translation type="unfinished">Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="714"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="737"/>
         <source>could not find instance of UiOrganizer</source>
         <translation type="unfinished">Die Instanz des UI-Organizers konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="722"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="745"/>
         <source>Error while opening user interface from plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="732"/>
+        <location filename="../Qitom/widgets/AIManagerWidget.cpp" line="755"/>
         <source>Warning while opening user interface from plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
 </context>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../designerPluginSource/AbstractDObjFigure.cpp" line="206"/>
+        <location filename="../plot/AbstractDObjFigure.cpp" line="211"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation type="unfinished">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
@@ -2983,17 +2992,17 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="216"/>
+        <location filename="../plot/AbstractFigure.cpp" line="221"/>
         <source>stay on top of all windows</source>
         <translation type="unfinished">Iim Vordergrund vor allen Fenstern anzeigen</translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="220"/>
+        <location filename="../plot/AbstractFigure.cpp" line="225"/>
         <source>stay on top of main window</source>
         <translation type="unfinished">Iim Vordergrund vor dem Hauptfenster anzeigen</translation>
     </message>
     <message>
-        <location filename="../designerPluginSource/AbstractFigure.cpp" line="225"/>
+        <location filename="../plot/AbstractFigure.cpp" line="230"/>
         <source>window</source>
         <translation>Fenster</translation>
     </message>
@@ -3023,12 +3032,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="648"/>
+        <location filename="../common/addInInterface.cpp" line="675"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="655"/>
+        <location filename="../common/addInInterface.cpp" line="682"/>
         <source>Destructor must be overwritten</source>
         <translation type="unfinished">Destruktor muss überschrieben werden</translation>
     </message>
@@ -3036,22 +3045,22 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="747"/>
+        <location filename="../common/addInInterface.cpp" line="774"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.h" line="960"/>
+        <location filename="../common/addInInterface.h" line="967"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.h" line="961"/>
+        <location filename="../common/addInInterface.h" line="968"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei optionalen Parametern!</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.h" line="962"/>
+        <location filename="../common/addInInterface.h" line="969"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Rückgabeparametern!</translation>
     </message>
@@ -3059,12 +3068,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="198"/>
+        <location filename="../common/addInInterface.cpp" line="203"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="374"/>
+        <location filename="../common/addInInterface.cpp" line="379"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
     </message>
@@ -3072,56 +3081,80 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="387"/>
+        <location filename="../common/addInInterface.cpp" line="392"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="394"/>
+        <location filename="../common/addInInterface.cpp" line="399"/>
         <source>Destructor must be overwritten</source>
         <translation type="unfinished">Destruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="409"/>
+        <location filename="../common/addInInterface.cpp" line="414"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="413"/>
+        <location filename="../common/addInInterface.cpp" line="418"/>
         <source>this object already has been registered as listener</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="425"/>
+        <location filename="../common/addInInterface.cpp" line="430"/>
         <source>timer could not be set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="450"/>
+        <location filename="../common/addInInterface.cpp" line="455"/>
         <source>the object could not been removed from the listener list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/addInInterface.cpp" line="520"/>
-        <location filename="../Common/addInInterface.cpp" line="540"/>
-        <location filename="../Common/addInInterface.cpp" line="558"/>
-        <location filename="../Common/addInInterface.cpp" line="576"/>
-        <location filename="../Common/addInInterface.cpp" line="594"/>
-        <location filename="../Common/addInInterface.cpp" line="612"/>
-        <location filename="../Common/addInInterface.cpp" line="630"/>
+        <location filename="../common/addInInterface.cpp" line="547"/>
+        <location filename="../common/addInInterface.cpp" line="567"/>
+        <location filename="../common/addInInterface.cpp" line="585"/>
+        <location filename="../common/addInInterface.cpp" line="603"/>
+        <location filename="../common/addInInterface.cpp" line="621"/>
+        <location filename="../common/addInInterface.cpp" line="639"/>
+        <location filename="../common/addInInterface.cpp" line="657"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
     </message>
 </context>
 <context>
+    <name>ito::AddInGrabber</name>
+    <message>
+        <location filename="../common/addInGrabber.cpp" line="85"/>
+        <location filename="../common/addInGrabber.cpp" line="100"/>
+        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../common/addInGrabber.cpp" line="218"/>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../common/addInGrabber.cpp" line="222"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="227"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="252"/>
         <source>directory %1 could not be found</source>
         <translation>Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="267"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="257"/>
+        <source>plugins folder could not be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="296"/>
         <source>filename is no AddIn-library: %1</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; ist kein AddIn</translation>
     </message>
@@ -3146,83 +3179,83 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Typ des AddIn mit dem Dateiname &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="310"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="339"/>
         <source>AddIn with filename &apos;%1&apos;is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="332"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="361"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="339"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="368"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="344"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="373"/>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
         <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="349"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="378"/>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="359"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="388"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="417"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="446"/>
         <source>error initializing plugin: %1</source>
         <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="440"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="469"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
         <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="527"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="556"/>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
         <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="599"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="669"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="628"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="698"/>
         <source>plugin not found</source>
         <translation>Plugin nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="828"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="962"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="1090"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="857"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="992"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="1121"/>
         <source>Wrong plugin name</source>
         <translation>Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="849"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="983"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="878"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="1013"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
         <translation>Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="871"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="900"/>
         <source>timeout while initializing dataIO</source>
         <translation>Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="911"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="1044"/>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="1134"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="941"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="1073"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="1165"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
         <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location filename="../Qitom/organizer/addInManager.cpp" line="1004"/>
+        <location filename="../Qitom/organizer/addInManager.cpp" line="1034"/>
         <source>timeout while initializing actuator</source>
         <translation>Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
@@ -4153,220 +4186,220 @@ Nachricht: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="378"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="381"/>
         <source>New Script</source>
         <translation type="unfinished">Neues Skript</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="382"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="385"/>
         <source>Open File</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="386"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="389"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="389"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="392"/>
         <source>Properties</source>
         <translation>Optionen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="392"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="395"/>
         <source>About Qt</source>
         <translation>Über QT</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="396"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="399"/>
         <source>About itom</source>
         <translation type="unfinished">Über iTOM</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="399"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="402"/>
         <source>Loaded plugins...</source>
         <translation type="unfinished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="402"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="405"/>
         <source>Assistant</source>
         <translation>Assistent</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="406"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="409"/>
         <source>UI Designer</source>
         <translation type="unfinished">UI-Designer</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="409"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="412"/>
         <source>Run python code in debug mode</source>
         <translation type="unfinished">Python-Code im Debug-Modus ausführen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="410"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="413"/>
         <source>set whether internal python code should be executed in debug mode</source>
         <translation type="unfinished">Interner Pyhton-Code wird im Debug-Modus ausgeführt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="418"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="421"/>
         <source>stop</source>
         <translation type="unfinished">Stop</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="419"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="422"/>
         <source>Shift+F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="423"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="426"/>
         <source>continue</source>
         <translation type="unfinished">Fortsetzen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="424"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="427"/>
         <source>F6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="428"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="431"/>
         <source>step</source>
         <translation type="unfinished">Einzelschritt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="429"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="432"/>
         <source>F11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="433"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="436"/>
         <source>step over</source>
         <translation type="unfinished">Prozedurschritt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="434"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="437"/>
         <source>F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="438"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="441"/>
         <source>step out</source>
         <translation type="unfinished">Ausführen bis Rücksprung</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="439"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="442"/>
         <source>Shift+F11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="444"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="447"/>
         <source>Reload modules...</source>
         <translation type="unfinished">Geladene Module...</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="451"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="454"/>
         <source>Application</source>
         <translation type="unfinished">Anwendung</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="456"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="459"/>
         <source>Tools</source>
         <translation type="unfinished">Tools</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="461"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="464"/>
         <source>About</source>
         <translation type="unfinished">Über</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="465"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="468"/>
         <source>Python</source>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="472"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="475"/>
         <source>File</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="479"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="482"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="481"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="484"/>
         <source>Toolboxes</source>
         <translation type="unfinished">Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="484"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="487"/>
         <source>Script</source>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="495"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="498"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="511"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="514"/>
         <source>Ready</source>
         <translation type="unfinished">Fertig</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="533"/>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="548"/>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="575"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="536"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="551"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="578"/>
         <source>python is being executed</source>
         <translation type="unfinished">Python wird ausgeführt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="643"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="646"/>
         <source>open file</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="895"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="923"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="923"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="951"/>
         <source>no menu element is indicated</source>
         <translation type="unfinished">Es wurde kein Menüelement erkannt</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="950"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="978"/>
         <source>The menu item &apos;%s&apos; does already exist but is no menu type</source>
         <translation type="unfinished">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="959"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="987"/>
         <source>menu item already exists.</source>
         <translation type="unfinished">Das Menüelement existiert bereits.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="998"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1026"/>
         <source>Invalid typeID.</source>
         <translation type="unfinished">Ungültige Typ-ID.</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="1007"/>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="1011"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1035"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1039"/>
         <source>Add menu element</source>
         <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="1070"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1098"/>
         <source>Remove menu element</source>
         <translation type="unfinished">Menüelement löschen</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="1070"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1098"/>
         <source>A user-defined menu with the key sequence &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../Qitom/widgets/mainWindow.cpp" line="1081"/>
+        <location filename="../Qitom/widgets/mainWindow.cpp" line="1109"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
     </message>
@@ -4491,47 +4524,47 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Beschreibung</translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="672"/>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1015"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="696"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1039"/>
         <source>Motor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="676"/>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1023"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="700"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1047"/>
         <source>Grabber</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="680"/>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1027"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="704"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1051"/>
         <source>ADDA</source>
         <translation type="unfinished">ADDA Wandler</translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="684"/>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1031"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="708"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1055"/>
         <source>Raw IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="688"/>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1019"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="712"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1043"/>
         <source>Algorithm</source>
         <translation type="unfinished">Algorithmus</translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="906"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="930"/>
         <source>Filter</source>
         <translation type="unfinished">Filter</translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="908"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="932"/>
         <source>Widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Qitom/models/PlugInModel.cpp" line="1011"/>
+        <location filename="../Qitom/models/PlugInModel.cpp" line="1035"/>
         <source>DataIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5270,6 +5303,42 @@ Katesisch</translation>
         <location filename="../Qitom/widgets/workspaceDockWidget.cpp" line="356"/>
         <source>timeout while renaming variables</source>
         <translation type="unfinished">Zeitüberschreitung beim umbenennen der Variablen</translation>
+    </message>
+</context>
+<context>
+    <name>uiDebugViewer</name>
+    <message>
+        <location filename="../Qitom/widgets/uiDebugViewer.ui" line="17"/>
+        <source>Debug-Viewer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/uiDebugViewer.ui" line="60"/>
+        <source>global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/uiDebugViewer.ui" line="63"/>
+        <source>global workspace variables</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/uiDebugViewer.ui" line="78"/>
+        <source>local</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Qitom/widgets/uiDebugViewer.ui" line="86"/>
+        <source>PushButton</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>uiMainWindow</name>
+    <message>
+        <location filename="../Qitom/widgets/uiMainWindow.ui" line="14"/>
+        <source>iTOM</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -30,6 +30,7 @@
 
 #include "../AppManagement.h"
 
+#include <qsettings.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qpluginloader.h>
@@ -39,6 +40,7 @@
 #include <qmainwindow.h>
 #include <qdockwidget.h>
 #include <QDebug>
+#include <QDirIterator>
 
 //#include "./memoryCheck/setDebugNew.h"
 //#include "./memoryCheck/reportingHook.h"
@@ -299,7 +301,43 @@ namespace ito
         }
         else
         {
-// Übersetzungsdatei laden!
+            //load translation file
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+            QStringList startupScripts;
+
+            settings.beginGroup("Language");
+            QString language = settings.value("language", "en").toString();
+            QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
+            settings.endGroup();
+
+            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+            QFileInfo fileInfo(filename);
+            QString translationPath = fileInfo.path();
+            QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
+            QDirIterator it(translationPath, QStringList("*_" + languageStr + ".qm"), QDir::Files);
+            if (it.hasNext())
+            {
+                QString translationLocal = it.next() + local.name();
+                m_Translator.load(translationLocal, translationPath);
+                if (m_Translator.isEmpty())
+                {
+                    message = tr("Unable to load translation file %1.").arg(translationPath + '/' + translationLocal);
+                    qDebug() << message;
+                    pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
+                }
+                else
+                {
+                    QCoreApplication::instance()->installTranslator(&m_Translator);
+                }
+            }
+            else
+            {
+//                message = tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
+                message = tr("Unable to find translation file.");
+                qDebug() << message;
+                pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
+            }
+
             QPluginLoader loader(filename);
             QObject *plugin = loader.instance();
             if (plugin)
