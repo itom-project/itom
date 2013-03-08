@@ -87,7 +87,6 @@ ENDMACRO ()
 MACRO(QT4_CREATE_TRANSLATION_ITOM _qm_files)
 	QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options ${ARGN})
 
-	message(STATUS ":::_lupdate_options ${_lupdate_options}")
 	set(_my_sources)
 	set(_my_dirs)
 	set(_my_tsfiles)
