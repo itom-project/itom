@@ -83,6 +83,7 @@ QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
      
     newList.append(newPair);
 
+#ifdef USING_SVN
     newPair.first = "itom_SVNRevision";
     newPair.second = SVN_REVISION;
     newList.append(newPair);
@@ -95,7 +96,6 @@ QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
     newPair.second = SVN_REPOSITORY_URL;
     newList.append(newPair);
 
-    
     newPair.first = "version_Warnings";
     QString warning("");
     bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
@@ -103,9 +103,46 @@ QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
     {
         warning.append(QObject::tr("Warning: The version contains locally changed code!\n"));
     }
+    else
+    {
+        warning.append(QObject::tr("Build from a clean version.\n"));
+    }
     newPair.second = warning;
     newList.append(newPair);
+#elif (defined USING_GIT)
+    newPair.first = "itom_GITHASH";
+    newPair.second = GIT_HASHTAG;
+    newList.append(newPair);
 
+    newPair.first = "itom_GIT_Date";
+    newPair.second = GIT_REVISION_DATE;
+    newList.append(newPair);
+
+    newPair.first = "ito_GIT_URL";
+    newPair.second = GIT_REPOSITORY_URL;
+    newList.append(newPair);
+
+    newPair.first = "version_Warnings";
+    QString warning("");
+    bool isClean = GIT_CLEAN_BUILD_FLAG > 0? false:true;
+    if(!isClean)
+    {
+        warning.append(QObject::tr("Warning: The version contains locally changed and uncomitted code!\n"));
+    }
+    else
+    {
+        warning.append(QObject::tr("Build from a clean version.\n"));
+    }
+    newPair.second = warning;
+    newList.append(newPair);
+#else
+    newPair.first = "version_Warnings";
+    QString warning("");
+    warning.append(QObject::tr("This version of itom not under version control (no GIT or SVN)!\n"));
+    newPair.second = warning;
+    newList.append(newPair);
+#endif
+    
     newPair.first = "openCV_Version";
     newPair.second = CV_VERSION;
     newList.append(newPair);

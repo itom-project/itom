@@ -4,12 +4,17 @@
     Copyright (C) 2013, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
-    This file is part of itom.
-  
+    This file is part of itom and its software development toolkit (SDK).
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
+   
+    In addition, as a special exception, the Institut für Technische
+    Optik (ITO) gives you certain additional rights.
+    These rights are described in the ITO LGPL Exception version 1.0,
+    which can be found in the file LGPL_EXCEPTION.txt in this package.
 
     itom is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,10 +24,23 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#ifndef ITOM_SDK_H
-#define ITOM_SDK_H
 
-//this file is copied to the SDK/include folder.
-//in a future version, CMake should write here the recent version of itom.
+#ifndef GIT_VERSION_H
+#define GIT_VERSION_H
 
-#endif
+/// Repository Type
+#define USING_GIT 1
+ 
+/// The current Hash Tag of this Version
+#define GIT_HASHTAG "$REV$"
+
+/// Date of the last commit
+#define GIT_REVISION_DATE "$DATE$"
+
+/// URL of project archive
+#define GIT_REPOSITORY_URL "$URL$"
+
+/// If WCMODS == TText, this is not a clean build
+#define GIT_CLEAN_BUILD_FLAG $MODS$
+
+#endif // GIT_VERSION_H

@@ -28,12 +28,25 @@ This is a subtype of DataIO for camera / framegrabber communication. The data ac
 
 * The methods **startDevice** and **stopDevice** opens and closes the capture logic of the devices to reduce CDU-load. For serial ports these functions are unnecessary. 
 * The method **acquire** starts the DataIO grabbing a frame with the current parameters. The function returns after sending the trigger. The function should be callable several times without calling get-/copyVal().
-* In **retrieveData** the data transfer is done and frame has to copied to **m_data**, an internal **dataObject**. The function blocks until the triggered data is copied.
-* The methods **getVal** and **copyVal** are the external interfaces for data grabbing. They call **retrieveData**. 
+* The methods **getVal** and **copyVal** are the external interfaces for data grabbing. They call **retrieveData**. The function should not be callable without a previous call of **acquire** and than only once.
+* In **retrieveData** the data transfer is done and frame has to copied. The function blocks until the triggered data is copied. In case retrieveData is called by getVal the frame has to be copied to **m_data**, an internal **dataObject**.
 * The function **getVal** overwrites the IO-**dataObject** by a shallow copy of the internal **dataObject**. Empty objects are allowed. Warning read shallow copy of dataObject before usage.  
-* The function **copyVal** deep-copies data to the IO-**dataObject**. The **dataObject** must have the right size and type.
+* The function **copyVal** deep-copies data to the external IO-**dataObject**. The **dataObject** must have the right size and type. **dataObject** with ROI should not be overwritten. The ROI should be filled. Empty objects are allowed. In case of empty **dataObject** a new object with right size is allocated.
 * The internal **dataObject** is checked after parameter changes by **checkData** (sizex, sizey and bpp) and, if necessary, reallocated.
 
+A typical sequence in python is 
+
+.. code-block:: python
+    :linenos:
+    
+    device.startDevice()
+    device.acquire()
+    device.getVal(dObj)
+    device.acquire()
+    device.getVal(dObj)
+    device.stopDevice()
+
+    
 A sample header file of the DataIO's plugin class is illustrated in the following code snippet:
 
 .. code-block:: c++

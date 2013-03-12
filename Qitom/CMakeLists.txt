@@ -2,7 +2,10 @@ project(qitom)
 
 cmake_minimum_required(VERSION 2.8)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
+OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
+
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
@@ -312,11 +315,11 @@ set(qitom_SOURCES
 
 #handle translations
 # see e.g. http://stackoverflow.com/questions/5630155/how-to-integrate-qt-internationalization-to-cmake
-set(qitom_ts
-    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
-)
+#set(qitom_ts
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
+#)
 
-QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+#QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
@@ -328,6 +331,25 @@ ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 #end add filters to visual studio
 
+
+#handle translations BEGIN
+set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
+
+file (GLOB TRANSLATIONS_FILES "../translation/*.ts") #test_qitom_de.ts") #*.ts")
+
+option (UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+if (UPDATE_TRANSLATIONS)
+	QT4_CREATE_TRANSLATION_ITOM(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+endif (UPDATE_TRANSLATIONS) 
+
+QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${TRANSLATIONS_FILES})
+
+add_custom_target (qitom_translation DEPENDS ${QM_FILES})
+
+#install(FILES ${QM_FILES} DESTINATION
+#${CMAKE_INSTALL_PREFIX}/translations)
+
+#handle translations END
 
 
 if(MSVC)
@@ -352,22 +374,10 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
-ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${qitom_ts})
+ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${TRANSLATIONS_FILES} )
+add_dependencies(qitom qitom_translation)
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(qitom PROPERTIES OUTPUT_NAME_RELEASE "qitom")
-
-#IF (CMAKE_HOST_WIN32) #32 or 64bit windows system
-#	
-#	
-##	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES RELWITHDEBINFO "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-##		SET_TARGET_PROPERTIES(qitom PROPERTIES MINSIZEREL "/SUBSYSTEM:WINDOWS")
-##	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-#ELSE (CMAKE_HOST_WIN32)
-#	ADD_EXECUTABLE(qitom ${qitom_SOURCES} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC})
-#ENDIF (CMAKE_HOST_WIN32)
 
 SET( WINICONRES "" )
 
@@ -380,16 +390,8 @@ IF(MSVC)
 	ENDIF(CMAKE_CL_64)
 ENDIF(MSVC)
 
-#message(SEND_ERROR ${VISUALLEAKDETECTOR_LIBRARIES})
-#IF (WIN32)
-#	set(SUBSYS "/SUBSYSTEM:WINDOWS")
-#	set(CMAKE_EXE_LINKERS_FLAG 	${SUBSYS})
-#	set(CMAKE_SHARED_LINKER_FLAGS ${SUBSYS})
-#	set(CMAKE_MODULE_LINKER_FLAGS ${SUBSYS})
-	TARGET_LINK_LIBRARIES(qitom ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
-#ELSE (WIN32)
-	#TARGET_LINK_LIBRARIES(qitom ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_opencv_core_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
-#ENDIF (WIN32)
+TARGET_LINK_LIBRARIES(qitom ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
+
 
 
 #
@@ -425,21 +427,33 @@ if(MSVC)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
 ENDIF (MSVC)
 
+UNSET(GIT_FOUND CACHE)
+find_package(Git)
 UNSET(SUBWCREV_FOUND CACHE)
-#FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
+FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
 
-IF(SUBWCREV_FOUND)
+IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+    MESSAGE(STATUS "Using GIT as repository information")
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
+    ADD_CUSTOM_COMMAND (
+        TARGET qitom
+        PRE_BUILD
+        COMMAND    ${PYTHON_EXECUTABLE}
+        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+    )
+ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
+    MESSAGE(STATUS "Using SVN as repository information")
     ADD_CUSTOM_COMMAND (
         TARGET qitom
         PRE_BUILD
         COMMAND    subwcrev
         ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
     )
-ELSE(SUBWCREV_FOUND)
+ELSE(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
     MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
     FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-ENDIF(SUBWCREV_FOUND)
+ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
 
 MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked

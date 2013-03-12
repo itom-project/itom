@@ -29,11 +29,13 @@
 #include "../models/PlugInModel.h"
 #include "algoInterfaceValidator.h"
 
+//#include <qcoreapplication.h>
 #include <qmetatype.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
 #include <qhash.h>
 #include <qtimer.h>
+#include <qtranslator.h>
 
 // in the invokeMethod function parameters are passed with the Q_ARG macro, which works only with preregistered data types
 // the registration of "new" data types is done in two steps. First they are declared with the Q_DECLARE_METATYPE macro
@@ -239,6 +241,7 @@ namespace ito
             AddInManager(void);
             AddInManager(AddInManager  &/*copyConstr*/) : QObject() {}
             ~AddInManager(void);
+            QTranslator m_Translator;
 
             static AddInManager *m_pAddInManager;
             static QList<QObject *> m_addInListDataIO;

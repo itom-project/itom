@@ -37,12 +37,34 @@ namespace ito {
         Q_OBJECT
 
         public:
-            AbstractItomDesignerPlugin(QObject *parent = NULL) : QObject(parent), m_plotFeatures(ito::Static) {}
+            AbstractItomDesignerPlugin(QObject *parent = NULL) : 
+                QObject(parent), 
+                m_plotFeatures(ito::Static), 
+                m_version(0),
+                m_author(""),
+                m_description(""),
+                m_detaildescription(""),
+                m_aboutThis(""),
+                m_license("LGPL with ITO itom-exception") {}
+
             ~AbstractItomDesignerPlugin() {}
 
             inline ito::PlotDataTypes getPlotDataTypes(void) const { return m_plotDataTypes; }
             inline ito::PlotDataFormats getPlotDataFormats(void) const { return m_plotDataFormats; }
             inline ito::PlotFeatures getPlotFeatures(void) const { return m_plotFeatures; }
+
+            //! returns addIn version
+            inline int getVersion(void) const { return m_version; }
+            //! returns plugin author
+            const QString getAuthor(void) const { return m_author; }
+            //! returns a brief description of the plugin
+            const QString getDescription(void) const { return m_description; }
+            //! returns a detailed description of the plugin
+            const QString getDetailDescription(void) const { return m_detaildescription; }
+            //! returns a detailed description of the plugin license
+            const QString getLicenseInfo(void) const { return m_license; }
+            //! returns a detailed description of the plugin compile informations
+            const QString getAboutInfo(void) const { return m_aboutThis; }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
 
@@ -50,7 +72,13 @@ namespace ito {
             ito::PlotDataTypes   m_plotDataTypes;
             ito::PlotDataFormats m_plotDataFormats;
             ito::PlotFeatures    m_plotFeatures;
-
+            
+            int m_version;                        //!< plugin version
+            QString m_author;                     //!< the plugin author
+            QString m_description;                //!< a brief descrition of the plugin
+            QString m_detaildescription;          //!< a detail descrition of the plugin
+            QString m_license;                    //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
+            QString m_aboutThis;                  //!< a short string with compile informations
             QString m_itomSettingsFile;
 
         signals:

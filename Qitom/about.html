@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+</style></head>
+<body style=" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;">
+Welcome to itom, the <a href="http://www.ito.uni-stuttgart.de">ITO</a> measurement programm.<p>
+Your current itom-version ($itom_SysType$) is $itom_Version$. The version of the plugin-interface is $interface_Version$.<br>
+$USINGSVN$Your itom-version correspond to SVN-Revision $itom_SVNRevision$ from $itom_SVNRevision_Date$ located at SVN-reposetory at <a href="$ito_SVNRevision_URL$">$ito_SVNRevision_URL$</a>.<br>$USINGSVN$
+$USINGGIT$Your itom-version correspond to GIT-Revision $itom_GITHASH$ from $itom_GIT_Date$ located at GIT-reposetory at <a href="$ito_GIT_URL$">$ito_GIT_URL$</a>.<br>$USINGGIT$
+$version_Warnings$<p>
+This itom-version is licensed unter <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a> v2.0<br>
+Please report bugs under: <a href="https://bitbucket.org/itom/itom/issues">https://bitbucket.org/itom/itom/issues</a> <br>
+Cheers your itom team<p>
+Your main programm of itom uses the following third party packages:
+<ul>
+  <li><a href="http://opencv.willowgarage.com/wiki/">openCV</a> openCV in version $openCV_Version$ by Willow Garage unter BSD-license.</li>
+  <li><a href="http://www.pointclouds.org/">point cload library</a> in version $PCL_Version$ by Willow Garage unter BSD-license.</li>
+  <li>The <a href="http://qt.nokia.com/">QT-Framework</a> in version $QT_Your_Version$ (Compile-Version $QT_Version$) by Nokia unter LGPL.</li>
+  <li>QPropertyEditor under LGPL</li>
+  <li><a href="http://www.riverbankcomputing.co.uk/software/qscintilla/intro">QScintilla</a> in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.</li>
+  <li>QScintilla is a port to Qt of Neil Hodgson's  <a href="http://www.scintilla.org/">Scintilla</a> C++ editor control.</li>
+  <li><a href="http://www.python.org">Python</a> in version $Py_Version$ by Python Software Foundation unter Python-License (similar to BSD license).</li>
+  <li>Python-package <a href="http://numpy.scipy.org/">NumPy</a> and <a href="http://www.scipy.org">SciPy</a> under BSD compatible license.</li>
+  <li><a href="http://matplotlib.sourceforge.net">MatPlotLib</a> under BSD compatible license.</li>
+</ul>  
+Further used third party packages 
+<ul>
+ <li>Google test framework by Google under New BSD-license</li>
+ <li>PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).</li>
+</ul>
+Some of the PlugIns or the designerPlugins may contain further third party packages, e.g.
+<ul>
+ <li><a href="http://qwt.sourceforge.net">QwtPlot</a> in version $QwtPlot_Version$ by Uwe Rathmann and Josef Wilgen under LGPL with additional <a href="http://qwt.sourceforge.net/qwtlicense.html">exceptions</a>.</li>
+ <li>NVidia CUDA SDK by NVidia unter NVidia CUDA SDK License,</li>
+ <li>OpenMP, see <a href="http://openmp.org/wp/">http://openmp.org/wp/</a></li>
+ <li>Hardware dependent third party driver and SDKs with different license models,</li>
+</ul>
+or may be published unter different terms or contitions than the main itom-programm. So please check plugin-license before distributing itom-plugins.
+
+</body></html>

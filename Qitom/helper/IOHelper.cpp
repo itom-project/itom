@@ -317,7 +317,7 @@ namespace ito {
 {
     if (defaultPath.isNull() || defaultPath.isEmpty()) defaultPath = QDir::currentPath();
 
-    IOfilters ^= ito::IOHelper::IOOutput;
+    IOfilters &= ~ito::IOHelper::IOOutput;
     QString filters = IOHelper::getFileFilters(IOfilters);
     static QString selectedFilter; //this variable will contain the last selected filter which is the default for the next time
 
@@ -899,23 +899,30 @@ namespace ito {
             //add here further filters
         }
     }
-    
-    if (IOfilters.testFlag(ito::IOHelper::IOWorkspace) == false)
+
+    //delete duplicates
+    filter.removeDuplicates();
+
+    //get all file-patterns from all filters and merge them together to one entry containing all, that is then added as 'Itom Files'
+    QRegExp reg("^.*\\((.*)\\)$");
+    QStringList allPatterns;
+
+    foreach(const QString &item, filter)
     {
-        filter << tr("Itom Files (*.py *.idc *.mat *.ui)");
+        if( reg.indexIn(item) >= 0 )
+        {
+            allPatterns.append( reg.cap(1).trimmed().split(" ") );
+        }
     }
-    else
-    {
-        filter << tr("Itom Files (*.idc *.mat)");
-    }
+
+    allPatterns.removeDuplicates();
+
+    filter << QString( "Itom Files (%1)" ).arg(allPatterns.join(" "));
 
     if (IOfilters.testFlag(ito::IOHelper::IOAllFiles))
     {
         filter << tr("All Files (*.*)");
     }
-
-    //delete duplicates
-    filter.removeDuplicates();  
 
     return filter.join(";;");
 }

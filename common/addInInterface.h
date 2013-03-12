@@ -157,6 +157,8 @@ namespace ito
             QString m_author;                                //!< the plugin author
             QString m_description;                          //!< a brief descrition of the plugin
             QString m_detaildescription;                    //!< a detail descrition of the plugin
+            QString m_license;                              //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
+            QString m_aboutThis;
             QList<ito::AddInBase *> m_InstList;             //!< vector holding a list of the actual instantiated classes of the plugin
             QVector<ito::Param> m_initParamsMand;          //!< vector with the mandatory initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
             QVector<ito::Param> m_initParamsOpt;           //!< vector with the optional initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
@@ -175,7 +177,7 @@ namespace ito
             AddInInterfaceBase() :
                 m_type(0), m_version(CREATEVERSION(0,0,0)), m_filename(""),
                 m_maxItomVer(MAXVERSION), m_minItomVer(MINVERSION),
-                m_author(""), m_description(""), m_detaildescription(""),
+                m_author(""), m_description(""), m_detaildescription(""), m_license("LGPL with ITO itom-exception"), m_aboutThis(""),
                 /*m_enableAutoLoad(false),*/ m_autoLoadPolicy(ito::autoLoadNever),
                 m_autoSavePolicy(ito::autoSaveNever),  m_callInitInNewThread(true), m_apiFunctionsBasePtr(NULL), m_apiFunctionsGraphBasePtr(NULL)
             { }
@@ -204,6 +206,10 @@ namespace ito
             const QString getDescription(void) const { return m_description; }
             //! returns a detailed description of the plugin
             const QString getDetailDescription(void) const { return m_detaildescription; }
+            //! returns a detailed description of the plugin license
+            const QString getLicenseInfo(void) const { return m_license; }
+            //! returns a detailed description of the plugin compile informations
+            const QString getAboutInfo(void) const { return m_aboutThis; }
             //! returns the plugin's filename
             const QString getFilename(void) const { return m_filename; }
 
@@ -1009,10 +1015,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.7",//version from 2012-12-20 - 2013-01-17 (last version for itom version 1.0.5)
     "ito.AddIn.InterfaceBase/1.1.8",//version from 2013-01-17 - 2013-01-23 (changes in auto-grabbing of cameras, first interface for itom version 1.0.6)
     "ito.AddIn.InterfaceBase/1.1.9",//version from 2013-01-23 - 2013-03-04 (changes in dataObjectHelper)
+    "ito.AddIn.InterfaceBase/1.1.10",//version from 2013-03-04 - 2013-03-12 (Added license and about string to the plugin)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.10";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.11";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

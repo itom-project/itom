@@ -1656,30 +1656,43 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
         if(aim != NULL)
         {
+            PyObject* info = NULL;
+            PyObject* license = NULL;
             for(int i = 0; i < aim->getNumTotItems(); i++)
             {
                 
                 curAddInInterface = reinterpret_cast<ito::AddInInterfaceBase*>(aim->getAddInPtr(i));
                 if(curAddInInterface)
                 {
+                    info = PyDict_New();
+
                     QString currentName = curAddInInterface->objectName();
                     key = PythonQtConversion::QStringToPyObject(currentName);
+                    license = PythonQtConversion::QStringToPyObject(curAddInInterface->getLicenseInfo());
+                    
                     int val = curAddInInterface->getVersion();
                     int first = MAJORVERSION(val);              
                     int middle =MINORVERSION(val);               
                     int last =PATCHVERSION(val); 
                     _snprintf(buf, 7, "%i.%i.%i", first, middle, last);
                     value = PyUnicode_FromString(buf);
-                    ret = PyDict_SetItem(myTempDic, key, value);
+
+                    ret = PyDict_SetItemString(info, "version", value);
+                    ret = PyDict_SetItemString(info, "license", license);
+
+                    ret = PyDict_SetItem(myTempDic, key, info);
 
                     Py_DECREF(key);
                     Py_DECREF(value);
+                    Py_DECREF(license);
+                    Py_XDECREF(info);
                 }
             }
         }
 
         ret = PyDict_SetItemString(myDic, "plugins", myTempDic);
         Py_XDECREF(myTempDic);
+
     }
 
     if (toogleOut)
@@ -1712,6 +1725,18 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
             
             PyObject* mySubKeys = PyDict_Keys(currentDict);
 
+            int longest = 0;
+            int compensatorMax = 30; 
+
+            for(Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
+            {      
+                PyObject* currentSubKey = PyList_GET_ITEM(mySubKeys, m);
+                int temp = PyUnicode_GET_SIZE(currentSubKey);
+                longest = temp > longest ? temp : longest;
+            }
+            longest += 3;
+            longest = longest > compensatorMax ? compensatorMax : longest;
+
             for(Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
             {
                 QString subKey("");
@@ -1722,10 +1747,42 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     continue;
                 }
 
+                int compensator = longest + (longest - subKey.length())*0.2;
+                subKey = subKey.append(":").leftJustified(compensator);
+
                 QString subVal("");
                 PyObject* currentSubVal = PyDict_GetItem(currentDict, currentSubKey);
 
-                if(PyLong_Check(currentSubVal))
+                if(PyDict_Check(currentSubVal))
+                {
+                    PyObject* curVal = PyDict_GetItemString(currentSubVal, "version");
+
+                    if(PyLong_Check(curVal))
+                    {
+                        subVal = QString("%1").arg(PythonQtConversion::PyObjGetInt(curVal, true,check));
+                    }
+                    else 
+                    {
+                        subVal = PythonQtConversion::PyObjGetString(curVal, true, check);
+                    }
+
+                    subVal = QString("%1").arg(PythonQtConversion::PyObjGetString(curVal, false,check));
+                    subVal.append("\t(license: ");
+
+                    curVal = PyDict_GetItemString(currentSubVal, "license");
+                    
+                    if(PyLong_Check(curVal))
+                    {
+                        subVal.append(QString("%1").arg(PythonQtConversion::PyObjGetInt(curVal, true,check)));
+                    }
+                    else 
+                    {
+                        subVal.append(PythonQtConversion::PyObjGetString(curVal, true, check));
+                    }
+
+                    subVal.append(")");
+                }
+                else if(PyLong_Check(currentSubVal))
                 {
                     subVal = QString("%1").arg(PythonQtConversion::PyObjGetInt(currentSubVal, true,check));
                 }
@@ -1739,7 +1796,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     continue;
                 }
 
-                std::cout << subKey.toAscii().data() <<":\t" << subVal.toAscii().data() << "\n";
+                std::cout << subKey.toAscii().data() <<"\t" << subVal.toAscii().data() << "\n";
 
             }
 
