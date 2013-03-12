@@ -108,28 +108,28 @@ PyDoc_STRVAR(pointCloudInit_doc,"pointCloud([type] | pointCloud [,indices] | wid
 Parameters \n\
 ----------- \n\
 type : point-type (e.g. point.PointXYZ, see Notes) \n\
-pointCloud : pointCloud \n\
+pointCloud : {pointCloud} \n\
 	another pointCloud instance which is appended at this point cloud \n\
-indices : sequence, optional \n\
+indices : {sequence}, optional \n\
 	only the indices of the given pointCloud will be appended to this point cloud \n\
-width : int \n\
+width : {int} \n\
 	width of the new point cloud \n\
-height : int \n\
+height : {int} \n\
 	height of the new point cloud (the point cloud is dense if height > 1) \n\
-point : point \n\
+point : {point} \n\
 	single point instance. This point cloud is filled up with elements of this point. If width and height \n\
 	are given, every element is set to this point, else the point cloud only consists of this single point. \n\
 \n\
 Notes \n\
 ------ \n\
 Possible types: \n\
-\n\
-* point.PointXYZ \n\
-* point.PointXYZI \n\
-* point.PointXYZRGBA \n\
-* point.PointXYZNormal \n\
-* point.PointXYZINormal \n\
-* point.PointXYZRGBNormal");
+    * point.PointXYZ \n\
+    * point.PointXYZI \n\
+    * point.PointXYZRGBA \n\
+    * point.PointXYZNormal \n\
+    * point.PointXYZINormal \n\
+    * point.PointXYZRGBNormal\n\
+");
 int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * /*kwds*/)
 {
 
@@ -288,7 +288,12 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point cloud");
+PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point cloud\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -347,7 +352,12 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudSize_doc,"returns number of points in point cloud");
+PyDoc_STRVAR(pyPointCloudSize_doc,"returns number of points in point cloud\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -372,9 +382,14 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
 
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudHeight_doc,"returns height of point cloud if organized as regular grid (organized == true), else 1 \n\
-                                    specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings: \n\
-                                    - it can specify the height (total number of rows) of an organized point cloud dataset; \n\
-                                    - it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).");
+specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings: \n\
+    * it can specify the height (total number of rows) of an organized point cloud dataset; \n\
+    * it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -399,9 +414,14 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
 
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudWidth_doc,"returns width of point cloud if organized as regular grid (organized == true), else equal to size \n\
-                                    specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings: \n\
-                                    - it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets; \n\
-                                    - it can specify the width (total number of points in a row) of an organized point cloud dataset.");
+specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings: \n\
+    * it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets; \n\
+    * it can specify the width (total number of points in a row) of an organized point cloud dataset.\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -425,7 +445,12 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudEmpty_doc,"returns whether this point cloud is empty, hence size == 1");
+PyDoc_STRVAR(pyPointCloudEmpty_doc,"returns whether this point cloud is empty, hence size == 1\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -450,7 +475,12 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudOrganized_doc,"returns whether this point cloud is organized as regular grid, hence height != 1");
+PyDoc_STRVAR(pyPointCloudOrganized_doc,"returns whether this point cloud is organized as regular grid, hence height != 1\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -475,7 +505,12 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudDense_doc,"specifies if all the data in points is finite (true), or whether it might contain Inf/NaN values (false).");
+PyDoc_STRVAR(pyPointCloudDense_doc,"specifies if all the data in points is finite (true), or whether it might contain Inf/NaN values (false).\n\
+\n\
+Notes \n\
+----- \n\
+{bool} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -541,7 +576,12 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFields_doc,"get available field names of point cloud");
+PyDoc_STRVAR(pyPointCloudFields_doc,"get available field names of point cloud\n\
+\n\
+Notes \n\
+----- \n\
+{} : ReadOnly ReadWrite \n\
+");
 PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -576,8 +616,20 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
 
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudAppend_doc,"append(point) -> appends point at the end of the point cloud. \n\
-                                   The type of point must fit to the type of the point cloud. If the point cloud is \n\
-                                   invalid, its type is set to the type of the point.");
+\n\
+Parameters \n\
+----------- \n\
+point : {point???}, optional \n\
+\n\
+Notes \n\
+----- \n\
+The type of point must fit to the type of the point cloud. If the point cloud is \n\
+invalid, its type is set to the type of the point.\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
     if (self->data == NULL)
@@ -987,7 +1039,16 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudClear_doc,"clear() -> clears the whole point cloud");
+PyDoc_STRVAR(pyPointCloudClear_doc,"clear() -> clears the whole point cloud\n\
+\n\
+Notes \n\
+----- \n\
+Clears the whole pointcloud.\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
 {
     if (self->data == NULL)
@@ -1389,7 +1450,22 @@ int PythonPCL::PyPointCloud_mappingSetElem(PyPointCloud *self, PyObject *key, Py
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudInsert_doc,"insert(index, values) -> inserts a single point or a sequence of points before position given by index");
+PyDoc_STRVAR(pyPointCloudInsert_doc,"insert(index, values) -> inserts a single point or a sequence of points before position given by index\n\
+\n\
+Parameters \n\
+----------- \n\
+index : {}\n\
+values : {}\n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
 PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
 {
     if (self->data == NULL)
@@ -1468,7 +1544,19 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
 
 //---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudErase_doc,"erase(indices) -> erases the points in point clouds indicated by indices (single number of slice) \n\
-                                   This method is the same than command 'del pointCloudVariable[indices]'");
+\n\
+Parameters \n\
+----------- \n\
+indices : {}\n\
+\n\
+Notes \n\
+----- \n\
+This method is the same than command 'del pointCloudVariable[indices]'\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
 {
     PyObject *indices = NULL;
@@ -1484,7 +1572,20 @@ PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudToDataObject_doc,"toDataObject() -> returns a PxN data object (float), where P is determined by the point type in the point cloud. N is the number of points.");
+PyDoc_STRVAR(pyPointCloudToDataObject_doc,"toDataObject() -> returns a PxN data object, where P is determined by the point type in the point cloud. N is the number of points.\n\
+\n\
+Returns \n\
+------- \n\
+PxN : {float}\n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 /*static*/ PyObject* PythonPCL::PyPointCloud_toDataObject(PyPointCloud *self)
 {
     if (self->data)
@@ -1659,7 +1760,8 @@ X,Y,Z : {MxN data objects} \n\
     Three 2D data objects with the same size.\n\
 XYZ : {3xMxN data object} \n\
     OR: 3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
-deleteNaN : {bool, default:false} \n\
+deleteNaN : {bool} \n\
+    default = false\n\
     if True all NaN values are skipped, hence, the resulting point cloud is not dense (organized) any more\n\
 \n\
 Returns \n\
@@ -1764,7 +1866,8 @@ XYZ : {3xMxN data object} \n\
     3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
     I : {MxN data object} \n\
     MxN data object with the same size than the single X,Y or Z planes \n\
-deleteNaN : {bool, default:false} \n\
+deleteNaN : {bool} \n\
+    default = false\n\
     if True all NaN values are skipped, hence, the resulting point cloud is not dense (organized) any more\n\
 \n\
 Returns \n\
@@ -2170,16 +2273,16 @@ PyObject* PythonPCL::PyPoint_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pointInit_doc,"point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.  \n\
                            Parameters are: \n\
-                           - 'type' is the desired type of this point, if not indicated point.PointInvalid is assumed. \n\
+                            * 'type' is the desired type of this point, if not indicated point.PointInvalid is assumed. \n\
                            \n\
                            Depending on the type, some of the next parameters must be given: \n\
-                           - 'xyz' (all types besides PointInvalid) is a sequence with three floating point elements (x,y,z) \n\
-                           - 'intensity' (only PointXYZI or PointXYZINormal) is a floating point value for the intensity \n\
-                           - 'rgba' (only PointXYZRGBA or PointXYZRGBNormal) is a uint8-sequence with either three or four values (r,g,b,a). If alpha value is not given, 255 is assumed \n\
+                            * 'xyz' (all types besides PointInvalid) is a sequence with three floating point elements (x,y,z) \n\
+                            * 'intensity' (only PointXYZI or PointXYZINormal) is a floating point value for the intensity \n\
+                            * 'rgba' (only PointXYZRGBA or PointXYZRGBNormal) is a uint8-sequence with either three or four values (r,g,b,a). If alpha value is not given, 255 is assumed \n\
                            \n\
                            For types: PointXYZNormal, PointXYZINormal and PointXYZRGBNormal: \n\
-                           - 'normal' is a sequence with three floating point elements (nx, ny, nz) \n\
-                           - 'curvature' is the curvature value for the normal (float)");
+                            * 'normal' is a sequence with three floating point elements (nx, ny, nz) \n\
+                            * 'curvature' is the curvature value for the normal (float)");
 int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
 {
     int pclType = ito::pclInvalid;
@@ -2775,7 +2878,12 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointXYZ_doc,"gets or sets x,y,z-values (x,y,z) [float-list]");
+PyDoc_STRVAR(pyPointXYZ_doc,"gets or sets x,y,z-values (x,y,z)\n\
+\n\
+Notes \n\
+----- \n\
+{float-list} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetXYZ(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -2822,7 +2930,12 @@ int PythonPCL::PyPoint_SetXYZ(PyPoint *self, PyObject *value, void * /*closure*/
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointIntensity_doc,"gets or sets intensity [float]");
+PyDoc_STRVAR(pyPointIntensity_doc,"gets or sets intensity\n\
+\n\
+Notes \n\
+----- \n\
+{float} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetIntensity(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -2869,7 +2982,12 @@ int PythonPCL::PyPoint_SetIntensity(PyPoint *self, PyObject *value, void * /*clo
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointRgb_doc,"gets or sets rgb-values (r,g,b) [uint8-list]");
+PyDoc_STRVAR(pyPointRgb_doc,"gets or sets rgb-values (r,g,b)\n\
+\n\
+Notes \n\
+----- \n\
+{uint8-list} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetRgb(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -2917,7 +3035,12 @@ int PythonPCL::PyPoint_SetRgb(PyPoint *self, PyObject *value, void * /*closure*/
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointRgba_doc,"gets or sets rgba-values (r,g,b,a) [uint8-list]");
+PyDoc_STRVAR(pyPointRgba_doc,"gets or sets rgba-values (r,g,b,a)\n\
+\n\
+Notes \n\
+----- \n\
+{uint8-list} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetRgba(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -2964,7 +3087,12 @@ int PythonPCL::PyPoint_SetRgba(PyPoint *self, PyObject *value, void * /*closure*
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCurvature_doc,"gets or sets curvature value [float]");
+PyDoc_STRVAR(pyPointCurvature_doc,"gets or sets curvature value\n\
+\n\
+Notes \n\
+----- \n\
+{float} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetCurvature(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -3011,7 +3139,12 @@ int PythonPCL::PyPoint_SetCurvature(PyPoint *self, PyObject *value, void * /*clo
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointNormal_doc,"gets or sets normal vector (nx,ny,nz) [float-list]");
+PyDoc_STRVAR(pyPointNormal_doc,"gets or sets normal vector (nx,ny,nz)\n\
+\n\
+Notes \n\
+----- \n\
+{float-list} : ReadWrite \n\
+");
 PyObject* PythonPCL::PyPoint_GetNormal(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)

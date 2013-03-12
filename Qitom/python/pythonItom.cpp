@@ -61,14 +61,6 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor() -> opens new, empty script editor window (undocked) \n\
 \n\
-Parameters \n\
------------ \n\
-none \n\
-\n\
-Returns \n\
-------- \n\
-None or PY_Error.\n\
-\n\
 Notes \n\
 ----- \n\
 \n\
@@ -101,14 +93,6 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyNewScript_doc, "newScript() -> opens an empty, new script in the current script window.\n\
-\n\
-Parameters \n\
------------ \n\
-none \n\
-\n\
-Returns \n\
-------- \n\
-None or PY_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -147,10 +131,6 @@ Parameters \n\
 ----------- \n\
 filename : {str} \n\
     Path and File of the file to open. Unter windows not case sensitiv.\n\
-\n\
-Returns \n\
-------- \n\
-None or PY_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -195,12 +175,13 @@ Parameters \n\
 ----------- \n\
 dataObject : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
-plotName: {String}, optional \n\
+plotName : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
 \n\
 Returns \n\
 ------- \n\
-Returns the number (ID) of the plot in the figure manager.\n\
+ID : {int???}\n\
+    Returns the number (ID) of the plot in the figure manager.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -262,10 +243,6 @@ Parameters \n\
 ----------- \n\
 fig-handle : {int | 'all'} \n\
     The number (ID) of the figure to close or all to close all.\n\
-\n\
-Returns \n\
-------- \n\
-None or Py_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -333,12 +310,8 @@ Parameters \n\
 ----------- \n\
 dataIO : {Hardware-Pointer} \n\
     Camera grabber device from which images are acquired.\n\
-plotName: {String}, optional \n\
+plotName : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Returns \n\
-------- \n\
-None or Py_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -402,12 +375,8 @@ Parameters \n\
 ----------- \n\
 dataIO : {Hardware-Pointer} \n\
     Camera grabber device from which images are acquired.\n\
-plotName: {String}, optional \n\
+plotName : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Returns \n\
-------- \n\
-None or Py_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -477,10 +446,6 @@ name :  {str} \n\
     the name of the parameter to be changed.\n\
 value : {int} \n\
     value is the new value for this parameter.\n\
-\n\
-Returns \n\
-------- \n\
-None or Py_Error.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -1250,7 +1215,8 @@ pluginname :  {str} \n\
 \n\
 Returns \n\
 ------- \n\
-True or False.\n\
+Status : {bool}\n\
+    TRUE or FALSE\n\
 \n\
 Notes \n\
 ----- \n\
@@ -1619,9 +1585,11 @@ PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) ->
 Parameters \n\
 ----------- \n\
 toggle-output : {bool} , optional\n\
-    if true, output will be written to a dictionary else to console; default: false.\n\
+    default = false\n\
+    if true, output will be written to a dictionary else to console.\n\
 dictionary : {bool}, optional \n\
-    if true, add informations about plugIn versions; default: false.\n\
+    default = false\n\
+    if true, add informations about plugIn versions.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -1797,16 +1765,12 @@ toolbarName : {str} \n\
     The name of the toolbar.\n\
 buttonName : {str} \n\
     The name (str, identifier) of the button to create.\n\
-code : {Str, Method, Function}, optional \n\
+code : {str, Method, Function}\n\
     The code to be executed if button is pressed.\n\
-icon : {Str}, optional \n\
+icon : {str}, optional \n\
     The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
-\n\
-Returns \n\
-------- \n\
-None\n\
 \n\
 Notes \n\
 ----- \n\
@@ -1921,10 +1885,6 @@ toolbarName : {str} \n\
 buttonName : {str} \n\
     The name (str, identifier) of the button to remove.\n\
 \n\
-Returns \n\
-------- \n\
-None\n\
-\n\
 Notes \n\
 ----- \n\
 \n\
@@ -1951,22 +1911,18 @@ PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key [, name, code, icon, argtuple]) ->
 \n\
 Parameters \n\
 ----------- \n\
-type : {Int}, optional \n\
+type : {Int}\n\
     The type of the menu-element (BUTTON:0 [default], SEPARATOR:1, MENU:2). Use the corresponding constans in module 'itom'.\n\
-key : {Str} \n\
+key : {str} \n\
     A slash-separated string where every sub-element is the key-name for the menu-element in the specific level.\n\
-name : {Str}, optional \n\
+name : {str}, optional \n\
     The text of the menu-element. If not indicated, the last sub-element of key is taken.\n\
-code : {Str, Method, Function}, optional \n\
+code : {str, Method, Function}, optional \n\
     The code to be executed if menu element is pressed.\n\
-icon : {Str}, optional \n\
+icon : {str}, optional \n\
     The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
-\n\
-Returns \n\
-------- \n\
-None or PyError\n\
 \n\
 Notes \n\
 ----- \n\
@@ -2122,10 +2078,6 @@ Parameters \n\
 ----------- \n\
 key : {str} \n\
     The name (str, identifier) of the menu entry to remove.\n\
-\n\
-Returns \n\
-------- \n\
-None\n\
 \n\
 Notes \n\
 ----- \n\
@@ -2299,13 +2251,10 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> returns dictionary with information about all available screens. \n\
 \n\
-Parameters \n\
------------ \n\
-none\n\
-\n\
 Returns \n\
 ------- \n\
-Returns a PyDictionary containing:\n\
+ScreenInfo : {PyDict} \n\
+    Returns a PyDictionary containing:\n\
 screenCount : {int} \n\
     number of available screens \n\
 primaryScreen : {int} \n\
@@ -2378,10 +2327,6 @@ dictionary : {dictionary, list, tuple} \n\
     dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray, npDataObject...)\n\
 matrix-name : {string or list or tuple of strings}, optional \n\
     string or list or tuple of string (same length than object-sequence)\n\
-\n\
-Returns \n\
-------- \n\
-None\n\
 \n\
 Notes \n\
 ----- \n\
@@ -2854,10 +2799,6 @@ dataObject : {DataObject} \n\
 tagsAsBinary : {bool}, optional \n\
     Optional tag to toogle if numeric-tags should be saved (metaData) as binary or by default as string.\n\
 \n\
-Returns \n\
-------- \n\
-None or PyErr\n\
-\n\
 Notes \n\
 ----- \n\
 \n\
@@ -2943,10 +2884,6 @@ dataObject : {DataObject} \n\
 doNotAppendIDO : {bool}, optional \n\
     Optional tag to avoid adding -ido-Tag, default is False.\n\
 \n\
-Returns \n\
-------- \n\
-None or PyErr\n\
-\n\
 Notes \n\
 ----- \n\
 \n\
@@ -3025,13 +2962,9 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getDefaultScaleAbleUnits_doc,"getDefaultScaleAbleUnits() -> Get a PythonList with standard scaleable units. \n\
 \n\
-Parameters \n\
------------ \n\
-none\n\
-\n\
 Returns \n\
 ------- \n\
-PyList with strings containing all scaleable units\n\
+List with strings containing all scaleable units : {PyList}\n\
 \n\
 Notes \n\
 ----- \n\
@@ -3124,13 +3057,10 @@ PyObject* PythonItom::ScaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getAppPath_doc,"getAppPath() -> returns absolute path of application base directory.\n\
 \n\
-Parameters \n\
------------ \n\
-none\n\
-\n\
 Returns \n\
 ------- \n\
-string with absolute path of this application\n\
+Path : {str}\n\
+    string with absolute path of this application\n\
 \n\
 Notes \n\
 ----- \n\
@@ -3145,13 +3075,10 @@ PyObject* PythonItom::getAppPath(PyObject* /*pSelf*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getCurrentPath_doc,"getCurrentPath() -> returns absolute path of current working directory.\n\
 \n\
-Parameters \n\
------------ \n\
-none\n\
-\n\
 Returns \n\
 ------- \n\
-string with current working path\n\
+Path : {str}\n\
+    string with current working path\n\
 \n\
 Notes \n\
 ----- \n\
@@ -3172,7 +3099,8 @@ newPath : {str} \n\
 \n\
 Returns \n\
 ------- \n\
-True of success else False\n\
+Success : {bool} \n\
+    True in case of success else False\n\
 \n\
 Notes \n\
 ----- \n\

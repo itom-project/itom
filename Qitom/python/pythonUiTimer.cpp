@@ -247,7 +247,16 @@ PyObject* PythonUiTimer::PyUiTimer_repr(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerStart_doc,"start() -> starts uiTimer");
+PyDoc_STRVAR(pyUiTimerStart_doc,"start() -> starts uiTimer\n\
+\n\
+Notes \n\
+----- \n\
+Starts uiTimer.\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUiTimer::PyUiTimer_start(PyUiTimer *self) 
 { 
     if (self->timer) 
@@ -256,7 +265,16 @@ PyObject* PythonUiTimer::PyUiTimer_start(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerStop_doc,"stop() -> stops uiTimer");
+PyDoc_STRVAR(pyUiTimerStop_doc,"stop() -> stopps uiTimer\n\
+\n\
+Notes \n\
+----- \n\
+Stopps uiTimer.\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUiTimer::PyUiTimer_stop(PyUiTimer *self) 
 { 
     if (self->timer) 
@@ -265,7 +283,20 @@ PyObject* PythonUiTimer::PyUiTimer_stop(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerIsActive_doc,"isActive() -> returns timer status");
+PyDoc_STRVAR(pyUiTimerIsActive_doc,"isActive() -> returns timer status\n\
+\n\
+Returns \n\
+------- \n\
+status : {bool} \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUiTimer::PyUiTimer_isActive(PyUiTimer *self)
 { 
     if (self->timer) 
@@ -275,7 +306,24 @@ PyObject* PythonUiTimer::PyUiTimer_isActive(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerSetInterval_doc,"setInterval(int interval) -> sets timer interval in [ms]");
+PyDoc_STRVAR(pyUiTimerSetInterval_doc,"setInterval(interval) -> sets timer interval in [ms]\n\
+\n\
+Parameters \n\
+----------- \n\
+interval : {int}\n\
+    interval in ms\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+sets the uiTimerinterval in ms.\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUiTimer::PyUiTimer_setInterval(PyUiTimer *self, PyObject *args)
 { 
     int timeout; 

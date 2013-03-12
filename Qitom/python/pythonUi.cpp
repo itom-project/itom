@@ -58,9 +58,9 @@ namespace ito
 // -------------------------------------------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_dealloc(PyUiItem* self)
 {
-	Py_XDECREF(self->baseItem);
+    Py_XDECREF(self->baseItem);
     DELETE_AND_SET_NULL_ARRAY(self->objName);
-	DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
+    DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
     self->methodList = NULL; //this has only been a borrowed reference
 
     //clear weak reference to this object
@@ -326,16 +326,26 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.  \n\
 \n\
+Parameters \n\
+----------- \n\
+slotOrPublicMethod : {str} \n\
+    name of the slot or method \n\
+arguments : {various types}, optional\n\
+    Here you must indicate every argument, that the definition of the slot indicates. The type must be convertable into the \n\
+    requested C++ based argument type.\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
 Use this method, to invoke any public slot or wrapped method of the underlying *uiItem*. For instance, see the Qt-help for slots of \n\
 the widget of element you are wrapping by this instance of *uiItem*. \n\
 \n\
-Parameters \n\
------------ \n\
-slotOrPublicMethod : string \n\
-	name of the slot or method \n\
-arguments : various types \n\
-	Here you must indicate every argument, that the definition of the slot indicates. The type must be convertable into the \n\
-	requested C++ based argument type.");
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
     int argsSize = PyTuple_Size(args);
@@ -495,17 +505,23 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method \n\
 \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function that is called if the signal is emitted. \n\
+\n\
+Notes \n\
+----- \n\
 This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
 about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
 callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
 signal definition must be convertable into a python object. \n\
 \n\
-Parameters \n\
------------ \n\
-signalSignature : string \n\
-	This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
-callableMethod : python method or function \n\
-	valid method or function that is called if the signal is emitted. \n\
+Returns \n\
+------- \n\
 \n\
 See Also \n\
 --------- \n\
@@ -583,13 +599,18 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal. \n\
 \n\
-If you use the connect method to link a signal with a python method or function, this method can only be executed if python is in an idle status. \n\
-However, if you want raise the python interrupt signal if a specific signal is emitted, this interruption should be immediately invoked. Therefore \n\
-\n\
 Parameters \n\
 ----------- \n\
-signalSignature : string \n\
-	This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+If you use the connect method to link a signal with a python method or function, this method can only be executed if python is in an idle status. \n\
+However, if you want raise the python interrupt signal if a specific signal is emitted, this interruption should be immediately invoked. Therefore \n\
 \n\
 See Also \n\
 --------- \n\
@@ -636,7 +657,24 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemDisconnect_doc,"disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.");
+PyDoc_STRVAR(PyUiItemDisconnect_doc,"disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+callableMethod : {python method or function} \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 {
     const char* signalSignature;
@@ -709,7 +747,24 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(property) -> returns tuple of requested properties (single property or tuple of properties)");
+PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(property) -> returns tuple of requested properties (single property or tuple of properties)\n\
+\n\
+Parameters \n\
+----------- \n\
+property : {ui???}\n\
+\n\
+Returns \n\
+------- \n\
+requested properties : {tuple} \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 {
     PyObject *propertyNames = NULL;
@@ -801,7 +856,23 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.");
+PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.\n\
+\n\
+Parameters \n\
+----------- \n\
+propertyDict : {dict}\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 {
     PyObject *propDict = NULL;
@@ -865,7 +936,23 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo([propertyName]) ->  returns information about the property 'propertyName' of this widget or all properties, if no name indicated.");
+PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.\n\
+\n\
+Parameters \n\
+----------- \n\
+propertyName : {tuple}, optional \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 {
     const char *propertyName = NULL;
@@ -969,7 +1056,23 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.");
+PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.\n\
+\n\
+Parameters \n\
+----------- \n\
+attributeNumber : {int} \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 {
     int attributeNumber;
@@ -1020,7 +1123,25 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.");
+PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.\n\
+\n\
+Parameters \n\
+----------- \n\
+attributeNumber : {int} \n\
+value : {bool} \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
 PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 {
     int attributeNumber;
@@ -1316,24 +1437,24 @@ clicked in order to accept or reject the dialog. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : string \n\
-	path to user interface file (*.ui), absolute or relative to current directory \n\
-type : int, optional \n\
-	display type: \n\
-    * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
-    * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
-    * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
-dialogButtonBar :  int, optional \n\
-	Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
-    * 0 (ui.BUTTONBAR_NO): do not add any buttons \n\
-    * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
-    * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
-dialogButtons : dict, optional \n\
-	every dictionary-entry is one button. key is the role, value is the button text \n\
-childOfMainWindow :  bool, optional \n\
-	for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
-deleteOnClose : bool, optional \n\
-	Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
+filename : {str} \n\
+    path to user interface file (*.ui), absolute or relative to current directory \n\
+type : {int}, optional \n\
+    display type: \n\
+        * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
+        * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
+        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
+dialogButtonBar :  {int}, optional \n\
+    Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+        * 0 (ui.BUTTONBAR_NO): do not add any buttons \n\
+        * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
+        * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
+dialogButtons : {dict}, optional \n\
+    every dictionary-entry is one button. key is the role, value is the button text \n\
+childOfMainWindow :  {bool}, optional \n\
+    for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
+deleteOnClose : {bool}, optional \n\
+    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", NULL};
@@ -1472,8 +1593,24 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiShow_doc,"show(modal) -> shows initialized UI-Dialog \n\
-                                Parameters: \n\
-                                modal: 0: non-modal (default), 1: modal (python waits until dialog is hidden), 2: modal (python returns immediately)");
+\n\
+Parameters \n\
+----------- \n\
+modal : {int} \n\
+    * 0: non-modal (default)\n\
+    * 1: modal (python waits until dialog is hidden)\n\
+    * 2: modal (python returns immediately)\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
     int modalLevel = 0;
@@ -1537,7 +1674,22 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiHide_doc,"hide() -> hides initialized UI-Dialog");
+PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized UI-Dialog\n\
+\n\
+Parameters \n\
+----------- \n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_hide(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1571,7 +1723,23 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns true if dialog is still visible");
+PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns true if dialog is still visible\n\
+\n\
+Parameters \n\
+----------- \n\
+\n\
+Returns \n\
+------- \n\
+dialog visible : {bool}\n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1617,14 +1785,37 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 //
 //#################################################################################################################
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals]) -> function to get a floating point number from the user \n\
-                                     Parameters: \n\
-                                     title (string) is the dialog title \n\
-                                     label (string) is the label above the text box \n\
-                                     defaultValue (double) is the default value in the text box \n\
-                                     min (double) is the allowed minimal value (default: -2147483647.0) \n\
-                                     max (double) is the allowed maximal value (default: 2147483647.0) \n\
-                                     decimals (int) are the number of shown decimals (default: 1)");
+PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals]) -> function to get a floating point number from the user\n\
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the dialog title \n\
+label : {str}\n\
+    is the label above the text box \n\
+    defaultValue : {double}, optional\n\
+    is the default value in the text box \n\
+min : {double}, optional\n\
+    default = -2147483647.0\n\
+    is the allowed minimal value\n\
+max : {double}, optional\n\
+    default = 2147483647.0\n\
+    is the allowed maximal value\n\
+decimals : {int}, optional\n\
+    default = 1\n\
+    are the number of shown decimals\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "decimals", NULL};
@@ -1678,13 +1869,33 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step]) -> function to get an integer number from the user \n\
-                                     Parameters: \n\
-                                     title (string) is the dialog title \n\
-                                     label (string) is the label above the text box \n\
-                                     defaultValue (int) is the default value in the text box \n\
-                                     min (int) is the allowed minimal value (default: -2147483647) \n\
-                                     max (int) is the allowed maximal value (default: 2147483647) \n\
-                                     step (int) is the change step if user presses the up/down arrow (default: 1)");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the dialog title \n\
+label : {str}\n\
+    is the label above the text box \n\
+defaultValue : {int}, optional\n\
+    is the default value in the text box \n\
+min : {int}, optional\n\
+    is the allowed minimal value (default: -2147483647) \n\
+max : {int}, optional\n\
+    is the allowed maximal value (default: 2147483647) \n\
+step : {int}, optional\n\
+    is the change step if user presses the up/down arrow (default: 1)\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "step", NULL};
@@ -1738,12 +1949,31 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex, editable]) -> function to let the user select an item from a string list \n\
-                                     Parameters: \n\
-                                     title (string) is the dialog title \n\
-                                     label (string) is the label above the text box \n\
-                                     stringList (tuple or list) is a list or tuple of possible string values \n\
-                                     currentIndex (int) defines the preselected value index (default: 0) \n\
-                                     editable (bool) defines wether new entries can be added (True) or not (False, default)");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the dialog title \n\
+label : {str}\n\
+    is the label above the text box \n\
+stringList : {tuple or list}, optional \n\
+    is a list or tuple of possible string values \n\
+currentIndex : {int}, optional\n\
+    defines the preselected value index (default: 0)\n\
+editable : {bool}, optional\n\
+    defines wether new entries can be added (True) or not (False, default)\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable", NULL};
@@ -1824,10 +2054,26 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString) -> function to get a string from the user \n\
-                                     Parameters: \n\
-                                     title (string) is the dialog title \n\
-                                     label (string) is the label above the text box \n\
-                                     defaultString (string) is the default string in the text box");
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the dialog title \n\
+label : {str}\n\
+    is the label above the text box \n\
+defaultString : {str}\n\
+    is the default string in the text box\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultString", NULL};
@@ -1877,12 +2123,31 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgInformation_doc,"msgInformation(title, text [, buttons, defaultButton, parent]) -> opens an information message box \n\
-                                    Parameters: \n\
-                                    - title (string) is the message box title \n\
-                                    - text (string) is the message text \n\
-                                    - buttons is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-                                    - defaultButton is a value of ui.MsgBox[...] which indicates the default button \n\
-                                    - parent [optional, ui] is the parent dialog of the message box.");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the message box title \n\
+text : {str}\n\
+    is the message text \n\
+buttons : {int}, optional\n\
+    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
+defaultButton : {int}, optional\n\
+    is a value of ui.MsgBox[...] which indicates the default button \n\
+parent : {ui}, optional\n\
+    is the parent dialog of the message box.\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");                                  
 PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,1);
@@ -1890,12 +2155,20 @@ PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kw
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgQuestion_doc,"msgQuestion(title, text [, buttons, defaultButton, parent]) -> opens a question message box \n\
-                                    Parameters: \n\
-                                    - title (string) is the message box title \n\
-                                    - text (string) is the message text \n\
-                                    - buttons is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-                                    - defaultButton is a value of ui.MsgBox[...] which indicates the default button \n\
-                                    - parent [optional, ui] is the parent dialog of the message box.");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the message box title \n\
+text : {str}\n\
+    is the message text \n\
+buttons : {int}, optional\n\
+    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
+defaultButton : {int}, optional\n\
+    is a value of ui.MsgBox[...] which indicates the default button \n\
+parent : {ui}, optional\n\
+    is the parent dialog of the message box.\n\
+");
 PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,2);
@@ -1903,12 +2176,31 @@ PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgWarning_doc,"msgWarning(title, text [, buttons, defaultButton, parent]) -> opens a warning message box \n\
-                                    Parameters: \n\
-                                    - title (string) is the message box title \n\
-                                    - text (string) is the message text \n\
-                                    - buttons is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-                                    - defaultButton is a value of ui.MsgBox[...] which indicates the default button \n\
-                                    - parent [optional, ui] is the parent dialog of the message box.");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the message box title \n\
+text : {str}\n\
+    is the message text \n\
+buttons : {int}, optional\n\
+    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
+defaultButton : {int}, optional\n\
+    is a value of ui.MsgBox[...] which indicates the default button \n\
+parent : {ui}, optional\n\
+    is the parent dialog of the message box.\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,3);
@@ -1916,12 +2208,31 @@ PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgCritical_doc,"msgCritical(title, text [, buttons, defaultButton, parent]) -> opens a critical message box \n\
-                                    Parameters: \n\
-                                    - title (string) is the message box title \n\
-                                    - text (string) is the message text \n\
-                                    - buttons is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-                                    - defaultButton is a value of ui.MsgBox[...] which indicates the default button \n\
-                                    - parent [optional, ui] is the parent dialog of the message box.");
+\n\
+Parameters \n\
+----------- \n\
+title : {str}\n\
+    is the message box title \n\
+text : {str}\n\
+    is the message text \n\
+buttons : {int}, optional\n\
+    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
+defaultButton : {int}, optional\n\
+    is a value of ui.MsgBox[...] which indicates the default button \n\
+parent : {ui}, optional\n\
+    is the parent dialog of the message box.\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,4);
@@ -1974,16 +2285,35 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory [, options, parent]) -> opens a dialog to choose an existing directory \n\
-                                    Parameters: \n\
-                                    caption (string) is the caption of this dialog \n\
-                                    startDirectory (string) is the start directory \n\
-                                    options is an or-combination of the following options (see QFileDialog::Option: \n\
-                                    - ShowDirsOnly (1) [default] \n\
-                                    - DontResolveSymlinks (2) \n\
-                                    - DontConfirmOverwrite (4) \n\
-                                    - DontUseNativeDialog (16) \n\
-                                    ... (for others see Qt-Help) \n\
-                                    parent [optional, ui-instance] is the parent widget of this dialog");
+\n\
+Parameters \n\
+----------- \n\
+caption : {str}\n\
+    is the caption of this dialog \n\
+startDirectory : {str}\n\
+    is the start directory \n\
+options : {int}, optional\n\
+    is an or-combination of the following options (see QFileDialog::Option:): \n\
+        * 1: ShowDirsOnly [default] \n\
+        * 2: DontResolveSymlinks \n\
+        * 4: DontConfirmOverwrite \n\
+        * 16: DontUseNativeDialog \n\
+        * ... (for others see Qt-Help) \n\
+parent : {ui}, optional\n\
+    is the parent widget of this dialog\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+QFileDialog::Option (???)\n\
+\n\
+");
 PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"caption", "directory", "options", "parent", NULL};
@@ -2034,15 +2364,35 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileName_doc,"getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file. \n\
-                                           Parameters: \n\
-                                           - caption (String) [optional] \n\
-                                           - startDirectory (String) [optional, if not indicated currentDirectory will be taken] \n\
-                                           - filters (String) [optional], possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-                                           - selectedFilterIndex [optional, default: 0] is the index of filters which is set by default (0 is first entry) \n\
-                                           - options [optional, default: 0], or-combination of enum values QFileDialog::Options \n\
-                                           - parent (ui) [optional] is the parent widget of this dialog \n\
-                                           \n\
-                                           returns filename as string or empty string if dialog has been aborted.");
+\n\
+Parameters \n\
+----------- \n\
+caption : {str}, optional\n\
+    startDirectory {str}, optional\n\
+    optional, if not indicated currentDirectory will be taken\n\
+filters : {str}, optional\n\
+    default = 0\n\
+    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
+    selectedFilterIndex is the index of filters which is set by default (0 is first entry) \n\
+options : {int}, optional\n\
+    default =  0 \n\
+    or-combination of enum values QFileDialog::Options \n\
+parent : {ui}, optional\n\
+    is the parent widget of this dialog \n\
+\n\
+Returns \n\
+------- \n\
+filename : {str}\n\
+    filename as string or empty string if dialog has been aborted.\n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     
@@ -2095,13 +2445,33 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetSaveFileName_doc,"getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save. \n\
-                                           Parameters: \n\
-                                           - caption (String) [optional] \n\
-                                           - startDirectory (String) [optional, if not indicated currentDirectory will be taken] \n\
-                                           - filters (String) [optional], possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-                                           - selectedFilterIndex [optional, default: 0] is the index of filters which is set by default (0 is first entry) \n\
-                                           - options [optional, default: 0], or-combination of enum values QFileDialog::Options \n\
-                                           - parent (ui) [optional] is the parent widget of this dialog");
+Parameters \n\
+----------- \n\
+caption : {str}, optional\n\
+    startDirectory : {String}, optional\n\
+    if not indicated currentDirectory will be taken\n\
+filters : {str}, optional\n\
+    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
+selectedFilterIndex : {int}, optional\n\
+    default = 0\n\
+    is the index of filters which is set by default (0 is first entry) \n\
+options : {int}, optional\n\
+    default = 0\n\
+    or-combination of enum values QFileDialog::Options \n\
+parent : {ui}, optional\n\
+    is the parent widget of this dialog\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     
@@ -2154,11 +2524,25 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiCreateNewPluginWidget_doc, "createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
-                                Parameters: \n\
-                                - 'widgetName' name algorithm widget \n\
-                                - parameters to pass to the plugin. The parameters are parsed and unnamed parameters are used in their \
-                                incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
-                                with name as well but after the first named parameter no more unnamed parameters are allowed.");
+Parameters \n\
+----------- \n\
+widgetName : {}\n\
+    name algorithm widget \n\
+    parameters to pass to the plugin. The parameters are parsed and unnamed parameters are used in their \
+    incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
+    with name as well but after the first named parameter no more unnamed parameters are allowed.\n\
+\n\
+Returns \n\
+------- \n\
+\n\
+Notes \n\
+----- \n\
+doctodo\n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
 PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     int length = PyTuple_Size(args);
@@ -2352,7 +2736,7 @@ PyTypeObject PythonUi::PyUiType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         pyUiInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
+        0,    	               /* tp_traverse */
         0,		               /* tp_clear */
         0,            /* tp_richcompare */
         0,		               /* tp_weaklistoffset */
