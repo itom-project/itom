@@ -44,6 +44,7 @@ namespace ito {
                 m_author(""),
                 m_description(""),
                 m_detaildescription(""),
+                m_aboutThis(""),
                 m_license("LGPL with ITO itom-exception") {}
 
             ~AbstractItomDesignerPlugin() {}
@@ -60,8 +61,10 @@ namespace ito {
             const QString getDescription(void) const { return m_description; }
             //! returns a detailed description of the plugin
             const QString getDetailDescription(void) const { return m_detaildescription; }
-            //! returns a detailed description of the plugin
+            //! returns a detailed description of the plugin license
             const QString getLicenseInfo(void) const { return m_license; }
+            //! returns a detailed description of the plugin compile informations
+            const QString getAboutInfo(void) const { return m_aboutThis; }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
 
@@ -75,7 +78,7 @@ namespace ito {
             QString m_description;                //!< a brief descrition of the plugin
             QString m_detaildescription;          //!< a detail descrition of the plugin
             QString m_license;                    //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
-
+            QString m_aboutThis;                  //!< a short string with compile informations
             QString m_itomSettingsFile;
 
         signals:
