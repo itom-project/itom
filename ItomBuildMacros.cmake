@@ -84,13 +84,17 @@ MACRO (QT4_WRAP_CPP_ITOM outfiles )
 ENDMACRO ()
 
 
-MACRO(QT4_CREATE_TRANSLATION_ITOM _qm_files)
+MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 	QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options ${ARGN})
-
+	
 	set(_my_sources)
 	set(_my_dirs)
 	set(_my_tsfiles)
 	set(_ts_pro)
+	
+	#reset tsFiles
+	set(${tsFiles} "")
+	
 	foreach (_file ${_lupdate_files})
 		get_filename_component(_ext ${_file} EXT)
 		get_filename_component(_abs_FILE ${_file} ABSOLUTE)
@@ -104,8 +108,32 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM _qm_files)
 			endif()
 		endif()
 	endforeach()
+	
+	message(STATUS "native ts ${_my_tsfiles}")
+	
+	foreach( _lang ${${languages}})
+		set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
+		message(STATUS "scan ${_tsFile}")
+		get_filename_component(_ext ${_tsFile} EXT)
+		get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
+		if(EXISTS ${_abs_FILE})
+			list(APPEND _my_tsfiles ${_abs_FILE})
+		else()
+			message(STATUS "...ist aber nicht da")
+			#create new ts file
+			add_custom_command(OUTPUT ${_abs_FILE}_new
+				COMMAND ${QT_LUPDATE_EXECUTABLE}
+				ARGS ${_lupdate_options} ${_my_dirs} -target-language ${_lang} -ts ${_abs_FILE}
+				DEPENDS ${_my_sources} VERBATIM)
+			list(APPEND _my_tsfiles ${_abs_FILE})
+			set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
+		endif()
+	endforeach()
+	
+	set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
 
 	foreach(_ts_file ${_my_tsfiles})
+		message(STATUS "update ${_ts_file}")
 		if(_my_sources)
 			# make a .pro file to call lupdate on, so we don't make our commands too
 			# long for some systems
@@ -123,10 +151,11 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM _qm_files)
 			endforeach()
 			file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
 		endif()
-		add_custom_command(OUTPUT ${_ts_file}
+		add_custom_command(OUTPUT ${_ts_file}_update
 			COMMAND ${QT_LUPDATE_EXECUTABLE}
 			ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -ts ${_ts_file}
 			DEPENDS ${_my_sources} ${_ts_pro} VERBATIM)
+		set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
 	endforeach()
    
 	#QT4_ADD_TRANSLATION_ITOM(${_qm_files} ${_my_tsfiles})
@@ -135,6 +164,7 @@ ENDMACRO()
 
 MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location)
 	foreach (_current_FILE ${ARGN})
+		message(STATUS "release ${_current_FILE}")
 		get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
 		get_filename_component(qm ${_abs_FILE} NAME_WE)
 		#get_source_file_property(output_location ${_abs_FILE} OUTPUT_LOCATION)

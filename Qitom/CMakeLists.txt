@@ -1,10 +1,12 @@
 project(qitom)
+SET (target_name qitom)
 
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
 OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
+SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
@@ -331,24 +333,23 @@ ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 #end add filters to visual studio
 
-
 #handle translations BEGIN
 set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
 
-file (GLOB TRANSLATIONS_FILES "../translation/*.ts") #test_qitom_de.ts") #*.ts")
+set (TRANSLATION_OUTPUT_FILES)
+set (TRANSLATIONS_FILES)
 
-option (UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+
+option (UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-endif (UPDATE_TRANSLATIONS) 
+	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${TRANSLATIONS_FILES})
+else (UPDATE_TRANSLATIONS)
+	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${EXISTING_TRANSLATION_FILES})
+endif (UPDATE_TRANSLATIONS)
 
-QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${TRANSLATIONS_FILES})
-
-add_custom_target (qitom_translation DEPENDS ${QM_FILES})
-
-#install(FILES ${QM_FILES} DESTINATION
-#${CMAKE_INSTALL_PREFIX}/translations)
-
+add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES} ${QM_FILES})
 #handle translations END
 
 
@@ -374,10 +375,10 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
-ADD_EXECUTABLE(qitom WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${TRANSLATIONS_FILES} )
-add_dependencies(qitom qitom_translation)
-set_target_properties(qitom PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
-set_target_properties(qitom PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} )
+add_dependencies(${target_name} ${target_name}_translation)
+set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
+set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 
 SET( WINICONRES "" )
 
