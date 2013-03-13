@@ -162,9 +162,9 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 ENDMACRO()
 
 
-MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location)
+MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
 	foreach (_current_FILE ${ARGN})
-		message(STATUS "release ${_current_FILE}")
+		message(STATUS "release ${_current_FILE}, target: ${target}")
 		get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
 		get_filename_component(qm ${_abs_FILE} NAME_WE)
 		#get_source_file_property(output_location ${_abs_FILE} OUTPUT_LOCATION)
@@ -175,12 +175,19 @@ MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location)
 		#else()
 		#set(qm "${CMAKE_CURRENT_BINARY_DIR}/${qm}.qm")
 		#endif()
+		
+		add_custom_command(TARGET ${target}
+                     PRE_BUILD
+                     COMMAND ${QT_LRELEASE_EXECUTABLE}
+					 ARGS ${_abs_FILE} -qm ${qm}
+					 VERBATIM
+					 )
 
-		add_custom_command(OUTPUT ${qm}
-			COMMAND ${QT_LRELEASE_EXECUTABLE}
-			ARGS ${_abs_FILE} -qm ${qm}
-			DEPENDS ${_abs_FILE} VERBATIM
-		)
+		#add_custom_command(OUTPUT ${qm}
+		#	COMMAND ${QT_LRELEASE_EXECUTABLE}
+		#	ARGS ${_abs_FILE} -qm ${qm}
+		#	DEPENDS ${_abs_FILE} VERBATIM
+		#)
 		set(${_qm_files} ${${_qm_files}} ${qm})
 	endforeach ()
 ENDMACRO()

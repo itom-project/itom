@@ -333,26 +333,6 @@ ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 #end add filters to visual studio
 
-#handle translations BEGIN
-set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
-
-set (TRANSLATION_OUTPUT_FILES)
-set (TRANSLATIONS_FILES)
-
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-
-option (UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${TRANSLATIONS_FILES})
-else (UPDATE_TRANSLATIONS)
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${EXISTING_TRANSLATION_FILES})
-endif (UPDATE_TRANSLATIONS)
-
-add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES} ${QM_FILES})
-#handle translations END
-
-
 if(MSVC)
 	# Qt disables the native wchar_t type, do it too to avoid linking issues
 	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
@@ -375,10 +355,34 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
+#handle translations BEGIN STEP 1
+set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
+
+set (TRANSLATION_OUTPUT_FILES)
+set (TRANSLATIONS_FILES)
+
+file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+#handle translations BEGIN END 1
+
 ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} )
-add_dependencies(${target_name} ${target_name}_translation)
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+
+#handle translations BEGIN STEP 2
+option (UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+if (UPDATE_TRANSLATIONS)
+	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+	
+	add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+	add_dependencies(${target_name} ${target_name}_translation)
+	
+	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+else (UPDATE_TRANSLATIONS)
+	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+endif (UPDATE_TRANSLATIONS)
+#handle translations END STEP 2
+
+
 
 SET( WINICONRES "" )
 
@@ -391,7 +395,7 @@ IF(MSVC)
 	ENDIF(CMAKE_CL_64)
 ENDIF(MSVC)
 
-TARGET_LINK_LIBRARIES(qitom ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
 
 
 
