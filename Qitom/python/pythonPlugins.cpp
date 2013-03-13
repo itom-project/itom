@@ -55,7 +55,14 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
 {
     if (retval.containsError())
     {
-        PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+		if(retval.errorMessage())
+		{
+			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+		}
+		else
+		{
+			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.\n", pluginName.toAscii().data());
+		}
         return false;
     }
 
