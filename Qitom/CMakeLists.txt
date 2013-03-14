@@ -147,6 +147,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
@@ -194,6 +195,7 @@ set(qitom_ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
@@ -284,6 +286,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp

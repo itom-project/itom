@@ -104,6 +104,20 @@ class AppManagement
             m_processOrganizer = processOrganizer;
         }
 
+        inline static void setUserName(const QString userName) { m_userName = userName; }
+        inline static const QString getUserName() { return m_userName; }
+        inline static void setUserRole(const int role) { m_userRole = role; }
+        static void setUserRole(const QString role) 
+        { 
+            if (role == "user")
+                m_userRole = 0;
+            else if (role == "admin")
+                m_userRole = 1;
+            else
+                m_userRole = 2;
+        }
+        inline static const int getUserRole() { return m_userRole; }
+
     private:
         static QObject* m_sew;  /*!< static pointer to ScriptEditorOrganizer (default: NULL) */
         static QObject* m_pe;   /*!< static pointer to PythonEngine (default: NULL) */
@@ -116,7 +130,8 @@ class AppManagement
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
         static QString m_settingsFile;
-
+        static int m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
+        static QString m_userName;  /*< id of current user */
 };
 
 #endif // APPMANAGEMENT_H

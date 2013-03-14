@@ -26,6 +26,7 @@
 
 #include "widgets/abstractDockWidget.h"
 #include "organizer/addInManager.h"
+#include "./ui/dialogSelectUser.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -76,19 +77,6 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion( ITOM_VERSION_STR );
-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-
-    QString settingsFile;
-    QDir appDir(QCoreApplication::applicationDirPath());
-    if (!appDir.cd("itomSettings"))
-    {
-        appDir.mkdir("itomSettings");
-        appDir.cd("itomSettings");
-    }
-    settingsFile = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
-    qDebug() << "settingsFile path: " << settingsFile;
-    AppManagement::setSettingsFile(settingsFile);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -104,6 +92,75 @@ MainApplication::~MainApplication()
     MainApplication::mainApplicationInstance = NULL;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! load of settings / user settings file
+/*!
+    reads the available setting files from the settings directory and offers a dialog box
+    allowing to selecet the user or to abort program initialization.
+
+    \sa PythonEngine, MainWindow, ScriptEditorOrganizer
+*/
+int MainApplication::loadSettings()
+{
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    QString settingsFile;
+    QDir appDir(QCoreApplication::applicationDirPath());
+    if (!appDir.cd("itomSettings"))
+    {
+        appDir.mkdir("itomSettings");
+        appDir.cd("itomSettings");
+    }
+    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
+    QHash<int, QString> userFileList;
+    QHash<int, QString> userNameList;
+
+    int nUser = 0;
+    foreach(QString iniFile, iniList) 
+    {
+        QSettings settings(appDir.absoluteFilePath(iniFile), QSettings::IniFormat);
+
+        settings.beginGroup("ITOMIniFile");
+        if (settings.contains("name"))
+        {
+            qDebug() << "found user ini file: " << iniFile;
+            userNameList.insert(nUser, settings.value("name").toString());
+            userFileList.insert(nUser, iniFile);
+        }
+        settings.endGroup();
+    }
+    if (!userNameList.isEmpty())
+    {
+        ito::DialogSelectUser userDialog (NULL);
+        foreach (QString user, userNameList)
+        {
+            userDialog.ui.userList->addItem(user);
+        }
+        int ret = userDialog.exec();
+        if (ret == 0)
+        {
+            return -1;
+        }
+
+        int userNum = userDialog.ui.userList->currentIndex().row();
+        settingsFile = QDir::cleanPath(appDir.absoluteFilePath(userFileList.value(userNum)));
+        qDebug() << "settingsFile path: " << settingsFile;
+        AppManagement::setSettingsFile(settingsFile);
+        AppManagement::setUserName(userNameList.value(userNum));
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        AppManagement::setUserRole(settings.value("ITOMIniFile/userRole").toString());
+    }
+    else
+    {
+        settingsFile = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
+        qDebug() << "settingsFile path: " << settingsFile;
+        AppManagement::setSettingsFile(settingsFile);
+    }
+
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application

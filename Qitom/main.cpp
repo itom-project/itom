@@ -313,13 +313,21 @@ int main(int argc, char *argv[])
 //    delete dllPath;
 #endif
 
+    int ret = 0;
+
     MainApplication m(MainApplication::standard);
+    if (m.loadSettings() != 0)
+    {
+        qDebug("load program aborted by user");
+        ret = 0;
+        goto end;
+    }
 
     m.setupApplication();
 
     qDebug("starting main event loop");
 
-    int ret = m.exec();
+    ret = m.exec();
 
     qDebug("application exited. call finalize");
 
@@ -327,6 +335,7 @@ int main(int argc, char *argv[])
 
     qDebug("finalize done");
 
+end:
     qInstallMsgHandler(0);
     delete messageStream;
     messageStream = NULL;

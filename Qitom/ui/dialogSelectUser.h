@@ -20,23 +20,34 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "AppManagement.h"
+#ifndef DIALOGSELECTUSER_H
+#define DIALOGSELECTUSER_H
 
-/*!
-    \class AppManagement
-    \brief static class only administrating QObject-pointers to main organization and management units of the main application
-*/
+#include "../global.h"
 
-//initialization of members
-QObject* AppManagement::m_pe = NULL;
-QObject* AppManagement::m_sew = NULL;
-QObject* AppManagement::m_dwo = NULL;
-QObject* AppManagement::m_plo = NULL;
-QObject* AppManagement::m_app = NULL;
-QObject* AppManagement::m_mainWin = NULL;
-QObject* AppManagement::m_uiOrganizer = NULL;
-QObject* AppManagement::m_processOrganizer = NULL;
-QString AppManagement::m_userName = QString("itom");    //!< standard user is itom
-int AppManagement::m_userRole = 2;                      //!< developer
-QMutex AppManagement::m_mutex;
-QString AppManagement::m_settingsFile;
+#include <qdialog.h>
+#include <qlist.h>
+
+#include "ui_dialogSelectUser.h"
+
+namespace ito {
+
+class DialogSelectUser : public QDialog 
+{
+    Q_OBJECT
+
+public:
+    DialogSelectUser(QWidget *parent = NULL);
+    ~DialogSelectUser();
+    Ui::DialogSelectUser ui;
+
+protected:
+    void init();
+
+private slots:
+    void on_cmdError_clicked(bool /*value*/) { return; };
+};
+
+} //end namespace ito
+
+#endif

@@ -48,6 +48,7 @@ class MainApplication : public QObject
         MainApplication(tGuiType guiType = standard);
         ~MainApplication();
 
+        int loadSettings();
         void setupApplication();
         void finalizeApplication();
 
