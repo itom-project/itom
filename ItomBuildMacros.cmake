@@ -247,6 +247,17 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
 
 ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
 
+MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
+	IF(${ITOM_APP_DIR} STREQUAL "")
+        message(SEND_ERROR "ITOM_DIR is not indicated")
+    ENDIF()
+	
+	foreach(_qmfile ${${qm_files}})
+		LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+		LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
+	endforeach()
+ENDMACRO (ADD_QM_FILES_TO_COPY_LIST)
+
 
 MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
 #    message(STATUS "target: ${target} ${ITOM_SDK_DIR} ${CMAKE_SIZEOF_VOID_P}")
