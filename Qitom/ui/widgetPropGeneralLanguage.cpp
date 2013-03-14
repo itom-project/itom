@@ -58,7 +58,7 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     lwi->setData(Qt::UserRole + 1, loc.name() );
 
     QDir languageDir;
-    languageDir.cd(QCoreApplication::applicationDirPath() + "/translation");
+    languageDir.cd(QCoreApplication::applicationDirPath() + "/Qitom/translation");
     languageDir.setNameFilters(QStringList("qitom_*.qm"));
 
     foreach (const QString &fileName, languageDir.entryList(QDir::Files))

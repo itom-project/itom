@@ -312,7 +312,7 @@ namespace ito
 
             QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
             QFileInfo fileInfo(filename);
-            QString translationPath = fileInfo.path();
+            QString translationPath = fileInfo.path() + "/translation";
             QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
             QDirIterator it(translationPath, QStringList("*_" + languageStr + ".qm"), QDir::Files);
             if (it.hasNext())

@@ -136,8 +136,7 @@ if(EXISTS "${OpenCV_DIR}")
 
 	endif(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
 
-
-	message(STATUS "GENERATOR: ::: ${CMAKE_GENERATOR} - ${BUILD_TARGET64} -- ${CVLIB_LIBSUFFIX}")
+	#message(STATUS "GENERATOR: ::: ${CMAKE_GENERATOR} - ${BUILD_TARGET64} -- ${CVLIB_LIBSUFFIX}")
 
 	## Initiate the variable before the loop
 	set(GLOBAL OpenCV_LIBS "")
@@ -178,10 +177,8 @@ if(EXISTS "${OpenCV_DIR}")
 			
 	endforeach(__CVLIB)
 
-
 	set(OpenCV_FOUND ${OpenCV_FOUND_TMP} CACHE BOOL "" FORCE)
 
-		
 else(EXISTS "${OpenCV_DIR}")
         set(ERR_MSG "Please specify OpenCV directory using OpenCV_DIR env. variable")
 endif(EXISTS "${OpenCV_DIR}")

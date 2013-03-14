@@ -182,7 +182,7 @@ void MainApplication::setupApplication()
     settings.endGroup();
 
     QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
-    QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
+    QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/Qitom/translation";
 
     //load translation files
 

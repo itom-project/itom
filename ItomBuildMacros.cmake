@@ -109,17 +109,17 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 		endif()
 	endforeach()
 	
-	message(STATUS "native ts ${_my_tsfiles}")
+	#message(STATUS "native ts ${_my_tsfiles}")
 	
 	foreach( _lang ${${languages}})
 		set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
-		message(STATUS "scan ${_tsFile}")
+		#message(STATUS "scan ${_tsFile}")
 		get_filename_component(_ext ${_tsFile} EXT)
 		get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
 		if(EXISTS ${_abs_FILE})
 			list(APPEND _my_tsfiles ${_abs_FILE})
 		else()
-			message(STATUS "...ist aber nicht da")
+			#message(STATUS "...ist aber nicht da")
 			#create new ts file
 			add_custom_command(OUTPUT ${_abs_FILE}_new
 				COMMAND ${QT_LUPDATE_EXECUTABLE}
@@ -133,7 +133,7 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 	set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
 
 	foreach(_ts_file ${_my_tsfiles})
-		message(STATUS "update ${_ts_file}")
+		#message(STATUS "update ${_ts_file}")
 		if(_my_sources)
 			# make a .pro file to call lupdate on, so we don't make our commands too
 			# long for some systems
@@ -164,7 +164,7 @@ ENDMACRO()
 
 MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
 	foreach (_current_FILE ${ARGN})
-		message(STATUS "release ${_current_FILE}, target: ${target}")
+		#message(STATUS "release ${_current_FILE}, target: ${target}")
 		get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
 		get_filename_component(qm ${_abs_FILE} NAME_WE)
 		#get_source_file_property(output_location ${_abs_FILE} OUTPUT_LOCATION)
@@ -246,6 +246,17 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
 	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
 
 ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
+
+MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
+	IF(${ITOM_APP_DIR} STREQUAL "")
+        message(SEND_ERROR "ITOM_DIR is not indicated")
+    ENDIF()
+	
+	foreach(_qmfile ${${qm_files}})
+		LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+		LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
+	endforeach()
+ENDMACRO (ADD_QM_FILES_TO_COPY_LIST)
 
 
 MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
