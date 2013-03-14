@@ -15,7 +15,6 @@ else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
-
 #set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #if(NOT CMAKE_SIZEOF_VOID_P)
 #   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
@@ -32,7 +31,6 @@ IF(BUILD_UNITTEST)
 	ADD_SUBDIRECTORY(gtest-1.6.0)
 	ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)
-
 
 #find current itom version from qitom/global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")

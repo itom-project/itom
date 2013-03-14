@@ -1,11 +1,13 @@
-project(qitom)
 SET (target_name qitom)
+
+project(${target_name})
 
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
 OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
+OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -354,7 +356,6 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 	set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
-
 #handle translations BEGIN STEP 1
 set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
 
@@ -369,7 +370,6 @@ set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 
 #handle translations BEGIN STEP 2
-option (UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 if (UPDATE_TRANSLATIONS)
 	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
 	
@@ -381,8 +381,6 @@ else (UPDATE_TRANSLATIONS)
 	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
-
-
 
 SET( WINICONRES "" )
 
@@ -396,10 +394,6 @@ IF(MSVC)
 ENDIF(MSVC)
 
 TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
-
-
-
-#
 
 # copy some folders and files during generate
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
