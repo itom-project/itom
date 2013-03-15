@@ -241,7 +241,7 @@ namespace ito
             AddInManager(void);
             AddInManager(AddInManager  &/*copyConstr*/) : QObject() {}
             ~AddInManager(void);
-            QTranslator m_Translator;
+            QVector<QTranslator*> m_Translator;
 
             static AddInManager *m_pAddInManager;
             static QList<QObject *> m_addInListDataIO;

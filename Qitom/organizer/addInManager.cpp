@@ -317,9 +317,10 @@ namespace ito
             QDirIterator it(translationPath, QStringList("*_" + languageStr + ".qm"), QDir::Files);
             if (it.hasNext())
             {
-                QString translationLocal = it.next() + local.name();
-                m_Translator.load(translationLocal, translationPath);
-                if (m_Translator.isEmpty())
+                QString translationLocal = it.next();
+                m_Translator.append(new QTranslator);
+                m_Translator.last()->load(translationLocal, translationPath);
+                if (m_Translator.last()->isEmpty())
                 {
                     message = tr("Unable to load translation file %1.").arg(translationPath + '/' + translationLocal);
                     qDebug() << message;
@@ -327,7 +328,7 @@ namespace ito
                 }
                 else
                 {
-                    QCoreApplication::instance()->installTranslator(&m_Translator);
+                    QCoreApplication::instance()->installTranslator(m_Translator.last());
                 }
             }
             else
@@ -1438,7 +1439,9 @@ end:
     }
 
 	//----------------------------------------------------------------------------------------------------------------------------------
-    AddInManager::AddInManager(void) : m_algoInterfaceValidator(NULL)
+    AddInManager::AddInManager(void) :
+        m_algoInterfaceValidator(NULL),
+        m_Translator(NULL)
     {
         ito::RetVal retValue;
         // this needs to be done in combination with Q_DECLARE_METATYPE to register a user data type

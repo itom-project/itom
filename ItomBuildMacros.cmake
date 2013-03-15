@@ -123,7 +123,7 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 			#create new ts file
 			add_custom_command(OUTPUT ${_abs_FILE}_new
 				COMMAND ${QT_LUPDATE_EXECUTABLE}
-				ARGS ${_lupdate_options} ${_my_dirs} -target-language ${_lang} -ts ${_abs_FILE}
+				ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
 				DEPENDS ${_my_sources} VERBATIM)
 			list(APPEND _my_tsfiles ${_abs_FILE})
 			set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
@@ -153,7 +153,7 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 		endif()
 		add_custom_command(OUTPUT ${_ts_file}_update
 			COMMAND ${QT_LUPDATE_EXECUTABLE}
-			ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -ts ${_ts_file}
+			ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
 			DEPENDS ${_my_sources} ${_ts_pro} VERBATIM)
 		set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
 	endforeach()
