@@ -571,7 +571,7 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject was a NULL pointer in function getRowPointer(...)");               
         }
 
-        if(dObj->getType() != ito::getDataType2<_Tp>())
+        if(dObj->getType() != ito::getDataType2<_Tp*>())
         {
             return ito::RetVal::format(ito::retError, 0, "DataObject and template Type differed in function getRowPointer(...)");               
         }
