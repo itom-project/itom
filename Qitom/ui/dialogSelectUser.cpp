@@ -27,7 +27,8 @@
 namespace ito {
 
 DialogSelectUser::DialogSelectUser(QWidget *parent) :
-    QDialog(parent)
+    QDialog(parent),
+    m_userModel(NULL)
 {
     ui.setupUi(this);
 }
@@ -36,9 +37,29 @@ DialogSelectUser::~DialogSelectUser()
 {
 }
 
-/*
-void DialogSelectUser::on_tree_itemSelectionChanged()
+void DialogSelectUser::DialogInit(UserModel *model)
 {
+    m_userModel = model;
+    QItemSelectionModel *selModel = ui.userList->selectionModel();
+    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
 }
-*/
+
+void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    if (m_userModel)
+    {
+        QModelIndex curIdx = ui.userList->currentIndex();
+        if (curIdx.isValid())
+        {
+            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
+            ui.lineEdit_name->setText(midx.data().toString());
+            midx = m_userModel->index(curIdx.row(), 2);
+            ui.lineEdit_role->setText(midx.data().toString());
+            midx = m_userModel->index(curIdx.row(), 3);
+            ui.lineEdit_iniFile->setText(midx.data().toString());
+        }
+    }
+}
+
+
 } //end namespace ito

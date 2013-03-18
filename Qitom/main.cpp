@@ -313,10 +313,23 @@ int main(int argc, char *argv[])
 //    delete dllPath;
 #endif
 
+    QString defUserName;
+    for (int nA = 0; nA < argc; nA++)
+    {
+        char *pNameFound = NULL;
+
+        pNameFound = strstr(argv[nA], "name=");
+        if (pNameFound)
+        {
+            defUserName = QString(((char*)argv[nA] + 6));
+            break;
+        }
+    }
+
     int ret = 0;
 
     MainApplication m(MainApplication::standard);
-    if (m.loadSettings() != 0)
+    if (m.loadSettings(defUserName) != 0)
     {
         qDebug("load program aborted by user");
         ret = 0;

@@ -24,6 +24,7 @@
 #define DIALOGSELECTUSER_H
 
 #include "../global.h"
+#include "./models/UserModel.h"
 
 #include <qdialog.h>
 #include <qlist.h>
@@ -39,13 +40,17 @@ class DialogSelectUser : public QDialog
 public:
     DialogSelectUser(QWidget *parent = NULL);
     ~DialogSelectUser();
+    void DialogInit(UserModel *model);
     Ui::DialogSelectUser ui;
+
+private:
+    UserModel *m_userModel;
 
 protected:
     void init();
 
 private slots:
-    void on_cmdError_clicked(bool /*value*/) { return; };
+    void userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
 };
 
 } //end namespace ito
