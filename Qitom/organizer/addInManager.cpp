@@ -442,12 +442,12 @@ namespace ito
         if (!m_addInListDataIO.contains(plugin))
         {
             m_addInListDataIO.append(plugin);
-            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("%1 (DataIO) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, tr("%1 (DataIO) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, QString("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, tr("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
         
@@ -458,12 +458,12 @@ namespace ito
         if (!m_addInListAct.contains(plugin))
         {
             m_addInListAct.append(plugin);
-            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("%1 (Actuator) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, tr("%1 (Actuator) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, QString("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retWarning, tr("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
         return retOk;
@@ -541,7 +541,7 @@ namespace ito
                                 fd->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                                 fd->m_name = it.key();
                                 m_filterList.insert(it.key(), fd);
-                                pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("Filter %1 loaded").arg(it.key())));
+                                pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, tr("Filter %1 loaded").arg(it.key())));
 
                                 if (tags.size() == 0) tags.append("");
                                 foreach(const QString &tag, tags)
@@ -622,7 +622,7 @@ namespace ito
                             ad->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                             ad->m_name = jt.key();
                             m_algoWidgetList.insert(jt.key(), ad);
-                            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, QString("Widget %1 loaded").arg(jt.key())));
+                            pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, tr("Widget %1 loaded").arg(jt.key())));
                         }
                         else if (validRet.containsError())
                         {
