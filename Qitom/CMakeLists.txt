@@ -105,6 +105,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
@@ -247,6 +248,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp	
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp

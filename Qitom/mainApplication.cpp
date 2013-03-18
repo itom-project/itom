@@ -26,6 +26,7 @@
 
 #include "widgets/abstractDockWidget.h"
 #include "organizer/addInManager.h"
+#include "./models/UserModel.h"
 #include "./ui/dialogSelectUser.h"
 
 #include <qsettings.h>
@@ -101,10 +102,11 @@ MainApplication::~MainApplication()
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
-int MainApplication::loadSettings()
+int MainApplication::loadSettings(const QString defUserName)
 {
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
     QSettings::setDefaultFormat(QSettings::IniFormat);
+    UserModel curUserModel;
 
     QString settingsFile;
     QDir appDir(QCoreApplication::applicationDirPath());
@@ -114,43 +116,81 @@ int MainApplication::loadSettings()
         appDir.cd("itomSettings");
     }
     QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
-    QHash<int, QString> userFileList;
-    QHash<int, QString> userNameList;
 
     int nUser = 0;
     foreach(QString iniFile, iniList) 
     {
-        QSettings settings(appDir.absoluteFilePath(iniFile), QSettings::IniFormat);
+        QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
 
         settings.beginGroup("ITOMIniFile");
         if (settings.contains("name"))
         {
             qDebug() << "found user ini file: " << iniFile;
-            userNameList.insert(nUser, settings.value("name").toString());
-            userFileList.insert(nUser, iniFile);
+            curUserModel.addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
         }
         settings.endGroup();
     }
-    if (!userNameList.isEmpty())
+
+    if (curUserModel.rowCount() > 0) 
     {
-        ito::DialogSelectUser userDialog (NULL);
-        foreach (QString user, userNameList)
+        char foundDefUser = 0;
+
+        DialogSelectUser userDialog;
+        userDialog.ui.userList->setModel(&curUserModel);
+        userDialog.DialogInit(&curUserModel);
+#if linux
+        QString curSysUser(getenv("USER")); ///for MAc or Linux
+#else
+        QString curSysUser(getenv("USERNAME")); //for windows
+#endif
+
+        for (int curIdx = 0; curIdx < curUserModel.rowCount(); curIdx++)
         {
-            userDialog.ui.userList->addItem(user);
-        }
-        int ret = userDialog.exec();
-        if (ret == 0)
-        {
-            return -1;
+            QModelIndex midx = curUserModel.index(curIdx, 1);
+            if (midx.isValid())
+            {
+                QString curUid(midx.data().toString());
+                if (!defUserName.isEmpty())
+                {
+                    if (curUid == defUserName)
+                    {
+                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
+                        userDialog.ui.userList->setCurrentIndex(actIdx);
+                        foundDefUser = 1;
+                    }
+                }
+                else
+                {
+                    if (curUid == curSysUser)
+                    {
+                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
+                        userDialog.ui.userList->setCurrentIndex(actIdx);
+                    }
+                }
+            }
         }
 
-        int userNum = userDialog.ui.userList->currentIndex().row();
-        settingsFile = QDir::cleanPath(appDir.absoluteFilePath(userFileList.value(userNum)));
+        if (foundDefUser == 0)
+        {
+            int ret = userDialog.exec();
+            if (ret == 0)
+            {
+                return -1;
+            }
+
+            QModelIndex curIdx = userDialog.ui.userList->currentIndex();
+            QModelIndex fIdx = curUserModel.index(curIdx.row(), 3);
+            settingsFile = QString(fIdx.data().toString());
+        }
+        else
+        {
+            settingsFile = QString("itom_").append(defUserName).append(".ini");
+        }
         qDebug() << "settingsFile path: " << settingsFile;
         AppManagement::setSettingsFile(settingsFile);
-        AppManagement::setUserName(userNameList.value(userNum));
         QSettings settings(settingsFile, QSettings::IniFormat);
-        AppManagement::setUserRole(settings.value("ITOMIniFile/userRole").toString());
+        AppManagement::setUserName(settings.value("ITOMIniFile/name").toString());
+        AppManagement::setUserRole(settings.value("ITOMIniFile/role").toString());
     }
     else
     {

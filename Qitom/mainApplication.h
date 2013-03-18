@@ -48,7 +48,7 @@ class MainApplication : public QObject
         MainApplication(tGuiType guiType = standard);
         ~MainApplication();
 
-        int loadSettings();
+        int loadSettings(const QString userName = "");
         void setupApplication();
         void finalizeApplication();
 
