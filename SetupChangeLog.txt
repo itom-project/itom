@@ -25,15 +25,15 @@ vergeben werden.
 Doku erstellen:
 ---------------
 
-1. \trunk\iTOM\documentation\itom_doxygen.dox mit doxywizard (Doxygen GUI frontend) öffnen
-2. Versionsnummer auf ITOM_VERSION_STR setzen
-3. Doxygen-Dokumentation erstellen
-4. itom_doxygen.dox abspeichern
-5. itom starten
-6. in trunk/itom/documentation/itom_documentation die python-Datei "create_doc.py" ausführen
+1. \Build\itom\docs\doxygen\itom_doxygen.dox mit doxywizard (Doxygen GUI frontend) öffnen
+2. Doxygen-Dokumentation erstellen (Reiter "Run", Button "Run Doxygen")
+3. itom_doxygen.dox abspeichern
+4. itom starten
+5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen
 
 
 CHANGE-LOG
 ----------
 
 Setup 1.0.6 - Rev. 4048 - Erstellt am 18.01.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
+Setup 1.0.8 - Erstellt am 18.03.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
