@@ -4,49 +4,49 @@
 <context>
     <name>BreakPointModel</name>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location filename="../models/breakPointModel.cpp" line="+37"/>
         <source>filename</source>
         <translation>Dateiname</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>line</source>
         <translation>Zeile</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>condition</source>
         <translation>Anforderungen</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>temporary</source>
         <translation>Temporär</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>enabled</source>
         <translation>Aktiv</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>ignore count</source>
         <translation>Anzahl Ignorierungen</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>py bp nr</source>
         <translation>Ph HP Nr</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="159"/>
-        <location filename="../models/breakPointModel.cpp" line="169"/>
+        <location line="+122"/>
+        <location line="+10"/>
         <source>yes</source>
         <translation>ja</translation>
     </message>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="159"/>
-        <location filename="../models/breakPointModel.cpp" line="169"/>
+        <location line="-10"/>
+        <location line="+10"/>
         <source>no</source>
         <translation>nein</translation>
     </message>
@@ -54,12 +54,12 @@
 <context>
     <name>DialogAboutQItom</name>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="63"/>
+        <location filename="../ui/dialogAbout.ui"/>
         <source>About ITOM</source>
         <translation>Über ITOM</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="73"/>
+        <location/>
         <source>itom logo</source>
         <translation>ITOM Logo</translation>
     </message>
@@ -180,7 +180,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;oder wurden unter anderen Bestimmungen oder Konditionen als das ITOM-Programm veröffentlicht. Deshalb bitte vor der Veröffentlichung eines ITOM-PlugIns überprüfen!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="127"/>
+        <location/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -215,12 +215,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="180"/>
+        <location/>
         <source>ito logo</source>
         <translation>ITO Logo</translation>
     </message>
     <message utf8="true">
-        <location filename="../ui/dialogAbout.ui" line="223"/>
+        <location/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -237,17 +237,17 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Deutschland&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="254"/>
+        <location/>
         <source>Copy all version numbers to clip board</source>
         <translation>Kopiert alle Versionsnummern in die Zwischenablage</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="257"/>
+        <location/>
         <source>Copy Versions</source>
         <translation>Versionen kopieren</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.ui" line="264"/>
+        <location/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
@@ -255,47 +255,47 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogEditBreakpoint</name>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="17"/>
+        <location filename="../ui/dialogEditBreakpoint.ui"/>
         <source>Edit Breakpoint</source>
         <translation>Haltepunkt editieren</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="36"/>
+        <location/>
         <source>Filename:</source>
         <translation>Dateiname:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="43"/>
+        <location/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="56"/>
+        <location/>
         <source>Line-Number:</source>
         <translation>Zeilennummer:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="63"/>
+        <location/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="76"/>
+        <location/>
         <source>&amp;Condition:</source>
         <translation>&amp;Bedingungen:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="95"/>
+        <location/>
         <source>&amp;Ignore Count:</source>
         <translation>&amp;Ignorierungen:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="118"/>
+        <location/>
         <source>temporary &amp;breakpoint</source>
         <translation>&amp;Temporärer Haltepunkt</translation>
     </message>
     <message>
-        <location filename="../ui/dialogEditBreakpoint.ui" line="138"/>
+        <location/>
         <source>&amp;enabled</source>
         <translation>&amp;Aktivierung</translation>
     </message>
@@ -303,65 +303,65 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogGoto</name>
     <message>
-        <location filename="../ui/dialogGoto.ui" line="14"/>
+        <location filename="../ui/dialogGoto.ui"/>
         <source>Go To</source>
         <translation>Gehe zu</translation>
     </message>
     <message>
-        <location filename="../ui/dialogGoto.ui" line="22"/>
+        <location/>
         <source>line</source>
         <translation>Zeile</translation>
     </message>
     <message>
-        <location filename="../ui/dialogGoto.ui" line="32"/>
+        <location/>
         <source>character</source>
-        <translation type="unfinished">Zeichen</translation>
+        <translation>Zeichen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogGoto.ui" line="41"/>
+        <location/>
         <source>Line number (0 - 0, current: 0)</source>
         <translation>Zeilennummer (0 - 0, aktuell: 0)</translation>
     </message>
     <message>
-        <location filename="../ui/dialogGoto.cpp" line="33"/>
+        <location filename="../ui/dialogGoto.cpp" line="+33"/>
         <source>Line number (1 - %1, current: %2):</source>
         <translation>Zeilennummer (1 - %1, aktuell: %2):</translation>
     </message>
     <message>
-        <location filename="../ui/dialogGoto.cpp" line="34"/>
+        <location line="+1"/>
         <source>Character number (0 - %1, current: %2):</source>
-        <translation type="unfinished">Zeichennummer (1 - %1, aktuell: %2):</translation>
+        <translation>Zeichennummer (1 - %1, aktuell: %2):</translation>
     </message>
 </context>
 <context>
     <name>DialogLoadedPlugins</name>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="14"/>
+        <location filename="../ui/dialogLoadedPlugins.ui"/>
         <source>Load Status of Plugins</source>
         <translation>Ladestatus der Plugins</translation>
     </message>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="20"/>
+        <location/>
         <source>Load status of detected plugin files:</source>
         <translation>Ladestatus der erkannten Plugin-Dateien:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="51"/>
+        <location/>
         <source>Filters</source>
         <translation>Filter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="57"/>
+        <location/>
         <source>Errors</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="76"/>
+        <location/>
         <source>Warnings</source>
         <translation>Warnungen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogLoadedPlugins.ui" line="95"/>
+        <location/>
         <source>Messages</source>
         <translation>Nachrichten</translation>
     </message>
@@ -369,64 +369,64 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogNewPluginInstance</name>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="14"/>
+        <location filename="../ui/dialogNewPluginInstance.ui"/>
         <source>New Plugin Instance</source>
-        <translation type="unfinished">Neue Plugin-Instanz</translation>
+        <translation>Neue Plugin-Instanz</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="20"/>
+        <location/>
         <source>Plugin Information</source>
-        <translation type="unfinished">Plugin-Informationen</translation>
+        <translation>Plugin-Informationen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="35"/>
+        <location/>
         <source>[ICON]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="44"/>
+        <location/>
         <source>Name:</source>
         <translation>Name:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="51"/>
+        <location/>
         <source>[name]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="58"/>
+        <location/>
         <source>Type:</source>
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="65"/>
+        <location/>
         <source>[type]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="87"/>
+        <location/>
         <source>Mandatory Parameters</source>
-        <translation type="unfinished">Pflichtparameter</translation>
+        <translation>Pflichtparameter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="123"/>
+        <location/>
         <source>Optional Parameters</source>
-        <translation type="unfinished">Optionale Parameter</translation>
+        <translation>Optionale Parameter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="164"/>
+        <location/>
         <source>Access instance with python</source>
-        <translation type="unfinished">Zugriff auf Instanz mt Python</translation>
+        <translation>Zugriff auf Instanz mt Python</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="192"/>
+        <location/>
         <source>variable name in global workspace</source>
-        <translation type="unfinished">Variablenname im ganzen Workspace</translation>
+        <translation>Variablenname im ganzen Arbeitsbereich</translation>
     </message>
     <message>
-        <location filename="../ui/dialogNewPluginInstance.ui" line="195"/>
+        <location/>
         <source>variable name:</source>
-        <translation type="unfinished">Variablenname:</translation>
+        <translation>Variablenname:</translation>
     </message>
     <message>
         <source>QT error: Grid layout could not be identified</source>
@@ -476,82 +476,82 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogOpenFileWithFilter</name>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="14"/>
+        <location filename="../ui/dialogOpenFileWithFilter.ui"/>
         <source>File Import Assistant</source>
-        <translation type="unfinished">Assistent für den Import von Dateien</translation>
+        <translation>Assistent für den Import von Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="20"/>
+        <location/>
         <source>Information</source>
         <translation>Informationen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="35"/>
+        <location/>
         <source>[ICON]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="44"/>
+        <location/>
         <source>Filename:</source>
         <translation>Dateiname:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="51"/>
+        <location/>
         <source>[name]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="58"/>
+        <location/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="65"/>
+        <location/>
         <source>[filter]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="93"/>
+        <location/>
         <source>Mandatory Parameters</source>
         <translation>Pflichtparameter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="129"/>
+        <location/>
         <source>Optional Parameters</source>
         <translation>Optionale Parameter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="167"/>
+        <location/>
         <source>Preview</source>
         <translation>Vorschau</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="187"/>
+        <location/>
         <source>&lt;&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="194"/>
+        <location/>
         <source>file is being loaded...</source>
         <translation>Datei wird geladen...</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="247"/>
+        <location/>
         <source>Reload</source>
-        <translation type="unfinished">Neu laden</translation>
+        <translation>Neu laden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="260"/>
+        <location/>
         <source>Save in global workspace</source>
-        <translation type="unfinished">Als globale Variable speichern</translation>
+        <translation>Als globale Variable speichern</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="288"/>
+        <location/>
         <source>variable name in global workspace</source>
-        <translation type="unfinished">Globaler Variablenname</translation>
+        <translation>Variablenname im globalen Arbeitsbereich</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.ui" line="291"/>
+        <location/>
         <source>variable name:</source>
         <translation>Variablenname:</translation>
     </message>
@@ -559,22 +559,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogPluginPicker</name>
     <message>
-        <location filename="../ui/dialogPluginPicker.ui" line="14"/>
+        <location filename="../ui/dialogPluginPicker.ui"/>
         <source>Plugin Picker</source>
-        <translation type="unfinished">Plugin laden</translation>
+        <translation>Plugin laden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.ui" line="20"/>
+        <location/>
         <source>Choose plugin instance:</source>
         <translation>Plugin-Instanz auswählen:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.ui" line="30"/>
+        <location/>
         <source>show plugins without active instances</source>
-        <translation type="unfinished">Plugins ohne aktive Instanzen anzeigen</translation>
+        <translation>Plugins ohne aktive Instanzen anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.ui" line="42"/>
+        <location/>
         <source>create new instance</source>
         <translation>Neue Instanz erstellen</translation>
     </message>
@@ -582,113 +582,113 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogReloadModule</name>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="14"/>
+        <location filename="../ui/dialogReloadModule.ui"/>
         <source>Python Modules</source>
-        <translation type="unfinished">Python-Module</translation>
+        <translation>Python-Module</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="58"/>
+        <location/>
         <source>Filter</source>
-        <translation type="unfinished">Filter</translation>
+        <translation>Filter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="67"/>
+        <location/>
         <source>show build-in modules</source>
-        <translation type="unfinished">Build-In-Module anzeigen</translation>
+        <translation>BuildIn-Module anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="74"/>
+        <location/>
         <source>show modules lying in python-folder(s)</source>
-        <translation type="unfinished">Module des Python-Ordners anzeigen</translation>
+        <translation>Module der Python-Ordner anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="84"/>
+        <location/>
         <source>Information</source>
         <translation>Informationen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="96"/>
+        <location/>
         <source>Module Name:</source>
         <translation>Modul-Name:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="103"/>
+        <location/>
         <source>&lt;click on item to see information&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="116"/>
+        <location/>
         <source>Path:</source>
-        <translation>Pfad:</translation>
+        <translation type="unfinished">Dateiname:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="123"/>
+        <location/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="137"/>
+        <location/>
         <source>Reload Modules</source>
-        <translation type="unfinished">Modul neu laden</translation>
+        <translation>Modul neu laden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.ui" line="147"/>
+        <location/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="65"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="140"/>
+        <location filename="../ui/dialogReloadModule.cpp" line="+65"/>
+        <location line="+75"/>
         <source>Python Engine is invalid</source>
-        <translation type="unfinished">Python-Engine ist ungültig</translation>
+        <translation>Python-Engine ist ungültig</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="65"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="140"/>
+        <location line="-75"/>
+        <location line="+75"/>
         <source>The Python Engine could not be found</source>
         <translation type="unfinished">Python-Engine wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="83"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="158"/>
+        <location line="-57"/>
+        <location line="+75"/>
         <source>connection problem</source>
         <translation type="unfinished">Verbindungsproblem</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="83"/>
+        <location line="-75"/>
         <source>No information about loaded modules could be retrieved by python.</source>
         <translation type="unfinished">Keine Informationen über geladene Module von Python verfügbar.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="90"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="94"/>
+        <location line="+7"/>
+        <location line="+4"/>
         <source>error while getting module list</source>
         <translation type="unfinished">Fehler beim Erstellen der Modulliste</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="94"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="168"/>
+        <location line="+0"/>
+        <location line="+74"/>
         <source>Unknown error</source>
         <translation type="unfinished">Unbekannter Fehler</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="158"/>
+        <location line="-10"/>
         <source>Timeout while forcing python to reload modules.</source>
         <translation type="unfinished">Zeitüberschreitung beim erneuten Laden der Module.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="164"/>
-        <location filename="../ui/dialogReloadModule.cpp" line="168"/>
+        <location line="+6"/>
+        <location line="+4"/>
         <source>error while reloading modules</source>
         <translation type="unfinished">Fehler beim erneuten Laden der Module</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="173"/>
+        <location line="+5"/>
         <source>Module reload</source>
-        <translation type="unfinished">Module erneut Laden</translation>
+        <translation>Module erneut laden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="173"/>
+        <location line="+0"/>
         <source>The following modules could not be reloaded:
 </source>
         <translation type="unfinished">Folgende Module konnten nicht geladen werden:</translation>
@@ -697,97 +697,97 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DialogReplace</name>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="32"/>
+        <location filename="../ui/dialogReplace.ui"/>
         <source>Find and Replace</source>
         <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="40"/>
+        <location/>
         <source>Find what</source>
         <translation>Suchen nach</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="75"/>
+        <location/>
         <source>Replace with</source>
         <translation>Ersetzen durch</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="107"/>
+        <location/>
         <source>Find in</source>
         <translation>Suchen in</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="124"/>
+        <location/>
         <source>Current Document</source>
         <translation>Aktuelles Dokument</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="129"/>
+        <location/>
         <source>Selection</source>
         <translation>Markierung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="144"/>
+        <location/>
         <source>Find Next</source>
         <translation>Weitersuchen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="147"/>
+        <location/>
         <source>F3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="157"/>
+        <location/>
         <source>Replace</source>
         <translation>Ersetzen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="170"/>
+        <location/>
         <source>Replace All</source>
         <translation>Alle ersetzen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="180"/>
+        <location/>
         <source>Expand</source>
         <translation>Erweitert</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="198"/>
+        <location/>
         <source>Options</source>
         <translation>Optionen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="212"/>
+        <location/>
         <source>Match whole word only</source>
         <translation>Nur ganzes Wort suchen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="219"/>
+        <location/>
         <source>Match case</source>
         <translation>Groß-/Kleinschreibung beachten</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="226"/>
+        <location/>
         <source>Wrap around</source>
         <translation>Vom Ende zum Anfang</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="233"/>
+        <location/>
         <source>Regular expression</source>
         <translation>Reguläre Ausdrücke</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="242"/>
+        <location/>
         <source>Direction</source>
         <translation>Suchrichtung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="248"/>
+        <location/>
         <source>Up</source>
         <translation>Aufwärts</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.ui" line="255"/>
+        <location/>
         <source>Down</source>
         <translation>Abwärts</translation>
     </message>
@@ -799,70 +799,93 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Assistent für den Import von Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="14"/>
+        <location filename="../ui/dialogSaveFileWithFilter.ui"/>
         <source>File Export Assistant</source>
-        <translation type="unfinished">Assistent für den Export von Dateien</translation>
+        <translation>Assistent für den Export von Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="20"/>
+        <location/>
         <source>Information</source>
         <translation>Informationen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="35"/>
+        <location/>
         <source>[ICON]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="44"/>
+        <location/>
         <source>Filename:</source>
         <translation>Dateiname:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="51"/>
+        <location/>
         <source>[name]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="58"/>
+        <location/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="65"/>
+        <location/>
         <source>[filter]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="93"/>
+        <location/>
         <source>Mandatory Parameters</source>
         <translation>Pflichtparameter</translation>
     </message>
     <message>
-        <location filename="../ui/dialogSaveFileWithFilter.ui" line="129"/>
+        <location/>
         <source>Optional Parameters</source>
         <translation>Optionale Parameter</translation>
     </message>
 </context>
 <context>
+    <name>DialogSelectUser</name>
+    <message>
+        <location filename="../ui/dialogSelectUser.ui"/>
+        <source>Dialog</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Role</source>
+        <translation>Rolle</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Ini-File</source>
+        <translation>INI-Datei</translation>
+    </message>
+</context>
+<context>
     <name>DialogVariableDetail</name>
     <message>
-        <location filename="../ui/dialogVariableDetail.ui" line="17"/>
+        <location filename="../ui/dialogVariableDetail.ui"/>
         <source>Variable Detail</source>
         <translation>Variablendatail</translation>
     </message>
     <message>
-        <location filename="../ui/dialogVariableDetail.ui" line="36"/>
+        <location/>
         <source>Name:</source>
         <translation>Name:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogVariableDetail.ui" line="49"/>
+        <location/>
         <source>Type:</source>
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../ui/dialogVariableDetail.ui" line="62"/>
+        <location/>
         <source>Value:</source>
         <translation>Wert:</translation>
     </message>
@@ -870,7 +893,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="407"/>
+        <location filename="../mainApplication.cpp" line="+504"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -878,105 +901,105 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="453"/>
+        <location filename="../python/pythonEngine.cpp" line="+453"/>
         <source>deadlock in python setup.</source>
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="543"/>
+        <location line="+90"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="635"/>
+        <location line="+92"/>
         <source>method name not found in builtin itom</source>
         <translation type="unfinished">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="778"/>
+        <location line="+143"/>
         <source>main dictionary is empty</source>
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="798"/>
+        <location line="+20"/>
         <source>exiting desired.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="803"/>
+        <location line="+5"/>
         <source>error while evaluating python string.</source>
         <translation type="unfinished">Fehler beim Evaluieren eines Python-Strings.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="871"/>
+        <location line="+68"/>
         <source>file does not exist</source>
         <translation type="unfinished">Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="939"/>
+        <location line="+68"/>
         <source>file could not be opened in readonly-mode</source>
         <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="1001"/>
-        <location filename="../python/pythonEngine.cpp" line="1109"/>
-        <location filename="../python/pythonEngine.cpp" line="1193"/>
+        <location line="+62"/>
+        <location line="+108"/>
+        <location line="+84"/>
         <source>Error while clearing all breakpoints in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="1288"/>
+        <location line="+95"/>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
         <translation type="unfinished">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="1336"/>
+        <location line="+48"/>
         <source>Error while editing breakpoint in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Editiern eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="1368"/>
+        <location line="+32"/>
         <source>Error while clearing breakpoint in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3363"/>
+        <location line="+1995"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3367"/>
-        <location filename="../python/pythonEngine.cpp" line="3472"/>
+        <location line="+4"/>
+        <location line="+105"/>
         <source>it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3392"/>
+        <location line="-80"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3400"/>
+        <location line="+8"/>
         <source>name &apos;%s&apos; already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3408"/>
+        <location line="+8"/>
         <source>error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3468"/>
+        <location line="+60"/>
         <source>The number of names and types must be equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3497"/>
+        <location line="+29"/>
         <source>values cannot be obtained since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3506"/>
+        <location line="+9"/>
         <source>item &apos;%s&apos; does not exist in workspace.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -985,60 +1008,60 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3575"/>
+        <location line="+69"/>
         <source>It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3605"/>
-        <location filename="../python/pythonEngine.cpp" line="3667"/>
+        <location line="+30"/>
+        <location line="+62"/>
         <source>Dictionary is not available</source>
         <translation type="unfinished">Wörterbuch ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3612"/>
+        <location line="-55"/>
         <source>variable name &apos;%1&apos; is no valid python variable name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3619"/>
+        <location line="+7"/>
         <source>variable name &apos;%1&apos; already exists in dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3630"/>
+        <location line="+11"/>
         <source>No instance of python class dataIO could be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3646"/>
+        <location line="+16"/>
         <source>No instance of python class actuator could be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3658"/>
+        <location line="+12"/>
         <source>AddIn must be of type dataIO or actuator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3716"/>
-        <location filename="../python/pythonEngine.cpp" line="3787"/>
+        <location line="+58"/>
+        <location line="+71"/>
         <source>it is not allowed to get modules if python is currently executed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3732"/>
-        <location filename="../python/pythonEngine.cpp" line="3803"/>
+        <location line="-55"/>
+        <location line="+71"/>
         <source>the script itomFunctions.py is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3740"/>
+        <location line="-63"/>
         <source>error while loading the modules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="3814"/>
+        <location line="+74"/>
         <source>error while reloading the modules</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1046,843 +1069,843 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="45"/>
+        <location filename="../../common/helperCommon.cpp" line="+45"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="55"/>
+        <location line="+10"/>
         <source>mandatory parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="59"/>
+        <location line="+4"/>
         <source>optional parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="63"/>
+        <location line="+4"/>
         <source>output parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="88"/>
-        <location filename="../../common/helperCommon.cpp" line="109"/>
+        <location line="+25"/>
+        <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
         <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="187"/>
-        <location filename="../../common/helperCommon.cpp" line="310"/>
+        <location line="+78"/>
+        <location line="+123"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="194"/>
-        <location filename="../../common/helperCommon.cpp" line="317"/>
+        <location line="-116"/>
+        <location line="+123"/>
         <source>the parameter name &apos;%1&apos; in invald</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="218"/>
+        <location line="-99"/>
         <source>array index of parameter out of bounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="225"/>
-        <location filename="../../common/helperCommon.cpp" line="350"/>
+        <location line="+7"/>
+        <location line="+125"/>
         <source>given index of parameter name ignored since parameter is no array type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="232"/>
-        <location filename="../../common/helperCommon.cpp" line="357"/>
+        <location line="-118"/>
+        <location line="+125"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="343"/>
+        <location line="-14"/>
         <source>array index out of bounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="398"/>
+        <location line="+55"/>
         <source>invalid parameter name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="40"/>
+        <location filename="../helper/paramHelper.cpp" line="+40"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="48"/>
+        <location line="+8"/>
         <source>In/Out flags of parameter &apos;%s&apos; are unequal to required flags of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="74"/>
+        <location line="+26"/>
         <source>The parameter &apos;%s&apos; is restricted by meta information while the interface parameter &apos;%s&apos; is not.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="80"/>
-        <location filename="../helper/paramHelper.cpp" line="92"/>
-        <location filename="../helper/paramHelper.cpp" line="117"/>
-        <location filename="../helper/paramHelper.cpp" line="142"/>
-        <location filename="../helper/paramHelper.cpp" line="167"/>
-        <location filename="../helper/paramHelper.cpp" line="219"/>
-        <location filename="../helper/paramHelper.cpp" line="268"/>
+        <location line="+6"/>
+        <location line="+12"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+52"/>
+        <location line="+49"/>
         <source>The type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="105"/>
+        <location line="-163"/>
         <source>The allowed integer range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="130"/>
+        <location line="+25"/>
         <source>The allowed char range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="155"/>
+        <location line="+25"/>
         <source>The allowed double range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="173"/>
+        <location line="+18"/>
         <source>The string type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="196"/>
+        <location line="+23"/>
         <source>String &apos;%s&apos;, requested by meta data of interface parameter &apos;%s&apos; could not be found in meta data of parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="226"/>
+        <location line="+30"/>
         <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="242"/>
-        <location filename="../helper/paramHelper.cpp" line="254"/>
+        <location line="+16"/>
+        <location line="+12"/>
         <source>The minimum and maximum dimensions of the data object of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="276"/>
+        <location line="+22"/>
         <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="281"/>
+        <location line="+5"/>
         <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="296"/>
+        <location line="+15"/>
         <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="304"/>
+        <location line="+8"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="347"/>
+        <location line="+43"/>
         <source>String &apos;%s&apos; does not fit to given string-constraints.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="354"/>
-        <location filename="../helper/paramHelper.cpp" line="416"/>
+        <location line="+7"/>
+        <location line="+62"/>
         <source>AddIn must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="367"/>
-        <location filename="../helper/paramHelper.cpp" line="380"/>
-        <location filename="../helper/paramHelper.cpp" line="393"/>
+        <location line="-49"/>
+        <location line="+13"/>
+        <location line="+13"/>
         <source>Value out of boundary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="407"/>
+        <location line="+14"/>
         <source>AddIn does not fit to minimum required type(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="411"/>
+        <location line="+4"/>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="507"/>
+        <location line="+96"/>
         <source>Parameter could not be converted to destination type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="512"/>
+        <location line="+5"/>
         <source>type of parameter does not fit to requested parameter type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="67"/>
+        <location filename="../../common/sharedFunctionsQt.cpp" line="+67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="71"/>
+        <location line="+4"/>
         <source>No unit specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="213"/>
+        <location line="+142"/>
         <source>Pluginname undefined. No xml file loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="247"/>
+        <location line="+34"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="258"/>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="383"/>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="576"/>
+        <location line="+11"/>
+        <location line="+125"/>
+        <location line="+193"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="646"/>
+        <location line="+70"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="650"/>
+        <location line="+4"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="677"/>
+        <location line="+27"/>
         <source>%1
 Obsolete parameter %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="681"/>
+        <location line="+4"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="690"/>
+        <location line="+9"/>
         <source>%1
 Parameter %2 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="694"/>
+        <location line="+4"/>
         <source>XML-Import warnings:
 Parameter %1 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="719"/>
+        <location line="+25"/>
         <source>%1
 Parameter not loadable %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="723"/>
+        <location line="+4"/>
         <source>XML-Import warnings:
 Parameter not loadable %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="733"/>
+        <location line="+10"/>
         <source>%1
 Type conflict for %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="737"/>
+        <location line="+4"/>
         <source>XML-Import warnings:
 Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="810"/>
+        <location line="+73"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1105"/>
+        <location line="+295"/>
         <source>Save object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1110"/>
+        <location line="+5"/>
         <source>Save object failed: object seems empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1117"/>
+        <location line="+7"/>
         <source>Save object failed: evaluate transpose failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1145"/>
+        <location line="+28"/>
         <source>Save object failed: file not writeable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1238"/>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1267"/>
+        <location line="+93"/>
+        <location line="+29"/>
         <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1304"/>
+        <location line="+37"/>
         <source>Load object failed: Number of dims smaller 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1312"/>
+        <location line="+8"/>
         <source>Not enough memory to alloc sizes vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1328"/>
+        <location line="+16"/>
         <source>Load object failed: dimension size missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1342"/>
+        <location line="+14"/>
         <source>Load object failed: dimX not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1353"/>
+        <location line="+11"/>
         <source>Load object failed: dimY not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1365"/>
+        <location line="+12"/>
         <source>Load object failed: isTransposed not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1423"/>
+        <location line="+58"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1432"/>
+        <location line="+9"/>
         <source>Load object failed: Error during allocating memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1478"/>
+        <location line="+46"/>
         <source>Load object failed: file corrupted at metaData (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1485"/>
+        <location line="+7"/>
         <source>Load object warning: file has invalid metaData for v1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1503"/>
+        <location line="+18"/>
         <source>Load object warning: DoubleExportType for v1.0 invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1508"/>
+        <location line="+5"/>
         <source>Load object warning: DoubleExportType for v1.0 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1545"/>
+        <location line="+37"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1578"/>
+        <location line="+33"/>
         <source>Load object warning: MetaData for dimX missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1608"/>
+        <location line="+30"/>
         <source>Load object warning: MetaData for dimY missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1638"/>
+        <location line="+30"/>
         <source>Load object warning: MetaData for values missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1667"/>
+        <location line="+29"/>
         <source>Load object warning: MetaData import for Rotation Matrix failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1703"/>
+        <location line="+36"/>
         <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1708"/>
+        <location line="+5"/>
         <source>Load object failed: tag space not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1722"/>
+        <location line="+14"/>
         <source>Load object failed: tags Space invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1760"/>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1766"/>
+        <location line="+38"/>
+        <location line="+6"/>
         <source>Load object warning: invalid tagType found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1772"/>
+        <location line="+6"/>
         <source>Load object warning: tagsSpace invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1812"/>
+        <location line="+40"/>
         <source>Load object failed: dataSpace missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1817"/>
+        <location line="+5"/>
         <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1827"/>
+        <location line="+10"/>
         <source>Load object warning: dataSpace and dataObject are not equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1832"/>
+        <location line="+5"/>
         <source>Load object warning: dataSpace attributes corrupted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1845"/>
+        <location line="+13"/>
         <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1856"/>
+        <location line="+11"/>
         <source>Load object failed: dataStream ended before finished reading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1886"/>
+        <location line="+30"/>
         <source>Load object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1919"/>
+        <location line="+33"/>
         <source>Load object failed: file not readable or does not exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1933"/>
+        <location line="+14"/>
         <source>Load object failed: file seems corrupt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1941"/>
+        <location line="+8"/>
         <source>Load object failed: wrong xml version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1949"/>
+        <location line="+8"/>
         <source>Load object failed: wrong document encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1955"/>
+        <location line="+6"/>
         <source>Load object failed: unexpected file ending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1974"/>
+        <location line="+19"/>
         <source>Load object failed: file is no itomDataObjectFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1993"/>
+        <location line="+19"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="1998"/>
+        <location line="+5"/>
         <source>Load object failed: object header not valied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="131"/>
-        <location filename="../python/pythonCommon.cpp" line="211"/>
+        <location filename="../api/apiFunctions.cpp" line="+131"/>
+        <location filename="../python/pythonCommon.cpp" line="+211"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="171"/>
+        <location line="+40"/>
         <source>Wrong number of parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="186"/>
-        <location filename="../api/apiFunctions.cpp" line="200"/>
+        <location line="+15"/>
+        <location line="+14"/>
         <source>Wrong parameter type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="226"/>
-        <location filename="../api/apiFunctions.cpp" line="249"/>
-        <location filename="../api/apiFunctions.cpp" line="271"/>
-        <location filename="../api/apiFunctions.cpp" line="319"/>
+        <location line="+26"/>
+        <location line="+23"/>
+        <location line="+22"/>
+        <location line="+48"/>
         <source>Filter name empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="235"/>
+        <location line="-84"/>
         <source>Filter not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="257"/>
-        <location filename="../api/apiFunctions.cpp" line="283"/>
-        <location filename="../api/apiFunctions.cpp" line="331"/>
+        <location line="+22"/>
+        <location line="+26"/>
+        <location line="+48"/>
         <source>Filter &apos;%s&apos; not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="275"/>
-        <location filename="../api/apiFunctions.cpp" line="323"/>
+        <location line="-56"/>
+        <location line="+48"/>
         <source>Vectors paramsMand, paramsOpt and paramsOut must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="290"/>
-        <location filename="../api/apiFunctions.cpp" line="338"/>
+        <location line="-33"/>
+        <location line="+48"/>
         <source>Filter parameters not found in hash table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="357"/>
-        <location filename="../api/apiFunctions.cpp" line="376"/>
-        <location filename="../api/apiFunctions.cpp" line="397"/>
+        <location line="+19"/>
+        <location line="+19"/>
+        <location line="+21"/>
         <source>Fatal error! Could not get addInManager instance!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="362"/>
+        <location line="-35"/>
         <source>No plugin name specified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="1076"/>
+        <location filename="../python/pythonCommon.cpp" line="+865"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="1080"/>
+        <location line="+4"/>
         <source>Could not delete Keyword: autoLoadParams</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="1179"/>
+        <location line="+99"/>
         <source>- unknown message -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="549"/>
+        <location filename="../python/pythonPlugins.cpp" line="+556"/>
         <source>timeout while getting name parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="580"/>
+        <location line="+31"/>
         <source>you must provide at least one parameter with the name of the function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="588"/>
+        <location line="+8"/>
         <source>the first function name parameter can not be interpreted as string</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="599"/>
+        <location line="+11"/>
         <source>plugin does not provide an execution of function &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="623"/>
+        <location line="+24"/>
         <source>timeout while calling specific function in plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="738"/>
+        <location line="+115"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="889"/>
-        <location filename="../python/pythonPlugins.cpp" line="941"/>
+        <location line="+151"/>
+        <location line="+52"/>
         <source>parameter list type and passed list type are incompatible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="1514"/>
+        <location line="+573"/>
         <source>timeout while calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="1622"/>
+        <location line="+108"/>
         <source>timeout while setting origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="1689"/>
+        <location line="+67"/>
         <source>timeout while getting Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="1818"/>
+        <location line="+129"/>
         <source>timeout while getting position values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="2071"/>
+        <location line="+253"/>
         <source>timeout while setting absolute position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="2151"/>
+        <location line="+80"/>
         <source>timeout while setting relative position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="2199"/>
+        <location line="+48"/>
         <source>Itom ActuatorPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="3594"/>
+        <location line="+1395"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="4078"/>
+        <location line="+484"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="4499"/>
+        <location line="+421"/>
         <source>Itom AlgorithmPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="2552"/>
+        <location filename="../python/pythonUi.cpp" line="+2552"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="2567"/>
+        <location line="+15"/>
         <source>no addin-manager found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="2575"/>
+        <location line="+8"/>
         <source>the first parameter must contain the widget name as string</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="2582"/>
+        <location line="+7"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="2589"/>
+        <location line="+7"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="189"/>
+        <location filename="../organizer/helpSystem.cpp" line="+189"/>
         <source>file could not be opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="199"/>
+        <location line="+10"/>
         <source>Load XML file failed: file seems corrupt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="206"/>
+        <location line="+7"/>
         <source>Load XML file failed:  wrong xml version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="213"/>
+        <location line="+7"/>
         <source>Load XML file failed: wrong document encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="228"/>
+        <location line="+15"/>
         <source>Load XML file failed: could not intepret checksum content as uint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="302"/>
+        <location line="+74"/>
         <source>collection project file could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="104"/>
+        <location filename="../helper/versionHelper.cpp" line="+104"/>
         <source>Warning: The version contains locally changed code!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="108"/>
-        <location filename="../helper/versionHelper.cpp" line="134"/>
+        <location line="+4"/>
+        <location line="+26"/>
         <source>Build from a clean version.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="130"/>
+        <location line="-4"/>
         <source>Warning: The version contains locally changed and uncomitted code!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="141"/>
+        <location line="+11"/>
         <source>This version of itom not under version control (no GIT or SVN)!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2039"/>
+        <location filename="../python/pythonItom.cpp" line="+2039"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2051"/>
+        <location line="+12"/>
         <source>For menu elements of type &apos;BUTTON&apos; any type of code (String or callable method or function) must be indicated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2062"/>
+        <location line="+11"/>
         <source>The given key is already associated to a python method or function. The menu element can not be created.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="1914"/>
-        <location filename="../python/pythonItom.cpp" line="2082"/>
+        <location line="-148"/>
+        <location line="+168"/>
         <source>Could not create a itom.proxy-object  of the given callable method or function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="1877"/>
+        <location line="-205"/>
         <source>Button must have a valid name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="1883"/>
+        <location line="+6"/>
         <source>Any type of code (String or callable method or function) must be indicated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="1894"/>
+        <location line="+11"/>
         <source>The given button name is already associated to a python method or function. The button can not be created.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="1920"/>
-        <location filename="../python/pythonItom.cpp" line="2088"/>
+        <location line="+26"/>
+        <location line="+168"/>
         <source>The code parameter must either be a python code snippet or a callable method or function object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2097"/>
+        <location line="+9"/>
         <source>A menu element of type &apos;separator&apos; can not execute some code. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2102"/>
+        <location line="+5"/>
         <source>A menu element of type &apos;separator&apos; can not execute any function or method. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2110"/>
+        <location line="+8"/>
         <source>A menu element of type &apos;menu&apos; can not execute some code. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="2115"/>
+        <location line="+5"/>
         <source>A menu element of type &apos;menu&apos; can not execute any function or method. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="209"/>
+        <location filename="../../plot/AbstractNode.h" line="+209"/>
         <source>Live data source for plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="279"/>
+        <location line="+70"/>
         <source>parameters in list could not be found in channels, in updateChannels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="323"/>
+        <location line="+44"/>
         <source>channel is not a sender in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="328"/>
+        <location line="+5"/>
         <source>unknown channel in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="59"/>
-        <location filename="../../plot/AbstractFigure.cpp" line="103"/>
+        <location filename="../../plot/AbstractFigure.cpp" line="+59"/>
+        <location line="+44"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="67"/>
-        <location filename="../../plot/AbstractFigure.cpp" line="74"/>
+        <location line="-36"/>
+        <location line="+7"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="79"/>
+        <location line="+5"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="93"/>
+        <location line="+14"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="118"/>
-        <location filename="../../plot/AbstractFigure.cpp" line="143"/>
+        <location line="+25"/>
+        <location line="+25"/>
         <source>channel does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1895,32 +1918,32 @@ Type conflict for %1</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="104"/>
+        <location filename="../../plot/AbstractNode.cpp" line="+104"/>
         <source>Parameter: does not exist in updateParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="110"/>
+        <location line="+6"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="112"/>
+        <location line="+2"/>
         <source>Channel is already updating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="178"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+178"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="58"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+58"/>
         <source>Source data for plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="59"/>
+        <location line="+1"/>
         <source>Actual output data of plot</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1928,12 +1951,12 @@ Type conflict for %1</source>
 <context>
     <name>ScriptEditorOrganizer</name>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="112"/>
+        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+112"/>
         <source>Script Editor</source>
         <translation>Script-Editor</translation>
     </message>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="204"/>
+        <location line="+92"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
@@ -1941,178 +1964,178 @@ Type conflict for %1</source>
 <context>
     <name>ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="61"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+61"/>
         <source>Untitled%1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="240"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+240"/>
         <source>&amp;toggle bookmark</source>
-        <translation type="unfinished">Lesezeichen &amp;umschalten</translation>
+        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="241"/>
+        <location line="+1"/>
         <source>next bookmark</source>
         <translation>Nächstes Lesezeichen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="242"/>
+        <location line="+1"/>
         <source>previous bookmark</source>
         <translation>Vorheriges Lesezeichen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="243"/>
+        <location line="+1"/>
         <source>clear all bookmarks</source>
         <translation>Alle Lesezeichen löschen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="248"/>
+        <location line="+5"/>
         <source>&amp;toggle breakpoint</source>
-        <translation type="unfinished">Haltepunkt &amp;umschalten</translation>
+        <translation type="unfinished">Haltepunkt ein-/aus&amp;schalten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="249"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="373"/>
+        <location line="+1"/>
+        <location line="+124"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="250"/>
+        <location line="-123"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="251"/>
+        <location line="+1"/>
         <source>&amp;next breakpoint</source>
         <translation>&amp;Nächste Haltepunkt</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="252"/>
+        <location line="+1"/>
         <source>&amp;previous breakpoint</source>
         <translation>&amp;Vorheriger Haltepunkt</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="253"/>
+        <location line="+1"/>
         <source>&amp;clear all breakpoint</source>
         <translation>Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="258"/>
+        <location line="+5"/>
         <source>&amp;cut</source>
         <translation>&amp;Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="259"/>
+        <location line="+1"/>
         <source>cop&amp;y</source>
         <translation>&amp;Kopieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="260"/>
+        <location line="+1"/>
         <source>&amp;paste</source>
         <translation>&amp;Einfügen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="262"/>
+        <location line="+2"/>
         <source>&amp;indent</source>
-        <translation>Ein&amp;rücken</translation>
+        <translation>Zeileneinzug ver&amp;größern</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="263"/>
+        <location line="+1"/>
         <source>&amp;unindent</source>
-        <translation type="unfinished">&amp;Ausrücken</translation>
+        <translation>Zeileneinzug ver&amp;kleinern</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="264"/>
+        <location line="+1"/>
         <source>&amp;comment</source>
-        <translation type="unfinished">Ko&amp;mmentieren</translation>
+        <translation>&amp;Kommentieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="265"/>
+        <location line="+1"/>
         <source>unc&amp;omment</source>
-        <translation type="unfinished">&amp;Auskommentiert</translation>
+        <translation>Kommentierung &amp;aufheben</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="271"/>
+        <location line="+6"/>
         <source>&amp;run script</source>
         <translation>Skript &amp;starten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="272"/>
+        <location line="+1"/>
         <source>&amp;debug script</source>
         <translation>Skript im &amp;Debug-Modus starten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="273"/>
+        <location line="+1"/>
         <source>sto&amp;p script</source>
         <translation>Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="377"/>
+        <location line="+104"/>
         <source>&amp;enable breakpoint</source>
         <translation>Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="770"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="838"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="874"/>
+        <location line="+393"/>
+        <location line="+68"/>
+        <location line="+36"/>
         <source>unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="770"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="874"/>
+        <location line="-104"/>
+        <location line="+104"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="838"/>
+        <location line="-36"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="787"/>
+        <location line="-51"/>
         <source>error while opening file</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="787"/>
+        <location line="+0"/>
         <source>file %1 could not be loaded</source>
         <translation>Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="854"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="901"/>
+        <location line="+67"/>
+        <location line="+47"/>
         <source>error while accessing file</source>
         <translation>Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="854"/>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="901"/>
+        <location line="-47"/>
+        <location line="+47"/>
         <source>file %1 could not be accessed</source>
         <translation>Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="888"/>
+        <location line="-13"/>
         <source>save as...</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="1430"/>
+        <location line="+542"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="1431"/>
+        <location line="+1"/>
         <source>Keep this file in editor?</source>
         <translation>Diese Datei im Editor belassen?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="1449"/>
+        <location line="+18"/>
         <source>The file &apos;%1&apos; has been modified by another programm.</source>
         <translation>Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="1450"/>
+        <location line="+1"/>
         <source>Do you want to reload it?</source>
         <translation>Soll diese neu geladen werden?</translation>
     </message>
@@ -2128,27 +2151,27 @@ Type conflict for %1</source>
         <translation type="obsolete">Dateiname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="86"/>
+        <location filename="../widgets/userUiDialog.cpp" line="+86"/>
         <source>filename &apos;%s&apos; does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateiname &apos;%s&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="102"/>
+        <location line="+16"/>
         <source>ui-file could not be correctly parsed.</source>
         <translation>UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="111"/>
+        <location line="+9"/>
         <source>itom</source>
-        <translation type="unfinished">itom</translation>
+        <translation>itom</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="141"/>
+        <location line="+30"/>
         <source>content-widget is empty.</source>
         <translation type="unfinished">Element ist leer.</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="156"/>
+        <location line="+15"/>
         <source>dialog button role is unknown</source>
         <translation type="unfinished">Unbekannte Rolle des Dialog-Button</translation>
     </message>
@@ -2156,141 +2179,138 @@ Type conflict for %1</source>
 <context>
     <name>WidgetFindWord</name>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="14"/>
+        <location filename="../ui/widgetFindWord.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="63"/>
+        <location/>
         <source>find:</source>
         <translation>Suche:</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="82"/>
+        <location/>
         <source>type search text...</source>
-        <translation type="unfinished">Suchtext...</translation>
+        <translation>Suchtext...</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="101"/>
+        <location/>
         <source>up</source>
         <translation>Aufwärts</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="108"/>
+        <location/>
         <source>Shift+F3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="127"/>
+        <location/>
         <source>down</source>
         <translation>Abwärts</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="134"/>
+        <location/>
         <source>F3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="156"/>
+        <location/>
         <source>mark all</source>
         <translation>Alles markieren</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="167"/>
+        <location/>
         <source>reg expr</source>
         <translation>Reg. Ausdr.</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="174"/>
+        <location/>
         <source>whole word</source>
-        <translation type="unfinished">Ganzes Wort</translation>
+        <translation>Ganzes Wort</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="181"/>
+        <location/>
         <source>match case</source>
-        <translation type="unfinished">Groß/Klein</translation>
+        <translation>Groß/Klein</translation>
     </message>
     <message>
-        <location filename="../ui/widgetFindWord.ui" line="188"/>
+        <location/>
         <source>wrap around</source>
-        <translation type="unfinished">Vom Ende zum Anfang</translation>
+        <translation>Vom Ende zum Anfang</translation>
     </message>
 </context>
 <context>
     <name>WidgetInfoBox</name>
     <message>
-        <location filename="../ui/widgetInfoBox.ui" line="14"/>
+        <location filename="../ui/widgetInfoBox.ui"/>
         <source>Information</source>
-        <translation type="unfinished">Informationen</translation>
+        <translation>Informationen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetInfoBox.ui" line="32"/>
+        <location/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetInfoBox.ui" line="42"/>
+        <location/>
         <source>Close</source>
-        <translation type="unfinished">Schließen</translation>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>
     <name>WidgetPropConsoleWrap</name>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="14"/>
+        <location filename="../ui/widgetPropConsoleWrap.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="20"/>
+        <location/>
         <source>Line Wrap</source>
         <translation>Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="26"/>
+        <location/>
         <source>Lines are not wrapped</source>
         <translation>Zeile nicht umbrechen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="33"/>
+        <location/>
         <source>Lines are wrapped at word boundaries</source>
         <translation>Wortweiser Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="43"/>
+        <location/>
         <source>Lines are wrapped at character boundaries</source>
         <translation>Zeichenweiser Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="53"/>
+        <location/>
         <source>Visual Appearance</source>
         <translation type="unfinished">Anzeige</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="59"/>
+        <location/>
         <source>Flag at start of every wrapped line</source>
         <translation type="unfinished">Markierung zu Beginn jeder umgebrochenen Zeile</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="67"/>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="93"/>
+        <location/>
         <source>No wrap flag</source>
         <translation type="unfinished">Keine Markierung</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="72"/>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="98"/>
+        <location/>
         <source>Wrap flag displayed by the text</source>
         <translation type="unfinished">Markierung beim Text</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="77"/>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="103"/>
+        <location/>
         <source>Wrap flag displayed by the border</source>
         <translation type="unfinished">Markierung am Rand</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="85"/>
+        <location/>
         <source>Flag at end of every wrapped line</source>
         <translation type="unfinished">Markierung am Ende jeder umgebrochenen Zeile</translation>
     </message>
@@ -2299,27 +2319,27 @@ Type conflict for %1</source>
         <translation type="obsolete">Umgebrochene Unterzeile um diese Anzahl Zeichen einrücken:</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="111"/>
+        <location/>
         <source>Number of characters a wrapped line is indented by</source>
         <translation type="unfinished">Anzahl Zeichen beim Einrücken einer umbegrochenen Zeile</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="134"/>
+        <location/>
         <source>Wrap Indentation Mode</source>
         <translation type="unfinished">Einrückmodus beim Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="140"/>
+        <location/>
         <source>Wrapped sub-lines are indented by the amount indicated above</source>
         <translation type="unfinished">Umgebrochene Unterzeile mit oben angegebenem Wert einrücken</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="150"/>
+        <location/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line</source>
         <translation type="unfinished">Folgende Unterzeilen wie die erste Unterzeile einrücken</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="157"/>
+        <location/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line plus one mor level of indentation</source>
         <translation type="unfinished">Jede Unterzeilen um einen Einzug mehr einrücken als die Vorherige</translation>
     </message>
@@ -2327,49 +2347,49 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropEditorAPI</name>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.ui" line="14"/>
+        <location filename="../ui/widgetPropEditorAPI.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.ui" line="27"/>
+        <location/>
         <source>Add API</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.ui" line="37"/>
+        <location/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.ui" line="61"/>
+        <location/>
         <source>base path: </source>
         <translation>Stammverzeichnis: </translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.ui" line="75"/>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="166"/>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="174"/>
+        <location/>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="+166"/>
+        <location line="+8"/>
         <source>generate lookup table by API files</source>
         <translation type="unfinished">Generiere Umsetzungstabelle für die API-Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="47"/>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="-127"/>
         <source>base path for relative pathes: </source>
         <translation>Stammverzeichnis für relative Verzeichnisse: </translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="168"/>
+        <location line="+121"/>
         <source>The API generation has been finished</source>
         <translation>Die API-Generierung ist beendet</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="179"/>
+        <location line="+11"/>
         <source>cancel preparation</source>
         <translation type="unfinished">Erstellung abbrechen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="202"/>
+        <location line="+23"/>
         <source>API files are already up-to-date</source>
         <translation>API-Dateien sind bereits auf dem neusten Stand</translation>
     </message>
@@ -2377,57 +2397,57 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropEditorAutoCompletion</name>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="14"/>
+        <location filename="../ui/widgetPropEditorAutoCompletion.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="20"/>
+        <location/>
         <source>auto-completion enabled</source>
         <translation>Autovervollständigung aktivieren</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="31"/>
+        <location/>
         <source>threshold</source>
         <translation type="unfinished">Schwelle</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="60"/>
+        <location/>
         <source>Case sensitive</source>
         <translation>Groß-/Kleinschreibung berücksichtigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="67"/>
+        <location/>
         <source>Use fill-up characters</source>
         <translation type="unfinished">Füllzeichen benutzen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="74"/>
+        <location/>
         <source>replace word right of the cursor if entry from list is selected</source>
         <translation type="unfinished">Ersetze Wörter hinter dem Cursors wenn der Eintrag von der Liste ausgewählt wird</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="81"/>
+        <location/>
         <source>show single</source>
         <translation type="unfinished">Einzeln anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="88"/>
+        <location/>
         <source>Sources for auto-completion</source>
         <translation type="unfinished">Quelle der Autovervollständigung</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="94"/>
+        <location/>
         <source>Use all available sources</source>
         <translation type="unfinished">Verwendung aller verfügbaren Quellen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="101"/>
+        <location/>
         <source>Use text in the current document as source</source>
         <translation type="unfinished">Verwendung des Texts im aktuellen Dokument als Quelle</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="111"/>
+        <location/>
         <source>Use any installed APIs as source</source>
         <translation type="unfinished">Verwendung irgendwelcher installierten APIs als Quelle </translation>
     </message>
@@ -2435,42 +2455,42 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropEditorCalltips</name>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="14"/>
+        <location filename="../ui/widgetPropEditorCalltips.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="20"/>
+        <location/>
         <source>calltips enabled</source>
         <translation type="unfinished">Vorschläge aktivieren</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="31"/>
+        <location/>
         <source>number of calltips</source>
         <translation type="unfinished">Anzahl der Vorschläge</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="60"/>
+        <location/>
         <source>Context display options</source>
         <translation type="unfinished">Kontextanzeige-Optionen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="66"/>
+        <location/>
         <source>Don&apos;t show context information</source>
         <translation type="unfinished">Kontextinformationen nicht anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="73"/>
+        <location/>
         <source>Show context information, if no prior autocompletion</source>
         <translation type="unfinished">Nur Kontextinformationen anzeigen wenn die Autovervollständigung nichts liefert</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="83"/>
+        <location/>
         <source>Show context information</source>
         <translation>Kontextinformationen immer anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorCalltips.ui" line="97"/>
+        <location/>
         <source>A context is any scope (e.g. Python module) prior to the function/method name</source>
         <translation type="unfinished">Ein Kontext ist jeder Bereich (z. B. Python-Modul) vor dem Namen der Funktion/Methode</translation>
     </message>
@@ -2478,92 +2498,92 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropEditorGeneral</name>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="14"/>
+        <location filename="../ui/widgetPropEditorGeneral.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="20"/>
+        <location/>
         <source>Indentation</source>
         <translation type="unfinished">Einzug</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="28"/>
+        <location/>
         <source>Auto Indentation</source>
         <translation type="unfinished">Automatischer Einzug</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="35"/>
+        <location/>
         <source>Show Indentation Guides</source>
         <translation type="unfinished">Einzugsmarker anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="42"/>
+        <location/>
         <source>Use tabs for indentation</source>
         <translation type="unfinished">Tabs als Einzug verwenden</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="49"/>
+        <location/>
         <source>Show Whitespace</source>
         <translation type="unfinished">Leerzeichen anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="60"/>
+        <location/>
         <source>Indentation Width</source>
         <translation type="unfinished">Einzugsgröße</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="89"/>
+        <location/>
         <source>Indentation Warning</source>
         <translation type="unfinished">Warnungen beim Einrücken</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="95"/>
+        <location/>
         <source>Indentation is displayed as being bad, if...</source>
         <translation type="unfinished">Warnen wenn...</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="102"/>
+        <location/>
         <source>no warning</source>
         <translation type="unfinished">keine Warnung</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="115"/>
+        <location/>
         <source>indentation is made up of a different combination (tabs/spaces) compared to previous line</source>
         <translation type="unfinished">der Einzug zweier aufeinanderfolgender Zeilen unterschiedlich erstellt wurden (Tabs/Leerzeichen)</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="122"/>
+        <location/>
         <source>indentation is made up of spaces followed by tabs</source>
         <translation type="unfinished">der Einzug aus einer Kombination von Leerzeichen und Tabs besteht</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="129"/>
+        <location/>
         <source>indentation contains spaces</source>
         <translation type="unfinished">der Einzug Leerzeichen enthält</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="136"/>
+        <location/>
         <source>indentation contains tabs</source>
         <translation type="unfinished">der Einzug Tabs enthält</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="149"/>
+        <location/>
         <source>End-of-line (EOL) mode</source>
         <translation type="unfinished">Zeilenende-Modus</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="155"/>
+        <location/>
         <source>Windows</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="162"/>
+        <location/>
         <source>Unix</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="169"/>
+        <location/>
         <source>Mac</source>
         <translation></translation>
     </message>
@@ -2571,42 +2591,42 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropEditorStyles</name>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="14"/>
+        <location filename="../ui/widgetPropEditorStyles.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="33"/>
+        <location/>
         <source>Foreground Color</source>
         <translation type="unfinished">Vordergundsfarbe</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="46"/>
+        <location/>
         <source>Background Color</source>
         <translation>Hintergrundsfarbe</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="59"/>
+        <location/>
         <source>Font</source>
         <translation>Schriftart</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="66"/>
+        <location/>
         <source>Fill to end of line</source>
         <translation type="unfinished">Bis Zeilenende ausfüllen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="102"/>
+        <location/>
         <source>Sample Text</source>
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.cpp" line="130"/>
+        <location filename="../ui/widgetPropEditorStyles.cpp" line="+130"/>
         <source>choose background color</source>
         <translation>Hintergrundfarbe auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.cpp" line="163"/>
+        <location line="+33"/>
         <source>choose foreground color</source>
         <translation type="unfinished">Vordergrundsfarbe auswählen</translation>
     </message>
@@ -2614,22 +2634,22 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropFigurePlugins</name>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.ui" line="14"/>
+        <location filename="../ui/widgetPropFigurePlugins.ui"/>
         <source>Form</source>
         <translation type="unfinished">Fenster</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.ui" line="20"/>
+        <location/>
         <source>Installed Figure and Plot Plugins</source>
         <translation type="unfinished">Installierte Figures und Plugins</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.ui" line="54"/>
+        <location/>
         <source>Default Figures</source>
         <translation type="unfinished">Standard Figures</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.ui" line="85"/>
+        <location/>
         <source>Reset to standard</source>
         <translation type="unfinished">Zurücksetzen</translation>
     </message>
@@ -2637,17 +2657,17 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.ui" line="14"/>
+        <location filename="../ui/widgetPropGeneralApplication.ui"/>
         <source>Form</source>
         <translation type="unfinished">Fenster</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.ui" line="20"/>
+        <location/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.ui" line="26"/>
+        <location/>
         <source>show message before closing the application</source>
         <translation type="unfinished">Nachricht vor dem Schließen anzeigen</translation>
     </message>
@@ -2655,12 +2675,12 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropGeneralLanguage</name>
     <message>
-        <location filename="../ui/widgetPropGeneralLanguage.ui" line="14"/>
+        <location filename="../ui/widgetPropGeneralLanguage.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropGeneralLanguage.ui" line="22"/>
+        <location/>
         <source>Current Language:</source>
         <translation>Aktuelle Sprache:</translation>
     </message>
@@ -2669,13 +2689,13 @@ Type conflict for %1</source>
         <translation type="obsolete">Aktuelle Sprache:</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropGeneralLanguage.ui" line="32"/>
+        <location/>
         <source>Affected after program restart!</source>
         <translation>Einstellung wird erst nach einem Programmneustart wirksam!</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropGeneralLanguage.cpp" line="112"/>
-        <location filename="../ui/widgetPropGeneralLanguage.cpp" line="131"/>
+        <location filename="../ui/widgetPropGeneralLanguage.cpp" line="+112"/>
+        <location line="+19"/>
         <source>Current Language: </source>
         <translation>Aktuelle Sprache: </translation>
     </message>
@@ -2683,27 +2703,27 @@ Type conflict for %1</source>
 <context>
     <name>WidgetPropPythonStartup</name>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.ui" line="14"/>
+        <location filename="../ui/widgetPropPythonStartup.ui"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.ui" line="27"/>
+        <location/>
         <source>Add File</source>
         <translation type="unfinished">Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.ui" line="37"/>
+        <location/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.ui" line="61"/>
+        <location/>
         <source>base path: </source>
         <translation type="unfinished">Basis-Ordner: </translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.cpp" line="41"/>
+        <location filename="../ui/widgetPropPythonStartup.cpp" line="+41"/>
         <source>base path for relative pathes: </source>
         <translation type="unfinished">Basis-Ordner für relative Verzeichnisse: </translation>
     </message>
@@ -2711,24 +2731,24 @@ Type conflict for %1</source>
 <context>
     <name>WorkspaceWidget</name>
     <message>
-        <location filename="../widgets/workspaceWidget.cpp" line="53"/>
+        <location filename="../widgets/workspaceWidget.cpp" line="+53"/>
         <source>Globals</source>
         <translation type="unfinished">Global</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceWidget.cpp" line="53"/>
-        <location filename="../widgets/workspaceWidget.cpp" line="57"/>
+        <location line="+0"/>
+        <location line="+4"/>
         <source>Value</source>
         <translation>Wert</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceWidget.cpp" line="53"/>
-        <location filename="../widgets/workspaceWidget.cpp" line="57"/>
+        <location line="-4"/>
+        <location line="+4"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceWidget.cpp" line="57"/>
+        <location line="+0"/>
         <source>Locals</source>
         <translation type="unfinished">Lokal</translation>
     </message>
@@ -2736,13 +2756,13 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="93"/>
+        <location filename="../widgets/AIManagerWidget.cpp" line="+93"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="97"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="357"/>
+        <location line="+4"/>
+        <location line="+260"/>
         <source>Show Plugin Toolbox</source>
         <translation type="unfinished">Plugin-Toolbox anzeigen</translation>
     </message>
@@ -2751,7 +2771,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="106"/>
+        <location line="-251"/>
         <source>Close Instance</source>
         <translation type="unfinished">Instanz schließen</translation>
     </message>
@@ -2760,226 +2780,226 @@ Type conflict for %1</source>
         <translation type="obsolete">An Python senden</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="102"/>
+        <location line="-4"/>
         <source>New Instance...</source>
         <translation type="unfinished">Neue Instanz...</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="110"/>
+        <location line="+8"/>
         <source>Send to Python...</source>
         <translation type="unfinished">An Python senden...</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="114"/>
+        <location line="+4"/>
         <source>Close all</source>
         <translation type="unfinished">Alles schließen</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="118"/>
+        <location line="+4"/>
         <source>Live Image...</source>
         <translation type="unfinished">Livebild...</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="122"/>
+        <location line="+4"/>
         <source>Snap Dialog...</source>
         <translation type="unfinished">Aufnahmedialog...</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="126"/>
+        <location line="+4"/>
         <source>Info...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="130"/>
+        <location line="+4"/>
         <source>Open Widget...</source>
         <translation type="unfinished">Fenster öffnen...</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="231"/>
+        <location line="+101"/>
         <source>List</source>
         <translation type="unfinished">Liste</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="233"/>
+        <location line="+2"/>
         <source>Details</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="240"/>
+        <location line="+7"/>
         <source>settings</source>
         <translation type="unfinished">Einstellungen</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="255"/>
+        <location line="+15"/>
         <source>plugins</source>
         <translation type="unfinished">Plugins</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="352"/>
+        <location line="+97"/>
         <source>Hide Plugin Toolbox</source>
         <translation type="unfinished">Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="448"/>
+        <location line="+96"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="449"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="483"/>
+        <location line="+1"/>
+        <location line="+34"/>
         <source>Error while creating new instance</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="476"/>
+        <location line="-7"/>
         <source>warning while creating new instance. Message: %1</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="477"/>
+        <location line="+1"/>
         <source>Warning while creating new instance</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="482"/>
+        <location line="+5"/>
         <source>error while creating new instance. Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="501"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="615"/>
+        <location line="+19"/>
+        <location line="+114"/>
         <source>Timeout</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="501"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="615"/>
+        <location line="-114"/>
+        <location line="+114"/>
         <source>Python did not response to the request within a certain timeout.</source>
         <translation type="unfinished">Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="509"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="623"/>
+        <location line="-106"/>
+        <location line="+114"/>
         <source>warning while sending instance to python. Message: %1</source>
         <translation type="unfinished">Warnung beim Senden der Instanz an Python. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="510"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="624"/>
+        <location line="-113"/>
+        <location line="+114"/>
         <source>Warning while sending instance to python</source>
         <translation type="unfinished">Warnung beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="515"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="629"/>
+        <location line="-109"/>
+        <location line="+114"/>
         <source>error while sending instance to python. Message: %1</source>
         <translation type="unfinished">Fehler beim Senden der Instanz an Python. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="516"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="630"/>
+        <location line="-113"/>
+        <location line="+114"/>
         <source>Error while sending instance to python</source>
         <translation type="unfinished">Fehler beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="521"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="636"/>
+        <location line="-109"/>
+        <location line="+115"/>
         <source>Python not available</source>
         <translation type="unfinished">Python nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="521"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="636"/>
+        <location line="-115"/>
+        <location line="+115"/>
         <source>The Python engine is not available</source>
         <translation type="unfinished">Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="550"/>
-        <location filename="../widgets/AIManagerWidget.cpp" line="554"/>
+        <location line="-86"/>
+        <location line="+4"/>
         <source>closing not possible</source>
         <translation type="unfinished">Schließen nicht möglich</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="550"/>
+        <location line="-4"/>
         <source>this instance cannot be closed by GUI since it has been created by Python</source>
         <translation type="unfinished">Diese Instanz kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="554"/>
+        <location line="+4"/>
         <source>this instance can temporarily not be closed since it is still in use by another element.</source>
         <translation type="unfinished">Diese Instanz kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="564"/>
+        <location line="+10"/>
         <source>final closing not possible</source>
         <translation type="unfinished">Endgültiges Schließen nicht möglich</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="564"/>
+        <location line="+0"/>
         <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
         <translation type="unfinished">Diese Instanz kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="573"/>
+        <location line="+9"/>
         <source>warning while closing instance. Message: %1</source>
         <translation type="unfinished">Warnung beim Schließen der Instanz. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="574"/>
+        <location line="+1"/>
         <source>Warning while closing instance</source>
         <translation type="unfinished">Warnung beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="579"/>
+        <location line="+5"/>
         <source>error while closing instance. Message: %1</source>
         <translation type="unfinished">Fehler beim Schließen der Instanz. Nachricht: %1</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="580"/>
+        <location line="+1"/>
         <source>Error while closing instance</source>
         <translation type="unfinished">Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="605"/>
+        <location line="+25"/>
         <source>Python variable name</source>
         <translation type="unfinished">Variablenname in Python</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="605"/>
+        <location line="+0"/>
         <source>Python variable name for saving this instance in global workspace</source>
         <translation type="unfinished">Variablenname in Python um diese Instanz in den globalen Workspace zu schreiben</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="605"/>
+        <location line="+0"/>
         <source>instance</source>
         <translation type="unfinished">Instanz</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="705"/>
+        <location line="+100"/>
         <source>Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters</source>
         <translation type="unfinished">Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="731"/>
+        <location line="+26"/>
         <source>User interface of plugin could not be created. Returned handle is invalid.</source>
         <translation type="unfinished">Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="737"/>
+        <location line="+6"/>
         <source>could not find instance of UiOrganizer</source>
         <translation type="unfinished">Die Instanz des UI-Organizers konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="745"/>
+        <location line="+8"/>
         <source>Error while opening user interface from plugin.</source>
         <translation type="unfinished">Fehler beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="755"/>
+        <location line="+10"/>
         <source>Warning while opening user interface from plugin.</source>
         <translation type="unfinished">Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
@@ -2987,7 +3007,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="211"/>
+        <location filename="../../plot/AbstractDObjFigure.cpp" line="+211"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation type="unfinished">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
@@ -2995,12 +3015,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="101"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+101"/>
         <source>stay on top</source>
         <translation type="unfinished">Im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="104"/>
+        <location line="+3"/>
         <source>stay on top of main window</source>
         <translation type="unfinished">Hauptfenster im Vordergrund anzeigen</translation>
     </message>
@@ -3012,17 +3032,17 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="221"/>
+        <location filename="../../plot/AbstractFigure.cpp" line="+78"/>
         <source>stay on top of all windows</source>
         <translation type="unfinished">Iim Vordergrund vor allen Fenstern anzeigen</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="225"/>
+        <location line="+4"/>
         <source>stay on top of main window</source>
         <translation type="unfinished">Iim Vordergrund vor dem Hauptfenster anzeigen</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="230"/>
+        <location line="+5"/>
         <source>window</source>
         <translation>Fenster</translation>
     </message>
@@ -3030,21 +3050,21 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractFilterDialog</name>
     <message>
-        <location filename="../ui/abstractFilterDialog.cpp" line="106"/>
-        <location filename="../ui/abstractFilterDialog.cpp" line="116"/>
-        <location filename="../ui/abstractFilterDialog.cpp" line="126"/>
-        <location filename="../ui/abstractFilterDialog.cpp" line="162"/>
-        <location filename="../ui/abstractFilterDialog.cpp" line="180"/>
+        <location filename="../ui/abstractFilterDialog.cpp" line="+106"/>
+        <location line="+10"/>
+        <location line="+10"/>
+        <location line="+36"/>
+        <location line="+18"/>
         <source>size</source>
         <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <location filename="../ui/abstractFilterDialog.cpp" line="141"/>
+        <location line="-39"/>
         <source>dims</source>
         <translation type="unfinished">Dimensionen</translation>
     </message>
     <message>
-        <location filename="../ui/abstractFilterDialog.cpp" line="145"/>
+        <location line="+4"/>
         <source>type</source>
         <translation type="unfinished">Typ</translation>
     </message>
@@ -3052,12 +3072,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="675"/>
+        <location filename="../../common/addInInterface.cpp" line="+675"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="682"/>
+        <location line="+7"/>
         <source>Destructor must be overwritten</source>
         <translation type="unfinished">Destruktor muss überschrieben werden</translation>
     </message>
@@ -3065,22 +3085,22 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="774"/>
+        <location line="+92"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="973"/>
+        <location filename="../../common/addInInterface.h" line="+973"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="974"/>
+        <location line="+1"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei optionalen Parametern!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="975"/>
+        <location line="+1"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Rückgabeparametern!</translation>
     </message>
@@ -3088,12 +3108,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="203"/>
+        <location filename="../../common/addInInterface.cpp" line="-571"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="379"/>
+        <location line="+176"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
     </message>
@@ -3101,43 +3121,43 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="392"/>
+        <location line="+13"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="399"/>
+        <location line="+7"/>
         <source>Destructor must be overwritten</source>
         <translation type="unfinished">Destruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="414"/>
+        <location line="+15"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="418"/>
+        <location line="+4"/>
         <source>this object already has been registered as listener</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="430"/>
+        <location line="+12"/>
         <source>timer could not be set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="455"/>
+        <location line="+25"/>
         <source>the object could not been removed from the listener list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="547"/>
-        <location filename="../../common/addInInterface.cpp" line="567"/>
-        <location filename="../../common/addInInterface.cpp" line="585"/>
-        <location filename="../../common/addInInterface.cpp" line="603"/>
-        <location filename="../../common/addInInterface.cpp" line="621"/>
-        <location filename="../../common/addInInterface.cpp" line="639"/>
-        <location filename="../../common/addInInterface.cpp" line="657"/>
+        <location line="+92"/>
+        <location line="+20"/>
+        <location line="+18"/>
+        <location line="+18"/>
+        <location line="+18"/>
+        <location line="+18"/>
+        <location line="+18"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
     </message>
@@ -3145,18 +3165,18 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../common/addInGrabber.cpp" line="85"/>
-        <location filename="../../common/addInGrabber.cpp" line="100"/>
+        <location filename="../../common/addInGrabber.cpp" line="+85"/>
+        <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInGrabber.cpp" line="218"/>
+        <location line="+118"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/addInGrabber.cpp" line="222"/>
+        <location line="+4"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3164,19 +3184,18 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="254"/>
         <source>directory %1 could not be found</source>
-        <translation>Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="259"/>
+        <location filename="../organizer/addInManager.cpp" line="+259"/>
         <source>plugins folder could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="298"/>
+        <location line="+39"/>
         <source>filename is no AddIn-library: %1</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; ist kein AddIn</translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
     <message>
         <source>error loading plugin: %1</source>
@@ -3199,93 +3218,128 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Typ des AddIn mit dem Dateiname &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="324"/>
-        <source>Unable to load translation file %1.</source>
-        <translation type="unfinished"></translation>
+        <location line="-44"/>
+        <source>directory &apos;%1&apos; could not be found</source>
+        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="336"/>
+        <location line="+71"/>
+        <source>Unable to load translation file &apos;%1&apos;.</source>
+        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Unable to find translation file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="377"/>
+        <location line="+41"/>
         <source>AddIn with filename &apos;%1&apos;is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="399"/>
+        <location line="+22"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="406"/>
+        <location line="+7"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="411"/>
+        <location line="+5"/>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
         <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="416"/>
+        <location line="+5"/>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="426"/>
+        <location line="+10"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="484"/>
+        <location line="+18"/>
+        <source>%1 (DataIO) loaded</source>
+        <translation type="unfinished">%1 (DataIO) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1 (Actuator) loaded</source>
+        <translation type="unfinished">%1 (Motor) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>error initializing plugin: %1</source>
         <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="507"/>
+        <location line="+23"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
         <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="594"/>
+        <location line="+36"/>
+        <source>Filter %1 loaded</source>
+        <translation>Filter %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+51"/>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
         <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="666"/>
-        <location filename="../organizer/addInManager.cpp" line="736"/>
+        <location line="+30"/>
+        <source>Widget %1 loaded</source>
+        <translation type="unfinished">Widget %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <location line="+70"/>
         <source>plugin not found</source>
         <translation>Plugin nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="895"/>
-        <location filename="../organizer/addInManager.cpp" line="1030"/>
-        <location filename="../organizer/addInManager.cpp" line="1159"/>
+        <location line="+159"/>
+        <location line="+135"/>
+        <location line="+129"/>
         <source>Wrong plugin name</source>
         <translation>Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="916"/>
-        <location filename="../organizer/addInManager.cpp" line="1051"/>
+        <location line="-243"/>
+        <location line="+135"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
         <translation>Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="938"/>
+        <location line="-113"/>
         <source>timeout while initializing dataIO</source>
         <translation>Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="979"/>
-        <location filename="../organizer/addInManager.cpp" line="1111"/>
-        <location filename="../organizer/addInManager.cpp" line="1203"/>
+        <location line="+41"/>
+        <location line="+132"/>
+        <location line="+92"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
         <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="1072"/>
+        <location line="-131"/>
         <source>timeout while initializing actuator</source>
         <translation>Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
@@ -3293,150 +3347,150 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AlgoInterfaceValidator</name>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="80"/>
+        <location filename="../organizer/algoInterfaceValidator.cpp" line="+80"/>
         <source>interface not found</source>
         <translation type="unfinished">Schnittstelle nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="114"/>
+        <location line="+34"/>
         <source>DataObject [in/out]</source>
         <translation type="unfinished">DataObjekt [ein/aus]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="115"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="122"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="129"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="136"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="143"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="150"/>
+        <location line="+1"/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
         <source>filename</source>
         <translation type="unfinished">Dateiname</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="121"/>
+        <location line="-29"/>
         <source>PointCloud [in/out]</source>
         <translation type="unfinished">Punktewolke [ein/aus]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="128"/>
+        <location line="+7"/>
         <source>PolygonMesh [in/out]</source>
         <translation type="unfinished">Polygon [ein/aus]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="135"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="156"/>
+        <location line="+7"/>
+        <location line="+21"/>
         <source>DataObject [in]</source>
         <translation type="unfinished">DataObjekt [ein]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="142"/>
+        <location line="-14"/>
         <source>PointCloud [in]</source>
         <translation type="unfinished">Punktewolke [ein]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="149"/>
+        <location line="+7"/>
         <source>PolygonMesh [in]</source>
         <translation type="unfinished">Polygon [ein]</translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="314"/>
+        <location line="+165"/>
         <source>Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="320"/>
+        <location line="+6"/>
         <source>Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="326"/>
+        <location line="+6"/>
         <source>Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="353"/>
+        <location line="+27"/>
         <source>The given algorithm interface is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="364"/>
+        <location line="+11"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="372"/>
+        <location line="+8"/>
         <source>In/Out flags of parameter &apos;%s&apos; are unequal to required flags of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="395"/>
+        <location line="+23"/>
         <source>The parameter &apos;%s&apos; is restricted by meta information while the interface parameter &apos;%s&apos; is not.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="401"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="413"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="438"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="463"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="488"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="540"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="589"/>
+        <location line="+6"/>
+        <location line="+12"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+52"/>
+        <location line="+49"/>
         <source>The type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="426"/>
+        <location line="-163"/>
         <source>The allowed integer range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="451"/>
+        <location line="+25"/>
         <source>The allowed char range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="476"/>
+        <location line="+25"/>
         <source>The allowed double range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="494"/>
+        <location line="+18"/>
         <source>The string type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="517"/>
+        <location line="+23"/>
         <source>String &apos;%s&apos;, requested by meta data of interface parameter &apos;%s&apos; could not be found in meta data of parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="547"/>
+        <location line="+30"/>
         <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="563"/>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="575"/>
+        <location line="+16"/>
+        <location line="+12"/>
         <source>The minimum and maximum dimensions of the data object of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="597"/>
+        <location line="+22"/>
         <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="602"/>
+        <location line="+5"/>
         <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="617"/>
+        <location line="+15"/>
         <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/algoInterfaceValidator.cpp" line="625"/>
+        <location line="+8"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3444,17 +3498,17 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::CallStackDockWidget</name>
     <message>
-        <location filename="../widgets/callStackDockWidget.cpp" line="59"/>
+        <location filename="../widgets/callStackDockWidget.cpp" line="+59"/>
         <source>file</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location filename="../widgets/callStackDockWidget.cpp" line="59"/>
+        <location line="+0"/>
         <source>line</source>
         <translation type="unfinished">Zeile</translation>
     </message>
     <message>
-        <location filename="../widgets/callStackDockWidget.cpp" line="59"/>
+        <location line="+0"/>
         <source>method</source>
         <translation type="unfinished">Methode</translation>
     </message>
@@ -3462,40 +3516,40 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="124"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+124"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="130"/>
+        <location line="+6"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin</source>
         <translation type="unfinished">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="139"/>
+        <location line="+9"/>
         <source>DesignerWidget in file &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation type="unfinished">Designer-Widget in Datei &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="175"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="180"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="185"/>
+        <location line="+36"/>
+        <location line="+5"/>
+        <location line="+5"/>
         <source>Figure &apos;%s&apos; does not correspond to the minimum requirements</source>
         <translation type="unfinished">Figure &apos;%s&apos; entspricht nicht den Mindestvoraussetzungen</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="194"/>
+        <location line="+9"/>
         <source>Figure &apos;%s&apos; not found</source>
         <translation type="unfinished">Figure &apos;%s&apos; nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="246"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="302"/>
+        <location line="+52"/>
+        <location line="+56"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="293"/>
+        <location line="-9"/>
         <source>no plot figure plugin could be found that fits to the given category.</source>
         <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie übereinstimmt.</translation>
     </message>
@@ -3503,49 +3557,49 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogOpenFileWithFilter</name>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="52"/>
+        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+52"/>
         <source>The name must start with a letter followed by numbers or letters [a-z] or [A-Z]</source>
         <translation type="unfinished">Der Name muss mit einem Buchstaben, gefolgt von Ziffern oder Buchstaben [a-z] oder [A-Z], beginnen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="119"/>
+        <location line="+67"/>
         <source>Python variable name missing</source>
         <translation type="unfinished">Python Variablenname fehlt</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="119"/>
+        <location line="+0"/>
         <source>You have to give a variable name, under which the loaded item is saved in the global workspace</source>
         <translation type="unfinished">Für den globalen Bereich muss ein Variablenname vergeben werden</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="176"/>
+        <location line="+57"/>
         <source>loading...</source>
         <translation type="unfinished">laden...</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="182"/>
+        <location line="+6"/>
         <source>Invalid parameters.</source>
         <translation type="unfinished">Ungültige Parameter.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="209"/>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="225"/>
+        <location line="+27"/>
+        <location line="+16"/>
         <source>An error occurred while loading the file.</source>
         <translation type="unfinished">Beim Laden der Datei ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="211"/>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="227"/>
+        <location line="-14"/>
+        <location line="+16"/>
         <source>Error while loading file</source>
         <translation type="unfinished">Fehler beim Laden der Datei</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="258"/>
+        <location line="+31"/>
         <source>Procedure still running</source>
         <translation type="unfinished">Wird noch ausgeführt</translation>
     </message>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="258"/>
+        <location line="+0"/>
         <source>The file is still being loaded. Please wait...</source>
         <translation type="unfinished">Die Datei wird noch geladen. Bitte warten...</translation>
     </message>
@@ -3553,42 +3607,42 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogPluginPicker</name>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="149"/>
+        <location filename="../ui/dialogPluginPicker.cpp" line="+149"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="150"/>
-        <location filename="../ui/dialogPluginPicker.cpp" line="186"/>
+        <location line="+1"/>
+        <location line="+36"/>
         <source>Error while creating new instance</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="179"/>
+        <location line="-7"/>
         <source>warning while creating new instance. Message: %1</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="180"/>
+        <location line="+1"/>
         <source>Warning while creating new instance</source>
         <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="185"/>
+        <location line="+5"/>
         <source>error while creating new instance. Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
 Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="211"/>
+        <location line="+26"/>
         <source>choose plugin</source>
         <translation type="unfinished">Plugin auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="211"/>
+        <location line="+0"/>
         <source>Please choose plugin you want to create a new instance from</source>
         <translation type="unfinished">Bitte Plugin zur Erzeugung einer neuen Instanz auswählen</translation>
     </message>
@@ -3596,153 +3650,153 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="47"/>
+        <location filename="../ui/dialogProperties.cpp" line="+47"/>
         <source>Properties</source>
         <translation type="unfinished">Optionen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="134"/>
+        <location line="+87"/>
         <source>Editor</source>
         <translation type="unfinished">Editor</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="134"/>
+        <location line="+0"/>
         <source>Editor - please choose subpage</source>
         <translation type="unfinished">Editor - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="135"/>
-        <location filename="../ui/dialogProperties.cpp" line="144"/>
+        <location line="+1"/>
+        <location line="+9"/>
         <source>General</source>
         <translation type="unfinished">Allgemein</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="135"/>
+        <location line="-9"/>
         <source>Editor - General</source>
         <translation type="unfinished">Editor - Allgemein</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="136"/>
+        <location line="+1"/>
         <source>API</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="136"/>
+        <location line="+0"/>
         <source>Editor - API files</source>
         <translation type="unfinished">Editor - API-Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="137"/>
+        <location line="+1"/>
         <source>Calltips</source>
         <translation type="unfinished">Verschläge</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="137"/>
+        <location line="+0"/>
         <source>Editor - calltips</source>
         <translation type="unfinished">Editor - Vorschläge</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="138"/>
+        <location line="+1"/>
         <source>Auto Completion</source>
         <translation type="unfinished">Autovervollständigung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="138"/>
+        <location line="+0"/>
         <source>Editor - auto completion</source>
         <translation type="unfinished">Editor - Autovervollständigung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="139"/>
+        <location line="+1"/>
         <source>Styles</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="139"/>
+        <location line="+0"/>
         <source>Editor - styles</source>
         <translation type="unfinished">Editor - Ansicht</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="140"/>
+        <location line="+1"/>
         <source>Console</source>
         <translation type="unfinished">Konsole</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="140"/>
+        <location line="+0"/>
         <source>Console - please choose subpage</source>
         <translation type="unfinished">Konsole - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="141"/>
+        <location line="+1"/>
         <source>Line Wrap</source>
         <translation type="unfinished">Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="141"/>
+        <location line="+0"/>
         <source>Console - Line Wrap</source>
         <translation type="unfinished">Konsole - Zeilenumbruch</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="142"/>
+        <location line="+1"/>
         <source>Python</source>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="142"/>
+        <location line="+0"/>
         <source>Python - please choose subpage</source>
         <translation type="unfinished">Python - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="143"/>
+        <location line="+1"/>
         <source>Startup</source>
         <translation type="unfinished">Autostart</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="143"/>
+        <location line="+0"/>
         <source>Python - startups</source>
         <translation type="unfinished">Python-Autostart</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="144"/>
+        <location line="+1"/>
         <source>General - please choose subpage</source>
         <translation type="unfinished">Allgemein - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="145"/>
+        <location line="+1"/>
         <source>Language</source>
         <translation type="unfinished">Sprache</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="145"/>
+        <location line="+0"/>
         <source>General - language</source>
         <translation type="unfinished">Allgemein - Sprache</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="146"/>
+        <location line="+1"/>
         <source>Application</source>
         <translation type="unfinished">Anwendung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="146"/>
+        <location line="+0"/>
         <source>General - application</source>
         <translation type="unfinished">Allgemein - Anwendung</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="147"/>
+        <location line="+1"/>
         <source>Plots and Figures</source>
         <translation type="unfinished">Plots und Figures</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="147"/>
+        <location line="+0"/>
         <source>Plots and Figures - please choose subpage</source>
         <translation type="unfinished">Plots und Figures - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="148"/>
+        <location line="+1"/>
         <source>Default Plots</source>
         <translation type="unfinished">Standard-Plots</translation>
     </message>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="148"/>
+        <location line="+0"/>
         <source>Plots and Figures - Defaults</source>
         <translation type="unfinished">Plots und Figures - Standard</translation>
     </message>
@@ -3750,12 +3804,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogReplace</name>
     <message>
-        <location filename="../ui/dialogReplace.cpp" line="280"/>
+        <location filename="../ui/dialogReplace.cpp" line="+281"/>
         <source>Expand</source>
         <translation type="unfinished">Erweitert</translation>
     </message>
     <message>
-        <location filename="../ui/dialogReplace.cpp" line="290"/>
+        <location line="+10"/>
         <source>Collaps</source>
         <translation type="unfinished">Einfach</translation>
     </message>
@@ -3763,161 +3817,161 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::FileSystemDockWidget</name>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="81"/>
+        <location filename="../widgets/fileSystemDockWidget.cpp" line="+81"/>
         <source>last used directories</source>
         <translation>Zuletzt verwendetet Verzeichnisse</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="111"/>
+        <location line="+30"/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="252"/>
+        <location line="+141"/>
         <source>open new folder</source>
         <translation>Neues Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="254"/>
+        <location line="+2"/>
         <source>change to parent folder</source>
         <translation>Zum übergeordneten Verzeichnis wechseln</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="256"/>
+        <location line="+2"/>
         <source>open file</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="258"/>
+        <location line="+2"/>
         <source>execute file</source>
         <translation>Datei ausführen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="260"/>
+        <location line="+2"/>
         <source>locate on disk</source>
         <translation>Verzeichnis anzeigen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="262"/>
+        <location line="+2"/>
         <source>rename</source>
         <translation>Umbenennen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="262"/>
+        <location line="+0"/>
         <source>F2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="264"/>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="785"/>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="798"/>
+        <location line="+2"/>
+        <location line="+521"/>
+        <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="266"/>
+        <location line="-532"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="268"/>
+        <location line="+2"/>
         <source>copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="270"/>
+        <location line="+2"/>
         <source>paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="272"/>
+        <location line="+2"/>
         <source>create new folder</source>
         <translation>Neuen Ordner erstellen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="274"/>
+        <location line="+2"/>
         <source>create new python file</source>
         <translation>Neue Python-Datei erstellen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="277"/>
+        <location line="+3"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="279"/>
+        <location line="+2"/>
         <source>Details</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="302"/>
+        <location line="+23"/>
         <source>settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="317"/>
+        <location line="+15"/>
         <source>file system</source>
         <translation>Dateisystem</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="444"/>
+        <location line="+127"/>
         <source>Itom Files</source>
         <translation>ITOM-Dateien</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="538"/>
+        <location line="+94"/>
         <source>Directory &apos;%1&apos; does not existing!</source>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="615"/>
+        <location line="+77"/>
         <source>select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="782"/>
+        <location line="+167"/>
         <source> the selected items</source>
         <translation>en die ausgewählten Objekte</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="785"/>
+        <location line="+3"/>
         <source>Do you really want to delete%1 ?</source>
         <translation>Soll%1 wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="798"/>
+        <location line="+13"/>
         <source>Error while deleting &apos;%1&apos;!</source>
         <translation>Fehler beim Löschen von &apos;%1&apos;!</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="889"/>
+        <location line="+91"/>
         <source>Error pasting items</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="889"/>
+        <location line="+0"/>
         <source>The selected items could not be pasted from the clipboard. Maybe their URLs already exist</source>
         <translation>Die markierten Objekte konnten nicht aus der Zwischenablage eingefügt werden. Vielleicht existieren die Objekte bereits</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="914"/>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="938"/>
+        <location line="+25"/>
+        <location line="+24"/>
         <source>New Folder</source>
         <translation>Neuer Ordner</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="938"/>
+        <location line="+0"/>
         <source>Failed to create a new directory</source>
         <translation>Fehler beim Erstellen des neuen Ordners</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="962"/>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="990"/>
+        <location line="+24"/>
+        <location line="+28"/>
         <source>New Script</source>
         <translation>Neues Skript</translation>
     </message>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="990"/>
+        <location line="+0"/>
         <source>Failed to create a new script</source>
         <translation>Fehler beim Erstellen einer neuen Python-Datei</translation>
     </message>
@@ -3925,240 +3979,240 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::IOHelper</name>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="59"/>
+        <location filename="../helper/IOHelper.cpp" line="+59"/>
         <source>File &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="62"/>
+        <location line="+3"/>
         <source>file does not exist</source>
         <translation type="unfinished">Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="107"/>
-        <location filename="../helper/IOHelper.cpp" line="740"/>
+        <location line="+45"/>
+        <location line="+633"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="107"/>
+        <location line="-633"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="137"/>
+        <location line="+30"/>
         <source>File &apos;%1&apos; could not be opened with registered external application</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknüpften externen Anwendung geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="140"/>
+        <location line="+3"/>
         <source>file could not be opened with external application</source>
         <translation type="unfinished">Datei konnte nicht mit der externen Anwendung geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="148"/>
+        <location line="+8"/>
         <source>File &apos;%1&apos; can not be opened with this application</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="151"/>
+        <location line="+3"/>
         <source>file can not be opened with this application</source>
         <translation type="unfinished">Datei kan mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="186"/>
+        <location line="+35"/>
         <source>Save selected variables as...</source>
         <translation type="unfinished">Speichern der markierten Variablen als...</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="208"/>
-        <location filename="../helper/IOHelper.cpp" line="269"/>
-        <location filename="../helper/IOHelper.cpp" line="362"/>
+        <location line="+22"/>
+        <location line="+61"/>
+        <location line="+93"/>
         <source>python engine not available</source>
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="213"/>
-        <location filename="../helper/IOHelper.cpp" line="367"/>
+        <location line="-149"/>
+        <location line="+154"/>
         <source>variables cannot be imported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="223"/>
+        <location line="-144"/>
         <source>timeout while getting value from workspace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="232"/>
+        <location line="+9"/>
         <source>the number of values returned from workspace does not correspond to requested number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="243"/>
+        <location line="+11"/>
         <source>An error occurred while saving to file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="245"/>
+        <location line="+2"/>
         <source>Error while saving file</source>
         <translation type="unfinished">Fehler beim Speichern</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="262"/>
-        <location filename="../helper/IOHelper.cpp" line="355"/>
+        <location line="+17"/>
+        <location line="+93"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="274"/>
+        <location line="-81"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="288"/>
+        <location line="+14"/>
         <source>timeout while pickling variables</source>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Pickeln&quot; von Variablen</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="302"/>
+        <location line="+14"/>
         <source>timeout while saving variables to matlab file</source>
         <translation type="unfinished">Zeitüberschreitung beim Speichern von Variablen in eine Matlab-Datei</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="309"/>
-        <location filename="../helper/IOHelper.cpp" line="400"/>
+        <location line="+7"/>
+        <location line="+91"/>
         <source>suffix must be *.idc or *.mat</source>
         <translation type="unfinished">Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="324"/>
+        <location line="-76"/>
         <source>Import data</source>
         <translation type="unfinished">Daten importieren</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="341"/>
+        <location line="+17"/>
         <source>file not found</source>
         <translation type="unfinished">Datei nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="380"/>
+        <location line="+39"/>
         <source>timeout while unpickling variables</source>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="393"/>
+        <location line="+13"/>
         <source>timeout while loading matlab variables</source>
         <translation type="unfinished">Zeitüberschreitung beim Laden von Matlab-Variablen</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="413"/>
+        <location line="+20"/>
         <source>open python script</source>
         <translation type="unfinished">Python-Skript öffnen</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="413"/>
+        <location line="+0"/>
         <source>python (*.py)</source>
         <translation type="unfinished">Python (*.py)</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="446"/>
+        <location line="+33"/>
         <source>timeout while opening script</source>
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="647"/>
+        <location line="+201"/>
         <source>The algorithm interface is not supported</source>
         <translation type="unfinished">Die Algorithmusschnittstelle wird nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="657"/>
+        <location line="+10"/>
         <source>Timeout while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="657"/>
+        <location line="+0"/>
         <source>A timeout occurred while content of loaded file has been sent to python workspace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="669"/>
+        <location line="+12"/>
         <source>An error occured while sending the content of the loaded file to the python workspace.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="670"/>
+        <location line="+1"/>
         <source>Error while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="674"/>
+        <location line="+4"/>
         <source>A warning occured while sending the content of the loaded file to the python workspace.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="675"/>
+        <location line="+1"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="685"/>
+        <location line="+10"/>
         <source>AlgoInterfaceValidator not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="695"/>
+        <location line="+10"/>
         <source>AddInManager or PythonEngine not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="725"/>
+        <location line="+30"/>
         <source>There is no plugin interface able to save the requested file type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="740"/>
+        <location line="+15"/>
         <source>Multiple plugins provide methods to save the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="776"/>
+        <location line="+36"/>
         <source>algorithm interface not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="808"/>
+        <location line="+32"/>
         <source>error while getting mand and out parameters from algorithm interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="813"/>
+        <location line="+5"/>
         <source>AlgoInterfaceValidator not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="819"/>
+        <location line="+6"/>
         <source>AddInManager not available</source>
         <translation type="unfinished">AddInManager nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="830"/>
+        <location line="+11"/>
         <source>Python Scripts (*.py)</source>
         <translation type="unfinished">Python-Skripts (*.py)</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="830"/>
-        <location filename="../helper/IOHelper.cpp" line="834"/>
+        <location line="+0"/>
+        <location line="+4"/>
         <source>Itom Data Collection (*.idc)</source>
         <translation type="unfinished">Itom Datensammlung (*.idc)</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="830"/>
-        <location filename="../helper/IOHelper.cpp" line="834"/>
+        <location line="-4"/>
+        <location line="+4"/>
         <source>Matlab Matrix (*.mat)</source>
         <translation type="unfinished">Matlab-Matrizen (*.mat)</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="830"/>
+        <location line="-4"/>
         <source>User Interfaces (*.ui)</source>
         <translation type="unfinished">Eigene Fenster (*.ui)</translation>
     </message>
@@ -4171,7 +4225,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">ITOM-Dateien (*.idc *.mat)</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="924"/>
+        <location line="+94"/>
         <source>All Files (*.*)</source>
         <translation type="unfinished">Alle Dateien (*.*)</translation>
     </message>
@@ -4179,255 +4233,255 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="91"/>
+        <location filename="../widgets/mainWindow.cpp" line="+91"/>
         <source>itom</source>
         <translation type="unfinished">itom</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="116"/>
+        <location line="+25"/>
         <source>Breakpoints</source>
         <translation type="unfinished">Haltepunkte</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="122"/>
+        <location line="+6"/>
         <source>File System</source>
         <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="129"/>
+        <location line="+7"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="140"/>
+        <location line="+11"/>
         <source>Global Variables</source>
         <translation type="unfinished">Globale Variablen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="147"/>
+        <location line="+7"/>
         <source>Local Variables</source>
         <translation type="unfinished">Lokale Variablen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="160"/>
+        <location line="+13"/>
         <source>Plugins</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="381"/>
+        <location line="+221"/>
         <source>New Script</source>
         <translation type="unfinished">Neues Skript</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="385"/>
+        <location line="+4"/>
         <source>Open File</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="389"/>
+        <location line="+4"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="392"/>
+        <location line="+3"/>
         <source>Properties</source>
         <translation>Optionen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="395"/>
+        <location line="+3"/>
         <source>About Qt</source>
         <translation>Über QT</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="399"/>
+        <location line="+4"/>
         <source>About itom</source>
         <translation type="unfinished">Über iTOM</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="402"/>
+        <location line="+3"/>
         <source>Loaded plugins...</source>
         <translation type="unfinished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="405"/>
+        <location line="+3"/>
         <source>Assistant</source>
         <translation>Assistent</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="409"/>
+        <location line="+4"/>
         <source>UI Designer</source>
         <translation type="unfinished">UI-Designer</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="412"/>
+        <location line="+3"/>
         <source>Run python code in debug mode</source>
         <translation type="unfinished">Python-Code im Debug-Modus ausführen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="413"/>
+        <location line="+1"/>
         <source>set whether internal python code should be executed in debug mode</source>
         <translation type="unfinished">Interner Pyhton-Code wird im Debug-Modus ausgeführt</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="421"/>
+        <location line="+8"/>
         <source>stop</source>
         <translation type="unfinished">Stop</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="422"/>
+        <location line="+1"/>
         <source>Shift+F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="426"/>
+        <location line="+4"/>
         <source>continue</source>
         <translation type="unfinished">Fortsetzen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="427"/>
+        <location line="+1"/>
         <source>F6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="431"/>
+        <location line="+4"/>
         <source>step</source>
         <translation type="unfinished">Einzelschritt</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="432"/>
+        <location line="+1"/>
         <source>F11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="436"/>
+        <location line="+4"/>
         <source>step over</source>
         <translation type="unfinished">Prozedurschritt</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="437"/>
+        <location line="+1"/>
         <source>F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="441"/>
+        <location line="+4"/>
         <source>step out</source>
         <translation type="unfinished">Ausführen bis Rücksprung</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="442"/>
+        <location line="+1"/>
         <source>Shift+F11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="447"/>
+        <location line="+5"/>
         <source>Reload modules...</source>
         <translation type="unfinished">Geladene Module...</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="454"/>
+        <location line="+7"/>
         <source>Application</source>
         <translation type="unfinished">Anwendung</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="459"/>
+        <location line="+5"/>
         <source>Tools</source>
         <translation type="unfinished">Tools</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="464"/>
+        <location line="+5"/>
         <source>About</source>
         <translation type="unfinished">Über</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="468"/>
+        <location line="+4"/>
         <source>Python</source>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="475"/>
+        <location line="+7"/>
         <source>File</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="482"/>
+        <location line="+7"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="484"/>
+        <location line="+2"/>
         <source>Toolboxes</source>
         <translation type="unfinished">Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="487"/>
+        <location line="+3"/>
         <source>Script</source>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="498"/>
+        <location line="+11"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="514"/>
+        <location line="+16"/>
         <source>Ready</source>
         <translation type="unfinished">Fertig</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="536"/>
-        <location filename="../widgets/mainWindow.cpp" line="551"/>
-        <location filename="../widgets/mainWindow.cpp" line="578"/>
+        <location line="+22"/>
+        <location line="+15"/>
+        <location line="+27"/>
         <source>python is being executed</source>
         <translation type="unfinished">Python wird ausgeführt</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="646"/>
+        <location line="+68"/>
         <source>open file</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="923"/>
+        <location line="+277"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="951"/>
+        <location line="+28"/>
         <source>no menu element is indicated</source>
         <translation type="unfinished">Es wurde kein Menüelement erkannt</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="978"/>
+        <location line="+27"/>
         <source>The menu item &apos;%s&apos; does already exist but is no menu type</source>
         <translation type="unfinished">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="987"/>
+        <location line="+9"/>
         <source>menu item already exists.</source>
         <translation type="unfinished">Das Menüelement existiert bereits.</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="1026"/>
+        <location line="+39"/>
         <source>Invalid typeID.</source>
         <translation type="unfinished">Ungültige Typ-ID.</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="1035"/>
-        <location filename="../widgets/mainWindow.cpp" line="1039"/>
+        <location line="+9"/>
+        <location line="+4"/>
         <source>Add menu element</source>
         <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="1098"/>
+        <location line="+59"/>
         <source>Remove menu element</source>
         <translation type="unfinished">Menüelement löschen</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="1098"/>
+        <location line="+0"/>
         <source>A user-defined menu with the key sequence &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="1109"/>
+        <location line="+11"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
     </message>
@@ -4435,76 +4489,76 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::ParamInputParser</name>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="52"/>
-        <location filename="../ui/paramInputParser.cpp" line="142"/>
-        <location filename="../ui/paramInputParser.cpp" line="214"/>
+        <location filename="../ui/paramInputParser.cpp" line="+52"/>
+        <location line="+90"/>
+        <location line="+72"/>
         <source>Canvas widget does not exist any more</source>
         <translation type="unfinished">Container existiert nicht länger</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="86"/>
+        <location line="-128"/>
         <source>[Integer]</source>
         <translation type="unfinished">Ganzzahl</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="90"/>
+        <location line="+4"/>
         <source>[Char]</source>
         <translation type="unfinished">[Zeichen]</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="94"/>
+        <location line="+4"/>
         <source>[Double]</source>
         <translation type="unfinished">Kommazahl</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="98"/>
+        <location line="+4"/>
         <source>[String]</source>
         <translation type="unfinished">Text</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="102"/>
+        <location line="+4"/>
         <source>[HW-Instance]</source>
         <translation type="unfinished">[HW-Instanz]</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="106"/>
+        <location line="+4"/>
         <source>[unknown]</source>
         <translation type="unfinished">[unbekannt]</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="154"/>
-        <location filename="../ui/paramInputParser.cpp" line="226"/>
+        <location line="+48"/>
+        <location line="+72"/>
         <source>QT error: Grid layout could not be identified</source>
         <translation type="unfinished">QT-Fehler: Grid Layout kann nicht identifiziert werden</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="188"/>
+        <location line="-38"/>
         <source>The parameter &apos;%1&apos; is invalid.</source>
         <translation type="unfinished">Der Parameter &apos;%1&apos; ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="193"/>
+        <location line="+5"/>
         <source>Invalid input</source>
         <translation type="unfinished">Ungültiger Input</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="271"/>
+        <location line="+78"/>
         <source>checked: 1, unchecked: 0</source>
         <translation type="unfinished">ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="443"/>
-        <location filename="../ui/paramInputParser.cpp" line="465"/>
+        <location line="+172"/>
+        <location line="+22"/>
         <source>QT error: Spin box widget could not be found</source>
         <translation type="unfinished">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="483"/>
+        <location line="+18"/>
         <source>QT error: Double spin box widget could not be found</source>
         <translation type="unfinished">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="505"/>
+        <location line="+22"/>
         <source>QT error: String input widget could not be found</source>
         <translation type="unfinished">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
     </message>
@@ -4512,87 +4566,87 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::PlugInModel</name>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location filename="../models/PlugInModel.cpp" line="+37"/>
         <source>Name</source>
         <translation type="unfinished">Name</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>Type</source>
         <translation type="unfinished">Typ</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>Version</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>Filename</source>
         <translation type="unfinished">Dateiname</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>Author</source>
         <translation type="unfinished">Autor</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>min. itom Version</source>
         <translation type="unfinished">min. ITOM-Version</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>max. itom Version</source>
         <translation type="unfinished">max. ITOM-Version</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="37"/>
+        <location line="+0"/>
         <source>Description</source>
         <translation type="unfinished">Beschreibung</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="696"/>
-        <location filename="../models/PlugInModel.cpp" line="1039"/>
+        <location line="+659"/>
+        <location line="+343"/>
         <source>Motor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="700"/>
-        <location filename="../models/PlugInModel.cpp" line="1047"/>
+        <location line="-339"/>
+        <location line="+347"/>
         <source>Grabber</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="704"/>
-        <location filename="../models/PlugInModel.cpp" line="1051"/>
+        <location line="-343"/>
+        <location line="+347"/>
         <source>ADDA</source>
         <translation type="unfinished">ADDA Wandler</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="708"/>
-        <location filename="../models/PlugInModel.cpp" line="1055"/>
+        <location line="-343"/>
+        <location line="+347"/>
         <source>Raw IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="712"/>
-        <location filename="../models/PlugInModel.cpp" line="1043"/>
+        <location line="-343"/>
+        <location line="+331"/>
         <source>Algorithm</source>
         <translation type="unfinished">Algorithmus</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="930"/>
+        <location line="-113"/>
         <source>Filter</source>
         <translation type="unfinished">Filter</translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="932"/>
+        <location line="+2"/>
         <source>Widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/PlugInModel.cpp" line="1035"/>
+        <location line="+103"/>
         <source>DataIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4600,17 +4654,17 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::QsciApiManager</name>
     <message>
-        <location filename="../organizer/qsciApiManager.cpp" line="278"/>
+        <location filename="../organizer/qsciApiManager.cpp" line="+278"/>
         <source>The python syntax documents have changed. The API has been updated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/qsciApiManager.cpp" line="320"/>
+        <location line="+42"/>
         <source>The generation of the python syntax API has been cancelled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/qsciApiManager.cpp" line="336"/>
+        <location line="+16"/>
         <source>The python syntax documents have changed. The API is being updated...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4618,310 +4672,310 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="200"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+200"/>
         <source>file open</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="227"/>
+        <location line="+27"/>
         <source>file not found</source>
         <translation type="unfinished">Datei nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="227"/>
+        <location line="+0"/>
         <source>the file %1 could not be found</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="239"/>
+        <location line="+12"/>
         <source>invalid file format</source>
         <translation type="unfinished">Unzulässiges Dateiformat</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="239"/>
+        <location line="+0"/>
         <source>the file %1 is no python macro</source>
         <translation type="unfinished">Die Datei &apos;%1&apos;  ist keine Python-Makro</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="286"/>
+        <location line="+47"/>
         <source>The following files have been changed and should be safed:</source>
         <translation type="unfinished">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="763"/>
+        <location line="+477"/>
         <source>move left</source>
         <translation type="unfinished">Nach Links verschieben</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="766"/>
+        <location line="+3"/>
         <source>move right</source>
         <translation type="unfinished">Nach rechts verschieben</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="769"/>
+        <location line="+3"/>
         <source>move first</source>
         <translation type="unfinished">An den Anfang verschieben</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="772"/>
+        <location line="+3"/>
         <source>move last</source>
         <translation type="unfinished">Ans Ende verschieben</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="775"/>
+        <location line="+3"/>
         <source>close</source>
         <translation type="unfinished">Schließen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="778"/>
+        <location line="+3"/>
         <source>close others</source>
         <translation type="unfinished">Alle anderen schließen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="781"/>
+        <location line="+3"/>
         <source>close all</source>
         <translation type="unfinished">Alles schließen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="784"/>
+        <location line="+3"/>
         <source>dock</source>
         <translation type="unfinished">Andocken</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="787"/>
+        <location line="+3"/>
         <source>undock</source>
         <translation type="unfinished">Lösen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="790"/>
+        <location line="+3"/>
         <source>new</source>
         <translation type="unfinished">Neu</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="793"/>
+        <location line="+3"/>
         <source>open</source>
         <translation type="unfinished">Öffnen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="796"/>
+        <location line="+3"/>
         <source>save</source>
         <translation type="unfinished">Speichern</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="799"/>
+        <location line="+3"/>
         <source>save as...</source>
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="802"/>
+        <location line="+3"/>
         <source>save all</source>
         <translation type="unfinished">Alles speichern</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="805"/>
+        <location line="+3"/>
         <source>cut</source>
         <translation type="unfinished">Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="808"/>
+        <location line="+3"/>
         <source>copy</source>
         <translation type="unfinished">Kopieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="811"/>
+        <location line="+3"/>
         <source>paste</source>
         <translation type="unfinished">Einfügen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="814"/>
+        <location line="+3"/>
         <source>undo</source>
         <translation type="unfinished">Rückgängig</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="817"/>
+        <location line="+3"/>
         <source>redo</source>
         <translation type="unfinished">Wiederholen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="820"/>
+        <location line="+3"/>
         <source>comment</source>
         <translation type="unfinished">Kommentieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="820"/>
+        <location line="+0"/>
         <source>Ctrl+R</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="823"/>
+        <location line="+3"/>
         <source>uncomment</source>
         <translation type="unfinished">Auskommentieren</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="823"/>
+        <location line="+0"/>
         <source>Ctrl+Shift+R</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="826"/>
+        <location line="+3"/>
         <source>indent</source>
         <translation type="unfinished">Einrücken</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="829"/>
+        <location line="+3"/>
         <source>unindent</source>
         <translation type="unfinished">Ausrücken</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="832"/>
+        <location line="+3"/>
         <source>run</source>
         <translation type="unfinished">Start</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="832"/>
+        <location line="+0"/>
         <source>F5</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="835"/>
+        <location line="+3"/>
         <source>debug</source>
         <translation type="unfinished">Debug</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="835"/>
-        <location filename="../widgets/scriptDockWidget.cpp" line="841"/>
+        <location line="+0"/>
+        <location line="+6"/>
         <source>F6</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="838"/>
+        <location line="-3"/>
         <source>stop</source>
         <translation type="unfinished">Stop</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="838"/>
+        <location line="+0"/>
         <source>Shift+F10</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="841"/>
+        <location line="+3"/>
         <source>continue</source>
         <translation type="unfinished">Fortsetzen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="844"/>
+        <location line="+3"/>
         <source>step</source>
         <translation type="unfinished">Einzelschritt</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="844"/>
+        <location line="+0"/>
         <source>F11</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="847"/>
+        <location line="+3"/>
         <source>step over</source>
         <translation type="unfinished">Prozedurschritt</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="847"/>
+        <location line="+0"/>
         <source>F10</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="850"/>
+        <location line="+3"/>
         <source>step out</source>
         <translation type="unfinished">Ausführen bis Rücksprung</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="850"/>
+        <location line="+0"/>
         <source>Shift+F11</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="853"/>
+        <location line="+3"/>
         <source>quick search...</source>
         <translation type="unfinished">Schnellsuche...</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="1486"/>
-        <location filename="../widgets/scriptDockWidget.cpp" line="1524"/>
+        <location line="+633"/>
+        <location line="+38"/>
         <source>find and replace</source>
         <translation type="unfinished">Suchen und Ersetzen</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="1486"/>
+        <location line="-38"/>
         <source>&apos;%1&apos; was not found</source>
         <translation type="unfinished">&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="1524"/>
+        <location line="+38"/>
         <source>%1 occurrence(s) was replaced</source>
         <translation type="unfinished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="856"/>
+        <location line="-668"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="856"/>
+        <location line="+0"/>
         <source>find and replace...</source>
         <translation type="unfinished">Suchen und Ersetzen...</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="859"/>
+        <location line="+3"/>
         <source>icon&amp;bowser</source>
         <translation type="unfinished">Sym&amp;bolsucher</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="859"/>
+        <location line="+0"/>
         <source>Ctrl+B</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="862"/>
+        <location line="+3"/>
         <source>goto...</source>
         <translation type="unfinished">Gehe zu...</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="862"/>
+        <location line="+0"/>
         <source>Ctrl+G</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="900"/>
+        <location line="+38"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="912"/>
+        <location line="+12"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="930"/>
+        <location line="+18"/>
         <source>&amp;Script</source>
         <translation type="unfinished">&amp;Skript</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="940"/>
+        <location line="+10"/>
         <source>&amp;Windows</source>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="970"/>
+        <location line="+30"/>
         <source>script editor</source>
         <translation type="unfinished">Skript-Editor</translation>
     </message>
@@ -4929,358 +4983,381 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="266"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+266"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="311"/>
+        <location line="+45"/>
         <source>widget is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="370"/>
+        <location line="+59"/>
         <source>widgets of type QDockWidget are not yet implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="432"/>
+        <location line="+62"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="508"/>
+        <location line="+76"/>
         <source>No internal dialog or window with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="565"/>
+        <location line="+57"/>
         <source>dialog could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="601"/>
+        <location line="+36"/>
         <source>filename does not exist</source>
         <translation type="unfinished">Dateiname existiert nicht</translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="625"/>
+        <location line="+24"/>
         <source>ui-file could not be correctly parsed.</source>
         <translation type="unfinished">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="673"/>
+        <location line="+48"/>
         <source>dock widget not implemented yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="737"/>
+        <location line="+64"/>
         <source>designer plugin widget could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="746"/>
+        <location line="+9"/>
         <source>No designer plugin with className &apos;%s&apos; could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="764"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="847"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="873"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="900"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="926"/>
+        <location line="+18"/>
+        <location line="+83"/>
+        <location line="+26"/>
+        <location line="+27"/>
+        <location line="+26"/>
         <source>dialog handle does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1064"/>
+        <location line="+138"/>
         <source>defaultButton must be within enum QMessageBox::StandardButton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1076"/>
+        <location line="+12"/>
         <source>buttons must be within enum QMessageBox::StandardButtons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1081"/>
+        <location line="+5"/>
         <source>defaultButton must appear in buttons, too.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1262"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1348"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1406"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1506"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1537"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1589"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1639"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1704"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1745"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1801"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1863"/>
+        <location line="+181"/>
+        <location line="+86"/>
+        <location line="+58"/>
+        <location line="+100"/>
+        <location line="+31"/>
+        <location line="+52"/>
+        <location line="+50"/>
+        <location line="+65"/>
+        <location line="+41"/>
+        <location line="+56"/>
+        <location line="+62"/>
         <source>object name is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1332"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1339"/>
+        <location line="-531"/>
+        <location line="+7"/>
         <source>at least one property could not be read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1383"/>
+        <location line="+44"/>
         <source>at least one property name does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1389"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1398"/>
+        <location line="+6"/>
+        <location line="+9"/>
         <source>at least one property could not be written</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1431"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1463"/>
+        <location line="+33"/>
+        <location line="+32"/>
         <source>The attribute number is out of range.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1440"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1472"/>
+        <location line="-23"/>
+        <location line="+32"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1549"/>
+        <location line="+77"/>
         <source>could not get reference to main dialog or window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1555"/>
+        <location line="+6"/>
         <source>uiHandle is invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1594"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1644"/>
+        <location line="+39"/>
+        <location line="+50"/>
         <source>no object name given.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1599"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1649"/>
+        <location line="-45"/>
+        <location line="+50"/>
         <source>The object ID of the parent widget is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1604"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1654"/>
+        <location line="-45"/>
+        <location line="+50"/>
         <source>The object ID of the parent widget is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1695"/>
+        <location line="+41"/>
         <source>parameter type %1 is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1733"/>
+        <location line="+38"/>
         <source>signal does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1739"/>
+        <location line="+6"/>
         <source>signal could not be connected to slot throwing a python keyboard interrupt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1795"/>
+        <location line="+56"/>
         <source>slot could not be found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="1937"/>
-        <location filename="../organizer/uiOrganizer.cpp" line="1979"/>
+        <location line="+142"/>
+        <location line="+42"/>
         <source>Plot window could not be loaded</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
+    <name>ito::UserModel</name>
+    <message>
+        <location filename="../models/UserModel.cpp" line="+35"/>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Id</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>role</source>
+        <translation>Rolle</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>iniFile</source>
+        <translation>INI-Datei</translation>
+    </message>
+</context>
+<context>
     <name>ito::WidgetPropFigurePlugins</name>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="72"/>
+        <location filename="../ui/widgetPropFigurePlugins.cpp" line="+72"/>
         <source>class name</source>
         <translation type="unfinished">Klassenname</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="73"/>
+        <location line="+1"/>
         <source>data types</source>
         <translation type="unfinished">Datentyp</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="74"/>
+        <location line="+1"/>
         <source>data formats</source>
         <translation type="unfinished">Datenformat</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="75"/>
+        <location line="+1"/>
         <source>features</source>
         <translation type="unfinished">Eigenschaften</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="76"/>
+        <location line="+1"/>
         <source>plot type</source>
         <translation type="unfinished">Anzeigetyp</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="77"/>
+        <location line="+1"/>
         <source>plugin file</source>
         <translation type="unfinished">Plugin-Datei</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="84"/>
+        <location line="+7"/>
         <source>DataObject - Line</source>
         <translation type="unfinished">Datenobjekt - Linie</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="85"/>
+        <location line="+1"/>
         <source>DataObject - Plane</source>
         <translation type="unfinished">Datenobjekt - Fläche</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="86"/>
+        <location line="+1"/>
         <source>DataObject - Plane Stack</source>
         <translation type="unfinished">Datenobjekt - Fläschenstapel</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="87"/>
+        <location line="+1"/>
         <source>Point Cloud</source>
         <translation type="unfinished">Punktewolke</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="88"/>
+        <location line="+1"/>
         <source>PolygonMesh</source>
         <translation type="unfinished">Polygon</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="93"/>
+        <location line="+5"/>
         <source>Gray8</source>
         <translation type="unfinished">Grau8</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="94"/>
+        <location line="+1"/>
         <source>Gray16</source>
         <translation type="unfinished">Grau16</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="95"/>
+        <location line="+1"/>
         <source>Gray32</source>
         <translation type="unfinished">Grau32</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="96"/>
+        <location line="+1"/>
         <source>RGB32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="97"/>
+        <location line="+1"/>
         <source>ARGB32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="98"/>
+        <location line="+1"/>
         <source>CMYK32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="99"/>
+        <location line="+1"/>
         <source>Float32</source>
         <translation type="unfinished">Fließkomma32</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="100"/>
+        <location line="+1"/>
         <source>Float64</source>
         <translation type="unfinished">Fließkomma64</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="101"/>
+        <location line="+1"/>
         <source>Complex</source>
         <translation type="unfinished">Komplex</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="106"/>
+        <location line="+5"/>
         <source>Static</source>
         <translation type="unfinished">Statisch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="107"/>
+        <location line="+1"/>
         <source>Live</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="108"/>
+        <location line="+1"/>
         <source>Cartesian</source>
         <translation type="unfinished">
 Katesisch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="109"/>
+        <location line="+1"/>
         <source>Polar</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="110"/>
+        <location line="+1"/>
         <source>Cylindrical</source>
         <translation type="unfinished">Zylindrisch</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="111"/>
+        <location line="+1"/>
         <source>OpenGl</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="112"/>
+        <location line="+1"/>
         <source>Cuda</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="113"/>
+        <location line="+1"/>
         <source>X3D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="118"/>
+        <location line="+5"/>
         <source>Line Plot</source>
         <translation type="unfinished">Linien-Plot</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="119"/>
+        <location line="+1"/>
         <source>Image Plot</source>
         <translation type="unfinished">Bild-Plot</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="120"/>
+        <location line="+1"/>
         <source>Isometric Plot</source>
         <translation type="unfinished">Isometrischer Plot</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="121"/>
+        <location line="+1"/>
         <source>3D Plot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="138"/>
+        <location line="+17"/>
         <source>category</source>
         <translation type="unfinished">Kategorie</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="139"/>
+        <location line="+1"/>
         <source>description</source>
         <translation type="unfinished">Beschreibung</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="140"/>
+        <location line="+1"/>
         <source>default figure plot</source>
         <translation type="unfinished">Standardgrafik-Plot</translation>
     </message>
@@ -5288,47 +5365,47 @@ Katesisch</translation>
 <context>
     <name>ito::WorkspaceDockWidget</name>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="128"/>
+        <location filename="../widgets/workspaceDockWidget.cpp" line="+128"/>
         <source>delete item(s)</source>
         <translation type="unfinished">Objekt(e) löschen</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="130"/>
+        <location line="+2"/>
         <source>export item(s)</source>
         <translation type="unfinished">Objekt(e) exportieren</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="132"/>
+        <location line="+2"/>
         <source>import item(s)</source>
         <translation type="unfinished">Objekt(e) importieren</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="134"/>
+        <location line="+2"/>
         <source>rename item</source>
         <translation type="unfinished">Objekt umbenennen</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="134"/>
+        <location line="+0"/>
         <source>F2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="145"/>
+        <location line="+11"/>
         <source>script editor</source>
         <translation type="unfinished">Skript-Editor</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="188"/>
+        <location line="+43"/>
         <source>Do you really want to delete the selected variables?</source>
         <translation type="unfinished">Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="344"/>
+        <location line="+156"/>
         <source>renaming variable</source>
         <translation type="unfinished">Variable umbenennen</translation>
     </message>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="356"/>
+        <location line="+12"/>
         <source>timeout while renaming variables</source>
         <translation type="unfinished">Zeitüberschreitung beim umbenennen der Variablen</translation>
     </message>
@@ -5336,37 +5413,37 @@ Katesisch</translation>
 <context>
     <name>uiDebugViewer</name>
     <message>
-        <location filename="../widgets/uiDebugViewer.ui" line="17"/>
+        <location filename="../widgets/uiDebugViewer.ui"/>
         <source>Debug-Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Debug-Übersicht</translation>
     </message>
     <message>
-        <location filename="../widgets/uiDebugViewer.ui" line="60"/>
+        <location/>
         <source>global</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Global</translation>
     </message>
     <message>
-        <location filename="../widgets/uiDebugViewer.ui" line="63"/>
+        <location/>
         <source>global workspace variables</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Variablen im globalen Arbeitsbereich</translation>
     </message>
     <message>
-        <location filename="../widgets/uiDebugViewer.ui" line="78"/>
+        <location/>
         <source>local</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lokal</translation>
     </message>
     <message>
-        <location filename="../widgets/uiDebugViewer.ui" line="86"/>
+        <location/>
         <source>PushButton</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ok</translation>
     </message>
 </context>
 <context>
     <name>uiMainWindow</name>
     <message>
-        <location filename="../widgets/uiMainWindow.ui" line="14"/>
+        <location filename="../widgets/uiMainWindow.ui"/>
         <source>iTOM</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>
