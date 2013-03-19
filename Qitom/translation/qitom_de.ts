@@ -1634,7 +1634,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="+556"/>
+        <location filename="../python/pythonPlugins.cpp" line="+558"/>
         <source>timeout while getting name parameter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1690,7 +1690,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+253"/>
+        <location line="+376"/>
         <source>timeout while setting absolute position</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1700,7 +1700,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+51"/>
         <source>Itom ActuatorPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1710,7 +1710,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+484"/>
+        <location line="+610"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2368,28 +2368,38 @@ Type conflict for %1</source>
     </message>
     <message>
         <location/>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="+166"/>
-        <location line="+8"/>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="+173"/>
+        <location line="+9"/>
         <source>generate lookup table by API files</source>
         <translation type="unfinished">Generiere Umsetzungstabelle für die API-Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="-127"/>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="-136"/>
         <source>base path for relative pathes: </source>
         <translation>Stammverzeichnis für relative Verzeichnisse: </translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+89"/>
+        <source>load python api file</source>
+        <translation type="unfinished">Pyhton API-Dateien laden</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>python api file (*.api)</source>
+        <translation>Pyhton API-Dateien (*.api)</translation>
+    </message>
+    <message>
+        <location line="+40"/>
         <source>The API generation has been finished</source>
         <translation>Die API-Generierung ist beendet</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
         <source>cancel preparation</source>
         <translation type="unfinished">Erstellung abbrechen</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>API files are already up-to-date</source>
         <translation>API-Dateien sind bereits auf dem neusten Stand</translation>
     </message>
@@ -3188,7 +3198,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+259"/>
+        <location filename="../organizer/addInManager.cpp" line="+260"/>
         <source>plugins folder could not be found</source>
         <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
@@ -3342,6 +3352,16 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="-131"/>
         <source>timeout while initializing actuator</source>
         <translation>Zeitüberschreitung während der Initialisierung von Actuator</translation>
+    </message>
+    <message>
+        <location line="+616"/>
+        <source>no dock widget available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>addin not available</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3863,13 +3883,13 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+521"/>
+        <location line="+488"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-532"/>
+        <location line="-499"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -3919,7 +3939,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation>ITOM-Dateien</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+61"/>
         <source>Directory &apos;%1&apos; does not existing!</source>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
