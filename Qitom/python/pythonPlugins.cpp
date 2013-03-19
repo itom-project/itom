@@ -41,6 +41,8 @@
 
 #include "pythontParamConversion.h"
 #include "pythonSharedPointerGuard.h"
+#include <qdockwidget.h>
+#include <qaction.h>
 
 using namespace ito;
 
@@ -55,7 +57,7 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
 {
     if (retval.containsError())
     {
-		if(retval.errorMessage())
+		if (retval.errorMessage())
 		{
 			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
 		}
@@ -96,7 +98,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
     {
         QByteArray name = functionName.toAscii();
         char* msg = retval.errorMessage();
-        if(msg)
+        if (msg)
         {
             //PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s\n", name.data(), msg);
             PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg);
@@ -320,15 +322,15 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 
    aib->getParamList(&paramList);
 
-    if(length == 1)
+    if (length == 1)
     {
-        if(!PyArg_ParseTuple(args, "i", &output))
+        if (!PyArg_ParseTuple(args, "i", &output))
         {
             PyErr_Format(PyExc_ValueError, "wrong input parameter");
             return NULL;
         }
     }
-    else if(length > 1)
+    else if (length > 1)
     {
         PyErr_Format(PyExc_ValueError, "wrong number of input arguments");
         return NULL;
@@ -395,23 +397,23 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
     const char* funcName = NULL;
     QString funcNameString("");
 
-    if(length == 1)
+    if (length == 1)
     {
-        if(!PyArg_ParseTuple(args, "s", &funcName))
+        if (!PyArg_ParseTuple(args, "s", &funcName))
         {
             PyErr_Format(PyExc_ValueError, "wrong input parameter, must be [string[, integer]]");
             return NULL;
         }
     }
-    if(length == 2)
+    if (length == 2)
     {
-        if(!PyArg_ParseTuple(args, "si", &funcName, &detailLevel))
+        if (!PyArg_ParseTuple(args, "si", &funcName, &detailLevel))
         {
             PyErr_Format(PyExc_ValueError, "wrong input parameter, must be [string[, integer]]");
             return NULL;
         }
     }
-    else if(length > 2)
+    else if (length > 2)
     {
         PyErr_Format(PyExc_ValueError, "wrong number of input arguments");
         return NULL;
@@ -424,17 +426,17 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
 
     if (funcList && funcList->size() > 0)
     {
-        if(funcName != NULL)
+        if (funcName != NULL)
             funcNameString = QString(funcName);
 
         QStringList execFuncs = funcList->keys();
         PyObject *execFuncslist = NULL;
 
-        if(execFuncs.size() > 0)
+        if (execFuncs.size() > 0)
         {
             
             
-            if(!funcNameString.isEmpty() && execFuncs.contains(funcNameString))    // got an exect match
+            if (!funcNameString.isEmpty() && execFuncs.contains(funcNameString))    // got an exect match
             {
                 (*funcList)[funcNameString].infoString;
                 (*funcList)[funcNameString].paramsMand;
@@ -495,12 +497,12 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
 
                 for (int funcs = 0; funcs < execFuncs.size(); funcs++)
                 {  
-                    if(longname < execFuncs.value(funcs).length())
+                    if (longname < execFuncs.value(funcs).length())
                         longname = execFuncs.value(funcs).length();
 
                     outPut.append(QPair<QString, QString>(execFuncs.value(funcs), (*funcList)[execFuncs.value(funcs)].infoString));
 
-                    PyObject *text = PythonQtConversion::QByteArrayToPyUnicodeSecure( (*funcList)[execFuncs.value(funcs)].infoString.toAscii() );
+                    PyObject *text = PythonQtConversion::QByteArrayToPyUnicodeSecure((*funcList)[execFuncs.value(funcs)].infoString.toAscii());
                     PyDict_SetItemString(result, execFuncs.value(funcs).toAscii().data() , text);
                     Py_DECREF(text);
                     text = NULL;
@@ -574,15 +576,15 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 {
     ito::RetVal ret = ito::retOk;
     QMap<QString, ExecFuncParams> *funcList;
-    QSharedPointer<QVector<ito::ParamBase> > paramsMand(new QVector<ito::ParamBase>() );
-    QSharedPointer<QVector<ito::ParamBase> > paramsOpt(new QVector<ito::ParamBase>() );
-    QSharedPointer<QVector<ito::ParamBase> > paramsOut(new QVector<ito::ParamBase>() );
+    QSharedPointer<QVector<ito::ParamBase> > paramsMand(new QVector<ito::ParamBase>());
+    QSharedPointer<QVector<ito::ParamBase> > paramsOpt(new QVector<ito::ParamBase>());
+    QSharedPointer<QVector<ito::ParamBase> > paramsOut(new QVector<ito::ParamBase>());
     QString name;
     int argsLength = PyTuple_Size(args);
     PyObject *pyObj = NULL;
     bool ok;
 
-    if(argsLength < 1)
+    if (argsLength < 1)
     {
         ret += ito::RetVal(ito::retError,0,QObject::tr("you must provide at least one parameter with the name of the function").toAscii().data());
     }
@@ -590,18 +592,18 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
     {
         pyObj = PyTuple_GET_ITEM(args,0); //borrowed
         name = PythonQtConversion::PyObjGetString(pyObj,true,ok);
-        if(!ok)
+        if (!ok)
         {
             ret += ito::RetVal(ito::retError,0,QObject::tr("the first function name parameter can not be interpreted as string").toAscii().data());
         }
     }
     
-    if(!ret.containsError())
+    if (!ret.containsError())
     {
         ret += aib->getExecFuncList(&funcList);
         QMap<QString, ExecFuncParams>::const_iterator it = funcList->constFind(name);
 
-        if(it == funcList->constEnd())
+        if (it == funcList->constEnd())
         {
             ret += ito::RetVal::format(ito::retError,0,QObject::tr("plugin does not provide an execution of function '%s'").toAscii().data(),name.toAscii().data());
         }
@@ -611,14 +613,14 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
             pyObj = PyTuple_GetSlice(args, 1, argsLength); //new ref
 
             //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
-            ret += parseInitParams( &(*it).paramsMand, &(*it).paramsOpt, pyObj, kwds, *paramsMand, *paramsOpt);
+            ret += parseInitParams(&(*it).paramsMand, &(*it).paramsOpt, pyObj, kwds, *paramsMand, *paramsOpt);
 
             //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
-            ret += copyParamVector( &(*it).paramsOut, *paramsOut);
+            ret += copyParamVector(&(*it).paramsOut, *paramsOut);
 
             Py_XDECREF(pyObj);
 
-            if(!ret.containsError())
+            if (!ret.containsError())
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                 QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
@@ -644,13 +646,13 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
     }
     else
     {
-        if(paramsOut->size() == 0)
+        if (paramsOut->size() == 0)
         {
             Py_RETURN_NONE;
         }
-        else if(paramsOut->size() == 1)
+        else if (paramsOut->size() == 1)
         {
-            PyObject* out = PythonParamConversion::ParamBaseToPyObject( (*paramsOut)[0] ); //new ref
+            PyObject* out = PythonParamConversion::ParamBaseToPyObject((*paramsOut)[0]); //new ref
             if (!SetReturnValueMessage(ret, "exec"))
             {
                 return NULL;
@@ -663,14 +665,14 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         else
         {
             //parse output vector to PyObject-Tuple
-            PyObject* out = PyTuple_New( paramsOut->size() );
+            PyObject* out = PyTuple_New(paramsOut->size());
             PyObject* temp;
             Py_ssize_t i = 0;
 
             foreach(const ito::ParamBase &p, *paramsOut)
             {
                 temp = PythonParamConversion::ParamBaseToPyObject(p); //new ref
-                if(temp)
+                if (temp)
                 {
                     PyTuple_SetItem(out,i,temp); //steals ref
                     i++;
@@ -724,12 +726,12 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     }
 
     ito::Param param = ((ito::AddInBase*)addInObj)->getParamRec(paramName,&paramNameCheck);
-    if(!paramNameCheck)
+    if (!paramNameCheck)
     {
         PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
         return NULL;
     }
-    else if(param.isValid() == false)
+    else if (param.isValid() == false)
     {
         PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
         return NULL;
@@ -785,7 +787,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         PyErr_Format(PyExc_ValueError, "no parameter name specified");
         return NULL;
     }
-    else if(length == 1)
+    else if (length == 1)
     {
         PyErr_Format(PyExc_ValueError, "no parameter supplied");
         return NULL;
@@ -799,12 +801,12 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     if (PyArg_ParseTuple(args, "ss", &paramName, &cVal))
     {
         param = aib->getParamRec(paramName,&paramNameCheck);
-        if(!paramNameCheck)
+        if (!paramNameCheck)
         {
             PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
             return NULL;
         }
-        else if(param.isValid() == false)
+        else if (param.isValid() == false)
         {
             PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
             return NULL;
@@ -819,12 +821,12 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "sd", &paramName, &dval))
     {
         param = aib->getParamRec(paramName,&paramNameCheck);
-        if(!paramNameCheck)
+        if (!paramNameCheck)
         {
             PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
             return NULL;
         }
-        else if(param.isValid() == false)
+        else if (param.isValid() == false)
         {
             PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
             return NULL;
@@ -837,7 +839,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             PyErr_Format(PyExc_TypeError, "wrong parameter type");
             return NULL;
         }
-        if( ito::checkNumericParamRange(param,dval,NULL) == false )
+        if (ito::checkNumericParamRange(param,dval,NULL) == false)
         //if ((dval < param.getMin()) || (dval > param.getMax()))
         {
             PyErr_Format(PyExc_ValueError, "out of parameter range");
@@ -863,12 +865,12 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         }
         //paramname = PyBytes_AsString(PyUnicode_AsASCIIString(tempObj));
         param = aib->getParamRec(paramName, &paramNameCheck);
-        if(!paramNameCheck)
+        if (!paramNameCheck)
         {
             PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
             return NULL;
         }
-        else if(param.isValid() == false)
+        else if (param.isValid() == false)
         {
             PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
             return NULL;
@@ -956,7 +958,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         }
     }
 
-    if(!ret.containsError())
+    if (!ret.containsError())
     {
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param));
         bool timeout = false;
@@ -972,7 +974,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             }
         }
 
-        if(!timeout)
+        if (!timeout)
         {
             ret += waitCond->returnValue;
         }
@@ -1018,7 +1020,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             retval += waitCond->returnValue;
             ItomSharedSemaphore::deleteSemaphore(waitCond);
             
-			PythonCommon::transformRetValToPyException( retval );
+			PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
             {
                 PyErr_Format(PyExc_RuntimeError, "error closing plugin");
@@ -1087,7 +1089,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 {
     self->actuatorObj = NULL;
 
-    if(args == NULL) //args is only NULL, instance of actuator is created by a c-code fragment. Then the content of the type-struct has to be filled by the c-code, too.
+    if (args == NULL) //args is only NULL, instance of actuator is created by a c-code fragment. Then the content of the type-struct has to be filled by the c-code, too.
     {
         return 0;
     }
@@ -1099,16 +1101,16 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         PyErr_Format(PyExc_ValueError, "no plugin specified");
         return -1;
     }
-    else if(length == 1) //!< copy constructor or name only
+    else if (length == 1) //!< copy constructor or name only
     {
         PyActuatorPlugin* copyPlugin = NULL;
 
         if (PyArg_ParseTuple(args, "O!", &PyActuatorPluginType, &copyPlugin))
         {
             //try to increment reference of copyPlugin->actuatorObj
-            if(copyPlugin->actuatorObj)
+            if (copyPlugin->actuatorObj)
             {
-                copyPlugin->actuatorObj->getBasePlugin()->incRef( copyPlugin->actuatorObj );
+                copyPlugin->actuatorObj->getBasePlugin()->incRef(copyPlugin->actuatorObj);
             }
 
             self->actuatorObj = copyPlugin->actuatorObj;
@@ -1153,7 +1155,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = AIM->getInitParams(pluginName, ito::typeActuator, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -1169,7 +1171,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -1185,7 +1187,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     //retval += copyParamVector(paramsMand, paramsMandCpy);
     //retval += copyParamVector(paramsOpt, paramsOptCpy);
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
 
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
@@ -1239,7 +1241,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 PyObject* PythonPlugins::PyActuatorPlugin_repr(PyActuatorPlugin *self)
 {
     PyObject *result;
-    if(self->actuatorObj == NULL)
+    if (self->actuatorObj == NULL)
     {
         result = PyUnicode_FromFormat("empty actuator plugin");
     }
@@ -1678,7 +1680,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     ito::RetVal ret = ito::retOk;
     int length = PyTuple_Size(args);
 
-    QSharedPointer<QVector<int> > status(new QVector<int>() );
+    QSharedPointer<QVector<int> > status(new QVector<int>());
 
     PyObject *result = NULL;
 
@@ -1707,10 +1709,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     }
 
     int size = status->size();
-    if(size>0)
+    if (size>0)
     {
         result = PyList_New(size); //new ref
-        for(int i=0;i<size;i++)
+        for (int i=0;i<size;i++)
         {
             PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
         }
@@ -1882,7 +1884,7 @@ See Also \n\
 PyObject* PythonPlugins::PyActuatorPlugin_getType(PyActuatorPlugin *self)
 {
     PyObject *result = NULL;
-    if(self == NULL || self->actuatorObj == NULL)
+    if (self == NULL || self->actuatorObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty actuator plugin");
 		return NULL;
@@ -1890,7 +1892,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getType(PyActuatorPlugin *self)
     else
     {
 		ito::AddInInterfaceBase *aib = self->actuatorObj->getBasePlugin();
-		if(aib)
+		if (aib)
 		{
 			result = PyLong_FromLong(aib->getType());
 	    }
@@ -1928,6 +1930,129 @@ The parameters (arguments), output parameters / return values depends on the fun
 PyObject* PythonPlugins::PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObject *args, PyObject *kwds)
 {
     return execFunc(self->actuatorObj, args, kwds);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorShowConfiguration_doc, "showConfiguration() -> open configuration dialog of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** open configuration dialog
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply open the configuration dialog
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_showConfiguration(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+
+    if (aib)
+    {
+        if (aib->hasConfDialog())
+        {
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorShowToolbox_doc, "showToolbox() -> open toolbox of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply open the widget
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_showToolbox(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError,0,"timeout while showing dock widget");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "showToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorHideToolbox_doc, "hideToolbox() -> hides toolbox of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply close the widget
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_hideToolbox(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout while showing dock widget");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "showToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2196,6 +2321,9 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"setPosRel", (PyCFunction)PythonPlugins::PyActuatorPlugin_setPosRel, METH_VARARGS, pyActuatorSetPosRel_doc},
    {"getType", (PyCFunction)PythonPlugins::PyActuatorPlugin_getType, METH_NOARGS, PyActuatorPlugin_getType_doc},
    {"exec", (PyCFunction)PythonPlugins::PyActuatorPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyActuatorPlugin_execFunc_doc},
+   {"showConfiguration", (PyCFunction)PythonPlugins::PyActuatorPlugin_showConfiguration, METH_NOARGS, pyActuatorShowConfiguration_doc},
+   {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyActuatorShowToolbox_doc},
+   {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyActuatorHideToolbox_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -2327,7 +2455,7 @@ int PythonPlugins::PyActuatorAxis_init(PyActuatorAxis *self, PyObject *args, PyO
         PyErr_Format(PyExc_ValueError, "insufficient number of parameters");
         return -1;
     }
-    else if(length == 1) //!< copy constructor or name only
+    else if (length == 1) //!< copy constructor or name only
     {
         PyActuatorAxis* copyPlugin = NULL;
 
@@ -2406,7 +2534,7 @@ PyObject* PythonPlugins::PyActuatorAxis_getStatus(PyActuatorAxis* self, PyObject
     ito::RetVal ret = ito::retOk;
     int length = PyTuple_Size(args);
 
-    QSharedPointer<QVector<int> > status(new QVector<int>() );
+    QSharedPointer<QVector<int> > status(new QVector<int>());
 
     PyObject *result = NULL;
 
@@ -2435,10 +2563,10 @@ PyObject* PythonPlugins::PyActuatorAxis_getStatus(PyActuatorAxis* self, PyObject
     }
 
     int size = status->size();
-    if(size>0)
+    if (size>0)
     {
         PyObject *result = PyList_New(size); //new ref
-        for(int i=0;i<size;i++)
+        for (int i=0;i<size;i++)
         {
             PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
         }
@@ -2727,7 +2855,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             retval += waitCond->returnValue;
             ItomSharedSemaphore::deleteSemaphore(waitCond);
 
-			PythonCommon::transformRetValToPyException( retval );
+			PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
             {
                 PyErr_Format(PyExc_RuntimeError, "error closing plugin");
@@ -2793,7 +2921,7 @@ See pluginHelp(name) for detail information about the specific initialisation pa
 int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
 
-    if(args == NULL) //args is only NULL, instance of dataIO is created by a c-code fragment. Then the content of the type-struct has to be filled by the c-code, too.
+    if (args == NULL) //args is only NULL, instance of dataIO is created by a c-code fragment. Then the content of the type-struct has to be filled by the c-code, too.
     {
         return 0;
     }
@@ -2807,16 +2935,16 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         PyErr_Format(PyExc_ValueError, "no plugin specified");
         return -1;
     }
-    else if(length == 1) //!< copy constructor or name only
+    else if (length == 1) //!< copy constructor or name only
     {
         PyDataIOPlugin* copyPlugin = NULL;
 
         if (PyArg_ParseTuple(args, "O!", &PyDataIOPluginType, &copyPlugin))
         {
             //try to increment reference of copyPlugin->dataIOObj
-            if(copyPlugin->dataIOObj)
+            if (copyPlugin->dataIOObj)
             {
-                copyPlugin->dataIOObj->getBasePlugin()->incRef( copyPlugin->dataIOObj );
+                copyPlugin->dataIOObj->getBasePlugin()->incRef(copyPlugin->dataIOObj);
             }
             
             self->dataIOObj = copyPlugin->dataIOObj;
@@ -2860,7 +2988,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     retval = AIM->getInitParams(pluginName, ito::typeDataIO, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -2875,7 +3003,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -2891,7 +3019,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     //retval += copyParamVector(paramsMand, paramsMandCpy);
     //retval += copyParamVector(paramsOpt, paramsOptCpy);
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
@@ -2949,7 +3077,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_name(PyDataIOPlugin* self)
 PyObject* PythonPlugins::PyDataIOPlugin_repr(PyDataIOPlugin *self)
 {
     PyObject *result;
-    if(self->dataIOObj == NULL)
+    if (self->dataIOObj == NULL)
     {
         result = PyUnicode_FromFormat("empty dataIO plugin");
     }
@@ -3141,19 +3269,19 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 {
     int count = 1;
 
-    if(!PyArg_ParseTuple(args, "|i", &count))
+    if (!PyArg_ParseTuple(args, "|i", &count))
     {
         return NULL;
     }
 
-    if(count < 0)
+    if (count < 0)
     {
         return PyErr_Format(PyExc_ValueError, "argument 'count' must be >= 0");
     }
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = NULL;
 
-    for(int i = 0 ; i < count ; i++)
+    for (int i = 0 ; i < count ; i++)
     {
         waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
@@ -3205,7 +3333,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 {
     int count = 1;
 
-    if(!PyArg_ParseTuple(args, "|i", &count))
+    if (!PyArg_ParseTuple(args, "|i", &count))
     {
         return NULL;
     }
@@ -3213,9 +3341,9 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = NULL;
 
-    if(count >= 0)
+    if (count >= 0)
     {
-        for(int i = 0 ; i < count ; i++)
+        for (int i = 0 ; i < count ; i++)
         {
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
@@ -3240,7 +3368,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
     
         Py_RETURN_NONE;
     }
-    else if(count == -1)
+    else if (count == -1)
     {
         count = -1;
         bool timeout = false;
@@ -3265,7 +3393,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             
         }
 
-        if(timeout)
+        if (timeout)
         {
             if (!SetReturnValueMessage(ret, "stopDevice"))
             {
@@ -3351,7 +3479,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
         PyErr_Format(PyExc_RuntimeError, QObject::tr("warning invoking acquire with message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
         return NULL;
     }
-    else if(ret == ito::retError)
+    else if (ret == ito::retError)
     {
         PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking acquire with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
         return NULL;
@@ -3415,7 +3543,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     {
         dObj = ((PythonDataObject::PyDataObject *)bufferDataObj)->dataObject;
 
-        if(dObj == NULL)
+        if (dObj == NULL)
         {
             PyErr_Format(PyExc_RuntimeError, "given data object is empty (internal dataObject-pointer is NULL)");
             return NULL;
@@ -3425,25 +3553,25 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(void *, (void*)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
         invokeMethod = 1;
     }
-    else if(PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
+    else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
     {
-        if(PyByteArray_Check(bufferObj))
+        if (PyByteArray_Check(bufferObj))
         {
             tempBuf  = (char *)PyByteArray_AsString(bufferObj);
             sharedBuffer = PythonSharedPointerGuard::createPythonSharedPointer<char>(tempBuf, bufferObj);
-            *maxLength = static_cast<int>(length < 0 ? PyByteArray_Size(bufferObj) : qMin(PyByteArray_Size(bufferObj),length) );
+            *maxLength = static_cast<int>(length < 0 ? PyByteArray_Size(bufferObj) : qMin(PyByteArray_Size(bufferObj),length));
         }
-        else if(PyBytes_Check(bufferObj))
+        else if (PyBytes_Check(bufferObj))
         {
             tempBuf  = (char *)PyBytes_AsString(bufferObj);
             sharedBuffer = PythonSharedPointerGuard::createPythonSharedPointer<char>(tempBuf, bufferObj);
-            *maxLength = static_cast<int>(length < 0 ? PyBytes_Size(bufferObj) : qMin(PyBytes_Size(bufferObj),length) );
+            *maxLength = static_cast<int>(length < 0 ? PyBytes_Size(bufferObj) : qMin(PyBytes_Size(bufferObj),length));
         }
-        else if(sizeof(Py_UNICODE) == sizeof(char) && PyUnicode_Check(bufferObj))
+        else if (sizeof(Py_UNICODE) == sizeof(char) && PyUnicode_Check(bufferObj))
         {
             tempBuf = (char*)PyUnicode_AS_DATA(bufferObj);
             sharedBuffer = PythonSharedPointerGuard::createPythonSharedPointer<char>(tempBuf, bufferObj);
-            *maxLength = static_cast<int>(length < 0 ? (Py_ssize_t)strlen(tempBuf) : qMin( (Py_ssize_t)strlen(tempBuf), length) );
+            *maxLength = static_cast<int>(length < 0 ? (Py_ssize_t)strlen(tempBuf) : qMin((Py_ssize_t)strlen(tempBuf), length));
         }
         else
         {
@@ -3451,7 +3579,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
             return NULL;
         }
 
-        if(*maxLength <= 0)
+        if (*maxLength <= 0)
         {
             PyErr_Format(PyExc_RuntimeError, "length of given buffer is zero.");
             return NULL;
@@ -3483,13 +3611,13 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         return NULL;
     }
 
-    if(invokeMethod == 1)
+    if (invokeMethod == 1)
     {
         Py_RETURN_NONE; //in case of data-object
     }
     else
     {
-        return PyLong_FromLong( *maxLength );
+        return PyLong_FromLong(*maxLength);
     }
 }
 
@@ -3687,7 +3815,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         const char *buf = NULL;
         tempObj = PyTuple_GetItem(args, 0);
 
-        if(length >= 2)
+        if (length >= 2)
         {
             tempObj1 = PyTuple_GetItem(args, 1);
         }
@@ -3696,39 +3824,39 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         QByteArray ba;
         int datalen = 0;
 
-        if( PyByteArray_Check(tempObj) )
+        if (PyByteArray_Check(tempObj))
         {
             buf = PyByteArray_AsString(tempObj);
             datalen = PyByteArray_Size(tempObj);
         }
-        else if( PyBytes_Check(tempObj) )
+        else if (PyBytes_Check(tempObj))
         {
             buf = PyBytes_AsString(tempObj);
             datalen = PyBytes_Size(tempObj);
         }
-        else if( PyUnicode_Check(tempObj) )
+        else if (PyUnicode_Check(tempObj))
         {
             //Py_ssize_t stringLengthByte = PyUnicode_GET_DATA_SIZE(tempObj);
-            if(sizeof(Py_UNICODE) == sizeof(wchar_t))
+            if (sizeof(Py_UNICODE) == sizeof(wchar_t))
             {
                 tempString = QString::fromWCharArray((wchar_t*)PyUnicode_AS_DATA(tempObj));
                 ba = tempString.toAscii();
                 buf = ba.data();
                 datalen = ba.length();
             }
-            else if(sizeof(Py_UNICODE) == 1)
+            else if (sizeof(Py_UNICODE) == 1)
             {
                 buf = PyUnicode_AS_DATA(tempObj);
                 datalen = strlen(buf);
             }
-            else if(sizeof(Py_UNICODE) == 2)
+            else if (sizeof(Py_UNICODE) == 2)
             {
                 tempString = QString::fromUtf16((ushort*)PyUnicode_AS_DATA(tempObj));
                 ba = tempString.toAscii();
                 buf = ba.data();
                 datalen = ba.length();
             }
-            else if(sizeof(Py_UNICODE) == 4)
+            else if (sizeof(Py_UNICODE) == 4)
             {
                 tempString = QString::fromUcs4((uint*)PyUnicode_AS_DATA(tempObj));
                 ba = tempString.toAscii();
@@ -3747,9 +3875,9 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             return NULL;
         }
 
-        if(length == 2)
+        if (length == 2)
         {
-            if(PyLong_Check(tempObj1))
+            if (PyLong_Check(tempObj1))
             {
                 datalen = PyLong_AsLong(tempObj1);
             }
@@ -3907,13 +4035,13 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     ito::RetVal ret = ito::retOk;
     bool val;
 
-    if(!PyArg_ParseTuple(args, "b", &val))
+    if (!PyArg_ParseTuple(args, "b", &val))
     {
         return NULL;
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    if(val)
+    if (val)
     {
         QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
     }
@@ -3971,7 +4099,7 @@ disableAutoGrabbing()\n\
 */
 PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, PyObject * /*args*/)
 {
-    if(self->dataIOObj->getAutoGrabbing())
+    if (self->dataIOObj->getAutoGrabbing())
     {
         Py_RETURN_TRUE;
     }
@@ -4001,7 +4129,7 @@ See Also \n\
 PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
 {
     PyObject *result = NULL;
-    if(self == NULL || self->dataIOObj == NULL)
+    if (self == NULL || self->dataIOObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty dataIO plugin");
 		return NULL;
@@ -4009,7 +4137,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
     else
     {
 		ito::AddInInterfaceBase *aib = self->dataIOObj->getBasePlugin();
-		if(aib)
+		if (aib)
 		{
 			result = PyLong_FromLong(aib->getType());
 	    }
@@ -4051,6 +4179,129 @@ PyObject* PythonPlugins::PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataIOShowConfiguration_doc, "showConfiguration() -> open configuration dialog of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** open configuration dialog
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply open the configuration dialog
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_showConfiguration(PyDataIOPlugin* self)
+{
+    ito::AddInBase *aib = self->dataIOObj;
+
+    if (aib)
+    {
+        if (aib->hasConfDialog())
+        {
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataIOShowToolbox_doc, "showToolbox() -> open toolbox of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply open the widget
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_showToolbox(PyDataIOPlugin* self)
+{
+    ito::AddInBase *aib = self->dataIOObj;
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError,0,"timeout while showing dock widget");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "showToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataIOHideToolbox_doc, "hideToolbox() -> hides toolbox of the plugin\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+See Also \n\
+--------- \n\
+\n\
+");
+
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply close the widget
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_hideToolbox(PyDataIOPlugin* self)
+{
+    ito::AddInBase *aib = self->dataIOObj;
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout while showing dock widget");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "showToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
     {NULL}  /* Sentinel */
 };
@@ -4075,6 +4326,9 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_getAutoGrabbing, METH_NOARGS, PyDataIOPlugin_getAutoGrabbing_doc},
    {"getType", (PyCFunction)PythonPlugins::PyDataIOPlugin_getType, METH_NOARGS, PyDataIOPlugin_getType_doc},
    {"exec", (PyCFunction)PythonPlugins::PyDataIOPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyDataIOPlugin_execFunc_doc},
+   {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyDataIOShowConfiguration_doc},
+   {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyDataIOShowToolbox_doc},
+   {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyDataIOHideToolbox_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -4161,7 +4415,7 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
             ItomSharedSemaphore::deleteSemaphore(waitCond);
 //            retval = aim->closeAddIn((ito::AddInBase**)&self->algoObj);
             
-			PythonCommon::transformRetValToPyException( retval );
+			PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
             {
                 PyErr_Format(PyExc_RuntimeError, "error closing plugin");
@@ -4212,16 +4466,16 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
         PyErr_Format(PyExc_ValueError, "no plugin specified");
         return -1;
     }
-    else if(length == 1) //!< copy constructor or name only
+    else if (length == 1) //!< copy constructor or name only
     {
         PyAlgoPlugin* copyPlugin = NULL;
 
         if (PyArg_ParseTuple(args, "O!", &PyAlgoPluginType, &copyPlugin))
         {
             //try to increment reference of copyPlugin->algoObj
-            if(copyPlugin->algoObj)
+            if (copyPlugin->algoObj)
             {
-                copyPlugin->algoObj->getBasePlugin()->incRef( copyPlugin->algoObj );
+                copyPlugin->algoObj->getBasePlugin()->incRef(copyPlugin->algoObj);
             }
 
             self->algoObj = copyPlugin->algoObj;
@@ -4264,7 +4518,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     retval = AIM->getInitParams(pluginName, ito::typeAlgo, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -4280,7 +4534,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
         }
@@ -4296,7 +4550,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     //retval += copyParamVector(paramsMand, paramsMandCpy);
     //retval += copyParamVector(paramsOpt, paramsOptCpy);
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
 
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
@@ -4327,11 +4581,11 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
         return -1;
     }
 
-    if(retval == ito::retWarning)
+    if (retval == ito::retWarning)
     {
         std::cerr << "Warning while loading plugin: " << pluginName.toAscii().data() << "\n" << std::endl;
 
-        if(retval.errorMessage() != NULL)
+        if (retval.errorMessage() != NULL)
         {
             std::cerr << " Message: " << QObject::tr(retval.errorMessage()).toAscii().data() << "\n" << std::endl;
         }
@@ -4465,7 +4719,7 @@ PyDoc_STRVAR(PyAlgoPlugin_getType_doc, "getType() -> returns AlgoPlugin type");
 PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
 {
     PyObject *result = NULL;
-    if(self == NULL || self->algoObj == NULL)
+    if (self == NULL || self->algoObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty Algo plugin");
 		return NULL;
@@ -4473,7 +4727,7 @@ PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
     else
     {
 		ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
-		if(aib)
+		if (aib)
 		{
 			result = PyLong_FromLong(aib->getType());
 	    }
