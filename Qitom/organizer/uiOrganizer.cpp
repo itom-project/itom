@@ -38,6 +38,7 @@
 #include "widgetWrapper.h"
 
 #include "qmainwindow.h"
+#include "widgets/mainWindow.h"
 
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -49,6 +50,36 @@
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 #include <qsettings.h>
 #include <qcoreapplication.h>
+
+
+
+
+
+//! destructor
+/*!
+	If the widget, observed by the UiDialogSet-instance is still valid, it is registered for deletion by the Qt-system.
+*/
+UiContainer::~UiContainer()
+{
+    if(!m_weakDialog.isNull())
+    {
+        if(m_type == UiContainer::uiTypeFigure)
+        {
+            MainWindow *mainWin = qobject_cast<MainWindow*>( AppManagement::getMainWindow() );
+            if(mainWin)
+            {
+                mainWin->removeAbstractDock( qobject_cast<ito::AbstractDockWidget*>(m_weakDialog.data()) );
+            }
+        }
+
+        m_weakDialog.data()->deleteLater();
+        m_weakDialog.clear();
+    }
+}
+
+
+
+
 
 /*!
     \class UiOrganizer
@@ -79,6 +110,12 @@ UiOrganizer::UiOrganizer() :
 
     /*QUiLoader loader;
     ito::RetVal retval = scanPlugins(qApp->applicationDirPath().append("/designer"), m_pluginInfoList);*/
+    /*QSharedPointer<unsigned int> test3;
+    {
+        QSharedPointer<unsigned int> test(new unsigned int, threadSafeDeleteUi);
+        QWeakPointer<unsigned int> test2 = test;
+        test3 = test2;
+    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -89,10 +126,10 @@ UiOrganizer::UiOrganizer() :
 */
 UiOrganizer::~UiOrganizer()
 {
-    QHash<unsigned int, UiDialogSet*>::const_iterator i = m_dialogList.constBegin();
+    QHash<unsigned int, UiContainerItem>::const_iterator i = m_dialogList.constBegin();
     while (i != m_dialogList.constEnd())
     {
-        delete i.value();
+        delete i->container;
         ++i;
     }
     m_dialogList.clear();
@@ -123,13 +160,13 @@ UiOrganizer::~UiOrganizer()
 void UiOrganizer::execGarbageCollection()
 {
     //check m_dialogList
-    QMutableHashIterator<unsigned int, UiDialogSet* > i(m_dialogList);
+    QMutableHashIterator<unsigned int, UiContainerItem > i(m_dialogList);
     while (i.hasNext())
     {
         i.next();
-        if(i.value()->getUiWidget() == NULL)
+        if(i.value().container->getUiWidget() == NULL)
         {
-            delete i.value();
+            delete i.value().container;
             i.remove();
         }
     }
@@ -241,11 +278,11 @@ void UiOrganizer::timerEvent(QTimerEvent * /*event*/)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UiDialogSet* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
+UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
 {
     if(m_dialogList.contains(uiHandle))
     {
-        return m_dialogList[uiHandle];
+        return m_dialogList[uiHandle].container;
     }
     else
     {
@@ -296,9 +333,10 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
     RetVal retValue = retOk;
     *initSlotCount = 0;
     *dialogHandle = 0;
-    UiDialogSet::tUiType widgetType = UiDialogSet::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
+    UiContainer::tUiType widgetType = UiContainer::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
     QString className;
-    UiDialogSet *set = NULL;
+    UiContainer *set = NULL;
+    UiContainerItem containerItem;
 
     if(parent == NULL) //take mainWindow of itom as parent
     {
@@ -319,22 +357,22 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
             className = metaObject->className();
             if(QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
             {
-                widgetType = UiDialogSet::uiTypeQMainWindow;
+                widgetType = UiContainer::uiTypeQMainWindow;
                 break;
             }
             else if(QString::compare(className, "QDialog", Qt::CaseInsensitive) == 0)
             {
-                widgetType = UiDialogSet::uiTypeQDialog;
+                widgetType = UiContainer::uiTypeQDialog;
                 break;
             }
             else if(QString::compare(className, "QDockWidget", Qt::CaseInsensitive) == 0)
             {
-                widgetType = UiDialogSet::uiTypeQDockWidget;
+                widgetType = UiContainer::uiTypeQDockWidget;
                 break;
             }
             else if(QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
             {
-                widgetType = UiDialogSet::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
+                widgetType = UiContainer::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
                 break;
             }
             
@@ -349,23 +387,25 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
 
         switch(widgetType)
         {
-            case UiDialogSet::uiTypeQMainWindow:
+            case UiContainer::uiTypeQMainWindow:
             {
-                set = new UiDialogSet(qobject_cast<QMainWindow*>(widget));
+                set = new UiContainer(qobject_cast<QMainWindow*>(widget));
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = widget->metaObject()->methodOffset();
                 break;
             }
-            case UiDialogSet::uiTypeQDialog:
+            case UiContainer::uiTypeQDialog:
             {
-                set = new UiDialogSet(qobject_cast<QDialog*>(widget));
+                set = new UiContainer(qobject_cast<QDialog*>(widget));
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = widget->metaObject()->methodOffset();
                 break;
             }
-            case UiDialogSet::uiTypeQDockWidget:
+            case UiContainer::uiTypeQDockWidget:
             {
                 retValue += RetVal(retError, 0, tr("widgets of type QDockWidget are not yet implemented").toAscii().data());
                 break;
@@ -374,9 +414,10 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
             {
                 QMap<QString, QString> buttons;
                 UserUiDialog *dialog = new UserUiDialog(widget,UserUiDialog::bbTypeNo,buttons, retValue, parent);
-                set = new UiDialogSet(dialog);
+                set = new UiContainer(dialog);
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
 
                 *initSlotCount = dialog->metaObject()->methodOffset();
                 break;
@@ -398,11 +439,12 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
 RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectID, QObject** newWidget)
 {
     RetVal retValue = retOk;
-    UiDialogSet *set = NULL;
+    UiContainer *set = NULL;
     QMainWindow *win = NULL;
     QDialog *dlg = NULL;
     bool found = false;
     int dialogHandle;
+    UiContainerItem cItem;
 
 
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
@@ -442,16 +484,18 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
 
         if(win)
         {
-            set = new UiDialogSet(win);
+            set = new UiContainer(win);
             dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-            m_dialogList[dialogHandle] = set;
+            cItem.container = set;
+            m_dialogList[dialogHandle] = cItem;
             objectID = addObjectToList(win);
         }
         else
         {
-            set = new UiDialogSet(dlg);
+            set = new UiContainer(dlg);
             dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-            m_dialogList[dialogHandle] = set;
+            cItem.container = set;
+            m_dialogList[dialogHandle] = cItem;
             objectID = addObjectToList(dlg);
         }
     }
@@ -473,7 +517,8 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
 RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringMap dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
-    UiDialogSet *set = NULL;
+    UiContainer *set = NULL;
+    UiContainerItem containerItem;
     QMainWindow *win = NULL;
     QDialog *dlg = NULL;
     QWidget *wid = NULL;
@@ -518,18 +563,20 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
             if(win)
             {
-                set = new UiDialogSet(win);
+                set = new UiContainer(win);
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = win->metaObject()->methodOffset();
                 *objectID = addObjectToList(win);
                 *className = win->metaObject()->className();
             }
             else
             {
-                set = new UiDialogSet(dlg);
+                set = new UiContainer(dlg);
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = dlg->metaObject()->methodOffset();
                 *objectID = addObjectToList(dlg);
                 *className = dlg->metaObject()->className();
@@ -579,9 +626,10 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                     dialog->setAttribute(Qt::WA_DeleteOnClose, true);
                 }
 
-                set = new UiDialogSet(dialog);
+                set = new UiContainer(dialog);
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                m_dialogList[*dialogHandle] = set;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = dialog->metaObject()->methodOffset();
                 *objectID = addObjectToList(dialog);
                 *className = dialog->metaObject()->className();
@@ -642,9 +690,10 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                             win->setAttribute(Qt::WA_DeleteOnClose, true);
                         }
 
-                        set = new UiDialogSet(win);
+                        set = new UiContainer(win);
                         *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                        m_dialogList[*dialogHandle] = set;
+                        containerItem.container = set;
+                        m_dialogList[*dialogHandle] = containerItem;
                         *initSlotCount = win->metaObject()->methodOffset();
                         *objectID = addObjectToList(win);
                         *className = win->metaObject()->className();
@@ -658,9 +707,10 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                             wid->setAttribute(Qt::WA_DeleteOnClose, true);
                         }
 
-                        set = new UiDialogSet(wid,UiDialogSet::uiTypeQMainWindow);
+                        set = new UiContainer(wid,UiContainer::uiTypeQMainWindow);
                         *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                        m_dialogList[*dialogHandle] = set;
+                        containerItem.container = set;
+                        m_dialogList[*dialogHandle] = containerItem;
                         *initSlotCount = wid->metaObject()->methodOffset();
                         *objectID = addObjectToList(wid);
                         *className = wid->metaObject()->className();
@@ -688,6 +738,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
 {
     if(widget)
@@ -753,7 +804,7 @@ RetVal UiOrganizer::deleteDialog(unsigned int handle, ItomSharedSemaphore *semap
 {
     RetVal retValue = RetVal(retOk);
 
-    UiDialogSet *ptr = getUiDialogByHandle(handle);
+    UiContainer *ptr = getUiDialogByHandle(handle);
     if(ptr)
     {
         delete ptr;
@@ -780,13 +831,13 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
 {
     RetVal retValue = RetVal(retOk);
 
-    UiDialogSet *ptr = getUiDialogByHandle(handle);
+    UiContainer *ptr = getUiDialogByHandle(handle);
     if(ptr)
     {
         switch(ptr->getType())
         {
-            case UiDialogSet::uiTypeUiDialog:
-            case UiDialogSet::uiTypeQDialog:
+            case UiContainer::uiTypeUiDialog:
+            case UiContainer::uiTypeQDialog:
             {
                 QDialog *dlg = qobject_cast<QDialog*>(ptr->getUiWidget());
                 if(dlg)
@@ -811,7 +862,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
                 }
             }
             break;
-            case UiDialogSet::uiTypeQMainWindow:
+            case UiContainer::uiTypeQMainWindow:
             {
                 QWidget *wid = ptr->getUiWidget();
                 if(wid)
@@ -862,7 +913,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
 RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
-    UiDialogSet *ptr = getUiDialogByHandle(handle);
+    UiContainer *ptr = getUiDialogByHandle(handle);
 
     if(ptr)
     {
@@ -889,7 +940,7 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
 RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
-    UiDialogSet *ptr = getUiDialogByHandle(handle);
+    UiContainer *ptr = getUiDialogByHandle(handle);
 
     if(ptr)
     {
@@ -915,7 +966,7 @@ RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attrib
 RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
-    UiDialogSet *ptr = getUiDialogByHandle(handle);
+    UiContainer *ptr = getUiDialogByHandle(handle);
 
     if(ptr)
     {
@@ -1045,7 +1096,7 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString titl
     QWidget *parent = NULL;
     if(uiHandle > 0)
     {
-        UiDialogSet *ptr = getUiDialogByHandle(uiHandle);
+        UiContainer *ptr = getUiDialogByHandle(uiHandle);
         if(ptr) parent = ptr->getUiWidget();
     }
     if(parent == NULL)
@@ -1123,7 +1174,7 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, QString cap
     QWidget *parent = NULL;
     if(uiHandle > 0)
     {
-        UiDialogSet *ptr = getUiDialogByHandle(uiHandle);
+        UiContainer *ptr = getUiDialogByHandle(uiHandle);
         if(ptr) parent = ptr->getUiWidget();
     }
     if(parent == NULL)
@@ -1155,7 +1206,7 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, QString caption, Q
     QWidget *parent = NULL;
     if(uiHandle > 0)
     {
-        UiDialogSet *ptr = getUiDialogByHandle(uiHandle);
+        UiContainer *ptr = getUiDialogByHandle(uiHandle);
         if(ptr) parent = ptr->getUiWidget();
     }
     if(parent == NULL)
@@ -1196,7 +1247,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, QString caption, Q
     QWidget *parent = NULL;
     if(uiHandle > 0)
     {
-        UiDialogSet *ptr = getUiDialogByHandle(uiHandle);
+        UiContainer *ptr = getUiDialogByHandle(uiHandle);
         if(ptr) parent = ptr->getUiWidget();
     }
     if(parent == NULL)
@@ -1277,7 +1328,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
 RetVal UiOrganizer::readProperties(unsigned int handle, QString widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
-    UiDialogSet* set = getUiDialogByHandle(handle);
+    UiContainer* set = getUiDialogByHandle(handle);
     if(set)
     {
         QWidget* widget = set->getUiWidget()->findChild<QWidget*>(widgetName);
@@ -1295,7 +1346,7 @@ RetVal UiOrganizer::readProperties(unsigned int handle, QString widgetName, QSha
 RetVal UiOrganizer::writeProperties(unsigned int handle, QString widgetName, QVariantMap properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
-    UiDialogSet* set = getUiDialogByHandle(handle);
+    UiContainer* set = getUiDialogByHandle(handle);
     if(set)
     {
         QWidget* widget = set->getUiWidget()->findChild<QWidget*>(widgetName);
@@ -1521,7 +1572,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
 RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
-    UiDialogSet *ptr = getUiDialogByHandle(uiHandle);
+    UiContainer *ptr = getUiDialogByHandle(uiHandle);
 
     if(ptr)
     {
@@ -2139,6 +2190,103 @@ RetVal UiOrganizer::liveLine(AddInDataIO* dataIO, QString plotClassName /*= ""*/
     }
 
     return retval;
+}
+
+
+RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
+{
+    RetVal retValue = retOk;
+    const FigureWidget *fig = NULL;
+    unsigned int h;
+    UiContainerItem containerItem;
+    UiContainer *set = NULL;
+    MainWindow *mainWin = NULL;
+
+    *initSlotCount = 0;
+    *objectID = 0;
+
+    //you can pass a figure handle by guardedFigureHandle.
+    //if this is the case, all available figures are checked for this handle
+    //and if it exists and is a figure, its guardedHandle will be returned.
+    if(!guardedFigureHandle.isNull() && !(*guardedFigureHandle).isNull() )
+    {
+        h = *(*guardedFigureHandle);
+
+        if(m_dialogList.contains(h))
+        {
+            containerItem = m_dialogList[h];
+            if(containerItem.container->getType() == UiContainer::uiTypeFigure)
+            {
+                fig = qobject_cast<const FigureWidget*>(containerItem.container->getUiWidget());
+                if(fig)
+                {
+                    *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
+                    *initSlotCount = fig->metaObject()->methodOffset();
+                    *objectID = addObjectToList(const_cast<FigureWidget*>(fig));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError,0,"figure window is not available any more");
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal::format(ito::retError,0,"handle '%i' is no figure.",h);
+            }
+        }
+        else
+        {
+            retValue += ito::RetVal::format(ito::retError,0,"handle '%i' could not be found.",h);
+        }
+    }
+    else
+    {
+        if(m_garbageCollectorTimer == 0)
+        {
+            m_garbageCollectorTimer = startTimer(5000);
+        }
+
+        FigureWidget *fig2 = new FigureWidget("Figure", false, true, NULL);
+
+        mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+        if(mainWin)
+        {
+            mainWin->addAbstractDock(fig2, Qt::TopDockWidgetArea);
+        }
+
+        set = new UiContainer(fig2);
+        unsigned int *handle = new unsigned int;
+        *handle = ++UiOrganizer::autoIncUiDialogCounter;
+        *guardedFigureHandle = QSharedPointer<unsigned int>(handle, threadSafeDeleteUi);
+        *initSlotCount = fig2->metaObject()->methodOffset();
+        *objectID = addObjectToList(fig2);
+        containerItem.container = set;
+        containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
+        m_dialogList[*handle] = containerItem;
+    }
+    
+    if(semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        ItomSharedSemaphore::deleteSemaphore(semaphore);
+    }
+
+    return retValue;
+}
+
+
+
+/*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)
+{
+    UiOrganizer *orga = qobject_cast<UiOrganizer*>( AppManagement::getUiOrganizer() );
+    if(orga)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(orga, "deleteDialog", Q_ARG(unsigned int, *handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        //question: do we need locker here?
+        locker.getSemaphore()->wait(-1);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

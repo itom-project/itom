@@ -30,22 +30,13 @@
 
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
-//#include "../organizer/addInManager.h"
-//
+
 #include "pythonQtConversion.h"
 #include "AppManagement.h"
 
-//
-//#include <qmap.h>
 #include <qsharedpointer.h>
 #include <qmessagebox.h>
 #include <qmetaobject.h>
-//#include <qcoreapplication.h>
-//
-//#include <iostream>
-//#include <qvector.h>
-//
-//#include "pythonEngineInc.h"
 
 QHash<QByteArray, QSharedPointer<MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
 
@@ -1414,7 +1405,6 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
         PyDict_SetItemString(self->dialogButtons, "RejectRole", text);
         Py_DECREF(text);
         text = NULL;
-        Py_INCREF(Py_None);
         self->winType = 0;
         self->buttonBarType = 0;
         self->childOfMainWindow = true; //default

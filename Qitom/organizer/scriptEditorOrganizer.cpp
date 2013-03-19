@@ -101,7 +101,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     ScriptDockWidget* newWidget;
     const PythonEngine *pyEngine = PythonEngine::getInstance();
 
-    QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
 
     docked = docked && m_dockAvailable;
     if (docked && this->getFirstDockedElement() != NULL)
@@ -109,7 +109,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
         docked = false;
     }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), docked, m_dockAvailable, mainWin);
+    newWidget = new ScriptDockWidget(tr("Script Editor"), docked, m_dockAvailable, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
     m_scriptStackMutex.lock();
     scriptDockElements.push_front( newWidget );
     m_scriptStackMutex.unlock();

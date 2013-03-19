@@ -126,8 +126,8 @@ signals:
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
 
 public slots:
-    void addScriptDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
-    void removeScriptDock(AbstractDockWidget* dockWidget);
+    void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
+    void removeAbstractDock(AbstractDockWidget* dockWidget);
 
     virtual void pythonStateChanged(tPythonTransitions pyTransition);
 

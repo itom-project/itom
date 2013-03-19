@@ -134,6 +134,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
@@ -179,6 +180,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptTabWidget.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
@@ -276,6 +278,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp
@@ -318,6 +321,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptTabWidget.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp

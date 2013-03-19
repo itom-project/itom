@@ -312,19 +312,22 @@ MainWindow::~MainWindow()
     \param dockWidget ScriptDockWidget to add to any docking area
     \param area docking area, where dockWidget should be shown
 */
-void MainWindow::addScriptDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area)
+void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area)
 {
-    dockWidget->setParent(this);
+    if(dockWidget)
+    {
+        dockWidget->setParent(this);
 
-    if (area == Qt::NoDockWidgetArea)
-    {
-        addDockWidget(Qt::TopDockWidgetArea , dockWidget);
-        dockWidget->setFloating(true);
-    }
-    else
-    {
-        addDockWidget(area, dockWidget);
-        dockWidget->setFloating(false);
+        if (area == Qt::NoDockWidgetArea)
+        {
+            addDockWidget(Qt::TopDockWidgetArea , dockWidget);
+            dockWidget->setFloating(true);
+        }
+        else
+        {
+            addDockWidget(area, dockWidget);
+            dockWidget->setFloating(false);
+        }
     }
 }
 
@@ -335,10 +338,13 @@ void MainWindow::addScriptDock(AbstractDockWidget* dockWidget, Qt::DockWidgetAre
 
     \param dockWidget ScriptDockWidget to remove from docking area
 */
-void MainWindow::removeScriptDock(AbstractDockWidget* dockWidget)
+void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 {
-    dockWidget->setParent(NULL);
-    removeDockWidget(dockWidget);
+    if(dockWidget)
+    {
+        dockWidget->setParent(NULL);
+        removeDockWidget(dockWidget);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

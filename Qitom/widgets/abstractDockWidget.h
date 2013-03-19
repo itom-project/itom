@@ -59,6 +59,8 @@ namespace ito
 
             RetVal setTopLevel( tTopLevelStyle topLevel );
 
+            void setParent ( QWidget * parent ) { m_overallParent = parent; QDockWidget::setParent(parent); }
+
             QWidget *getActiveInstance() 
             { 
                 if(!m_docked && m_floatingStyle == floatingWindow)

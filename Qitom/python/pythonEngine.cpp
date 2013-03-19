@@ -33,6 +33,7 @@
 
 #include "pythonItom.h"
 #include "pythonUi.h"
+#include "pythonFigure.h"
 #include "pythonUiTimer.h"
 #include "pythonPlugins.h"
 #include "pythonPCL.h"
@@ -137,6 +138,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<ito::DataObject> >("QSharedPointer<ito::DataObject>");
     qRegisterMetaType<QPointer<ito::AddInDataIO> >("QPointer<ito::AddInDataIO>");
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
+    qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int>>");
 #if ITOM_POINTCLOUDLIBRARY > 0    
 	qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
@@ -328,6 +330,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonUi::PyUiType);
                 PythonUi::PyUi_addTpDict( PythonUi::PyUiType.tp_dict);
                 PyModule_AddObject(itomModule, "ui", (PyObject *)&PythonUi::PyUiType);
+            }
+
+            if (PyType_Ready(&PythonFigure::PyFigureType) >= 0)
+            {
+                Py_INCREF(&PythonFigure::PyFigureType);
+                PythonFigure::PyFigure_addTpDict( PythonFigure::PyFigureType.tp_dict);
+                PyModule_AddObject(itomModule, "figure", (PyObject *)&PythonFigure::PyFigureType);
             }
 
             if (PyType_Ready(&PythonProxy::PyProxyType) >= 0)
