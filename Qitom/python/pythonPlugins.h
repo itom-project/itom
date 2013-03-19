@@ -109,6 +109,9 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_setParam(PyActuatorPlugin *self, PyObject *args);
 	   static PyObject *PyActuatorPlugin_getType(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObject *args, PyObject *kwds);
+       static PyObject *PyActuatorPlugin_showConfiguration(PyActuatorPlugin *self);
+       static PyObject *PyActuatorPlugin_showToolbox(PyActuatorPlugin *self);
+       static PyObject *PyActuatorPlugin_hideToolbox(PyActuatorPlugin *self);
 
        static PyObject *PyActuatorPlugin_calib(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setOrigin(PyActuatorPlugin *self, PyObject *args);
@@ -153,6 +156,9 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject *args);
 	   static PyObject *PyDataIOPlugin_getType(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds);
+       static PyObject *PyDataIOPlugin_showConfiguration(PyDataIOPlugin *self);
+       static PyObject *PyDataIOPlugin_showToolbox(PyDataIOPlugin *self);
+       static PyObject *PyDataIOPlugin_hideToolbox(PyDataIOPlugin *self);
 
        static PyObject *PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObject *args);

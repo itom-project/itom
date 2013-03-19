@@ -41,6 +41,7 @@
 #include <qdockwidget.h>
 #include <QDebug>
 #include <QDirIterator>
+#include <qaction.h>
 
 //#include "./memoryCheck/setDebugNew.h"
 //#include "./memoryCheck/reportingHook.h"
@@ -544,7 +545,7 @@ namespace ito
                                 pluginLoadStatus.messages.append(QPair<ito::tRetValue,QString>(ito::retOk, tr("Filter %1 loaded").arg(it.key())));
 
                                 if (tags.size() == 0) tags.append("");
-                                foreach(const QString &tag, tags)
+                                foreach (const QString &tag, tags)
                                 {
                                     m_filterListInterfaceTag.insert(QString::number(fd->m_interface) + "_" + tag, fd);
                                 }
@@ -1410,7 +1411,7 @@ end:
         }
 
         ItomSharedSemaphore *waitCond = NULL;
-        foreach(param1, paramListPluginCpy)
+        foreach (param1, paramListPluginCpy)
         {
             if (!strlen(param1.getName()))
             {
@@ -1628,12 +1629,12 @@ end:
     *   @param [in] addin   addin from which the dialog should be called
     *
     *   This method opens the configuration dialog of a plugin. The dialog can be opened using a right click on an instance of the plugin
-    *   in the addInModel list. An implementation of a configuration dialog is not mandatory, so in case there is no dialog implemented
-    *   nothing happens.
+    *   in the addInModel list or using showConfiguration command in python. An implementation of a configuration dialog is not mandatory, 
+    *   so in case there is no dialog implemented nothing happens.
     */
     ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin)
     {
-        if (addin)
+        if (addin && addin->hasConfDialog())
         {
             addin->showConfDialog();
             return ito::retOk;
@@ -1642,6 +1643,65 @@ end:
         {
             return ito::retError;
         }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /** showDockWidget              show or hide the plugin's widget
+    *   @param [in] addin           addin from which the dialog should be called
+    *   @param [in] visible         1=show, 0=hide, -1=toggle
+    *   @param [in, out] waitCond   wait condition for calls from other threads. See also \ref ItomSharedSemaphore
+    *
+    *   This method opens or closes the wodget of a plugin. The widget can be opened or closed using a right click on an instance of the
+    *   plugin in the addInModel list or using showToolbox or hideToolbox command in python. An implementation of a configuration dialog
+    *   is not mandatory, so in case there is no dialog implemented nothing happens.
+    */
+    ito::RetVal AddInManager::showDockWidget(ito::AddInBase *addin, int visible, ItomSharedSemaphore *waitCond /*= NULL*/)
+    {
+        ItomSharedSemaphoreLocker locker(waitCond);
+        ito::RetVal retval;
+
+        if (addin)
+        {
+            QDockWidget *dw = addin->getDockWidget();
+            if (dw)
+            {
+                QAction *toggleAction = dw->toggleViewAction();
+                if (visible == 0) //hide
+                {
+                    if (toggleAction->isChecked()) //dock widget is currently visible -> hide it now
+                    {
+                        dw->toggleViewAction()->trigger();
+                    }
+                }
+                else if (visible == 1) //show
+                {
+                    if (toggleAction->isChecked() == false) //dock widget is currently hidden -> show it now
+                    {
+                        dw->toggleViewAction()->trigger();
+                    }
+                }
+                else //toggle
+                {
+                    dw->toggleViewAction()->trigger();
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("no dock widget available").toAscii().data());
+            }
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("addin not available").toAscii().data());
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+
+        return retval;
     }
 
 	//----------------------------------------------------------------------------------------------------------------------------------
@@ -1732,7 +1792,7 @@ end:
     //----------------------------------------------------------------------------------------------------------------------------------
     bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
     {
-        foreach(const QWeakPointer<ito::AddInBase> ptr, m_deadPlugins)
+        foreach (const QWeakPointer<ito::AddInBase> ptr, m_deadPlugins)
         {
             if (!ptr.isNull() && ptr.data() == plugin)
             {
