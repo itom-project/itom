@@ -465,40 +465,7 @@ void FileSystemDockWidget::fillFilterList()
         cnt++;
     }
     m_pCmbFilter->setCurrentIndex(defFilterNumber);
-
-    /*int defFilterNumber = 0;
-    int cnt = 0;
-    QString allFiles = tr("all files");
-    QString itomFiles = tr("itom files");
-    QString pythonScripts = tr("python scripts");
-    QString itomDataCollection = tr("itom data collection");
-    QString userInterfaces = tr("user interfaces");
-    QString imageFiles = tr("image files");
-    QString matlab = tr("matlab matrix");
-
-    defaultFilterPatterns.clear();
-    defaultFilterPatterns[itomFiles + " (*.py *.idc *.rpm *.bmp *.png *.mat, *.ui)"] = QStringList() << "*.py" << "*.idc" << "*.rpm" << "*.bmp" << "*.png" << "*.mat" << "*.ui";
-    defaultFilterPatterns[pythonScripts + " (*.py)"] = QStringList() << "*.py";
-    defaultFilterPatterns[itomDataCollection + " (*.idc)"] = QStringList() << "*.idc";
-    defaultFilterPatterns[userInterfaces + " (*ui)"] = QStringList() << "*.ui";
-    defaultFilterPatterns[imageFiles + " (*.rpm *.bmp *.png)"] = QStringList() << "*.rpm" << "*.bmp" << "*.png";
-    defaultFilterPatterns[matlab + " (*.mat)"] = QStringList() << "*.mat";
-    defaultFilterPatterns[allFiles + " (*.*)"] = QStringList() << "*.*";
-    m_pCmbFilter->clear();
-
-    QHashIterator<QString, QStringList> i(defaultFilterPatterns);
-    while (i.hasNext())
-    {
-        i.next();
-        m_pCmbFilter->addItem(i.key());
-        if (i.key().contains(itomFiles))
-        {
-            defFilterNumber = cnt;
-        }
-        cnt++;
-    }
-
-    m_pCmbFilter->setCurrentIndex(defFilterNumber);*/
+    cmbFilterEditTextChanged(m_pCmbFilter->currentText());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
