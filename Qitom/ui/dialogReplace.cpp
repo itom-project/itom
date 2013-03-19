@@ -267,7 +267,8 @@ void DialogReplace::on_pushButtonReplaceAll_clicked()
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
 
-    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, m_lineFrom, m_indexFrom, m_lineTo, m_indexTo);
+//    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, m_lineFrom, m_indexFrom, m_lineTo, m_indexTo);
+    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -70,7 +70,8 @@ public slots:
 signals:
     void findNext(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward = true, bool isQuickSeach = false);
     void replaceSelection(QString expr, QString replace);
-    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int m_lineFrom, int m_indexFrom, int m_lineTo, int m_indexTo);
+//    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int m_lineFrom, int m_indexFrom, int m_lineTo, int m_indexTo);
+    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord);
 };
 
 } //end namespace ito
