@@ -251,7 +251,7 @@ namespace ito
 
         if (pluginsDir.exists() == false)
         {
-            QString dirErr = tr("directory %1 could not be found").arg(pluginsDir.canonicalPath());
+            QString dirErr = tr("directory '%1' could not be found").arg(pluginsDir.canonicalPath());
             retValue += RetVal(retError, 0, dirErr.toAscii().data());
         }
 		else if (!pluginsFolderExists)
@@ -322,7 +322,7 @@ namespace ito
                 m_Translator.last()->load(translationLocal, translationPath);
                 if (m_Translator.last()->isEmpty())
                 {
-                    message = tr("Unable to load translation file %1.").arg(translationPath + '/' + translationLocal);
+                    message = tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
                     qDebug() << message;
                     pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
                 }
