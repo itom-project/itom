@@ -73,7 +73,7 @@ void WidgetPropPythonStartup::writeSettings()
     settings.beginGroup("Python");
 
     settings.beginWriteArray("startupFiles");
-    for(int i = 0 ; i < ui.listWidget->count() ; i++)
+    for (int i = 0 ; i < ui.listWidget->count() ; i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("file", ui.listWidget->item(i)->text());
@@ -91,26 +91,34 @@ void WidgetPropPythonStartup::on_listWidget_currentItemChanged(QListWidgetItem* 
 
 void WidgetPropPythonStartup::on_btnAdd_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "load python script",QDir::currentPath(),"python script (*.py)");
-     
-    if(!filename.isEmpty())
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("load python script"), QDir::currentPath(), tr("python script (*.py)"));
+
+    if (!filenames.empty())
     {
-        QDir::setCurrent( QFileInfo(filename).path() );
-        ui.listWidget->addItem(filename);
+        QDir::setCurrent(QFileInfo(filenames.first()).path());
+    }
+
+    foreach (QString filename, filenames)
+    {
+        if (ui.listWidget->findItems(filename, Qt::MatchExactly).isEmpty())
+        {
+            ui.listWidget->addItem(filename);
+        }
     }
 }
 
 void WidgetPropPythonStartup::on_btnRemove_clicked()
 {
-    if(ui.listWidget->currentItem())
+    qDeleteAll(ui.listWidget->selectedItems());
+/*    if (ui.listWidget->currentItem())
     {
-        ui.listWidget->takeItem( ui.listWidget->currentIndex().row());
-    }
+        ui.listWidget->takeItem(ui.listWidget->currentIndex().row());
+    }*/
 }
 
 void WidgetPropPythonStartup::on_listWidget_itemActivated(QListWidgetItem* item)
 {
-    if(item)
+    if (item)
     {
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         ui.listWidget->editItem(item);
