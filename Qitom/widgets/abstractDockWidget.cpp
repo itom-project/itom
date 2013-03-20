@@ -198,6 +198,10 @@ void AbstractDockWidget::setVisible(bool visible)
         if(m_floatingStyle == floatingWindow)
         {
             m_pWindow->setVisible(visible);
+            if(visible == false)
+            {
+                QDockWidget::setVisible(visible);
+            }
         }
         else
         {
@@ -404,6 +408,11 @@ void AbstractDockWidget::pythonStateChanged(tPythonTransitions pyTransition)
 */
 void AbstractDockWidget::dockWidget()
 {
+    if(m_docked == false && m_floatingStyle == floatingWindow)
+    {
+        m_lastUndockedSize = m_pWindow->geometry();
+    }
+
     //qDebug() << "AbstractDockWidget::dockWidget start";
     m_docked = true;
 
@@ -419,7 +428,7 @@ void AbstractDockWidget::dockWidget()
     //qDebug() << "AbstractDockWidget::dockWidget 0b";
     setFloating(false);
     //qDebug() << "AbstractDockWidget::dockWidget 0c";
-    show();
+    QDockWidget::setVisible(true); //show();
     //qDebug() << "AbstractDockWidget::dockWidget 0d";
     m_pWindow->menuBar()->hide();
     m_actDock->setVisible(false);
@@ -461,21 +470,27 @@ void AbstractDockWidget::undockWidget()
 
         //setWindowFlags(Qt::Window);
         //setFloating(true);
+        
+
+        m_dockToolbar->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+
+        m_pWindow->setWindowFlags(Qt::Window);
+
+        if(m_docked_old && !m_lastUndockedSize.isEmpty())
+        {
+            m_pWindow->setGeometry(m_lastUndockedSize);
+        }
 
         if(m_docked_old)
         {
             show();
         }
 
-        m_dockToolbar->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
-
-        m_pWindow->setWindowFlags(Qt::Window);
         setTopLevel(m_recentTopLevelStyle);
-        m_pWindow->show();
 
         setWindowFlags(Qt::Widget);
         setFloating(true);
-        hide();
+        QDockWidget::hide();
 
         m_pWindow->show();
         m_pWindow->raise();

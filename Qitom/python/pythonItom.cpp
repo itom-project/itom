@@ -169,19 +169,14 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(dataObject) -> plot a DataObject in a new plot-window.  \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className]) -> plots a dataObject in a newly created figure\n\
 \n\
 Parameters \n\
 ----------- \n\
-dataObject : {DataObject} \n\
+data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
-plotName : {str}, optional \n\
+className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Returns \n\
-------- \n\
-ID : {int???}\n\
-    Returns the number (ID) of the plot in the figure manager.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -189,320 +184,300 @@ Notes \n\
 Plot an existing dataObject in not dockable, not blocking window. \n\
 The style of the plot will depend on the object dimensions.\n\
 If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.");
-PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs)
+PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    PyObject *pyDataObject = NULL;
-    char* plotClassName = NULL;
-    if (!PyArg_ParseTuple(pArgs, "O|s", &pyDataObject, &plotClassName))
+    const char *kwlist[] = {"data", "className", NULL};
+    PyObject *data = NULL;
+    int areaIndex = 0;
+    char* className = NULL;
+    bool ok = true;
+
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|s", const_cast<char**>(kwlist), &data, &className) )
     {
-        return PyErr_Format(PyExc_RuntimeError, "argument must be a dataObject or other array-type object followed by an optional plot class name");
+        return NULL;
     }
 
-//    PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
-
-    bool ok = true;
-    QSharedPointer<ito::DataObject> newDataObj( PythonQtConversion::PyObjGetDataObjectNewPtr( pyDataObject, false, ok) );
-
+    QSharedPointer<ito::DataObject> newDataObj( PythonQtConversion::PyObjGetDataObjectNewPtr( data, false, ok) );
     if(!ok)
     {
         return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    QSharedPointer<unsigned int> plotHandle(new unsigned int);
-    *plotHandle = 0;
+    int areaCol = 0;
+    int areaRow = 0;
+    QSharedPointer<unsigned int> figHandle(new unsigned int);
+    *figHandle = 0; //new figure will be requested
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
-    if(plotClassName) defaultPlotClassName = plotClassName;
+    if(className) defaultPlotClassName = className;
 
-    QMetaObject::invokeMethod(uiOrg, "plotImage", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, plotHandle), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-    //not save by means of sharedPointer concept
-
-    if (locker.getSemaphore()->wait(PLUGINWAIT))
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        return Py_BuildValue("I",*plotHandle);
-        //Py_RETURN_NONE;
-    }
-    else
-    {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-        {
-            return PyErr_Occurred();
-        }
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
     }
+
+    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
+    {
+        return NULL;
+    }
+    
+    return Py_BuildValue("i", *figHandle); //returns handle
 }
 
+////----------------------------------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pyCloseFigure_doc,"closeFigure(fig-handle|'all') -> closes the figure window with the given handle-number. \n\
+//\n\
+//Parameters \n\
+//----------- \n\
+//fig-handle : {int | 'all'} \n\
+//    The number (ID) of the figure to close or all to close all.\n\
+//\n\
+//Notes \n\
+//----- \n\
+//\n\
+//Closes the figure window with the given handle-number (type int) or closes all figures ('all').");
+//PyObject* PythonItom::PyCloseFigure(PyObject * /*pSelf*/, PyObject *pArgs)
+//{
+//    int handle = 0; //0 = 'all', >0 = specific figure
+//    const char* tag;
+//
+//    if (!PyArg_ParseTuple(pArgs, "I", &handle))
+//    {
+//        PyErr_Clear();
+//        if (!PyArg_ParseTuple(pArgs, "s", &tag))
+//        {
+//            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
+//        }
+//
+//        handle = 0;
+//        if (!(strcmp(tag,"all") || strcmp(tag,"All") || strcmp(tag,"ALL")))
+//        {
+//            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
+//        }
+//    }
+//    else
+//    {
+//        if (handle <= 0)
+//        {
+//            return PyErr_Format(PyExc_ValueError, "figure handle must be bigger than zero");
+//        }
+//    }
+//
+//    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
+//
+//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
+//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//
+//    //QMetaObject::invokeMethod(figureOrganizer, "closeFigure", Q_ARG(unsigned int, static_cast<unsigned int>(handle)), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//
+//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
+//    //{
+//    //    if (locker.getSemaphore()->returnValue == retError)
+//    //    {
+//    //        return PyErr_Format(PyExc_RuntimeError, "error while closing figure: \n%s", locker.getSemaphore()->returnValue.errorMessage());
+//    //    }
+//    //    else
+//    //    {
+//    //        Py_RETURN_NONE;
+//    //    }
+//    //}
+//    //else
+//    //{
+//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+//    //    {
+//    //        return PyErr_Occurred();
+//    //    }
+//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while closing figure.");
+//    //}
+//}
+
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyCloseFigure_doc,"closeFigure(fig-handle|'all') -> closes the figure window with the given handle-number. \n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> shows a camera live image in a newly created figure\n\
 \n\
 Parameters \n\
 ----------- \n\
-fig-handle : {int | 'all'} \n\
-    The number (ID) of the figure to close or all to close all.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Closes the figure window with the given handle-number (type int) or closes all figures ('all').");
-PyObject* PythonItom::PyCloseFigure(PyObject * /*pSelf*/, PyObject *pArgs)
-{
-    int handle = 0; //0 = 'all', >0 = specific figure
-    const char* tag;
-
-    if (!PyArg_ParseTuple(pArgs, "I", &handle))
-    {
-        PyErr_Clear();
-        if (!PyArg_ParseTuple(pArgs, "s", &tag))
-        {
-            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
-        }
-
-        handle = 0;
-        if (!(strcmp(tag,"all") || strcmp(tag,"All") || strcmp(tag,"ALL")))
-        {
-            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
-        }
-    }
-    else
-    {
-        if (handle <= 0)
-        {
-            return PyErr_Format(PyExc_ValueError, "figure handle must be bigger than zero");
-        }
-    }
-
-    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
-
-    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    //QMetaObject::invokeMethod(figureOrganizer, "closeFigure", Q_ARG(unsigned int, static_cast<unsigned int>(handle)), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-    //{
-    //    if (locker.getSemaphore()->returnValue == retError)
-    //    {
-    //        return PyErr_Format(PyExc_RuntimeError, "error while closing figure: \n%s", locker.getSemaphore()->returnValue.errorMessage());
-    //    }
-    //    else
-    //    {
-    //        Py_RETURN_NONE;
-    //    }
-    //}
-    //else
-    //{
-    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-    //    {
-    //        return PyErr_Occurred();
-    //    }
-    //    return PyErr_Format(PyExc_RuntimeError, "timeout while closing figure.");
-    //}
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(dataIO) -> shows camera image in a live window  \n\
-\n\
-Parameters \n\
------------ \n\
-dataIO : {Hardware-Pointer} \n\
+cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
-plotName : {str}, optional \n\
+className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Notes \n\
------ \n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.");
-PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs)
+PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    PyObject *cameraGrabber = NULL;
-    const char* plotClassName = NULL;
+    const char *kwlist[] = {"cam", "className", NULL};
+    PythonPlugins::PyDataIOPlugin *cam = NULL;
+    int areaIndex = 0;
+    char* className = NULL;
+    bool ok = true;
 
-    if (!PyArg_ParseTuple(pArgs, "O!|s", &PythonPlugins::PyDataIOPluginType, &cameraGrabber, &plotClassName))
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!|s", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &className) )
     {
-        return PyErr_Format(PyExc_RuntimeError, "argument is no dataIO device");
+        return NULL;
     }
 
-    PythonPlugins::PyDataIOPlugin* elem = (PythonPlugins::PyDataIOPlugin*)cameraGrabber;
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QString plotClassName2;
-    if(plotClassName)
-    {
-        plotClassName2 = QString(plotClassName);
-    }
+    int areaCol = 0;
+    int areaRow = 0;
+    QSharedPointer<unsigned int> figHandle(new unsigned int);
+    *figHandle = 0; //new figure will be requested
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QMetaObject::invokeMethod(uiOrg, "liveImage", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(QString, plotClassName2), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QString defaultPlotClassName;
+    if(className) defaultPlotClassName = className;
 
-    if (locker.getSemaphore()->wait(PLUGINWAIT))
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        if (locker.getSemaphore()->returnValue == retError)
-        {
-            PyErr_Format(PyExc_RuntimeError, "error while starting live image: \n%s\n", locker.getSemaphore()->returnValue.errorMessage());
-            return NULL;
-        }
-        else if (locker.getSemaphore()->returnValue == retWarning)
-        {
-            std::cerr << "warning while starting live image: \n" << "warning message: \n" << std::endl;
-            std::cerr << locker.getSemaphore()->returnValue.errorMessage() << std::endl;
+        return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image of camera");
+    }
 
-            Py_RETURN_NONE;
-        }
-        else
-        {
-            Py_RETURN_NONE;
-        }
-    }
-    else
+    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-        {
-            return PyErr_Occurred();
-        }
-        return PyErr_Format(PyExc_RuntimeError, "timeout while opening live image");
+        return NULL;
     }
+    
+    return Py_BuildValue("i", *figHandle); //returns handle
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveLine_doc,"liveLine(dataIO) -> shows grabber data in a live line view window  \n\
-\n\
-Parameters \n\
------------ \n\
-dataIO : {Hardware-Pointer} \n\
-    Camera grabber device from which images are acquired.\n\
-plotName : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Notes \n\
------ \n\
-\n\
-Creates a lineplot-window (1D) and automatically grabs lines into this window.\n\
-This function is not blocking.");
-PyObject* PythonItom::PyLiveLine(PyObject * /*pSelf*/, PyObject *pArgs)
-{
-    PyObject *grabber = NULL;
-    const char* plotClassName = NULL;
-
-    if (!PyArg_ParseTuple(pArgs, "O!|s", &PythonPlugins::PyDataIOPluginType, &grabber, &plotClassName))
-    {
-        return PyErr_Format(PyExc_RuntimeError, "argument is no dataIO device");
-    }
-
-    PythonPlugins::PyDataIOPlugin* elem = (PythonPlugins::PyDataIOPlugin*)grabber;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QString plotClassName2;
-    if(plotClassName)
-    {
-        plotClassName2 = QString(plotClassName);
-    }
-
-    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QMetaObject::invokeMethod(uiOrg, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(QString, plotClassName2), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-//    QMetaObject::invokeMethod(figureOrganizer, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-    if (locker.getSemaphore()->wait(PLUGINWAIT))
-    {
-        if (locker.getSemaphore()->returnValue == retError)
-        {
-            PyErr_Format(PyExc_RuntimeError,"error while starting live line view: \n%s\n",locker.getSemaphore()->returnValue.errorMessage());
-            return NULL;
-        }
-        else if (locker.getSemaphore()->returnValue == retWarning)
-        {
-            std::cerr << "warning while starting live line view: \n" << "warning message: \n" << std::endl;
-            std::cerr << locker.getSemaphore()->returnValue.errorMessage() << std::endl;
-
-            Py_RETURN_NONE;
-        }
-        else
-        {
-            Py_RETURN_NONE;
-        }
-    }
-    else
-    {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-        {
-            return PyErr_Occurred();
-        }
-        return PyErr_Format(PyExc_RuntimeError, "timeout while opening live line view");
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySetFigParam_doc,"setFigParam(figHandle, name, value OR name, value) -> sets the parameter 'name' of figure to value \n\
-\n\
-Parameters \n\
------------ \n\
-figHandle : {int}, optional \n\
-    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
-    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
-name :  {str} \n\
-    the name of the parameter to be changed.\n\
-value : {int} \n\
-    value is the new value for this parameter.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function sets the parameter 'name' of the specigied figure to value.\n\
-If 'help?' is used as name of the parameter, a list of available parameters is printed.");
-PyObject* PythonItom::PySetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
-{
-    const char *paramKey = "help?\0";
-    int figHandle = -1; //takes current figure handle
-    PyObject *paramValue = NULL;
-    //pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
-    if (PyTuple_Size(pArgs) <= 0)
-    {
-        paramKey = "help?\0";
-    }
-    else
-    {
-        if (!PyArg_ParseTuple(pArgs, "sO", &paramKey, &paramValue))
-        {
-            PyErr_Clear();
-            if (!PyArg_ParseTuple(pArgs, "i|sO", &figHandle, &paramKey, &paramValue))
-            {
-                return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key, variant argument");
-            }
-        }
-    }
-
-    QVariant argument = QVariant();
-
-    if (paramValue != NULL)
-    {
-        PythonQtConversion::convertPyObjectToQVariant(paramValue, argument);
-        if (PyErr_Occurred()) return NULL;
-    }
-
-    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
-
-    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    //QMetaObject::invokeMethod(figureOrganizer, "setFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QVariant, argument), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-    //{
-    //    Py_RETURN_NONE;
-    //}
-    //else
-    //{
-    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-    //    {
-    //        return PyErr_Occurred();
-    //    }
-    //    return PyErr_Format(PyExc_RuntimeError, "timeout while setting figure parameter");
-    //}
-
-}
+////----------------------------------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pyLiveLine_doc,"liveLine(dataIO) -> shows grabber data in a live line view window  \n\
+//\n\
+//Parameters \n\
+//----------- \n\
+//dataIO : {Hardware-Pointer} \n\
+//    Camera grabber device from which images are acquired.\n\
+//plotName : {str}, optional \n\
+//    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
+//\n\
+//Notes \n\
+//----- \n\
+//\n\
+//Creates a lineplot-window (1D) and automatically grabs lines into this window.\n\
+//This function is not blocking.");
+//PyObject* PythonItom::PyLiveLine(PyObject * /*pSelf*/, PyObject *pArgs)
+//{
+//    PyObject *grabber = NULL;
+//    const char* plotClassName = NULL;
+//
+//    if (!PyArg_ParseTuple(pArgs, "O!|s", &PythonPlugins::PyDataIOPluginType, &grabber, &plotClassName))
+//    {
+//        return PyErr_Format(PyExc_RuntimeError, "argument is no dataIO device");
+//    }
+//
+//    PythonPlugins::PyDataIOPlugin* elem = (PythonPlugins::PyDataIOPlugin*)grabber;
+//    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//    QString plotClassName2;
+//    if(plotClassName)
+//    {
+//        plotClassName2 = QString(plotClassName);
+//    }
+//
+//    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+//    QMetaObject::invokeMethod(uiOrg, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(QString, plotClassName2), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+////    QMetaObject::invokeMethod(figureOrganizer, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//
+//    if (locker.getSemaphore()->wait(PLUGINWAIT))
+//    {
+//        if (locker.getSemaphore()->returnValue == retError)
+//        {
+//            PyErr_Format(PyExc_RuntimeError,"error while starting live line view: \n%s\n",locker.getSemaphore()->returnValue.errorMessage());
+//            return NULL;
+//        }
+//        else if (locker.getSemaphore()->returnValue == retWarning)
+//        {
+//            std::cerr << "warning while starting live line view: \n" << "warning message: \n" << std::endl;
+//            std::cerr << locker.getSemaphore()->returnValue.errorMessage() << std::endl;
+//
+//            Py_RETURN_NONE;
+//        }
+//        else
+//        {
+//            Py_RETURN_NONE;
+//        }
+//    }
+//    else
+//    {
+//        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+//        {
+//            return PyErr_Occurred();
+//        }
+//        return PyErr_Format(PyExc_RuntimeError, "timeout while opening live line view");
+//    }
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pySetFigParam_doc,"setFigParam(figHandle, name, value OR name, value) -> sets the parameter 'name' of figure to value \n\
+//\n\
+//Parameters \n\
+//----------- \n\
+//figHandle : {int}, optional \n\
+//    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
+//    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
+//name :  {str} \n\
+//    the name of the parameter to be changed.\n\
+//value : {int} \n\
+//    value is the new value for this parameter.\n\
+//\n\
+//Notes \n\
+//----- \n\
+//\n\
+//This function sets the parameter 'name' of the specigied figure to value.\n\
+//If 'help?' is used as name of the parameter, a list of available parameters is printed.");
+//PyObject* PythonItom::PySetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
+//{
+//    const char *paramKey = "help?\0";
+//    int figHandle = -1; //takes current figure handle
+//    PyObject *paramValue = NULL;
+//    //pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
+//    if (PyTuple_Size(pArgs) <= 0)
+//    {
+//        paramKey = "help?\0";
+//    }
+//    else
+//    {
+//        if (!PyArg_ParseTuple(pArgs, "sO", &paramKey, &paramValue))
+//        {
+//            PyErr_Clear();
+//            if (!PyArg_ParseTuple(pArgs, "i|sO", &figHandle, &paramKey, &paramValue))
+//            {
+//                return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key, variant argument");
+//            }
+//        }
+//    }
+//
+//    QVariant argument = QVariant();
+//
+//    if (paramValue != NULL)
+//    {
+//        PythonQtConversion::convertPyObjectToQVariant(paramValue, argument);
+//        if (PyErr_Occurred()) return NULL;
+//    }
+//
+//    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
+//
+//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
+//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//
+//    //QMetaObject::invokeMethod(figureOrganizer, "setFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QVariant, argument), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//
+//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
+//    //{
+//    //    Py_RETURN_NONE;
+//    //}
+//    //else
+//    //{
+//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+//    //    {
+//    //        return PyErr_Occurred();
+//    //    }
+//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while setting figure parameter");
+//    //}
+//
+//}
 
 ////----------------------------------------------------------------------------------------------------------------------------------
 //PyObject* PythonItom::convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg)
@@ -559,76 +534,76 @@ PyObject* PythonItom::PySetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
 //
 //}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyGetFigParam_doc,"getFigParam(figHandle, name, OR name) -> gets the parameter 'name' of given figure \n\
-\n\
-Parameters \n\
------------ \n\
-figHandle : {int}, optinal \n\
-    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
-    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
-name :  {str} \n\
-    the name of the parameter to be read out.\n\
-\n\
-Returns \n\
-------- \n\
-The value of the parameter 'name' or Py_Error.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function gets the value of parameter 'name' of the specigied figure.\n\
-If 'help?' is used as name of the parameter, a list of available parameters is printed.");
-PyObject* PythonItom::PyGetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
-{
-    return PyErr_Format(PyExc_RuntimeError, "temporary not implemented");
-
-    //const char *paramKey = "help?\0";
-    //int figHandle = -1; //takes current figure handle
-    ////pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
-    //if (PyTuple_Size(pArgs) <= 0)
-    //{
-    //    paramKey = "help?\0";
-    //}
-    //else
-    //{
-    //    if (!PyArg_ParseTuple(pArgs, "s", &paramKey))
-    //    {
-    //        PyErr_Clear();
-    //        if (!PyArg_ParseTuple(pArgs, "i|s", &figHandle, &paramKey))
-    //        {
-    //            return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key");
-    //        }
-    //    }
-    //}
-
-    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    //QSharedPointer<QVariant> returnValue = QSharedPointer<QVariant>(new QVariant());
-
-    //QMetaObject::invokeMethod(figureOrganizer, "getFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QSharedPointer<QVariant>, returnValue), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-    //{
-    //    //everything's ok
-    //}
-    //else
-    //{
-    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-    //    {
-    //        return PyErr_Occurred();
-    //    }
-    //    return PyErr_Format(PyExc_RuntimeError, "timeout while getting parameters");
-    //}
-
-    //PyObject* retObject = NULL;
-
-    ////now parse returnValue
-    //retObject = PythonQtConversion::QVariantToPyObject(*returnValue);
-
-    //return retObject;
-}
+////----------------------------------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pyGetFigParam_doc,"getFigParam(figHandle, name, OR name) -> gets the parameter 'name' of given figure \n\
+//\n\
+//Parameters \n\
+//----------- \n\
+//figHandle : {int}, optinal \n\
+//    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
+//    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
+//name :  {str} \n\
+//    the name of the parameter to be read out.\n\
+//\n\
+//Returns \n\
+//------- \n\
+//The value of the parameter 'name' or Py_Error.\n\
+//\n\
+//Notes \n\
+//----- \n\
+//\n\
+//This function gets the value of parameter 'name' of the specigied figure.\n\
+//If 'help?' is used as name of the parameter, a list of available parameters is printed.");
+//PyObject* PythonItom::PyGetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
+//{
+//    return PyErr_Format(PyExc_RuntimeError, "temporary not implemented");
+//
+//    //const char *paramKey = "help?\0";
+//    //int figHandle = -1; //takes current figure handle
+//    ////pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
+//    //if (PyTuple_Size(pArgs) <= 0)
+//    //{
+//    //    paramKey = "help?\0";
+//    //}
+//    //else
+//    //{
+//    //    if (!PyArg_ParseTuple(pArgs, "s", &paramKey))
+//    //    {
+//    //        PyErr_Clear();
+//    //        if (!PyArg_ParseTuple(pArgs, "i|s", &figHandle, &paramKey))
+//    //        {
+//    //            return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key");
+//    //        }
+//    //    }
+//    //}
+//
+//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
+//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//
+//    //QSharedPointer<QVariant> returnValue = QSharedPointer<QVariant>(new QVariant());
+//
+//    //QMetaObject::invokeMethod(figureOrganizer, "getFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QSharedPointer<QVariant>, returnValue), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//
+//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
+//    //{
+//    //    //everything's ok
+//    //}
+//    //else
+//    //{
+//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+//    //    {
+//    //        return PyErr_Occurred();
+//    //    }
+//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while getting parameters");
+//    //}
+//
+//    //PyObject* retObject = NULL;
+//
+//    ////now parse returnValue
+//    //retObject = PythonQtConversion::QVariantToPyObject(*returnValue);
+//
+//    //return retObject;
+//}
 
 ////----------------------------------------------------------------------------------------------------------------------------------
 ////returns new reference
@@ -3258,12 +3233,12 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"scriptEditor", (PyCFunction)PythonItom::PyOpenEmptyScriptEditor, METH_NOARGS, pyOpenEmptyScriptEditor_doc},
     {"newScript", (PyCFunction)PythonItom::PyNewScript, METH_NOARGS, pyNewScript_doc},
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
-    {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS, pyPlotImage_doc},
-    {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS, pyLiveImage_doc},
-    {"liveLine", (PyCFunction)PythonItom::PyLiveLine, METH_VARARGS, pyLiveLine_doc},
+    {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
+    {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
+    /*{"liveLine", (PyCFunction)PythonItom::PyLiveLine, METH_VARARGS, pyLiveLine_doc},
     {"closeFigure", (PyCFunction)PythonItom::PyCloseFigure, METH_VARARGS, pyCloseFigure_doc},
     {"setFigParam", (PyCFunction)PythonItom::PySetFigParam, METH_VARARGS, pySetFigParam_doc},
-    {"getFigParam", (PyCFunction)PythonItom::PyGetFigParam, METH_VARARGS, pyGetFigParam_doc},
+    {"getFigParam", (PyCFunction)PythonItom::PyGetFigParam, METH_VARARGS, pyGetFigParam_doc},*/
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
     {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS, pyFilterHelp_doc},
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS, pyWidgetHelp_doc},

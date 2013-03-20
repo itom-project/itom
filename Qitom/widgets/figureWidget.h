@@ -27,9 +27,11 @@
 
 #include "common/sharedStructures.h"
 #include "DataObject/dataobj.h"
+#include "common/addInInterface.h"
 
 #include <qgridlayout.h>
 #include <qsharedpointer.h>
+#include <qpointer.h>
 
 namespace ito {
 
@@ -41,6 +43,9 @@ public:
     ~FigureWidget();
 
     RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, QString className, QPoint &newAreas);
+    RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, QString className, QPoint &newAreas);
+    
+    void setFigHandle(QSharedPointer<unsigned int> figHandle) { m_guardedFigHandle = figHandle; }
 
 protected:
     
@@ -51,11 +56,15 @@ protected:
     void updateActions();
     void updatePythonActions(){ updateActions(); }
 
-    void closeEvent(QCloseEvent *event) { event->accept(); };
+    void closeEvent(QCloseEvent *event); // { event->accept(); };
+
+    QSharedPointer<ito::Param> getParamByInvoke(ito::AddInBase* addIn, const QString &paramName, ito::RetVal &retval);
 
 private:
     QGridLayout *m_pGrid;
     QWidget *m_pCenterWidget;
+
+    QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds it own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
 
 
 signals:

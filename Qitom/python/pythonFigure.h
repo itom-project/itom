@@ -34,6 +34,7 @@
 #include <qobject.h>
 #include <qhash.h>
 #include <qsharedpointer.h>
+#include <qpointer.h>
 
 namespace ito 
 {
@@ -79,17 +80,20 @@ public:
     static PyObject* PyFigure_repr(PyFigure *self);
     static PyObject* PyFigure_show(PyFigure *self, PyObject *args);
     static PyObject* PyFigure_hide(PyFigure *self);
-    static PyObject* PyFigure_Plot(PyFigure *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyFigure_getHandle(PyFigure *self, void *closure);
+    static PyObject* PyFigure_getDocked(PyFigure *self, void *closure);
+    static int       PyFigure_setDocked(PyFigure *self, PyObject *value, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // static members
     //-------------------------------------------------------------------------------------------------
-    
+    static PyObject* PyFigure_close(PyFigure *self, PyObject *args);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
@@ -100,6 +104,8 @@ public:
     static PyTypeObject PyFigureType;
     static PyModuleDef  PyFigureModule;
     static void PyFigure_addTpDict(PyObject *tp_dict);
+
+private:
 
 };
 

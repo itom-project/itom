@@ -71,12 +71,12 @@ public:
     static PyObject* PyNewScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyOpenScript(PyObject *pSelf, PyObject *pArgs);
 
-    static PyObject* PyPlotImage(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyLiveLine(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyCloseFigure(PyObject *pSelf, PyObject *pArgs);
+    static PyObject* PyPlotImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
+    static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
+    //static PyObject* PyLiveLine(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
+    /*static PyObject* PyCloseFigure(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PySetFigParam(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyGetFigParam(PyObject *pSelf, PyObject *pArgs);
+    static PyObject* PyGetFigParam(PyObject *pSelf, PyObject *pArgs);*/
 
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs);

@@ -938,6 +938,82 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue = RetVal(retOk);
+    UiContainer *ptr = getUiDialogByHandle(uiHandle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
+
+    if(widget)
+    {
+        if(widget->inherits("ito::AbstractDockWidget"))
+        {
+            AbstractDockWidget *adw = (AbstractDockWidget*)widget;
+            *docked = adw->docked();
+        }
+        else
+        {
+            retValue += RetVal(retError, 0, tr("dialog cannot be docked").toAscii().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        ItomSharedSemaphore::deleteSemaphore(semaphore);
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue = RetVal(retOk);
+    UiContainer *ptr = getUiDialogByHandle(uiHandle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
+
+    if(widget)
+    {
+        if(widget->inherits("ito::AbstractDockWidget"))
+        {
+            AbstractDockWidget *adw = (AbstractDockWidget*)widget;
+
+            if(docked)
+            {
+                adw->dockWidget();
+            }
+            else
+            {
+                adw->undockWidget();
+            }
+        }
+        else
+        {
+            retValue += RetVal(retError, 0, tr("dialog cannot be docked or undocked").toAscii().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        ItomSharedSemaphore::deleteSemaphore(semaphore);
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
@@ -2194,28 +2270,100 @@ RetVal UiOrganizer::liveLine(AddInDataIO* dataIO, QString plotClassName /*= ""*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, unsigned int figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
     FigureWidget *fig = NULL;
 
-    if(m_dialogList.contains(figHandle))
+    if(*figHandle == 0)
     {
-        fig = qobject_cast<FigureWidget*>( m_dialogList[figHandle].container->getUiWidget() );
-        if(fig)
+        //create new figure and gives it its own reference, since no instance is keeping track of it
+        QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
+        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+        QSharedPointer<unsigned int> objectID(new unsigned int);
+        retval += createFigure( guardedFigHandle, initSlotCount, objectID, NULL);
+        if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
-            QPoint newAreas;
-            fig->plot(dataObj, areaRow, areaCol, className, newAreas);
+            *figHandle = *(*guardedFigHandle);
+            fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
+            fig->setFigHandle( *guardedFigHandle );
+        }
+    }
+
+    if(!retval.containsError())
+    {
+
+        if(m_dialogList.contains(*figHandle))
+        {
+            fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
+            if(fig)
+            {
+                QPoint newAreas;
+                fig->plot(dataObj, areaRow, areaCol, className, newAreas);
+            }
+            else
+            {
+                retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",*figHandle);
+            }
         }
         else
         {
-            retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",figHandle);
+            retval += RetVal::format(retError,0,"figHandle %i not available.",*figHandle);
         }
     }
-    else
+
+    if(semaphore)
     {
-        retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+
+    if(*figHandle == 0)
+    {
+        //create new figure and gives it its own reference, since no instance is keeping track of it
+        QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
+        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+        QSharedPointer<unsigned int> objectID(new unsigned int);
+        retval += createFigure( guardedFigHandle, initSlotCount, objectID, NULL);
+        if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+        {
+            *figHandle = *(*guardedFigHandle);
+            fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
+            fig->setFigHandle( *guardedFigHandle );
+        }
+    }
+
+    if(!retval.containsError())
+    {
+
+        if(m_dialogList.contains(*figHandle))
+        {
+            fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
+            if(fig)
+            {
+                QPoint newAreas;
+                fig->liveImage(dataIO, areaRow, areaCol, className, newAreas);
+            }
+            else
+            {
+                retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",*figHandle);
+            }
+        }
+        else
+        {
+            retval += RetVal::format(retError,0,"figHandle %i not available.",*figHandle);
+        }
     }
 
     if(semaphore)
@@ -2334,8 +2482,93 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+
+    if(m_dialogList.contains(figHandle))
+    {
+        fig = qobject_cast<FigureWidget*>( m_dialogList[figHandle].container->getUiWidget() );
+        if(fig)
+        {
+            QSharedPointer<unsigned int> empty;
+            fig->setFigHandle( empty );
+        }
+        else
+        {
+            retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",figHandle);
+        }
+    }
+    else
+    {
+        retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+    QSharedPointer<unsigned int> empty;
+
+    if(figHandle > 0)
+    {
+        if(m_dialogList.contains(figHandle))
+        {
+            fig = qobject_cast<FigureWidget*>( m_dialogList[figHandle].container->getUiWidget() );
+            if(fig)
+            {
+                fig->setFigHandle( empty );
+            }
+            else
+            {
+                retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",figHandle);
+            }
+        }
+        else
+        {
+            retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+        }
+    }
+    else
+    {
+        QHash<unsigned int, ito::UiContainerItem>::const_iterator i = m_dialogList.constBegin();
+        FigureWidget *fig;
+        while (i != m_dialogList.constEnd()) 
+        {
+            fig = qobject_cast<FigureWidget*>( i.value().container->getUiWidget());
+            if(fig)
+            {
+                fig->setFigHandle(empty);
+            }
+            ++i;
+        }
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)
 {
     UiOrganizer *orga = qobject_cast<UiOrganizer*>( AppManagement::getUiOrganizer() );

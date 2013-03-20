@@ -137,16 +137,6 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
-{
-    if(self->guardedFigHandle.isNull())
-    {
-        return PyErr_Format(PyExc_RuntimeError,"invalid figure");
-    }
-    return Py_BuildValue("i", *(self->guardedFigHandle) );
-}
-
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -161,18 +151,13 @@ areaIndex: {int}, optional \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
 \n\
-Returns \n\
-------- \n\
-ID : {int???}\n\
-    Returns the number (ID) of the plot in the figure manager.\n\
-\n\
 Notes \n\
 ----- \n\
 \n\
 Plot an existing dataObject in not dockable, not blocking window. \n\
 The style of the plot will depend on the object dimensions.\n\
 If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.");
-PyObject* PythonFigure::PyFigure_Plot(PyFigure *self, PyObject *args, PyObject *kwds)
+PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"data", "areaIndex", "className", NULL};
     PyObject *data = NULL;
@@ -204,19 +189,72 @@ PyObject* PythonFigure::PyFigure_Plot(PyFigure *self, PyObject *args, PyObject *
     QString defaultPlotClassName;
     if(className) defaultPlotClassName = className;
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-    if (locker.getSemaphore()->wait(PLUGINWAIT))
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        Py_RETURN_NONE;
-    }
-    else
-    {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-        {
-            return PyErr_Occurred();
-        }
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
     }
+
+    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
+    {
+        return NULL;
+    }
+    
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className]) -> shows a camera live image in the current or given area of this figure\n\
+\n\
+Parameters \n\
+----------- \n\
+cam : {dataIO-Instance} \n\
+    Camera grabber device from which images are acquired.\n\
+areaIndex: {int}, optional \n\
+    \n\
+className : {str}, optional \n\
+    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
+\n\
+Creates a plot-image (2D) and automatically grabs images into this window.\n\
+This function is not blocking.");
+/*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"cam", "areaIndex", "className", NULL};
+    PythonPlugins::PyDataIOPlugin *cam = NULL;
+    int areaIndex = self->currentSubplotIdx;
+    char* className = NULL;
+    bool ok = true;
+
+    if( !PyArg_ParseTupleAndKeywords(args, kwds, "O!|is", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &areaIndex, &className) )
+    {
+        return NULL;
+    }
+
+    if(areaIndex > self->cols * self->rows)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->rows;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QString defaultPlotClassName;
+    if(className) defaultPlotClassName = className;
+
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image");
+    }
+
+    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
+    {
+        return NULL;
+    }
+    
+    Py_RETURN_NONE;
 }
 
 
@@ -252,7 +290,7 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
     *retCodeIfModal = -1;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*(self->guardedFigHandle))) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(unsigned int, *(self->guardedFigHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(30000))
     {
@@ -296,7 +334,7 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*(self->guardedFigHandle))), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -311,11 +349,181 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
 }
 
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//   getter / setters
+//----------------------------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
+{
+    if(self->guardedFigHandle.isNull())
+    {
+        return PyErr_Format(PyExc_RuntimeError,"invalid figure");
+    }
+    return Py_BuildValue("i", *(self->guardedFigHandle) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigure_docked_doc, "dock status of figure (True|False) \n\
+\n\
+this attribute controls the dock appearance of this figure. If it is docked, the figure is integrated into the main window \n\
+of itom, else it is a independent window. \n\
+");
+/*static*/ PyObject* PythonFigure::PyFigure_getDocked(PyFigure *self, void *closure)
+{
+    ito::RetVal retValue = retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if( *(self->guardedFigHandle) <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QSharedPointer<bool> docked(new bool);
+
+    QMetaObject::invokeMethod(uiOrga, "getDockedStatus", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_Format(PyExc_RuntimeError, "timeout while getting dock status");
+        return NULL;
+    }
+    
+    retValue = locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if(*docked)
+    {
+        Py_RETURN_TRUE;
+    }
+    Py_RETURN_FALSE;
+}
+
+/*static*/ int PythonFigure::PyFigure_setDocked(PyFigure *self, PyObject *value, void *closure)
+{
+    bool ok;
+    bool docked = PythonQtConversion::PyObjGetBool(value,false,ok);
+
+    if(!ok)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "docked attribute must be set to True or False");
+        return -1;
+    }
+
+    ito::RetVal retValue = retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if( *(self->guardedFigHandle) <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+    QMetaObject::invokeMethod(uiOrga, "setDockedStatus", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(bool, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_Format(PyExc_RuntimeError, "timeout while getting dock status");
+        return NULL;
+    }
+    
+    retValue = locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return -1;
+
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//   static
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigure_Close_doc,"close(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+\n\
+This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
+\n\
+Parameters \n\
+----------- \n\
+handle : {dataIO-Instance} \n\
+    any figure handle (>0) or 'all' in order to close all opened figures \n\
+\n\
+Notes \n\
+------- \n\
+If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too.");
+/*static*/ PyObject* PythonFigure::PyFigure_close(PyFigure * /*self*/, PyObject *args)
+{
+    PyObject *arg = NULL;
+    if(!PyArg_ParseTuple(args, "O", &arg))
+    {
+        return NULL;
+    }
+
+    bool ok;
+    int handle;
+    QString text;
+    handle = PythonQtConversion::PyObjGetInt(arg,false,ok);
+    if(!ok)
+    {
+        handle = 0;
+        text = PythonQtConversion::PyObjGetString(arg,false,ok);
+        if(!ok || text != "all")
+        {
+            return PyErr_Format(PyExc_RuntimeError, "argument must be either a figure handle or 'all'");
+        }
+    }
+    else if(handle <= 0)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "figure handle must be bigger than zero");
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+    QMetaObject::invokeMethod(uiOrga, "figureClose", Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(-1))
+    {
+        PyErr_Format(PyExc_RuntimeError, "timeout while closing figures");
+        return NULL;
+    }
+    
+    retValue = locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    Py_RETURN_NONE;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonFigure::PyFigure_methods[] = {
     {"show", (PyCFunction)PyFigure_show,     METH_VARARGS, pyFigureShow_doc},
     {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
-    {"plot", (PyCFunction)PyFigure_Plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
+    {"plot", (PyCFunction)PyFigure_plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
+    {"liveImage", (PyCFunction)PyFigure_liveImage, METH_VARARGS | METH_KEYWORDS, pyFigureLiveImage_doc},
+
+
+    {"close", (PyCFunction)PyFigure_close, METH_VARARGS | METH_STATIC, pyFigure_Close_doc},
     //{"isVisible", (PyCFunction)PyUi_isVisible, METH_NOARGS, pyUiIsVisible_doc},
     //
     //{"getDouble",(PyCFunction)PyUi_getDouble, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetDouble_doc},
@@ -350,6 +558,7 @@ PyModuleDef PythonFigure::PyFigureModule = {
 //----------------------------------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonFigure::PyFigure_getseters[] = {
     {"handle", (getter)PyFigure_getHandle, NULL, "returns handle of figure", NULL},
+    {"docked", (getter)PyFigure_getDocked, (setter)PyFigure_setDocked, pyFigure_docked_doc, NULL},
     {NULL}  /* Sentinel */
 };
 

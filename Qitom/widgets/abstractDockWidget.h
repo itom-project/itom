@@ -36,6 +36,7 @@
 #include <qstring.h>
 #include <qaction.h>
 #include <qshortcut.h>
+#include <qrect.h>
 
 
 namespace ito
@@ -242,6 +243,7 @@ namespace ito
 
 			QSize m_oldMinSize;
 			QSize m_oldMaxSize;
+            QRect m_lastUndockedSize;
     
         //signals:
         //    void addDockToMainWindow(AbstractDockWidget *widget);       /*!<  signal emitted if widget should be docked to main window */
@@ -257,12 +259,10 @@ namespace ito
 
 			void setDockSize(int newWidth, int newHeight);
 
-
-        private slots:
-
             void dockWidget();
             void undockWidget();
 
+        private slots:
             void mnuStayOnTop(bool checked);
             void mnuStayOnTopOfApp(bool checked);
 

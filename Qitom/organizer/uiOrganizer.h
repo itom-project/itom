@@ -297,6 +297,9 @@ public slots:
     RetVal setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on = true, ItomSharedSemaphore *semaphore = NULL);
     RetVal isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore = NULL);
 
+    RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);
+    RetVal setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore = NULL);
+
     RetVal showInputDialogGetDouble(QString title, QString label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min = -2147483647, double max = 2147483647, int decimals = 1, ItomSharedSemaphore *semaphore = NULL );
     RetVal showInputDialogGetInt(QString title, QString label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
     RetVal showInputDialogGetItem(QString title, QString label, QStringList stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex = 0, bool editable = false, ItomSharedSemaphore *semaphore = NULL );
@@ -326,14 +329,19 @@ public slots:
 
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
-
+    
     RetVal plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);    
     RetVal liveData(AddInDataIO* dataIO, QString widget, QObject **window, ItomSharedSemaphore *semaphore = NULL);
     RetVal liveImage(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
     RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, unsigned int figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
+
+    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    
+    RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
 
     void figureDestroyed(QObject *obj)
     {
