@@ -229,7 +229,7 @@ namespace ito
 	{
 		if(m_dockWidget == NULL)
 		{
-			m_dockWidget = new QDockWidget(title);
+			m_dockWidget = new QDockWidget(title + " - " + tr("Toolbox"));
 			connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
             connect(m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
 		}
