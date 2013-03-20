@@ -25,6 +25,12 @@
 
 #include "abstractDockWidget.h"
 
+#include "common/sharedStructures.h"
+#include "DataObject/dataobj.h"
+
+#include <qgridlayout.h>
+#include <qsharedpointer.h>
+
 namespace ito {
 
 class FigureWidget : public AbstractDockWidget
@@ -33,6 +39,8 @@ class FigureWidget : public AbstractDockWidget
 public:
     FigureWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~FigureWidget();
+
+    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, QString className, QPoint &newAreas);
 
 protected:
     
@@ -43,9 +51,11 @@ protected:
     void updateActions();
     void updatePythonActions(){ updateActions(); }
 
-    void closeEvent(QCloseEvent *event) {};
+    void closeEvent(QCloseEvent *event) { event->accept(); };
 
 private:
+    QGridLayout *m_pGrid;
+    QWidget *m_pCenterWidget;
 
 
 signals:

@@ -69,6 +69,8 @@ namespace ito
                 }
                 return this;
             }
+
+            void setVisible(bool visible);
    
         protected:
 
@@ -163,6 +165,11 @@ namespace ito
                 if (event->type() == QEvent::Close)
                 {
                     closeEvent((QCloseEvent*)event);
+                    if(testAttribute(Qt::WA_DeleteOnClose) && event->isAccepted() ) //if window should be closed and dockwidget is assigned with WA_DeleteOnClose, delete this dockwidget first.
+                    {
+                       deleteLater();
+                    }
+                    
                     return true;
                 }
                 else

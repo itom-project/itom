@@ -187,6 +187,25 @@ void AbstractDockWidget::init()
     updateActions();
 }
 
+void AbstractDockWidget::setVisible(bool visible)
+{
+    if(m_docked)
+    {
+        QDockWidget::setVisible(visible);
+    }
+    else
+    {
+        if(m_floatingStyle == floatingWindow)
+        {
+            m_pWindow->setVisible(visible);
+        }
+        else
+        {
+            QDockWidget::setVisible(visible);
+        }
+    }
+}
+
 //! resizes this widget to the given size
 /*!
     \param width
@@ -458,6 +477,7 @@ void AbstractDockWidget::undockWidget()
         setFloating(true);
         hide();
 
+        m_pWindow->show();
         m_pWindow->raise();
 
         toggleViewAction()->setVisible(false);

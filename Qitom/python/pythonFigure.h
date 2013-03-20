@@ -56,6 +56,7 @@ public:
         QSharedPointer<unsigned int> guardedFigHandle;
         int rows;
         int cols;
+        int currentSubplotIdx;
         PythonQtSignalMapper *signalMapper;
     }
     PyFigure;
@@ -76,10 +77,19 @@ public:
     // general members
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyFigure_repr(PyFigure *self);
+    static PyObject* PyFigure_show(PyFigure *self, PyObject *args);
+    static PyObject* PyFigure_hide(PyFigure *self);
+    static PyObject* PyFigure_Plot(PyFigure *self, PyObject *args, PyObject *kwds);
+
+    //-------------------------------------------------------------------------------------------------
+    // getter / setter
+    //------------------------------------------------------------------------------------------------- 
+    static PyObject* PyFigure_getHandle(PyFigure *self, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // static members
     //-------------------------------------------------------------------------------------------------
+    
 
     //-------------------------------------------------------------------------------------------------
     // type structures

@@ -66,8 +66,9 @@ PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObje
     if(self != NULL)
     {
         self->guardedFigHandle.clear(); //default: invalid
-        self->rows = 0;
-        self->cols = 0;
+        self->rows = 1;
+        self->cols = 1;
+        self->currentSubplotIdx = 0;
         self->signalMapper = NULL;
     }
 
@@ -136,86 +137,262 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
+{
+    if(self->guardedFigHandle.isNull())
+    {
+        return PyErr_Format(PyExc_RuntimeError,"invalid figure");
+    }
+    return Py_BuildValue("i", *(self->guardedFigHandle) );
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure\n\
+\n\
+Parameters \n\
+----------- \n\
+data : {DataObject} \n\
+    Is the data object whose region of interest will be plotted.\n\
+areaIndex: {int}, optional \n\
+    \n\
+className : {str}, optional \n\
+    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
+\n\
+Returns \n\
+------- \n\
+ID : {int???}\n\
+    Returns the number (ID) of the plot in the figure manager.\n\
+\n\
+Notes \n\
+----- \n\
+\n\
+Plot an existing dataObject in not dockable, not blocking window. \n\
+The style of the plot will depend on the object dimensions.\n\
+If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.");
+PyObject* PythonFigure::PyFigure_Plot(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"data", "areaIndex", "className", NULL};
+    PyObject *data = NULL;
+    int areaIndex = self->currentSubplotIdx;
+    char* className = NULL;
+    bool ok = true;
+
+    if( !PyArg_ParseTupleAndKeywords(args, kwds, "O|is", const_cast<char**>(kwlist), &data, &areaIndex, &className) )
+    {
+        return NULL;
+    }
+
+    QSharedPointer<ito::DataObject> newDataObj( PythonQtConversion::PyObjGetDataObjectNewPtr( data, false, ok) );
+    if(!ok)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+    }
+
+    if(areaIndex > self->cols * self->rows)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->rows;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QString defaultPlotClassName;
+    if(className) defaultPlotClassName = className;
+
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        Py_RETURN_NONE;
+    }
+    else
+    {
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+        {
+            return PyErr_Occurred();
+        }
+        return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureShow_doc,"show() -> shows figure \n\
+\n\
+\n\
+");
+PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
+{
+    int modalLevel = 0; //no modal
+
+    if(!PyArg_ParseTuple(args, ""))
+    {
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if( *(self->guardedFigHandle) <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QSharedPointer<int> retCodeIfModal(new int);
+    *retCodeIfModal = -1;
+    ito::RetVal retValue = retOk;
+
+    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*(self->guardedFigHandle))) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(30000))
+    {
+        PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+        return NULL;
+    }
+    
+    retValue = locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if(*retCodeIfModal >= 0)
+    {
+        return Py_BuildValue("i",*retCodeIfModal);
+    }
+    else
+    {
+        Py_RETURN_NONE;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureHide_doc, "hide() -> hides figure without deleting it\n\
+\n\
+\n\
+");
+PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
+{
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if( *(self->guardedFigHandle) <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*(self->guardedFigHandle))), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(-1))
+    {
+        PyErr_Format(PyExc_RuntimeError, "timeout while hiding figure");
+        return NULL;
+    }
+    
+    retValue = locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    Py_RETURN_NONE;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonFigure::PyFigure_methods[] = {
-        //{"show", (PyCFunction)PyUi_show,     METH_VARARGS, pyUiShow_doc},
-        //{"hide", (PyCFunction)PyUi_hide, METH_NOARGS, pyUiHide_doc},
-        //{"isVisible", (PyCFunction)PyUi_isVisible, METH_NOARGS, pyUiIsVisible_doc},
-        //
-        //{"getDouble",(PyCFunction)PyUi_getDouble, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetDouble_doc},
-        //{"getInt",(PyCFunction)PyUi_getInt, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetInt_doc},
-        //{"getItem",(PyCFunction)PyUi_getItem, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetItem_doc},
-        //{"getText",(PyCFunction)PyUi_getText, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetText_doc},
-        //{"msgInformation", (PyCFunction)PyUi_msgInformation, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgInformation_doc},
-        //{"msgQuestion", (PyCFunction)PyUi_msgQuestion, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgQuestion_doc},
-        //{"msgWarning", (PyCFunction)PyUi_msgWarning, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgWarning_doc},
-        //{"msgCritical", (PyCFunction)PyUi_msgCritical, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgCritical_doc},
-        //{"getExistingDirectory", (PyCFunction)PyUi_getExistingDirectory, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetExistingDirectory_doc},
-        //{"getOpenFileName", (PyCFunction)PyUi_getOpenFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetOpenFileName_doc},
-        //{"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
-        //{"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
-        {NULL}  /* Sentinel */
+    {"show", (PyCFunction)PyFigure_show,     METH_VARARGS, pyFigureShow_doc},
+    {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
+    {"plot", (PyCFunction)PyFigure_Plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
+    //{"isVisible", (PyCFunction)PyUi_isVisible, METH_NOARGS, pyUiIsVisible_doc},
+    //
+    //{"getDouble",(PyCFunction)PyUi_getDouble, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetDouble_doc},
+    //{"getInt",(PyCFunction)PyUi_getInt, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetInt_doc},
+    //{"getItem",(PyCFunction)PyUi_getItem, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetItem_doc},
+    //{"getText",(PyCFunction)PyUi_getText, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetText_doc},
+    //{"msgInformation", (PyCFunction)PyUi_msgInformation, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgInformation_doc},
+    //{"msgQuestion", (PyCFunction)PyUi_msgQuestion, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgQuestion_doc},
+    //{"msgWarning", (PyCFunction)PyUi_msgWarning, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgWarning_doc},
+    //{"msgCritical", (PyCFunction)PyUi_msgCritical, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgCritical_doc},
+    //{"getExistingDirectory", (PyCFunction)PyUi_getExistingDirectory, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetExistingDirectory_doc},
+    //{"getOpenFileName", (PyCFunction)PyUi_getOpenFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetOpenFileName_doc},
+    //{"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
+    //{"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
+    {NULL}  /* Sentinel */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMemberDef PythonFigure::PyFigure_members[] = {
-        {NULL}  /* Sentinel */
+    {NULL}  /* Sentinel */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyModuleDef PythonFigure::PyFigureModule = {
-        PyModuleDef_HEAD_INIT,
-        "figure",
-        "itom figure type in python",
-        -1,
-        NULL, NULL, NULL, NULL, NULL
+    PyModuleDef_HEAD_INIT,
+    "figure",
+    "itom figure type in python",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonFigure::PyFigure_getseters[] = {
+    {"handle", (getter)PyFigure_getHandle, NULL, "returns handle of figure", NULL},
     {NULL}  /* Sentinel */
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyTypeObject PythonFigure::PyFigureType = {
-        PyVarObject_HEAD_INIT(NULL, 0)
-        "itom.figure",             /* tp_name */
-        sizeof(PyFigure),             /* tp_basicsize */
-        0,                         /* tp_itemsize */
-        (destructor)PyFigure_dealloc, /* tp_dealloc */
-        0,                         /* tp_print */
-        0,                         /* tp_getattr */
-        0,                         /* tp_setattr */
-        0,                         /* tp_reserved */
-        (reprfunc)PyFigure_repr,         /* tp_repr */
-        0,                         /* tp_as_number */
-        0,                         /* tp_as_sequence */
-        0,                         /* tp_as_mapping */
-        0,                         /* tp_hash  */
-        0,                         /* tp_call */
-        0,                         /* tp_str */
-        0, /* tp_getattro */
-        0,  /* tp_setattro */
-        0,                         /* tp_as_buffer */
-        Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
-        pyFigureInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,    	               /* tp_traverse */
-        0,		               /* tp_clear */
-        0,            /* tp_richcompare */
-        0,		               /* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
-        PyFigure_methods,             /* tp_methods */
-        PyFigure_members,             /* tp_members */
-        PyFigure_getseters,            /* tp_getset */
-        0,                         /* tp_base */
-        0,                         /* tp_dict */
-        0,                         /* tp_descr_get */
-        0,                         /* tp_descr_set */
-        0,                         /* tp_dictoffset */
-        (initproc)PyFigure_init,      /* tp_init */
-        0,                         /* tp_alloc */
-        PyFigure_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "itom.figure",             /* tp_name */
+    sizeof(PyFigure),             /* tp_basicsize */
+    0,                         /* tp_itemsize */
+    (destructor)PyFigure_dealloc, /* tp_dealloc */
+    0,                         /* tp_print */
+    0,                         /* tp_getattr */
+    0,                         /* tp_setattr */
+    0,                         /* tp_reserved */
+    (reprfunc)PyFigure_repr,         /* tp_repr */
+    0,                         /* tp_as_number */
+    0,                         /* tp_as_sequence */
+    0,                         /* tp_as_mapping */
+    0,                         /* tp_hash  */
+    0,                         /* tp_call */
+    0,                         /* tp_str */
+    0, /* tp_getattro */
+    0,  /* tp_setattro */
+    0,                         /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
+    pyFigureInit_doc /*"dataObject objects"*/,           /* tp_doc */
+    0,    	               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,            /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    PyFigure_methods,             /* tp_methods */
+    PyFigure_members,             /* tp_members */
+    PyFigure_getseters,            /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)PyFigure_init,      /* tp_init */
+    0,                         /* tp_alloc */
+    PyFigure_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

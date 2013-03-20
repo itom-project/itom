@@ -863,6 +863,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
             }
             break;
             case UiContainer::uiTypeQMainWindow:
+            case UiContainer::uiTypeFigure:
             {
                 QWidget *wid = ptr->getUiWidget();
                 if(wid)
@@ -2192,7 +2193,41 @@ RetVal UiOrganizer::liveLine(AddInDataIO* dataIO, QString plotClassName /*= ""*/
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, unsigned int figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
 
+    if(m_dialogList.contains(figHandle))
+    {
+        fig = qobject_cast<FigureWidget*>( m_dialogList[figHandle].container->getUiWidget() );
+        if(fig)
+        {
+            QPoint newAreas;
+            fig->plot(dataObj, areaRow, areaCol, className, newAreas);
+        }
+        else
+        {
+            retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",figHandle);
+        }
+    }
+    else
+    {
+        retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
@@ -2201,6 +2236,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     UiContainerItem containerItem;
     UiContainer *set = NULL;
     MainWindow *mainWin = NULL;
+    unsigned int forcedHandle = 0;
+    bool found = false;
 
     *initSlotCount = 0;
     *objectID = 0;
@@ -2223,6 +2260,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                     *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
                     *initSlotCount = fig->metaObject()->methodOffset();
                     *objectID = addObjectToList(const_cast<FigureWidget*>(fig));
+                    found = true;
                 }
                 else
                 {
@@ -2236,10 +2274,18 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError,0,"handle '%i' could not be found.",h);
+            if(h == 0)
+            {
+                retValue += ito::RetVal(ito::retError,0,"handle '0' cannot be assigned.");
+            }
+            else
+            {
+                forcedHandle = h;
+            }
         }
     }
-    else
+
+    if(!found)
     {
         if(m_garbageCollectorTimer == 0)
         {
@@ -2247,6 +2293,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         }
 
         FigureWidget *fig2 = new FigureWidget("Figure", false, true, NULL);
+        //fig2->setAttribute( Qt::WA_DeleteOnClose ); //always delete figure window, if user closes it
+        QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
 
         mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
         if(mainWin)
@@ -2256,7 +2304,18 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
 
         set = new UiContainer(fig2);
         unsigned int *handle = new unsigned int;
-        *handle = ++UiOrganizer::autoIncUiDialogCounter;
+        if(forcedHandle == 0)
+        {
+            *handle = ++UiOrganizer::autoIncUiDialogCounter;
+        }
+        else
+        {
+            *handle = forcedHandle; //does not exist any more!
+            if(UiOrganizer::autoIncObjectCounter < forcedHandle)
+            {
+                UiOrganizer::autoIncObjectCounter = forcedHandle; //the next figure must always get a really new and unique handle number
+            }
+        }
         *guardedFigureHandle = QSharedPointer<unsigned int>(handle, threadSafeDeleteUi);
         *initSlotCount = fig2->metaObject()->methodOffset();
         *objectID = addObjectToList(fig2);
@@ -2287,6 +2346,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         //question: do we need locker here?
         locker.getSemaphore()->wait(-1);
     }
+    delete handle;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

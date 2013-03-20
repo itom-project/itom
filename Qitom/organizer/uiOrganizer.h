@@ -252,8 +252,9 @@ public:
 
     RetVal getNewPluginWindow(QString pluginName, unsigned int &objectID, QObject** newWidget);
 
-protected:
     QWidget* loadDesignerPluginWidget(QString &name, RetVal &retValue, QWidget *parent = NULL);
+
+protected:
 
     static void threadSafeDeleteUi(unsigned int *handle);
 
@@ -325,13 +326,19 @@ public slots:
 
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
-
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);    
     RetVal liveData(AddInDataIO* dataIO, QString widget, QObject **window, ItomSharedSemaphore *semaphore = NULL);
     RetVal liveImage(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
     RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
+
+    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, unsigned int figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+
+    void figureDestroyed(QObject *obj)
+    {
+        qDebug() << obj;
+    }
 
 private slots:
 
