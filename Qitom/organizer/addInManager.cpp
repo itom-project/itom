@@ -1503,6 +1503,12 @@ end:
         closeDeadPlugins();
         m_deadPluginTimer.stop();
 
+        foreach (QTranslator *Translator, m_Translator)
+        {
+            delete Translator;
+        }
+        m_Translator.clear();
+
         while (m_addInListDataIO.size() > 0)
         {
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[0]));

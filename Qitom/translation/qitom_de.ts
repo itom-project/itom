@@ -2737,6 +2737,16 @@ Type conflict for %1</source>
         <source>base path for relative pathes: </source>
         <translation type="unfinished">Basis-Ordner für relative Verzeichnisse: </translation>
     </message>
+    <message>
+        <location line="+53"/>
+        <source>load python script</source>
+        <translation>Pyhton-Skript laden</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>python script (*.py)</source>
+        <translation>Python-Skript (*.py)</translation>
+    </message>
 </context>
 <context>
     <name>WorkspaceWidget</name>
@@ -3123,7 +3133,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location line="+176"/>
+        <location line="+29"/>
+        <source>Toolbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
     </message>
@@ -3354,7 +3369,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation>Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+616"/>
+        <location line="+622"/>
         <source>no dock widget available</source>
         <translation type="unfinished"></translation>
     </message>
