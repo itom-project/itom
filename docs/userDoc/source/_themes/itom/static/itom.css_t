@@ -36,12 +36,12 @@ body {
     font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
     min-width: 59em;
     max-width: 70em;
-    color: #333333;
+    color: #000000;
     border-style:double;
-    border-width: 2px;
+    border-width: 0px;
 }
 
-/*---------------------------------------Von Martin hinzugefýgt-------------------------------------------*/
+/*---------------------------------------Von Martin -------------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------*/
 /*Parameters, Returns, etc - Spalte*/
 col.field-name{ 
@@ -51,15 +51,15 @@ col.field-name{
     border-left: 2px solid #000000;
 }
 
-/*class.itom ... ýberschrift*/
+/*class.itom ... Ueberschrift*/
 dl.class dt{
    font-size: 19px; 
 }
 
 /*Hinterlegung der gesamten Methoden*/
 dl.method, dl.staticmethod, dl.function{
-  background-color: #ffffff /*#FBF8EF;*/
-  border: 1px solid;
+  background-color: #ffffff; /*#FBF8EF;*/
+  border: 0px solid #000000;
 }
 
 /*Hinterlegung des gesamten Attributes*/
@@ -71,20 +71,19 @@ dl.attribute{
 /*Hinterlegung des Attributeheaders*/
 dl.attribute dt{
  	background-color: #E6E6E6;
-  border-bottom: 1px solid #000000; /*#B40404*/ 
   font-size: 13px;
   padding-left: 7px;
 }
 
 /*Hinterlegung des static- und Mehodenheaders*/
-dl.method dt, dl.staticmethod, dl.function dt{
- 	background-color: #E6E6E6;
-  border-bottom: 1px solid #000000; /*#B40404*/ 
+dl.method dt, dl.staticmethod dt, dl.function dt{
+ 	background-color: #E6E6E6; 
+  border-top: 1px solid #000000; /*#B40404*/
   font-size: 13px;
   padding-left: 7px;
 }
 
-/*---------------------------------------Von Martin hinzugefýgt-ENDE--------------------------------------*/
+/*---------------------------------------Von Martin-ENDE--------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------*/
 
 div.footer {
@@ -165,7 +164,7 @@ div.header {
     left: 0px;
     top: 0px;
     height: 85px;
-    background: #B40404; */
+    background: #efefef; */
     padding: 0 40px;
 }
 div.header h1 {
