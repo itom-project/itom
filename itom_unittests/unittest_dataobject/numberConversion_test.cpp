@@ -261,26 +261,26 @@ TYPED_TEST(Real_ComplexTest, numberConversionIntToComplex_Test)
 	int8_var2 = 0;
 	int8_var3 = 5;
 
-	complex64_var1 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var1) );	
-	complex128_var1 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var1) );	
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(-5), complex64_var1.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var1.imag() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(-5), complex128_var1.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var1.imag() );
+	complex64_var1 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var1) );	//!< converting the value in int8_var1 to complex64 value 
+	complex128_var1 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var1) );	//!< converting the value in int8_var1 to complex128 value 
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(-5), complex64_var1.real() );				//!< Real part of complex64_var1 should be equal to the value in int8_var1 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var1.imag() );				//!< Imaginary part of complex64_var1 should be 0.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(-5), complex128_var1.real() );				//!< Real part of complex128_var1 should be equal to the value in int8_var1 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var1.imag() );				//!< Imaginary part of complex128_var1 should be 0.
 
-	complex64_var2 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var2) );					
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var2.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var2.imag() );
-	complex128_var2 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var2) );					
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var2.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var2.imag() );
+	complex64_var2 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var2) );	//!< converting the value in int8_var2 to complex64 value 
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var2.real() );				//!< Real part of complex64_var2 should be equal to the value in int8_var2 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var2.imag() );				//!< Imaginary part of complex64_var2 should be 0.
+	complex128_var2 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var2) );	//!< Converting the value in int8_var2 to complex128 value				
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var2.real() );				//!< Real part of complex128_var2 should be equal to the value in int8_var2 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var2.imag() );				//!< Imaginary part of complex128_var2 should be 0.
 
-	complex64_var3 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var3) );					
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(5), complex64_var3.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var3.imag() );
-	complex128_var3 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var3) );					
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(5), complex128_var3.real() );
-	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var3.imag() );
+	complex64_var3 = ito::numberConversion<ito::complex64>(ito::tInt8,(void*)(&int8_var3) );	//!< converting the value in int8_var3 to complex64 value 				
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(5), complex64_var3.real() );				//!< Real part of complex64_var2 should be equal to the value in int8_var2 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var3.imag() );				//!< Imaginary part of complex64_var2 should be 0.
+	complex128_var3 = ito::numberConversion<ito::complex128>(ito::tInt8,(void*)(&int8_var3) );	//!< Converting the value in int8_var2 to complex128 value					
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(5), complex128_var3.real() );				//!< Real part of complex128_var3 should be equal to the value in int8_var3 after conversion.
+	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var3.imag() );				//!< Imaginary part of complex128_var3 should be 0.
 
 	int16_var1 = -5;
 	int16_var2 = 0;
@@ -288,7 +288,7 @@ TYPED_TEST(Real_ComplexTest, numberConversionIntToComplex_Test)
 	complex64_var1,complex64_var2,complex64_var3 = 0 ;
 	complex128_var1,complex128_var2,complex128_var3 = 0 ;
 
-	complex64_var1 = ito::numberConversion<ito::complex64>(ito::tInt16, &int16_var1);
+	complex64_var1 = ito::numberConversion<ito::complex64>(ito::tInt16, &int16_var1);			//!< converting the value in int16_var1 to complex64 value 
 	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(-5), complex64_var1.real() );
 	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var1.imag() );
 	complex128_var1 = ito::numberConversion<ito::complex128>(ito::tInt16, &int16_var1);
@@ -418,7 +418,7 @@ TYPED_TEST(Real_ComplexTest, numberConversionFloatToComplex_Test)
 	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float32>(0), complex64_var7.imag() );
 
 
-	complex128_var3 = ito::numberConversion<ito::complex128>(ito::tFloat32,(void*)(&float32_var1) );	
+	complex128_var1 = ito::numberConversion<ito::complex128>(ito::tFloat32,(void*)(&float32_var1) );	
 	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(-5.0), complex128_var1.real() );
 	EXPECT_FLOAT_EQ( cv::saturate_cast<ito::float64>(0), complex128_var1.imag() );
 	complex128_var2 = ito::numberConversion<ito::complex128>(ito::tFloat32,(void*)(&float32_var2) );	

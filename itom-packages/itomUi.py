@@ -67,13 +67,19 @@ class ItomUi():
         '''
         def decorate(func):
             parts = func.__name__.split("_")
-            if(len(parts) == 3 and parts[0] == "on"):
+            if(len(parts) >= 3 and parts[0] == "on"):
                 setattr(func,"hasAutoSlot",True)
-                newSig = "{0}({1})".format(parts[2],attr[0])
+                newSig = "{0}({1})".format(parts[ len(parts) - 1 ],attr[0])
                 sig = getattr(func, "signature", [])
                 sig.append(newSig)
                 wid = getattr(func, "widgetName", [])
-                wid.append(parts[1])
+                
+                if(len(parts) == 3):
+                    widgetName = parts[1]
+                else:
+                    widgetName = "_".join( parts[1:len(parts)-1] )
+                
+                wid.append(widgetName)
                 setattr(func,"signature",sig)
                 setattr(func,"widgetName",wid)
             return func

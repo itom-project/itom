@@ -104,7 +104,7 @@ TYPED_TEST(SaturateTestFloat, saturate_cast_Test)
 
 }
 
-//! saturate_cast_Test1
+//! saturate_cast_Test1  
 /*!
 	This test checks the functionality of saturate_cast<type>(...) method while converting from float64 into float32 for values which exceeds the maximum value of float32 type variable.
 */
@@ -231,8 +231,15 @@ TYPED_TEST(SaturateTestCmplx_NonCmplx, saturate_cast_Test)
 	EXPECT_EQ(0 , complex_var1.imag() );									//!< check if real part of complex64 type variable is 0.
 
 	complex_var2 = cv::saturate_cast<TypeParam>(float32_var1);				//!< converting float32 type value into complex128 type
-	EXPECT_EQ(cv::saturate_cast<TypeParam>(-4.9), complex_var2.real() );	//!< check if real part of complex128 type variable is same as assigned float32 type value
-	EXPECT_EQ(0,complex_var2.imag() );										//Note:: Test is failing only for double datatype...............
+	if(std::numeric_limits<TypeParam>::is_exact)
+    {
+		EXPECT_EQ(cv::saturate_cast<TypeParam>(-4.9), complex_var2.real() );	//!< check if real part of complex128 type variable is same as assigned float32 type value
+    }
+    else
+    {
+		EXPECT_FLOAT_EQ(cv::saturate_cast<TypeParam>(-4.9), complex_var2.real() );	//!< check if real part of complex128 type variable is same as assigned float32 type value
+	}
+	EXPECT_EQ(0,complex_var2.imag() );										
 
 	//!< Testing if exception is raised as it is supposed to, while converting from Complex datatype variables to any other type variables.
 	EXPECT_ANY_THROW(cv::saturate_cast<TypeParam>(complex_var1));	

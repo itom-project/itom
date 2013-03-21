@@ -12,10 +12,10 @@
 #include "commonChannel.h"
 
 
-/*! \class ROITest
-	\brief ROI methods test for real data types
+/*! \class copyTests1
+	\brief test for deepCopyPartial(..) method.
 
-	This test class checks functionality of different methods dealing with ROI for data objects.
+	This test class checks functionality of deepCopyPartial(..) method on different data objects of different sizes and types.
 */
 template <typename _Tp> class copyTests1 : public ::testing::Test 
 	{ 
@@ -87,7 +87,10 @@ public:
 TYPED_TEST_CASE(copyTests1, ItomRealDataTypes);
 
 
-
+//deepCopyPartial_Test
+/*!
+	deepCopyPartial(..) function must raise an exception whenever the size (of ROI) of source and destination data objects are unequal. This test varifies this functionality.
+*/
 TYPED_TEST(copyTests1, deepCopyPartial_Test)
 {
 	dObj1_sr = dObj1_s; 
@@ -148,6 +151,10 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 
 }
 
+//deepCopyPartial_Test1
+/*!
+	deepCopyPartial(..) function must raise an exception whenever the type of source and destination data objects are unequal. This test varifies this functionality.
+*/
 TYPED_TEST(copyTests1, deepCopyPartial_Test1)
 {
 	//!< Test for different types of Data Objects should raise exception.
@@ -156,9 +163,15 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test1)
 	EXPECT_ANY_THROW(dObj2_s.deepCopyPartial(dObj2_d));
 }
 
+//deepCopyPartial_Test2
+/*!
+	Values of ROI of coursce must be equal to values in ROI of destination after copying. 
+	Also values outside of ROI of destination must remain equal if checked after adjusting ROI back to original size and position.
+	The above two conditions are checked in this test for 2 and 3 dimensional data objects.
+*/
 TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 {
-	//!< Test for different types of Data Objects should raise exception.
+	
 	int temp=0;
 	for(int i =0;i<10;i++) 
 		{
@@ -269,7 +282,8 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 
 // deepCopyPartial_Test3
 /*!
-	This test checks functionality of deepCopyPartial() method on 5 dimensional data objects
+	This test is basically the extension of deepCopyPartial_Test2 adding 5 dimensional data objects under test.
+	So this test checks same functionality of deepCopyPartial() method on 5 dimensional data objects
 */
 TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 {
@@ -342,7 +356,10 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 
 }
 
-//!< In this test, we define a 5 dimension data object, make a deep copy from it using deepCopyPartial() function , adjust the ROI of copied data object to smaller ROI, adjust the ROI back to original size of source data object and then compare the values of the elements if the values have been changed.
+//deepCopyPartial_Test4
+/*!
+	In this test, we define a 5 dimension data object, make a deep copy from it using deepCopyPartial() function , adjust the ROI of copied data object to smaller ROI, adjust the ROI back to original size of source data object and then compare the values of the elements if the values have been changed.
+*/
 TYPED_TEST(copyTests1, deepCopyPartial_Test4)
 {
 	int matLimits5d_1[] = {-1,-2,-1,-1,-2,0,-1,-1,-2,-1};

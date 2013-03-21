@@ -1,14 +1,8 @@
 #include <iostream>
 #include "gtest/gtest.h"
 
-#include "dataTest.h"
-#include "operatorTest.h"
-#include "addressTest.h"
-#include "saturateTest_real.h"
-#include "functions_ROITest.h"
-#include "complexDataTest.h"
-#include "dataObjectTag_Test.h"
-#include "dataObjectTagType_Test.h"
+
+
 
 ////=======================================================================================================================================
 //class FooTest : public ::testing::TestWithParam<int> {
@@ -21,12 +15,15 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "copyTests/*.*"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	::testing::FLAGS_gtest_filter = "operatorTest/*.SubTest"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	//::testing::FLAGS_gtest_filter = "ROITest/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
-    ::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
+    
 	
-	//ito::DataObject obj(4,5,6,ito::tInt16);
-	//cv::Mat_<float> mat;
+	
+	::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
+	
+
 
 	RUN_ALL_TESTS();   // To start Test check
 

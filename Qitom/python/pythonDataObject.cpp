@@ -1086,7 +1086,7 @@ This type string has one of these values: 'uint8', 'int8', 'uint16', 'int16', 'u
 \n\
 Notes \n\
 ----- \n\
-{Str} : ReadOnly\n\
+{str} : ReadOnly\n\
 ");
 PyObject* PythonDataObject::PyDataObj_GetType(PyDataObject *self, void * /*closure*/)
 {
@@ -2152,7 +2152,7 @@ Parameters  \n\
 ------------\n\
 axisNum : {int}\n\
     The addressed axis\n\
-axisDescription : {Str}\n\
+axisDescription : {str}\n\
     New axis description\n\
 \n\
 Notes \n\
@@ -2205,7 +2205,7 @@ Parameters  \n\
 ------------\n\
 axisNum : {int}\n\
     The addressed axis\n\
-axisUnit : {Str}\n\
+axisUnit : {str}\n\
     New axis unit\n\
 \n\
 Notes \n\
@@ -2255,7 +2255,7 @@ PyDoc_STRVAR(pyDataObjectSetTag_doc,"setTag(key, tagvalue) -> Set the value of t
 \n\
 Parameters  \n\
 ------------\n\
-key : {Str}\n\
+key : {str}\n\
     the name of the tag to set\n\
 tagvalue : {str or double}\n\
     the new value of the tag, either string or double value\n\
@@ -2328,7 +2328,7 @@ PyDoc_STRVAR(pyDataObjectDeleteTag_doc,"deleteTag(key) -> Delete the tag specifi
 \n\
 Parameters  \n\
 ------------\n\
-key : {Str}\n\
+key : {str}\n\
     the name of the tag to be deleted\n\
 \n\
 Notes \n\
@@ -2355,7 +2355,7 @@ PyDoc_STRVAR(pyDataObjectTagExists_doc,"existTag(key) -> return 1 if tag exists,
 \n\
 Parameters  \n\
 ------------\n\
-key : {Str}\n\
+key : {str}\n\
     the name of the tag\n\
 \n\
 Returns \n\
@@ -2413,7 +2413,7 @@ PyDoc_STRVAR(pyDataObjectAddToProtocol_doc,"addToProtocol([newLine]) -> Appends 
 \n\
 Parameters  \n\
 ------------\n\
-newLine : {Str}\n\
+newLine : {str}\n\
     The text to be added to the protocol.\n\
 \n\
 Notes \n\
@@ -3794,6 +3794,7 @@ PyDoc_STRVAR(pyDataObjectMul_doc, "mul() -> a.mul(b) returns element wise multip
 Parameters  \n\
 ------------\n\
 doctodo\n\
+\n\
 Returns \n\
 -------- \n\
 \n\
@@ -3892,6 +3893,7 @@ PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newSizes) -> Returns reshaped shal
 Returns \n\
 ------- \n\
 reshaped shallow copy of data object\n\
+\n\
 Notes \n\
 ----- \n\
 Not implemented yet.\n\
@@ -5528,7 +5530,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(pyDataObjectToList_doc, "toList() -> returns nested list of content of data object\n\
+PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> returns nested list of content of data object\n\
 \n\
 Returns \n\
 ------- \n\

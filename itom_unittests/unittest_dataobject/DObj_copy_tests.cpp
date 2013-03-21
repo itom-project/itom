@@ -201,6 +201,12 @@ TYPED_TEST(copyTests, copyTo_True_Test)
 }
 
 
+//copyTo_False_Test
+/*!
+	This test checks the functionality of copyTo(..) function with "regionOnly" parameter set to "false" on data objects of different data types and dimensions except 5 dimension data objects.
+	After applying this method, destination object must have the same original size and dimensions as the source data object. ROI must have the same position and size. Even after adjusting back ROI 
+	of the destination object, the contents of the data object should be same as the original data object.
+*/
 TYPED_TEST(copyTests, copyTo_False_Test)
 {
 
@@ -239,13 +245,7 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 			}
 		}
 
-
 	temp=0;
-
-	// NOTE: How to assign values to 5d Data Objects.
-
-	
-
 	dObj1_sr = dObj1_s; 
 	dObj2_sr = dObj2_s;
 	dObj3_sr = dObj3_s;
@@ -349,13 +349,14 @@ TYPED_TEST(copyTests, copyTo_False_Test)
 	dObj4_sr.copyTo(dObj4_dr,false);
 	EXPECT_EQ(dObj4_sr.getDims(),dObj4_dr.getDims() );	//!< Testing if the dimensions of ROI of copied Data Object are same as the ROI of original Data Object.
 	EXPECT_EQ(dObj4_sr.getSize() ,dObj4_dr.getSize() );	//!< Testing if the size of ROI of copied Data Object is same as the ROI of original Data Object.
-
-		
-	
-
-
 }
 
+
+//!< copyTo_False_Test1
+/*!
+	This test checks the functionality of copyTo(..) function with "regionOnly" parameter set to "false" on data objects of different data types but only 5 dimension.
+	This test is basically extension of copyTo_False_Test adding 5 dimensional data object.
+*/
 TYPED_TEST(copyTests, copyTo_False_Test1)
 {							
 	int matLimits5d_1[] = {0,-3,0,-4,0,0,-1,-1,-2,0};
@@ -426,7 +427,7 @@ TYPED_TEST(copyTests, copyTo_False_Test1)
 						idx[4] = m;
 						v1 = dObj4_dr.at<TypeParam>(idx);
 						v2 = cv::saturate_cast<TypeParam>(test_res5d[temp++]);
-						EXPECT_EQ(v1,v2);			//!< Testing if the elements within the ROI contains same original value after adjustROI method.
+						EXPECT_EQ(v1,v2);			//!< Testing if the elements within the ROI contains same original value after copyTo(...) method.
 					}
 				}
 			}
@@ -454,11 +455,11 @@ TYPED_TEST(copyTests, copyTo_False_Test1)
 
 				for(int l=0; l<dim4;l++)
 				{		
-					rowPtr1_dr= (TypeParam*)dObj4_dr.rowPtr(dataIdx,l);
+					rowPtr1_dr= (TypeParam*)dObj4_dr.rowPtr(dataIdx,l);		//!< using row pointer accessing the data of data object dObj4_dr
 
 					for(int m=0; m<dim5;m++)
 					{
-						EXPECT_EQ(rowPtr1_dr[m],cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m)));	//!< assign unique value to each element of data object dObj4	
+						EXPECT_EQ(rowPtr1_dr[m],cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m)));	//!< checking if the ROI  of dObj4_dr retains same after applying copyTo(...) function.	
 					}
 				}
 			}
