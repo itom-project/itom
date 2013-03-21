@@ -77,8 +77,8 @@ TYPED_TEST(IsZeroValueComplexTest, checkZeroValueComplex_Test)
 	std::complex<ito::float64> NonZeroVal6(-0.03,0.01);
 
 	//!< Declaration for zero value variables. 
-	std::complex<ito::float32> epsilon1(0.0,0.0) ;
-	std::complex<ito::float64> epsilon2(0.0,0.0) ;
+	std::complex<ito::float32> epsilon1( std::numeric_limits<ito::float32>::epsilon() ,0.0) ;
+	std::complex<ito::float64> epsilon2( std::numeric_limits<ito::float64>::epsilon() ,0.0) ;
     if(std::numeric_limits<TypeParam>::is_exact)
     {
 
