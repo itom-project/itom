@@ -48,6 +48,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
     establishes widgets being part of the main window including necessary actions
@@ -236,6 +237,7 @@ MainWindow::MainWindow() :
     //showInfoMessageLine("Hey folks...!", "TestInfo");
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
     disconnects connections between main window and python engine
@@ -304,6 +306,7 @@ MainWindow::~MainWindow()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be added to main window's dock widgets
 /*!
     \param dockWidget ScriptDockWidget to add to any docking area
@@ -325,6 +328,7 @@ void MainWindow::addScriptDock(AbstractDockWidget* dockWidget, Qt::DockWidgetAre
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be removed from docking area
 /*!
     notice, that even a ScriptDockWidget is actually undocked, it belongs to the docking area NoDockWidgetArea
@@ -337,6 +341,7 @@ void MainWindow::removeScriptDock(AbstractDockWidget* dockWidget)
     removeDockWidget(dockWidget);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! close event invoked if main window should be closed (and therefore the whole application too)
 /*!
     if this event is invoked the signal mainWindowCloseRequest is emitted, which invokes the slot mainWindowCloseRequest
@@ -355,6 +360,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication, MainWindow will be destroyed
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
     if (!isMaximized() && !isMinimized())
@@ -363,6 +369,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::moveEvent(QMoveEvent * event)
 {
     if (!isMaximized() && !isMinimized())
@@ -371,6 +378,7 @@ void MainWindow::moveEvent(QMoveEvent * event)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! creates actions for menu and toolbar
 void MainWindow::createActions()
 {
@@ -391,6 +399,9 @@ void MainWindow::createActions()
 
     m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties"), this);
     connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
+
+    m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management"), this);
+    connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
 
     m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"),tr("About Qt"), this);
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -470,12 +481,14 @@ void MainWindow::createToolBars()
     m_pythonToolBar->addAction(m_actions["python_global_runmode"]);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::createMenus()
 {
     m_pMenuFile = menuBar()->addMenu(tr("File"));
     m_pMenuFile->addAction(m_appFileNew);
     m_pMenuFile->addAction(m_appFileOpen);
     m_pMenuFile->addAction(m_actions["properties"]);
+    m_pMenuFile->addAction(m_actions["usermanagement"]);
     m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_actions["exit"]);
 
@@ -500,9 +513,9 @@ void MainWindow::createMenus()
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
     m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
@@ -514,7 +527,7 @@ void MainWindow::createStatusBar()
     statusBar()->showMessage(tr("Ready"));
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot connected to signal pythonStateChanged in PythonEngine which is invoked by every change of the python state
 /*!
     Actually, this slot is only evaluated in the main window in order to show python's busy state in the statusBar.
@@ -600,6 +613,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
     updatePythonActions();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! updates actions which deal with python commands
 void MainWindow::updatePythonActions()
 {
@@ -616,6 +630,7 @@ void MainWindow::updatePythonActions()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by action to open a new python script
 /*!
     invokes method \a newScript in ScriptEditorOrganizer
@@ -630,6 +645,7 @@ void MainWindow::mnuNewScript()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by action to open any known file format
 /*!
     Py-macro files will be opened by ScriptEditorOrganizer
@@ -653,6 +669,7 @@ void MainWindow::mnuOpenFile()
     IOHelper::openGeneralFile(fileName, false, true, this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAssistant()
 {
     if (this->m_pHelpSystem == NULL)
@@ -696,7 +713,7 @@ void MainWindow::mnuShowAssistant()
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuAboutQitom()
 {
     QList<QPair<QString, QString> > versionList = retrieveITOMVERSIONMAP();
@@ -712,7 +729,7 @@ void MainWindow::mnuAboutQitom()
     dlgAbout = NULL;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::helpAssistantError ( QProcess::ProcessError /*error*/ )
 {
     QMessageBox msgBox(this);
@@ -720,6 +737,7 @@ void MainWindow::helpAssistantError ( QProcess::ProcessError /*error*/ )
     msgBox.exec();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowProperties()
 {
     DialogProperties *dlg = new DialogProperties();
@@ -733,6 +751,21 @@ void MainWindow::mnuShowProperties()
     dlg = NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuShowUserManagement()
+{
+    DialogUserManagement *dlg = new DialogUserManagement();
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted)
+    {
+
+    }
+
+    delete dlg;
+    dlg = NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::setStatusText(QString message, int timeout)
 {
     if (message == "")
@@ -745,6 +778,7 @@ void MainWindow::setStatusText(QString message, int timeout)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode)
 {
     QMap<QString, QToolBar*>::const_iterator it = m_userDefinedToolBars.constFind(toolbarName);
@@ -826,6 +860,7 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     toolbar->addAction(action);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonName)
 {
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.find(toolbarName);
@@ -857,6 +892,7 @@ void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonNa
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename)
 {
     //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
@@ -1041,6 +1077,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
     
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonRemoveMenuElement(QString key)
 {
     QStringList keys = key.split("/");
@@ -1101,6 +1138,7 @@ void MainWindow::pythonRemoveMenuElement(QString key)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::currentDirectoryChanged()
 {
     QString cd = QDir::cleanPath(QDir::currentPath());
@@ -1112,16 +1150,19 @@ void MainWindow::currentDirectoryChanged()
     if (m_fileSystemDock)    m_fileSystemDock->changeBaseDirectory(cd);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::setCursor(const Qt::CursorShape cursor)
 {
     QApplication::setOverrideCursor(QCursor(cursor));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::resetCursor()
 {
     QApplication::restoreOverrideCursor();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -1155,7 +1196,7 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowDesigner()
 {
     ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
@@ -1185,6 +1226,7 @@ void MainWindow::mnuShowDesigner()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::designerError ( QProcess::ProcessError /*error*/ )
 {
     QMessageBox msgBox(this);
@@ -1192,7 +1234,7 @@ void MainWindow::designerError ( QProcess::ProcessError /*error*/ )
     msgBox.exec();
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuToogleExecPyCodeByDebugger(bool checked)
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -1203,6 +1245,7 @@ void MainWindow::mnuToogleExecPyCodeByDebugger(bool checked)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
@@ -1217,30 +1260,35 @@ void MainWindow::mnuScriptStop()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to continue debugging process if actually waiting at breakpoint
 void MainWindow::mnuScriptContinue()
 {
     emit(pythonDebugCommand(ito::pyDbgContinue));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step
 void MainWindow::mnuScriptStep()
 {
     emit(pythonDebugCommand(ito::pyDbgStep));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step over
 void MainWindow::mnuScriptStepOver()
 {
     emit(pythonDebugCommand(ito::pyDbgStepOver));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step out
 void MainWindow::mnuScriptStepOut()
 {
     emit(pythonDebugCommand(ito::pyDbgStepOut));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyReloadModules()
 {
     DialogReloadModule *dlgReloadModules = new DialogReloadModule(this);
@@ -1248,6 +1296,7 @@ void MainWindow::mnuPyReloadModules()
     DELETE_AND_SET_NULL(dlgReloadModules);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowLoadedPlugins()
 {
     DialogLoadedPlugins *dlgLoadedPlugins = new DialogLoadedPlugins(this);
@@ -1255,12 +1304,14 @@ void MainWindow::mnuShowLoadedPlugins()
     DELETE_AND_SET_NULL(dlgLoadedPlugins);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuExitApplication()
 {
     //does not call the closeEvent-method!
     emit(mainWindowCloseRequest());
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::showInfoMessageLine( QString text, QString winKey /*= ""*/ )
 {
     WidgetInfoBox *w = NULL;
@@ -1289,5 +1340,6 @@ void MainWindow::showInfoMessageLine( QString text, QString winKey /*= ""*/ )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 } //end namespace ito
 

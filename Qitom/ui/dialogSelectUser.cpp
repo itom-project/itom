@@ -26,6 +26,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogSelectUser::DialogSelectUser(QWidget *parent) :
     QDialog(parent),
     m_userModel(NULL)
@@ -33,10 +34,12 @@ DialogSelectUser::DialogSelectUser(QWidget *parent) :
     ui.setupUi(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogSelectUser::~DialogSelectUser()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::DialogInit(UserModel *model)
 {
     m_userModel = model;
@@ -44,6 +47,7 @@ void DialogSelectUser::DialogInit(UserModel *model)
     QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     if (m_userModel)
@@ -61,5 +65,5 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 } //end namespace ito

@@ -29,6 +29,7 @@
 #include "AIManagerWidget.h"
 #include "fileSystemDockWidget.h"
 #include "breakPointDockWidget.h"
+#include "userManagement.h"
 
 #include <qtableview.h>
 #include <qprocess.h>
@@ -155,6 +156,7 @@ private slots:
 	void mnuShowAssistant();
     void mnuShowDesigner();
     void mnuShowProperties();
+    void mnuShowUserManagement();
     void mnuToogleExecPyCodeByDebugger(bool checked);
 
     void mnuScriptStop();

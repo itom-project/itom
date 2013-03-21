@@ -25,8 +25,6 @@
 
 #include <qabstractitemmodel.h>
 
-#include <qicon.h>
-
 namespace ito 
 {
     /*!

@@ -170,6 +170,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/iconBrowserDialog.h
@@ -178,11 +179,11 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptTabWidget.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.h
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h
 )
 
 QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
@@ -214,6 +215,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui	
 )
 
 QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
@@ -308,6 +310,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/iconBrowserDialog.cpp
@@ -319,7 +322,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp	
 )
 
 #handle translations
