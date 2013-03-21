@@ -693,7 +693,7 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
                 {
                     case typeActuator:
                     {
-                        return tr("Motor");
+                        return tr("Actuator");
                     }
                     case typeDataIO | typeGrabber:
                     {

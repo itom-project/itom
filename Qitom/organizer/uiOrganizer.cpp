@@ -2535,7 +2535,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
             }
             else
             {
-                retval += RetVal::format(retError,0,"figHandle %i is not handle for a figure window.",figHandle);
+                retval += RetVal::format(retError,0,"figHandle %i is not a handle for a figure window.",figHandle);
             }
         }
         else
