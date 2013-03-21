@@ -5530,7 +5530,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(pyDataObjectToList_doc, "toList() -> returns nested list of content of data object\n\
+PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> returns nested list of content of data object\n\
 \n\
 Returns \n\
 ------- \n\
