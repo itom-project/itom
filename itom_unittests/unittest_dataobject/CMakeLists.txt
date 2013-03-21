@@ -46,34 +46,34 @@ INCLUDE_DIRECTORIES(
 # )
 
 set(unittest_dataobject_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/addressTest.h
-	${CMAKE_CURRENT_SOURCE_DIR}/commonChannel.h
-	${CMAKE_CURRENT_SOURCE_DIR}/complexDataTest.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTagType_Test.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTag_Test.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataTest.h
-	${CMAKE_CURRENT_SOURCE_DIR}/functions_ROITest.h
+	${CMAKE_CURRENT_SOURCE_DIR}/commonChannel.h	
 	${CMAKE_CURRENT_SOURCE_DIR}/operatorComplexTest.h
-	${CMAKE_CURRENT_SOURCE_DIR}/operatorTest.h
-	${CMAKE_CURRENT_SOURCE_DIR}/saturateTest_real.h
 	${CMAKE_CURRENT_SOURCE_DIR}/test_global.h
 )
 
 set(unittest_dataobject_SOURCES 
+	${CMAKE_CURRENT_SOURCE_DIR}/addressTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/adjustROI_func_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test1.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/convertCmplxTypeToRealType_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/complexDataTest.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTagType_Test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTag_Test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/dataTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/dimsAndtype_Test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/DObj_copy_tests.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/DObj_cpy_test1.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/functions_ROITest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/getDataType_Test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/isZeroValue_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/locateROI_func_test.cpp
 	#${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/miscellaneous.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/numberConversion_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/operatorTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/saturate_cast_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/saturateTest_real.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/seekMat_calcNumMats_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_dataobject.cpp
 )
