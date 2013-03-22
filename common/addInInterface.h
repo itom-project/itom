@@ -1016,10 +1016,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.8",//version from 2013-01-17 - 2013-01-23 (changes in auto-grabbing of cameras, first interface for itom version 1.0.6)
     "ito.AddIn.InterfaceBase/1.1.9",//version from 2013-01-23 - 2013-03-04 (changes in dataObjectHelper)
     "ito.AddIn.InterfaceBase/1.1.10",//version from 2013-03-04 - 2013-03-12 (Added license and about string to the plugin)
+    "ito.AddIn.InterfaceBase/1.1.11",//version from 2013-03-12 - 2013-03-22 (bugfix in ito::ParamBase)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.11";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.12";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

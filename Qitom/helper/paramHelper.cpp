@@ -364,7 +364,7 @@ namespace ito {
         {
             if(value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("Value out of boundary").toAscii().data());
+                return ito::RetVal(ito::retError,0, QObject::tr("value out of range [%1,%2]").arg(meta->getMin()).arg(meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;
@@ -377,7 +377,7 @@ namespace ito {
         {
             if(value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("Value out of boundary").toAscii().data());
+                return ito::RetVal(ito::retError,0, QObject::tr("value out of range [%1,%2]").arg((int)meta->getMin()).arg((int)meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;
@@ -390,7 +390,7 @@ namespace ito {
         {
             if(value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("Value out of boundary").toAscii().data());
+                return ito::RetVal(ito::retError,0, QObject::tr("Value out of range [%1,%2]").arg((char)meta->getMin()).arg((char)meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;

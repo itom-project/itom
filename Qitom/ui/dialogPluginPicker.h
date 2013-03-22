@@ -66,6 +66,7 @@ protected:
     {
         QModelIndex idx = sourceModel()->index(sourceRow, 0, sourceParent);
         int type = sourceModel()->data(idx, Qt::UserRole + 1).toInt();
+        int itemType = sourceModel()->data(idx, Qt::UserRole + 3).toInt();
 
 
         if(!m_showPluginsWithoutInstance)
@@ -77,7 +78,7 @@ protected:
             }
         }
 
-        if(!m_pluginName.isNull())
+        if(!m_pluginName.isNull() && itemType == ito::PlugInModel::itemPlugin )
         {
             if( QString::compare( sourceModel()->data(idx, Qt::DisplayRole).toString(), m_pluginName, Qt::CaseInsensitive ) != 0)
             {
