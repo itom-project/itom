@@ -404,7 +404,7 @@ void MainApplication::setupApplication()
 
     std::cout << "\n\tWelcome to itom program!\n\n";
 //    std::cout << "THIS ITOM-COPY IS A PREPUPLISHED ALPHA VERSION\nGIVEN TO ZEISS MICROSCOPY FOR INTERNAL USE WITHIN\nZEISS-ITO-COOPERATION.\nDO NOT DISTRIBUTE TO THIRD PARTY.\n !!! CONFIDENTIAL !!! \n\n";
-    std::cout << "\tPlease report bugs under:\n\t\thttp://obelix.ito.uni-stuttgart.de/mantis\n\tCheers your itom team\n" << std::endl;
+    std::cout << "\tPlease report bugs under:\n\t\thttps://bitbucket.org/itom/itom/issues\n\tCheers your itom team\n" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
