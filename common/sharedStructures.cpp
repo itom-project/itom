@@ -135,7 +135,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const double val) :
     InOutCheck();
 }
 
-/** constructor with name and type, int val, int minVal, int maxVal and optional info
+/** constructor with name and type and int val
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
 *   @param [in] val    actual value
@@ -160,8 +160,30 @@ ParamBase::ParamBase(const char *name, const uint32 type, const int val) :
         case Double & paramTypeMask:
             m_dVal = (double)val;
         break;
+        case String & paramTypeMask:
+            if(val == 0)
+            {
+                m_iVal = -1;
+                m_cVal = NULL;
+            }
+            else
+            {
+                throw std::runtime_error("constructor with int val and String type is not callable for val != NULL");
+            }
+        break;
+        case HWRef & paramTypeMask:
+            if(val == 0)
+            {
+                m_iVal = -1;
+                m_cVal = NULL;
+            }
+            else
+            {
+                throw std::runtime_error("constructor with int val and Hardware type is not callable for val != NULL");
+            }
+        break;
         default:
-            throw std::runtime_error("constructor with double val is only callable for types Int and Double");
+            throw std::runtime_error("constructor with int val is only callable for types Int, Double, String (for val==0 only) and Hardware (for val==0 only)");
         break;
     }
 }
