@@ -1499,6 +1499,11 @@ end:
     */
     AddInManager::~AddInManager(void)
     {
+        ito::RetVal retval;
+        AddInBase *addInInstance = NULL;
+        QList<AddInBase*> addInInstancesCpy;
+        AddInInterfaceBase *aib = NULL;
+
         //if there are still plugins in the "deadPlugin"-stack, try to kill them now
         closeDeadPlugins();
         m_deadPluginTimer.stop();
@@ -1509,21 +1514,46 @@ end:
         }
         m_Translator.clear();
 
+        //we need to apply two steps in order to close all hardware-references
+        //1. first -> close all opened instances (instances that keep reference to others must delete them after their deletion)
+        //2. second -> delete all AddInInterfaceBase classes
+
+
+        //step 1:
+        foreach(QObject *obj, m_addInListDataIO)
+        {
+            aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+            addInInstancesCpy = aib->getInstList(); //this copy is necessary in order to close every instance exactly one times (even if one instance is not deleted here but later, since another plugin still holds a reference to it)
+            while (addInInstancesCpy.size() > 0)
+            {
+                addInInstance = (addInInstancesCpy[0]);
+                if (addInInstance)
+                {
+                    retval += closeAddIn(&addInInstance, NULL);
+                }
+                addInInstancesCpy.removeFirst();
+            }
+        }
+
+        foreach(QObject *obj, m_addInListAct)
+        {
+            aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+            addInInstancesCpy = aib->getInstList(); //this copy is necessary in order to close every instance exactly one times (even if one instance is not deleted here but later, since another plugin still holds a reference to it)
+            while (addInInstancesCpy.size() > 0)
+            {
+                addInInstance = (addInInstancesCpy[0]);
+                if (addInInstance)
+                {
+                    retval += closeAddIn(&addInInstance, NULL);
+                }
+                addInInstancesCpy.removeFirst();
+            }
+        }
+
+        //step 2:
         while (m_addInListDataIO.size() > 0)
         {
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[0]));
-            while (aib->getInstList().size() > 0)
-            {
-                AddInDataIO *ais = reinterpret_cast<AddInDataIO *>(aib->getInstList()[0]);
-                if (ais)
-                {
-                    aib->closeInst(reinterpret_cast<ito::AddInBase **>(&ais));
-                }
-            }
-            //if (aib->m_refCount)
-            //{
-            //   Q_ASSERT_X(1, "AddInManager::~AddInManager", "not all instances of addIn could be closed");
-            //}
             m_addInListDataIO.removeFirst();
             delete aib;
         }
@@ -1531,22 +1561,12 @@ end:
         while (m_addInListAct.size() > 0)
         {
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[0]));
-            while (aib->getInstList().size() > 0)
-            {
-                AddInActuator *aia = reinterpret_cast<AddInActuator *>(aib->getInstList()[0]);
-                if (aia)
-                {
-                    aib->closeInst(reinterpret_cast<ito::AddInBase **>(&aia));
-                }
-            }
-            //if (aib->m_refCount)
-            //{
-            //   Q_ASSERT_X(1, "AddInManager::~AddInManager", "not all instances of addIn could be closed");
-            //}
             m_addInListAct.removeFirst();
             delete aib;
         }
 
+
+        //remove all algorithms
         while (m_addInListAlgo.size() > 0)
         {
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[0]));
@@ -1569,10 +1589,6 @@ end:
                     aib->closeInst(reinterpret_cast<ito::AddInBase **>(&ail));
                 }
             }
-            //if (aib->m_refCount)
-            //{
-            //   Q_ASSERT_X(1, "AddInManager::~AddInManager", "not all instances of addIn could be closed");
-            //}
             m_addInListAlgo.removeFirst();
             delete aib;
         }

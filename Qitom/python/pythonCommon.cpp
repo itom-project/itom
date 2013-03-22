@@ -24,6 +24,8 @@
 
 #include "pythonQtConversion.h"
 
+#include "helper/paramHelper.h"
+
 #include <iostream>
 
 namespace ito
@@ -47,6 +49,7 @@ ito::RetVal checkAndSetParamVal(PyObject *tempObj, ito::Param *param, int *set)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam, ito::ParamBase &outParam, int *set)
 {
+    ito::RetVal retval;
     //outParam must have same type than defaultParam
     Q_ASSERT( defaultParam->getType() == outParam.getType() );
     /*PyObject *item = NULL;*/
@@ -211,7 +214,18 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         return ito::RetVal(ito::retError, 0, QObject::tr("Unknown parameter type").toAscii().data());
     }
 
-    return ito::retOk;
+    //validate parameter (due to possible meta information)
+    if(defaultParam->getMeta() != NULL)
+    {
+        retval += ParamHelper::validateParam(*defaultParam, outParam, true, false);
+
+        if(retval.containsError())
+        {
+            *set = 0;
+        }
+    }
+
+    return retval;
 }
 
 
@@ -823,7 +837,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
 
     len = argsLen > numMandParams ? numMandParams : argsLen;
 
-    // Check if paramters are passed as arg and keyword
+    // Check if parameters are passed as arg and keyword
     if (kwds != NULL)
     {
         for (int n = 0; n < len; n++)
@@ -851,6 +865,42 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             }
         }
     }
+
+    // check if any key is given, which does not exist in kwds-dictionary
+    Py_ssize_t foundKwds = 0;
+    foreach(const ito::Param p, *defaultParamListMand)
+    {
+        if ( PyDict_GetItemString(kwds, p.getName() ) ) 
+        {
+            foundKwds++;
+        }
+    }
+    foreach(const ito::Param p, *defaultParamListOpt)
+    {
+        if ( PyDict_GetItemString(kwds, p.getName() ) ) 
+        {
+            foundKwds++;
+        }
+    }
+
+    //this is a keyword-parameter, that can be passed without being part of the mandatory or optional parameters
+    if(PyDict_GetItemString(kwds, "autoLoadParams"))
+    {
+        foundKwds++;
+    }
+
+    if(foundKwds != PyDict_Size(kwds))
+    {
+        if (mandPParsed) 
+            free(mandPParsed);
+        if (optPParsed)  
+            free(optPParsed);
+        std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
+        errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
+        errOutInitParams(defaultParamListOpt, -1, "Optional parameters are:");
+        return ito::RetVal(ito::retError,0,"there are keyword arguments that does not exist in mandatory or optional parameters.");
+    }
+
 
     // argsLen ist not sufficient for mandatory parameters so check if we can complete with keywords
     if (argsLen < numMandParams)
@@ -937,11 +987,11 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if(retval.errorMessage() == NULL)
             {
-                errOutInitParams(defaultParamListMand, n, "wrong parameter type");
+                errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
             }
             else
             {
-                errOutInitParams(defaultParamListMand, n, retval.errorMessage());
+                errOutInitParams(defaultParamListOpt, n, retval.errorMessage());
             }
             if (mandPParsed)
                 free(mandPParsed);
