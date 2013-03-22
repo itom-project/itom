@@ -48,6 +48,12 @@ class DialogUserManagement : public QDialog
 
     private slots:
         void userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
+        void on_pushButton_newUser_clicked();
+        void on_pushButton_delUser_clicked();
+        void on_pushButton_resetGroup_clicked();
+        void on_pushButton_pluginsEnableAll_clicked();
+        void on_pushButton_pluginsDisableAll_clicked();
+        void on_buttonBox_apply();
 };
 
 } //end namespace ito

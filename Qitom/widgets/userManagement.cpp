@@ -25,6 +25,7 @@
 #include "../AppManagement.h"
 #include <QSettings>
 #include <QDir>
+#include <qmessagebox.h>
 
 namespace ito {
 
@@ -82,11 +83,110 @@ void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, co
     {
         QModelIndex midx = m_userModel->index(curIdx.row(), 0);
         ui.lineEdit_name->setText(midx.data().toString());
+        midx = m_userModel->index(curIdx.row(), 1);
+        ui.lineEdit_id->setText(midx.data().toString());
         midx = m_userModel->index(curIdx.row(), 2);
-        ui.lineEdit_group->setText(midx.data().toString());
+        if (midx.data().toString() == "developer")
+        {
+            ui.comboBox_group->setCurrentIndex(0);
+        }
+        else if (midx.data().toString() == "admin")
+        {
+            ui.comboBox_group->setCurrentIndex(1);
+        }
+        else
+        {
+            ui.comboBox_group->setCurrentIndex(2);
+        }
         midx = m_userModel->index(curIdx.row(), 3);
         ui.lineEdit_iniFile->setText(midx.data().toString());
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_pushButton_newUser_clicked()
+{
+    QString uid = ui.lineEdit_id->text();
+    QString group;
+    QString name;
+    QString iniFile;
+    QModelIndex startIdx = m_userModel->index(0, 1);
+    QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1);
+
+    if (!uidList.isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("UserID already exists! Cannot create user!"), QMessageBox::Ok);
+        return;
+    }
+
+    if (ui.comboBox_group->currentText() == "developer")
+        group = "developer";
+    else if (ui.comboBox_group->currentText() == "admin")
+        group = "admin";
+    else if (ui.comboBox_group->currentText() == "user")
+        group = "user";
+    else
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("No or invalid group entered, setting to developer!"), QMessageBox::Ok);
+        group = "developer";
+    }
+    
+    if ((name = ui.lineEdit_name->text()).isEmpty())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("No user name entered, creating user with empty name!"), QMessageBox::Ok);
+        name = "";
+    }
+
+    QDir appDir(QCoreApplication::applicationDirPath());
+    if (!appDir.cd("itomSettings"))
+    {
+        if (!appDir.exists("itomDefault.ini"))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Standard itom ini file not found, aborting!"), QMessageBox::Ok);
+            return;
+        }
+    }
+    else
+    {
+        QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath(QString("itomDefault.ini"))));
+        iniFile = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+        if (!stdIniFile.copy(iniFile))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Could not copy standard itom ini file!"), QMessageBox::Ok);
+            return;
+        }
+    }
+
+    QSettings settings(iniFile, QSettings::IniFormat);
+    settings.beginGroup("ITOMIniFile");
+    settings.setValue("name", name);
+    settings.setValue("role", group);
+    settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_pushButton_delUser_clicked()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_pushButton_resetGroup_clicked()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_pushButton_pluginsEnableAll_clicked()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_pushButton_pluginsDisableAll_clicked()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::on_buttonBox_apply()
+{
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
