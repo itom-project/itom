@@ -40,21 +40,33 @@ namespace pclHelper
 {
 
 //------------------------------------------------------------------------------------------------------------------------------
-void PointXYZRGBtoXYZRGBA (pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out)
+//! converts pcl::PointXYZRGB to pcl::PointXYZRGBA
+/*!
+    \param [in] in is the input point
+	\param [in/out] out is the converted output point, where alpha is set to 255 (no transparency)
+    \sa PointXYZRGBAtoXYZRGB
+*/
+void PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out)
 {
     out.x = in.x; out.y = in.y; out.z = in.z;
     out.r = in.r; out.g = in.g; out.b = in.b; out.PCLALPHA = 255;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void PointXYZRGBAtoXYZRGB (pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out)
+//! converts pcl::PointXYZRGBA to pcl::PointXYZRGB
+/*!
+    \param [in] in is the input point
+	\param [in/out] out is the converted output point
+    \sa PointXYZRGBtoXYZRGBA
+*/
+void PointXYZRGBAtoXYZRGB (const  pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out)
 {
     out.x = in.x; out.y = in.y; out.z = in.z;
     out.r = in.r; out.g = in.g; out.b = in.b;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void PointCloudXYZRGBtoXYZRGBA( pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out)
+void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out)
 {
     out.width = in.width;
     out.height = in.height;

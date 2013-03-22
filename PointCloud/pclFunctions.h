@@ -39,9 +39,9 @@ class DataObject; //forward declaration
 
 namespace pclHelper
 {
-    void PointXYZRGBtoXYZRGBA (pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out);
-    void PointXYZRGBAtoXYZRGB (pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
-    void PointCloudXYZRGBtoXYZRGBA( pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
+    void PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out);
+    void PointXYZRGBAtoXYZRGB (const pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
+    void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
 
     ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaN = false);
     ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);

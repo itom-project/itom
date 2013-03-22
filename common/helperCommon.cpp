@@ -38,6 +38,11 @@
 namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
+	//! checks param vector
+	/*!
+		\param [in] params is a pointer to QVector<ito::Param>. This pointer is checked.
+		\return ito::RetVal, that contains an error if params is NULL
+	*/
     ito::RetVal checkParamVector(QVector<ito::Param> *params)
     {
         if(params == NULL)
@@ -48,6 +53,17 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+	//! verifies that the three param vectors are not NULL
+	/*!
+		If any of the given input parameters of type QVector<ito::Param>* are NULL, a ito::RetVal is returned,
+		that contains an error. Use this method in any algorithm-method in order to check the given input.
+
+		\param [in] paramsMand is the first parameter vector
+		\param [in] paramsOpt is the second parameter vector
+		\param [in] paramsOut is the third parameter vector
+		\return ito::RetVal, that contains an error if params is NULL
+		\sa checkParamVector
+	*/
     ito::RetVal checkParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
     {
         if(paramsMand == NULL)
@@ -69,6 +85,13 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+	//! brief returns a parameter from the parameter-vector, that fits to a specific name
+	/*!
+		
+
+		\param name description
+		\return 
+	*/
     ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval)
     {
         const char *temp;
