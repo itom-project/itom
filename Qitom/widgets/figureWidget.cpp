@@ -36,7 +36,8 @@ namespace ito {
 FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/)
     : AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, parent),
     m_pGrid(NULL),
-    m_pCenterWidget(NULL)
+    m_pCenterWidget(NULL),
+    m_menuWindow(NULL)
 {
 
     AbstractDockWidget::init();
@@ -89,6 +90,18 @@ void FigureWidget::createActions()
 //----------------------------------------------------------------------------------------------------------------------------------------
 void FigureWidget::createMenus()
 {
+	//create main menus
+    m_menuWindow = new QMenu(tr("&Windows"), this);
+    if (m_actStayOnTop)
+    {
+        m_menuWindow->addAction(m_actStayOnTop);
+    }
+    if (m_actStayOnTopOfApp)
+    {
+        m_menuWindow->addAction(m_actStayOnTopOfApp);
+    }
+	
+    getMenuBar()->addMenu(m_menuWindow);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -301,5 +314,7 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 
     return result;
 }
+
+
 
 } //end namespace ito

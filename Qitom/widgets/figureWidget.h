@@ -32,18 +32,26 @@
 #include <qgridlayout.h>
 #include <qsharedpointer.h>
 #include <qpointer.h>
+#include <qaction.h>
+#include <qmenu.h>
 
 namespace ito {
 
 class FigureWidget : public AbstractDockWidget
 {
     Q_OBJECT
+
+
 public:
     FigureWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~FigureWidget();
 
     RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, QString className, QPoint &newAreas);
     RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, QString className, QPoint &newAreas);
+
+	//---------------------------------
+	// setter / getter
+	//---------------------------------
     
     void setFigHandle(QSharedPointer<unsigned int> figHandle) { m_guardedFigHandle = figHandle; }
 
@@ -64,13 +72,16 @@ private:
     QGridLayout *m_pGrid;
     QWidget *m_pCenterWidget;
 
+    QMenu *m_menuWindow;
+
     QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds it own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
 
+	
 
 signals:
     
 private slots:
-    
+
 };
 
 } //end namespace ito

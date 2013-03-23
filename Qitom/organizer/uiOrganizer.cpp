@@ -2545,16 +2545,16 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
     }
     else
     {
-        QHash<unsigned int, ito::UiContainerItem>::const_iterator i = m_dialogList.constBegin();
+        QMutableHashIterator<unsigned int, ito::UiContainerItem> i(m_dialogList);
         FigureWidget *fig;
-        while (i != m_dialogList.constEnd()) 
+        while (i.hasNext() ) 
         {
+			i.next();
             fig = qobject_cast<FigureWidget*>( i.value().container->getUiWidget());
             if(fig)
             {
                 fig->setFigHandle(empty);
             }
-            ++i;
         }
     }
 
