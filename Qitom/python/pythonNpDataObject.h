@@ -37,7 +37,7 @@ public:
     //------------------------------------------------------------------------------------------------- 
     typedef struct 
     {
-        PyArrayObject base;
+        PyArrayObject numpyArray;
         PyObject* tags;             //PyDictObject
         PyObject* axisScales;       //PyListObject
         PyObject* axisOffsets;      //PyListObject
@@ -56,6 +56,10 @@ public:
     static void PyNpDataObject_dealloc(PyNpDataObject *self);
     static PyObject* PyNpDataObject_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyDataObject_init(PyNpDataObject *self, PyObject *args, PyObject *kwds);
+
+    //uncomment the following methods for finding the bug described in comment at begin of pythonNpDataObject.cpp
+    //static PyObject * __PyArray_View(PyArrayObject *self, PyArray_Descr *type, PyTypeObject *pytype);
+    //static int __PyArray_SetBaseObject(PyArrayObject *arr, PyObject *obj);
 
     //-------------------------------------------------------------------------------------------------
     // numpy subclassing methods

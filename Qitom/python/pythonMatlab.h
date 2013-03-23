@@ -43,7 +43,7 @@
  * along with pymatlab.  If not, see <http://www.gnu.org/licenses/>.
  * * */
 
-#define NPY_NO_DEPRECATED_API 0x00000007
+//#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
 
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #ifdef _DEBUG

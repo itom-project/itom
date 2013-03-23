@@ -30,6 +30,31 @@
 
 //------------------------------------------------------------------------------------------------------
 
+
+// in npDataObject, there is a crash for numpy 1.7 if 
+// //#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
+// is set. This is due to the following fact:
+//
+//  In type PyNpDataObject, the first memory block belongs to PyArrayObject.
+//  In previous versions of numpy, PyArrayObject contained lots of members for the
+//  numpy array. In the new version, this is only reduced to PyObject_HEAD and the
+//  members are moved to PyArrayObject_fields. Nevertheless, numpy casts a lot of 
+//  PyArrayObject-pointers to PyArrayObject_fields. This can be done, if PyArrayObject
+//  is not subclassed, since then, an access to the member base of PyArrayObject_fields
+//  points to the same memory than for instance unitValue. Right now, I (Marc Gronle)
+//  don't know how to avoid this, therefore NPY_NO_DEPRECATED_API must not be defined.
+//
+//  In order to test the problem, you can uncomment the methods__PyArray_View and__PyArray_SetBaseObject
+//  in this class and replace the call of PyArray_View by __PyArray_View. There finally is an
+//  error in __PyArray_SetBaseObject.
+//
+//  futher references are:
+//     see: http://osdir.com/ml/python-numeric-general/2012-03/msg00384.html
+//          https://github.com/numpy/numpy/issues/2980
+//
+//  other subclasses of numpy can be found in:
+//     http://trac.mcs.anl.gov/projects/ITAPS/browser/python/trunk/iMesh_array.inl?rev=3831
+
 //PyNPDataObject
 using namespace ito;
 
@@ -43,7 +68,12 @@ void PythonNpDataObject::PyNpDataObject_dealloc(PyNpDataObject* self)
     Py_XDECREF(self->valueUnit);
     Py_XDECREF(self->valueDescription);
 
-    (&PyArray_Type)->tp_dealloc((PyObject*)self);
+    /*destructor blub = PyArray_Type.tp_dealloc;
+    blub( (PyObject*) self );
+    int i=1;
+    (&PyArray_Type)->tp_dealloc((PyObject*)self);*/
+    //self->base.ob_base.ob_type->tp_free( (PyObject*)self );
+    Py_TYPE(&(self->numpyArray))->tp_free( (PyObject*)self );
 };
 
 PyDoc_STRVAR(npDataObject_tags_doc,             "tag dictionary for this data object.");
@@ -173,10 +203,13 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             PyErr_Format(PyExc_ValueError, "ndarray argument is invalid");
             return NULL;
         }
+
+        //self = (PyNpDataObject*)__PyArray_View((PyArrayObject*)arr, NULL, type);
         self = (PyNpDataObject*)PyArray_View((PyArrayObject*)arr, NULL, type);
+ 
         Py_DECREF(arr);
 
-        int dims = PyArray_NDIM(&(self->base)); //.nd;
+        int dims = PyArray_NDIM(&(self->numpyArray)); //.nd;
         if(dims == 1) dims = 2;
         self->tags = PyDict_New();
         self->axisScales = PyList_New(dims);
@@ -206,6 +239,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         else
         {
             self = (PyNpDataObject*)PyArray_View((PyArrayObject*)arr, NULL, type);
+            //self = (PyNpDataObject*)__PyArray_View((PyArrayObject*)arr, NULL, type);
 
             //copy tags from obj to self
             //0. check-value (here: 21120)
@@ -303,6 +337,134 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
 
     return (PyObject*)self;
 }
+
+
+//this method is taken from source code of numpy 1.7.0
+//PyObject * PythonNpDataObject::__PyArray_View(PyArrayObject *self, PyArray_Descr *type, PyTypeObject *pytype)
+//{
+//    PyArrayObject *ret = NULL;
+//    PyArray_Descr *dtype;
+//    PyTypeObject *subtype;
+//    int flags;
+//
+//    if (pytype) {
+//        subtype = pytype;
+//    }
+//    else {
+//        subtype = Py_TYPE(self);
+//    }
+//
+//    flags = PyArray_FLAGS(self);
+//
+//    dtype = PyArray_DESCR(self);
+//    Py_INCREF(dtype);
+//    ret = (PyArrayObject *)PyArray_NewFromDescr(subtype,
+//                               dtype,
+//                               PyArray_NDIM(self), PyArray_DIMS(self),
+//                               PyArray_STRIDES(self),
+//                               PyArray_DATA(self),
+//                               flags,
+//                               (PyObject *)self);
+//    if (ret == NULL) {
+//        return NULL;
+//    }
+//
+//    /* Set the base object */
+//    Py_INCREF(self);
+//    if (__PyArray_SetBaseObject(ret, (PyObject *)self) < 0) {
+//        Py_DECREF(ret);
+//        Py_DECREF(type);
+//        return NULL;
+//    }
+//
+//    if (type != NULL) {
+//        if (PyObject_SetAttrString((PyObject *)ret, "dtype",
+//                                   (PyObject *)type) < 0) {
+//            Py_DECREF(ret);
+//            Py_DECREF(type);
+//            return NULL;
+//        }
+//        Py_DECREF(type);
+//    }
+//    return (PyObject *)ret;
+//}
+//
+//
+//
+//int PythonNpDataObject::__PyArray_SetBaseObject(PyArrayObject *arr, PyObject *obj)
+//{
+//    if (obj == NULL) {
+//        PyErr_SetString(PyExc_ValueError,
+//                "Cannot set the NumPy array 'base' "
+//                "dependency to NULL after initialization");
+//        return -1;
+//    }
+//    /*
+//     * Allow the base to be set only once. Once the object which
+//     * owns the data is set, it doesn't make sense to change it.
+//     */
+//    if (PyArray_BASE(arr) != NULL) {
+//        Py_DECREF(obj);
+//        PyErr_SetString(PyExc_ValueError,
+//                "Cannot set the NumPy array 'base' "
+//                "dependency more than once");
+//        return -1;
+//    }
+//
+//    /*
+//     * Don't allow infinite chains of views, always set the base
+//     * to the first owner of the data.  
+//     * That is, either the first object which isn't an array, 
+//     * or the first object which owns its own data.
+//     */
+//
+//    while (PyArray_Check(obj) && (PyObject *)arr != obj) {
+//        PyArrayObject *obj_arr = (PyArrayObject *)obj;
+//        PyObject *tmp;
+//
+//        /* Propagate WARN_ON_WRITE through views. */
+//        if (PyArray_FLAGS(obj_arr) & (1 << 31) /*NPY_ARRAY_WARN_ON_WRITE*/) {
+//            PyArray_ENABLEFLAGS(arr, (1 << 31) /*NPY_ARRAY_WARN_ON_WRITE*/);
+//        }   
+//
+//        /* If this array owns its own data, stop collapsing */
+//        if (PyArray_CHKFLAGS(obj_arr, NPY_ARRAY_OWNDATA)) {
+//            break;
+//        }   
+//
+//        tmp = PyArray_BASE(obj_arr);
+//        /* If there's no base, stop collapsing */
+//        if (tmp == NULL) {
+//            break;
+//        }
+//        /* Stop the collapse new base when the would not be of the same 
+//         * type (i.e. different subclass).
+//         */
+//        if (Py_TYPE(tmp) != Py_TYPE(arr)) {
+//            break;
+//        }
+//
+//
+//        Py_INCREF(tmp);
+//        Py_DECREF(obj);
+//        obj = tmp;
+//    }
+//
+//    /* Disallow circular references */
+//    if ((PyObject *)arr == obj) {
+//        Py_DECREF(obj);
+//        PyErr_SetString(PyExc_ValueError,
+//                "Cannot create a circular NumPy array 'base' dependency");
+//        return -1;
+//    }
+//
+//    ((PyArrayObject_fields *)arr)->base = obj;
+//
+//    return 0;
+//}
+
+
+
 
 PyObject* PythonNpDataObject::PyNpDataObject_Array_Finalize(PyNpDataObject *self, PyObject *args)
 {
@@ -700,7 +862,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisScales(PyNpDataObject *self, PyObj
         return -1;
     }
 
-    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
+    int dims = PyArray_NDIM(&(self->numpyArray)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -744,7 +906,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisOffsets(PyNpDataObject *self, PyOb
         return -1;
     }
 
-    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
+    int dims = PyArray_NDIM(&(self->numpyArray)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -788,7 +950,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisDescriptions(PyNpDataObject *self,
         return -1;
     }
 
-    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
+    int dims = PyArray_NDIM(&(self->numpyArray)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
@@ -823,7 +985,7 @@ int PythonNpDataObject::PyNpDataObject_setAxisUnits(PyNpDataObject *self, PyObje
         return -1;
     }
 
-    int dims = PyArray_NDIM(&(self->base)); //self->base.nd;
+    int dims = PyArray_NDIM(&(self->numpyArray)); //self->base.nd;
     if(dims == 1) dims = 2;
 
     if(!PySequence_Check(value))
