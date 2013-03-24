@@ -731,7 +731,8 @@ namespace ito
     *   @return      ito::retOk on success ito::retError otherwise
     *
     *   The getPlugInInfo method searchs in all three plugin lists for a plugin with the name 'name'. In case the according
-    *   plugin is found its information about number, name ... returned.
+    *   plugin is found its information about number, name ... returned. For all parameters of type char** provide the address to a char*-variable.
+	*   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
     */
     const RetVal AddInManager::getPlugInInfo(const QString &name, int *pluginType, int *pluginNum, char **pluginTypeString, char ** author, char ** description, char ** detaildescription, int *version)
     {

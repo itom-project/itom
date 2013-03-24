@@ -27,6 +27,7 @@
 #include "pythontParamConversion.h"
 #include "pythonCommon.h"
 #include "pythonProxy.h"
+#include "pythonFigure.h"
 
 #include "pythonEngine.h"
 
@@ -1182,6 +1183,7 @@ PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginname) -> checks if a certain plugin was loaded.\n\
+Checks if a specified plugin is loaded and returns the result as a boolean expression. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1190,38 +1192,16 @@ pluginname :  {str} \n\
 \n\
 Returns \n\
 ------- \n\
-Status : {bool}\n\
-    TRUE or FALSE\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Checks if a specified plugin is loaded and returns the result as a boolean expression.");
+True, if the plugin has been loaded and can be used, else False.");
 PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    int length = PyTuple_Size(pArgs);
-    //int output = 0;
-    const char* pluginName;
-
+    const char* pluginName = NULL;
     ito::RetVal retval = ito::retOk;
-
-    if (length == 0)
-    {
-        return PyErr_Format(PyExc_SyntaxError, "no plugin specified");
-    }
-    else if (length == 1) //!< copy name only
-    {
-        if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
-        {
-            return PyErr_Format(PyExc_SyntaxError, "wrong input type");
-        }
-    }
-    else if (length > 1) //!< Valid input is name only
-    {
-        return PyErr_Format(PyExc_SyntaxError, "to many objects");
-    }
-
-    PyErr_Clear();
+	
+	if(!PyArg_ParseTuple(pArgs, "s", &pluginName))
+	{
+		return NULL;
+	}
 
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
@@ -1252,62 +1232,48 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         return Py_False;
     }
-    else
-    {
-        return Py_True;
-    }
+
+    return Py_True;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = 0]) -> generates an online help for the specified plugin.\n\
+PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.\n\
 \n\
 Parameters \n\
 ----------- \n\
 pluginName : {str} \n\
     is the fullname of a plugin as specified in the plugin window.\n\
-dictionary : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with plugin parameters.\n\
-    Default value is 0.\n\
+dictionary : {bool}, optional \n\
+	if dictionary == True, function returns an dict with plugin parameters (default: False)\n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of dictionary.\n\
+Returns None or a dict depending on the value of parameter dictionary.\n\
 \n\
 Notes \n\
 ----- \n\
 \n\
 Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
-If dictionary is 1, a PyDictionary with all plugin parameters is returned.");
-PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs)
+If dictionary is True, a dict with all plugin parameters is returned.");
+PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
-    int length = PyTuple_Size(pArgs);
-    int output = 0;
-    const char* pluginName;
+	const char *kwlist[] = {"pluginName", "dictionary", NULL};
+    const char* pluginName = NULL;
+#if PY_VERSION_HEX < 0x03030000
+	unsigned char output = 0;
 
-    if (length == 0)
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &output) )
     {
-        return PyErr_Format(PyExc_ValueError, "no plugin specified");
+        return NULL;
     }
-    else if (length == 1) //!< copy name only
-    {
-        if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-    }
-    else if (length == 2) //!< copy name and toggle output
-    {
-        if (!PyArg_ParseTuple(pArgs, "si", &pluginName, &output))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-    }
-    else if (length > 2) //!< Valid input are name and toggle output only
-    {
-        return PyErr_Format(PyExc_ValueError, "to many objects");
-    }
+#else //only python 3.3 or higher has the 'p' (bool) type string
+	bool output = false;
 
-    PyErr_Clear();
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &output) )
+    {
+        return NULL;
+    }
+#endif
 
     QVector<ito::Param> *paramsMand = NULL;
     QVector<ito::Param> *paramsOpt = NULL;
@@ -3216,6 +3182,24 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 //	}
 //}
 
+PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+\n\
+This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
+close of class figure.\n\
+\n\
+Parameters \n\
+----------- \n\
+handle : {dataIO-Instance} \n\
+    any figure handle (>0) or 'all' in order to close all opened figures \n\
+\n\
+Notes \n\
+------- \n\
+If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too. \n\
+\n\
+See Also \n\
+--------- \n\
+figure.close");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
@@ -3235,6 +3219,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
+	{"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
     /*{"liveLine", (PyCFunction)PythonItom::PyLiveLine, METH_VARARGS, pyLiveLine_doc},
     {"closeFigure", (PyCFunction)PythonItom::PyCloseFigure, METH_VARARGS, pyCloseFigure_doc},
     {"setFigParam", (PyCFunction)PythonItom::PySetFigParam, METH_VARARGS, pySetFigParam_doc},
@@ -3242,7 +3227,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
     {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS, pyFilterHelp_doc},
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS, pyWidgetHelp_doc},
-    {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS, pyPluginHelp_doc},
+    {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
     {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
     {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS, pySaveDataObject_doc},

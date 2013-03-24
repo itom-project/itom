@@ -81,7 +81,7 @@ public:
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PyWidgetHelp(PyObject* pSelf, PyObject* pArgs);
-    static PyObject* PyPluginHelp(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyPluginHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyITOMVersion(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* PyPluginLoaded(PyObject* pSelf, PyObject* pArgs);
