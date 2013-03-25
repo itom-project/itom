@@ -120,7 +120,7 @@ void FigureWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, QString className, QPoint &newAreas)
+RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QPoint &newAreas)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -135,12 +135,12 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
         int sizey = dataObj->getSize(dims - 2);
         if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
         {
-            plotClassName = dwo->getFigureClass("DObjStaticLine", plotClassName, retval);
+            plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
             
         }
         else
         {
-            plotClassName = dwo->getFigureClass("DObjStaticImage", plotClassName, retval);
+            plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
             //not 1D so try 2D ;-) new 2dknoten()
         }
 
@@ -197,7 +197,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, QString className, QPoint &newAreas)
+RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QPoint &newAreas)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -219,11 +219,11 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         {
             if(sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
             {
-                plotClassName = dwo->getFigureClass("DObjLiveLine", plotClassName, retval);
+                plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
             }
             else
             {
-                plotClassName = dwo->getFigureClass("DObjLiveImage", plotClassName, retval);
+                plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
             }
         }
 
