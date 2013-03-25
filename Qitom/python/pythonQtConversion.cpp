@@ -743,7 +743,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if(Py_TYPE(val) == &ito::PythonPlugins::PyActuatorPluginType)
         {
-            type = QMetaType::type("QPointer<ito::AddInAcutator>");
+            type = QMetaType::type("QPointer<ito::AddInActuator>");
         }
         else if(Py_TYPE(val) == &ito::PythonPlugins::PyDataIOPluginType)
         {
