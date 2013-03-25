@@ -63,7 +63,7 @@ namespace ito
 		(*(ito::RetVal (*)(const QString &, const int, const bool, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *)) ito::ITOM_API_FUNCS[6])
 
     #define apiValidateStringMeta \
-        (*(ito::RetVal (*)(const ito::StringMeta *meta, const char* value, bool mandatory = false)) ito::ITOM_API_FUNCS[7])
+        (*(ito::RetVal (*)(const ito::StringMeta *meta, const char* value, bool mandatory)) ito::ITOM_API_FUNCS[7])
 
     #define apiValidateDoubleMeta \
         (*(ito::RetVal (*)(const ito::DoubleMeta *meta, double value)) ito::ITOM_API_FUNCS[8])
@@ -75,10 +75,19 @@ namespace ito
         (*(ito::RetVal (*)(const ito::CharMeta *meta, char value)) ito::ITOM_API_FUNCS[10])
 
     #define apiValidateHWMeta \
-        (*(ito::RetVal (*)(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false)) ito::ITOM_API_FUNCS[11])
+        (*(ito::RetVal (*)(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory)) ito::ITOM_API_FUNCS[11])
 
     #define apiCompareParam \
         (*(ito::tCompareResult (*)(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret)) ito::ITOM_API_FUNCS[12])
+    
+    #define apiValidateParam \
+        (*(ito::RetVal (*)(const ito::Param &templateParam, const ito::ParamBase &param, bool strict, bool mandatory)) ito::ITOM_API_FUNCS[13])
+
+    #define apiGetParamFromMapByKey \
+        (*(ito::RetVal (*)(QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly)) ito::ITOM_API_FUNCS[14])
+    
+    #define apiParseParamName \
+        (*(ito::RetVal (*)(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)) ito::ITOM_API_FUNCS[15])
 
 #if defined(ITOM_IMPORT_API)
 static int importItomApi(void** apiArray)

@@ -237,39 +237,36 @@ This method is the getter-method for reading the current value of internal param
     ito::RetVal MyPlugin::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retValue(ito::retOk);
+        ito::RetVal retValue;
         QString key;
         bool hasIndex = false;
         int index;
         QString suffix;
+		QMap<QString,ito::Param>::iterator it;
         
-        //parse the given parameter-name
-        retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
+        //parse the given parameter-name (if you support indexed or suffix-based parameters)
+        retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+		
+		if(retValue == ito::retOk)
+		{
+			//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+			retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+		}
 
-        if(key == "")
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
-        }
-        else
-        {
-            QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-            if (paramIt != m_params.constEnd())
-            {
-                //put your switch-case.. for getting the right value here
-                
-                //finally, save the desired value in the argument val (this is a shared pointer!)
-                *val = paramIt.value();
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
-            }
-        }
-        if (waitCond) 
-        {
-            waitCond->returnValue = retValue;
-            waitCond->release();
-        }
+		if(!retValue.containsError())
+		{
+			//put your switch-case.. for getting the right value here
+			
+			//finally, save the desired value in the argument val (this is a shared pointer!)
+			*val = it.value();
+		}
+
+		if (waitCond) 
+		{
+			waitCond->returnValue = retValue;
+			waitCond->release();
+		}
+
         return retValue;
     }
 
@@ -311,66 +308,54 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         bool hasIndex;
         int index;
         QString suffix;
+		QMap<QString,ito::Param>::iterator it;
+		
+		//parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += ito::parseParamName( val->getName(), key, hasIndex, index, suffix );
+		
+		if(isMotorMoving()) //this if-case is for actuators only.
+		{
+			retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
+		}
+		
+		if(!retValue.containsError())
+		{
+			//gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+			retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+		}
 
-        if(key == "")
+        if(!retValue.containsError())
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+			//here the new parameter is checked whether it's type corresponds or can be cast into the
+			// value in m_params and whether the new type fits to the requirements of any possible
+			// meta structure.
+			retValue += apiValidateParam(*it, *val, false, true);
+		}
+		
+		if(!retValue.containsError())
+		{			
+			if(key == "async")
+			{
+				//check the new value and if ok, assign it to the internal parameter
+				retValue += it->copyValueFrom( &(*val) );
+			}
+            else if(key == "demoKey")
+			{
+				//check the new value and if ok, assign it to the internal parameter
+				retValue += it->copyValueFrom( &(*val) );
+			}
+			else
+			{
+				//all parameters that don't need further checks can simply be assigned
+				//to the value in m_params (the rest is already checked above)
+				retValue += it->copyValueFrom( &(*val) );
+			}
         }
-        else if(isMotorMoving()) //this else if is for actuators only.
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
-        }
-        else
-        {
-            QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-            
-            if (paramIt != m_params.end())
-            {
-                if(paramIt->getFlags() & ito::ParamBase::Readonly)
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("This parameter is read-only.").toAscii().data());
-                }
-                else if(val->isNumeric() && paramIt->isNumeric())
-                {
-                    if(key == "async")
-                    {
-                        //check the new value and if ok, assign it to the internal parameter
-                        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-                    }
-                    else
-                    {
-                        QByteArray ba = key.toAscii();
-                        retValue += ito::RetVal::format(ito::retError, 0, "Parameter with key '%s' cannot be assigned", ba.data() );
-                    }
-                }
-                else if (paramIt->getType() == val->getType())
-                {
-                    //non numeric parameters, switch case for them here
-                    if(key == "demoKey")
-                    {
-                        //check the new value and if ok, assign it to the internal parameter
-                        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-                    }
-                    
-                    }
-                    else
-                    {
-                        QByteArray ba = key.toAscii();
-                        retValue += ito::RetVal::format(ito::retError, 0, "Parameter with key '%s' cannot be assigned", ba.data() );
-                    }
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toAscii().data());
-                }
-
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
-            }
-        }
+		
+		if(!retValue.containsError())
+		{
+			emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+		}
 
         if (waitCond) 
         {

@@ -46,6 +46,9 @@ namespace ito
         (void*)&ParamHelper::validateCharMeta,          /* [10] */
         (void*)&ParamHelper::validateHWMeta,            /* [11] */
         (void*)&ParamHelper::compareParam,              /* [12] */
+        (void*)&ParamHelper::validateParam,             /* [13] */
+        (void*)&ParamHelper::getParamFromMapByKey,      /* [14] */
+        (void*)&ParamHelper::parseParamName,            /* [15] */
 		NULL
 	};
 

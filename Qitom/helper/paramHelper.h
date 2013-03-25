@@ -25,6 +25,9 @@
 
 #include "../../common/sharedStructures.h"
 
+#include <qmap.h>
+#include <qstring.h>
+
 namespace ito 
 {
     class AddInBase; //forward declaration
@@ -43,6 +46,8 @@ namespace ito
         static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false);
         static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false);
         static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = NULL);
+        static ito::RetVal getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly);
+        static ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
     private:
         ParamHelper(){};

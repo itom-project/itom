@@ -593,5 +593,85 @@ namespace ito {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal ParamHelper::getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly)
+    {
+        if(key == "")
+        {
+            return ito::RetVal(ito::retError,0,QObject::tr("Name of given parameter is empty.").toAscii().data());
+        }
+
+        QMap<QString, ito::Param>::iterator it = paramMap.find( key );
+        if(it != paramMap.end())
+        {
+            if(errorIfReadOnly && (it->getFlags() & ito::ParamBase::Readonly) )
+            {
+                return ito::RetVal::format(ito::retError,0,QObject::tr("Parameter '%1' is read only.").arg(key).toAscii().data());
+            }
+
+            found = it;
+        }
+        else
+        {
+            return ito::RetVal::format(ito::retError,0,QObject::tr("Parameter '%1' not found.").arg(key).toAscii().data());
+        }
+
+        return ito::retOk;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! parses parameter name with respect to regular expression, assigned for parameter-communcation with plugins
+    /*!
+        This method parses any parameter-name with respect to the rules defined for possible names of plugin-parameters.
+
+        The regular expression used for the check is "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$"
+
+        Then the components are:
+
+        [0] full string
+        [1] PARAMNAME
+        [2] [INDEX] or empty-string if no index is given
+        [3] INDEX or empty-string if no index is given
+        [4] :ADDITIONALTAG or empty-string if no tag is given
+        [5] ADDITIONALTAG or empty-string if no tag is given
+
+        \param [in] name is the raw parameter name
+        \param [out] paramName is the real parameter name (first part of name; part before the first opening bracket ('[') or if not available the first colon (':'))
+        \param [out] hasIndex indicates whether the name contains an index part (defined by a number within two brackets (e.g. '[NUMBER]'), which has to be appended to the paramName
+        \param [out] index is the fixed-point index value or -1 if hasIndex is false
+        \param [out] additionalTag is the remaining string of name which is the part after the first colon (':'). If an index part exists, the first colon after the index part is taken.
+    */
+    ito::RetVal ParamHelper::parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)
+    {
+        ito::RetVal retValue = ito::retOk;
+        paramName = QString();
+        hasIndex = false;
+        index = -1;
+        additionalTag = QString();
+
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
+        if(rx.indexIn(name) == -1)
+        {
+            retValue += ito::RetVal(ito::retError,0,QObject::tr("invalid parameter name").toAscii().data());
+        }
+        else
+        {
+            QStringList pname = rx.capturedTexts();
+            paramName = pname[1];
+            if(pname.size()>=4)
+            {
+                if(!pname[3].isEmpty())
+                {
+                    index = pname[3].toInt(&hasIndex);
+                }
+            }
+            if(pname.size() >=6)
+            {
+                additionalTag = pname[5];
+            }
+        }
+
+
+        return retValue;
+    }
 
 } //end namespace ito
