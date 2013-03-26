@@ -1623,7 +1623,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+912"/>
+        <location filename="../python/pythonCommon.cpp" line="+974"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4272,7 +4272,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+91"/>
+        <location filename="../widgets/mainWindow.cpp" line="+92"/>
         <source>itom</source>
         <translation type="unfinished">itom</translation>
     </message>
@@ -4307,7 +4307,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+228"/>
         <source>New Script</source>
         <translation type="unfinished">Neues Skript</translation>
     </message>
@@ -4325,6 +4325,11 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="+3"/>
         <source>Properties</source>
         <translation>Optionen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>User Management</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -4437,12 +4442,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>File</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
@@ -4474,12 +4479,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Python wird ausgeführt</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+71"/>
         <source>open file</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+277"/>
+        <location line="+297"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
@@ -4510,7 +4515,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Remove menu element</source>
         <translation type="unfinished">Menüelement löschen</translation>
     </message>
@@ -4520,7 +4525,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
     </message>
@@ -5483,6 +5488,121 @@ Katesisch</translation>
         <location filename="../widgets/uiMainWindow.ui"/>
         <source>iTOM</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>userManagement</name>
+    <message>
+        <location filename="../widgets/userManagement.ui"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Enable All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Disable All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Main Application Features</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Script Editor</source>
+        <translation type="unfinished">Script-Editor</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Developer Tools
+(Workspace, Breakpoints,
+ Ui-Designer, Call Stack)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Edit Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>File System Widget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Addin Manager Widget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Console</source>
+        <translation type="unfinished">Konsole</translation>
+    </message>
+    <message>
+        <location/>
+        <source>normal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>read only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>User / Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Name</source>
+        <translation type="unfinished">Name</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Ini File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Reset All In Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>New User</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Delete User</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
