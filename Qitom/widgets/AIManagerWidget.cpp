@@ -436,6 +436,8 @@ void AIManagerWidget::mnuCreateNewInstance()
                 return;
             }
 
+            QApplication::setOverrideCursor ( QCursor(Qt::WaitCursor) );
+
             if (aib->getType() & ito::typeDataIO)
             {
                 ito::AddInDataIO *plugin = NULL;
@@ -449,6 +451,8 @@ void AIManagerWidget::mnuCreateNewInstance()
                 retValue += aim->initAddIn(itemNum, aib->objectName(), &plugin, &paramsMandNew, &paramsOptNew, false, NULL);
                 basePlugin = (ito::AddInBase*)(plugin);
             }
+
+            QApplication::restoreOverrideCursor();
 
             if (retValue.containsWarning())
             {

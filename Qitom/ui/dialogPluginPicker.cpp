@@ -157,6 +157,8 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                     return;
                 }
 
+                QApplication::setOverrideCursor ( QCursor(Qt::WaitCursor) );
+
                 if(aib->getType() & ito::typeDataIO)
                 {
                     ito::AddInDataIO *plugin = NULL;
@@ -171,7 +173,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                     basePlugin = (ito::AddInBase*)(plugin);
                 }
 
-                    
+                QApplication::restoreOverrideCursor();                    
 
                 if(retValue.containsWarning())
                 {
