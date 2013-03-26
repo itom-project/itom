@@ -117,6 +117,7 @@ class AppManagement
                 m_userRole = 2;
         }
         inline static const int getUserRole() { return m_userRole; }
+        static QString getUserID(void);
 
     private:
         static QObject* m_sew;  /*!< static pointer to ScriptEditorOrganizer (default: NULL) */

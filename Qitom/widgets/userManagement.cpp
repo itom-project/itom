@@ -29,6 +29,48 @@
 
 namespace ito {
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::loadUserList()
+{
+    QItemSelectionModel *selModel = ui.userList->selectionModel();
+    QObject::disconnect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+    if (m_userModel)
+        m_userModel->deleteLater();
+
+    m_userModel = new UserModel();
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    QString settingsFile;
+    QDir appDir(QCoreApplication::applicationDirPath());
+    if (!appDir.cd("itomSettings"))
+    {
+        appDir.mkdir("itomSettings");
+        appDir.cd("itomSettings");
+    }
+
+    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
+
+    int nUser = 0;
+    foreach(QString iniFile, iniList) 
+    {
+        QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
+
+        settings.beginGroup("ITOMIniFile");
+        if (settings.contains("name"))
+        {
+            qDebug() << "found user ini file: " << iniFile;
+            m_userModel->addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
+        }
+        settings.endGroup();
+    }
+
+    ui.userList->setModel(m_userModel);
+    selModel = ui.userList->selectionModel();
+    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
     QDialog(parent),
@@ -36,6 +78,8 @@ DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
 {
     ui.setupUi(this);
 
+    loadUserList();
+/*
     m_userModel = new UserModel();
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
     QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -67,6 +111,7 @@ DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
     ui.userList->setModel(m_userModel);
     QItemSelectionModel *selModel = ui.userList->selectionModel();
     QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -162,11 +207,57 @@ void DialogUserManagement::on_pushButton_newUser_clicked()
     settings.setValue("name", name);
     settings.setValue("role", group);
     settings.endGroup();
+
+    loadUserList();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::on_pushButton_delUser_clicked()
 {
+    QString uid = ui.lineEdit_id->text();
+    QString iniFile = ui.lineEdit_iniFile->text();
+    QString name = ui.lineEdit_name->text();
+    QModelIndex startIdx = m_userModel->index(0, 1);
+    QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1);
+    QDir appDir(QCoreApplication::applicationDirPath());
+
+    if (uidList.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("User ID not found, aborting!"), QMessageBox::Ok);
+        return;
+    }
+
+    QString tempPath = QDir::cleanPath(appDir.absoluteFilePath(QString("itomSettings/itom_").append(uid).append(".ini")));
+    if (iniFile != tempPath)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("User ID and ini file name mismatch, aborting!"), QMessageBox::Ok);
+        return;
+    }
+
+    QSettings settings(iniFile, QSettings::IniFormat);
+    if (settings.value("ITOMIniFile/name").toString() != name)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("User name and ini file user name mismatch, aborting!"), QMessageBox::Ok);
+        return;
+    }
+
+    if (uid == AppManagement::getUserID())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
+        return;
+    }
+
+    QString msg = QString("Warning the ini file\n").append(iniFile).append("\nfor user ").append(name).append(" will be deleted!\nAre you sure?");
+    if (QMessageBox::warning(this, tr("Warning"), tr(msg.toAscii().data()), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
+    {
+        QFile file(iniFile);
+        if (!file.remove())
+            QMessageBox::warning(this, tr("Warning"), tr((QString("file: \n").append(iniFile).append("\ncould not be deleted!")).toAscii().data()), QMessageBox::Ok);
+
+        loadUserList();
+    }
+
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

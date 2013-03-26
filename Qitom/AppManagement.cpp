@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "AppManagement.h"
+#include <qfileinfo.h>
 
 /*!
     \class AppManagement
@@ -40,3 +41,11 @@ QString AppManagement::m_userName = QString("itom");    //!< standard user is it
 int AppManagement::m_userRole = 2;                      //!< developer
 QMutex AppManagement::m_mutex;
 QString AppManagement::m_settingsFile;
+
+
+QString AppManagement::getUserID(void)
+{
+    QFileInfo fi(m_settingsFile);
+    QString name = fi.baseName();
+    return name.right(name.length() - 5);
+}

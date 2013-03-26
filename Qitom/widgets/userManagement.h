@@ -42,6 +42,7 @@ class DialogUserManagement : public QDialog
 
     private:
         UserModel *m_userModel;
+        void loadUserList();
 
     protected:
         void init();
