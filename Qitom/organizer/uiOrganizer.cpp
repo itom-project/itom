@@ -2280,9 +2280,14 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
+        *(*guardedFigHandle) = 0;
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
-        retval += createFigure( guardedFigHandle, initSlotCount, objectID, NULL);
+        QSharedPointer<int> row(new int);
+        *row = areaRow;
+        QSharedPointer<int> col(new int);
+        *col = areaCol;
+        retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -2299,8 +2304,7 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                QPoint newAreas;
-                fig->plot(dataObj, areaRow, areaCol, className, newAreas);
+                fig->plot(dataObj, areaRow, areaCol, className);
             }
             else
             {
@@ -2333,9 +2337,14 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
+        *(*guardedFigHandle) = 0;
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
-        retval += createFigure( guardedFigHandle, initSlotCount, objectID, NULL);
+        QSharedPointer<int> row(new int);
+        *row = areaRow;
+        QSharedPointer<int> col(new int);
+        *col = areaCol;
+        retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -2352,8 +2361,7 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                QPoint newAreas;
-                fig->liveImage(dataIO, areaRow, areaCol, className, newAreas);
+                fig->liveImage(dataIO, areaRow, areaCol, className);
             }
             else
             {
@@ -2376,7 +2384,7 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
     const FigureWidget *fig = NULL;
@@ -2405,6 +2413,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                 fig = qobject_cast<const FigureWidget*>(containerItem.container->getUiWidget());
                 if(fig)
                 {
+                    *rows = fig->rows();
+                    *cols = fig->cols();
                     *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
                     *initSlotCount = fig->metaObject()->methodOffset();
                     *objectID = addObjectToList(const_cast<FigureWidget*>(fig));
@@ -2440,7 +2450,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
             m_garbageCollectorTimer = startTimer(5000);
         }
 
-        FigureWidget *fig2 = new FigureWidget("Figure", false, true, NULL);
+        FigureWidget *fig2 = new FigureWidget("Figure", false, true, *rows, *cols, NULL);
         //fig2->setAttribute( Qt::WA_DeleteOnClose ); //always delete figure window, if user closes it
         QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
 
@@ -2480,6 +2490,50 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+    QSharedPointer<unsigned int> empty;
+
+    if(m_dialogList.contains(*figHandle))
+    {
+        fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
+        if(fig)
+        {
+            QObject* obj = fig->getSubplot(subplotIndex);
+            if(obj)
+            {
+                *objectID = addObjectToList(obj);
+                *widgetClassName = obj->metaObject()->className();
+                *objectName = obj->objectName().toAscii();
+            }
+            else
+            {
+                retval += RetVal::format(retError, errorObjDoesNotExist, tr("subplot at indexed position %i is not available").toAscii().data(), subplotIndex);
+            }
+        }
+        else
+        {
+            retval += RetVal::format(retError,0,"figHandle %i is not a handle for a figure window.",figHandle);
+        }
+    }
+    else
+    {
+        retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONFIGURE_H
-#define PYTHONFIGURE_H
+#ifndef PYTHONPLOTITEM_H
+#define PYTHONPLOTITEM_H
 
 #include "pythonCommon.h"
 #include "pythonUi.h"
@@ -39,7 +39,7 @@
 namespace ito 
 {
 
-class PythonFigure
+class PythonPlotItem
 {
 public:
 
@@ -54,58 +54,44 @@ public:
     typedef struct
     {
         PythonUi::PyUiItem uiItem;
-        QSharedPointer<unsigned int> guardedFigHandle;
-        int rows;
-        int cols;
-        int currentSubplotIdx;
-        PythonQtSignalMapper *signalMapper;
     }
-    PyFigure;
+    PyPlotItem;
 
     //-------------------------------------------------------------------------------------------------
     // macros
     //------------------------------------------------------------------------------------------------- 
-    #define PyFigure_Check(op) PyObject_TypeCheck(op, &ito::PythonFigure::PyFigureType)
+    #define PyPlotItem_Check(op) PyObject_TypeCheck(op, &ito::PythonPlotItem::PyPlotItemType)
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
     //------------------------------------------------------------------------------------------------- 
-    static void PyFigure_dealloc(PyFigure *self);
-    static PyObject *PyFigure_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-    static int PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds);
+    static void PyPlotItem_dealloc(PyPlotItem *self);
+    static PyObject *PyPlotItem_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+    static int PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // general members
     //------------------------------------------------------------------------------------------------- 
-    static PyObject* PyFigure_repr(PyFigure *self);
-    static PyObject* PyFigure_show(PyFigure *self, PyObject *args);
-    static PyObject* PyFigure_hide(PyFigure *self);
-    static PyObject* PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds);
-    static PyObject* PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds);
-
-    static PyObject* PyFigure_getSubplot(PyFigure *self, PyObject *args);
+    static PyObject* PyPlotItem_repr(PyPlotItem *self);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //------------------------------------------------------------------------------------------------- 
-    static PyObject* PyFigure_getHandle(PyFigure *self, void *closure);
-    static PyObject* PyFigure_getDocked(PyFigure *self, void *closure);
-    static int       PyFigure_setDocked(PyFigure *self, PyObject *value, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // static members
     //-------------------------------------------------------------------------------------------------
-    static PyObject* PyFigure_close(PyFigure *self, PyObject *args);
+
 
     //-------------------------------------------------------------------------------------------------
     // type structures
     //------------------------------------------------------------------------------------------------- 
-    static PyGetSetDef  PyFigure_getseters[];
-    static PyMemberDef  PyFigure_members[];
-    static PyMethodDef  PyFigure_methods[];
-    static PyTypeObject PyFigureType;
-    static PyModuleDef  PyFigureModule;
-    static void PyFigure_addTpDict(PyObject *tp_dict);
+    static PyGetSetDef  PyPlotItem_getseters[];
+    static PyMemberDef  PyPlotItem_members[];
+    static PyMethodDef  PyPlotItem_methods[];
+    static PyTypeObject PyPlotItemType;
+    static PyModuleDef  PyPlotItemModule;
+    static void PyPlotItem_addTpDict(PyObject *tp_dict);
 
 private:
 

@@ -22,17 +22,14 @@
 
 #include "pythonUi.h"
 
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
+#include "structmember.h"
 
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/addInManager.h"
 
 #include "pythonQtConversion.h"
+#include "pythonFigure.h"
 #include "AppManagement.h"
 
 #include <qsharedpointer.h>
@@ -570,10 +567,10 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    PythonUi::PyUi *ui = PyUiItem_getParentUI(self);
-    if(ui)
+    PythonQtSignalMapper *signalMapper = PyUiItem_getTopLevelSignalMapper(self);
+    if(signalMapper)
     {
-        if(!ui->signalMapper->addSignalHandler(*objPtr, signalSignature, *sigId, callableMethod, *argTypes))
+        if(!signalMapper->addSignalHandler(*objPtr, signalSignature, *sigId, callableMethod, *argTypes))
         {
             PyErr_Format(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
@@ -720,10 +717,10 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    PythonUi::PyUi *ui = PyUiItem_getParentUI(self);
-    if(ui)
+    PythonQtSignalMapper *signalMapper = PyUiItem_getTopLevelSignalMapper(self);
+    if(signalMapper)
     {
-        if(!ui->signalMapper->removeSignalHandler(*objPtr, signalSignature, *sigId, callableMethod))
+        if(signalMapper->removeSignalHandler(*objPtr, signalSignature, *sigId, callableMethod))
         {
             PyErr_Format(PyExc_RuntimeError, "the connection could not be disconnected.");
             return NULL;
@@ -1230,10 +1227,8 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *args)
     PyErr_Clear(); //genericgetattr throws an error, if attribute is not available, which it isn't for attributes pointing to widgetNames
 
     //return new instance of PyUiItem
-    PythonUi::PyUiItem *PyUiItem;
     PyObject *arg2 = Py_BuildValue("OO", self, args);
-
-    PyUiItem = (PythonUi::PyUiItem *)PyObject_CallObject((PyObject *)&PythonUi::PyUiItemType, arg2);
+    PythonUi::PyUiItem *PyUiItem = (PythonUi::PyUiItem *)PyObject_CallObject((PyObject *)&PythonUi::PyUiItemType, arg2);
     Py_DECREF(arg2);
 
     if(PyUiItem == NULL)
@@ -1260,19 +1255,38 @@ PyObject* PythonUi::PyUiItem_setattro(PyUiItem * /*self*/, PyObject * /*args*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //returns borrowed reference to overall ui-instance or NULL, if not existing
-/*static*/ PythonUi::PyUi* PythonUi::PyUiItem_getParentUI(PyUiItem *self)
+///*static*/ PythonUi::PyUi* PythonUi::PyUiItem_getParentUI(PyUiItem *self)
+//{
+//    PyUi *result = NULL;
+//    PyUiItem *item = self;
+//    while(item && !result)
+//    {
+//        if(PyUi_Check(item))
+//        {
+//            result = (PythonUi::PyUi*)(item);
+//        }
+//        item = (PyUiItem*)(item->baseItem);
+//    }
+//    return result;
+//}
+
+//returns borrowed reference to signal mapper of overall ui- or figure-instance or NULL, if this does not exist
+/*static*/ PythonQtSignalMapper* PythonUi::PyUiItem_getTopLevelSignalMapper(PyUiItem *self)
 {
-    PyUi *result = NULL;
     PyUiItem *item = self;
-    while(item && !result)
+    while(item)
     {
         if(PyUi_Check(item))
         {
-            result = (PythonUi::PyUi*)(item);
+            return ((PyUi*)item)->signalMapper;
+        }
+        else if(PyFigure_Check(item))
+        {
+            return ((PythonFigure::PyFigure*)item)->signalMapper;
         }
         item = (PyUiItem*)(item->baseItem);
     }
-    return result;
+    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

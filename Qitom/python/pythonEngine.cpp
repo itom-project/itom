@@ -38,6 +38,7 @@
 #include "pythonPlugins.h"
 #include "pythonPCL.h"
 #include "pythonProxy.h"
+#include "pythonPlotItem.h"
 #include "pythontParamConversion.h"
 
 #include "../organizer/addInManager.h"
@@ -332,11 +333,20 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "ui", (PyObject *)&PythonUi::PyUiType);
             }
 
+            PythonFigure::PyFigureType.tp_base = &PythonUi::PyUiItemType; //Figure is derived from UiItem
             if (PyType_Ready(&PythonFigure::PyFigureType) >= 0)
             {
                 Py_INCREF(&PythonFigure::PyFigureType);
                 PythonFigure::PyFigure_addTpDict( PythonFigure::PyFigureType.tp_dict);
                 PyModule_AddObject(itomModule, "figure", (PyObject *)&PythonFigure::PyFigureType);
+            }
+
+            PythonPlotItem::PyPlotItemType.tp_base = &PythonUi::PyUiItemType; //PlotItem is derived from UiItem
+            if (PyType_Ready(&PythonPlotItem::PyPlotItemType) >= 0)
+            {
+                Py_INCREF(&PythonPlotItem::PyPlotItemType);
+                PythonPlotItem::PyPlotItem_addTpDict( PythonPlotItem::PyPlotItemType.tp_dict);
+                PyModule_AddObject(itomModule, "plotItem", (PyObject *)&PythonPlotItem::PyPlotItemType);
             }
 
             if (PyType_Ready(&PythonProxy::PyProxyType) >= 0)

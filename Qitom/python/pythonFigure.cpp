@@ -22,17 +22,14 @@
 
 #include "pythonFigure.h"
 
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
+#include "structmember.h"
 
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
 
 #include "pythonQtConversion.h"
 #include "AppManagement.h"
+#include "pythonPlotItem.h"
 
 #include <qsharedpointer.h>
 #include <qmessagebox.h>
@@ -56,13 +53,14 @@ void PythonFigure::PyFigure_dealloc(PyFigure* self)
 
     DELETE_AND_SET_NULL( self->signalMapper );
 
-    Py_TYPE(self)->tp_free((PyObject*)self);
+    //Py_TYPE(self)->tp_free((PyObject*)self);
+    PythonUi::PyUiItemType.tp_dealloc( (PyObject*)self );
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObject * kwds)
 {
-    PyFigure* self = (PyFigure *)type->tp_alloc(type, 0);
+    PyFigure *self = (PyFigure*)PythonUi::PyUiItemType.tp_new(type,args,kwds);
     if(self != NULL)
     {
         self->guardedFigHandle.clear(); //default: invalid
@@ -76,16 +74,20 @@ PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureInit_doc,"figure([handle]) -> plot figure\n\
+PyDoc_STRVAR(pyFigureInit_doc,"figure([handle, [rows, cols]]) -> plot figure\n\
 \n\
 doc");
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
-    int handle = -1;
+    const char *kwlist[] = {"handle", "rows", "cols", NULL};
 
-    if(!PyArg_ParseTuple(args,"|i", &handle))
+    int handle = -1;
+    unsigned int rows = 1;
+    unsigned int cols = 1;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"|iII",const_cast<char**>(kwlist), &handle, &rows, &cols))
     {
         return -1;
     }
@@ -104,7 +106,12 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 
     *initSlotCount = 0;
 
-    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer< QSharedPointer<unsigned int> >,guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QSharedPointer<int> rows_(new int);
+    QSharedPointer<int> cols_(new int);
+    *rows_ = rows;
+    *cols_ = cols;
+
+    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer< QSharedPointer<unsigned int> >,guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(60000))
     {
@@ -119,7 +126,17 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     DELETE_AND_SET_NULL( self->signalMapper );
     self->signalMapper = new PythonQtSignalMapper(*initSlotCount);
 
-    return 0;
+    self->rows = *rows_;
+    self->cols = *cols_;
+
+    PyObject *args2 = PyTuple_New(3);
+    PyTuple_SetItem(args2,0,PyLong_FromLong(*objectID) );
+    PyTuple_SetItem(args2,1, PyUnicode_FromString("<figure>") );
+    PyTuple_SetItem(args2,2, PyUnicode_FromString("FigureClass") );
+    int result = PythonUi::PyUiItemType.tp_init((PyObject*)self,args2,NULL);
+    Py_DECREF(args2);
+
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -348,6 +365,49 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureSubplot_doc,"subplot(index) -> returns plotItem of desired subplot\n\
+\n\
+This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
+\n\
+Parameters \n\
+----------- \n\
+index : {unsigned int} \n\
+    index to desired subplot. The subplot at the top, left position has the index 0 whereas the index is incremented row-wise.");
+/*static*/ PyObject* PythonFigure::PyFigure_getSubplot(PyFigure *self, PyObject *args)
+{
+    unsigned int index = 0;
+    if(!PyArg_ParseTuple(args, "I", &index))
+    {
+        return NULL;
+    }
+
+    if(index >= (self->cols * self->rows))
+    {
+        return PyErr_Format(PyExc_RuntimeError,"index exceeds maximum number of existing subplots. The allowed range is [0,%i]", (self->cols * self->rows - 1));
+    }
+
+    //return new instance of PyUiItem
+    PyObject *arg2 = Py_BuildValue("OI", self, index);
+    PythonPlotItem::PyPlotItem *plotItem = (PythonPlotItem::PyPlotItem *)PyObject_CallObject((PyObject *)&PythonPlotItem::PyPlotItemType, arg2);
+    Py_DECREF(arg2);
+
+    if(plotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of requested subplot");
+        return NULL;
+    }
+
+    if(PyErr_Occurred())
+    {
+        Py_XDECREF(plotItem);
+        plotItem = NULL;
+    }
+
+    return (PyObject *)plotItem;
+
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -450,6 +510,8 @@ of itom, else it is a independent window. \n\
     return 0;
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //   static
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -521,7 +583,7 @@ PyMethodDef PythonFigure::PyFigure_methods[] = {
     {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
     {"plot", (PyCFunction)PyFigure_plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
     {"liveImage", (PyCFunction)PyFigure_liveImage, METH_VARARGS | METH_KEYWORDS, pyFigureLiveImage_doc},
-
+    {"subplot", (PyCFunction)PyFigure_getSubplot, METH_VARARGS, pyFigureSubplot_doc},
 
     {"close", (PyCFunction)PyFigure_close, METH_VARARGS | METH_STATIC, pyFigure_Close_doc},
     //{"isVisible", (PyCFunction)PyUi_isVisible, METH_NOARGS, pyUiIsVisible_doc},

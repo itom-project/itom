@@ -109,7 +109,8 @@ public:
     // helpers
     //------------------------------------------------------------------------------------------------- 
     static bool loadMethodDescriptionList(PyUiItem *self);
-    static PythonUi::PyUi* PyUiItem_getParentUI(PyUiItem *self);
+    //static PythonUi::PyUi* PyUiItem_getParentUI(PyUiItem *self);
+    static PythonQtSignalMapper* PyUiItem_getTopLevelSignalMapper(PyUiItem *self);
 
     //-------------------------------------------------------------------------------------------------
     // type structures

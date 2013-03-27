@@ -335,7 +335,8 @@ public slots:
     RetVal liveImage(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
     RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
+    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);

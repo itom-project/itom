@@ -136,6 +136,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
@@ -281,6 +282,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp

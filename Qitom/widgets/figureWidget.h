@@ -34,6 +34,8 @@
 #include <qpointer.h>
 #include <qaction.h>
 #include <qmenu.h>
+#include <qevent.h>
+#include <qsignalmapper.h>
 
 namespace ito {
 
@@ -43,17 +45,24 @@ class FigureWidget : public AbstractDockWidget
 
 
 public:
-    FigureWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~FigureWidget();
 
-    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QPoint &newAreas);
-    RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QPoint &newAreas);
+    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className);
+    RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className);
+
+    QWidget *getSubplot(int index) const;
+
+    RetVal changeCurrentSubplot(int newIndex);
 
 	//---------------------------------
 	// setter / getter
 	//---------------------------------
-    
     void setFigHandle(QSharedPointer<unsigned int> figHandle) { m_guardedFigHandle = figHandle; }
+
+
+    inline int rows() const { return m_rows; };
+    inline int cols() const { return m_cols; };
 
 protected:
     
@@ -66,6 +75,8 @@ protected:
 
     void closeEvent(QCloseEvent *event); // { event->accept(); };
 
+    //bool eventFilter(QObject *obj, QEvent *event);
+
     QSharedPointer<ito::Param> getParamByInvoke(ito::AddInBase* addIn, const QString &paramName, ito::RetVal &retval);
 
 private:
@@ -73,6 +84,12 @@ private:
     QWidget *m_pCenterWidget;
 
     QMenu *m_menuWindow;
+    QMenu *m_menuSubplot;
+
+    QActionGroup *m_pSubplotActions;
+
+    int m_rows;
+    int m_cols;
 
     QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds it own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
 
@@ -81,7 +98,7 @@ private:
 signals:
     
 private slots:
-
+    void mnu_subplotActionsTriggered(QAction *action);
 };
 
 } //end namespace ito
