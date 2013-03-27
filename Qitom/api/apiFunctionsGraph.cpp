@@ -23,6 +23,7 @@
 #include "../helper/paramHelper.h"
 #include "apiFunctionsGraph.h"
 #include "../Qitom/AppManagement.h"
+#include "../organizer/addInManager.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../Qitom/organizer/uiOrganizer.h"
 

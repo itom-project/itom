@@ -30,6 +30,7 @@
 
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
+#include "../organizer/addInManager.h"
 
 #include "pythonQtConversion.h"
 #include "AppManagement.h"

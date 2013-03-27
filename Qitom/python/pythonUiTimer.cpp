@@ -43,11 +43,12 @@
 //#include <qmetaobject.h>
 //#include <qcoreapplication.h>
 
-#include <iostream>
-#include <qvector.h>
-
 #include "pythonEngineInc.h"
 #include "AppManagement.h"
+
+#include <iostream>
+#include <qvector.h>
+#include <qtimer.h>
 
 namespace ito
 {

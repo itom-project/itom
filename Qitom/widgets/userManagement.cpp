@@ -21,11 +21,14 @@
 *********************************************************************** */
 
 #include "userManagement.h"
-
 #include "../AppManagement.h"
+#include "../organizer/userOrganizer.h"
+
 #include <QSettings>
 #include <QDir>
 #include <qmessagebox.h>
+#include <qtimer.h>
+#include <qdebug.h>
 
 namespace ito {
 
@@ -241,7 +244,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
         return;
     }
 
-    if (uid == AppManagement::getUserID())
+    if (uid == ((ito::userOrganizer*)AppManagement::getUserOrganizer())->getUserID())
     {
         QMessageBox::warning(this, tr("Warning"), tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
         return;

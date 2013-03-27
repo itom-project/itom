@@ -26,6 +26,7 @@
 
 #include "mainApplication.h"
 #include "main.h"
+#include "organizer/userOrganizer.h"
 
 #define VISUAL_LEAK_DETECTOR 0 //1 if you want to active the Visual Leak Detector (MSVC and Debug only), else type 0, if build with CMake always set it to 0.
 #if defined _DEBUG  && defined(_MSC_VER) && (VISUAL_LEAK_DETECTOR > 0 || defined(VISUAL_LEAK_DETECTOR_CMAKE))
@@ -329,7 +330,7 @@ int main(int argc, char *argv[])
     int ret = 0;
 
     MainApplication m(MainApplication::standard);
-    if (m.loadSettings(defUserName) != 0)
+    if (ito::userOrganizer::getInstance()->loadSettings(defUserName) != 0)
     {
         qDebug("load program aborted by user");
         ret = 0;

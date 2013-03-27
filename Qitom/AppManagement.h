@@ -27,8 +27,6 @@
 #include <qobject.h>
 #include <qmutex.h>
 
-#include "./organizer/addInManager.h"
-
 /* content */
 
 //!< AppManagement (in order to provide access to basic organizers, managers and other main components to every instance
@@ -36,19 +34,21 @@
 class AppManagement
 {
     public:
-        inline static QString& getSettingsFile() { QMutexLocker locker(&m_mutex); return m_settingsFile; };
+        static QString& getSettingsFile();
 
-        inline static QObject* getScriptEditorOrganizer() { QMutexLocker locker(&m_mutex); return m_sew; }; /*!< returns static pointer to ScriptEditorOrganizer instance */
-        inline static QObject* getPythonEngine() { QMutexLocker locker(&m_mutex); return m_pe; };           /*!< returns static pointer to PythonEngine instance */
+        inline static QObject* getScriptEditorOrganizer() { QMutexLocker locker(&m_mutex); return m_sew; } /*!< returns static pointer to ScriptEditorOrganizer instance */
+        inline static QObject* getPythonEngine() { QMutexLocker locker(&m_mutex); return m_pe; }           /*!< returns static pointer to PythonEngine instance */
     
-        inline static QObject* getPaletteOrganizer() { QMutexLocker locker(&m_mutex); return m_plo; };        /*!< returns static pointer to PaletteOrganizer instance */
-        inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; };        /*!< returns static pointer to DesignerWidgetOrganizer instance */
+        inline static QObject* getPaletteOrganizer() { QMutexLocker locker(&m_mutex); return m_plo; }        /*!< returns static pointer to PaletteOrganizer instance */
+        inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; }        /*!< returns static pointer to DesignerWidgetOrganizer instance */
     
-        inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; };
-        inline static QObject* getAddinManager() { QMutexLocker locker (&m_mutex); return qobject_cast<QObject*>(ito::AddInManager::getInstance()); };
-	    inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; };
-        inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; };  /*!< returns static pointer to UiOrganizer instance */
-        inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; };  /*!< returns static pointer to ProcessOrganizer instance */
+        inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; }
+        static QObject* getAddinManager();
+	    inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
+        inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
+        inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
+        inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
+
 
         static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)                                /*!< sets ScriptEditorOrganizer instance pointer */
         {
@@ -62,13 +62,13 @@ class AppManagement
             m_pe = pythonEngine;
         }
 
-        static void setPaletteOrganizer(QObject* paletteOrganizer)                                                  /*!< sets PythonEngine instance pointer */
+        static void setPaletteOrganizer(QObject* paletteOrganizer)                                          /*!< sets PythonEngine instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_plo = paletteOrganizer;
         }
 
-        static void setDesignerWidgetOrganizer(QObject* designerWidgetOrganizer)                                                  /*!< sets PythonEngine instance pointer */
+        static void setDesignerWidgetOrganizer(QObject* designerWidgetOrganizer)                            /*!< sets PythonEngine instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_dwo = designerWidgetOrganizer;
@@ -92,32 +92,17 @@ class AppManagement
             m_uiOrganizer = uiOrganizer;
         }
 
-        static void setSettingsFile(QString &settingsFile)
-        {
-            QMutexLocker locker(&m_mutex);
-            m_settingsFile = settingsFile;
-        }
-
         static void setProcessOrganizer(QObject* processOrganizer)
         {
             QMutexLocker locker(&m_mutex);
             m_processOrganizer = processOrganizer;
         }
 
-        inline static void setUserName(const QString userName) { m_userName = userName; }
-        inline static const QString getUserName() { return m_userName; }
-        inline static void setUserRole(const int role) { m_userRole = role; }
-        static void setUserRole(const QString role) 
-        { 
-            if (role == "user")
-                m_userRole = 0;
-            else if (role == "admin")
-                m_userRole = 1;
-            else
-                m_userRole = 2;
+        static void setUserOrganizer(QObject* userOrganizer)
+        {
+            QMutexLocker locker(&m_mutex);
+            m_userOrganizer = userOrganizer;
         }
-        inline static const int getUserRole() { return m_userRole; }
-        static QString getUserID(void);
 
     private:
         static QObject* m_sew;  /*!< static pointer to ScriptEditorOrganizer (default: NULL) */
@@ -128,11 +113,9 @@ class AppManagement
 	    static QObject* m_mainWin;
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
+        static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
-        static QString m_settingsFile;
-        static int m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
-        static QString m_userName;  /*< id of current user */
 };
 
 #endif // APPMANAGEMENT_H

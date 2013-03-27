@@ -27,6 +27,7 @@
 #include "widgets/abstractDockWidget.h"
 #include "organizer/addInManager.h"
 #include "./models/UserModel.h"
+#include "organizer/userOrganizer.h"
 #include "./ui/dialogSelectUser.h"
 
 #include <qsettings.h>
@@ -95,114 +96,6 @@ MainApplication::~MainApplication()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! load of settings / user settings file
-/*!
-    reads the available setting files from the settings directory and offers a dialog box
-    allowing to selecet the user or to abort program initialization.
-
-    \sa PythonEngine, MainWindow, ScriptEditorOrganizer
-*/
-int MainApplication::loadSettings(const QString defUserName)
-{
-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-    UserModel curUserModel;
-
-    QString settingsFile;
-    QDir appDir(QCoreApplication::applicationDirPath());
-    if (!appDir.cd("itomSettings"))
-    {
-        appDir.mkdir("itomSettings");
-        appDir.cd("itomSettings");
-    }
-    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
-
-    int nUser = 0;
-    foreach(QString iniFile, iniList) 
-    {
-        QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
-
-        settings.beginGroup("ITOMIniFile");
-        if (settings.contains("name"))
-        {
-            qDebug() << "found user ini file: " << iniFile;
-            curUserModel.addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
-        }
-        settings.endGroup();
-    }
-
-    if (curUserModel.rowCount() > 0) 
-    {
-        char foundDefUser = 0;
-
-        DialogSelectUser userDialog;
-        userDialog.ui.userList->setModel(&curUserModel);
-        userDialog.DialogInit(&curUserModel);
-#if linux
-        QString curSysUser(getenv("USER")); ///for MAc or Linux
-#else
-        QString curSysUser(getenv("USERNAME")); //for windows
-#endif
-
-        for (int curIdx = 0; curIdx < curUserModel.rowCount(); curIdx++)
-        {
-            QModelIndex midx = curUserModel.index(curIdx, 1);
-            if (midx.isValid())
-            {
-                QString curUid(midx.data().toString());
-                if (!defUserName.isEmpty())
-                {
-                    if (curUid == defUserName)
-                    {
-                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                        foundDefUser = 1;
-                    }
-                }
-                else
-                {
-                    if (curUid == curSysUser)
-                    {
-                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                    }
-                }
-            }
-        }
-
-        if (foundDefUser == 0)
-        {
-            int ret = userDialog.exec();
-            if (ret == 0)
-            {
-                return -1;
-            }
-
-            QModelIndex curIdx = userDialog.ui.userList->currentIndex();
-            QModelIndex fIdx = curUserModel.index(curIdx.row(), 3);
-            settingsFile = QString(fIdx.data().toString());
-        }
-        else
-        {
-            settingsFile = QString("itom_").append(defUserName).append(".ini");
-        }
-        qDebug() << "settingsFile path: " << settingsFile;
-        AppManagement::setSettingsFile(settingsFile);
-        QSettings settings(settingsFile, QSettings::IniFormat);
-        AppManagement::setUserName(settings.value("ITOMIniFile/name").toString());
-        AppManagement::setUserRole(settings.value("ITOMIniFile/role").toString());
-    }
-    else
-    {
-        settingsFile = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
-        qDebug() << "settingsFile path: " << settingsFile;
-        AppManagement::setSettingsFile(settingsFile);
-    }
-
-    return 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
     starts PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and organizers.
@@ -213,8 +106,9 @@ int MainApplication::loadSettings(const QString defUserName)
 void MainApplication::setupApplication()
 {
     RetVal retValue = retOk;
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     QStringList startupScripts;
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings.beginGroup("Language");
     QString language = settings.value("language", "en").toString();

@@ -36,6 +36,7 @@
 
 #include "../AppManagement.h"
 #include "../organizer/uiOrganizer.h"
+#include "../organizer/addInManager.h"
 
 #include <qdir.h>
 #include <qcoreapplication.h>

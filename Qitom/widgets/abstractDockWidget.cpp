@@ -29,11 +29,12 @@
 
 #include "abstractDockWidget.h"
 #include "../AppManagement.h"
-#include <qstyle.h>
 
+#include <qstyle.h>
 #include <QSpacerItem>
 #include <qwidget.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 namespace ito {
 

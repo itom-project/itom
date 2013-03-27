@@ -21,7 +21,10 @@
 *********************************************************************** */
 
 #include "AppManagement.h"
-#include <qfileinfo.h>
+#include "./organizer/addInManager.h"
+#include "./organizer/userOrganizer.h"
+
+//#include <qfileinfo.h>
 
 /*!
     \class AppManagement
@@ -37,15 +40,18 @@ QObject* AppManagement::m_app = NULL;
 QObject* AppManagement::m_mainWin = NULL;
 QObject* AppManagement::m_uiOrganizer = NULL;
 QObject* AppManagement::m_processOrganizer = NULL;
-QString AppManagement::m_userName = QString("itom");    //!< standard user is itom
-int AppManagement::m_userRole = 2;                      //!< developer
+QObject* AppManagement::m_userOrganizer = NULL;
 QMutex AppManagement::m_mutex;
-QString AppManagement::m_settingsFile;
 
 
-QString AppManagement::getUserID(void)
+QObject* AppManagement::getAddinManager() 
+{ 
+    QMutexLocker locker (&m_mutex); 
+    return qobject_cast<QObject*>(ito::AddInManager::getInstance()); 
+}
+
+QString& AppManagement::getSettingsFile(void)
 {
-    QFileInfo fi(m_settingsFile);
-    QString name = fi.baseName();
-    return name.right(name.length() - 5);
+    QMutexLocker locker(&m_mutex);
+    return ((ito::userOrganizer*)m_userOrganizer)->getSettingsFile();
 }
