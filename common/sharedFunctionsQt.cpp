@@ -814,7 +814,7 @@ namespace ito
 
         stream.writeAttribute("FormatVersion", "1.0");
         stream.writeAttribute("dataType", type);
-        stream.writeAttribute("isTransposed",  QString::number(dObjOut->isT()));
+        //stream.writeAttribute("isTransposed",  QString::number(dObjOut->isT()));
         stream.writeAttribute("dims", QString::number(dObjOut->getDims()));
         
         int dim = dObjOut->getDims() - 2;
@@ -823,11 +823,11 @@ namespace ito
         {
             QString attrib = "dim";
             attrib.append(QString::number(i));
-            stream.writeAttribute(attrib, QString::number(dObjOut->getSize(i, false)));
+            stream.writeAttribute(attrib, QString::number(dObjOut->getSize(i)));
         }
-        stream.writeAttribute("dimY", QString::number(dObjOut->getSize(dim, false)));
+        stream.writeAttribute("dimY", QString::number(dObjOut->getSize(dim)));
         dim++;
-        stream.writeAttribute("dimX", QString::number(dObjOut->getSize(dim, false)));
+        stream.writeAttribute("dimX", QString::number(dObjOut->getSize(dim)));
 
         // Now add metaData to XML-Stream
 
@@ -852,19 +852,19 @@ namespace ito
                 {                      
                     if(doubleAsBinary)
                     {
-                        double dtVal = dObjOut->getAxisOffset(i, false);
+                        double dtVal = dObjOut->getAxisOffset(i);
                         stream.writeAttribute("offset", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
-                        dtVal = dObjOut->getAxisScale(i, false);
+                        dtVal = dObjOut->getAxisScale(i);
                         stream.writeAttribute("scale", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
                     }
                     else
                     {
-                        stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(i, false), 'g', 15));
-                        stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(i, false), 'g', 15));                             
+                        stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(i), 'g', 15));
+                        stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(i), 'g', 15));                             
                     }
-                    cvalEncoded = QByteArray(dObjOut->getAxisUnit(i, valid, false).data()).toPercentEncoding();
+                    cvalEncoded = QByteArray(dObjOut->getAxisUnit(i, valid).data()).toPercentEncoding();
                     stream.writeAttribute("unit", cvalEncoded);
-                    cvalEncoded = QByteArray(dObjOut->getAxisDescription(i, valid, false).data()).toPercentEncoding();
+                    cvalEncoded = QByteArray(dObjOut->getAxisDescription(i, valid).data()).toPercentEncoding();
                     stream.writeAttribute("description", cvalEncoded);
                     stream.writeCharacters(" "); 
                 }
@@ -877,19 +877,19 @@ namespace ito
             {
                 if(doubleAsBinary)
                 {
-                    double dtVal = dObjOut->getAxisOffset(dim, false);
+                    double dtVal = dObjOut->getAxisOffset(dim);
                     stream.writeAttribute("offset", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
-                    dtVal = dObjOut->getAxisScale(dim, false);
+                    dtVal = dObjOut->getAxisScale(dim);
                     stream.writeAttribute("scale", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
                 }
                 else
                 {
-                    stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim, false), 'g', 15));
-                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim, false), 'g', 15));                             
+                    stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim), 'g', 15));
+                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));                             
                 }
-                cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid, false).data()).toPercentEncoding();
+                cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("unit", cvalEncoded);
-                cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid, false).data()).toPercentEncoding();
+                cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("description", cvalEncoded);
                 stream.writeCharacters(" "); 
             }
@@ -899,20 +899,20 @@ namespace ito
             {
                 if(doubleAsBinary)
                 {
-                    double dtVal = dObjOut->getAxisOffset(dim, false);
+                    double dtVal = dObjOut->getAxisOffset(dim);
                     stream.writeAttribute("offset", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
-                    dtVal = dObjOut->getAxisScale(dim, false);
+                    dtVal = dObjOut->getAxisScale(dim);
                     stream.writeAttribute("scale", QByteArray((char*)&(dtVal),sizeof(double)).toBase64());
                 }
                 else
                 {
-                    stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim, false), 'g', 15));
-                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim, false), 'g', 15));                             
+                    stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim), 'g', 15));
+                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));                             
                 }
 
-                cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid, false).data()).toPercentEncoding();
+                cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("unit", cvalEncoded);
-                cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid, false).data()).toPercentEncoding();
+                cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("description", cvalEncoded);
 
                 stream.writeCharacters(" "); 
@@ -1052,8 +1052,8 @@ namespace ito
     inline RetVal writeObjectDataToFileV1(QXmlStreamWriter &stream, DataObject *dObjOut, int elementsize)
     {
         int z_length = dObjOut->calcNumMats();
-        int lineSize = dObjOut->getSize(dObjOut->getDims()-1, false) * elementsize;
-        int lines = dObjOut->getSize(dObjOut->getDims()-2, false);
+        int lineSize = dObjOut->getSize(dObjOut->getDims()-1) * elementsize;
+        int lines = dObjOut->getSize(dObjOut->getDims()-2);
 
         stream.writeStartElement("data");
         stream.writeAttribute("planes", QString::number(z_length));        
@@ -1110,12 +1110,12 @@ namespace ito
             return RetVal(retError, 0, QObject::tr("Save object failed: object seems empty").toAscii().data());
         }
 
-        ret += dObjOut->evaluateTransposeFlag();
+        /*ret += dObjOut->evaluateTransposeFlag();
 
         if(ret.containsError())
         {
             return RetVal(retError, 0, QObject::tr("Save object failed: evaluate transpose failed").toAscii().data());
-        }
+        }*/
 
         int elementsize = 1;
         QString type;
@@ -1293,7 +1293,7 @@ namespace ito
  
         char ndims = 0;
         int objType = tUInt8;
-        char isTransposed = 0;
+        //char isTransposed = 0;
 
         if(attrStream.hasAttribute("dims") && attrStream.hasAttribute("dataType"))
         {
@@ -1354,7 +1354,7 @@ namespace ito
             }
         }
 
-        if(!ret.containsError())
+        /*if(!ret.containsError())
         {
             if(attrStream.hasAttribute("isTransposed"))
             {
@@ -1364,7 +1364,7 @@ namespace ito
             {
                 ret += RetVal(retError, 0, QObject::tr("Load object failed: isTransposed not specified").toAscii().data());
             }
-        }
+        }*/
 
         if(!ret.containsError())
         {
@@ -1431,10 +1431,10 @@ namespace ito
             {
                 ret += RetVal(retError, 0, QObject::tr("Load object failed: Error during allocating memory").toAscii().data());
             }
-            else
+            /*else
             {
                 dObjIn.setT(isTransposed);
-            }
+            }*/
         }
 
         if (NULL != sizes)
@@ -1522,22 +1522,21 @@ namespace ito
                 double dVal = 0.0;
                 QString attrName("offset"); 
                 ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-                dObjIn.setAxisOffset(i, dVal, false);
+                dObjIn.setAxisOffset(i, dVal);
 
                 dVal = 1.0;
                 attrName = "scale";
                 ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-                dObjIn.setAxisScale(i, dVal, false);
-
+                dObjIn.setAxisScale(i, dVal);
                 std::string strVal("");
                 attrName = "unit";
                 ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-                dObjIn.setAxisUnit(i, strVal, false);
+                dObjIn.setAxisUnit(i, strVal);
 
                 strVal = "";
                 attrName = "description";
                 ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-                dObjIn.setAxisDescription(i, strVal, false);
+                dObjIn.setAxisDescription(i, strVal);
 
             }
             else
@@ -1556,22 +1555,22 @@ namespace ito
             double dVal = 0.0;
             QString attrName("offset"); 
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-            dObjIn.setAxisOffset(ndims-1, dVal, false);
+            dObjIn.setAxisOffset(ndims-1, dVal);
 
             dVal = 1.0;
             attrName = "scale";
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-            dObjIn.setAxisScale(ndims-1, dVal, false);
+            dObjIn.setAxisScale(ndims-1, dVal);
 
             std::string strVal("");
             attrName = "unit";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setAxisUnit(ndims-1, strVal, false);
+            dObjIn.setAxisUnit(ndims-1, strVal);
 
             strVal = "";
             attrName = "description";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setAxisDescription(ndims-1, strVal, false);
+            dObjIn.setAxisDescription(ndims-1, strVal);
         }
         else
         {
@@ -1586,22 +1585,22 @@ namespace ito
             double dVal = 0.0;
             QString attrName("offset"); 
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-            dObjIn.setAxisOffset(ndims-2, dVal, false);
+            dObjIn.setAxisOffset(ndims-2, dVal);
 
             dVal = 1.0;
             attrName = "scale";
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
-            dObjIn.setAxisScale(ndims-2, dVal, false);
+            dObjIn.setAxisScale(ndims-2, dVal);
 
             std::string strVal("");
             attrName = "unit";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setAxisUnit(ndims-2, strVal, false);
+            dObjIn.setAxisUnit(ndims-2, strVal);
 
             strVal = "";
             attrName = "description";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setAxisDescription(ndims-2, strVal, false);             
+            dObjIn.setAxisDescription(ndims-2, strVal);             
         }
         else
         {
@@ -1797,8 +1796,8 @@ namespace ito
         stream.readNextStartElement();
         int numPlanes = dObjIn.calcNumMats();
         int dims = dObjIn.getDims(); 
-        int lineSize = dObjIn.getSize(dims-1, false) * elementsize;
-        int lines = dObjIn.getSize(dims-2, false);
+        int lineSize = dObjIn.getSize(dims-1) * elementsize;
+        int lines = dObjIn.getSize(dims-2);
         int planeSize = lines*lineSize;
         QString error;
 

@@ -290,28 +290,28 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             self->axisScales = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisScales, i, PyFloat_FromDouble(dObj->getAxisScale(i,true))); //steals ref to value
+                PyList_SetItem(self->axisScales, i, PyFloat_FromDouble(dObj->getAxisScale(i))); //steals ref to value
             }
 
             //3. axisOffsets
             self->axisOffsets = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisOffsets, i, PyFloat_FromDouble(dObj->getAxisOffset(i,true))); //steals ref to value
+                PyList_SetItem(self->axisOffsets, i, PyFloat_FromDouble(dObj->getAxisOffset(i))); //steals ref to value
             }
 
             //4. axisDescriptions
             self->axisDescriptions = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisDescriptions, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp,true).data())); //steals ref to value
+                PyList_SetItem(self->axisDescriptions, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp).data())); //steals ref to value
             }
 
             //5. axisUnits
             self->axisUnits = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisUnits, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp,true).data())); //steals ref to value
+                PyList_SetItem(self->axisUnits, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp).data())); //steals ref to value
             }
 
             //6. valueUnit

@@ -571,7 +571,7 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject was a NULL pointer in function getRowPointer(...)");               
         }
 
-        if(dObj->getType() != ito::getDataType2<_Tp*>())
+        if(dObj->getType() != ito::getDataType2<_Tp>())
         {
             return ito::RetVal::format(ito::retError, 0, "DataObject and template Type differed in function getRowPointer(...)");               
         }
@@ -792,24 +792,24 @@ namespace dObjHelper
         \sa  
         \date    12.2011 
     */
-    inline bool dObjareEqualDetail(ito::DataObject *dObj1, ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag, bool &transFlag, bool &last2DimsFlag)
+    inline bool dObjareEqualDetail(ito::DataObject *dObj1, ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag /*, bool &transFlag*/, bool &last2DimsFlag)
     {
         bool retVal = true;
         typeFlag = true;
         dimsFlag = true;
         last2DimsFlag = true;
-        transFlag = true;
+        //transFlag = true;
 
         if(dObj1->getType() != dObj2->getType())
         {
             retVal = false;
             typeFlag = false;
         }
-        if(dObj1->isT() != dObj2->isT())
+        /*if(dObj1->isT() != dObj2->isT())
         {
             retVal = false;
             transFlag = false;        
-        }
+        }*/
 
         if(dObj1->getDims() != dObj2->getDims())
         {
@@ -859,7 +859,7 @@ namespace dObjHelper
     */
     inline bool dObjareEqualShort(ito::DataObject *obj1, ito::DataObject *obj2)
     {
-        if(obj1->getDims() == obj2->getDims() && obj1->getType() == obj2->getType() && obj1->isT() == obj2->isT())
+        if(obj1->getDims() == obj2->getDims() && obj1->getType() == obj2->getType() /*&& obj1->isT() == obj2->isT()*/)
         {
             for(int i = 0; i < obj1->getDims(); i++)
             {

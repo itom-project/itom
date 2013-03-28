@@ -87,8 +87,8 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
     bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapZ, "Z", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-    retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0,true), mapZ->getSize(0,true), mapZ->getSize(1,true), mapZ->getSize(1,true), 1, ito::tFloat32);
-    retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0,true), mapZ->getSize(0,true), mapZ->getSize(1,true), mapZ->getSize(1,true), 1, ito::tFloat32);
+    retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
+    retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
 
     if(!retval.containsError())
     {
@@ -102,8 +102,8 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
         pcl::PointXYZ point;
         ito::PCLPointCloud pointCloud;
 
-        width = mapZ->getSize(1,true);
-        height = mapZ->getSize(0,true);
+        width = mapZ->getSize(1);
+        height = mapZ->getSize(0);
 
         if(deleteNaN)
         {
@@ -183,9 +183,9 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
     bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapZ, "Z", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-    retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0,true), mapZ->getSize(0,true), mapZ->getSize(1,true), mapZ->getSize(1,true), 1, ito::tFloat32);
-    retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0,true), mapZ->getSize(0,true), mapZ->getSize(1,true), mapZ->getSize(1,true), 1, ito::tFloat32);
-    retval += ito::dObjHelper::verify2DDataObject(mapI, "I", mapZ->getSize(0,true), mapZ->getSize(0,true), mapZ->getSize(1,true), mapZ->getSize(1,true), 1, ito::tFloat32);
+    retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
+    retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
+    retval += ito::dObjHelper::verify2DDataObject(mapI, "I", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
 
     if(!retval.containsError())
     {
@@ -200,8 +200,8 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
         pcl::PointXYZI point;
         ito::PCLPointCloud pointCloud;
 
-        width = mapZ->getSize(1,true);
-        height = mapZ->getSize(0,true);
+        width = mapZ->getSize(1);
+        height = mapZ->getSize(0);
 
         if(deleteNaN)
         {
@@ -308,10 +308,10 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
     if(retval == retOk)
     {
         bool checkScale = true;
-        firstX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 0, checkScale, false));
-        stepX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 1, checkScale, false)) - firstX;
-        firstY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 0, checkScale, false));
-        stepY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 1, checkScale, false)) - firstY;
+        firstX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 0, checkScale));
+        stepX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 1, checkScale)) - firstX;
+        firstY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 0, checkScale));
+        stepY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 1, checkScale)) - firstY;
     }
 
     if(retval == ito::retOk)
@@ -327,8 +327,8 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
             pcl::PointXYZ point;
             
-            width = mapDisp->getSize(1,true);
-            height = mapDisp->getSize(0,true);
+            width = mapDisp->getSize(1);
+            height = mapDisp->getSize(0);
 
             if(deleteNaN)
             {
@@ -394,8 +394,8 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
             pcl::PointXYZI point;
             
-            width = mapDisp->getSize(1,true);
-            height = mapDisp->getSize(0,true);
+            width = mapDisp->getSize(1);
+            height = mapDisp->getSize(0);
 
             if(deleteNaN)
             {

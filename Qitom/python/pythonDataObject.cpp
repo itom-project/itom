@@ -1152,7 +1152,8 @@ Notes \n\
 ");
 PyObject* PythonDataObject::PyDataObj_GetTranspose(PyDataObject *self, void * /*closure*/)
 {
-    if(self->dataObject == NULL)
+    return PyErr_Format(PyExc_RuntimeError,"TODO: Transpose changes");
+    /*if(self->dataObject == NULL)
     {
         Py_RETURN_NONE;
     }
@@ -1172,12 +1173,15 @@ PyObject* PythonDataObject::PyDataObj_GetTranspose(PyDataObject *self, void * /*
             Py_INCREF(Py_False);
             return Py_False;
         }
-    }
+    }*/
 }
 
 int PythonDataObject::PyDataObj_SetTranspose(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
-    if(value == NULL)
+    PyErr_Format(PyExc_RuntimeError,"TODO: Transpose changes");
+    return -1;
+
+    /*if(value == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "Cannot delete the transpose attribute");
         return -1;
@@ -1203,7 +1207,7 @@ int PythonDataObject::PyDataObj_SetTranspose(PyDataObject *self, PyObject *value
     {
         PyErr_SetString(PyExc_TypeError, "Argument must have a boolean value.");
         return -1;
-    }
+    }*/
 }
 //---------------------------------------Get / Set metadata / objecttags-----------------------------------------------------------
 
@@ -1339,7 +1343,7 @@ PyObject* PythonDataObject::PyDataObject_getAxisScales(PyDataObject *self, void 
     double temp;
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        temp = self->dataObject->getAxisScale(i, true);
+        temp = self->dataObject->getAxisScale(i);
         PyTuple_SetItem(ret, i,PyFloat_FromDouble(temp)); //steals reference
     }
 
@@ -1388,7 +1392,7 @@ int PythonDataObject::PyDataObject_setAxisScales(PyDataObject *self, PyObject *v
             return -1;
         }
 
-        self->dataObject->setAxisScale(i, scale, true);
+        self->dataObject->setAxisScale(i, scale);
     }
 
     return 0;
@@ -1419,7 +1423,7 @@ PyObject* PythonDataObject::PyDataObject_getAxisOffsets(PyDataObject *self, void
     double temp;
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        temp = self->dataObject->getAxisOffset(i, true);
+        temp = self->dataObject->getAxisOffset(i);
         PyTuple_SetItem(ret, i,PyFloat_FromDouble(temp));
     }
 
@@ -1469,7 +1473,7 @@ int PythonDataObject::PyDataObject_setAxisOffsets(PyDataObject *self, PyObject *
             return -1;
         }
 
-        self->dataObject->setAxisOffset(i, offset, true);
+        self->dataObject->setAxisOffset(i, offset);
     }
 
     return 0;
@@ -1500,7 +1504,7 @@ PyObject* PythonDataObject::PyDataObject_getAxisDescriptions(PyDataObject *self,
     std::string temp;
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        temp = self->dataObject->getAxisDescription(i, valid, true);
+        temp = self->dataObject->getAxisDescription(i, valid);
         if(valid)
         {
 			PyObject *string = PyUnicode_FromString(temp.data());
@@ -1552,7 +1556,7 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
             PyErr_SetString(PyExc_TypeError, "elements of axis description vector must be a string");
             return -1;
         }
-        self->dataObject->setAxisDescription(i, tempString, true);
+        self->dataObject->setAxisDescription(i, tempString);
     }
 
     return 0;
@@ -1584,7 +1588,7 @@ PyObject* PythonDataObject::PyDataObject_getAxisUnits(PyDataObject *self, void *
     std::string temp;
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        temp = self->dataObject->getAxisUnit(i, valid, true);
+        temp = self->dataObject->getAxisUnit(i, valid);
         if(valid)
         {
             PyTuple_SetItem(ret, i, PyUnicode_FromString(temp.data()));
@@ -1631,7 +1635,7 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
             PyErr_SetString(PyExc_TypeError, "elements of axis unit vector must be a string");
             return -1;
         }
-        self->dataObject->setAxisUnit(i, tempString, true);
+        self->dataObject->setAxisUnit(i, tempString);
     }
 
     return 0;
@@ -3405,13 +3409,13 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
         switch(dims)
         {
         case 2:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i], continuous: %i, transposed: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0,true), dObj->getSize(1,true), dObj->getContinuous(), dObj->isT(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getContinuous(), dObj->getOwnData());
             break;
         case 3:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i x %i], continuous: %i, transposed: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0,true), dObj->getSize(1,true), dObj->getSize(2,true), dObj->getContinuous(), dObj->isT(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getSize(2), dObj->getContinuous(), dObj->getOwnData());
             break;
         default:
-            result = PyUnicode_FromFormat("DataObject('%s', %i dims, continuous: %i, transposed: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->isT(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("DataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
             break;
         }
         self->dataObject->unlock();
@@ -3529,17 +3533,22 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
         return NULL;
     }
     self->dataObject->lockWrite();
+
     try
     {
-        self->dataObject->adj();
+        ito::DataObject *newDataObj = new ito::DataObject( self->dataObject->adj() );
+        self->dataObject->unlock();
+        delete self->dataObject;
+        self->dataObject = newDataObj;
     }
     catch(cv::Exception exc)
     {
+        self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         self->dataObject->unlock();
         return NULL;
     }
-    self->dataObject->unlock();
+    
     Py_RETURN_NONE;
 }
 
@@ -3559,12 +3568,12 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     }
     
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockWrite();
+    self->dataObject->lockRead();
     
-    retObj->dataObject = new ito::DataObject(*(self->dataObject));
+    //retObj->dataObject = new ito::DataObject( retObj->dataObject->adj() ); //*(self->dataObject));
     try
     {
-        retObj->dataObject->conj();
+        retObj->dataObject = new ito::DataObject( retObj->dataObject->adj() );
     }
     catch(cv::Exception exc)
     {
@@ -3597,6 +3606,7 @@ doctodo\n\
 ");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
 {
+    return PyErr_Format(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
     if(self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "data object is NULL");
@@ -3690,7 +3700,7 @@ PyObject* PythonDataObject::PyDataObject_size(PyDataObject *self, PyObject* args
 
         for(int i = 0 ; i < dims ; i++)
         {
-            PyList_SetItem(retList, i, PyLong_FromLong(self->dataObject->getSize(i,true)));
+            PyList_SetItem(retList, i, PyLong_FromLong(self->dataObject->getSize(i)));
         }
 
     }
@@ -3700,7 +3710,7 @@ PyObject* PythonDataObject::PyDataObject_size(PyDataObject *self, PyObject* args
         {
             if(desiredDim >= 0 && desiredDim < dims)
             {
-                retList = PyLong_FromLong(self->dataObject->getSize(desiredDim,true));
+                retList = PyLong_FromLong(self->dataObject->getSize(desiredDim));
             }
             else
             {
@@ -4145,7 +4155,7 @@ int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 
     for(int i = 0 ; i < dims ; i++)
     {
-        count *= self->dataObject->getSize(i,false); //independent on transpose flag
+        count *= self->dataObject->getSize(i); //independent on transpose flag
     }
 
     self->dataObject->unlock();
@@ -4212,7 +4222,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
         {
             temp1 = PyLong_AsLong(elem);
 
-            if(temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i,true))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
+            if(temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
             {
                 ranges[i].start = temp1;
                 ranges[i].end = temp1 + 1;
@@ -4230,7 +4240,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             singlePoint = false;
 
             Py_ssize_t start, stop, step, slicelength;
-            if(PySlice_GetIndicesEx(elem, self->dataObject->getSize(i,true), &start, &stop, &step, &slicelength) == 0)
+            if(PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
             {
                 if(step != 1)
                 {
@@ -4348,7 +4358,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         {
             temp1 = PyLong_AsLong(elem);
 
-            if(temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i,true)))
+            if(temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i)))
             {
                 ranges[i].start = temp1;
                 ranges[i].end = temp1+1;
@@ -4364,7 +4374,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         {
             containsSlices = true;
             Py_ssize_t start, stop, step, slicelength;
-            if(PySlice_GetIndicesEx(elem, self->dataObject->getSize(i,true), &start, &stop, &step, &slicelength) == 0)
+            if(PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
             {
                 if(step != 1)
                 {
@@ -4798,14 +4808,14 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     selfDO->lockRead();
 
-    if(selfDO->isT())
+    /*if(selfDO->isT())
     {
         selfDO->unlock();
         selfDO->lockWrite();
         selfDO->evaluateTransposeFlag();
         selfDO->unlock();
         selfDO->lockRead();
-    }
+    }*/
 
     inter = new PyArrayInterface;
     if (inter==NULL) {
@@ -4893,14 +4903,14 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 
     selfDO->lockRead();
 
-    if(selfDO->isT())
+    /*if(selfDO->isT())
     {
         selfDO->unlock();
         selfDO->lockWrite();
         selfDO->evaluateTransposeFlag();
         selfDO->unlock();
         selfDO->lockRead();
-    }
+    }*/
 
     PyObject *retDict = PyDict_New();
     item = PyLong_FromLong(3);
@@ -5032,14 +5042,14 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 
     selfDO->lockRead();
 
-    if(selfDO->isT())
+    /*if(selfDO->isT())
     {
         selfDO->unlock();
         selfDO->lockWrite();
         selfDO->evaluateTransposeFlag();
         selfDO->unlock();
         selfDO->lockRead();
-    }
+    }*/
 
     if(selfDO->getContinuous()/* == true*/)
     {
@@ -5081,14 +5091,14 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
 
     self->dataObject->lockRead();
 
-    if(self->dataObject->isT())
+    /*if(self->dataObject->isT())
     {
         self->dataObject->unlock();
         self->dataObject->lockWrite();
         self->dataObject->evaluateTransposeFlag();
         self->dataObject->unlock();
         self->dataObject->lockRead();
-    }
+    }*/
 
     int dims = self->dataObject->getDims();
 
@@ -5296,7 +5306,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     //PyTuple_SetItem(tagTuple,9,PyFloat_FromDouble(dObj->getValueScale()));
 
 
-    PyObject *stateTuple = Py_BuildValue("(bOO)", self->dataObject->isT(), dataTuple, tagTuple);
+    PyObject *stateTuple = Py_BuildValue("(bOO)", false /*self->dataObject->isT()*/, dataTuple, tagTuple);
 
     Py_DECREF(dataTuple);
     Py_DECREF(tagTuple);
@@ -5368,7 +5378,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     {
         Py_XDECREF(dataTuple);
         Py_XDECREF(tagTuple);
-        PyErr_SetString(PyExc_NotImplementedError, "transpose flag of unpickled data must be false (since the transposition has been evaluated before pickling)");
+        PyErr_SetString(PyExc_NotImplementedError, "transpose flag of unpickled data must be false (since the transposition has been evaluated before pickling). Transpose flag is obsolete now.");
         return NULL;
     }
 
@@ -5430,8 +5440,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
     }
 
-
-    self->dataObject->setT(transpose);
+    //transpose must be false (checked above)
+    //self->dataObject->setT(transpose);
 
     //check tags
     if(tagTuple != NULL && PyTuple_Size(tagTuple) == 10)
@@ -5462,7 +5472,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                self->dataObject->setAxisScale(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)), true);
+                self->dataObject->setAxisScale(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)));
             }
         }
 
@@ -5472,7 +5482,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                self->dataObject->setAxisOffset(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)), true);
+                self->dataObject->setAxisOffset(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)));
             }
         }
 
@@ -5484,7 +5494,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             {
                 if(parsePyObject2StdString(PySequence_GetItem(tempTag,i), tempString) == 0)
                 {
-                    self->dataObject->setAxisDescription(i, tempString, true);
+                    self->dataObject->setAxisDescription(i, tempString);
                 }
             }
         }
@@ -5497,7 +5507,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             {
                 if(parsePyObject2StdString(PySequence_GetItem(tempTag,i), tempString) == 0)
                 {
-                    self->dataObject->setAxisDescription(i, tempString, true);
+                    self->dataObject->setAxisDescription(i, tempString);
                 }
             }
         }
@@ -5578,7 +5588,7 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, 
 
     if((int)iterationIndex == dataObj->getDims() - 1) //last index
     {
-        size_t len = dataObj->getSize(iterationIndex,true);
+        size_t len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New( len );
         for(size_t i = 0; i < len ; i++)
         {
@@ -5591,7 +5601,7 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, 
     }
     else if((int)iterationIndex < dataObj->getDims() - 1) //previous indexes (besides last one)
     {
-        size_t len = dataObj->getSize(iterationIndex,true);
+        size_t len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New( len );
         for(size_t i = 0; i < len ; i++)
         {

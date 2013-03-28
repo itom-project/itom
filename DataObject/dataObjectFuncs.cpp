@@ -1503,11 +1503,11 @@ namespace dObjHelper
         dObjIO->addToProtocol(protocol);
         
         bool test;
-        std::string axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-1, test, false));
-        dObjIO->setAxisUnit(dObjIO->getDims()-1, axisUnit, false);
-        dObjIO->setAxisOffset(dObjIO->getDims()-1, 0.0, false);
+        std::string axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-1, test));
+        dObjIO->setAxisUnit(dObjIO->getDims()-1, axisUnit);
+        dObjIO->setAxisOffset(dObjIO->getDims()-1, 0.0);
 
-        float64 newScale = dObjIO->getAxisScale(dObjIO->getDims()-1, false);
+        float64 newScale = dObjIO->getAxisScale(dObjIO->getDims()-1);
         if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
         {
             newScale = 1/newScale;
@@ -1516,11 +1516,11 @@ namespace dObjHelper
         {
             newScale = 1.0;
         }
-        dObjIO->setAxisScale(dObjIO->getDims()-1, newScale , false);
+        dObjIO->setAxisScale(dObjIO->getDims()-1, newScale );
 
         if(!lineWise)
         {
-            newScale = dObjIO->getAxisScale(dObjIO->getDims()-2, false);
+            newScale = dObjIO->getAxisScale(dObjIO->getDims()-2);
             if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
             {
                 newScale = 1/newScale;
@@ -1529,10 +1529,10 @@ namespace dObjHelper
             {
                 newScale = 1.0;
             }
-            dObjIO->setAxisScale(dObjIO->getDims()-2, newScale , false);
+            dObjIO->setAxisScale(dObjIO->getDims()-2, newScale );
 
-            axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-2, test, false));
-            dObjIO->setAxisUnit(dObjIO->getDims()-2, axisUnit, false);
+            axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-2, test));
+            dObjIO->setAxisUnit(dObjIO->getDims()-2, axisUnit);
         }
 
         return retval;
@@ -1613,8 +1613,8 @@ namespace dObjHelper
         }
 
         ito::RetVal retValue;
-        retValue += verifySize(dObj->getSize(0,true), sizeYMin, sizeYMax, "y-axis", name);
-        retValue += verifySize(dObj->getSize(1,true), sizeXMin, sizeXMax, "x-axis", name);
+        retValue += verifySize(dObj->getSize(0), sizeYMin, sizeYMax, "y-axis", name);
+        retValue += verifySize(dObj->getSize(1), sizeXMin, sizeXMax, "x-axis", name);
     
         return retValue;
     }
@@ -1655,9 +1655,9 @@ namespace dObjHelper
         }
 
         ito::RetVal retValue;
-        retValue += verifySize(dObj->getSize(0,true), sizeZMin, sizeZMax, "z-axis", name);
-        retValue += verifySize(dObj->getSize(1,true), sizeYMin, sizeYMax, "y-axis", name);
-        retValue += verifySize(dObj->getSize(2,true), sizeXMin, sizeXMax, "x-axis", name);
+        retValue += verifySize(dObj->getSize(0), sizeZMin, sizeZMax, "z-axis", name);
+        retValue += verifySize(dObj->getSize(1), sizeYMin, sizeYMax, "y-axis", name);
+        retValue += verifySize(dObj->getSize(2), sizeXMin, sizeXMax, "x-axis", name);
     
         return retValue;
     }
@@ -1724,10 +1724,10 @@ namespace dObjHelper
 
         for(int i = copyLastNDims; i > 0; i--)
         {
-            DataObjectOut.setAxisDescription(nDimOut - i, DataObjectIn.getAxisDescription(nDimIn - i, test, true), true);
-            DataObjectOut.setAxisUnit(nDimOut - i, DataObjectIn.getAxisUnit(nDimIn - i, test, true), true);
-            DataObjectOut.setAxisOffset(nDimOut - i, DataObjectIn.getAxisOffset(nDimIn - i, true), true);
-            DataObjectOut.setAxisScale(nDimOut - i, DataObjectIn.getAxisScale(nDimIn - i, true), true);
+            DataObjectOut.setAxisDescription(nDimOut - i, DataObjectIn.getAxisDescription(nDimIn - i, test));
+            DataObjectOut.setAxisUnit(nDimOut - i, DataObjectIn.getAxisUnit(nDimIn - i, test));
+            DataObjectOut.setAxisOffset(nDimOut - i, DataObjectIn.getAxisOffset(nDimIn - i));
+            DataObjectOut.setAxisScale(nDimOut - i, DataObjectIn.getAxisScale(nDimIn - i ));
         }
         
         if(includeValueTags)
