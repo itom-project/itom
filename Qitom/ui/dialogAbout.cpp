@@ -23,17 +23,19 @@
 #include "dialogAbout.h" 
 #include <QClipboard>
 
-DialogAboutQItom::DialogAboutQItom(QList<QPair<QString, QString> > versionMap)
+DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
 {
+    QString tabText;
+
     m_VersionString.clear();
-    QFile file(":/license/about.html");
+    QFile file(":/license/about.html"); //:/license/about.html");
     if(!file.open(QIODevice::ReadOnly)) 
     {
-        QMessageBox::information(0, "error", file.errorString());
+        tabText = tr("Could not load file %1. Reason: %2.").arg("about.html").arg( file.errorString() );
     }
 
     QTextStream in(&file);
-    QString currTxt(in.readAll());
+    tabText = in.readAll();
     file.close();
 
     bool hasGIT = false;
@@ -43,50 +45,82 @@ DialogAboutQItom::DialogAboutQItom(QList<QPair<QString, QString> > versionMap)
     ui.itomLogo->setPixmap( QPixmap(QString::fromUtf8(":/application/icons/itomicon/q_itoM64.png")));
     ui.ITOLogo->setPixmap( QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
-    for( int i = 0; i < versionMap.size(); i++)
+    QMapIterator<QString, QString> i(versionMap);
+    while (i.hasNext()) 
     {
-        m_VersionString.append(QString("%1: %2\n").arg(versionMap[i].first, versionMap[i].second));
-        QString keyWord(QString("$%1$").arg(versionMap[i].first));
-        if(currTxt.contains(keyWord))
+        i.next();
+
+        m_VersionString.append(QString("%1: %2\n").arg(i.key(), i.value()));
+        QString keyWord = QString("$%1$").arg(i.key());
+        if(tabText.contains(keyWord))
         {
-            currTxt = currTxt.replace(keyWord, versionMap[i].second.replace('\n', "<p>"));
+            tabText = tabText.replace(keyWord, QString(i.value()).replace('\n', "<p>"));
         }
-        if(versionMap[i].first.compare("itom_GITHASH") == 0)
+        if(i.key() =="itom_GIT_Rev" && i.value() != "")
         {
             hasGIT = true;
         }
-        if(versionMap[i].first.compare("itom_SVNRevision") == 0)
+        if(i.key() =="itom_SVN_Rev" && i.value() != "")
         {
             hasSVN = true;
         }
     }
 
-    int x0 = currTxt.indexOf("$USINGSVN$");
-    int x1 = currTxt.lastIndexOf("$USINGSVN$");
+    int x0 = tabText.indexOf("$USINGSVN$");
+    int x1 = tabText.lastIndexOf("$USINGSVN$");
     if(!hasSVN)
     {
-        currTxt.remove(x0, x1-x0+10);
+        tabText.remove(x0, x1-x0+10);
     }
     else
     {
-        currTxt.remove(x0, 10);
-        x1 = currTxt.lastIndexOf("$USINGSVN$");
-        currTxt.remove(x1-10, 10);
+        tabText.remove(x0, 10);
+        x1 = tabText.lastIndexOf("$USINGSVN$");
+        tabText.remove(x1-10, 10);
     }
 
-    x0 = currTxt.indexOf("$USINGGIT$");
-    x1 = currTxt.lastIndexOf("$USINGGIT$");
+    x0 = tabText.indexOf("$USINGGIT$");
+    x1 = tabText.lastIndexOf("$USINGGIT$");
     if(!hasGIT)
     {
-        currTxt.remove(x0, x1-x0+10);
+        tabText.remove(x0, x1-x0+10);
     }
     else
     {
-        currTxt.remove(x0, 10);
-        currTxt.remove(x1-10, 10);    
+        tabText.remove(x0, 10);
+        tabText.remove(x1-10, 10);    
     }
 
-    ui.infoText->setHtml(currTxt);
+    ui.txtBasic->setHtml(tabText);
+
+
+    //contributors
+    file.setFileName(":/license/contributors.html");
+    if(!file.open(QIODevice::ReadOnly)) 
+    {
+        tabText = tr("Could not load file %1. Reason: %2.").arg("contributors.html").arg( file.errorString() );
+    }
+    else
+    {
+        tabText = QTextStream(&file).readAll();
+        file.close();
+    }
+
+    ui.txtContributors->setHtml(tabText);
+
+    //license
+    file.setFileName(":/license/COPYING.txt");
+    if(!file.open(QIODevice::ReadOnly)) 
+    {
+        tabText = tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg( file.errorString() );
+    }
+    else
+    {
+        tabText = QTextStream(&file).readAll();
+        file.close();
+    }
+
+    ui.txtLicense->setText(tabText);
 
 };
 
@@ -95,6 +129,7 @@ void DialogAboutQItom::on_pushButtonCopy_clicked()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(m_VersionString, QClipboard::Clipboard);
+    QMessageBox::information(this, "copy", tr("The version string has been copied to the clipboard"));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

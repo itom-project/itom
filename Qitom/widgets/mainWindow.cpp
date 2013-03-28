@@ -722,7 +722,7 @@ void MainWindow::mnuShowAssistant()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuAboutQitom()
 {
-    QList<QPair<QString, QString> > versionList = retrieveITOMVERSIONMAP();
+    QMap<QString, QString> versionList = getItomVersionMap();
 
     DialogAboutQItom *dlgAbout = new DialogAboutQItom(versionList);
     dlgAbout->exec();

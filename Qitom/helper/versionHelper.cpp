@@ -25,6 +25,7 @@
 #include "version.h"
 #include "opencv2/core/version.hpp"
 //#include "../../designerPluginSource/qwt/src/qwt_global.h"
+#include "common/addInInterface.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include <pcl/pcl_config.h>
@@ -52,127 +53,218 @@
 	#define PCL_REVISION_VERSION 0
 #endif
 
-QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
+//QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
+//{
+//    QList<QPair<QString, QString> > newList;
+//    QPair<QString, QString> newPair;
+//
+//    char buf[7] = {0};
+//    _snprintf(buf, 7, "%i.%i.%i", ITOM_VERSION_MAJOR, ITOM_VERSION_MINOR, ITOM_VERSION_PATCH);
+//
+//    newPair.first = "itom_Version";
+//    newPair.second = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
+//    newList.append(newPair);
+//
+//    newPair.first = "itom_SysType";
+//    
+//#if (defined linux)
+//    newPair.second = "Q_OS_LINUX";
+//#elif (defined Q_OS_WIN32)
+//    #if (defined Q_OS_WIN64)
+//        newPair.second = "Windows 64-Bit";
+//    #else
+//        newPair.second = "Windows 32-Bit";
+//    #endif
+//    #ifdef _DEBUG
+//        newPair.second.append(" DEBUG");
+//    #endif
+//#else
+//    newPair.second = "undefined system";
+//#endif
+//     
+//    newList.append(newPair);
+//
+//#ifdef USING_SVN
+//    newPair.first = "itom_SVNRevision";
+//    newPair.second = SVN_REVISION;
+//    newList.append(newPair);
+//
+//    newPair.first = "itom_SVNRevision_Date";
+//    newPair.second = SVN_REVISION_DATE;
+//    newList.append(newPair);
+//
+//    newPair.first = "ito_SVNRevision_URL";
+//    newPair.second = SVN_REPOSITORY_URL;
+//    newList.append(newPair);
+//
+//    newPair.first = "version_Warnings";
+//    QString warning("");
+//    bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
+//    if(!isClean)
+//    {
+//        warning.append(QObject::tr("Warning: The version contains locally changed code!\n"));
+//    }
+//    else
+//    {
+//        warning.append(QObject::tr("Build from a clean version.\n"));
+//    }
+//    newPair.second = warning;
+//    newList.append(newPair);
+//#elif (defined USING_GIT)
+//    newPair.first = "itom_GITHASH";
+//    newPair.second = GIT_HASHTAG;
+//    newList.append(newPair);
+//
+//    newPair.first = "itom_GIT_Date";
+//    newPair.second = GIT_REVISION_DATE;
+//    newList.append(newPair);
+//
+//    newPair.first = "ito_GIT_URL";
+//    newPair.second = GIT_REPOSITORY_URL;
+//    newList.append(newPair);
+//
+//    newPair.first = "version_Warnings";
+//    QString warning("");
+//    bool isClean = GIT_CLEAN_BUILD_FLAG > 0? false:true;
+//    if(!isClean)
+//    {
+//        warning.append(QObject::tr("Warning: The version contains locally changed and uncomitted code!\n"));
+//    }
+//    else
+//    {
+//        warning.append(QObject::tr("Build from a clean version.\n"));
+//    }
+//    newPair.second = warning;
+//    newList.append(newPair);
+//#else
+//    newPair.first = "version_Warnings";
+//    QString warning("");
+//    warning.append(QObject::tr("This version of itom not under version control (no GIT or SVN)!\n"));
+//    newPair.second = warning;
+//    newList.append(newPair);
+//#endif
+//    
+//    newPair.first = "openCV_Version";
+//    newPair.second = CV_VERSION;
+//    newList.append(newPair);
+//
+//#if ITOM_POINTCLOUDLIBRARY > 0
+//    _snprintf(buf, 7, "%i.%i.%i", PCL_MAJOR_VERSION, PCL_MINOR_VERSION, PCL_REVISION_VERSION);
+//    newPair.first = "PCL_Version";
+//    newPair.second = buf;
+//#else
+//	newPair.first = "PCL_Version";
+//	newPiar.second = "not compiled";
+//#endif
+//    newList.append(newPair);
+//    
+//    newPair.first = "QT_Version";
+//    newPair.second = QT_VERSION_STR;
+//    newList.append(newPair);
+//
+//    newPair.first = "QT_Your_Version";
+//    newPair.second = qVersion();
+//    newList.append(newPair);
+//
+//    newPair.first = "Py_Version";
+//    newPair.second = PY_VERSION;
+//    newList.append(newPair);
+//
+//    //newPair.first = "QwtPlot_Version";
+//    //newPair.second = QWT_VERSION_STR;
+//    //newList.append(newPair);
+//
+//    return newList;
+//}
+
+
+
+QMap<QString, QString> ito::getItomVersionMap()
 {
-    QList<QPair<QString, QString> > newList;
-    QPair<QString, QString> newPair;
+    QMap<QString, QString> items;
 
-    char buf[7] = {0};
-    _snprintf(buf, 7, "%i.%i.%i", ITOM_VERSION_MAJOR, ITOM_VERSION_MINOR, ITOM_VERSION_PATCH);
+    //itom_version
+    items["itom_Version"] = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
 
-    newPair.first = "itom_Version";
-    newPair.second = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
-    newList.append(newPair);
-
-    newPair.first = "itom_SysType";
-    
+    //itom_SysType
 #if (defined linux)
-    newPair.second = "Q_OS_LINUX";
+    items["itom_SysType"] = "Q_OS_LINUX";
 #elif (defined Q_OS_WIN32)
     #if (defined Q_OS_WIN64)
-        newPair.second = "Windows 64-Bit";
+        items["itom_SysType"] = "Windows 64-Bit";
     #else
-        newPair.second = "Windows 32-Bit";
+        items["itom_SysType"] = "Windows 32-Bit";
     #endif
     #ifdef _DEBUG
-        newPair.second.append(" DEBUG");
+        items["itom_SysType"].append(" DEBUG");
     #endif
 #else
-    newPair.second = "undefined system";
+    items["itom_SysType"] = "undefined system";
 #endif
      
-    newList.append(newPair);
+    items["itom_SVN_Rev"] = "";
+    items["itom_SVN_Date"] = "";
+    items["itom_SVN_URL"] = "";
+    items["itom_GIT_Rev"] = "";
+    items["itom_GIT_Date"] = "";
+    items["itom_GIT_URL"] = "";
 
 #ifdef USING_SVN
-    newPair.first = "itom_SVNRevision";
-    newPair.second = SVN_REVISION;
-    newList.append(newPair);
+    items["itom_SVN_Rev"] = SVN_REVISION;
+    items["itom_SVN_Date"] = SVN_REVISION_DATE;
+    items["itom_SVN_URL"] = SVN_REPOSITORY_URL;
 
-    newPair.first = "itom_SVNRevision_Date";
-    newPair.second = SVN_REVISION_DATE;
-    newList.append(newPair);
-
-    newPair.first = "ito_SVNRevision_URL";
-    newPair.second = SVN_REPOSITORY_URL;
-    newList.append(newPair);
-
-    newPair.first = "version_Warnings";
-    QString warning("");
     bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
     if(!isClean)
     {
-        warning.append(QObject::tr("Warning: The version contains locally changed code!\n"));
+        items["version_Warnings"] = QObject::tr("Warning: The version contains locally changed code!\n");
     }
     else
     {
-        warning.append(QObject::tr("Build from a clean version.\n"));
+        items["version_Warnings"] = QObject::tr("Build from a clean version.\n");
     }
-    newPair.second = warning;
-    newList.append(newPair);
+
 #elif (defined USING_GIT)
-    newPair.first = "itom_GITHASH";
-    newPair.second = GIT_HASHTAG;
-    newList.append(newPair);
+    items["itom_GIT_Rev"] = GIT_HASHTAG;
+    items["itom_GIT_Date"] = GIT_REVISION_DATE;
+    items["itom_GIT_URL"] = GIT_REPOSITORY_URL;
 
-    newPair.first = "itom_GIT_Date";
-    newPair.second = GIT_REVISION_DATE;
-    newList.append(newPair);
-
-    newPair.first = "ito_GIT_URL";
-    newPair.second = GIT_REPOSITORY_URL;
-    newList.append(newPair);
-
-    newPair.first = "version_Warnings";
-    QString warning("");
     bool isClean = GIT_CLEAN_BUILD_FLAG > 0? false:true;
     if(!isClean)
     {
-        warning.append(QObject::tr("Warning: The version contains locally changed and uncomitted code!\n"));
+        items["version_Warnings"] = QObject::tr("Warning: The version contains locally changed and uncomitted code!\n");
     }
     else
     {
-        warning.append(QObject::tr("Build from a clean version.\n"));
+        items["version_Warnings"] = QObject::tr("Build from a clean version.\n");
     }
-    newPair.second = warning;
-    newList.append(newPair);
 #else
-    newPair.first = "version_Warnings";
-    QString warning("");
-    warning.append(QObject::tr("This version of itom not under version control (no GIT or SVN)!\n"));
-    newPair.second = warning;
-    newList.append(newPair);
+    items["version_Warnings"] = QObject::tr("This version of itom not under version control (no GIT or SVN)!\n")
 #endif
     
-    newPair.first = "openCV_Version";
-    newPair.second = CV_VERSION;
-    newList.append(newPair);
-
+    //OpenCV
+    items["openCV_Version"] = CV_VERSION;
+    
+    //PCL
 #if ITOM_POINTCLOUDLIBRARY > 0
-    _snprintf(buf, 7, "%i.%i.%i", PCL_MAJOR_VERSION, PCL_MINOR_VERSION, PCL_REVISION_VERSION);
-    newPair.first = "PCL_Version";
-    newPair.second = buf;
+    items["PCL_Version"] = QString("%1.%2.%3").arg(PCL_MAJOR_VERSION).arg(PCL_MINOR_VERSION).arg(PCL_REVISION_VERSION);
 #else
-	newPair.first = "PCL_Version";
-	newPiar.second = "not compiled";
+	items["PCL_Version"] = "not used";
 #endif
-    newList.append(newPair);
-    
-    newPair.first = "QT_Version";
-    newPair.second = QT_VERSION_STR;
-    newList.append(newPair);
 
-    newPair.first = "QT_Your_Version";
-    newPair.second = qVersion();
-    newList.append(newPair);
+    //Qt-Stuff
+    items["QT_Version"] = QT_VERSION_STR;
+    items["QT_Your_Version"] = qVersion();
 
-    newPair.first = "Py_Version";
-    newPair.second = PY_VERSION;
-    newList.append(newPair);
+    //Python
+    items["Py_Version"] = PY_VERSION;
 
     //newPair.first = "QwtPlot_Version";
     //newPair.second = QWT_VERSION_STR;
-    //newList.append(newPair);
 
-    return newList;
+    //addInInterface
+    items["itom_pluginInterface_Version"] = ito_AddInInterface_CurrentVersion;
+
+    return items;
 }
 

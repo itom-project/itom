@@ -35,7 +35,7 @@ class DialogAboutQItom : public QDialog
     Q_OBJECT
 
     public:
-        DialogAboutQItom(QList<QPair<QString, QString> > versionMap);
+        DialogAboutQItom(const QMap<QString, QString> &versionMap);
 
         ~DialogAboutQItom() {m_VersionString.clear();};
 

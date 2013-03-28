@@ -1575,7 +1575,22 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
     int ret = 0;
 
-    QList<QPair<QString, QString> > versionList = ito::retrieveITOMVERSIONMAP();
+    QMap<QString, QString> versionMap = ito::getItomVersionMap();
+    QMapIterator<QString, QString> i(versionMap);
+
+    while (i.hasNext()) 
+    {
+        i.next();
+
+        key = PythonQtConversion::QStringToPyObject(i.key());
+        value = PythonQtConversion::QStringToPyObject(i.value());
+        ret = PyDict_SetItem(myTempDic, key, value);
+
+        Py_DECREF(key);
+        Py_DECREF(value);
+    }
+
+    /*QList<QPair<QString, QString> > versionList = ito::retrieveITOMVERSIONMAP();
 
     for( int i = 0; i < versionList.size(); i++)
     {
@@ -1585,7 +1600,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
         Py_DECREF(key);
         Py_DECREF(value);
-    }
+    }*/
 
     ret = PyDict_SetItemString(myDic, "itom", myTempDic);
     Py_XDECREF(myTempDic);

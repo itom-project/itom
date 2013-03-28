@@ -27,7 +27,8 @@
 
 namespace ito
 {
-    QList<QPair<QString, QString> > retrieveITOMVERSIONMAP();
+    //QList<QPair<QString, QString> > retrieveITOMVERSIONMAP();
+    QMap<QString, QString> getItomVersionMap();
 }
 
 #endif //VERSIONHELPER
