@@ -36,14 +36,14 @@
 
 //! global variable reference used to store AddInManager reference, as the AIM is singleton this variable is principally only
 //! accessed by the class itself. Its value is return also by the getReference \ref AddInManager::method of AIM
-ito::userOrganizer* ito::userOrganizer::m_pUserOrganizer = NULL;
+ito::UserOrganizer* ito::UserOrganizer::m_pUserOrganizer = NULL;
 
 namespace ito 
 {
 
     //! userOrganizer implementation
     //----------------------------------------------------------------------------------------------------------------------------------
-    userOrganizer::userOrganizer(void) : QObject(), m_userRole(0), m_userName("ito"), m_enabledUI(0), m_settingsFile("") 
+    UserOrganizer::UserOrganizer(void) : QObject(), m_userRole(0), m_userName("ito"), m_enabledUI(0), m_settingsFile("") 
     {
         AppManagement::setUserOrganizer(this);
     }
@@ -55,13 +55,13 @@ namespace ito
     *   This method returns the instance of the userOrganizer, i.e. if the userOrganizer has not been started, it is started then.
     *   Otherwise the reference to the open userOrganizer is returned
     */
-    userOrganizer * userOrganizer::getInstance(void)
+    UserOrganizer * UserOrganizer::getInstance(void)
     {
-        if (userOrganizer::m_pUserOrganizer == NULL)
+        if (UserOrganizer::m_pUserOrganizer == NULL)
         {
-            userOrganizer::m_pUserOrganizer = new ito::userOrganizer();
+            UserOrganizer::m_pUserOrganizer = new ito::UserOrganizer();
         }
-        return userOrganizer::m_pUserOrganizer;
+        return UserOrganizer::m_pUserOrganizer;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -70,17 +70,17 @@ namespace ito
     *
     *   closes the instance of the userOrganizer - should only be called at the very closing of the main program
     */
-    RetVal userOrganizer::closeInstance(void)
+    RetVal UserOrganizer::closeInstance(void)
     {
-        if (userOrganizer::m_pUserOrganizer)
+        if (UserOrganizer::m_pUserOrganizer)
         {
-            delete userOrganizer::m_pUserOrganizer;
+            DELETE_AND_SET_NULL(UserOrganizer::m_pUserOrganizer);
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal userOrganizer::loadSettings(const QString defUserName)
+    ito::RetVal UserOrganizer::loadSettings(const QString defUserName)
     {
         QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
         QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -117,9 +117,9 @@ namespace ito
             userDialog.ui.userList->setModel(&curUserModel);
             userDialog.DialogInit(&curUserModel);
     #if linux
-            QString curSysUser(getenv("USER")); ///for MAc or Linux
+            QString curSysUser(qgetenv("USER")); ///for MAc or Linux
     #else
-            QString curSysUser(getenv("USERNAME")); //for windows
+            QString curSysUser(qgetenv("USERNAME")); //for windows
     #endif
 
             for (int curIdx = 0; curIdx < curUserModel.rowCount(); curIdx++)
@@ -184,7 +184,7 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    QString userOrganizer::getUserID(void)
+    QString UserOrganizer::getUserID(void) const
     {
         QString fname = QFileInfo(m_settingsFile).baseName();
         fname = fname.right(fname.length() - 5);

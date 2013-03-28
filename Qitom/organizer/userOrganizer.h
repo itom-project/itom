@@ -29,16 +29,16 @@
 namespace ito
 {
 
-class userOrganizer : QObject
+class UserOrganizer : QObject
 {
     Q_OBJECT
 
     public:
-        static userOrganizer * getInstance(void);
+        static UserOrganizer * getInstance(void);
         static RetVal closeInstance(void);
 
         inline void setUserName(const QString userName) { m_userName = userName; }
-        inline const QString getUserName() { return m_userName; }
+        inline const QString getUserName() const { return m_userName; }
         inline void setUserRole(const int role) { m_userRole = role; }
         void setUserRole(const QString role) 
         { 
@@ -49,19 +49,19 @@ class userOrganizer : QObject
             else
                 m_userRole = 2;
         }
-        inline int getUserRole() { return m_userRole; }
-        QString getUserID(void);
+        inline int getUserRole() const { return m_userRole; }
+        QString getUserID(void) const;
         void setUiFlags(long flags) { m_enabledUI = flags; }
-        long getUiFlags(void) { return m_enabledUI; }
+        long getUiFlags(void) const { return m_enabledUI; }
         void setSettingsFile(QString &settingsFile) { m_settingsFile = settingsFile; }
-        inline QString& getSettingsFile() { return m_settingsFile; };
-        ito::RetVal userOrganizer::loadSettings(const QString defUserName);
+        inline QString getSettingsFile() const { return m_settingsFile; };
+        ito::RetVal UserOrganizer::loadSettings(const QString defUserName);
 
 private:
-        userOrganizer(void);
-        userOrganizer(userOrganizer  &/*copyConstr*/) : QObject() {}
-        ~userOrganizer(void) {};
-        static userOrganizer *m_pUserOrganizer;
+        UserOrganizer(void);
+        UserOrganizer(UserOrganizer  &/*copyConstr*/) : QObject() {}
+        ~UserOrganizer(void) {};
+        static UserOrganizer *m_pUserOrganizer;
 
         int m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
         QString m_userName;  /*< id of current user */

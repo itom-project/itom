@@ -50,8 +50,8 @@ QObject* AppManagement::getAddinManager()
     return qobject_cast<QObject*>(ito::AddInManager::getInstance()); 
 }
 
-QString& AppManagement::getSettingsFile(void)
+QString AppManagement::getSettingsFile(void)
 {
     QMutexLocker locker(&m_mutex);
-    return ((ito::userOrganizer*)m_userOrganizer)->getSettingsFile();
+    return ((ito::UserOrganizer*)m_userOrganizer)->getSettingsFile();
 }

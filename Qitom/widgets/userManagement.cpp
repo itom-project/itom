@@ -244,7 +244,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
         return;
     }
 
-    if (uid == ((ito::userOrganizer*)AppManagement::getUserOrganizer())->getUserID())
+    if (uid == ((ito::UserOrganizer*)AppManagement::getUserOrganizer())->getUserID())
     {
         QMessageBox::warning(this, tr("Warning"), tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
         return;

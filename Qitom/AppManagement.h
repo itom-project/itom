@@ -34,7 +34,7 @@
 class AppManagement
 {
     public:
-        static QString& getSettingsFile();
+        static QString getSettingsFile();
 
         inline static QObject* getScriptEditorOrganizer() { QMutexLocker locker(&m_mutex); return m_sew; } /*!< returns static pointer to ScriptEditorOrganizer instance */
         inline static QObject* getPythonEngine() { QMutexLocker locker(&m_mutex); return m_pe; }           /*!< returns static pointer to PythonEngine instance */

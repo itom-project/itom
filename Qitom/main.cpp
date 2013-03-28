@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
     int ret = 0;
 
     MainApplication m(MainApplication::standard);
-    if (ito::userOrganizer::getInstance()->loadSettings(defUserName) != 0)
+    if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != 0)
     {
         qDebug("load program aborted by user");
         ret = 0;
@@ -350,6 +350,9 @@ int main(int argc, char *argv[])
     qDebug("finalize done");
 
 end:
+
+    ito::UserOrganizer::closeInstance();
+
     qInstallMsgHandler(0);
     delete messageStream;
     messageStream = NULL;
