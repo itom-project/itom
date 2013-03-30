@@ -47,14 +47,14 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-#source_encoding = 'utf-8-sig'
+source_encoding = 'iso-8859-15 ' #'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = 'itom Documentation'
-copyright = '2011-2012, Institut for Technical Optics (ITO), University Stuttgart. Bug report: http://obelix/mantis/login_page.php'
+copyright = '2011-2012, Institut for Technical Optics (ITO), University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -64,10 +64,10 @@ copyright = '2011-2012, Institut for Technical Optics (ITO), University Stuttgar
 version = itomFuncs.version(1)["itom"]["itom_Version"]
 # The full version, including alpha/beta/rc tags. / Instead of release we will use the SNV-Revision
 d = itomFuncs.version(1)
-if("itom_SVNRevision" in d["itom"]):
-	release = d["itom"]["itom_SVNRevision"]
-elif("itom_GITHASH" in d["itom"]):
-	release = d["itom"]["itom_GITHASH"]
+if("itom_SVN_Rev" in d["itom"] and d["itom"]["itom_SVN_Rev"] != ""):
+	release = d["itom"]["itom_SVN_Rev"]
+elif("itom_GIT_Rev" in d["itom"] and d["itom"]["itom_GIT_Rev"] != ""):
+	release = d["itom"]["itom_GIT_Rev"]
 else:
 	release = "unknown"
 

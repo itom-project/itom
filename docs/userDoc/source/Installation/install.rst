@@ -3,49 +3,80 @@
 Installation
 ################
 
-In this section we want to show you how to install |itom| on your computer.
+In this section we want to show you how to get and install |itom| on your computer.
 
 Minimum system requirements
 ****************************
-Before installation, please review the minimum system requirements. MOMENTAN NOCH KOPIERT VON PAINT.NET!
+Before installation, please review the minimum system requirements.
 
-* Windows 7 (recommended), 
-  * or Windows XP SP3,
-  * or Windows Vista SP1 (SP2 and Platform Update recommended)
+* Operating System
+
+    * Windows XP SP3 *or*
+    * Windows Vista SP1 (SP2 and platform update recommended) *or*
+    * Windows 7 *or*
+    * Windows 8 (not tested yet) *or*
+    * Linux based OS (tested with Debian)
+
+* 32 or 64bit processor architecture
 * 800MHz processor (dual-core recommended)
 * 512MB of RAM
 * 1024 x 768 screen resolution
 * 200+ MB hard drive space
-* .........
 
-Getting the programm
-**********************
 
-There are two ways of getting |itom| on your computer. 
 
-The first one is using the installer :doc:`setup.exe <distribution_installation>` to install the current release version of iTOM with precompiled plugIns on your computer.
+Getting |itom|
+***************
 
-The second way is to get the source files and build your own |itom| -exe. This way is more complicated. You need to install :doc:`the development environment <environment_installation>`, including visual studio or QtCreator. With this installation, you can change the C/C++ code of |itom| and develop your own plugIns.
-
-For beginners and persons who only want to use python-scripts and simple GUI-interaktion we recommend the easy setup.exe installation.
-
-For developers we recommend the installation of the |itom| developement enviorment.
+Depending on your operating system, there are currently up to two different possibilites how to obtain and run |itom| on your computer.
+At first, windows users that mainly want to use |itom| and pre-compiled plugins can download the latest *32bit* or *64bit* setup of |itom|
+and install the current release on the computer (see :doc:`setup.exe <install_windows_setup>`). For linux users there is currently no
+pre-compiled package available. The setup can for instance be downloaded from https://bitbucket.org/itom/itom/downloads. Please consider that
+the core installation of |itom| does not contain any hardware or software plugins and no designer plugins which provide plotting functionalities to |itom|.
 
 .. toctree::
- :maxdepth: 1
+    :maxdepth: 1
+    
+    install_windows_setup.rst
 
-
- distribution_installation.rst   
- environment_installation.rst
- 
-Completing the installation
-****************************
+Secondly, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
+compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and linux users.
 
 .. toctree::
- :maxdepth: 1
+    :maxdepth: 1
+    
+    build_dependencies.rst
 
- itom_folder_structure.rst
- set_itom_properties.rst
+
+
+
+Plugins, Designer-Plugins
+**************************
+
+Each plugin or designer plugin enhances the core-functionality of |itom| and is compiled in its own project. Therefore the installer or sources of |itom|
+do no contain any plugin. Every plugin is distributed as a library file (*dll*, *so*,...) and - if necessary - other files.
+
+.. toctree::
+    :maxdepth: 1
+    
+    s
+
+sdf::
+.... toctree::
+.. :maxdepth: 1
+..
+..
+.. distribution_installation.rst   
+.. environment_installation.rst
+.. 
+..Completing the installation
+..****************************
+..
+.... toctree::
+.. :maxdepth: 1
+..
+.. itom_folder_structure.rst
+.. set_itom_properties.rst
    
    
    

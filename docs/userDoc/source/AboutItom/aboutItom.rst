@@ -1,25 +1,33 @@
 .. include:: ../include/global.inc
 
-About ITOM
+About itom
 ****************
 
 What is |itom|?
 ===================
 
-|itom| is the new measurement software of the ito. With this software we wanted to create a new fast system with simple and unitary integration of hardware. It should be a versatile tool for building the control software for any measurement setup with high adaptability to different situations. Therefore it is necessary to easily do modification in the software or transfer code blocks from one program to another. But not only that it is possible to control your hardware, you also can use |itom| for analysing or processing your acquired data. At the end we want to give you a software as replacement of Matlab, Labview,... and all with high process speed due to C++. Even though |itom| is a powerful software it is easy to use and so everyone can learn to handle it.
+|itom| is a lab automation and measurement software developed and provided by ITO (Institut for Technical Optics, University Stuttgart, Germany).
+This software has been designed with an emphasis on developping and running optical systems, however it can be used for other systems, too.
+|itom| should be a versatile tool for building the control software for any measurement setup which should be highly adaptible to different
+environments and settings. Therefore it is necessary to have a powerful and fast core-program, to integrate a scripting language in order to
+easily modify and transfer code blocks from one part of the program to another and to provide a simple and unitary interface for controlling
+external hardware components. Nevertheless, |itom| should not only be used for controlling hardware components, butcan also use it for analysing 
+or processing your acquired data. Finally, |itom| must be considered as an open source lab automation software whose functionality lie somewhere
+in the middle between commercial software packages like Matlab or Labview.
 
-The following table shows how we could approach all our requirements:
+The following table shows in which way base requirements to such a software system have influenced the choice of components during the designing
+process:
 
 +---------------------------------------------------------------+---------------------------+
 | What we wanted                                                | How we did it             |
 +===============================================================+===========================+
-| fast (close to hardware) software                             | C++                       |
+| fast software, development of fast algorithms                 | C++                       |
 +---------------------------------------------------------------+---------------------------+
 | modern multi-platform GUI                                     | Qt-Framework              |
 +---------------------------------------------------------------+---------------------------+
 | easy integration of different hardware (camera, actuator,...) | Plugin system             |
 +---------------------------------------------------------------+---------------------------+
-| fast, robust and easy to learn script language                | Python                    |
+| fast, robust and easy-to-learn scriptingnguage                | Python                    |
 +---------------------------------------------------------------+---------------------------+
 
 In the figure below you can see the three columns on which |itom| is based:
@@ -32,7 +40,7 @@ In the figure below you can see the three columns on which |itom| is based:
 
 Based on this three columns you can control measurement applications, basic setups or scripted image processing.
 
-To lean more about how to control itom via script language or the GUI proceed with :ref:`gettingStarted`.
+To learn more about how to control |itom| via script language or the GUI proceed with :ref:`gettingStarted`.
 
 
 
@@ -41,65 +49,110 @@ To lean more about how to control itom via script language or the GUI proceed wi
 
 
 
-Impressum
+About us
 ===================
 
-| Institut fuer Technische Optik
-| Universitaet Stuttgart
+| Institut für Technische Optik
+| Universität Stuttgart
 | Pfaffenwaldring 9
 | 70569 Stuttgart
 |
-| **Bug report:**
-| http://obelix/mantis/login_page.php
+| **Report issues at:**
+| https://bitbucket.org/itom/itom/issues
 
-Licence
+This help has been built for itom-version |version| (SVN/Git-revision |release|).
+
+Licensing
 ===================
 
-Itom Licence
-~~~~~~~~~~~~~~~~~~~~~
+itom Licensing
+~~~~~~~~~~~~~~~
 
-This help was build for iTOM-version |version| which correspond to SVN-Revision |release|
-This itom-version will be licensed unter LGPL vX.X (probably 2.0, 2.1, 3.0).
+The core components and the main application of |itom| is covered by **GNU Library General Public Licence** (GNU LGPL). All components belonging to
+the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are additionally covered by **itom exception**. The main idea of this exception is
+to allow other libraries (e.g. plugins) to include and link agains components of |itom| SDK independent on the specific license model of each "other" library.
+All files belonging to the |itom| SDK are included in the folder **SDK** that is shipped with any setup or included in the build directory (when build from sources).
+
+The full text license of **LGPL** and **itom exception** is also included as file *COPYING* in the source distributions and setups.
+
+All plugins and designer-plugins that can be integrated in |itom| can have their own licensing. Therefore the user is referred to the specific licensing documents or
+statements of each external library (plugin).
+
+itom Exception
+~~~~~~~~~~~~~~
+
+All components (source files) which are part of |itom| SDK are not only covered by the LPGL license but also by the *itom Exception*, that provides further grants and rights
+for using these components::
+
+    ITO LGPL Exception version 1.0
+    ------------------------------
+
+    Additional rights granted beyond the LGPL (the "Exception").
+
+    As a special exception to the terms and conditions of version 2.0 of the LGPL,
+    ITO hereby grants you the rights described below, provided you agree to
+    the terms and conditions in this Exception, including its obligations and
+    restrictions on use.
+
+    Nothing in this Exception gives you or anyone else the right to change the
+    licensing terms of the itom Software.
+
+    Below, "Licensed Software" shall refer to the software licensed under the LGPL
+    and this exception.
+
+    1) The right to use Open Source Licenses not compatible with the GNU
+    Library General Public License: Your software (hereafter referred to as "Your
+    Software") may import the Licensed Software and/or distribute binaries of Your
+    Software that imports the Licensed Software.
+
+    2) The right to link non-Open Source applications with pre-installed versions of
+    the Licensed Software: You may link applications with binary pre-installed
+    versions of the Licensed Software.
+
+    3) The right to subclass from classes of the licensed software: Classes that are 
+    subclassed from classes of the licensed software are not considered to be
+    constituting derivative work and therefore the author of such classes does 
+    not need to provide source code for this classes.
 
 Package Licences
 ~~~~~~~~~~~~~~~~~~~~~
 
-Your main programm of itom uses the following third party packages:
+A standard distribution of |itom| links to the following third-party library (shared linkage):
 
-- `openCV <http://opencv.willowgarage.com/wiki/>`_ by Willow Garage under BSD-license
+- `OpenCV <http://opencv.willowgarage.com/wiki/>`_ by Willow Garage under BSD-license
 
-- `point cload library <http://www.pointclouds.org/>`_ by Willow Garage under BSD-license
+- `Point Cload Library <http://www.pointclouds.org/>`_ by Willow Garage under BSD-license
 
-- The `QT-Framework <http://qt.nokia.com/>`_ by Nokia unter LGPL.
+- `QT-Framework <http://qt.nokia.com/>`_ by Nokia under LGPL.
 
-- `QwtPlot <http://qwt.sourceforge.net/>`_ by Uwe Rathmann and Josef Wilgen under LGPL with additional `exceptions <http://qwt.sourceforge.net/qwtlicense.html>`_.
-
-- QPropertyEditor under LGPL
-
-- `QScintilla <http://www.riverbankcomputing.co.uk/software/qscintilla/intro>`_ in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.
+- `QScintilla <http://www.riverbankcomputing.co.uk/software/qscintilla/intro>`_ in by Riverbank Computed Limited under GPL with additional exceptions.
 
 - QScintilla is a port to Qt of Neil Hodgson's `Scintilla <http://www.scintilla.org/>`_ C++ editor control.
 
 - `Python <http://www.python.org/>`_ by Python Software Foundation unter Python-License (similar to BSD license).
 
-- Python-package `NumPy <http://numpy.scipy.org/>`_ and `SciPy <http://www.scipy.org/>`_ under BSD compatible license.
+- Python-package `NumPy <http://numpy.scipy.org/>`_ under BSD compatible license.
 
-- `MatPlotLib <http://matplotlib.sourceforge.net/>`_ under BSD compatible license.
+- Some classes concerning the interaction between |Qt| and |python| have been inspired by `PythonQt <http://pythonqt.sourceforge.net/>`_ under LGPL license.
 
 
-Further used third party packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Additionally, the following third-party libraries are also used by common plugins or common configurations of |itom|:
+
+- `SciPy <http://www.scipy.org/>`_ under BSD compatible license.
+
+- `MatplotLib <http://matplotlib.sourceforge.net/>`_ under BSD compatible license.
+
+- `QwtPlot <http://qwt.sourceforge.net/>`_ by Uwe Rathmann and Josef Wilgen under LGPL with additional `exceptions <http://qwt.sourceforge.net/qwtlicense.html>`_.
+
+- QPropertyEditor under LGPL
 
 - Google test framework by Google under New BSD-license
-    
-- PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).
 
-Some of the PlugIns may contain further third party packages, e.g.:
+
+Other plugins may also contain further third party packages, e.g.:
 
 - NVidia CUDA SDK by NVidia under NVidia CUDA SDK License
 
 - `OpenMP <http://openmp.org/wp/>`_
 
-- Hardware dependent third party driver and SDKs with different license models,
-
-or may be published under different terms of conditions than the main itom-programm. So please check plugin-license before distributing itom-plugins. 
+- Hardware dependent third party drivers and SDKs with different license models or terms of conditions than the main itom-programm. So please check the specific plugin-license. 
