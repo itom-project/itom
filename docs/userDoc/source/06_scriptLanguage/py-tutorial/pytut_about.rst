@@ -1,12 +1,34 @@
-﻿About this tutorial
--------------------
+﻿.. include:: ../../../include/global.inc
+
+Python tutorial
+**********************************
+
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
+The goal of this tutorial is to give prospective ITOM users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|. 
+
+**Content**
+
+.. toctree::
+    :maxdepth: 2
+
+    pytut_runscript.rst
+    pytut_numbers_math.rst
+    pytut_variables_names.rst
+    pytut_strings_text.rst
+    pytut_dictionaries.rst
+    pytut_if_else.rst
+    pytut_loops_lists.rst
+    pytut_classes_objects.rst
+    pytut_functions.rst
+    pytut_modules.rst
+    pytut_prompting_passing.rst
+    pytut_reading_writing_files.rst
 
 
-The goal of this tutorial is to give prospective ITOM users a quick overview about the basic |Pythonv3| commands and how to use them within ITOM. The following resources have been used:
+The following resources have been used:
 
 * `Learn Python The Hard Way <http://learnpythonthehardway.org/book/>`_
 * `Official Python v3.3.0 documentation <http://docs.python.org/py3k/>`_

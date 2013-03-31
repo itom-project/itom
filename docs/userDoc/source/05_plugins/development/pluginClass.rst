@@ -31,6 +31,7 @@ The following components and structures are equal for all plugins of type *actua
 The basic scheme of the live-cycle of any plugin is depicted in figure :ref:`plugin-plugincall-scheme1`:
 
 .. _plugin-plugincall-scheme1:
+
 .. figure:: images/pluginBase1_824.png
 
 At startup of |itom|, one single instance (singleton) of each plugin interface class is created and managed by the **AddInManager**. Later, an instance of the real plugin can be requested, for instance in a python-script or by
@@ -50,6 +51,7 @@ method **waitForDone** (for actuators) it makes sense to release it earlier. For
 Finally, if the plugin should be closed, the inverse function calls with respect to the initialization are executed. That means, the **AddInManager** is at first invoking the method **call** of the plugin (still in its own thread). Then the plugin is moved back to the main thread and then **AddInManager** forces the deletion of the plugin by the method **closeThisInst** of the corresponding interface class.
 
 .. _plugin-class-callInitThread:
+
 .. note::
     
     In some cases, it is not possible to initialize the hardware (some cameras) in another thread than the main thread. Since this initialization should be done in the **init** method of the plugin, |itom| provides a
