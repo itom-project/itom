@@ -144,7 +144,7 @@ ScriptDockWidget::~ScriptDockWidget()
     \param exludeIndex tab-index which should be ignored, set to -1 in order to consider every tab
     \return string list
 */
-QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int excludeIndex)
+QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int excludeIndex) const
 {
     QStringList list;
     ScriptEditorWidget* sew;
@@ -430,7 +430,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 /*!
     \return true if any script has no filename, else false
 */
-bool ScriptDockWidget::containsNewScripts() //!< new means unsaved (without filename)
+bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (without filename)
 {
     bool newScripts = false;
     ScriptEditorWidget *editorWidget;
@@ -1326,9 +1326,8 @@ void ScriptDockWidget::mnuScriptStop()
         emit(pythonDebugCommand(ito::pyDbgQuit));
         //activateWindow(); (if you uncomment this line,the script window will always dissappear in the background - that's a little bit crazy, therefore don't activate it here)
     }
-    else
+    else if(PythonEngine::getInstance())
     {
-        //emit(pythonInterruptExecution());
         PythonEngine::getInstance()->pythonInterruptExecution();
     }
 }

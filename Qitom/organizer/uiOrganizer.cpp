@@ -2452,7 +2452,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
 
         FigureWidget *fig2 = new FigureWidget("Figure", false, true, *rows, *cols, NULL);
         //fig2->setAttribute( Qt::WA_DeleteOnClose ); //always delete figure window, if user closes it
-        QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
+        //QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
 
         mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
         if(mainWin)

@@ -60,81 +60,70 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-    if(pyEngine != NULL) pythonBusy = pyEngine->isPythonBusy();
+    if(pyEngine) 
+	{
+		pythonBusy = pyEngine->isPythonBusy();
+		connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
+		connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+    
+		connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
+		connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
-    //connect(pyThread, SIGNAL(pythonCodeExecStart(bool)), this, SLOT(pythonCodeExecStart(bool)));
-    //connect(pyThread, SIGNAL(pythonCodeExecEnd()), this, SLOT(pythonCodeExecEnd()));
+		const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
 
-    connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-    connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-    //connect(pyEngine, SIGNAL(pythonDebuggerContinued()), this, SLOT(pythonCodeExecContinued()));
+		connect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
+		connect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
+		connect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
-    connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
-    connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
+		//!< check if BreakPointModel already contains breakpoints for this editor and load them
+		if(getFilename() != "")
+		{
+			QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+			QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
 
-    const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+			for(int i=0; i<bpItems.size() ; i++)
+			{
+				breakPointAdd( bpItems.at(i), i );
+			}
 
-    connect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
-    connect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
-    connect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
+		}
+	}
 
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
-
-    //!< check if BreakPointModel already contains breakpoints for this editor and load them
-    if(getFilename() != "")
-    {
-        QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-        QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
-
-        for(int i=0; i<bpItems.size() ; i++)
-        {
-            breakPointAdd( bpItems.at(i), i );
-        }
-
-    }
-
-    pyEngine = NULL;
-    bpModel = NULL;
-
     setAcceptDrops(true);
 }
 
 ScriptEditorWidget::~ScriptEditorWidget()
 {
     const PythonEngine *pyEngine = PythonEngine::getInstance();
-    const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
 
-    //disconnect(pyThread, SIGNAL(pythonCodeExecStart(bool)), this, SLOT(pythonCodeExecStart(bool)));
-    //disconnect(pyThread, SIGNAL(pythonCodeExecEnd()), this, SLOT(pythonCodeExecEnd()));
+	if(pyEngine)
+	{
+		const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
 
-    disconnect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-    disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-    //disconnect(pyThread, SIGNAL(pythonDebuggerContinued()), this, SLOT(pythonCodeExecContinued()));
+		disconnect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
+		disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
 
-    disconnect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
-    disconnect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
+		disconnect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
+		disconnect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
+		disconnect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
+		disconnect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
+		disconnect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
-    disconnect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
-    disconnect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
-    disconnect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
+		//!< delete remaining break-points (not neccesary)
+		/*if(0)
+		{
+			QModelIndexList list = bpModel->getBreakPointIndizes(getFilename());
+			bpModel->deleteBreakPoints(list);
+		}*/
+	}
 
-    disconnect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
-    disconnect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
-
-    //!< delete remaining break-points (not neccesary)
-    /*if(0)
-    {
-        QModelIndexList list = bpModel->getBreakPointIndizes(getFilename());
-        bpModel->deleteBreakPoints(list);
-    }*/
+	disconnect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
+	disconnect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
 
     DELETE_AND_SET_NULL(m_pFileSysWatcher);
-
-
-    pyEngine = NULL;
-    bpModel = NULL;
 }
 
 
@@ -786,14 +775,17 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     //!< check if BreakPointModel already contains breakpoints for this editor and load them
     if(getFilename() != "")
     {
-        BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
-        QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-        QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
+        BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
+		if(bpModel)
+		{
+			QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+			QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
 
-        for(int i=0; i<bpItems.size() ; i++)
-        {
-            breakPointAdd( bpItems.at(i), i );
-        }
+			for(int i=0; i<bpItems.size() ; i++)
+			{
+				breakPointAdd( bpItems.at(i), i );
+			}
+		}
 
     }
 
@@ -1089,9 +1081,12 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
 {
     if(getFilename() == "") return RetVal(retError);
 
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
+    BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
 
-    bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
+	if(bpModel)
+	{
+		bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
+	}
 
     //!< the following lines are not neccesary, since the delete-slot is invoked for each breakPoint by the BreakPointModel
     /*markerDeleteAll(markBreakPoint);
@@ -1264,28 +1259,34 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
 
 RetVal ScriptEditorWidget::changeFilename(QString newFilename)
 {
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
+    BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
     QModelIndexList modelIndexList;
 
     if(newFilename == "" || newFilename.isNull())
     {
-        modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-        bpModel->deleteBreakPoints(modelIndexList);
+		if(bpModel)
+		{
+			modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+			bpModel->deleteBreakPoints(modelIndexList);
+		}
         filename = QString();
     }
     else
     {
-        modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-        QList<BreakPointItem> lists = bpModel->getBreakPoints(modelIndexList);
-        BreakPointItem temp;
-        QList<BreakPointItem> newList;
-        for(int i=0; i<lists.size() ;i++)
-        {
-            temp = lists.at(i);
-            temp.filename = newFilename;
-            newList.push_back(temp);
-        }
-        bpModel->changeBreakPoints(modelIndexList, newList, false);
+		if(bpModel)
+		{
+			modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+			QList<BreakPointItem> lists = bpModel->getBreakPoints(modelIndexList);
+			BreakPointItem temp;
+			QList<BreakPointItem> newList;
+			for(int i=0; i<lists.size() ;i++)
+			{
+				temp = lists.at(i);
+				temp.filename = newFilename;
+				newList.push_back(temp);
+			}
+			bpModel->changeBreakPoints(modelIndexList, newList, false);
+		}
         filename = newFilename;
     }
 
@@ -1297,7 +1298,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
 {
     std::list<QPair<int,int> >::iterator it;
     int line;
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
+    BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
     BreakPointItem item;
     QModelIndex index;
 

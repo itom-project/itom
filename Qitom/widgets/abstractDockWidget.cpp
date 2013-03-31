@@ -112,7 +112,11 @@ AbstractDockWidget::~AbstractDockWidget()
 {
     DELETE_AND_SET_NULL(m_pWindow);
     m_toolBars.clear();
-    disconnect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+
+	if(PythonEngine::getInstance())
+	{
+		disconnect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+	}
 }
 
 //! init method, called by constructor
@@ -169,7 +173,10 @@ void AbstractDockWidget::init()
 
     m_pWindow->addToolBar(m_dockToolbar);
 
-    connect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+	if(PythonEngine::getInstance())
+	{
+		connect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+	}
 
     createActions();
     createMenus();

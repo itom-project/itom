@@ -46,7 +46,7 @@ public:
     ScriptDockWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~ScriptDockWidget();
 
-    QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1);
+    QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
 
     RetVal newScript();
     RetVal openScript();
@@ -56,7 +56,7 @@ public:
 
     inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); };   /*!<  checks wether given tab-index is valid (true) or not (false) */
     inline int getTabCount() const { return m_tab->count(); };      /*!<  returns number of tabs */
-    bool containsNewScripts();
+    bool containsNewScripts() const;
 
     RetVal appendEditor( ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */

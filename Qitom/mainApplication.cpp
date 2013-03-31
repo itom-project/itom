@@ -106,6 +106,7 @@ MainApplication::~MainApplication()
 void MainApplication::setupApplication()
 {
     RetVal retValue = retOk;
+	RetVal pyRetValue;
     QStringList startupScripts;
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -197,10 +198,16 @@ void MainApplication::setupApplication()
     m_pyThread = new QThread();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
-//    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_RETURN_ARG(ito::RetVal, retValue));
-    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &retValue));
+    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue));
 
     qDebug("..python engine moved to new thread");
+
+	retValue += pyRetValue;
+	if(pyRetValue.containsError())
+	{
+		DELETE_AND_SET_NULL(m_pyEngine);
+		AppManagement::setPythonEngine(NULL);
+	}
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -274,18 +281,18 @@ void MainApplication::setupApplication()
     {
 		if (retValue.errorMessage())
 		{
-			std::cout << "Error when starting the application: " << retValue.errorMessage() << std::endl;
+			std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
 		}
 		else
 		{
-			std::cout << "An unspecified error occurred when starting the application." << std::endl;
+			std::cerr << "An unspecified error occurred when starting the application." << std::endl;
 		}
     }
 	else if (retValue.containsWarning())
 	{
 		if (retValue.errorMessage())
 		{
-			std::cout << "Warning when starting the application: " << retValue.errorMessage() << std::endl;
+			std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
 		}
 		else
 		{
@@ -326,18 +333,19 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_mainWin);
     AppManagement::setMainWindow(NULL);
 
-    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+	if(m_pyEngine)
+	{
+		ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+		QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
+		waitCond->waitAndProcessEvents(-1);
 
-    QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
+		//call further objects, which have been marked by "deleteLater" during this finalize method (partI)
+		QCoreApplication::sendPostedEvents ();
+		QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+		QCoreApplication::processEvents();
 
-    waitCond->waitAndProcessEvents(-1);
-
-    //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-    QCoreApplication::sendPostedEvents ();
-    QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-    QCoreApplication::processEvents();
-
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+		ItomSharedSemaphore::deleteSemaphore(waitCond);
+	}
 
     DELETE_AND_SET_NULL(m_pyEngine);
     AppManagement::setPythonEngine(NULL);

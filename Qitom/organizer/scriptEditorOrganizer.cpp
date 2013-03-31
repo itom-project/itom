@@ -99,7 +99,7 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
 {
     ScriptDockWidget* newWidget;
-    const PythonEngine *pyEngine = PythonEngine::getInstance();
+    
 
     //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
 
@@ -125,9 +125,12 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     //!< setup signal/slot-connection to python thread
     qRegisterMetaType<ito::tPythonDbgCmd>("tPythonDbgCmd" );
     
-
-    connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-    connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+	const PythonEngine *pyEngine = PythonEngine::getInstance();
+	if(pyEngine)
+	{
+		connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+		connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+	}
 
     if (docked)
     {
@@ -152,8 +155,6 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
 */
 void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 {
-    const PythonEngine *pyEngine = PythonEngine::getInstance();
-
     disconnect(widget,SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)),this,SLOT(removeScriptDockWidget(ScriptDockWidget*)));
     disconnect(widget,SIGNAL(dockScriptTab(ScriptDockWidget*,int,bool)),this,SLOT(dockScriptTab(ScriptDockWidget*,int,bool)));
     disconnect(widget,SIGNAL(undockScriptTab(ScriptDockWidget*,int,bool,bool)),this,SLOT(undockScriptTab(ScriptDockWidget*,int,bool,bool)));
@@ -163,8 +164,12 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 
     disconnect(widget,SIGNAL(openScriptRequest(QString,ScriptDockWidget*)), this, SLOT(openScriptRequested(QString,ScriptDockWidget*)));
 
-    disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-    disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+	const PythonEngine *pyEngine = PythonEngine::getInstance();
+	if(pyEngine)
+	{
+		disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+		disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+	}
 
     emit(removeScriptDockWidgetFromMainWindow(widget));
 

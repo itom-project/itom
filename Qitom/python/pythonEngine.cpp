@@ -192,6 +192,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
+	bool numpyAvailable = true;
 
     qDebug() << "python in thread: " << QThread::currentThreadId ();
 
@@ -224,9 +225,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             if (_import_array() < 0)
             {
+				numpyAvailable = false;
                 PyErr_Print();
-                PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-                (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import\n");
+                PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.");
+                (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n");
+				return;
             }
 
             //!< start python-type pythonStream, in order to redirect stdout and stderr to std::cout and std::cerr (possibly redirected to qDebugStream)
@@ -250,24 +253,24 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             static wchar_t *wargv = L"";
             PySys_SetArgv(1, &wargv);
 
-            PythonDataObject::PyDataObjectType.tp_base =0;
-            PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
-            PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
-            {
-                Py_INCREF(&PythonDataObject::PyDataObjectType);
-                PyModule_AddObject(itomModule, "dataObject", (PyObject *)&PythonDataObject::PyDataObjectType);
-            }
+			PythonDataObject::PyDataObjectType.tp_base =0;
+			PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
+			PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
+			if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
+			{
+				Py_INCREF(&PythonDataObject::PyDataObjectType);
+				PyModule_AddObject(itomModule, "dataObject", (PyObject *)&PythonDataObject::PyDataObjectType);
+			}
 
 
-            PythonDataObject::PyDataObjectIterType.tp_base =0;
-            PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
-            PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonDataObject::PyDataObjectIterType) >= 0)
-            {
-                Py_INCREF(&PythonDataObject::PyDataObjectIterType);
-                //PyModule_AddObject(itomModule, "dataObjectIter", (PyObject *)&PythonDataObject::PyDataObjectIterType);
-            }
+			PythonDataObject::PyDataObjectIterType.tp_base =0;
+			PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
+			PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
+			if (PyType_Ready(&PythonDataObject::PyDataObjectIterType) >= 0)
+			{
+				Py_INCREF(&PythonDataObject::PyDataObjectIterType);
+				//PyModule_AddObject(itomModule, "dataObjectIter", (PyObject *)&PythonDataObject::PyDataObjectIterType);
+			}
 
             if (PyType_Ready(&PythonPlugins::PyActuatorPluginType) >= 0)
             {
@@ -296,21 +299,14 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
             }
 
-            PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
-            PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
-            PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
-            {
-                Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
-                PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
-            }
-
-            /*if (PyType_Ready(&PythonUiDialog::PyUiDialogType) >= 0)
-            {
-                Py_INCREF(&PythonUiDialog::PyUiDialogType);
-                PythonUiDialog::PyUiDialog_addTpDict( PythonUiDialog::PyUiDialogType.tp_dict);
-                PyModule_AddObject(itomModule, "uiDialog", (PyObject *)&PythonUiDialog::PyUiDialogType);
-            }*/
+			PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
+			PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
+			PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
+			if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
+			{
+				Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
+				PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
+			}
 
             if (PyType_Ready(&PythonUiTimer::PyUiTimerType) >= 0)
             {

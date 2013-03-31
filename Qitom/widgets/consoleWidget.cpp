@@ -62,13 +62,13 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     if(qout) connect(qout, SIGNAL(flushStream( QString, tMsgType )), this, SLOT(receiveStream(QString, tMsgType)));
     if(qerr) connect(qerr, SIGNAL(flushStream( QString, tMsgType )), this, SLOT(receiveStream(QString, tMsgType)));
 
-    const PythonEngine *pyEngine = PythonEngine::getInstance();
+    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 
-    connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
-
-    connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-
-    pyEngine = NULL;
+	if(pyEngine)
+	{
+		connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
+		connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+	}
 
     cmdList = new DequeCommandList(20);
 
@@ -88,10 +88,12 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
 ConsoleWidget::~ConsoleWidget()
 {
-    const PythonEngine *pyEngine = PythonEngine::getInstance();
-    disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
-    disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-    pyEngine = NULL;
+    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
+	if(pyEngine)
+	{
+		disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
+		disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+	}
 
     DELETE_AND_SET_NULL(cmdList);
     DELETE_AND_SET_NULL(qout);
@@ -301,8 +303,11 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
     if(key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
     {
-        //PyErr_SetInterrupt();
-        PythonEngine::getInstance()->pythonInterruptExecution();
+		if(PythonEngine::getInstance())
+		{
+			//PyErr_SetInterrupt();
+			PythonEngine::getInstance()->pythonInterruptExecution();
+		}
         acceptEvent = false; //!< no action necessary
         forwardEvent = false;
     }
@@ -683,8 +688,15 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             //emit pythonExecuteString(value.singleLine);
 
-            PythonEngine *pyEngine = qobject_cast<PythonEngine*>( AppManagement::getPythonEngine() );
-            QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
+            QObject *pyEngine = AppManagement::getPythonEngine(); //qobject_cast<PythonEngine*>( AppManagement::getPythonEngine() );
+			if(pyEngine)
+			{
+				QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
+			}
+			else
+			{
+				QMessageBox::critical(this,tr("script execution"), tr("Python is not available"));
+			}
 
             //connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
 

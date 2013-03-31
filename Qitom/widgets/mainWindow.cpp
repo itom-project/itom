@@ -182,6 +182,11 @@ MainWindow::MainWindow() :
         connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
         connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
     }
+	else
+	{
+		showInfoMessageLine( tr("Python could not be started. itom cannot be used in the desired way.") );
+		m_console->setReadOnly(true);
+	}
 
     // signal mapper for user defined actions
     m_userDefinedSignalMapper = new QSignalMapper(this);
@@ -1259,9 +1264,8 @@ void MainWindow::mnuScriptStop()
         emit(pythonDebugCommand(ito::pyDbgQuit));
         raise();
     }
-    else
+    else if(PythonEngine::getInstance())
     {
-        //emit(pythonInterruptExecution());
         PythonEngine::getInstance()->pythonInterruptExecution();
     }
 }
