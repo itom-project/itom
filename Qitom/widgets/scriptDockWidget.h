@@ -61,12 +61,13 @@ public:
     RetVal appendEditor( ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(QString filename, int line = -1);
+	bool activeTabEnsureLineVisible(int lineNr);
 
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;
     ScriptEditorWidget* getCurrentEditor() const;
 
-    int getIndexByEditor(ScriptEditorWidget* sew);
+    int getIndexByEditor(ScriptEditorWidget* sew) const;
 
 
     void createActions();

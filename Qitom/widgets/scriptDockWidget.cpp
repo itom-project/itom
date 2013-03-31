@@ -618,7 +618,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
     \param sew reference to ScriptEditorWidget
     \return tab-index of given ScriptEditorWidget or -1 if this widget could not be found
 */
-int ScriptDockWidget::getIndexByEditor(ScriptEditorWidget* sew)
+int ScriptDockWidget::getIndexByEditor(ScriptEditorWidget* sew) const
 {
     if (sew == NULL) return -1;
     for (int i = 0; i < m_tab->count() ; i++)
@@ -1043,6 +1043,21 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
         }
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptDockWidget::activeTabEnsureLineVisible(int lineNr)
+{
+	if(m_actTabIndex >= 0)
+	{
+		ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
+		if(sew)
+		{
+			sew->setCursorPosAndEnsureVisible(lineNr);
+			return true;
+		}
+	}
+	return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

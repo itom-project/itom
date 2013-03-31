@@ -451,7 +451,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
     setCursorPosition(line, 0);
     ensureLineVisible(line);
     ensureCursorVisible();
-    return RetVal(retOk);
+    return retOk;
 }
 
 

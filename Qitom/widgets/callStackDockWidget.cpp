@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../organizer/scriptEditorOrganizer.h"
 
 #include "callStackDockWidget.h"
 #include "../global.h"
@@ -58,6 +59,8 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, QWidget *parent, 
 
 	m_headers << tr("file") << tr("line") << tr("method");
 	m_table->setHorizontalHeaderLabels(m_headers);
+
+	connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(itemDoubleClicked(QTableWidgetItem*)));
 	
 
     setContentWidget(m_table);
@@ -143,7 +146,11 @@ void CallStackDockWidget::createMenus()
 void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, QStringList methods)
 {
 	QTableWidgetItem *item;
+	Qt::ItemFlags flagsEnabled = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+	Qt::ItemFlags flagsDisabled = Qt::ItemIsSelectable;
+	Qt::ItemFlags flags;
 	QFileInfo info;
+	QString filename;
 	m_table->clear();
 
 	m_table->setRowCount(filenames.count());
@@ -155,12 +162,27 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
 	for(int i = 0 ; i < filenames.count() ; i++)
 	{
 		info = QFileInfo(filenames[i]);
-		item = new QTableWidgetItem( info.fileName() );
+		filename = info.fileName();
+		if(filename.contains("<"))
+		{
+			flags = flagsDisabled;
+		}
+		else
+		{
+			flags = flagsEnabled;
+		}
+
+		item = new QTableWidgetItem( filename );
+		item->setFlags(flags);
 		item->setData(Qt::ToolTipRole, info.canonicalFilePath() );
 		m_table->setItem(i,0, item);
+
 		item = new QTableWidgetItem( QString::number(lines[i]) );
+		item->setFlags(flags);
 		m_table->setItem(i,1,item);
+
 		item = new QTableWidgetItem(methods[i]);
+		item->setFlags(flags);
 		m_table->setItem(i,2,item);
 	}
 }
@@ -171,6 +193,37 @@ void CallStackDockWidget::deleteCallStack()
 	m_table->clear();
 	m_table->setRowCount(0);
 	m_table->setHorizontalHeaderLabels(m_headers);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
+{
+	QString canonicalPath;
+	int lineNr = -1;
+
+	if(item)
+	{
+		QTableWidgetItem *item2 = m_table->item( item->row(),0 );
+		if(item2)
+		{
+			canonicalPath = item2->data( Qt::ToolTipRole ).toString();
+
+			item2 = m_table->item( item->row(), 1);
+			if(item2)
+			{
+				lineNr = item2->text().toInt() - 1;
+			}
+
+			if(canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
+			{
+				ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+				if(seo)
+				{
+					seo->openScript( canonicalPath, NULL, lineNr );
+				}
+			}
+		}
+	}
 }
 
 

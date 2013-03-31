@@ -479,10 +479,11 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
 //! slot, invoked if python macro file should be opened as new tab in active script editor window
 /*!
     \param filename Filename of the python macro
-    \param waitCond ItomSharedSemaphore which will be waked up if opening process is finished. Use NULL if nothing should happen
+    \param semaphore ItomSharedSemaphore which will be woken up if opening process is finished. Use NULL if nothing should happen
+	\param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* semaphore)
+RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* semaphore, int visibleLineNr)
 {
     RetVal retValue(retOk);
 
@@ -498,6 +499,10 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
         {
             exist = true;
             (*it)->raiseAndActivate();
+			if(visibleLineNr >= 0)
+			{
+				(*it)->activeTabEnsureLineVisible(visibleLineNr);
+			}
         }
     }
     m_scriptStackMutex.unlock();
@@ -519,6 +524,11 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
 			else
 			{
 				retValue += activeWidget->openScript(filename, false);
+			}
+
+			if(visibleLineNr >= 0)
+			{
+				activeWidget->activeTabEnsureLineVisible(visibleLineNr);
 			}
 
             activeWidget->raiseAndActivate();

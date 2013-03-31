@@ -57,7 +57,8 @@ private:
 	QTableWidget *m_table;
 	QStringList m_headers;
 
-	private slots:
+private slots:
+	void itemDoubleClicked(QTableWidgetItem *item);
 
 public slots:
 	void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
