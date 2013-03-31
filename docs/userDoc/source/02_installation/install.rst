@@ -28,7 +28,11 @@ Before installation, please review the minimum system requirements.
 Getting |itom|
 ***************
 
-Depending on your operating system, there are currently up to two different possibilites how to obtain and run |itom| on your computer.
+Depending on your operating system, there are currently two different possibilites how to obtain and run |itom| on your computer.
+
+Setup
+-----
+
 At first, windows users that mainly want to use |itom| and pre-compiled plugins can download the latest *32bit* or *64bit* setup of |itom|
 and install the current release on the computer (see :doc:`setup.exe <install_windows_setup>`). For linux users there is currently no
 pre-compiled package available. The setup can for instance be downloaded from https://bitbucket.org/itom/itom/downloads. Please consider that
@@ -39,8 +43,12 @@ the core installation of |itom| does not contain any hardware or software plugin
     
     install_windows_setup.rst
 
+Build from Sources
+------------------    
+
 Secondly, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
-compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and linux users.
+compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and linux users. Before getting the source files,
+check the build dependencies below which contain software packages and libraries necessary to build and |itom|.
 
 .. toctree::
     :maxdepth: 1

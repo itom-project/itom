@@ -1,22 +1,81 @@
 .. include:: ../include/global.inc
 
-Creating advanced dialoges   
-****************************
+Creating advanced dialogs and windows  
+*************************************
 
-In this chapter, writing advanced dialogs with the itom-python module and the Qt-Designer will be explained.
+With |itom| it is not only possible to add menus and toolbar elements to the main GUI of |itom| or to use the default set of input and message boxes, but
+it is also possible to create own user interfaces. These interfaces are designed by help of a WYSIWYG ("what you see is what you get") design tool (Qt Designer).
+The logic behind the surfaces is then scripted using |python|. Therefore it is possible to change the appearance of control elements at runtime or to connect
+a signal, emitted when for instance clicking on a button, with a user-defined python method.
+
+In this chaper, the creation of such user interfaces is explained.
 
 Qt Designer
 ==============
 
-| The Qt Designer can be used to create a GUI for interaction with the iTOM software.
-| For details see the Qt Designer documentation http://qt-project.org/doc/qt-4.8/designer-manual.html
+| The Qt Designer can be used to create a GUI for interaction with the |itom| software.
+| For details see the Qt Designer documentation under http://qt-project.org/doc/qt-4.8/designer-manual.html
 
-After building a GUI it can be opened in iTOM by usage of the following code (for details see the example in the following section):
+In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
+
+.. figure:: images_userGUI/mainsymbols2.png
+
+or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
+can choose the base type of the user interface you want to create.
+
+.. figure:: images_userGUI/designerNew.png
+
+In principle you have the possibility to choose between three different base layouts:
+
+1. **Dialog**. A Dialog is usually displayed on top of the main window and only has got one close-button in its title bar. Often, dialogs are used for configuration dialogs where the
+user finally closes the dialog using one of the standard buttons (OK, Cancel, Apply...) in order to confirm or reject the current changes in the dialog. A dialog cannot have its
+own toolbar, menu or status bar.
+2. **Main Window**. A main window is a fully equipped main window, which can be minimized, maximized, can have toolbars, menus and a status bar. Therefore it is recommended to use this
+type of user interface for the main window of your measurement system. Like a dialog, it is possible to show the main window on top of |itom| (as sub-window of |itom|) or as independent
+window, which has its own icon in the windows tray.
+3. **Widget**. A widget is the base class for all control elements provided by |Qt|. Therefore a widget does not have any title bar or windows frame. Nevertheless you can choose a widget
+for your user interface, since |itom| provides the possibility to stack this widget into a default dialog which can optionally show some default buttons on the right side or at the
+bottom of the dialog. This is the easiest way the generate a configuration dialog in |itom|, since you do not need to script the necessary methods handling clicks on one of these buttons.
+In this case, |itom| automatically gets full information about the close status and type of closing of the dialog (accepted, rejected...).
+
+After having chosen one of these base layouts (types), your surface is displayed in the middle of the **Qt Designer** and you can start to drag elements from the widget library
+on your surface. If the **Qt Designer** is started from |itom| you will even find a section **ITOM Plugins** in the library list, which contains all loadable designer plugins that are
+provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that are currently available in your installation of |itom|.
+
+.. figure:: images_userGUI/qtdesigner1.png
+
+After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
+a unique object name to any of your control elements, it is possible to access and manipulate this widget from a |python| script in |itom| using this name, too. In general many of the
+properties that are visible in the property toolbox can afterwards be read or changed by an appropriate script (depending on the data type of the property).
+
+The alignment of control elements on the surface is mainly controlled by so-called layout elements. These layouts together with size policies that can be assigned to every widget 
+control the appearance of the entire user interface and provide the feature that the dialog can be changed in size whereas all widgets are dynamically repositioned. For more information
+about layouting your user interface, see http://qt-project.org/doc/qt-4.8/designer-layouts.html.
+
+Finally, save your user interface under a convenient filename with the suffix **.ui**.
+
+Widget Library
+---------------
+
+In principle, you are allowed to place every widget on your user interface that is available in the widget library (widget box) of **Qt Designer**. Later, you will learn how you can
+access properties of any widget (read and/or write) and how you can call specific functions provided by any widget. However, you will also learn that you do not have access using |python|
+to all functions a widget has and you are not able to sub-class any widget, like you can it using a native **C++** program. Therefore, it is not recommended to place any widget from the
+group **Item Views (Model-based)** on your user interface since only few functions of these widgets are accessible by a |python| script. If you need a list box, use the item-based list
+widget.
+
+Loading user interface in |itom|
+=================================
+
+
+
+At startup of **Qt Designer**, a dialog 
+
+After building a GUI it can be opened in |itom| by usage of the following code (for details see the example in the following section):
 
 .. code-block:: python
     :linenos:
 	
-	dialog=uiDialog("*.ui")
+	dialog=ui("*.ui")
 	dialog.show(0) # for non modal version of the GUI window
 	dialog.show(1) # for modal version of the GUI window
 	
@@ -31,11 +90,12 @@ If the dialog is shown in modal version the python code is stopped and will be c
 	
 Example of GUI
 ===============
-In the following you will see a simple example of how the Qt Designer in combination with the iTOM software can be used to create a GUI.
+In the following you will see a simple example of how the Qt Designer in combination with the |itom| software can be used to create a GUI.
 
-Empty GUI and standard Dialog Buttons
+Empty GUI and standard dialog buttons
 --------------------------------------
-First we start the Qt Designer and create a new, empty widget without any buttons. Usually, it is recommended to create a widget and no dialog or main window, since |itom| puts your widget in a self-created dialog, which already has the necessary base functionalities, e.g. for closing the dialog and sending the close-status to |itom|.
+First we start the Qt Designer and create a new, empty widget without any buttons. Usually, it is recommended to create a widget and no dialog or main window, 
+since |itom| puts your widget in a self-created dialog, which already has the necessary base functionalities, e.g. for closing the dialog and sending the close-status to |itom|.
 
 .. figure:: images_userGUI/qtdesigner/qtdesignerempty.png
 
@@ -43,19 +103,22 @@ If we now save the GUI as *test.ui* and open it with the above commands, we see 
 
 .. figure:: images_userGUI/qtdesigner/itomOKCANCEL.png
 
-These buttons are standard dialog buttons placed by |itom| and therefore don't have to be designed in the Qt Designer. It's possible to define which standard buttons should be included in the GUI and where to put them. The full uiDialog function call is
+These buttons are standard dialog buttons placed by |itom| and therefore don't have to be designed in the Qt Designer. It's possible to define which standard buttons 
+should be included in the GUI and where to put them. The full **ui** function call is
 
 .. code-block:: python
     :linenos:
 	
-	dialog = uiDialog("test.ui", showDialogButtons = True, dialogButtonsOrientation = False, dialogButtons = {"AcceptRole":"OK", "RejectRole":"Cancel","ApplyRole":"Apply"})
+	dialog = ui("test.ui", type = ui.TYPEDIALOG, dialogButtons = ui.BUTTONBAR_VERTICAL, dialogButtons = {"AcceptRole":"OK", "RejectRole":"Cancel","ApplyRole":"Apply"}, childOfMainWindow = True, deleteOnClose = False)
 
 with the following parameters:
 
 +-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
 | Parameter                         | Description                                                                      | Default                                      |
 +===================================+==================================================================================+==============================================+
-| filename [string]                 | path to user interface file (\*.ui)                                              |   nothing                                    |
+| filename [string]                 | path to user interface file relative to the current path (\*.ui)                 |   nothing                                    |
++-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
+| type                              | ui.TYPEDIALOG: your ui-file can be a widget, mainWindow or dialog.               |                                              |
 +-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
 | showDialogButtons [bool]          | indicates whether dialog buttons should automatically be added                   | True                                         |
 +-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+

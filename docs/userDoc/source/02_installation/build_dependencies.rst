@@ -133,13 +133,13 @@ You don't have to install OpenNI, since this is only the binaries for the commun
 If you want to debug the point cloud library (not necessary, optional) unpack the appropriate zip-archive with the pdb-files into the bin-folder of the point cloud library. 
 This is the folder where the dll's lie, too.
 
-**Python** (mandatory, 3.2 or higher)
+**Python** (mandatory, 3.2)
 
-Download the installer from http://www.python.org/download/ and install python. You can simultaneously run different versions of python
+Download the installer from http://www.python.org/download/ and install python in version 3.2. You can simultaneously run different versions of python.
 
 **NumPy** (mandatory)
 
-Get a version of NumPy and install it. On windows binaries for many python packages can be found under http://www.lfd.uci.edu/~gohlke/pythonlibs/.
+Get a version of NumPy that fits to python 3.2 and install it. On windows binaries for many python packages can be found under http://www.lfd.uci.edu/~gohlke/pythonlibs/.
 
 **Sphinx** (optional)
 
