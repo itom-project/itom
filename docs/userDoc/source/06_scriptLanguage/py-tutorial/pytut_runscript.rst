@@ -1,9 +1,9 @@
-﻿Creating a project folder and run a first program
+﻿.. include:: ../../include/global.inc
+
+Creating a project folder and run a first program
 -------------------------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
-
-.. include:: ../../include/global.inc
 
 
 Create a project folder

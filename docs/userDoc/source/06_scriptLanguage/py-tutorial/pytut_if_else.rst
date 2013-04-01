@@ -1,9 +1,11 @@
-﻿If and else statements
+﻿.. include:: ../../include/global.inc
+
+If and else statements
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 
 `if` Statements

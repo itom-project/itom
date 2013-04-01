@@ -1,9 +1,10 @@
-﻿Variables and names 
--------------------------------
+﻿.. include:: ../../include/global.inc
+
+Variables and names 
+--------------------
+
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
-
-.. include:: ../../include/global.inc
 
 
 Using variables

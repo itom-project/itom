@@ -1,9 +1,11 @@
-﻿Functions
+﻿.. include:: ../../include/global.inc
+
+Functions
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 
 Defining Functions

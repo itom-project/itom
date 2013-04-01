@@ -1,9 +1,11 @@
-﻿Dictionaries, Lists and Tuples
+﻿.. include:: ../../include/global.inc
+
+Dictionaries, Lists and Tuples
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 
 Dictionaries

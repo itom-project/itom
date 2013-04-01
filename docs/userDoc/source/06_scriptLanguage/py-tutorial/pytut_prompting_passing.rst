@@ -1,7 +1,9 @@
-﻿Prompting and passing
+﻿.. include:: ../../include/global.inc
+
+Prompting and passing
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 

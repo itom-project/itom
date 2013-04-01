@@ -1,9 +1,9 @@
-﻿Strings and text 
+﻿.. include:: ../../include/global.inc
+
+Strings and text 
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
-
-.. include:: ../../include/global.inc
 
 
 Strings

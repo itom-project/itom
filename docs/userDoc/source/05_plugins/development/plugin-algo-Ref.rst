@@ -5,7 +5,7 @@
 .. _plugin-Algo-FilterDef-Ref:
 
 FilterDef
-=========
+==========
 
 .. doxygenclass:: ito::AddInAlgo::FilterDef
     :project: itom
@@ -14,7 +14,7 @@ FilterDef
 .. _plugin-Algo-AlgoWidgetDef-Ref:
 
 AlgoWidgetDef
-=========
+==============
 
 .. doxygenclass:: ito::AddInAlgo::AlgoWidgetDef
     :project: itom

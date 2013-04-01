@@ -199,6 +199,8 @@ of other widgets. However, since each objectName is unique among all elements of
 
 But why do we need to access these elements? Why do they returns its own instance of class :py:class:`~itom.uiItem`. These questions are answered in the following sections...
 
+.. _qtdesigner-getsetprops:
+
 Getting and setting properties
 ==============================
 
@@ -415,6 +417,9 @@ QTableView          uiItem horizontalHeader()
 QTableView          uiItem verticalHeader()
 =================== ====================================================================================
 
+Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
+hold for every other widget, since every widget is derived from *QWidget*.
+
 .. note:
     
     Whenever the return value is of type **uiItem**, the original C++ datatype is a pointer to **QWidget**. This pointer is specially wrapped in a thread-safe process to the
@@ -426,267 +431,58 @@ QTableView          uiItem verticalHeader()
 Connecting internal signals and slots in **Qt Designer**
 ========================================================
 
+.. |qtsignalslotmode| image:: images_userGUI/designer-connection-tool.png
+
+If you want to connect the signal, emitted by any widget, with a slot from another widget, you will learn in this section how to do this. This type of connection can for instance
+be useful if you want to enable or disable certain widgets depending on the status of other ones, like the check-status of a checkbox. The following figure shows an user interface
+with a checkbox and a textfield. Let us define a signal-slot-connection, such that the textfield gets disabled if the checkbox is unchecked.
+
+.. figure:: images_userGUI/uiSignalSlot1.png
+
+This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
+in the toolbar or by pressing *F4*. Then you can make a drag&drop connection between the emitting widget and the receiver-widget. After releasing the mouse button, the connection dialog,
+depicted in the following figure becomes visible:
+
+.. figure:: images_userGUI/uiSignalSlot2.png
+
+Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are
+visible. However, you can check the checkbox below, in order to also show the signals and slots of the inherited classes. Please make sure, that you only choose pairs of signals and
+slots which have the same parameter types. In our case, we connect the signal *toggled(bool)* with the slot *setEnabled(bool)*, which is the setter-method of the property *enabled*.
+
+This example has also shown, that not only slots defined in the slot-section can be called as slots, but also every setter-method of any property can be called like every slot. However,
+in this case it is more convenient the property like described in section :ref:`qtdesigner-getsetprops`.
+
+
 Auto-connecting signals using python decorators
 ===============================================
 
+TODO
 
+Debugging user interfaces and slot-methods
+==========================================
+
+If you established a signal-slot-connection between an element of the GUI and a |python|-method, you probably want to debug this method once the signal has been emitted. This
+is obtained by setting any breakpoint into the specific line and toggling the button *Run python code in debug mode* in the menu **Script** of |itom|.
+
+.. figure:: images_userGUI/runPyCodeInDebug.png
 
 Hints and limitations
 ==========================================
-pyqt
 
+All methods described in this chapter explain how to create and use user-defined dialogs and windows using |python| scripts in |itom|. Finally, all dialogs are created using the
+|Qt|-framework. The classes :py:class:`itom.ui` and :py:class:`itom.uiItem` finally are wrappers for the underlying |Qt|-system. Using pure python, similar things can also be
+obtained with the famous packages **PyQt** or **PySide**. However, in |itom| you must not use these packages. The reason is, that create a new main instance of the |Qt|-engine, that
+needs to be created in the main thread. This is the case, if **PyQt** or **PySide** is executed directly in |python|. However using |itom| |python| is embedded as scripting language, such
+that |itom| is executed in the main thread while |python| is moved to its own additional thread. The reason is to enable the execution of longer scripts, while the main application |itom|
+still keeps reactive. Therefore, |python| does not have access to the real main thread and it is forbidden to explicitly execute some GUI-related stuff in secondary threads. Therefore
+all methods in :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization structure, that runs in the main thread of |itom|, in
+order to interact with all dialogs.
 
 
 
 
 
 
-OLD
-###
-
-After having designed a dialog, window or widget using **Qt Creator**, we switch now to |itom| in order to load and show the interface. The simplest example for loading the dialog is
-
-.. code-block:: python
-    
-    dialog = ui("[yourFilename].ui")
-    dialog.show(0) # for non-modal version of the dialog
-    dialog.show(1) # for modal, blocking version of the dialog
-
-At first an instance of your user interface is loaded and stored in the python variable "dialog", that is an instance of the class :py:class:`itom.ui`. 
-This class is part of the python module |pyItom|. Calling the method :py:meth:`~itom.ui.show` shows the user interface, where you choose the modality by the
-integer parameter of this method. A modal dialog fully blocks the underlying window, hence |itom|, such that you need to close your dialog before you can interact
-again with the main window of |itom|. If the dialog is shown in modal version the python code is stopped and will be continued after ending the dialog by 
-clicking on **OK** or **CANCEL** or any other button which ends the dialog. To get the information which button was used for ending the dialog use
-
-.. code-block:: python
-	
-	code = dialog.show(1)
-	print("Dialog has been terminated with code: ", code)
-
-	
-Example of GUI
-===============
-In the following you will see a simple example of how the Qt Designer in combination with the |itom| software can be used to create a GUI.
-
-Empty GUI and standard dialog buttons
---------------------------------------
-First we start the Qt Designer and create a new, empty widget without any buttons. Usually, it is recommended to create a widget and no dialog or main window, 
-since |itom| puts your widget in a self-created dialog, which already has the necessary base functionalities, e.g. for closing the dialog and sending the close-status to |itom|.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignerempty.png
-
-If we now save the GUI as *test.ui* and open it with the above commands, we see that the Dialog has two standard Buttons: **OK** and **CANCEL**.
-
-.. figure:: images_userGUI/qtdesigner/itomOKCANCEL.png
-
-These buttons are standard dialog buttons placed by |itom| and therefore don't have to be designed in the Qt Designer. It's possible to define which standard buttons 
-should be included in the GUI and where to put them. The full **ui** function call is
-
-.. code-block:: python
-    :linenos:
-	
-	dialog = ui("test.ui", type = ui.TYPEDIALOG, dialogButtons = ui.BUTTONBAR_VERTICAL, dialogButtons = {"AcceptRole":"OK", "RejectRole":"Cancel","ApplyRole":"Apply"}, childOfMainWindow = True, deleteOnClose = False)
-
-with the following parameters:
-
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-| Parameter                         | Description                                                                      | Default                                      |
-+===================================+==================================================================================+==============================================+
-| filename [string]                 | path to user interface file relative to the current path (\*.ui)                 |   nothing                                    |
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-| type                              | ui.TYPEDIALOG: your ui-file can be a widget, mainWindow or dialog.               |                                              |
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-| showDialogButtons [bool]          | indicates whether dialog buttons should automatically be added                   | True                                         |
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-| dialogButtonsOrientation [int]    | 0: horizontal above ui-widget, 1: vertical on the right side of ui-widget        |   0                                          |
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-| dialogButtons [dict]              | every dictionary-entry is one button. key is the role, value is the button text. | {"AcceptRole":"OK", "RejectRole":"Cancel"}   |
-+-----------------------------------+----------------------------------------------------------------------------------+----------------------------------------------+
-
-The key-role names correspond to the enumeration names of the enumeration QDialogButtonBox::ButtonRole of the |Qt|-library.
-
-.. |pushbuttonsymbol| image:: images_userGUI/qtdesigner/bushbuttonsymbol.png  
-
-Layout and pushButton
-----------------------
-After having the standard dialog buttons to end the interaction, we want to define a user-defined button, called PushButton. Therefore we add a PushButton in the Qt Designer to our GUI by drag and drop of |pushbuttonsymbol| from the widgetbox to the dialog.
-
-.. figure:: images_userGUI/qtdesigner/pushbuttondesign.png
-
-It's recommended to specify all properties of this button in the Qt Designer, even if it is possible to change these properties in |itom| as well. So we set the text of the button to "click me".
-
-If we now started the GUI in |itom| we would get something like this
-
-.. figure:: images_userGUI/qtdesigner/itomdialogwithoutlayout.png
-
-|
-| This is because we didn't set up a layout for our dialog. Therefore we need some layouts and spacers from the Widgetbox in the Qt Designer. With the Layout-Widget it's possible to arrange all objects in the dialog and the spacer can be used for empty spaces. In the following a horizontal layout is used to separate the dialog in 3 horizontal parts. The part in the middle contains the button and in the left and right part a horizontal spacer is placed. In addition a vertical layout and two vertical spacers are added in the middle part, so that it is possible to place the button in the middle of the GUI.
-| For adding a layout you can right-click on the element for which he wants to add a layout and choose an appropriate layout or just drag and drop a new layout from the widgetbox.
-
-Step 1: Add a horizontal layout to the dialog by right-clicking on it.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignerhorizontallayout.png
-
-Step 2: Add two horizontal spacer to the left and right of the button.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignerhorizontalspacer.png
-
-Step 3: Add another vertical layout in the middle and two vertical spacers, so that you get the following design.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignerlayoutspacers.png
-
-|
-| If you now start the GUI in iTOM you will get a GUI with the pushButton in the middle of it, but without any function.
-| In the next step, we add a function to the pushButton. This is done by linking the button to a function. This linking is done in iTOM. We want to link the button to a simple function which is called after clicking on the button. As function we choose
-|
-
-.. code-block:: python
-    :linenos:
-	
-	def pushfunction(clicked):
-	    print("Button clicked.")
-		
-which just prints the message "Button clicked" in the command window. To link the function to the button you have to connect the signal which is sent by the button with the function
-
-.. code-block:: python
-    :linenos:
-	
-	dialog.pushButton.connect("clicked(bool)",pushfunction)
-	
-To find out which signals a GUI element can send you have to check the Qt Designer reference. In this case search for "QPushButton" and look for signals (here: mostly defined in inherited class QAbstractButton). Choose one appropriate signal (here: clicked, 1 argument of type bool). The python function we want to link has to have the same number of arguments than the signal (here: 1 - *clicked*). 
-
-With the following code
-
-.. code-block:: python
-    :linenos:
-	
-    dialog=uiDialog("test.ui")
-    def pushfunction(clicked):
-        print("Button clicked")
-    dialog.pushButton.connect("clicked(bool)", pushfunction)
-    dialog.show()
-	
-we get this GUI
-
-.. figure:: images_userGUI/qtdesigner/itomGUIbutton.png
-
-If you want to disconnect the button use
-
-.. code-block:: python
-    :linenos:
-	
-	dialog.pushButton.disconnect("clicked(bool)", pushfunction)
-	
-
-Setting and Getting properties
--------------------------------
-As mentioned above it's recommended that as many element properties as possible are defined in the Qt Designer. But of course it is also possible to set or to get properties in iTOM as well.
-
-First we define a variable for the pushButton
-
-.. code-block:: python
-    :linenos:
-	
-	varPushButton=dialog.pushButton
-	
-| This step is not necessary, but it's a little bit faster than typing every time *dialog.pushButton*.
-| After this, there are 2 ways of setting a property
-|
-
-.. code-block:: python
-    :linenos:
-	
-	#1. possibility
-	varPushButton["text"] = "CLICK ME"
-	#2. possibility
-	varPushButton.setProperty({"text":"CLICK ME"})
-	
-and two ways of getting properties
-
-.. code-block:: python
-    :linenos:
-	
-	#1. possibility
-	btnText = varPushButton["text"]
-	#2. possibility
-	[btnText, btnCheckableState] = varPushButton.getProperty(["text","checkable"])
-	
-If **checkable property** of the button is changed to true by
-
-.. code-block:: python
-    :linenos:
-	
-	varPushButton["checkable"] = True
-	
-the button is changed to a checkable button, which gets (un)checked whenever it is clicked. The current status is given by the *clicked* function (True or False) and can be therefore printed by changing the pushfunction to
-
-.. code-block:: python
-    :linenos:
-
-	def pushfunction(clicked):
-	    print("Button clicked. Checked:", clicked)
-		
-It's also possible to **hide** buttons by
-
-.. code-block:: python
-    :linenos:
-	
-	varPushButton.call("hide")
-
-		
-Further GUI elements
-=====================
-After we have explained the basic steps to get a GUI for your iTOM programm (basically it is just a button, which can start functions), we now want to show some more elements of the Qt Designer and their functionality.
-
-List Widget |qtlistwidgetsymbol|
------------------------------------
-.. |qtlistwidgetsymbol| image:: images_userGUI/qtdesigner/qtdesignerlistwidgetsymbol.png  
-
-With the list widget you can create lists in your GUI. We place a list widget right to the button from the previous example.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignerlistwidget.png
-
-For creating entries of the list you can either double click on the list in the Qt Designer or add the entries in the iTOM software. For doing this the following code is used
-
-.. code-block:: python
-    :linenos:
-	
-	dialog.listWidget.call("addItem","entry 1")
-	dialog.listWidget.call("addItems",["entry 2","entry 3"])
-	
-or for deleting the entries
-
-.. code-block:: python
-    :linenos:
-
-	dialog.listWidget.call("clear")
-	
-Using the list widget our GUI in iTOM looks like
-
-.. figure:: images_userGUI/qtdesigner/itomlistwidget.png
-
-Tab Widget |qttabwidgetsymbol|
--------------------------------
-.. |qttabwidgetsymbol| image:: images_userGUI/qtdesigner/qtdesignertabwidgetsymbol.png  
-
-The tab widget can be used to organize several GUI elements in different tabs. We place a tab widget with the list widget in the first tab and an empty second tab.
-
-.. figure:: images_userGUI/qtdesigner/qtdesignertabwidget.png
-
-Like for the pushButton it is also possible to change properties from the tab widget.
-
-.. code-block:: python
-    :linenos:
-	
-	# disable first tab of tabWidget
-	dialog.tabWidget.call("setTabEnabled",0,False)
-	# get enable-status of first tab of tabWidget
-	retValue = dialog.tabWidget.call("isTabEnabled",0)
-	print("first tab is enabled? ", retValue)
-
-This **disables** the firtst tab and results in the following iTOM GUI
-
-.. figure:: images_userGUI/qtdesigner/itomtabwidget.png
 
 
 

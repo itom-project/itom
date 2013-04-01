@@ -383,27 +383,6 @@ Just using the GUI
    
  tut_0_gui/tut01.rst
 
-Working with Python
-=====================
-
-.. toctree::
- :maxdepth: 3
-   
- tut_1_python/pytut_about.rst
- tut_1_python/pytut_runscript.rst
- tut_1_python/pytut_numbers_math.rst
- tut_1_python/pytut_variables_names.rst
- tut_1_python/pytut_strings_text.rst
- tut_1_python/pytut_dictionaries.rst
- tut_1_python/pytut_if_else.rst
- tut_1_python/pytut_loops_lists.rst
- tut_1_python/pytut_classes_objects.rst
- tut_1_python/pytut_functions.rst
- tut_1_python/pytut_modules.rst
- tut_1_python/pytut_prompting_passing.rst
- tut_1_python/pytut_reading_writing_files.rst
-
-
  
 Using ITOM
 ============

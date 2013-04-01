@@ -168,26 +168,26 @@ parameters.
 Class *ParamBase*
 -----------------
 
-The class **ParamBase** consists of the following main elements or member variables, which however are only accessible by
+The class :cpp:class:`ParamBase` consists of the following main elements or member variables, which however are only accessible by
 corresponding getter- or setter-methods:
 
 .. c:member:: m_type
-	
-	This variable contains an OR combination of the data type, covered by the parameter container as well as some
-	additional falgs (read-only, auto-save). Read the section :ref:`plugin-params-typesFlags` for more information about the type.
-	
-	The type part of this member is obtained by **getType()**, the flags can be obtained by **getFlags()**.
+    
+    This variable contains an OR combination of the data type, covered by the parameter container as well as some
+    additional falgs (read-only, auto-save). Read the section :ref:`plugin-params-typesFlags` for more information about the type.
+    
+    The type part of this member is obtained by **getType()**, the flags can be obtained by **getFlags()**.
 
 .. c:member:: char *m_pName
-	
-	 This char-pointer contains the name of the parameter. This name is for example used for accessing the parameter in the python's *setParam* or *getParam* method and usually you can also use this name as keyword in a python argument list of appropriate method calls.
-	 
-	 Access the name of a parameter by using **getName()**.
-	 
+    
+     This char-pointer contains the name of the parameter. This name is for example used for accessing the parameter in the python's *setParam* or *getParam* method and usually you can also use this name as keyword in a python argument list of appropriate method calls.
+     
+     Access the name of a parameter by using **getName()**.
+     
 .. c:member:: values
-	
-	There are three further member variables which are used in order to store the variable content of the parameter container.
-	Reading and writing these values is only done by the constructor or the methods **getVal<_Tp>** and **setVal<_Tp>**.
+    
+    There are three further member variables which are used in order to store the variable content of the parameter container.
+    Reading and writing these values is only done by the constructor or the methods **getVal<_Tp>** and **setVal<_Tp>**.
 
 Typical creations for parameters of class **ParamBase** are:
 
@@ -340,59 +340,59 @@ For a full reference to all member function of class **ParamBase**, see :ref:`pl
 Class *Param*
 -------------
 
-The class **Param** is derived from **ParamBase**. Therefore it has all features of **ParamBase** including two additional
+The class **Param** is derived from :cpp:class`ParamBase`. Therefore it has all features of **ParamBase** including two additional
 member variables:
 
-.. c:member:: ParamMeta *m_pMeta
-	
-	This is a pointer to a struct containing type-dependent meta information about this plugin. This pointer may also be
-	NULL, if no meta information is provided. The meta-information struct is always owned by the parameter and deeply copied
-	when calling for instance a copy constructor. For more information see :ref:`plugin-ParamsMeta`.
-	
-	Access to the meta information struct is given by
-	
-	.. code-block:: c++
-		
-		Param p;
-		ParamMeta* meta = p.getMeta();
-		//in this case meta is NULL, since no meta information has been set to 'p'.
-		
-		//now we create a integer-variable with a min and max value
-		Param p2("var1",ParamBase::Int,2);
-		IntMeta meta2(-2,2);
-		
-		//now we set the meta information of p2 to meta2. Since the ownership of meta2 should not
-		//be taken by p2, the second argument is false. Then, p2 makes a copy of meta2.
-		p2.setMeta(&meta2,false);
-		
-		meta = p.getMeta();
-		//meta is now a pointer to a structure of type ParamMeta. It can be casted to IntMeta.
+    .. cpp:member:: ParamMeta *m_pMeta
+        
+        This is a pointer to a struct containing type-dependent meta information about this plugin. This pointer may also be
+        NULL, if no meta information is provided. The meta-information struct is always owned by the parameter and deeply copied
+        when calling for instance a copy constructor. For more information see :ref:`plugin-ParamsMeta`.
+        
+        Access to the meta information struct is given by
+        
+        .. code-block:: c++
+            
+            Param p;
+            ParamMeta* meta = p.getMeta();
+            //in this case meta is NULL, since no meta information has been set to 'p'.
+            
+            //now we create a integer-variable with a min and max value
+            Param p2("var1",ParamBase::Int,2);
+            IntMeta meta2(-2,2);
+            
+            //now we set the meta information of p2 to meta2. Since the ownership of meta2 should not
+            //be taken by p2, the second argument is false. Then, p2 makes a copy of meta2.
+            p2.setMeta(&meta2,false);
+            
+            meta = p.getMeta();
+            //meta is now a pointer to a structure of type ParamMeta. It can be casted to IntMeta.
 
-.. c:member:: char *m_pInfo
-	
-	This is the description string of the parameter. If no description is indicated, this pointer is NULL, else it is a
-	zero-terminated string, which is also copied, when the parameter is called using a copy constructor or assigned to another
-	parameter.
-	
-	The description can be obtained by
-	
-	.. code-block:: c++
-		
-		Param p("name", ParamBase::String, "content", "information")
-		const char* descr = p.getInfo(); //descr is 'information'
-	
-	.. note::
-		
-		Do not delete the char-pointer returned by **getInfo**, since this is only a reference to the internal description
-		string of the parameter.
-	
-	The description string is changed by
-	
-	.. code-block:: c++
-		
-		p.setInfo("new information")
+    .. cpp:member:: char *m_pInfo
+        
+        This is the description string of the parameter. If no description is indicated, this pointer is NULL, else it is a
+        zero-terminated string, which is also copied, when the parameter is called using a copy constructor or assigned to another
+        parameter.
+        
+        The description can be obtained by
+        
+        .. code-block:: c++
+            
+            Param p("name", ParamBase::String, "content", "information")
+            const char* descr = p.getInfo(); //descr is 'information'
+        
+        .. note::
+            
+            Do not delete the char-pointer returned by **getInfo**, since this is only a reference to the internal description
+            string of the parameter.
+        
+        The description string is changed by
+        
+        .. code-block:: c++
+            
+            p.setInfo("new information")
 
-The full reference of class **Param** is available in see :ref:`plugin-param-Ref`.
+The full reference of class :cpp:class:`Param` is available in see :ref:`plugin-param-Ref`.
 
 In the following, examples about how to create parameters and meta information of different types are shown:
 

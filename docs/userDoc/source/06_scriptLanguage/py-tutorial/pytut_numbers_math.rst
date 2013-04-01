@@ -1,9 +1,11 @@
+.. include:: ../../include/global.inc
+
 Numbers and math 
 -------------------------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 
 Python arithmetic operators:

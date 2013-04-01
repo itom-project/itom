@@ -1,9 +1,11 @@
-﻿Loops and Lists
+﻿.. include:: ../../include/global.inc
+
+Loops and Lists
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 `for` Statements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

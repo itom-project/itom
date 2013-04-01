@@ -1,9 +1,11 @@
-﻿Modules
+﻿.. include:: ../../include/global.inc
+
+Modules
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 
 Import Modules

@@ -1,9 +1,11 @@
-﻿Classes and Objects
+﻿.. include:: ../../include/global.inc
+
+Classes and Objects
 -------------------------------
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-.. include:: ../../include/global.inc
+
 
 .. _tut-classes:
 
