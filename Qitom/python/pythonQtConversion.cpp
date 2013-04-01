@@ -850,7 +850,6 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     }
     break;
 
-    // these are important for MeVisLab
     case QVariant::Map:
     {
         if (PyMapping_Check(val)) 

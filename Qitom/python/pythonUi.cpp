@@ -736,15 +736,19 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(property) -> returns tuple of requested properties (single property or tuple of properties)\n\
+PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)\n\
+Use this method or the operator [] in order to get the value of one specific property of this widget or of multiple properties. \n\
+Multiple properties are given by a tuple or list of property names. For one single property, its value is returned as it is. \n\
+If the property names are passed as sequence, a sequence of same size is returned with the corresponding values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-property : {ui???}\n\
+property : {string, string-list} \n\
+	Name of one property or sequence (tuple,list...) of property names \n\
 \n\
 Returns \n\
 ------- \n\
-requested properties : {tuple} \n\
+returns the value of one single property or a list of values, if a sequence of names is given as parameter. \n\
 \n\
 Notes \n\
 ----- \n\
@@ -752,6 +756,7 @@ doctodo\n\
 \n\
 See Also \n\
 --------- \n\
+setProperty
 \n\
 ");
 PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
@@ -759,26 +764,24 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     PyObject *propertyNames = NULL;
     QStringList propNames;
     bool ok = false;
+	bool returnTuple = true;
 
     if(!PyArg_ParseTuple(args, "O", &propertyNames))
     {
         return NULL;
     }
 
-    Py_INCREF(propertyNames);
-
     if(PyBytes_Check(propertyNames) || PyUnicode_Check(propertyNames))
     {
         QString temp = PythonQtConversion::PyObjGetString(propertyNames, true, ok);
         if(ok)
         {
+			returnTuple = false;
             propNames << temp;
         }
         else
         {
-            Py_XDECREF(propertyNames);
-            PyErr_Format(PyExc_RuntimeError, "property name string could not be parsed.");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "property name string could not be parsed.");
         }
     }
     else if(PySequence_Check(propertyNames))
@@ -786,14 +789,12 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
         propNames = PythonQtConversion::PyObjToStringList(propertyNames, true, ok);
         if(!ok)
         {
-            Py_XDECREF(propertyNames);
-            PyErr_SetString(PyExc_RuntimeError, "property names list or tuple could not be converted to a list of strings");
-            return NULL;
+            PyErr_SetString(PyExc_RuntimeError, "list or tuple of property names could not be converted to a list of strings");
+			return NULL;
         }
     }
     else
     {
-        Py_XDECREF(propertyNames);
         PyErr_SetString(PyExc_RuntimeError, "property name must be a string or tuple/list of strings"); 
         return NULL;
     }
@@ -801,7 +802,6 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if(uiOrga == NULL)
     {
-        Py_XDECREF(propertyNames);
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return NULL;
     }
@@ -825,7 +825,6 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        Py_XDECREF(propertyNames);
         PyErr_SetString(PyExc_RuntimeError, "timeout while reading property/properties");
         return NULL;
     }
@@ -833,15 +832,19 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     retValue += locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
-    PyObject *retObj = PyList_New(propNames.count());
-    for(int i = 0 ; i < propNames.count() ; i++)
-    {
-        PyList_SetItem(retObj,i, PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames.at(i))));
-    }
-
-    Py_XDECREF(propertyNames);
-
-    return retObj;
+	if(returnTuple)
+	{
+		PyObject *retObj = PyList_New(propNames.count());
+		for(int i = 0 ; i < propNames.count() ; i++)
+		{
+			PyList_SetItem(retObj,i, PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames.at(i))));
+		}
+		return retObj;
+	}
+	else
+	{
+		return PythonQtConversion::QVariantToPyObject( retPropMap->value(propNames.at(0)) );
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -850,16 +853,11 @@ PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property
 Parameters \n\
 ----------- \n\
 propertyDict : {dict}\n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+	Dictionary with properties (keyword) and the values that should be set.\n\
 \n\
 See Also \n\
 --------- \n\
+getProperty
 \n\
 ");
 PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)

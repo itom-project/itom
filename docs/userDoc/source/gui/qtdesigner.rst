@@ -142,7 +142,7 @@ Finally, the call to :py:class:`itom.ui` must be in the following way, in order 
     You can also use a keyword-based call to **ui** since every parameter has its default value such that you can omit parameters beside the first one.
     For more details about all parameters, keywords and its default values see :py:class:`itom.ui`.
 
-The dialog is closed and deleted if the variable **dialog** is deleted using the command :py:func:`del`.
+The dialog is closed and deleted if the variable **dialog** is deleted using the command **del**.
 
 Main window or dialog (TYPEWINDOW)
 ----------------------------------
@@ -163,7 +163,7 @@ This main window can now be shown using the following code snippet:
     win.show() #this is equal to win.show(0) -> non-modal
 
 Then, the window is shown on top of the main window of |itom|, since it is considered to be a child of |itom|. If you don't want this, you can also add the keyword-parameter
-*childOfMainWindow=False* to the call of :py:class`itom.ui`:
+*childOfMainWindow=False* to the call of :py:class:`itom.ui`:
 
 .. code-block:: python
     
@@ -171,6 +171,272 @@ Then, the window is shown on top of the main window of |itom|, since it is consi
 
 Here, you need to use the keyword, since the parameters *dialogButtonBar* and *dialogButtons* (used for TYPEDIALOG) are not given in this case, since they are useless in case of
 *TYPEWINDOW*. If your window is no child of |itom|, it gets its own icon in the Windows tray bar and does not stay on top of |itom|.
+
+
+Accessing control elements
+==========================
+
+Until now, you know how to design an interface and how to show it using |itom|. This and the following sections explain how you dynamically interact with the user interface and
+its elements. One elementary tool for this is to access any desired element of the GUI. For instance, if you want to change properties of a button or the text of a lineedit-widget,
+you first need to access these elements.
+
+The accessing is simply done by the unique and specific **objectName** of each element and the dot-operator (**.**). Let's take the first example **testWidget.ui** again. The
+dialog has been assigned the variable **dialog**. Then have the following possibilities to access its elements:
+
+.. code-block:: python
+    
+    elemGroup = dialog.groupOption # access the group box by its objectName
+    
+    elemRadioOpt1 = dialog.radioOpt1 # OR
+    elemRadioOpt1 = elemGroup.radioOpt1
+    
+    textfield = dialog.txtInput
+
+Each variable created by the code block above is an instance of :py:class:`itom.uiItem`. It is this class that defines the dot-operator. Looking at the example of accessing the first radio
+button, which is a child of the group-box, it is both possible to access the group button by its objectName as child of the entire dialog or as child of the groupbox. This is feasible
+since the class :py:class:`~itom.ui` is derived from :py:class:`~itom.uiItem`, such that the dot-operator not only works for entire dialog references but also for accessing sub-elements 
+of other widgets. However, since each objectName is unique among all elements of the entire dialog, is doesn't matter how to access any element.
+
+But why do we need to access these elements? Why do they returns its own instance of class :py:class:`~itom.uiItem`. These questions are answered in the following sections...
+
+Getting and setting properties
+==============================
+
+As already mentioned, you can read or write most properties of any element that are also listed in the property toolbox of **Qt Designer**. Properties are also separately listed in the
+corresponding |Qt| documentation. In general it makes sense to set properties - when offline possible - in the **Qt Designer**. This is a little bit more efficient and keeps your
+script tiny. Getting and setting properties is possible if you have an object of type :py:class:`~itom.uiItem`. Therefore you need to get this object like described in the section above.
+
+Getting the property value can either be done by using the mapping-operator **[]** or by using the method :py:meth:`~itom.uiItem.getProperty`. For instance, if you want to get the current text 
+and the enabled status of the textfield in dialog *testWidget.ui* from the first example, you can use one of the following possibilities:
+
+.. code-block:: python
+    
+    #1. possibility
+    text = dialog.txtInput["text"]
+    enabled = dialog.txtInput["enabled"]
+    
+    #2. possibility
+    [text,enabled] = dialog.txtInput.getProperty(["text", "enabled"])
+
+.. note:
+    
+    For accessing single properties, it is shorter and easier to use the mapping-operator **[]**. However, due to the interal thread-structure of |itom|, it is a little bit faster to
+    access multiple properties of the same widget using the method :py:meth:`~itom.uiItem.getProperty`.
+
+In order to set one or multiple properties, you can use similar methods. Simply assign a value to the mapping-operator **[]** or use the method :py:meth:`~itom.uiItem.setProperty`.
+
+.. code-block:: python
+    
+    #1. possibility
+    dialog.txtInput["text"] = "new text for this textfield"
+    dialog.txtInput["enabled"] = False
+    
+    #2. possibility
+    dialog.txtInput.setProperty( {"text":"new text for this textfield", "enabled":False} )
+
+If you use :py:meth:`~itom.uiItem.setProperty`, you always need to pass a dictionary as argument. This dictionary can contain one or multiple properties, where the keyword
+always is the property-name (string) and the value is the corresponding new value (type depends on corresponding C++ type).
+For more information about supported datatypes, that can be accessed by python in |itom| see :ref:`qtdesigner-datatypes`.
+
+.. _qtdesigner-datatypes:
+
+Supported datatypes
+===================
+
+The classes :py:class:`itom.ui`and :py:class:`itom.uiItem` are the connection between any python-script in |itom| and GUI-elements, written in C++ and provided by |Qt|.
+Therefore, it is necessary to transform types from python to corresponding C++-structures and vice-versa. The following table lists some convenient type casts. In general,
+it is always tried to convert the input type to the desired destination type, such that a number can also be transformed to a string, if it is always known, that the destination
+requires a string.
+
+================= ===========================================================================
+C++/Qt-Type       Python-Type  
+================= ===========================================================================
+QString           str or any type, that has a string representation
+QByteArray        unicode or byte type
+QUrl              any string that can be interpreted as Url
+bool              any type that can be casted to a boolean value (1,0,True,False...)
+QStringList       any sequence that only contains values castable to QString
+int, short, long  integer, floats are rounded to integer, True=1, False=0
+unsigned int ...  integer, floats are rounded to integer, True=1, False=0
+float, double     integer, floats, True=1.0, False=0.0
+QVector<int>      any sequence whose values are castable to int
+QVector<double>   any sequence whose values are castable to double
+PCLPointCloud     :py:class:`~itom.pointCloud`
+PCLPoint          :py:class:`~itom.point`
+PCLPolygonMesh    :py:class:`~itom.polygonMesh`
+DataObject*       :py:class:`~itom.dataObject` or any type convertable to an array (see numpy)
+AddInDataIO*      :py:class:`~itom.dataIO`
+AddInActuator*    :py:class:`~itom.actuator`
+QVariant          any of the types above can be transformed to QVariant
+QVariantMap       a dictionary where keys are strings and values are generally convertable.
+QVariantList      any sequence whose items can be convertable.
+================= ===========================================================================
+
+If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converted for them. It only becomes a little bit more difficult for pointers to
+extended C++ or |Qt| classes. The conversion is mainly done in the |itom| class **PythonQtConversion**.
+
+Connecting signals
+==================
+
+Now, you know how to change properties of dialogs at runtime of |itom| using a small python script snippet. In this section, you will learn how you can let |itom| a specific python-method 
+for instance if a button on the user interface is clicked. Whenever something is changed in a user interface or the user starts to interact with the interface, any type of event is emitted.
+In |Qt| many of these events are specially handled and called signals. For instance, if an user clicks a button, toggles a checkbox, triggers an item in a menu or selects an item in a list
+widget, a signal is emitted or sent.
+
+The counterpart to a signal is called slot. |Qt| provides the possibility to **connect** a signal with a slot, under the only condition, that both have exactly the same order and type
+of arguments. It is even possible to connect the same signal to various slots. Whenever a signal is emitted, all connected slots are executed. |itom| provides you the possibility to
+define slots in form of ordinary python methods or functions and to also connect them to signals of widgets on your user interface.
+
+For establishing the connection, you need again a reference to the specific widget on the user interface. This reference is any variable of type :py:class:`~itom.uiItem`. Next, you need the
+name and the arguments of the |Qt| signal, you want to connec to. This information can be obtained by the |Qt| documentation. For instance, if you need any signal that a widget of type
+**QPushButton** (the type of our push button, placed in the user interface in file **testWidget.ui**), go to http://qt-project.org/doc/qt-4.8/qpushbutton.html. Unfortunately, you won't find
+a headline called **Signals** at this page, since **QPushButton** does not directly declare any signal. However, you can see under **Additional Inherited Members**, that **QPushButton**
+inherits signals from its base classes. The most important signals are inherited from **QAbstractButton**. Click on its link and you will see the available signals for a push button:
+
+.. code-block:: c++
+    
+    void clicked ( bool checked = false )
+    void pressed ()
+    void released ()
+    void toggled ( bool checked )
+
+If any argument provides a default value, you can also omit the specific argument. Select the signal that is convenient for you and create its string-signature. The signature always
+contains the following structure:
+    
+    signature = "signalName(typeName1,typeName2,...)"
+
+For instance, the signatures for the signals above are:
+    
+    "clicked()" or "clicked(bool)"
+    "pressed()"
+    "released()"
+    "toggled()" or "toggled(bool)"
+
+Then, create a python method in your script, which you want to consider to be a slot and that should be connected with the signal. This method always requires the same number of
+arguments than given in the signature. If you want to connect a signal to a method that is a bounded method of a class in python, the first argument **self** does not count to the
+number of total arguments, hence, you always need to define the first parameter **self**, like it is the case for bounded methods.
+
+Finally, use the method :py:meth:`~itom.uiItem.connect` in order to establish the connection. For instance let us create a method, that should show a message when the push button "click me"
+on the first exemplary dialog (*testWidget.ui*) has been clicked:
+
+.. code-block:: python
+    
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+    
+    def showMsg():
+        #slot executed in button 'click me' is clicked
+        ui.msgInformation("itom","you pressed the button click me")
+    
+    #connect(signature, method)
+    dialog.btnClickMe.connect( "clicked()", showMsg )
+    
+    #show dialog
+    dialog.show()
+
+You have seen that the method :py:meth:`~itom.uiItem.connect` of the element *dialog.btnClickMe* (the push button) has been called. Its first argument is
+the signature of the signal, as second argument the reference to the slot-methods is given. If you integrate the dialog within a class and the slot is a member of this class, too,
+the exemplary code can look as follows:
+
+.. code-block:: python
+    
+    class MyDialog():
+        
+        def __init__(self):
+            self.dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+            self.dialog.btnClickMe.connect("clicked()", self.showMsg)
+            self.dialog.show()
+        
+        def showMsg(self):
+            ui.msgInformation("itom","you pressed the button click me")
+    
+    #instance of class MyDialog
+    test = MyDialog()
+            
+
+Let us use the second example **testWindow.ui**. If you want a python method to be executed if the user clicks an action in the menu of the main window, you should connect
+the signal **triggered()** of every item in the menu with your method. In |Qt| such an item is an instance of *QAction* and is also accessed by its *objectName*.
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEWINDOW)
+    
+    def addItem(self):
+        print("action addItem clicked")
+    
+    win.actionAddItem.connect("triggered()", addItem) #actionAddItem is the objectName of the action
+    win.show()
+
+
+Calling slots
+=============
+
+Widgets on user interfaces not only emit signals but they also have slots defined, such that you can connect other signals (e.g. from other widgets) to these slots. Using a python
+script in |itom| you can also call (*or:* invoke) these slots. 
+
+.. note:
+    With respect to the documentation of |Qt| it is only possible to invoke slots of widgets from python, but it is not possible
+    to call public, protected or private member methods. This is a limitation of |itom|. Other python packages like *pySide* or *PyQt* offer this possibility, however their use is not
+    possible in |itom|, since they require the python interpreter to be executed in the main thread, which is not the case in |itom|, where |python| runs in its own secondary thread.
+
+In order to invoke a slot, call the method :py:meth:`~itom.uiItem.call` of any element on your user interface. For instance, in order to clear the list widget (*objectName*: *listWidget*) 
+of **uiWindow.ui**, you can invoke its public slot **clear()**:
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEWINDOW)
+    listWidget = win.listWidget
+    listWidget.call("clear")
+
+Here, the method :py:meth:`~itom.uiItem.call` is only called with one argument, the name of the slot in |Qt|. If this slot would have any arguments that can be converted from |python| (see
+:ref:`qtdesigner-datatypes`), add these arguments as further parameters to the call.
+
+Unfortunately, there are some methods of important widgets in |Qt|, which are not defined to be a *public slot*. For instance, the methods to add item(s) to a list widget are no slots.
+However, there are some exceptions defined in |itom| such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These exceptions are 
+contained in the following table:
+
+=================== ====================================================================================
+Widget / ClassName   Public Method
+=================== ====================================================================================
+QWidget             void resize(int,int)
+QWidget             void setGeometry(int,int,int,int)
+QListWidget         void addItem(QString)
+QListWidget         void addItems(QStringList)
+QComboBox           void addItem(QString)
+QComboBox           void addItems(QStringList)
+QTabWidget          int isTabEnabled(int)
+QTabWidget          void setTabEnabled(int,bool)
+QMainWindow         uiItem statusBar() *returns a reference to the statusbar widget*
+QMainWindow         uiItem centralWidget() *returns a reference to the central widget of the mainWindow*
+QTableWidget        void setHorizontalHeaderLabels(QStringList)
+QTableWidget        void setVerticalHeaderLabels(QStringList)
+QTableWidget        QVariant getItem(int,int)
+QTableWidget        void setItem(int,int,QVariant)
+QTableView          uiItem horizontalHeader()
+QTableView          uiItem verticalHeader()
+=================== ====================================================================================
+
+.. note:
+    
+    Whenever the return value is of type **uiItem**, the original C++ datatype is a pointer to **QWidget**. This pointer is specially wrapped in a thread-safe process to the
+    corresponding instance of **uiItem**, that represents the specific widget.
+    
+    The special slots defined in the table above are given in the class **WidgetWrapper** of |itom|.
+
+
+Connecting internal signals and slots in **Qt Designer**
+========================================================
+
+Auto-connecting signals using python decorators
+===============================================
+
+
+
+Hints and limitations
+==========================================
+pyqt
+
+
+
 
 
 
