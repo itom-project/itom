@@ -1451,7 +1451,7 @@ type : {int}, optional \n\
         * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
 dialogButtonBar :  {int}, optional \n\
     Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
-        * 0 (ui.BUTTONBAR_NO): do not add any buttons \n\
+		* 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
         * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
         * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
 dialogButtons : {dict}, optional \n\
