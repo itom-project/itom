@@ -66,23 +66,133 @@ widget.
 Loading user interface in |itom|
 =================================
 
+In this section, an introduction is given how to create and load user interfaces in |itom| depending on different type-attributes.
 
 
-At startup of **Qt Designer**, a dialog 
+Widget embedded in |itom|-dialog (TYPEDIALOG)
+---------------------------------------------
 
-After building a GUI it can be opened in |itom| by usage of the following code (for details see the example in the following section):
+Like described above, the easiest and most comfortable way to load user interfaces in |itom| is to use the type **TYPEDIALOG**. In **Qt Creator** you design a widget with your
+individual content and then when loading this GUI in |itom|, the widget is embedded in a dialog provided by |itom|, which optionally adds a horizontal or vertical button bar
+at the right side or at the bottom of the dialog.
+
+Let us create an exemplary user interface. In **Qt Creator** the following widget has been created:
+
+.. figure:: images_userGUI/testWidget.png
+
+On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
+this group box two radio buttons have been placed using a simple drag&drop from the widget library. Both radio buttons are aligned inside of the group box with a vertical layout. This
+is reached by a right-click on the group box and choosing *vertical layout* from the *layout* menu. Below the group box, a widget of type *lineedit* and a push button (type *pushbutton*)
+have been placed. Finally the three main elements are also aligned in a vertical layout with respect to the overall widget. This can be achieved by a right click on an empty space of
+the widget or directly in the *object inspector*. If you increase now the size of the overall widget, you will see that all sub-elements are resized according to their layout. Since
+we don't want sub-widgets to be vertically stretched and distributed, a vertical spacer element has been placed at the bottom of the vertical layout stack.
+
+The following properties have been directly set in **Qt Creator**:
+
+* group box: *objectName*: groupOption, *title*: 'Please make your choice'
+* push button: *objectName*: btnClickMe, *text*: 'click me'
+* line edit: *objectName*: txtInput, *text*: 'put here your text...'
+* radio buttons: *objectName*: radioOpt1 and radioOpt2, *text*: 'Option 1' and 'Option 2'
+
+The entire widget is saved under the filename *testWidget.ui* in an arbitrary directory.
+
+Then you can load and show the widget in |itom| by creating a python-script in the same directory with the following content. You can also directly type these lines into the
+command line of |itom|, however, you should then assure that the current directory is equal to the directory where the user interface has been stored.
 
 .. code-block:: python
-    :linenos:
-	
-	dialog=ui("*.ui")
-	dialog.show(0) # for non modal version of the GUI window
-	dialog.show(1) # for modal version of the GUI window
-	
-If the dialog is shown in modal version the python code is stopped and will be continued after ending the dialog by clicking on **OK** or **CANCEL** or any other button which ends the dialog. To get the information which button was used for ending the dialog use
+    
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG) #loading dialog
+    result = dialog.show(1) #modally show, wait until the dialog has been closed
+    print("The dialog has been closed with code", result)
+
+At first, an instance of class :py:class:`itom.ui` is created that is given the name of the user interface file. This instance can then be accessed by the name *dialog*.
+By calling the method :py:meth:`~itom.ui.show`, the dialog is shown. Since the parameter has been set to **1**, the dialog is shown in a modal style, such that python waits
+until the dialog has been closed again and |itom| is entirely blocked during that time. However, then it is possible to get informed about the way the dialog is closed, such
+that the variable *result* will be set to *0* if the user closed the dialog using a cancel button (not available here) or the close button in the title bar or *1* if the user
+clicked an **OK**-button.
+
+.. figure:: images_userGUI/testWidgetItom.png
+
+It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
+on the parameters of :py:meth:`~itom.ui.show`. However only in the modal case above, the closing result can be tracked by |python|. Additionally, this is also only possible if 
+a widget is embedded in a dialog, given by |itom|, like it is always the case if you create an instance of :py:class:`itom.ui` with the second parameter set to **ui.TYPEDIALOG**.
+
+Right now, you don't have the possibility to quit the dialog using any button (**OK**, **Cancel**...). In order to obtain a button bar with these buttons, the call to the class
+:py:class:`itom.ui` needs to be changed. There is the choice between two different appearances of a button bar, which can be automatically added to your widget:
+
+.. figure:: images_userGUI/testWidgetButtonBar.png
+
+Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
+key-word of the item corresponds to the role of the button (see enumeration *QDialogButtonBox::ButtonRole** of the |Qt|-library documentation) and the value is the text of the
+button. Common roles are:
+
+* "AcceptRole": Use this role for an **OK**-button. The dialog is closed and the return value in modal style is 1.
+* "CancelRole": Use this role for a **Cancel**-button. The dialog is also closed but the return value is 0.
+
+Finally, the call to :py:class:`itom.ui` must be in the following way, in order to get an auto-generated button bar:
 
 .. code-block:: python
-    :linenos:
+    
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+    #or
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_HORIZONTAL, {"AcceptRole":"Yes", "CancelRole":"No"})
+
+.. note::
+    
+    You can also use a keyword-based call to **ui** since every parameter has its default value such that you can omit parameters beside the first one.
+    For more details about all parameters, keywords and its default values see :py:class:`itom.ui`.
+
+The dialog is closed and deleted if the variable **dialog** is deleted using the command :py:func:`del`.
+
+Main window or dialog (TYPEWINDOW)
+----------------------------------
+
+If you are not interested in the exact return value of the dialog but you want to have full control and all available functionalities of any dialog or main window,
+create an user interface based on a **dialog** or **main window** in **Qt Designer**.
+
+.. figure:: images_userGUI/testWindow.png
+
+The figure shows an exemplary user interface (**testWindow.ui**) that is based on a main window. On the right side, there have been added three buttons, nested in a vertical layout.
+On the left side, there is a list widget (objectName: **listWidget**, type: **List Widget**). Additionally a menu has been added that consists of three items.
+
+This main window can now be shown using the following code snippet:
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEWINDOW)
+    win.show() #this is equal to win.show(0) -> non-modal
+
+Then, the window is shown on top of the main window of |itom|, since it is considered to be a child of |itom|. If you don't want this, you can also add the keyword-parameter
+*childOfMainWindow=False* to the call of :py:class`itom.ui`:
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEWINDOW, childOfMainWindow=False)
+
+Here, you need to use the keyword, since the parameters *dialogButtonBar* and *dialogButtons* (used for TYPEDIALOG) are not given in this case, since they are useless in case of
+*TYPEWINDOW*. If your window is no child of |itom|, it gets its own icon in the Windows tray bar and does not stay on top of |itom|.
+
+
+
+
+OLD
+###
+
+After having designed a dialog, window or widget using **Qt Creator**, we switch now to |itom| in order to load and show the interface. The simplest example for loading the dialog is
+
+.. code-block:: python
+    
+    dialog = ui("[yourFilename].ui")
+    dialog.show(0) # for non-modal version of the dialog
+    dialog.show(1) # for modal, blocking version of the dialog
+
+At first an instance of your user interface is loaded and stored in the python variable "dialog", that is an instance of the class :py:class:`itom.ui`. 
+This class is part of the python module |pyItom|. Calling the method :py:meth:`~itom.ui.show` shows the user interface, where you choose the modality by the
+integer parameter of this method. A modal dialog fully blocks the underlying window, hence |itom|, such that you need to close your dialog before you can interact
+again with the main window of |itom|. If the dialog is shown in modal version the python code is stopped and will be continued after ending the dialog by 
+clicking on **OK** or **CANCEL** or any other button which ends the dialog. To get the information which button was used for ending the dialog use
+
+.. code-block:: python
 	
 	code = dialog.show(1)
 	print("Dialog has been terminated with code: ", code)

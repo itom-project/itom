@@ -1,6 +1,14 @@
 ui-elements (GUI)
 =================
-   
+
+uiItem-Class
+------------------
+ 
+.. autoclass:: itom.uiItem
+    :member-order: groupwise
+    :members:   
+
+    
 ui-Class
 ---------
 
@@ -8,15 +16,7 @@ ui-Class
     :show-inheritance:
     :member-order: groupwise
     :members:
-    
-    
-uiItem-Class
-------------------
- 
-.. autoclass:: itom.uiItem
-    :member-order: groupwise
-    :members:
-    
+
     
 uiTimer-Class
 ------------------
