@@ -23,28 +23,22 @@ Before installation, please review the minimum system requirements.
 * 1024 x 768 screen resolution
 * 200+ MB hard drive space
 
+Installation from setup
+************************
 
-
-Getting |itom|
-***************
-
-Depending on your operating system, there are currently two different possibilites how to obtain and run |itom| on your computer.
-
-Setup
------
-
-At first, windows users that mainly want to use |itom| and pre-compiled plugins can download the latest *32bit* or *64bit* setup of |itom|
-and install the current release on the computer (see :doc:`setup.exe <install_windows_setup>`). For linux users there is currently no
-pre-compiled package available. The setup can for instance be downloaded from https://bitbucket.org/itom/itom/downloads. Please consider that
-the core installation of |itom| does not contain any hardware or software plugins and no designer plugins which provide plotting functionalities to |itom|.
+Currently, there is a *32bit* and *64bit* setup version of |itom| available (Windows only). For linux users there is no pre-compiled package available.
+The use of the setup version is recommended for users that mainly want to work with |itom| without developing new algorithms or plugins. The setup
+can for instance be downloaded from https://bitbucket.org/itom/itom/downloads. Please consider that the core installation of |itom| does not contain 
+any hardware or software plugins and no designer plugins which provide plotting functionalities to |itom|.
 
 .. toctree::
     :maxdepth: 1
     
     install_windows_setup.rst
 
+
 Build from Sources
-------------------    
+************************ 
 
 Secondly, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
 compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and linux users. Before getting the source files,
@@ -54,6 +48,8 @@ check the build dependencies below which contain software packages and libraries
     :maxdepth: 1
     
     build_dependencies.rst
+    git_clone.rst
+    build_cmake.rst
 
 
 Plugins, Designer-Plugins

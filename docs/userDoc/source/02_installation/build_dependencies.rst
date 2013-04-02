@@ -104,7 +104,9 @@ to a directory on your hard drive (e.g. **C:\QScintilla2.6**). The open your Vis
 Just execute the batch file and answer the given questions::
 
    qscintilla_install.bat
-   
+
+.. _install-depend-opencv:
+
 **OpenCV** (mandatory, 2.3 or higher)
 
 You have different possibilities in order to get the binaries from OpenCV:

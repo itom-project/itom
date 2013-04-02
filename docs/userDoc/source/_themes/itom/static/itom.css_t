@@ -47,7 +47,7 @@ body {
 col.field-name{ 
     background-color: #F6E3CE;
     overflow: hidden;
-    width: 110px;
+	width: 115px;
     border-left: 2px solid #000000;
 }
 
@@ -55,6 +55,12 @@ col.field-name{
 dl.class dt{
    font-size: 19px; 
 }
+
+/*Das Wort "class" in der Klassenueberschrift*/
+dl.class dt em.property{
+	font-size: 1.05em  
+}
+
 
 /*Hinterlegung der gesamten Methoden*/
 dl.method, dl.staticmethod, dl.function{
@@ -279,18 +285,16 @@ table.index a:hover, table.index a:active {
     margin-bottom: 15px;
     margin-top: 15px;
 }*/
-/*div.note {
-    padding: 10px 15px 10px 80px;
-    background: #e4ffde url(alert_info_32.png) 15px 15px no-repeat;
-    min-height: 42px;
-}*/
+
+
 /*div.warning {
     padding: 10px 15px 10px 80px;
     background: #fffbc6 url(alert_warning_32.png) 15px 15px no-repeat;
     min-height: 42px;
 }*/
 
-div.admonition, div.warning {
+div.admonition.note, div.warning, 
+div.admonition.seealso{
     font-size: 0.9em;
     margin: 1em 0 1em 0;
     border: 1px solid #86989B;
@@ -307,9 +311,10 @@ div.admonition pre, div.warning pre {
     margin: 0.4em 1em 0.4em 1em;
 }
 
+/*Note, Warning etc. Kasten ueberschrift*/
 div.admonition p.admonition-title,
 div.warning p.admonition-title {
-    margin: 0;
+    margin: 0 0 0 0;
     padding: 0.1em 0 0.1em 0.5em;
     color: white;
     border-bottom: 1px solid #86989B;
@@ -423,9 +428,11 @@ td {
     vertical-align: top;
 }
 
+/*Groesse aller Links*/
+/*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
 tt {
     background-color: #e2e2e2;
-    font-size: 1.0em;
+    font-size: 1.2em;
     font-family: monospace;
 }
 
@@ -1080,10 +1087,11 @@ table.highlighttable td {
     padding: 0 0.5em 0 0.5em;
 }
 
-tt.descname {
+/*Klassenname *."Pointcloud" */
+dl.class dt tt.descname {
     background-color: transparent;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 tt.descclassname {
