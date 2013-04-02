@@ -397,41 +397,41 @@ void MainWindow::createActions()
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     //app actions
-    m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script"), this);
+    m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
     connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
     m_appFileNew->setShortcut(QKeySequence::New);
 
-    m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
+    m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
     connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
     m_appFileOpen->setShortcut(QKeySequence::Open);
 
     temp = m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
-    m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties"), this);
+    m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties..."), this);
     connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
 
-    m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management"), this);
+    m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management..."), this);
     connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
 
-    m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"),tr("About Qt"), this);
+    m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"), tr("About Qt..."), this);
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     //m_aboutQt->setShortcut(QKeySequence("F3"));
 
-    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/q_itoM32.png"),tr("About itom"), this);
+    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/q_itoM32.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    temp = m_actions["show_loaded_plugins"] = new QAction(tr("Loaded plugins..."),this);
+    temp = m_actions["show_loaded_plugins"] = new QAction(tr("Loaded plugins..."), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
-    temp = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"),tr("Assistant"), this);
+    temp = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
     temp->setShortcut(QKeySequence::HelpContents);
 
-    temp = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"),tr("UI Designer"), this);
+    temp = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
-    temp = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"),tr("Run python code in debug mode"), this);
+    temp = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
     temp->setToolTip(tr("set whether internal python code should be executed in debug mode"));
     temp->setCheckable(true);
     if (pyEngine)

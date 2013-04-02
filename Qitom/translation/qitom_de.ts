@@ -2,6 +2,155 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de_DE">
 <context>
+    <name>AddInManager</name>
+    <message>
+        <location filename="../organizer/addInManager.cpp" line="+255"/>
+        <source>directory &apos;%1&apos; could not be found</source>
+        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>plugins folder could not be found</source>
+        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>filename is no AddIn-library: %1</source>
+        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Unable to load translation file &apos;%1&apos;.</source>
+        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Unable to find translation file.</source>
+        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>AddIn with filename &apos;%1&apos;is unknown.</source>
+        <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1 (DataIO) loaded</source>
+        <translation type="unfinished">%1 (DataIO) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1 (Actuator) loaded</source>
+        <translation type="unfinished">%1 (Motor) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>error initializing plugin: %1</source>
+        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
+        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Filter %1 loaded</source>
+        <translation type="unfinished">Filter %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
+        <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Widget %1 loaded</source>
+        <translation type="unfinished">Widget %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <location line="+71"/>
+        <source>plugin not found</source>
+        <translation type="unfinished">Plugin nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+159"/>
+        <location line="+135"/>
+        <location line="+129"/>
+        <source>Wrong plugin name</source>
+        <translation type="unfinished">Falscher Plugin-Name</translation>
+    </message>
+    <message>
+        <location line="-243"/>
+        <location line="+135"/>
+        <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
+        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+    </message>
+    <message>
+        <location line="-113"/>
+        <source>timeout while initializing dataIO</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <location line="+132"/>
+        <location line="+92"/>
+        <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
+        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+    </message>
+    <message>
+        <location line="-131"/>
+        <source>timeout while initializing actuator</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
+    </message>
+    <message>
+        <location line="+638"/>
+        <source>no dock widget available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>addin not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BreakPointModel</name>
     <message>
         <location filename="../models/breakPointModel.cpp" line="+37"/>
@@ -52,14 +201,26 @@
     </message>
 </context>
 <context>
-    <name>DialogAboutQItom</name>
+    <name>ConsoleWidget</name>
     <message>
-        <location filename="../ui/dialogAbout.ui"/>
-        <source>About ITOM</source>
-        <translation>Über ITOM</translation>
+        <location filename="../widgets/consoleWidget.cpp" line="+698"/>
+        <source>script execution</source>
+        <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
     <message>
-        <location/>
+        <location line="+0"/>
+        <source>Python is not available</source>
+        <translation type="unfinished">Python ist nicht verfügbar</translation>
+    </message>
+</context>
+<context>
+    <name>DialogAboutQItom</name>
+    <message>
+        <source>About ITOM</source>
+        <translation type="obsolete">Über ITOM</translation>
+    </message>
+    <message>
+        <location filename="../ui/dialogAbout.ui"/>
         <source>itom logo</source>
         <translation>ITOM Logo</translation>
     </message>
@@ -181,41 +342,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Welcome to itom, the &lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; measurement programm.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;THIS ITOM-COPY IS A PREPUPLISHED ALPHA VERSION GIVEN TO ZEISS MICROSCOPY FOR INTERNAL USE WITHIN A ZEISS-ITO-COOPERATION. DO NOT DISTRIBUTE TO THIRD PARTY.&lt;br /&gt;!!! CONFIDENTIAL !!!&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your current itom-version ([itom_SysType]) is [itom_Version] (prepublished ALPHA-Version) which correspond to SVN-Revision [itom_SVNRevision] from [itom_SVNRevision_Date] located at SVN-repository at &lt;/span&gt;&lt;a href=&quot;[ito_SVNRevision_URL]&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;[ito_SVNRevision_URL]&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This itom-version will be licensed unter &lt;/span&gt;&lt;a href=&quot;http://www.gnu.org/licenses/lgpl.html&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; vX.X (probably 2.0, 2.1, 3.0)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please report bugs under: &lt;/span&gt;&lt;a href=&quot;http://obelix.ito.uni-stuttgart.de/mantis &quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://obelix.ito.uni-stuttgart.de/mantis &lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;[version_Warnings] Cheers your itom team&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your main programm of itom uses the following third party packages:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://opencv.willowgarage.com/wiki/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;openCV&lt;/span&gt;&lt;/a&gt; openCV in version [openCV_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.pointclouds.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;point cload library&lt;/span&gt;&lt;/a&gt; in version [PCL_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The &lt;a href=&quot;http://qt.nokia.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QT-Framework&lt;/span&gt;&lt;/a&gt; in version [QT_Your_Version] (Compile-Version [QT_Version]) by Nokia unter LGPL.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://qwt.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QwtPlot&lt;/span&gt;&lt;/a&gt; in version [QwtPlot_Version] by Uwe Rathmann and Josef Wilgen under LGPL with additional &lt;a href=&quot;http://qwt.sourceforge.net/qwtlicense.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;exceptions&lt;/span&gt;&lt;/a&gt;.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QPropertyEditor under LGPL  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.riverbankcomputing.co.uk/software/qscintilla/intro&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QScintilla&lt;/span&gt;&lt;/a&gt; in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QScintilla is a port to Qt of Neil Hodgson&apos;s  &lt;a href=&quot;http://www.scintilla.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Scintilla&lt;/span&gt;&lt;/a&gt; C++ editor control.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.python.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Python&lt;/span&gt;&lt;/a&gt; in version [Py_Version] by Python Software Foundation unter Python-License (similar to BSD license).  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Python-package &lt;a href=&quot;http://numpy.scipy.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;NumPy&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;http://www.scipy.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SciPy&lt;/span&gt;&lt;/a&gt; under BSD compatible license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://matplotlib.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;MatPlotLib&lt;/span&gt;&lt;/a&gt; under BSD compatible license.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;  Further used third party packages &lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Google test framework by Google under New BSD-license &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Some of the PlugIns may contain further third party packages, e.g.&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;NVidia CUDA SDK by NVidia unter NVidia CUDA SDK License, &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenMP, see &lt;a href=&quot;http://openmp.org/wp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://openmp.org/wp/&lt;/span&gt;&lt;/a&gt; &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hardware dependent third party driver and SDKs with different license models,&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;or my be published unter different terms or contitions than the main itom-programm. So please check plugin-license before distributing itom-plugins.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>ito logo</source>
         <translation>ITO Logo</translation>
     </message>
@@ -250,6 +376,52 @@ p, li { white-space: pre-wrap; }
         <location/>
         <source>Close</source>
         <translation>Schließen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>About itom</source>
+        <translation>Über itom</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Basic information</source>
+        <translation type="unfinished">Basisinformationen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Contributors</source>
+        <translation>Mitwirkende</translation>
+    </message>
+    <message>
+        <location/>
+        <source>License</source>
+        <translation>Lizenz</translation>
+    </message>
+    <message>
+        <location/>
+        <source>The following license text corresponds to the file COPYING.txt, which is provided with this installation of itom. </source>
+        <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
+    </message>
+    <message>
+        <location filename="../ui/dialogAbout.cpp" line="+34"/>
+        <location line="+67"/>
+        <location line="+14"/>
+        <source>Could not load file %1. Reason: %2.</source>
+        <translation>Die Datei &apos;%1&apos; kann nicht geladen werden. Grund: %2.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>The version string has been copied to the clipboard</source>
+        <translation>Die Versionsinformationen wurde in die Zwischenablage kopiert</translation>
     </message>
 </context>
 <context>
@@ -893,7 +1065,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+504"/>
+        <location filename="../mainApplication.cpp" line="+406"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -901,7 +1073,42 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+453"/>
+        <location filename="../python/pythonEngine.cpp" line="+244"/>
+        <source>error importing sys in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>error importing itom in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>error redirecting stdout in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>error redirecting stderr in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+179"/>
+        <source>the module itoFunctions could not be loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+11"/>
+        <source>the module itoDebugger could not be loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>deadlock in python setup.</source>
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
@@ -916,7 +1123,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+83"/>
+        <source>Qt text encoding %1 not compatible to python. Python encoding is set to UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+60"/>
         <source>main dictionary is empty</source>
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
@@ -1000,7 +1212,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+9"/>
-        <source>item &apos;%s&apos; does not exist in workspace.</source>
+        <source>item &apos;%1&apos; does not exist in workspace.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1069,12 +1281,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="+45"/>
+        <location filename="../../common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+21"/>
         <source>mandatory parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1089,7 +1301,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+32"/>
         <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
         <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht gefunden</translation>
@@ -1129,12 +1341,13 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location filename="../helper/paramHelper.cpp" line="+654"/>
+        <location filename="../../common/helperCommon.cpp" line="+55"/>
         <source>invalid parameter name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+40"/>
+        <location line="-614"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1255,6 +1468,21 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+5"/>
         <source>type of parameter does not fit to requested parameter type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+88"/>
+        <source>Name of given parameter is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Parameter &apos;%1&apos; is read only.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Parameter &apos;%1&apos; not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1562,7 +1790,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+131"/>
+        <location filename="../api/apiFunctions.cpp" line="+134"/>
         <location filename="../python/pythonCommon.cpp" line="+214"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
@@ -1623,7 +1851,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+974"/>
+        <location filename="../python/pythonCommon.cpp" line="+977"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1724,7 +1952,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2552"/>
+        <location filename="../python/pythonUi.cpp" line="+2553"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1779,14 +2007,14 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+104"/>
+        <location filename="../helper/versionHelper.cpp" line="+220"/>
         <source>Warning: The version contains locally changed code!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+26"/>
+        <location line="+15"/>
         <source>Build from a clean version.
 </source>
         <translation type="unfinished"></translation>
@@ -1798,13 +2026,13 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+7"/>
         <source>This version of itom not under version control (no GIT or SVN)!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2039"/>
+        <location filename="../python/pythonItom.cpp" line="+1996"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1937,7 +2165,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+178"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+179"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
@@ -1960,7 +2188,7 @@ Type conflict for %1</source>
         <translation>Script-Editor</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+97"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
@@ -1973,7 +2201,7 @@ Type conflict for %1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+240"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+209"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -2080,14 +2308,14 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+393"/>
-        <location line="+68"/>
+        <location line="+71"/>
         <location line="+36"/>
         <source>unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-104"/>
-        <location line="+104"/>
+        <location line="-107"/>
+        <location line="+107"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
@@ -2097,7 +2325,7 @@ Type conflict for %1</source>
         <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-51"/>
+        <location line="-54"/>
         <source>error while opening file</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
@@ -2107,7 +2335,7 @@ Type conflict for %1</source>
         <translation>Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+70"/>
         <location line="+47"/>
         <source>error while accessing file</source>
         <translation>Fehler beim Zugriff auf die Datei</translation>
@@ -2124,7 +2352,7 @@ Type conflict for %1</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+542"/>
+        <location line="+551"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -2780,7 +3008,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="+93"/>
+        <location filename="../widgets/AIManagerWidget.cpp" line="+73"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
@@ -2872,7 +3100,7 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+34"/>
+        <location line="+38"/>
         <source>Error while creating new instance</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
@@ -3039,7 +3267,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="+101"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+102"/>
         <source>stay on top</source>
         <translation type="unfinished">Im Vordergrund anzeigen</translation>
     </message>
@@ -3217,14 +3445,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+260"/>
         <source>plugins folder could not be found</source>
-        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
+        <translation type="obsolete">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location line="+39"/>
         <source>filename is no AddIn-library: %1</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
     <message>
         <source>error loading plugin: %1</source>
@@ -3247,140 +3473,100 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Typ des AddIn mit dem Dateiname &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location line="-44"/>
         <source>directory &apos;%1&apos; could not be found</source>
-        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+71"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
-        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+        <translation type="obsolete">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+12"/>
         <source>Unable to find translation file.</source>
-        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
+        <translation type="obsolete">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+41"/>
         <source>AddIn with filename &apos;%1&apos;is unknown.</source>
-        <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
+        <translation type="obsolete">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+22"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>%1 (DataIO) loaded</source>
-        <translation type="unfinished">%1 (DataIO) geladen</translation>
+        <translation type="obsolete">%1 (DataIO) geladen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+        <translation type="obsolete">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>%1 (Actuator) loaded</source>
-        <translation type="unfinished">%1 (Motor) geladen</translation>
+        <translation type="obsolete">%1 (Motor) geladen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+        <translation type="obsolete">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+19"/>
         <source>error initializing plugin: %1</source>
-        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
+        <translation type="obsolete">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
     <message>
-        <location line="+23"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
-        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+        <translation type="obsolete">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
     </message>
     <message>
-        <location line="+36"/>
         <source>Filter %1 loaded</source>
-        <translation>Filter %1 geladen</translation>
+        <translation type="obsolete">Filter %1 geladen</translation>
     </message>
     <message>
-        <location line="+51"/>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
-        <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
+        <translation type="obsolete">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
     </message>
     <message>
-        <location line="+30"/>
         <source>Widget %1 loaded</source>
-        <translation type="unfinished">Widget %1 geladen</translation>
+        <translation type="obsolete">Widget %1 geladen</translation>
     </message>
     <message>
-        <location line="+42"/>
-        <location line="+70"/>
         <source>plugin not found</source>
-        <translation>Plugin nicht gefunden</translation>
+        <translation type="obsolete">Plugin nicht gefunden</translation>
     </message>
     <message>
-        <location line="+159"/>
-        <location line="+135"/>
-        <location line="+129"/>
         <source>Wrong plugin name</source>
-        <translation>Falscher Plugin-Name</translation>
+        <translation type="obsolete">Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location line="-243"/>
-        <location line="+135"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation>Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+        <translation type="obsolete">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location line="-113"/>
         <source>timeout while initializing dataIO</source>
-        <translation>Zeitüberschreitung während der Initialisierung von DataIO</translation>
+        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <location line="+132"/>
-        <location line="+92"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
-        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+        <translation type="obsolete">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location line="-131"/>
         <source>timeout while initializing actuator</source>
-        <translation>Zeitüberschreitung während der Initialisierung von Actuator</translation>
-    </message>
-    <message>
-        <location line="+638"/>
-        <source>no dock widget available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>addin not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
 </context>
 <context>
@@ -3537,7 +3723,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::CallStackDockWidget</name>
     <message>
-        <location filename="../widgets/callStackDockWidget.cpp" line="+59"/>
+        <location filename="../widgets/callStackDockWidget.cpp" line="+60"/>
         <source>file</source>
         <translation type="unfinished">Datei</translation>
     </message>
@@ -3555,12 +3741,22 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+124"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+119"/>
+        <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>The version &apos;ito.AbstractItomDesignerPlugin&apos; in file &apos;%1&apos; does not correspond to the requested version (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin</source>
         <translation type="unfinished">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
@@ -3654,7 +3850,7 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+36"/>
+        <location line="+38"/>
         <source>Error while creating new instance</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
@@ -3851,6 +4047,101 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="+10"/>
         <source>Collaps</source>
         <translation type="unfinished">Einfach</translation>
+    </message>
+</context>
+<context>
+    <name>ito::DialogUserManagement</name>
+    <message>
+        <location filename="../widgets/userManagement.cpp" line="+166"/>
+        <location line="+27"/>
+        <location line="+10"/>
+        <source>Error</source>
+        <translation type="unfinished">Fehler</translation>
+    </message>
+    <message>
+        <location line="-37"/>
+        <source>UserID already exists! Cannot create user!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+6"/>
+        <location line="+45"/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+6"/>
+        <location line="+5"/>
+        <location line="+4"/>
+        <source>Warning</source>
+        <translation type="unfinished">Warnung</translation>
+    </message>
+    <message>
+        <location line="-80"/>
+        <source>No or invalid group entered, setting to developer!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>No user name entered, creating user with empty name!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Standard itom ini file not found, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Could not copy standard itom ini file!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>User ID not found, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>User ID and ini file name mismatch, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>User name and ini file user name mismatch, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cannot delete current user, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ito::FigureWidget</name>
+    <message>
+        <location filename="../widgets/figureWidget.cpp" line="+119"/>
+        <source>subplot %1 (empty)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>&amp;Subplots</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>&amp;Windows</source>
+        <translation type="unfinished">&amp;Fenster</translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <source>subplot %1 (plot)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+102"/>
+        <source>subplot %1 (liveImage)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4274,7 +4565,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/mainWindow.cpp" line="+92"/>
         <source>itom</source>
-        <translation type="unfinished">itom</translation>
+        <translation>itom</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -4307,49 +4598,82 @@ Nachricht: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+26"/>
+        <source>Python could not be started. itom cannot be used in the desired way.</source>
+        <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
+    </message>
+    <message>
         <source>New Script</source>
-        <translation type="unfinished">Neues Skript</translation>
+        <translation type="obsolete">Neues Skript</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Open File</source>
-        <translation type="unfinished">Datei öffnen</translation>
+        <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+221"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Properties</source>
-        <translation>Optionen</translation>
+        <translation type="obsolete">Optionen</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>User Management</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Benutzerverwaltung</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>About Qt</source>
-        <translation>Über QT</translation>
+        <translation type="obsolete">Über QT</translation>
+    </message>
+    <message>
+        <source>About itom</source>
+        <translation type="obsolete">Über iTOM</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>New Script...</source>
+        <translation>Neues Skript...</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>About itom</source>
-        <translation type="unfinished">Über iTOM</translation>
+        <source>Open File...</source>
+        <translation>Datei öffnen...</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Properties...</source>
+        <translation>Optionen...</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>User Management...</source>
+        <translation>Benutzerverwaltung...</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>About Qt...</source>
+        <translation>Über QT...</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>About itom...</source>
+        <translation>Über itom...</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Loaded plugins...</source>
-        <translation type="unfinished">Geladene Plugins...</translation>
+        <translation>Geladene Plugins...</translation>
+    </message>
+    <message>
+        <source>Assistant</source>
+        <translation type="obsolete">Assistent</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Assistant</source>
-        <translation>Assistent</translation>
+        <source>Help...</source>
+        <translation>Hilfe...</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -4369,7 +4693,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+8"/>
         <source>stop</source>
-        <translation type="unfinished">Stop</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4651,6 +4975,10 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+659"/>
+        <source>Actuator</source>
+        <translation type="unfinished">Motor</translation>
+    </message>
+    <message>
         <location line="+343"/>
         <source>Motor</source>
         <translation></translation>
@@ -4950,7 +5278,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Schnellsuche...</translation>
     </message>
     <message>
-        <location line="+633"/>
+        <location line="+647"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation type="unfinished">Suchen und Ersetzen</translation>
@@ -4966,7 +5294,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-668"/>
+        <location line="-682"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5027,37 +5355,37 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+266"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+303"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+46"/>
         <source>widget is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+61"/>
         <source>widgets of type QDockWidget are not yet implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+79"/>
         <source>No internal dialog or window with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+59"/>
         <source>dialog could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+37"/>
         <source>filename does not exist</source>
         <translation type="unfinished">Dateiname existiert nicht</translation>
     </message>
@@ -5067,12 +5395,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+50"/>
         <source>dock widget not implemented yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>designer plugin widget could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5083,15 +5411,27 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+18"/>
-        <location line="+83"/>
+        <location line="+84"/>
         <location line="+26"/>
-        <location line="+27"/>
+        <location line="+36"/>
+        <location line="+42"/>
+        <location line="+25"/>
         <location line="+26"/>
         <source>dialog handle does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="-98"/>
+        <source>dialog cannot be docked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>dialog cannot be docked or undocked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+194"/>
         <source>defaultButton must be within enum QMessageBox::StandardButton</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5201,6 +5541,11 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="+142"/>
         <location line="+42"/>
         <source>Plot window could not be loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+410"/>
+        <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5494,115 +5839,132 @@ Katesisch</translation>
     <name>userManagement</name>
     <message>
         <location filename="../widgets/userManagement.ui"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>Enable All</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle aktivieren</translation>
     </message>
     <message>
         <location/>
         <source>Disable All</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle deaktivieren</translation>
     </message>
     <message>
         <location/>
         <source>Main Application Features</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hauptanwendung</translation>
     </message>
     <message>
         <location/>
         <source>Script Editor</source>
-        <translation type="unfinished">Script-Editor</translation>
+        <translation>Skript-Editor</translation>
     </message>
     <message>
         <location/>
         <source>Developer Tools
 (Workspace, Breakpoints,
  Ui-Designer, Call Stack)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Entwickler-Tools
+(Workspace, Haltepunkte,
+ Ui-Designer, Call Stack)</translation>
     </message>
     <message>
         <location/>
         <source>Edit Properties</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eigentschaftseditor</translation>
     </message>
     <message>
         <location/>
         <source>File System Widget</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
         <location/>
         <source>Addin Manager Widget</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Addin-Manager</translation>
     </message>
     <message>
         <location/>
         <source>Console</source>
-        <translation type="unfinished">Konsole</translation>
+        <translation>Konsole</translation>
     </message>
     <message>
         <location/>
         <source>normal</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>read only</source>
-        <translation type="unfinished"></translation>
+        <translation>nur lesen</translation>
     </message>
     <message>
         <location/>
         <source>off</source>
-        <translation type="unfinished"></translation>
+        <translation>aus</translation>
     </message>
     <message>
         <location/>
         <source>User / Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzer / Gruppen</translation>
     </message>
     <message>
         <location/>
         <source>Name</source>
-        <translation type="unfinished">Name</translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location/>
         <source>Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Gruppe</translation>
     </message>
     <message>
         <location/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>Ini File</source>
-        <translation type="unfinished"></translation>
+        <translation>Ini-Datei</translation>
     </message>
     <message>
         <location/>
         <source>Reset All In Group</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gruppe zurücksetzen</translation>
     </message>
     <message>
         <location/>
         <source>New User</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuer Benutzer</translation>
     </message>
     <message>
         <location/>
         <source>Delete User</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzer löschen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>developer</source>
+        <translation>Entwickler</translation>
+    </message>
+    <message>
+        <location/>
+        <source>admin</source>
+        <translation>Administrator</translation>
+    </message>
+    <message>
+        <location/>
+        <source>user</source>
+        <translation>Benutzer</translation>
+    </message>
+    <message>
+        <location/>
+        <source>User Management</source>
+        <translation type="unfinished">Benutzerverwaltung</translation>
     </message>
 </context>
 </TS>
