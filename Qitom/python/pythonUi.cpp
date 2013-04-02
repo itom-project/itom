@@ -756,8 +756,7 @@ doctodo\n\
 \n\
 See Also \n\
 --------- \n\
-setProperty
-\n\
+setProperty \n\
 ");
 PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 {
@@ -857,8 +856,7 @@ propertyDict : {dict}\n\
 \n\
 See Also \n\
 --------- \n\
-getProperty
-\n\
+getProperty \n\
 ");
 PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 {
