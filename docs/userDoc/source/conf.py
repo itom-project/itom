@@ -208,7 +208,9 @@ latex_paper_size = 'a4'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'itom_doc.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual')
+  #('index', 'itom_doc.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual')
 ]
 
 #latex_documents = [
