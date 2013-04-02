@@ -1,6 +1,8 @@
 itom methods
 ================================
 
+.. currentmodule:: itom
+
 Plotting and camera
 ---------------------
 .. automodule:: itom

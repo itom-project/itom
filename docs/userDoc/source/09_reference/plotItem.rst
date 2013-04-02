@@ -1,7 +1,8 @@
-actuator
+plotItem
 ================================
 
 .. currentmodule:: itom
 
-.. autoclass:: itom.actuator
+.. autoclass:: itom.plotItem
+    :show-inheritance:
 	:members:

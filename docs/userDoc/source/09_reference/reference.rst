@@ -13,15 +13,17 @@ Content:
    :maxdepth: 1
    
    itom_general.rst
+   dataIO.rst
+   actuator.rst
+   algo.rst
+   figure.rst
+   plotItem.rst
+   itom_GUI.rst
    dataObject.rst
    npDataObject.rst 
    point.rst
    pointCloud.rst
    polygonMesh.rst
-   itom_GUI
-   dataIO.rst
-   actuator.rst
-   algo.rst
 
 For an alphabetic index see:
 

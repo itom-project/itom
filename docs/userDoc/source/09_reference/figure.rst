@@ -1,7 +1,8 @@
-actuator
+figure
 ================================
 
 .. currentmodule:: itom
 
-.. autoclass:: itom.actuator
+.. autoclass:: itom.figure
+    :show-inheritance:
 	:members:
