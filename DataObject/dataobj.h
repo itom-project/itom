@@ -410,13 +410,10 @@ class DataObject
                         m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
                         m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
                         m_osize.m_p[-1] = dimensions;
-                       // m_osize.m_pTransp = &m_transpose;
                         m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
                         m_size.m_p[-1] = dimensions;
-                       // m_size.m_pTransp = &m_transpose;
                         m_roi.m_p = m_roi.m_p + 1;
                         m_roi.m_p[-1] = dimensions;
-                       // m_roi.m_pTransp = &m_transpose;
                     }
                 }
                 else
@@ -424,13 +421,10 @@ class DataObject
                     m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
                     m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
                     m_osize.m_p[-1] = dimensions;
-                   //m_osize.m_pTransp = &m_transpose;
                     m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
                     m_size.m_p[-1] = dimensions;
-                    //m_size.m_pTransp = &m_transpose;
                     m_roi.m_p = m_roi.m_p + 1;
                     m_roi.m_p[-1] = dimensions;
-                    //m_roi.m_pTransp = &m_transpose;
                 }
 
                 for (uchar n = 0 ; n < dimensions ; n++)
@@ -489,13 +483,10 @@ class DataObject
                         m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
                         m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
                         m_osize.m_p[-1] = dimensions;
-                        //m_osize.m_pTransp = &m_transpose;
                         m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
                         m_size.m_p[-1] = dimensions;
-                        //m_size.m_pTransp = &m_transpose;
                         m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                         m_roi.m_p[-1] = dimensions;
-                        //m_roi.m_pTransp = &m_transpose;
                     }
                 }
                 else
@@ -503,13 +494,10 @@ class DataObject
                     m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
                     m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
                     m_osize.m_p[-1] = dimensions;
-                    //m_osize.m_pTransp = &m_transpose;
                     m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
                     m_size.m_p[-1] = dimensions;
-                    //m_size.m_pTransp = &m_transpose;
                     m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                     m_roi.m_p[-1] = dimensions;
-                    //m_roi.m_pTransp = &m_transpose;
                 }
 
                 for (uchar n = 0; n < dimensions; n++)
@@ -586,12 +574,12 @@ class DataObject
 
         struct MSize
         {
-            inline MSize() : m_p(NULL)/*, m_pTransp(NULL)*/ {}
-            inline MSize(size_t *_p, char *_transp) : m_p(_p)/*, m_pTransp(_transp)*/ {}
+            inline MSize() : m_p(NULL) {}
+            inline MSize(size_t *_p, char *_transp) : m_p(_p) {}
 //            Size operator()() const;
             inline size_t operator [] (const int dim) const
             {
-                return m_p[dim]; //return the size value without considering the transposed flag. for this operator the transposed flag is only a virtual flag, this operator corresponds to the real data representation in memory
+                return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             };
 //            inline unsigned int& operator [](const int i) { return m_p[i]; };
             inline operator const size_t * () const { return m_p; }
@@ -606,21 +594,8 @@ class DataObject
                 if( d != dsz )
                     return false;
                 if( d == 2 )
-                {
-                    //switch (-(*m_pTransp) + (*sz.m_pTransp))
-                    //{
-                        /*case -1:
-                            return m_p[1] == sz.m_p[0] && m_p[0] == sz.m_p[1];
-                        break;
-
-                        case 1:
-                            return m_p[0] == sz.m_p[1] && m_p[1] == sz.m_p[0];
-                        break;*/
-
-                       // default:
-                            return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];
-                      //  break;
-                    //}
+                {                    
+                            return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];            
                 }
 
                 for( size_t i = 0; i < d - 2; i++ )
@@ -629,28 +604,13 @@ class DataObject
                     {
                         return false;
                     }
-                }
-                /*switch (-(*m_pTransp) + (*sz.m_pTransp))
-                {*/
-                    /*case -1:
-                        return m_p[d - 2] == sz.m_p[d - 1] && m_p[d - 1] == sz.m_p[d - 2];
-                    break;
-
-                    case 1:
-                        return m_p[d - 1] == sz.m_p[d - 2] && m_p[d - 2] == sz.m_p[d - 1];
-                    break;*/
-
-                    //default:
-                        return m_p[d - 2] == sz.m_p[d - 2] && m_p[d - 1] == sz.m_p[d - 1];
-                    //break;
-                //}
-
+                }                
+                        return m_p[d - 2] == sz.m_p[d - 2] && m_p[d - 1] == sz.m_p[d - 1];               
                 return true;
             }
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
 
             size_t *m_p;
-        //    char *m_pTransp;  /*!< pointer to m_transpose flag */
         };
 
         struct MROI
@@ -659,7 +619,7 @@ class DataObject
             inline MROI(size_t *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
             inline size_t operator [] (const int dim) const
             {
-                return m_p[dim]; //return the size value without considering the transposed flag. for this operator the transposed flag is only a virtual flag, this operator corresponds to the real data representation in memory
+                return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             }
 
 //            inline unsigned int operator () (unsigned char dim, unsigned char beginEnd) const { beginEnd > 0 ? beginEnd = 1 : beginEnd = 0; return m_p[dim + beginEnd]; };
@@ -824,12 +784,7 @@ class DataObject
                 cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
             }
             if(!m_pDataObjectTags) return 0.0; // default
-
-            /*if(considerTransposeFlag && isT() && static_cast<int>(axisNum) >= m_dims - 2)
-            {
-                int dimNum = (int)axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2;
-                return m_pDataObjectTags->m_axisOffsets[dimNum] - m_roi[dimNum];
-            }*/
+           
             return m_pDataObjectTags->m_axisOffsets[axisNum] - m_roi[axisNum];
         }
 
@@ -842,11 +797,6 @@ class DataObject
             }
             if(!m_pDataObjectTags) return 1.0; // default
 
-
-            /*if(considerTransposeFlag && isT() && axisNum >= m_dims - 2)
-            {
-                return m_pDataObjectTags->m_axisScales[axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2];
-            }*/
             return m_pDataObjectTags->m_axisScales[axisNum];
         }
 
@@ -863,11 +813,7 @@ class DataObject
                 validOperation = false;
                 return std::string(); //error
             }
-            validOperation = true;
-            /*if(considerTransposeFlag && isT() && axisNum >= m_dims - 2)
-            {
-                return m_pDataObjectTags->m_axisUnit[axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2];
-            }*/
+            validOperation = true;            
             return m_pDataObjectTags->m_axisUnit[axisNum];
         }
 
@@ -885,11 +831,7 @@ class DataObject
                 return std::string(); //error
             }
 
-            validOperation = true;
-          /*  if(considerTransposeFlag && isT() && axisNum >= m_dims - 2)
-            {
-                return m_pDataObjectTags->m_axisDescription[axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2];
-            }*/
+            validOperation = true;          
             return m_pDataObjectTags->m_axisDescription[axisNum];
         }
 
@@ -1016,12 +958,7 @@ class DataObject
                 return 1; //error
             uchar *ch = (uchar *)&offset;
             if (!((ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0))
-                return 1;
-           /* if (considerTransposeFlag && isT() && static_cast<int>(axisNum) >= m_dims - 2)
-            {
-                int dimNum = (int)axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2;
-                m_pDataObjectTags->m_axisOffsets[dimNum] = offset + m_roi[dimNum];
-            }*/
+                return 1;           
             else
             {
                 m_pDataObjectTags->m_axisOffsets[axisNum] = offset  + m_roi[axisNum];
@@ -1038,11 +975,7 @@ class DataObject
             if (fabs(scale) < std::numeric_limits<double>::epsilon()) return 1;
             uchar *ch = (uchar *)&scale;
             if (!((ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0))
-                return 1;
-            /*if (considerTransposeFlag && isT() && static_cast<int>(axisNum) >= m_dims - 2)
-            {
-                m_pDataObjectTags->m_axisScales[(int)axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2] = scale;
-            }*/
+                return 1;           
             else
             {
                 m_pDataObjectTags->m_axisScales[axisNum] = scale;
@@ -1056,11 +989,7 @@ class DataObject
             if (!m_pDataObjectTags) return 1; //error
 //            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
             if (axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
-
-            /*if (considerTransposeFlag && isT() && static_cast<int>(axisNum) >= m_dims - 2)
-            {
-                m_pDataObjectTags->m_axisUnit[(int)axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2] = unit;
-            }*/
+			           
             else
             {
                 m_pDataObjectTags->m_axisUnit[axisNum] = unit;
@@ -1073,11 +1002,7 @@ class DataObject
         {
             if (!m_pDataObjectTags) return 1; //error
 //            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error
-            if (axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error
-           /* if (considerTransposeFlag && isT() && static_cast<int>(axisNum) >= m_dims - 2)
-            {
-                m_pDataObjectTags->m_axisDescription[(int)axisNum == m_dims - 2 ? m_dims - 1 : m_dims - 2] = description;
-            }*/
+            if (axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error          
             else
             {
                 m_pDataObjectTags->m_axisDescription[axisNum] = description;
@@ -1198,7 +1123,7 @@ class DataObject
         \param[out] isInsideImage   flag which is set to true if coordinate is within range of the image.
         \return (double)( pix / AxisScale + AxisOffset) & [0..imagesize-1]
         */
-        inline double getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage/*, const bool considerTranspose = true*/) const
+        inline double getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage) const
         {
             double tPx = 0.0;
             if(static_cast<int>(dim) >= m_dims)
@@ -1216,17 +1141,17 @@ class DataObject
 
             if(m_pDataObjectTags)
             {
-                tPx = (phys / getAxisScale(dim/*, considerTranspose*/) + getAxisOffset(dim/*, considerTranspose*/));
+                tPx = (phys / getAxisScale(dim) + getAxisOffset(dim));
             }
             else
             {
                 tPx = phys;
             }
 
-            if(tPx > getSize(dim/*, considerTranspose*/) - 1)
+            if(tPx > getSize(dim) - 1)
             {
                 isInsideImage = false;
-                tPx = static_cast<double>(getSize(dim/*, considerTranspose*/)- 1);
+                tPx = static_cast<double>(getSize(dim)- 1);
             }
             else if( tPx < 0)
             {
@@ -1244,34 +1169,10 @@ class DataObject
         /**
         \brief Function returns the not rounded pixel index of a physical coordinate
          */
-        inline int getPhysToPix2D(const double physY, double &tPxY, bool &isInsideImageY, const double physX, double &tPxX, bool &isInsideImageX/*, const bool considerTranspose = true*/) const
+        inline int getPhysToPix2D(const double physY, double &tPxY, bool &isInsideImageY, const double physX, double &tPxX, bool &isInsideImageX) const
         {
             if(m_dims < 2)
-            {
-                /*if(considerTranspose && this->m_transpose)
-                {
-                    tPxX = 0.0;
-                    if(physX != 0.0)
-                    {
-                        isInsideImageX = false;
-                    }
-
-                    if(m_pDataObjectTags)
-                    {
-                        tPxY = physY / m_pDataObjectTags->m_axisScales[0] + m_pDataObjectTags->m_axisOffsets[0];
-                    }
-                    else
-                    {
-                        tPxY = physY;
-                    }
-                    if(tPxY > m_size[0] - 1)
-                    {
-                        isInsideImageY = false;
-                        tPxY = static_cast<double>(m_size[0] - 1);
-                    }
-                }
-                else*/
-                {
+            {           
                     tPxY = physY;
                     if(physY != 0.0)
                     {
@@ -1291,37 +1192,10 @@ class DataObject
                     {
                         isInsideImageX = false;
                         tPxX = static_cast<double>(m_size[0] - 1);
-                    }
-                }
+                    }                
             }
             else
-            {
-                /*if(considerTranspose && this->m_transpose)
-                {
-                    if(m_pDataObjectTags)
-                    {
-                        tPxX = physX / m_pDataObjectTags->m_axisScales[m_dims - 2] + m_pDataObjectTags->m_axisOffsets[m_dims - 2];
-                        tPxY = physY / m_pDataObjectTags->m_axisScales[m_dims - 1] + m_pDataObjectTags->m_axisOffsets[m_dims - 1];
-                    }
-                    else
-                    {
-                        tPxX = physX;
-                        tPxY = physY;
-                    }
-
-                    if(tPxY > m_size[m_dims - 1] - 1)
-                    {
-                        isInsideImageY = false;
-                        tPxY = static_cast<double>(m_size[m_dims - 1] - 1);
-                    }
-                    if(tPxX > m_size[m_dims - 2] - 1)
-                    {
-                        isInsideImageX = false;
-                        tPxY = static_cast<double>(m_size[m_dims - 2] - 1);
-                    }
-                }
-                else*/
-                {
+            {             
                     if(m_pDataObjectTags)
                     {
                         tPxX = physX / m_pDataObjectTags->m_axisScales[m_dims - 1] + m_pDataObjectTags->m_axisOffsets[m_dims - 1];
@@ -1342,8 +1216,7 @@ class DataObject
                     {
                         isInsideImageX = false;
                         tPxY = static_cast<double>(m_size[m_dims - 1] - 1);
-                    }
-                }
+                    }                
             }
 
             if(tPxX < 0)
@@ -1368,7 +1241,7 @@ class DataObject
         \param[out] isInsideImage   flag which is set to true if coordinate is within range of the image.
         \return (double)( pix - AxisOffset)* AxisScale)
         */
-        inline double getPixToPhys(const unsigned int dim, const double pix, bool &isInsideImage/*, const bool considerTranspose = true*/) const
+        inline double getPixToPhys(const unsigned int dim, const double pix, bool &isInsideImage) const
         {
             double tPhys = 0.0;
             if(static_cast<int>(dim) >= m_dims)
@@ -1385,14 +1258,14 @@ class DataObject
             }
             if(m_pDataObjectTags)
             {
-                tPhys = (pix - getAxisOffset(dim/*, considerTranspose*/)) * getAxisScale(dim/*, considerTranspose*/);
+                tPhys = (pix - getAxisOffset(dim)) * getAxisScale(dim);
             }
             else
             {
                 tPhys = pix;
             }
 
-            if((pix > getSize(dim/*, considerTranspose*/) - 1) || (pix < 0))
+            if((pix > getSize(dim) - 1) || (pix < 0))
             {
                 isInsideImage = false;
             }
@@ -1478,13 +1351,7 @@ class DataObject
 
         /*!< returns if the data object is owner of the data, hence, the data will be deleted by this data object, if nobody else is using the data any more */
         inline char getOwnData(void) const { return m_owndata; }
-
-        ///*!< returns true if the transpose-flag is set */
-        //inline char isT(void) const { return m_transpose; }
-
-        ///*!< sets the transpose flag to 0 or 1 */
-        //inline void setT(const char trans) { m_transpose = trans; }
-
+        
         //! gets total number of elements within the data object's ROI
         /*!
             \return number of elements
@@ -1553,8 +1420,7 @@ class DataObject
             if(m_objSharedDataLock) m_objSharedDataLock->unlock();
             m_objHeaderLock.unlock();
         }
-
-        //RetVal evaluateTransposeFlag();  /*!< if the transpose flag is set, executes the transposition by changing the values in memory. The transpose flag is set to false afterwards. */
+        
         RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0);   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const;
         RetVal deepCopyPartial(DataObject &rhs);                         /*!< copies the values of each element from this data object to the ROI of the given rhs-dataObject. The rhs-dataObject must be allocated yet and its ROI must be the same size than this ROI */
@@ -1566,7 +1432,7 @@ class DataObject
 //        std::vector<int *> get_mdata(void) const;
         int ** get_mdata(void) const;
 
-        //! returns the size-member. This member does not consider the transpose flag, hence, m_size fits to the physical organization of data in memory. For user interaction the last two dimensions have to be flipped if the transpose flag is set
+        //! returns the size-member. m_size fits to the physical organization of data in memory. For user interaction the last two dimensions have to be flipped if the transpose flag is set
         /*!
             \return size-member of type MSize
         */
@@ -1580,17 +1446,12 @@ class DataObject
 
         //! gets the size of the given dimension (this is the size within the ROI)
         /*!
-            \param index is the specific zero-based dimension-index whose size is requested
-            \param considerTransposeFlag: returns the sizes of both last dimensions corresponding to the data in memory, but if the transpose flag is set these values does not correspond to the sizes the user would suppose, if true the sizes will returned in the way the user will suppose it (default = false)
+            \param index is the specific zero-based dimension-index whose size is requested           
             \return size or -1 if index is out of boundaries
         */
-        size_t getSize(int index/*, bool considerTransposeFlag = false*/) const
+        size_t getSize(int index) const
         {
-            if(index < 0 || index >= m_dims) return -1;
-            /*if(considerTransposeFlag && isT() && index >= m_dims - 2)
-            {
-                return m_size[index == m_dims - 2 ? static_cast<size_t>(m_dims - 1) : static_cast<size_t>(m_dims - 2)];
-            }*/
+            if(index < 0 || index >= m_dims) return -1;            
             else
             {
 
@@ -1600,17 +1461,12 @@ class DataObject
 
         //! gets the original size of the given dimension (this is the size without considering any ROI)
         /*!
-            \param index is the specific zero-based dimension-index whose size is requested
-            \param considerTransposeFlag : returns the sizes of both last dimensions corresponding to the data in memory, but if the transpose flag is set these values does not correspond to the sizes the user would suppose, if true the sizes will returned in the way the user will suppose it (default = false)
+            \param index is the specific zero-based dimension-index whose size is requested           
             \return size or -1 if index is out of boundaries
         */
         size_t getOriginalSize(int index/*, bool considerTransposeFlag = false*/) const
         {
-            if(index < 0 || index >= m_dims) return -1;
-           /* if(considerTransposeFlag && isT() && index >= m_dims - 2)
-            {
-                return m_osize[index == m_dims - 2 ? static_cast<size_t>(m_dims - 1) : static_cast<size_t>(m_dims - 2)];
-            }*/
+            if(index < 0 || index >= m_dims) return -1;           
             else
             {
 
@@ -1645,7 +1501,7 @@ class DataObject
             \param type is the data-type of each element (use type of enumeration tDataType)
             \sa create, tDataType
         */
-        DataObject(const size_t size, const int type):/* m_transpose(0),*/ m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const size_t size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             size_t sizes[2] = {1, size};
             this->create(2, sizes, type, 1);
@@ -1661,7 +1517,7 @@ class DataObject
             \param type is the data-type of each element (use type of enumeration tDataType)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeY, const size_t sizeX, const int type):/* m_transpose(0),*/ m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const size_t sizeY, const size_t sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             size_t sizes[2] = {sizeY, sizeX};
             this->create(2, sizes, type, 1);
@@ -1678,7 +1534,7 @@ class DataObject
             \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous = 0) : /*m_transpose(0),*/ m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
              size_t sizes[3] = {sizeZ, sizeY, sizeX};
 
@@ -1978,15 +1834,8 @@ class DataObject
                     cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
                 }
             }
-         #endif
-            /*if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(x, y);
-            }
-            else*/
-            {
+         #endif           
                return (*(cv::Mat_<_Tp> *)(m_data[0]))(y, x);
-            }
         }
 
         //! addressing method for two-dimensional data object.
@@ -2001,31 +1850,14 @@ class DataObject
             if (m_dims != 2)
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
-            }
-
-           /* if( isT())
-            {
-                if (((size_t)x >= m_size[0]) || ((size_t)y >= m_size[1]) )
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
-            }
-            else*/
-            {
+            }          
                 if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[0]) )
                 {
                     cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
                 }
-            }
+            
          #endif
-           /* if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(x, y);
-            }
-            else*/
-            {
                return (*(cv::Mat_<_Tp> *)(m_data[0]))(y, x);
-            }
         }
 
         //! addressing method for three-dimensional data object.
@@ -2057,14 +1889,8 @@ class DataObject
                 }
             }
          #endif
-            /*if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(x, y);
-            }
-            else*/
-            {
+            
                return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(y, x);
-            }
         }
 
         //! addressing method for three-dimensional data object.
@@ -2082,75 +1908,45 @@ class DataObject
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
 
-           /* if( isT())
-            {
-                if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[2]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
-            }
-            else*/
-            {
                 if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
                 {
                     cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
                 }
-            }
 
 
          #endif
-            /*if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(x, y);
-            }
-            else*/
-            {
+
                return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(y, x);
-            }
         }
 
         //! addressing method for n-dimensional data object.
         /*!
             \param *idx is vector whose size is equal to the data object's dimensions. Each entry indicates the zero-based index of its specific dimension considering any ROI
-            \remark The idx vector must indicate the indizes in "virtual"-order (user-friendly order), that means the transpose-flag is considered.
+            \remark The idx vector must indicate the indizes in "virtual"-order (user-friendly order)
             \return const reference to specific element
         */
-        template<typename _Tp> _Tp& at(const unsigned int *idx) const //idx is in virtual order (with respect to transpose-flag)
+        template<typename _Tp> _Tp& at(const unsigned int *idx) const //idx is in virtual order 
         {
             size_t matNum = 0;
 
             matIdxToNum(idx, &matNum);
 
-           /* if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 1], idx[m_dims - 2]);
-            }
-            else*/
-            {
                return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
-            }
         }
 
         //! addressing method for n-dimensional data object.
         /*!
             \param *idx is vector whose size is equal to the data object's dimensions. Each entry indicates the zero-based index of its specific dimension considering any ROI
-            \remark The idx vector must indicate the indizes in "virtual"-order (user-friendly order), that means the transpose-flag is considered.
+            \remark The idx vector must indicate the indizes in "virtual"-order (user-friendly order)
             \return reference to specific element
         */
-        template<typename _Tp> _Tp& at(const unsigned int *idx) //idx is in virtual order (with respect to transpose-flag)
+        template<typename _Tp> _Tp& at(const unsigned int *idx) //idx is in virtual order 
         {
             size_t matNum = 0;
 
             matIdxToNum(idx, &matNum);
 
-           /* if (isT())
-            {
-               return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 1], idx[m_dims - 2]);
-            }
-            else*/
-            {
                return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
-            }
         }
 
         DataObject at(const ito::Range rowRange, const ito::Range colRange);     /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
@@ -2285,16 +2081,8 @@ template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const Da
         std::cout <<  tMat + 1 << "->(";
 
 //#ifndef linux
-       /* if (dObj.isT())
-        {
-            std::cout << ((*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))).t()) << std::endl << std::endl;
-
-
-        }
-        else*/
-        {
-            std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;
-        }
+      
+            std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
 //#endif
 
         std::cout << ")" << "\n" << std::endl;

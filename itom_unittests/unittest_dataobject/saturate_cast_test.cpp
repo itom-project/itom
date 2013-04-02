@@ -90,8 +90,8 @@ TYPED_TEST(SaturateTestFloat, saturate_cast_Test)
 	ito::float32 float32_test1 = cv::saturate_cast<ito::float32>(float64_sigNan);
 	EXPECT_EQ(0,std::memcmp(&float32_sigNan,&float32_test1,sizeof(float32_sigNan) ) );				/*!< Testing if float64 signalNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function. */
 
-	ito::float32 float32_test2 = cv::saturate_cast<ito::float32>(float64_qNan);					//cv::saturate_cast always returns signalingNaN for any NaN-input
-	EXPECT_EQ(0,std::memcmp(&float32_sigNan,&float32_test2,sizeof(float32_qNan) ) );		               //NOTE:: This test is failing for qNan value.................
+	ito::float32 float32_test2 = cv::saturate_cast<ito::float32>(float64_qNan);					//!< cv::saturate_cast always returns signalingNaN for any NaN-input
+	EXPECT_EQ(0,std::memcmp(&float32_sigNan,&float32_test2,sizeof(float32_qNan) ) );		    //!< Testing if float64 quietNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function.         
 
 
 	EXPECT_FLOAT_EQ(cv::saturate_cast<ito::float32>(float32_inf),float64_inf);
@@ -100,7 +100,7 @@ TYPED_TEST(SaturateTestFloat, saturate_cast_Test)
 	EXPECT_EQ(0,std::memcmp(&float64_sigNan,&float64_test1,sizeof(float64_sigNan) ) );
 
 	ito::float64 float64_test2 = cv::saturate_cast<ito::float64>(float32_qNan);					//cv::saturate_cast always returns signalingNaN for any NaN-input
-	EXPECT_EQ(0,std::memcmp(&float64_sigNan,&float64_test2,sizeof(float64_qNan) ) );				      //NOTE:: This test is failing for qNan value................
+	EXPECT_EQ(0,std::memcmp(&float64_sigNan,&float64_test2,sizeof(float64_qNan) ) );			//!< Testing if float32 quietNaN variable becomes same as float64 signalNaN variable after converting with saturate_cast<Type>(...) function.
 
 }
 
@@ -150,15 +150,15 @@ TYPED_TEST(SaturateTestFloat_Int, saturate_cast_Test)
 	EXPECT_EQ(cv::saturate_cast<TypeParam>(float_var7) , 5);				//!< conversion from floating point value 5.0 ( using saturate_cast(...) method )to signed fixed type value should return 5.
 	TypeParam Param_test1 = cv::saturate_cast<TypeParam>(float32_inf);
 	TypeParam Param_max1 = std::numeric_limits<TypeParam>::min();
-	EXPECT_EQ(Param_max1 ,  Param_test1 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead...................
+	EXPECT_EQ(Param_max1 ,  Param_test1 );									//Testing if saturate_cast() is returning max value of that datatype 
 
 	TypeParam Param_test2 = cv::saturate_cast<TypeParam>(float32_sigNan);
 	TypeParam Param_max2 = std::numeric_limits<TypeParam>::min();
-	EXPECT_EQ(Param_max2, Param_test2 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead..................
+	EXPECT_EQ(Param_max2, Param_test2 );									//Testing if saturate_cast() is returning max value of that datatype 
 
 	TypeParam Param_test3 = cv::saturate_cast<TypeParam>(float32_qNan);
 	TypeParam Param_max3 = std::numeric_limits<TypeParam>::min();
-	EXPECT_EQ(Param_max3, Param_test3 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead..................
+	EXPECT_EQ(Param_max3, Param_test3 );									//Testing if saturate_cast() is returning max value of that datatype 
 }
 
 //! SaturateTestFloat_UInt
@@ -200,15 +200,15 @@ TYPED_TEST(SaturateTestFloat_UInt, saturate_cast_Test)
 
 	TypeParam Param_test1 = cv::saturate_cast<TypeParam>(float32_inf);		//!< converting special value infinity() variable into unsigned fixed point type variable using saturate_cast(...) method.
 	TypeParam Param_max1 = std::numeric_limits<TypeParam>::min();			//!< Expected maximum value of the data type under test.
-	EXPECT_EQ(Param_max1 ,  Param_test1 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead..................
+	EXPECT_EQ(Param_max1 ,  Param_test1 );									//Testing if saturate_cast() is returning max value of that datatype 
 
 	TypeParam Param_test2 = cv::saturate_cast<TypeParam>(float32_sigNan);	//!< converting special value signaling_NaN() variable into unsigned fixed point type variable using saturate_cast(...) method.
 	TypeParam Param_max2 = std::numeric_limits<TypeParam>::min();			//!< Expected maximum value of the data type under test.
-	EXPECT_EQ(Param_max2, Param_test2 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead..................
+	EXPECT_EQ(Param_max2, Param_test2 );									//Testing if saturate_cast() is returning max value of that datatype 
 
 	TypeParam Param_test3 = cv::saturate_cast<TypeParam>(float32_qNan);		//!< converting special value quiet_NaN() variable into unsigned fixed point type variable using saturate_cast(...) method.
 	TypeParam Param_max3 = std::numeric_limits<TypeParam>::min();			//!< Expected maximum value of the data type under test.
-	EXPECT_EQ(Param_max3, Param_test3 );									//Note:: Test is failing. According to document, saturate_cast() must return max value of that datatype but it is returning min value of that datatype instead..................
+	EXPECT_EQ(Param_max3, Param_test3 );									//Testing if saturate_cast() is returning max value of that datatype 
 }
 
 //! SaturateTestCmplx_NonCmplx

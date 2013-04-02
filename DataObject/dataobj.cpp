@@ -490,69 +490,6 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
     return tmat;*/
 };
 
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------
-//! templated helper-method for evaluating the virtual transpose-flag. If this flag is set to true, the matrix is really transposed in memory and the flag is reset to false.
-/*!
-    \param *dObj is the given data object
-    \return retOk
-    \sa evaluateTransposeFlag
-*/
-//template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj)
-//{
-//    if(dObj == NULL) return RetVal(retError);
-
-//    size_t numMats = dObj->calcNumMats();
-
-    // No way to contruct iterators on temporary transposed matrices so we transpose all
-    // anyway there could be situations this leads to inconsistencies
-    //if (dObj->isT())
-    //{
-    //    for (size_t nMat = 0; nMat < numMats; nMat++)
-    //    {
-    //        *((cv::Mat_<_Tp> *)(dObj->get_mdata()[nMat])) = ((cv::Mat_<_Tp> *)(dObj->get_mdata()[nMat]))->t();
-    //    }
-    //    dObj->setT(0);
-
-    //    //flip last two dimensions in m_osize, m_roi und m_size
-    //    int dims = dObj->getDims();
-    //    if(dims > 1)
-    //    {
-    //        size_t temp;
-
-    //        temp = dObj->m_osize.m_p[dims-1];
-    //        dObj->m_osize.m_p[dims-1] = dObj->m_osize.m_p[dims-2];
-    //        dObj->m_osize.m_p[dims-2] = temp;
-    //        temp = dObj->m_roi.m_p[dims-1];
-    //        dObj->m_roi.m_p[dims-1] = dObj->m_roi.m_p[dims-2];
-    //        dObj->m_roi.m_p[dims-2] = temp;
-    //        temp = dObj->m_size.m_p[dims-1];
-    //        dObj->m_size.m_p[dims-1] = dObj->m_size.m_p[dims-2];
-    //        dObj->m_size.m_p[dims-2] = temp;
-    //    }
-    //}
-
- //   return RetVal(retOk);
-//}
-
-//typedef RetVal (*tEvaluateTransposeFlagFunc)(DataObject *dObj);
-//MAKEFUNCLIST(EvaluateTransposeFlagFunc)
-
-//! high-level, non-templated method for evaluating the virtual transpose-flag
-/*!
-    If this flag is set to true, the matrix is really transposed in memory and the flag is reset to false.
-
-    \return retOk
-    \sa EvaluateTransposeFlagFunc
-*/
-//RetVal DataObject::evaluateTransposeFlag()
-//{
-//    return  fListEvaluateTransposeFlagFunc[getType()](this);
-//}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! templated method for create
 /*!
@@ -748,7 +685,6 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
 
     m_owndata = (continuousDataPtr == NULL);
 
-    //m_transpose = 0;
 
     if(!m_continuous && continuousDataPtr)
     {
@@ -1174,7 +1110,6 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
    {
          numMats = lhs.calcNumMats();
          CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
-         //rhs.setT(lhs.isT());
          for (size_t nMat = 0; nMat < numMats; nMat++)
          {
             tMat = lhs.seekMat(nMat);
@@ -1199,8 +1134,6 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
          }
 
 
-
-         //rhs.setT(lhs.isT());
          for (unsigned int nMat = 0; nMat < numMats; nMat++)
          {
             tempMat = (cv::Mat_<_Tp> *)lhs.m_data[nMat];
@@ -1402,55 +1335,46 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    {
       case ito::tInt8:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tUInt8:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tInt16:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tUInt16:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tInt32:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tFloat32:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tFloat64:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tComplex64:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
       break;
 
       case ito::tComplex128:
          rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         //rhs.setT(lhs.isT());
          CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
       break;
 
@@ -2130,7 +2054,6 @@ DataObject & DataObject::operator = (const DataObject &rhs)
    m_type = rhs.m_type;
    m_continuous = rhs.m_continuous;
 //   m_owndata = m_owndata;
-   //setT(rhs.isT());
    m_pRefCount = rhs.m_pRefCount;
 
    if(rhs.m_dims > 0 || m_pRefCount)
@@ -2175,7 +2098,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
 
     \param &copyConstr is the data object, which will be copied
 */
-DataObject::DataObject(const DataObject& copyConstr) : /*m_transpose(0),*/ m_pRefCount(0), m_dims(0), m_data(NULL)
+DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0), m_data(NULL)
 {
     /*if(copyConstr.m_objSharedDataLock->getLockStatus() == -1)
     {
@@ -2183,7 +2106,6 @@ DataObject::DataObject(const DataObject& copyConstr) : /*m_transpose(0),*/ m_pRe
     }*/
 
     createHeaderWithROI(copyConstr.m_dims, copyConstr.m_size.m_p, copyConstr.m_osize.m_p, copyConstr.m_roi.m_p);
-    //setT(copyConstr.isT());
     m_pRefCount = copyConstr.m_pRefCount;
     m_objSharedDataLock = copyConstr.m_objSharedDataLock; //copies pointer
     m_pDataObjectTags = copyConstr.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
@@ -2239,7 +2161,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 		}
 
 		m_type = dObj.m_type;
-	   // m_transpose = copyConstr.m_transpose;
 		m_continuous = dObj.m_continuous;
 		m_owndata = dObj.m_owndata;
 
