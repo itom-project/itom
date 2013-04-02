@@ -14,7 +14,7 @@
 #define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.2\32 Bit"
 ;#define SourceDirPCL "${PCL_DIR}/../bin"
 #define ExeName "Qitom.exe"
-#define Name "ITOM"
+#define Name "itom"
 #define Version "${ITOM_versionString}"
 #define Publisher "ITO Uni Stuttgart"
 #define URL "http://www.ito.uni-stuttgart.de/"
@@ -128,7 +128,10 @@ Source: "{#SourceDirPython}\6. PIL-fork-1.1.7.win32-py3.2.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
 ; Default INI
-Source: "{#SourceDirITOM}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder  
+Source: "{#SourceDirITOM}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder
+
+; Lizenz-Datei
+Source: "{#SourceDirITOMHelp}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
 
 ; itom-packages
 Source: "{#SourceDirITOM}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder  
