@@ -67,11 +67,19 @@ if(PYTHONINTERP_FOUND)
 
         # Get the major and minor version numbers
         string(REGEX REPLACE "\\." ";" _NUMPY_VERSION_LIST ${NUMPY_VERSION})
+		
         list(GET _NUMPY_VERSION_LIST 0 NUMPY_VERSION_MAJOR)
         list(GET _NUMPY_VERSION_LIST 1 NUMPY_VERSION_MINOR)
-        list(GET _NUMPY_VERSION_LIST 2 NUMPY_VERSION_PATCH)
+        list(GET _NUMPY_VERSION_LIST 2 NUMPY_VERSION_PATCHBUNDLE)
+		
+		#version_patch can also be "patch_number rc releasecandidate_number" -> split patch_number
+		string(REGEX REPLACE "rc" ";" NUMPY_VERSION_PATCHBUNDLE ${NUMPY_VERSION_PATCHBUNDLE})
+		list(GET NUMPY_VERSION_PATCHBUNDLE 0 NUMPY_VERSION_PATCH)
+		
         math(EXPR NUMPY_VERSION_DECIMAL
             "(${NUMPY_VERSION_MAJOR} * 10000) + (${NUMPY_VERSION_MINOR} * 100) + ${NUMPY_VERSION_PATCH}")
+		
+		message(STATUS ${_NUMPY_VERSION_LIST} ${NUMPY_VERSION_DECIMAL})
 
         find_package_message(NUMPY
             "Found NumPy: version \"${NUMPY_VERSION}\" ${NUMPY_INCLUDE_DIRS}"
