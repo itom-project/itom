@@ -65,7 +65,9 @@ public:
     inline int cols() const { return m_cols; };
 
 protected:
-    
+
+    QWidget* prepareWidget(const QString &plotClassName, int areaRow, int areaCol, RetVal &retval);
+
     void createActions();
     void createMenus();
     void createToolBars();
@@ -85,13 +87,21 @@ private:
 
     QMenu *m_menuWindow;
     QMenu *m_menuSubplot;
+    QAction *m_firstSysAction;
 
     QActionGroup *m_pSubplotActions;
 
     int m_rows;
     int m_cols;
+    int m_curIdx;
 
     QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds it own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
+
+    QMap< QObject*, QList<QAction*> > m_menuStack;
+
+    QVector<QWidget*> m_widgets;
+
+
 
 	
 

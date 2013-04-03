@@ -51,6 +51,14 @@ namespace ito
             enum tMovingStyle { movingDisabled, movingEnabled };    /*!<  if movingDisabled dockWidget must not be moved from one docking area to another one, else: movingEnabled */
             enum tTopLevelStyle { topLevelOverall, topLevelParentOnly, topLevelNothing };
 
+            struct Toolbar
+            {
+                Qt::ToolBarArea area;
+                int section;
+                QString key;
+                QToolBar *tb;
+            };
+
             AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title = QString(), QWidget *parent = 0);
             virtual ~AbstractDockWidget();
 
@@ -201,12 +209,13 @@ namespace ito
             inline bool pythonDebugMode() const { return m_pythonDebugMode; }          /*!<  returns if python is in debug mode (true) */
             inline bool pythonInWaitingMode() const { return m_pythonInWaitingMode; }  /*!<  returns if python is in waiting mode (true) \sa m_pythonInWaitingMode */
 
-            RetVal registerToolBar(QToolBar* tb, QString key);
-            RetVal unregisterToolBar(QString key);
+            //RetVal addAndRegisterToolBar(QToolBar* tb, QString key);
+            //RetVal unregisterToolBar(QString key);
             QToolBar* getToolBar(QString key) const;
             inline QMenuBar* getMenuBar() const { return (m_pWindow == NULL) ?  NULL : m_pWindow->menuBar(); }
 
-            RetVal addAndRegisterToolBar(QToolBar* tb, QString key);
+            RetVal addToolBar(QToolBar *tb, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
+            RetVal removeToolBar(const QString &key);
 
             QAction *m_actStayOnTop;
             QAction *m_actStayOnTopOfApp;
@@ -229,6 +238,7 @@ namespace ito
             QString m_completeTitle;            /*!<  complete title for this instance, shown if dock widget is undocked */
 
             QMap<QString,QToolBar*> m_toolBars; /*!<  map of different toolbars, which are shown in undocked version with bigger icon sizes comparing to docked version */
+            QList<Toolbar> m_toolbars;
 
             bool m_pythonBusy;                  /*!<  if true, python is busy right now */
             bool m_pythonDebugMode;             /*!<  if true, python is in debug mode right now */

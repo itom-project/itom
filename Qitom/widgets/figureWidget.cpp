@@ -42,13 +42,16 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
     m_menuWindow(NULL),
     m_menuSubplot(NULL),
     m_pSubplotActions(NULL),
+    m_firstSysAction(NULL),
     m_rows(rows),
-    m_cols(cols)
+    m_cols(cols),
+    m_curIdx(-1)
 {
 
     AbstractDockWidget::init();
 
     QWidget *temp;
+    int idx = 0;
 
     m_pCenterWidget = new QWidget(this);
     m_pGrid = new QGridLayout(m_pCenterWidget);
@@ -56,13 +59,17 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
     m_pGrid->setContentsMargins(0,0,0,0);
     m_pCenterWidget->setLayout(m_pGrid);
 
+    m_widgets.fill(NULL, rows * cols);
+
     for(int r = 0 ; r < rows ; r++)
     {
         for (int c = 0 ; c < cols ; c++)
         {
             temp = new QWidget(m_pCenterWidget);
             temp->setObjectName( QString("emptyWidget%1").arg(m_cols * r + c) );
-            m_pGrid->addWidget(new QWidget(m_pCenterWidget), r, c);
+            m_widgets[idx] = new QWidget(m_pCenterWidget);
+            m_pGrid->addWidget(m_widgets[idx], r, c);
+            idx++;
         }
     }
 
@@ -132,7 +139,7 @@ void FigureWidget::createMenus()
     {
         m_menuSubplot = new QMenu(tr("&Subplots"), this);
         m_menuSubplot->addActions(m_pSubplotActions->actions());
-        getMenuBar()->addMenu(m_menuSubplot);
+        m_firstSysAction = getMenuBar()->addMenu(m_menuSubplot);
     }
 
 
@@ -147,7 +154,8 @@ void FigureWidget::createMenus()
         m_menuWindow->addAction(m_actStayOnTopOfApp);
     }
 	
-    getMenuBar()->addMenu(m_menuWindow);
+    QAction *act = getMenuBar()->addMenu(m_menuWindow);
+    if(!m_firstSysAction) m_firstSysAction = act;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -169,93 +177,51 @@ void FigureWidget::updateActions()
 RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     RetVal retval;
     QString plotClassName;
     bool exists = false;
+    int idx = areaCol + areaRow * m_cols;
 
-    if(areaRow < 0 || areaRow >= m_rows)
+    if(dwo)
     {
-        retval += ito::RetVal::format(ito::retError,0,"areaRow out of range [0,%i]", m_rows-1);
-    }
-
-    if(areaCol < 0 || areaCol >= m_cols)
-    {
-        retval += ito::RetVal::format(ito::retError,0,"arealCol out of range [0,%i]", m_cols-1);
-    }
-
-    if(!retval.containsError())
-    {
-
-        if(dwo && uiOrg)
+        int dims = dataObj->getDims();
+        int sizex = dataObj->getSize(dims - 1);
+        int sizey = dataObj->getSize(dims - 2);
+        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
         {
-            int dims = dataObj->getDims();
-            int sizex = dataObj->getSize(dims - 1);
-            int sizey = dataObj->getSize(dims - 2);
-            if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
-            {
-                plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
+            plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
             
-            }
-            else
-            {
-                plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
-                //not 1D so try 2D ;-) new 2dknoten()
-            }
-
-            QLayoutItem *currentItem = m_pGrid->itemAtPosition(areaRow,areaCol);
-            QWidget *currentItemWidget = currentItem ? currentItem->widget() : NULL;
-            if(currentItemWidget)
-            {
-                const QMetaObject* meta = currentItemWidget->metaObject();
-                if(QString::compare(plotClassName, meta->className(), Qt::CaseInsensitive) == 0)
-                {
-                    exists = true;
-                }
-            }
-
-            if(exists == false)
-            {
-                QWidget* newWidget = uiOrg->loadDesignerPluginWidget(plotClassName, retval, m_pCenterWidget);
-                if(newWidget)
-                {
-                    newWidget->setObjectName( QString("plot%1x%2").arg(areaRow).arg(areaCol) );
-
-                    if(m_pSubplotActions)
-                    {
-                        int idx = areaCol + areaRow * m_cols;
-                        m_pSubplotActions->actions()[ idx ]->setText( tr("subplot %1 (plot)").arg( idx ) );
-                    }
-
-                    QWidget *oldWidget = currentItem ? currentItemWidget : NULL;
-                    m_pGrid->addWidget(newWidget, areaRow, areaCol, 1, 1);
-                    currentItemWidget = newWidget;
-                    if(oldWidget) oldWidget->deleteLater();
-                }
-                else
-                {
-                    retval += RetVal::format(retError,0,"could not create designer widget of class '%s'", plotClassName.toAscii().data());
-                }
-            }
-
-            if(!retval.containsError() && currentItemWidget)
-            {
-                ito::AbstractDObjFigure *dObjFigure = NULL;
-                if (currentItemWidget->inherits("ito::AbstractDObjFigure"))
-                {
-                    dObjFigure = (ito::AbstractDObjFigure*)(currentItemWidget);
-                    dObjFigure->setSource(dataObj);
-                }
-                else
-                {
-                    retval += RetVal::format(retError,0,"designer widget of class '%s' cannot plot objects of type dataObject", plotClassName.toAscii().data());
-                }
-            }
         }
         else
         {
-            retval += RetVal(retError,0,"designerWidgetOrganizer or uiOrganizer is not available");
+            plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
+            //not 1D so try 2D ;-) new 2dknoten()
         }
+
+        QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
+
+        if(!retval.containsError() && destWidget)
+        {
+            ito::AbstractDObjFigure *dObjFigure = NULL;
+            if (destWidget->inherits("ito::AbstractDObjFigure"))
+            {
+                dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
+                dObjFigure->setSource(dataObj);
+            }
+            else
+            {
+                retval += RetVal::format(retError,0,"designer widget of class '%s' cannot plot objects of type dataObject", plotClassName.toAscii().data());
+            }
+
+            if(idx == m_curIdx)
+            {
+                changeCurrentSubplot(idx);
+            }
+        }
+    }
+    else
+    {
+        retval += RetVal(retError,0,"designerWidgetOrganizer is not available");
     }
 
     return retval;
@@ -265,10 +231,73 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     RetVal retval;
     QString plotClassName;
     bool exists = false;
+    int idx = areaCol + areaRow * m_cols;
+
+    if(!dwo)
+    {
+        retval += RetVal(retError,0,"designerWidgetOrganizer is not available");
+    }
+    else if(cam.isNull())
+    {
+        retval += RetVal(retError,0,"camera is not available any more");
+    }
+    else
+    {
+        //get size of camera image
+        QSharedPointer<ito::Param> sizex = getParamByInvoke(cam.data(), "sizex", retval);
+        QSharedPointer<ito::Param> sizey = getParamByInvoke(cam.data(), "sizey", retval);
+        
+        if(!retval.containsError())
+        {
+            if(sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
+            }
+            else
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
+            }
+        }
+
+        QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
+
+        if(!retval.containsError() && destWidget)
+        {
+            ito::AbstractDObjFigure *dObjFigure = NULL;
+            if (destWidget->inherits("ito::AbstractDObjFigure"))
+            {
+                dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
+                dObjFigure->setCamera(cam);
+            }
+            else
+            {
+                retval += RetVal::format(retError,0,"designer widget of class '%s' cannot plot objects of type dataObject", plotClassName.toAscii().data());
+            }
+            
+            if(idx == m_curIdx)
+            {
+                changeCurrentSubplot(idx);
+            }
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, int areaCol, RetVal &retval)
+{
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    bool exists = false;
+    QWidget *destinationWidget = NULL;
+    QMenuBar *menubar = getMenuBar();
+    QAction *insertAction;
+    QList<QAction*> menusActions;
+    QList<AbstractFigure::ToolBarItem> toolbars;
+    int idx = areaCol + areaRow * m_cols;
 
     if(areaRow < 0 || areaRow >= m_rows)
     {
@@ -282,31 +311,9 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 
     if(!retval.containsError())
     {
-
-        if(cam.isNull())
+        if(uiOrg)
         {
-            retval += RetVal(retError,0,"camera is not available any more");
-        }
-        else if(dwo && uiOrg)
-        {
-            //get size of camera image
-            QSharedPointer<ito::Param> sizex = getParamByInvoke(cam.data(), "sizex", retval);
-            QSharedPointer<ito::Param> sizey = getParamByInvoke(cam.data(), "sizey", retval);
-        
-            if(!retval.containsError())
-            {
-                if(sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
-                {
-                    plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
-                }
-                else
-                {
-                    plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
-                }
-            }
-
-            QLayoutItem *currentItem = m_pGrid->itemAtPosition(areaRow,areaCol);
-            QWidget *currentItemWidget = currentItem ? currentItem->widget() : NULL;
+            QWidget *currentItemWidget = m_widgets[idx];
             if(currentItemWidget)
             {
                 const QMetaObject* meta = currentItemWidget->metaObject();
@@ -318,39 +325,58 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 
             if(exists == false)
             {
-                QWidget* newWidget = uiOrg->loadDesignerPluginWidget(plotClassName, retval, m_pCenterWidget);
+                QWidget* newWidget = uiOrg->loadDesignerPluginWidget(plotClassName, retval, AbstractFigure::ModeInItomFigure, m_pCenterWidget);
                 if(newWidget)
                 {
                     newWidget->setObjectName( QString("plot%1x%2").arg(areaRow).arg(areaCol) );
 
+                    ito::AbstractFigure *figWidget = NULL;
+                    if (newWidget->inherits("ito::AbstractFigure"))
+                    {
+                        figWidget = (ito::AbstractFigure*)(newWidget);
+
+                        QList<QMenu*> menus = figWidget->getMenus();
+                        menusActions.clear();
+                        
+                        foreach(QMenu* m, menus)
+                        {
+                            insertAction = menubar->insertMenu(m_firstSysAction, m);
+                            menusActions.append( insertAction );
+                        }
+                        m_menuStack[figWidget] = menusActions;
+
+                        foreach(const AbstractFigure::ToolBarItem &t, figWidget->getToolbars())
+                        {
+                            t.toolbar->setVisible(false);
+                        }
+                    }
+
                     if(m_pSubplotActions)
                     {
                         int idx = areaCol + areaRow * m_cols;
-                        m_pSubplotActions->actions()[ idx ]->setText( tr("subplot %1 (liveImage)").arg( idx ) );
+                        m_pSubplotActions->actions()[ idx ]->setText( tr("subplot %1").arg( idx ) );
                     }
 
-                    QWidget *oldWidget = currentItem ? currentItemWidget : NULL;
+                    QWidget *oldWidget = m_widgets[idx];
                     m_pGrid->addWidget(newWidget, areaRow, areaCol, 1, 1);
-                    currentItemWidget = newWidget;
-                    if(oldWidget) oldWidget->deleteLater();
+                    m_widgets[idx] = newWidget;
+                    destinationWidget = newWidget;
+                    
+                    if(oldWidget) 
+                    {
+                        menusActions = m_menuStack[oldWidget];
+                        foreach(QAction* a, menusActions)
+                        {
+                            menubar->removeAction(a);
+                        }
+                        m_menuStack.remove( oldWidget );
+
+                        oldWidget->deleteLater();
+                    }
                 }
                 else
                 {
                     retval += RetVal::format(retError,0,"could not create designer widget of class '%s'", plotClassName.toAscii().data());
-                }
-            }
-
-            if(!retval.containsError() && currentItemWidget)
-            {
-                ito::AbstractDObjFigure *dObjFigure = NULL;
-                if (currentItemWidget->inherits("ito::AbstractDObjFigure"))
-                {
-                    dObjFigure = (ito::AbstractDObjFigure*)(currentItemWidget);
-                    dObjFigure->setCamera(cam);
-                }
-                else
-                {
-                    retval += RetVal::format(retError,0,"designer widget of class '%s' cannot plot objects of type dataObject", plotClassName.toAscii().data());
                 }
             }
         }
@@ -360,7 +386,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         }
     }
 
-    return retval;
+    return destinationWidget;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -434,31 +460,75 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 RetVal FigureWidget::changeCurrentSubplot(int newIndex)
 {
     qDebug() << "new current action " << newIndex;
-    QLayoutItem *item = NULL;
     QWidget *widget = NULL;
-    int curIdx;
+    int idx;
+    ito::AbstractFigure *figWidget = NULL;
+    QMainWindow *mainWin = getCanvas();
+    QString key_;
 
     for(int r = 0 ; r < m_rows ; r++)
     {
         for(int c = 0 ; c < m_cols ; c++)
         {
-            curIdx = m_cols * r + c;
-            item = m_pGrid->itemAtPosition(r,c);
-            if(item)
+            idx = m_cols * r + c;
+            widget = m_widgets[idx];
+            if(widget && idx == newIndex)
             {
-                widget = item->widget();
-                if(widget && curIdx == newIndex)
+                //if(idx != m_curIdx)
+                //{
+                    //set new toolbars
+                    QList< AbstractFigure::ToolBarItem > toolbars;
+                    if (widget->inherits("ito::AbstractFigure"))
+                    {
+                        figWidget = (ito::AbstractFigure*)(widget);
+                        toolbars = figWidget->getToolbars();
+
+                        QList< AbstractFigure::ToolBarItem >::iterator i;
+                        for(i = toolbars.begin() ; i != toolbars.end() ; ++i)
+                        {
+                            key_ = QString("%1_%2").arg( int(figWidget) ).arg(i->key);
+                            addToolBar(i->toolbar, key_, i->area, i->section);
+                            i->toolbar->setVisible(i->visible);
+                        }
+                    }
+                //}
+                
+                if(m_rows > 1 || m_cols > 1)
                 {
                     widget->setStyleSheet( QString("QWidget#%1 { border: 2px solid blue } ").arg( widget->objectName() ) );
-                    if(m_pSubplotActions) m_pSubplotActions->actions()[ curIdx ]->setChecked(true);
                 }
-                else if(widget)
+
+                if(m_pSubplotActions) m_pSubplotActions->actions()[ idx ]->setChecked(true);
+            }
+            else if(widget)
+            {
+                if( idx == m_curIdx )
+                {
+                    //remove toolbars from this
+                    QList< AbstractFigure::ToolBarItem > toolbars;
+                    if (widget->inherits("ito::AbstractFigure"))
+                    {
+                        figWidget = (ito::AbstractFigure*)(widget);
+                        toolbars = figWidget->getToolbars();
+
+                        QList< AbstractFigure::ToolBarItem >::iterator i;
+                        for(i = toolbars.begin() ; i != toolbars.end() ; ++i)
+                        {
+                            key_ = QString("%1_%2").arg( int(figWidget) ).arg(i->key);
+                            removeToolBar(key_);
+                        }
+                    }
+                }
+
+                if(m_rows > 1 || m_cols > 1)
                 {
                     widget->setStyleSheet( QString("QWidget#%1 { border: 2px none } ").arg( widget->objectName() ) );
                 }
             }
         }
     }
+
+    m_curIdx = newIndex;
 
     return retOk;
 }

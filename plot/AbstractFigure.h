@@ -46,20 +46,23 @@ void initialize(AbstractFigure *fig);
 class AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
-    Q_ENUMS(TopLevelMode)
     Q_ENUMS(WindowMode)
     Q_PROPERTY(bool toolbarVisible READ toolbarVisible WRITE setToolbarVisible DESIGNABLE true)
     Q_PROPERTY(bool showContextMenu READ showContextMenu WRITE setShowContextMenu DESIGNABLE true)
-    Q_PROPERTY(TopLevelMode topLevelMode READ getTopLevelMode WRITE setTopLevelMode DESIGNABLE false) //designable is not important, since topLevelMode only is relevant for window-based-plots.
 
     public:
-        AbstractFigure(const QString &itomSettingsFile, QWidget *parent = 0);
+        enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
+
+        struct ToolBarItem {
+            QToolBar *toolbar;
+            bool visible;
+            int section;
+            Qt::ToolBarArea area;
+            QString key;
+        };
+
+        AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode = ModeStandaloneInUi, QWidget *parent = 0);
         ~AbstractFigure();
-
-        enum WindowMode { ModeWindow, ModeEmbedded };
-        enum TopLevelMode { TopLevelNothing, TopLevelParentOnly, TopLevelOverall };
-
-        void setWindowMode(const WindowMode mode);
 
         virtual bool event(QEvent *e);
         void setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr);
@@ -78,47 +81,35 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         virtual void setShowContextMenu(bool show) = 0; 
         virtual bool showContextMenu() const = 0;
 
-        void setTopLevelMode(TopLevelMode mode);
-        TopLevelMode getTopLevelMode();
-
-		//toolbar methods
-		void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
-		void insertToolBar(const QString &key_before, QToolBar *toolbar, const QString &key);
-		void insertToolBarBreak(const QString &key_before);
-		void removeToolBar(const QString &key);
-		void removeToolBarBreak(const QString &key_before);
-		void showToolBar(const QString &key);
-		void hideToolBar(const QString &key);
+        QList<QMenu*> getMenus() const;
+        QList<AbstractFigure::ToolBarItem> getToolbars() const;
 
     protected:
 
-        RetVal initialize();
+		void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
+        void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
+
+		void showToolBar(const QString &key);
+		void hideToolBar(const QString &key);
+
         void addMenu(QMenu *menu);
 
-		QMap<QString, QPair<QToolBar*, bool> > m_toolbars;
+        RetVal initialize();
 
-        QMenu    *m_contextMenu;
-
-        QAction *m_actTopLevelParent;
-        QAction *m_actTopLevelOverall;
-
-        QMenu *m_menuWindow;
+        QMenu *m_contextMenu;
 
         WindowMode m_windowMode;
-        TopLevelMode m_topLevelMode;
         QString m_itomSettingsFile;
         QWidget *m_mainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
         
-        //friend void ito::initialize(ito::AbstractFigure *fig);
-
 		bool m_toolbarsVisible;
 
-        
-
     private:
+        QList<QMenu*> m_menus;
+        QList<ToolBarItem> m_toolbars;
 
     signals:
 
@@ -126,14 +117,9 @@ class AbstractFigure : public QMainWindow, public AbstractNode
 
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
 
-        void mnuTopLevelOverall(bool checked);
-        void mnuTopLevelParent(bool checked);
-
     public slots:
 };
 
 }; // namespace ito
-
-Q_DECLARE_METATYPE(ito::AbstractFigure::TopLevelMode)
 
 #endif // ABSTRACTFIGURE_H

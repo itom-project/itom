@@ -234,7 +234,7 @@ void AIManagerWidget::createToolBars()
 
     m_pMainToolbar = new QToolBar(tr("plugins"), this);
     m_pMainToolbar->setFloatable(false);
-    addAndRegisterToolBar(m_pMainToolbar, "mainToolBar");
+    addToolBar(m_pMainToolbar, "mainToolBar");
 
     m_pMainToolbar->addWidget(spacerWidget);
     m_pMainToolbar->addAction(m_pAIManagerViewSettingMenu->menuAction());

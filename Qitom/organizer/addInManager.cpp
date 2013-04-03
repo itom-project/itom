@@ -337,7 +337,7 @@ namespace ito
 //                message = tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
                 message = tr("Unable to find translation file.");
                 qDebug() << message;
-                pls.messages.append(QPair<ito::tRetValue, QString>(retError, message));
+                pls.messages.append(QPair<ito::tRetValue, QString>(retWarning, message));
             }
 
             QPluginLoader loader(filename);

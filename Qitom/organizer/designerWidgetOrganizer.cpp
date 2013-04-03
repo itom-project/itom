@@ -27,16 +27,14 @@
 #include "common/apiFunctionsGraphInc.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
-#include "plot/abstractItomDesignerPlugin.h"
 
-#include <QtUiTools/quiloader.h>
+#include <qmetaobject.h>
 #include <qpluginloader.h>
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#include <qsettings.h>
 #include <qcoreapplication.h>
 #include <qdir.h>
-#include <qlibrary.h>
-#include <qsettings.h>
-#include <qmetaobject.h>
+
 
 /*!
     \class DesignerWidgetOrganizer
@@ -52,7 +50,7 @@ namespace ito
 /*!
 
 */
-DesignerWidgetOrganizer::DesignerWidgetOrganizer()
+DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
 {
     //create figure categories (for property dialog...)
    ito::PlotDataFormats allFormats = ~(ito::PlotDataFormats(0)); //(~ito::Format_Gray8); // | ito::Format_Gray8; //(ito::PlotDataFormats(0));
@@ -63,7 +61,7 @@ DesignerWidgetOrganizer::DesignerWidgetOrganizer()
     m_figureCategories["DObjStaticImage"] = FigureCategory("Data Object, 2D Image Plot, Static", ito::DataObjPlane | ito::DataObjPlaneStack, allFormats, ito::Static | ito::PlotImage, 0, "itom2DQwtFigure");
     m_figureCategories["DObjStaticGeneralPlot"] = FigureCategory("Data Object, Any Planar Plot, Static", ito::DataObjLine | ito::DataObjPlane | ito::DataObjPlaneStack, allFormats, ito::Static, ito::Plot3D | ito::PlotISO, "itom2DQwtFigure");
 
-    scanDesignerPlugins();
+    retValue += scanDesignerPlugins();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +96,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     bool allowedInterface;
 
     //get version of the required AbstractItomDesignerPlugin
-    AbstractItomDesignerPlugin *dummyPlugin = new AbstractItomDesignerPlugin();
+    AbstractItomDesignerPlugin *dummyPlugin = new DummyItomDesignerPlugin(NULL);
     if(dummyPlugin)
     {
         metaObj = dummyPlugin->metaObject();
@@ -201,7 +199,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     return ito::retOk;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 bool DesignerWidgetOrganizer::figureClassExists( const QString &className )
 {
     foreach(const FigurePlugin &plugin, m_figurePlugins)
@@ -214,7 +212,7 @@ bool DesignerWidgetOrganizer::figureClassExists( const QString &className )
     return false;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck( const QString &className, int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask, bool *ok )
 {
     ito::RetVal retVal;
@@ -251,7 +249,7 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck( const Q
     return retVal;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask )
 {
     QList<FigurePlugin> figurePlugins;
@@ -268,6 +266,7 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( int plotD
     return figurePlugins;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( const FigureCategory &figureCat )
 {
     QList<FigurePlugin> figurePlugins;
@@ -292,6 +291,7 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( const Fig
     return figurePlugins;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal )
 {
     if(!m_figureCategories.contains(figureCategory))
@@ -348,6 +348,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DesignerWidgetOrganizer::setFigureDefaultClass( const QString &figureCategory, const QString &defaultClassName)
 {
     if(!m_figureCategories.contains(figureCategory))
@@ -361,6 +362,27 @@ RetVal DesignerWidgetOrganizer::setFigureDefaultClass( const QString &figureCate
     settings.setValue(figureCategory, defaultClassName);
     settings.endGroup();
     return retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget *parentWidget, const QString &name /*= QString()*/, AbstractFigure::WindowMode winMode /*= AbstractFigure::ModeStandaloneInUi*/)
+{
+    QPluginLoader *factory = NULL;
+    foreach(const FigurePlugin &plugin, m_figurePlugins)
+    {
+        if(QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
+        {
+            factory = plugin.factory;
+            break;
+        }
+    }
+
+    if(factory)
+    {
+        ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)( factory->instance() );
+        return fac->createWidgetWithMode(winMode, parentWidget);
+    }
+    return NULL;
 }
 
 

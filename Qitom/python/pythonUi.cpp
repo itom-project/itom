@@ -1213,9 +1213,9 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *args)
+PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 {
-    PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,args);
+    PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name);
     if(ret != NULL)
     {
         return ret;
@@ -1223,7 +1223,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *args)
     PyErr_Clear(); //genericgetattr throws an error, if attribute is not available, which it isn't for attributes pointing to widgetNames
 
     //return new instance of PyUiItem
-    PyObject *arg2 = Py_BuildValue("OO", self, args);
+    PyObject *arg2 = Py_BuildValue("OO", self, name);
     PythonUi::PyUiItem *PyUiItem = (PythonUi::PyUiItem *)PyObject_CallObject((PyObject *)&PythonUi::PyUiItemType, arg2);
     Py_DECREF(arg2);
 
@@ -1243,10 +1243,12 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonUi::PyUiItem_setattro(PyUiItem * /*self*/, PyObject * /*args*/)
+int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 {
-    PyErr_SetString(PyExc_TypeError, "It is not possible to assign another widget to the given widget in the user interface.");
-    return NULL;
+    int ret = PyObject_GenericSetAttr( (PyObject*)self, name, value );
+
+    //PyErr_SetString(PyExc_TypeError, "It is not possible to assign another widget to the given widget in the user interface.");
+    return ret;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

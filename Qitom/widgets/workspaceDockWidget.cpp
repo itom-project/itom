@@ -145,7 +145,8 @@ void WorkspaceDockWidget::createToolBars()
     m_pMainToolBar = new QToolBar(tr("script editor"),this);
     m_pMainToolBar->setFloatable(false);
     m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    addAndRegisterToolBar(m_pMainToolBar, "mainToolBar");
+    addToolBar(m_pMainToolBar,"mainToolBar");
+    //addAndRegisterToolBar(m_pMainToolBar, "mainToolBar");
 
     m_pMainToolBar->addAction( m_actImport->action() );
     m_pMainToolBar->addAction( m_actExport->action() );

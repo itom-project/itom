@@ -316,7 +316,7 @@ void FileSystemDockWidget::createToolBars()
 
     m_pMainToolbar = new QToolBar(tr("file system"), this);
     m_pMainToolbar->setFloatable(false);
-    addAndRegisterToolBar(m_pMainToolbar, "mainToolBar");
+    addToolBar(m_pMainToolbar, "mainToolBar");
 
     m_pMainToolbar->addAction(m_pShowDirListMenu->menuAction());
     m_pMainToolbar->addAction(m_pActSelectCD->action());

@@ -29,21 +29,25 @@
 #define ABSTRACTITOMDESIGNERPLUGIN_H
 
 #include "../common/sharedStructuresGraphics.h"
+#include "abstractFigure.h"
+#include <QtDesigner/QDesignerCustomWidgetInterface>
     
 namespace ito {
 
-    class AbstractItomDesignerPlugin : public QObject
+    class AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
     {
         Q_OBJECT
+        Q_INTERFACES(QDesignerCustomWidgetInterface)
         
         //! the classinfo ito.AbstractItomDesignerPlugin is the interface number of AbstractItomDesignerPlugin.
         //  increment this number if you changed something in this interface or other abstract classes of the
         //  plot designerPlugin system.
-        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.0.0")
+        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.0.2")
 
         public:
-            AbstractItomDesignerPlugin(QObject *parent = NULL) : 
-                QObject(parent), 
+            AbstractItomDesignerPlugin(QObject *parent) :
+                QObject(parent),
+                QDesignerCustomWidgetInterface(),
                 m_plotFeatures(ito::Static), 
                 m_version(0),
                 m_author(""),
@@ -73,6 +77,8 @@ namespace ito {
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
 
+            virtual QWidget *createWidgetWithMode(AbstractFigure::WindowMode winMode, QWidget *parent) = 0;
+
         protected:
             ito::PlotDataTypes   m_plotDataTypes;
             ito::PlotDataFormats m_plotDataFormats;
@@ -86,11 +92,6 @@ namespace ito {
             QString m_aboutThis;                  //!< a short string with compile informations
             QString m_itomSettingsFile;
 
-        signals:
-
-        public slots:
-
-        private slots:
 
     };
 } // namepsace ito

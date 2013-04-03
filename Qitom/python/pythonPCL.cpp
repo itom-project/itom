@@ -2272,17 +2272,21 @@ PyObject* PythonPCL::PyPoint_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
 
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pointInit_doc,"point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.  \n\
-                           Parameters are: \n\
-                            * 'type' is the desired type of this point, if not indicated point.PointInvalid is assumed. \n\
-                           \n\
-                           Depending on the type, some of the next parameters must be given: \n\
-                            * 'xyz' (all types besides PointInvalid) is a sequence with three floating point elements (x,y,z) \n\
-                            * 'intensity' (only PointXYZI or PointXYZINormal) is a floating point value for the intensity \n\
-                            * 'rgba' (only PointXYZRGBA or PointXYZRGBNormal) is a uint8-sequence with either three or four values (r,g,b,a). If alpha value is not given, 255 is assumed \n\
-                           \n\
-                           For types: PointXYZNormal, PointXYZINormal and PointXYZRGBNormal: \n\
-                            * 'normal' is a sequence with three floating point elements (nx, ny, nz) \n\
-                            * 'curvature' is the curvature value for the normal (float)");
+\n\
+Parameters \n\
+------------ \n\
+type : {int} \n\
+    the desired type of this point (default: point.PointInvalid). Depending on the type, some of the following parameters must be given: \n\
+xyz : {seq}, all types besides PointInvalid \n\
+    sequence with three floating point elements (x,y,z) \n\
+intensity : {float}, only PointXYZI or PointXYZINormal \n\
+    is a floating point value for the intensity \n\
+rgba, {seq. of uint8, three or four values}, only PointXYZRGBA or PointXYZRGBNormal \n\
+    a uint8-sequence with either three or four values (r,g,b,a). If alpha value is not given, 255 is assumed \n\
+normal : {seq}, only PointXYZNormal, PointXYZINormal and PointXYZRGBNormal \n\
+    is a sequence with three floating point elements (nx, ny, nz) \n\
+curvature : {float}, only PointXYZNormal, PointXYZINormal and PointXYZRGBNormal \n\
+    is the curvature value for the normal (float)");
 int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
 {
     int pclType = ito::pclInvalid;

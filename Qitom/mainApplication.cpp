@@ -217,7 +217,7 @@ void MainApplication::setupApplication()
         m_uiOrganizer = new UiOrganizer();
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
-        m_designerWidgetOrganizer = new DesignerWidgetOrganizer();
+        m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
     }
     else

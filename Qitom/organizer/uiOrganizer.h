@@ -38,6 +38,8 @@
 #include "../common/sharedStructuresGraphics.h"
 #include "../common/addInInterface.h"
 
+#include "../../plot/AbstractFigure.h"
+
 #include <qmap.h>
 #include <qsharedpointer.h>
 #include <qstring.h>
@@ -252,7 +254,7 @@ public:
 
     RetVal getNewPluginWindow(QString pluginName, unsigned int &objectID, QObject** newWidget);
 
-    QWidget* loadDesignerPluginWidget(QString &name, RetVal &retValue, QWidget *parent = NULL);
+    QWidget* loadDesignerPluginWidget(const QString &name, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent = NULL);
 
 protected:
 
@@ -330,10 +332,10 @@ public slots:
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
     
-    RetVal plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);    
+    /*RetVal plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);    
     RetVal liveData(AddInDataIO* dataIO, QString widget, QObject **window, ItomSharedSemaphore *semaphore = NULL);
     RetVal liveImage(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
-    RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
+    RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);*/
 
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);

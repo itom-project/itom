@@ -31,6 +31,7 @@
 const QString ConsoleWidget::lineBreak = QString("\n");
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent),
     startLineBeginCmd(-1),
@@ -86,6 +87,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::~ConsoleWidget()
 {
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
@@ -101,6 +103,7 @@ ConsoleWidget::~ConsoleWidget()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::initEditor()
 {
     setPaper(QColor(1,81,107));
@@ -122,6 +125,7 @@ RetVal ConsoleWidget::initEditor()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -169,6 +173,7 @@ void ConsoleWidget::loadSettings()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 {
     switch(pyTransition)
@@ -221,12 +226,14 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::clearEditor()
 {
     startNewCommand(true);
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< new command is a new line starting with ">>"
 RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
 {
@@ -257,6 +264,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::useCmdListCommand(int dir)
 {
     QString cmd("");
@@ -290,6 +298,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!> reimplementation to process the keyReleaseEvent
 void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 {
@@ -644,6 +653,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::executeCmdQueue()
 {
     cmdQueueStruct value;
@@ -711,6 +721,7 @@ RetVal ConsoleWidget::executeCmdQueue()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 {
     if(endLine<beginLine) return RetVal(retError);
@@ -805,11 +816,13 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::receiveStream( QString text, tMsgType msgType )
 {
     printMessage(text, msgType);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
 {
     QString totalMsg = msg.join(ConsoleWidget::lineBreak);
@@ -858,6 +871,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::printMessage(QString msg, tMsgType type)
 {
     if(msg!="")
@@ -870,6 +884,7 @@ RetVal ConsoleWidget::printMessage(QString msg, tMsgType type)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::moveCursorToEnd()
 {
     int lastLine = lines()-1;
@@ -877,11 +892,13 @@ RetVal ConsoleWidget::moveCursorToEnd()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dropEvent ( QDropEvent * event )
 {
     QsciScintilla::dropEvent(event);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dragEnterEvent ( QDragEnterEvent * event )
 {
     if(event->mimeData()->hasText())
@@ -890,6 +907,7 @@ void ConsoleWidget::dragEnterEvent ( QDragEnterEvent * event )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
 {
     QsciScintilla::dragMoveEvent(event);
@@ -922,6 +940,7 @@ void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*
 @return 0: pos invalid, 1: pos valid, 2: pos below last line
 */
@@ -998,6 +1017,7 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::selChanged ()
 {
     if( waitForCmdExecutionDone )
@@ -1033,6 +1053,7 @@ void ConsoleWidget::selChanged ()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::copy ()
 {
     if(canCopy)
@@ -1041,6 +1062,7 @@ void ConsoleWidget::copy ()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::paste ()
 {
     moveCursorToValidRegion();
@@ -1048,6 +1070,7 @@ void ConsoleWidget::paste ()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::cut ()
 {
     if(canCut)
@@ -1056,6 +1079,7 @@ void ConsoleWidget::cut ()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::moveCursorToValidRegion()
 {
     int lineFrom, lineTo, indexFrom, indexTo;
@@ -1085,7 +1109,7 @@ RetVal ConsoleWidget::moveCursorToValidRegion()
 
 
 
-//!-------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 DequeCommandList::DequeCommandList(int maxLength)
 {
     maxItems = maxLength;
@@ -1094,11 +1118,13 @@ DequeCommandList::DequeCommandList(int maxLength)
     rit = cmdList.rbegin();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DequeCommandList::~DequeCommandList()
 {
     cmdList.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DequeCommandList::add(QString cmd)
 {
     moveLast();
@@ -1115,12 +1141,14 @@ RetVal DequeCommandList::add(QString cmd)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DequeCommandList::moveLast()
 {
     rit = cmdList.rbegin();
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getPrevious()
 {
     if(cmdList.size()>1)
@@ -1143,6 +1171,7 @@ QString DequeCommandList::getPrevious()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getNext()
 {
     if(cmdList.size()>1)

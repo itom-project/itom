@@ -26,6 +26,7 @@
 #include "../../common/sharedStructures.h"
 #include "../../common/sharedStructuresGraphics.h"
 #include "../models/PlugInModel.h"
+#include "plot/abstractItomDesignerPlugin.h"
 
 #include <qobject.h>
 #include <qlist.h>
@@ -34,6 +35,25 @@ class QPluginLoader; //forward declaration
 
 namespace ito
 {
+
+class DummyItomDesignerPlugin : public AbstractItomDesignerPlugin
+{
+public:
+
+    QString name() const { return ""; };
+    QString group() const { return ""; };
+    QString toolTip() const { return ""; };
+    QString whatsThis() const { return ""; };
+    QString includeFile() const { return ""; };
+    QIcon icon() const { return QIcon(); };
+
+    bool isContainer() const { return false; };
+
+    QWidget *createWidget(QWidget *parent) { return NULL; };
+
+    DummyItomDesignerPlugin(QObject *parent) : AbstractItomDesignerPlugin(parent) {};
+    virtual QWidget *createWidgetWithMode(ito::AbstractFigure::WindowMode winMode, QWidget *parent) { return NULL; };
+};
 
 struct FigurePlugin
 {
@@ -75,7 +95,7 @@ class DesignerWidgetOrganizer : public QObject
 
 public:
     
-    DesignerWidgetOrganizer();
+    DesignerWidgetOrganizer(ito::RetVal &retValue);
     ~DesignerWidgetOrganizer();
 
     const QList<PluginLoadStatus> getPluginLoadStatus() const { return m_pluginLoadStatus; }
@@ -87,6 +107,8 @@ public:
     QList<FigurePlugin> getPossibleFigureClasses( const FigureCategory &figureCat );
     QString getFigureClass( const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal );
     RetVal setFigureDefaultClass( const QString &figureCategory, const QString &defaultClassName);
+
+    QWidget* createWidget(const QString &className, QWidget *parentWidget, const QString &name = QString(), AbstractFigure::WindowMode winMode = AbstractFigure::ModeStandaloneInUi);
 
 protected:
     RetVal scanDesignerPlugins();

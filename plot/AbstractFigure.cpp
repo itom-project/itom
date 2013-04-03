@@ -182,18 +182,16 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::AbstractFigure(const QString &itomSettingsFile, QWidget *parent)
+AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent)
     : QMainWindow(parent),
     AbstractNode(),
     m_contextMenu(NULL),
     m_itomSettingsFile(itomSettingsFile),
     m_apiFunctionsGraphBasePtr(NULL),
     m_apiFunctionsBasePtr(NULL),
-    m_actTopLevelParent(NULL),
-    m_actTopLevelOverall(NULL),
-    m_menuWindow(NULL),
     m_mainParent(parent),
-	m_toolbarsVisible(true)
+	m_toolbarsVisible(true),
+    m_windowMode(windowMode)
 {
     //itom_PLOTAPI = NULL;
     //importItomPlotApi(NULL);
@@ -212,213 +210,187 @@ AbstractFigure::~AbstractFigure()
         removeChannel(delChan);
     }
     m_pChannels.clear();
+
+    //clear toolbars and menus
+    foreach(QMenu *m, m_menus)
+    {
+        m->deleteLater();
+    }
+    m_menus.clear();
+
+    foreach(ToolBarItem t, m_toolbars)
+    {
+        if(t.toolbar)
+        {
+            t.toolbar->deleteLater();
+        }
+    }
+    m_toolbars.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::initialize()
 {
-    //create actions
-    m_actTopLevelOverall = new QAction(tr("stay on top of all windows"), this);
-    m_actTopLevelOverall->setCheckable(true);
-    connect(m_actTopLevelOverall, SIGNAL(triggered(bool)), this, SLOT(mnuTopLevelOverall(bool)));
+    //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
+    switch(m_windowMode)
+    {
+    case AbstractFigure::ModeInItomFigure:
+    case AbstractFigure::ModeStandaloneInUi:
+        setWindowFlags(Qt::Widget);
+        setAttribute(Qt::WA_DeleteOnClose, false);
+        menuBar()->setVisible(false);
+        break;
+    case AbstractFigure::ModeStandaloneWindow:
+        setWindowFlags(Qt::Window);
+        setAttribute(Qt::WA_DeleteOnClose, true);
+        menuBar()->setVisible(true);
+        break;
+    }
 
-    m_actTopLevelParent = new QAction(tr("stay on top of main window"), this);
-    m_actTopLevelParent->setCheckable(true);
-    connect(m_actTopLevelParent, SIGNAL(triggered(bool)), this, SLOT(mnuTopLevelParent(bool)));
-
-    //create main menus
-    m_menuWindow = new QMenu(tr("window"), this);
-    m_menuWindow->addAction(m_actTopLevelParent);
-    m_menuWindow->addAction(m_actTopLevelOverall);
-    menuBar()->addMenu(m_menuWindow);
-
-    setWindowMode( ito::AbstractFigure::ModeEmbedded ); //this is important as default. In the windows case, this mode is reset to ModeWindow
-    //fig->setWindowFlags(Qt::Widget); //this is important such that this main window reacts as widget
+    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    {
+        foreach(const ToolBarItem &item, m_toolbars)
+        {
+            if(item.toolbar)
+            {
+                QMainWindow::addToolBar(item.area, item.toolbar);
+            }
+            else
+            {
+                QMainWindow::addToolBarBreak(item.area);
+            }
+        }
+    }
 
     return ito::retOk;
 }
 
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addMenu(QMenu *menu)
 {
-    QAction *prevAct = NULL;
-    if(m_menuWindow) prevAct = m_menuWindow->menuAction();
-    menu->setParent(this);
+    //never adds to menuBar()
+    m_menus.append(menu);
+}
 
-    if(prevAct)
+//----------------------------------------------------------------------------------------------------------------------------------
+QList<QMenu*> AbstractFigure::getMenus() const
+{
+    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
-        menuBar()->insertMenu(prevAct, menu);
+        //in standalone mode, this plugin handles its own menus and toolbars
+        return QList<QMenu*>();
     }
     else
     {
-        menuBar()->addMenu(menu);
+        return m_menus;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/)
+QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
 {
-	if(m_toolbars.contains(key))
-	{
-		m_toolbars[key].first->deleteLater();
-	}
-	QMainWindow::addToolBar(area,toolbar);
-	m_toolbars[key] = QPair<QToolBar*,bool>( toolbar, m_toolbarsVisible );
-	toolbar->setVisible( m_toolbarsVisible );
+    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    {
+        //in standalone mode, this plugin handles its own menus and toolbars
+        return QList<AbstractFigure::ToolBarItem>();
+    }
+    else
+    {
+        return m_toolbars;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::insertToolBar(const QString &key_before, QToolBar *toolbar, const QString &key)
+void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
 {
-	if(m_toolbars.contains(key_before) == false) return;
+    ToolBarItem item;
+    item.key = key;
+    item.area = area;
+    item.toolbar = toolbar;
+    item.visible = m_toolbarsVisible;
+    item.section = section;
 
-	QToolBar *before = m_toolbars[key_before].first;
-	if(m_toolbars.contains(key))
-	{
-		m_toolbars[key].first->deleteLater();
-	}
-	QMainWindow::insertToolBar(before,toolbar);
-	m_toolbars[key] = QPair<QToolBar*,bool>( toolbar, m_toolbarsVisible );
-	toolbar->setVisible( m_toolbarsVisible );
+    int maxSection = 1;
+
+    //get highest section for same area
+    foreach(const ToolBarItem &titem, m_toolbars)
+    {
+        if(titem.area == area)
+        {
+            maxSection = std::max(maxSection, titem.section);
+        }
+    }
+
+    m_toolbars.append(item);
+
+    if(m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow )
+    {
+        if(maxSection < section)
+        {
+            QMainWindow::addToolBarBreak(area);
+        }
+
+        QMainWindow::addToolBar(area, toolbar);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::insertToolBarBreak(const QString &key_before)
+void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/)
 {
-	if(m_toolbars.contains(key_before) == false) return;
+    ToolBarItem item;
+    item.key = key;
+    item.area = area;
+    item.toolbar = NULL;
+    item.visible = m_toolbarsVisible;
+    item.section = 1;
 
-	QToolBar *before = m_toolbars[key_before].first;
-	QMainWindow::insertToolBarBreak(before);
-}
+    //get highest section for same area
+    foreach(const ToolBarItem &titem, m_toolbars)
+    {
+        if(titem.area == area)
+        {
+            item.section = std::max(item.section, titem.section);
+        }
+    }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::removeToolBar(const QString &key)
-{
-	if(m_toolbars.contains(key))
-	{
-		m_toolbars[key].first->deleteLater();
-		m_toolbars.remove(key);
-	}
-}
+    m_toolbars.append(item);
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::removeToolBarBreak(const QString &key_before)
-{
-	if(m_toolbars.contains(key_before))
-	{
-		QMainWindow::removeToolBarBreak( m_toolbars[key_before].first );
-	}
+    if(m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow )
+    {
+        QMainWindow::addToolBarBreak(area);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::showToolBar(const QString &key)
 {
-	if(m_toolbars.contains(key))
+    QList<AbstractFigure::ToolBarItem>::iterator i;
+	
+    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-		m_toolbars[key].second = true;
-		m_toolbars[key].first->setVisible( true && m_toolbarsVisible );
+        if(i->key == key)
+        {
+            i->visible = true;
+            i->toolbar->setVisible( true && m_toolbarsVisible );
+        }
 	}
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::hideToolBar(const QString &key)
 {
-	if(m_toolbars.contains(key))
+    QList<AbstractFigure::ToolBarItem>::iterator i;
+	
+    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-		m_toolbars[key].second = false;
-		m_toolbars[key].first->setVisible( false && m_toolbarsVisible );
+        if(i->key == key)
+        {
+            i->visible = false;
+            i->toolbar->setVisible( false /*&& m_toolbarsVisible*/ ); //always false
+        }
 	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::setWindowMode(const WindowMode mode)
-{
-    switch( mode )
-    {
-    case ModeWindow:
-        {
-        setWindowFlags(Qt::Window);
-        setAttribute(Qt::WA_DeleteOnClose, true);
-        m_windowMode = ModeWindow;
-
-        QSettings settings(m_itomSettingsFile, QSettings::IniFormat );
-        settings.beginGroup("Figures");
-        TopLevelMode tlm = (TopLevelMode)(settings.value("topLevelMode", TopLevelNothing)).toInt();
-        settings.endGroup();
-
-        setTopLevelMode(tlm);
-        if(menuBar()->actions().count() > 0)
-        {
-            menuBar()->setVisible(true);
-        }
-        }
-        break;
-    case ModeEmbedded:
-        {
-        setWindowFlags(Qt::Widget);
-        setAttribute(Qt::WA_DeleteOnClose, false);
-        m_windowMode = ModeEmbedded;
-        setTopLevelMode(TopLevelNothing);
-        menuBar()->setVisible(false);
-        }
-        break;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::setTopLevelMode(TopLevelMode mode)
-{
-    Qt::WindowFlags flags = windowFlags();
-    bool visible = isVisible();
-
-    if(m_windowMode == ModeEmbedded)
-    {
-        mode = TopLevelNothing;
-        setParent(m_mainParent);
-        setWindowFlags( flags & ~(Qt::WindowStaysOnTopHint) );
-        m_actTopLevelOverall->setChecked(false);
-        m_actTopLevelParent->setChecked(false);
-    }
-    else
-    {
-
-        switch(mode)
-        {
-            case TopLevelNothing:
-                setParent(NULL);
-                setWindowFlags( flags & ~(Qt::WindowStaysOnTopHint) );
-                m_actTopLevelOverall->setChecked(false);
-                m_actTopLevelParent->setChecked(false);
-                break;
-            case TopLevelOverall:
-                setParent(m_mainParent);
-                setWindowFlags( flags | Qt::WindowStaysOnTopHint );
-                m_actTopLevelOverall->setChecked(true);
-                m_actTopLevelParent->setChecked(false);
-                break;
-            case TopLevelParentOnly:
-                setParent(m_mainParent);
-                setWindowFlags( flags & ~(Qt::WindowStaysOnTopHint) );
-                m_actTopLevelOverall->setChecked(false);
-                m_actTopLevelParent->setChecked(true);
-                break;
-        }
-
-        QSettings settings(m_itomSettingsFile, QSettings::IniFormat );
-        settings.beginGroup("Figures");
-        settings.setValue("topLevelMode", mode);
-        settings.endGroup();
-    }
-
-    m_topLevelMode = mode;
-
-    if(visible) show(); //it is necessary to re-show the widget in order to activate the settings from above.
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::TopLevelMode AbstractFigure::getTopLevelMode()
-{
-    return m_topLevelMode;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -456,12 +428,14 @@ bool AbstractFigure::event(QEvent *e)
 void AbstractFigure::setToolbarVisible(bool visible)
 {
 
-	QMapIterator<QString, QPair<QToolBar*,bool> > i(m_toolbars);
+	QList<AbstractFigure::ToolBarItem>::iterator i;
 	
-	while (i.hasNext()) 
+    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-		i.next();
-		i.value().first->setVisible( visible && i.value().second );
+        if(i->toolbar)
+        {
+            i->toolbar->setVisible( visible && (*i).visible );
+        }
 	}
 
 	m_toolbarsVisible = visible;
@@ -475,30 +449,5 @@ bool AbstractFigure::toolbarVisible() const
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::mnuTopLevelOverall(bool checked)
-{
-    if(checked)
-    {
-        setTopLevelMode(AbstractFigure::TopLevelOverall);
-    }
-    else
-    {    
-        setTopLevelMode(AbstractFigure::TopLevelNothing);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::mnuTopLevelParent(bool checked)
-{
-    if(checked)
-    {
-        setTopLevelMode(AbstractFigure::TopLevelParentOnly);
-    }
-    else
-    {    
-        setTopLevelMode(AbstractFigure::TopLevelNothing);
-    }
-}
 
 } //end namespace ito

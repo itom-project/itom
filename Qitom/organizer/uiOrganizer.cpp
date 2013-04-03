@@ -452,13 +452,13 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
     {
         QWidget *mainParent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
         //mainParent will be set as parent-widget, this however is finally defined by the top-level mode of class AbstractFigure.
-        *newWidget = loadDesignerPluginWidget(pluginName,retValue,mainParent);
+        *newWidget = loadDesignerPluginWidget(pluginName,retValue,AbstractFigure::ModeStandaloneWindow,mainParent);
         win = qobject_cast<QMainWindow*>(*newWidget);
         if(win)
         {
             if(win->inherits("ito::AbstractFigure"))
             {
-                ((ito::AbstractFigure*)win)->setWindowMode(ito::AbstractFigure::ModeWindow);
+                //((ito::AbstractFigure*)win)->setWindowMode(ito::AbstractFigure::ModeWindow);
             }
             else
             {
@@ -538,7 +538,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
         if(filename == "matplotlib" || filename == "MatplotlibFigure")
         {
             pluginClassName = "MatplotlibFigure";
-            win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,NULL));
+            win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,AbstractFigure::ModeStandaloneWindow, NULL));
             if(win)
             {
                 win->setWindowFlags(Qt::Window);
@@ -767,9 +767,11 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QWidget* UiOrganizer::loadDesignerPluginWidget(QString &className, RetVal &retValue, QWidget *parent)
+QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent)
 {
-    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correclty initialized!
+    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+
+    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correctly initialized!
     QWidget* widget = NULL;
 
     QStringList availableWidgets = loader.availableWidgets();
@@ -778,14 +780,19 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(QString &className, RetVal &retVa
     {
         /*QStringList l = loader.availableLayouts();
         QStringList p = loader.pluginPaths();*/
-        widget = loader.createWidget(className, parent);
+        widget = dwo->createWidget(className,parent,QString(),winMode); //loader.createWidget(className, parent);
         /*QDir path = QCoreApplication::applicationDirPath();
         path.cd("designer");
         QString path2 = QDir::cleanPath( path.absolutePath() );*/
 
         if(widget == NULL)
         {
-            retValue += RetVal(retError,0,tr("designer plugin widget could not be created").toAscii().data());
+            widget = loader.createWidget(className, parent);
+        }
+
+        if(widget == NULL)
+        {
+            retValue += RetVal(retError,0,tr("designer plugin widget ('%1') could not be created").arg(className).toAscii().data());
         }
         else
         {
@@ -2008,266 +2015,266 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PyErr_SetInterrupt();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
-{
-    ItomSharedSemaphoreLocker locker(semaphore);
-
-    ito::RetVal retval;
-    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    if(dwo == NULL)
-    {
-        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
-    }
-    else
-    {
-        int dims = dataObj->getDims();
-        int sizex = dataObj->getSize(dims - 1);
-        int sizey = dataObj->getSize(dims - 2);
-        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticLine", plotClassName, retval);
-            
-        }
-        else
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticImage", plotClassName, retval);
-            //not 1D so try 2D ;-) new 2dknoten()
-        }
-
-        if(!retval.containsError())
-        {
-            QObject *window;
-            retval += getNewPluginWindow(plotClassName, *plotHandle, &window);
-
-            if(!retval.containsError() && window)
-            {
-                ito::AbstractDObjFigure *mainWin;
-
-                if (window->inherits("ito::AbstractDObjFigure"))
-                    mainWin = (ito::AbstractDObjFigure*)(window);
-                else
-                    mainWin = NULL;
-
-                if(mainWin)
-                {
-                    mainWin->setWindowMode(ito::AbstractFigure::ModeWindow);
-                    /*mainWin->setWindowFlags(Qt::Window);
-                    mainWin->setAttribute(Qt::WA_DeleteOnClose, true);*/
-
-                    mainWin->setSource(dataObj);
-
-                    mainWin->show();
-                }
-                else
-                {
-                    retval += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
-                }
-            }
-        }
-    }
-
-    if(semaphore)
-    {
-        semaphore->returnValue = retval;
-        semaphore->release();
+////----------------------------------------------------------------------------------------------------------------------------------
+////----------------------------------------------------------------------------------------------------------------------------------
+//RetVal UiOrganizer::plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
+//{
+//    ItomSharedSemaphoreLocker locker(semaphore);
+//
+//    ito::RetVal retval;
+//    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+//    if(dwo == NULL)
+//    {
+//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//    }
+//    else
+//    {
+//        int dims = dataObj->getDims();
+//        int sizex = dataObj->getSize(dims - 1);
+//        int sizey = dataObj->getSize(dims - 2);
+//        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
+//        {
+//            plotClassName = dwo->getFigureClass("DObjStaticLine", plotClassName, retval);
+//            
+//        }
+//        else
+//        {
+//            plotClassName = dwo->getFigureClass("DObjStaticImage", plotClassName, retval);
+//            //not 1D so try 2D ;-) new 2dknoten()
+//        }
+//
+//        if(!retval.containsError())
+//        {
+//            QObject *window;
+//            retval += getNewPluginWindow(plotClassName, *plotHandle, &window);
+//
+//            if(!retval.containsError() && window)
+//            {
+//                ito::AbstractDObjFigure *mainWin;
+//
+//                if (window->inherits("ito::AbstractDObjFigure"))
+//                    mainWin = (ito::AbstractDObjFigure*)(window);
+//                else
+//                    mainWin = NULL;
+//
+//                if(mainWin)
+//                {
+//                    mainWin->setWindowMode(ito::AbstractFigure::ModeWindow);
+//                    /*mainWin->setWindowFlags(Qt::Window);
+//                    mainWin->setAttribute(Qt::WA_DeleteOnClose, true);*/
+//
+//                    mainWin->setSource(dataObj);
+//
+//                    mainWin->show();
+//                }
+//                else
+//                {
+//                    retval += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
+//                }
+//            }
+//        }
+//    }
+//
+//    if(semaphore)
+//    {
+//        semaphore->returnValue = retval;
+//        semaphore->release();
+////        ItomSharedSemaphore::deleteSemaphore(semaphore);
+////        semaphore = NULL;
+//    }
+//
+//    return RetVal(retOk);
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//RetVal UiOrganizer::liveData(AddInDataIO* dataIO, QString widgetName,  QObject **window, ItomSharedSemaphore *semaphore)
+//{
+//    RetVal retVal(retOk);
+//    unsigned int plotHandle;
+//    ito::AbstractDObjFigure *mainWin = NULL;
+//
+//    retVal += getNewPluginWindow(widgetName, plotHandle, window);
+//
+//    if(!retVal.containsError() && (*window))
+//    {
+//        if ((*window)->inherits("ito::AbstractDObjFigure"))
+//            mainWin = (ito::AbstractDObjFigure*)(*window);
+//        else
+//            mainWin = NULL;
+//
+//        if(mainWin)
+//        {
+//            mainWin->setWindowMode(ito::AbstractFigure::ModeWindow);
+//            //mainWin->setWindowFlags(Qt::Window);
+//            //mainWin->setAttribute(Qt::WA_DeleteOnClose, true);
+//            mainWin->show();
+//        }
+//        else
+//        {
+//            retVal += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
+//        }
+//    }
+//
+//    mainWin->setCamera(QPointer<ito::AddInDataIO>(dataIO));
+//    /*mainWin->setProperty("liveSource", v);
+//    
+//    if(dataIO)
+//    {
+//        AddInManager *aim = AddInManager::getInstance();
+//        retVal += aim->incRef((ito::AddInBase*)dataIO);
+//        mainWin->getInputParam("liveData")->setVal<void*>(dataIO);
+//    }
+//
+//    QMetaObject::invokeMethod(dataIO, "startDeviceAndRegisterListener", Q_ARG(QObject*, *window), Q_ARG(ItomSharedSemaphore*, NULL));*/
+//
+//    if(semaphore)
+//    {
+//        semaphore->returnValue = retVal;
+//        semaphore->release();
 //        ItomSharedSemaphore::deleteSemaphore(semaphore);
 //        semaphore = NULL;
-    }
-
-    return RetVal(retOk);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::liveData(AddInDataIO* dataIO, QString widgetName,  QObject **window, ItomSharedSemaphore *semaphore)
-{
-    RetVal retVal(retOk);
-    unsigned int plotHandle;
-    ito::AbstractDObjFigure *mainWin = NULL;
-
-    retVal += getNewPluginWindow(widgetName, plotHandle, window);
-
-    if(!retVal.containsError() && (*window))
-    {
-        if ((*window)->inherits("ito::AbstractDObjFigure"))
-            mainWin = (ito::AbstractDObjFigure*)(*window);
-        else
-            mainWin = NULL;
-
-        if(mainWin)
-        {
-            mainWin->setWindowMode(ito::AbstractFigure::ModeWindow);
-            //mainWin->setWindowFlags(Qt::Window);
-            //mainWin->setAttribute(Qt::WA_DeleteOnClose, true);
-            mainWin->show();
-        }
-        else
-        {
-            retVal += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
-        }
-    }
-
-    mainWin->setCamera(QPointer<ito::AddInDataIO>(dataIO));
-    /*mainWin->setProperty("liveSource", v);
-    
-    if(dataIO)
-    {
-        AddInManager *aim = AddInManager::getInstance();
-        retVal += aim->incRef((ito::AddInBase*)dataIO);
-        mainWin->getInputParam("liveData")->setVal<void*>(dataIO);
-    }
-
-    QMetaObject::invokeMethod(dataIO, "startDeviceAndRegisterListener", Q_ARG(QObject*, *window), Q_ARG(ItomSharedSemaphore*, NULL));*/
-
-    if(semaphore)
-    {
-        semaphore->returnValue = retVal;
-        semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
-        semaphore = NULL;
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::liveImage(AddInDataIO* dataIO, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
-{
-    ito::RetVal retval;
-    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    if(dwo == NULL)
-    {
-        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
-    }
-    else
-    {
-        plotClassName = dwo->getFigureClass("DObjLiveImage", plotClassName, retval);
-
-        if(!retval.containsError())
-        {
-            QObject *window = NULL;
-            retval = liveData(dataIO, plotClassName, &window, NULL);
-        //    ito::RetVal retval = liveData(dataIO, "itom2DGVFigure", &window, NULL);
-
-            if (dataIO && !retval.containsError() )
-            {
-                long maxInt = 1;
-                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                ito::Param param = dataIO->getParamRec("bpp");
-                if ( param.getName() != NULL)   // Parameter is defined
-                {
-                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
-                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-                    {
-                        if (!dataIO->isAlive())
-                        {
-                            break;
-                        }
-                    }
-                    if(!locker.getSemaphore()->returnValue.containsError())
-                    {
-                        int bpp = (*qsParam).getVal<int>();
-
-                        if(bpp < 17)    // scale only for int8, uint8, int16, uint16
-                        {
-                            maxInt = (maxInt << bpp) - 1;
-                            if (window)
-                            {
-                                ((ito::AbstractDObjFigure*)window)->setZAxisInterval(QPointF(0.0, maxInt));
-                                ((ito::AbstractDObjFigure*)window)->setColorPalette("grayMarked");
-                            }
-                        }
-                        else if (bpp == 24)
-                        {
-                            maxInt = (maxInt << bpp) - 1;
-                            if (window)
-                            {
-                                ((ito::AbstractDObjFigure*)window)->setZAxisInterval(QPointF(0.0, maxInt));
-                                ((ito::AbstractDObjFigure*)window)->setColorPalette("RGB24");
-                            }                    
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if(semaphore)
-    {
-        semaphore->returnValue = retval;
-        semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
-        semaphore = NULL;
-    }
-
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::liveLine(AddInDataIO* dataIO, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
-{
-    ito::RetVal retval;
-    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    if(dwo == NULL)
-    {
-        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
-    }
-    else
-    {
-        plotClassName = dwo->getFigureClass("DObjLiveLine", plotClassName, retval);
-
-        if(!retval.containsError())
-        {
-
-            QObject *window = NULL;
-            retval = liveData(dataIO, plotClassName, &window, NULL);
-
-            if (dataIO && !retval.containsError())
-            {
-                long maxInt = 1;
-                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                ito::Param param = dataIO->getParamRec("bpp");
-                if ( param.getName() != NULL)   // Parameter is defined
-                {
-                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
-                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-                    {
-                        if (!dataIO->isAlive())
-                        {
-                            break;
-                        }
-                    }
-                    if(!locker.getSemaphore()->returnValue.containsError())
-                    {
-                        int bpp = (*qsParam).getVal<int>();
-
-                        if(bpp < 16)    // scale only for int8, uint8, int16, uint16
-                        {
-                            maxInt = (maxInt << bpp) - 1;
-                            if (window)
-                            {
-                                ((ito::AbstractDObjFigure*)window)->setYAxisInterval(QPointF(0.0, maxInt));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if(semaphore)
-    {
-        semaphore->returnValue = retval;
-        semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
-        semaphore = NULL;
-    }
-
-    return retval;
-}
+//    }
+//
+//    return retVal;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//RetVal UiOrganizer::liveImage(AddInDataIO* dataIO, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
+//{
+//    ito::RetVal retval;
+//    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+//    if(dwo == NULL)
+//    {
+//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//    }
+//    else
+//    {
+//        plotClassName = dwo->getFigureClass("DObjLiveImage", plotClassName, retval);
+//
+//        if(!retval.containsError())
+//        {
+//            QObject *window = NULL;
+//            retval = liveData(dataIO, plotClassName, &window, NULL);
+//        //    ito::RetVal retval = liveData(dataIO, "itom2DGVFigure", &window, NULL);
+//
+//            if (dataIO && !retval.containsError() )
+//            {
+//                long maxInt = 1;
+//                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//                ito::Param param = dataIO->getParamRec("bpp");
+//                if ( param.getName() != NULL)   // Parameter is defined
+//                {
+//                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
+//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+//                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+//                    {
+//                        if (!dataIO->isAlive())
+//                        {
+//                            break;
+//                        }
+//                    }
+//                    if(!locker.getSemaphore()->returnValue.containsError())
+//                    {
+//                        int bpp = (*qsParam).getVal<int>();
+//
+//                        if(bpp < 17)    // scale only for int8, uint8, int16, uint16
+//                        {
+//                            maxInt = (maxInt << bpp) - 1;
+//                            if (window)
+//                            {
+//                                ((ito::AbstractDObjFigure*)window)->setZAxisInterval(QPointF(0.0, maxInt));
+//                                ((ito::AbstractDObjFigure*)window)->setColorPalette("grayMarked");
+//                            }
+//                        }
+//                        else if (bpp == 24)
+//                        {
+//                            maxInt = (maxInt << bpp) - 1;
+//                            if (window)
+//                            {
+//                                ((ito::AbstractDObjFigure*)window)->setZAxisInterval(QPointF(0.0, maxInt));
+//                                ((ito::AbstractDObjFigure*)window)->setColorPalette("RGB24");
+//                            }                    
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    if(semaphore)
+//    {
+//        semaphore->returnValue = retval;
+//        semaphore->release();
+//        ItomSharedSemaphore::deleteSemaphore(semaphore);
+//        semaphore = NULL;
+//    }
+//
+//    return retval;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//RetVal UiOrganizer::liveLine(AddInDataIO* dataIO, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)
+//{
+//    ito::RetVal retval;
+//    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+//    if(dwo == NULL)
+//    {
+//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//    }
+//    else
+//    {
+//        plotClassName = dwo->getFigureClass("DObjLiveLine", plotClassName, retval);
+//
+//        if(!retval.containsError())
+//        {
+//
+//            QObject *window = NULL;
+//            retval = liveData(dataIO, plotClassName, &window, NULL);
+//
+//            if (dataIO && !retval.containsError())
+//            {
+//                long maxInt = 1;
+//                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//                ito::Param param = dataIO->getParamRec("bpp");
+//                if ( param.getName() != NULL)   // Parameter is defined
+//                {
+//                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
+//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+//                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+//                    {
+//                        if (!dataIO->isAlive())
+//                        {
+//                            break;
+//                        }
+//                    }
+//                    if(!locker.getSemaphore()->returnValue.containsError())
+//                    {
+//                        int bpp = (*qsParam).getVal<int>();
+//
+//                        if(bpp < 16)    // scale only for int8, uint8, int16, uint16
+//                        {
+//                            maxInt = (maxInt << bpp) - 1;
+//                            if (window)
+//                            {
+//                                ((ito::AbstractDObjFigure*)window)->setYAxisInterval(QPointF(0.0, maxInt));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    if(semaphore)
+//    {
+//        semaphore->returnValue = retval;
+//        semaphore->release();
+//        ItomSharedSemaphore::deleteSemaphore(semaphore);
+//        semaphore = NULL;
+//    }
+//
+//    return retval;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
@@ -2280,13 +2287,12 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
-        *(*guardedFigHandle) = 0;
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
         QSharedPointer<int> row(new int);
-        *row = areaRow;
+        *row = areaRow + 1;
         QSharedPointer<int> col(new int);
-        *col = areaCol;
+        *col = areaCol + 1;
         retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
@@ -2304,7 +2310,7 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                fig->plot(dataObj, areaRow, areaCol, className);
+                retval += fig->plot(dataObj, areaRow, areaCol, className);
             }
             else
             {
@@ -2337,13 +2343,12 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
-        *(*guardedFigHandle) = 0;
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
         QSharedPointer<int> row(new int);
-        *row = areaRow;
+        *row = areaRow + 1;
         QSharedPointer<int> col(new int);
-        *col = areaCol;
+        *col = areaCol + 1;
         retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
@@ -2361,7 +2366,7 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                fig->liveImage(dataIO, areaRow, areaCol, className);
+                retval += fig->liveImage(dataIO, areaRow, areaCol, className);
             }
             else
             {

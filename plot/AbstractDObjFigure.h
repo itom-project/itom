@@ -51,8 +51,8 @@ class AbstractDObjFigure : public AbstractFigure
     
 
 public:
-    AbstractDObjFigure(const QString &itomSettingsFile, QWidget *parent = 0) : 
-        AbstractFigure(itomSettingsFile, parent),
+    AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) : 
+        AbstractFigure(itomSettingsFile, windowMode, parent),
         m_cameraConnected(false)
     {
         m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toAscii().data()));

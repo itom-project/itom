@@ -968,7 +968,7 @@ void ScriptDockWidget::createMenus()
 void ScriptDockWidget::createToolBars()
 {
     m_mainToolBar = new QToolBar(tr("script editor"),this);
-    addAndRegisterToolBar(m_mainToolBar, "mainToolBar");
+    addToolBar(m_mainToolBar, "mainToolBar");
 
     m_mainToolBar->addAction(m_newScriptAction->action() );
     m_mainToolBar->addAction(m_openScriptAction->action() );

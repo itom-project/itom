@@ -285,55 +285,178 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle( QString newCompleteTitle, boo
 
 
 
-//! ands given toolbar and register it with given key-string in toolbar-map (m_toolBars)
-/*!
-    long description
+////! ands given toolbar and register it with given key-string in toolbar-map (m_toolBars)
+///*!
+//    long description
+//
+//    \param tb reference to toolbar of type QToolBar
+//    \param key string containing key for this toolbar
+//    \return retOk, if toolbar could be added, retError, if key already exists in map
+//*/
+//RetVal AbstractDockWidget::addAndRegisterToolBar(QToolBar* tb, QString key)
+//{
+//    QMap<QString,QToolBar*>::iterator it = m_toolBars.find(key);
+//
+//    if(it == m_toolBars.end())
+//    {
+//        m_pWindow->insertToolBar(m_dockToolbar, tb);
+//
+//        if(!m_docked && m_floatingStyle == floatingWindow)
+//        {
+//            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+//        }
+//        else
+//        {
+//            tb->setIconSize(QSize(16,16));
+//        }
+//
+//        m_toolBars.insert(key,tb);
+//        return RetVal(retOk);
+//    }
+//    return RetVal(retError);
+//}
 
-    \param tb reference to toolbar of type QToolBar
-    \param key string containing key for this toolbar
-    \return retOk, if toolbar could be added, retError, if key already exists in map
-*/
-RetVal AbstractDockWidget::addAndRegisterToolBar(QToolBar* tb, QString key)
+////! remove toolbar with given key from m_toolBars
+///*!
+//    \param key key-string to toolbar which should be removed
+//    \return retOk, if toolbar could be removed, retError, if key has not been found in toolbar-map
+//*/
+//RetVal AbstractDockWidget::unregisterToolBar(QString key)
+//{
+//    int nr = m_toolBars.remove(key);
+//    
+//
+//    if(nr == 0)
+//    {
+//        return RetVal(retError);
+//    }
+//    else
+//    {
+//        return RetVal(retOk);
+//    }
+//}
+
+RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
 {
-    QMap<QString,QToolBar*>::iterator it = m_toolBars.find(key);
+    QList<Toolbar>::iterator i;
+    int highestSection = 1;
 
-    if(it == m_toolBars.end())
+    //check if key already available and quit if so
+    for(i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
     {
-        m_pWindow->insertToolBar(m_dockToolbar, tb);
-
-        if(!m_docked && m_floatingStyle == floatingWindow)
+        if(i->key == key)
         {
-            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
-        }
-        else
-        {
-            tb->setIconSize(QSize(16,16));
+            return RetVal(retError,0,tr("toolbar '%1' is already available").arg(key).toAscii().data());
         }
 
-        m_toolBars.insert(key,tb);
-        return RetVal(retOk);
+        if(i->area == area && i->section > highestSection)
+        {
+            highestSection = i->section;
+        }
     }
-    return RetVal(retError);
-}
 
-//! remove toolbar with given key from m_toolBars
-/*!
-    \param key key-string to toolbar which should be removed
-    \return retOk, if toolbar could be removed, retError, if key has not been found in toolbar-map
-*/
-RetVal AbstractDockWidget::unregisterToolBar(QString key)
-{
-    int nr = m_toolBars.remove(key);
-    
-
-    if(nr == 0)
+    if(!m_docked && m_floatingStyle == floatingWindow)
     {
-        return RetVal(retError);
+        tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
     }
     else
     {
-        return RetVal(retOk);
+        tb->setIconSize(QSize(16,16));
     }
+
+    if(area == Qt::TopToolBarArea)
+    {
+        if(highestSection < section)
+        {
+            m_pWindow->addToolBarBreak(area);
+            m_pWindow->addToolBar(tb);
+        }
+        else if(section == 1)
+        {
+            m_pWindow->insertToolBar(m_dockToolbar, tb);
+        }
+        else
+        {
+            m_pWindow->addToolBar(tb);
+        }
+    }
+    else
+    {
+        if(highestSection < section)
+        {
+            m_pWindow->addToolBarBreak(area);
+            m_pWindow->addToolBar(tb);
+        }
+        else
+        {
+            m_pWindow->addToolBar(tb);
+        }
+    }
+
+
+
+    Toolbar t;
+    t.area = area;
+    t.key = key;
+    t.section = section;
+    t.tb = tb;
+    m_toolbars.append(t);
+
+    return retOk;
+}
+
+RetVal AbstractDockWidget::removeToolBar(const QString &key)
+{
+    //key is unique
+    QList<Toolbar>::iterator i;
+    Qt::ToolBarArea area;
+    int section;
+    int count = 0;
+    QToolBar *tb = NULL;
+    int idx = 0;
+
+    for(i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
+    {
+        if(i->key == key)
+        {
+            tb = i->tb;
+            area = i->area;
+            section = i->section;
+            break;
+        }
+
+        idx++;
+    }
+
+    if(tb)
+    {
+        //count toolbars in same section and area
+        //do this only if section > 1, since this is in order to remove breaks, which are not available before 1 section
+        if(section > 1)
+        {
+            for(i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
+            {
+                if(i->section == section && i->area == area)
+                {
+                    count++;
+                }
+            }
+        }
+
+        if(count == 1)
+        {
+            //tb is the last in this section, remove break before this section
+            m_pWindow->removeToolBarBreak(tb);
+        }
+
+        m_pWindow->removeToolBar(tb);
+        m_toolbars.takeAt(idx);
+
+        return retOk;
+
+    }
+
+    return RetVal(retError, 0, tr("toolbar '%1' not found").arg(key).toAscii().data());
 }
 
 //! returns reference to toolbar with given key-value
@@ -445,12 +568,19 @@ void AbstractDockWidget::dockWidget()
     windowStateChanged( false );
 
     m_dockToolbar->setIconSize(QSize(20,15));
-    QMap<QString,QToolBar*>::iterator it;
-    //qDebug() << "AbstractDockWidget::dockWidget 2";
-    for(it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
+
+    QList<Toolbar>::iterator it;
+    for(it = m_toolbars.begin() ; it != m_toolbars.end() ; ++it)
     {
-        (*it)->setIconSize(QSize(16,16));
+        it->tb->setIconSize(QSize(16,16));
     }
+
+    //QMap<QString,QToolBar*>::iterator it;
+    ////qDebug() << "AbstractDockWidget::dockWidget 2";
+    //for(it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
+    //{
+    //    (*it)->setIconSize(QSize(16,16));
+    //}
     //qDebug() << "AbstractDockWidget::dockWidget 3";
     setAdvancedWindowTitle();
 
@@ -515,8 +645,21 @@ void AbstractDockWidget::undockWidget()
         m_dockToolbar->setIconSize(QSize(20,15));
     }
 
+    QList<Toolbar>::iterator it;
+    for(it = m_toolbars.begin() ; it != m_toolbars.end() ; ++it)
+    {
+        if(m_floatingStyle == floatingWindow)
+        {
+            it->tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+        }
+        else
+        {
+            it->tb->setIconSize(QSize(16,16));
+        }
+    }
 
-    QMap<QString,QToolBar*>::iterator it;
+
+    /*QMap<QString,QToolBar*>::iterator it;
 
     for(it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
     {
@@ -528,7 +671,7 @@ void AbstractDockWidget::undockWidget()
         {
             (*it)->setIconSize(QSize(16,16));
         }
-    }
+    }*/
 
     setAdvancedWindowTitle();
 }

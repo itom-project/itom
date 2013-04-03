@@ -99,8 +99,8 @@ public:
     static PyObject* PyUiItem_getProperties(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_setProperties(PyUiItem *self, PyObject *args);
     static PyObject *PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args);
-    static PyObject* PyUiItem_getattro(PyUiItem *self, PyObject *args);
-    static PyObject* PyUiItem_setattro(PyUiItem *self, PyObject *args);
+    static PyObject* PyUiItem_getattro(PyUiItem *self, PyObject *name);
+    static int       PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value);
 
     static PyObject* PyUiItem_setAttribute(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_getAttribute(PyUiItem *self, PyObject *args);
