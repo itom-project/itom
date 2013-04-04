@@ -30,6 +30,7 @@
 #include "../organizer/addInManager.h"
 #include "../organizer/processOrganizer.h"
 #include "../organizer/uiOrganizer.h"
+#include "../organizer/userOrganizer.h"
 
 #include "../ui/dialogProperties.h"
 #include "../ui/dialogAbout.h"
@@ -97,15 +98,21 @@ MainWindow::MainWindow() :
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea );
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
-    qDebug(".. before loading console widget");
-    //console (central widget):
-    m_console = new ConsoleWidget(this);
-    //setCentralWidget(m_console);
-    qDebug(".. console widget loaded");
 
     //content
     m_contentLayout = new QVBoxLayout;
-    m_contentLayout->addWidget( m_console);
+
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg->hasFeature(featConsole))
+    {
+        qDebug(".. before loading console widget");
+        //console (central widget):
+        m_console = new ConsoleWidget(this);
+        //setCentralWidget(m_console);
+        qDebug(".. console widget loaded");
+        m_contentLayout->addWidget( m_console);
+    }
+
     m_contentLayout->setContentsMargins(0,0,0,0);
     m_contentLayout->setSpacing(1);
 
@@ -113,56 +120,65 @@ MainWindow::MainWindow() :
     centralWidget->setLayout(m_contentLayout);
     setCentralWidget(centralWidget); 
 
-    // breakPointDock
-    m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), this, true, true, AbstractDockWidget::floatingStandard );
-	m_breakPointDock->setObjectName("itomBreakPointDockWidget");
-    m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-    addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
+    if (uOrg->hasFeature(featFileSystem))
+    {
+        // FileDir-Dock
+        m_fileSystemDock = new FileSystemDockWidget(tr("File System"), this, true, true, AbstractDockWidget::floatingStandard);
+	    m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
+	    m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
+        addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
+    }
 
-    // FileDir-Dock
-    m_fileSystemDock = new FileSystemDockWidget(tr("File System"), this, true, true, AbstractDockWidget::floatingStandard);
-	m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
-	m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-    connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
-    addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        // breakPointDock
+        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), this, true, true, AbstractDockWidget::floatingStandard );
+	    m_breakPointDock->setObjectName("itomBreakPointDockWidget");
+        m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
-	// CallStack-Dock
-	m_callStackDock = new CallStackDockWidget( tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
-	m_callStackDock->setObjectName("itomCallStackDockWidget");
-	m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-	addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
+	    // CallStack-Dock
+	    m_callStackDock = new CallStackDockWidget( tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
+	    m_callStackDock->setObjectName("itomCallStackDockWidget");
+	    m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+	    addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
-    // tabify file-directory and breakpoints
-	tabifyDockWidget(m_callStackDock, m_fileSystemDock);
-    tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
-    m_fileSystemDock->raise();
+        // tabify file-directory and breakpoints
+	    tabifyDockWidget(m_callStackDock, m_fileSystemDock);
+        tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
+        m_fileSystemDock->raise();
 
-    // global workspace widget (Python)
-    m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), true, this, true, true, AbstractDockWidget::floatingStandard);
-	m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
-    m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
-    connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+        // global workspace widget (Python)
+        m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), true, this, true, true, AbstractDockWidget::floatingStandard);
+	    m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
+        m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+        addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
+        connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
 
-    // local workspace widget (Python)
-    m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), false, this, true, true, AbstractDockWidget::floatingStandard);
-	m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
-    m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
-    connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+        // local workspace widget (Python)
+        m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), false, this, true, true, AbstractDockWidget::floatingStandard);
+	    m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
+        m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+        addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
+        connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
 
-    // tabify global and local workspace
-    tabifyDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock);
-    //splitDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock, Qt::Horizontal);
-    m_globalWorkspaceDock->raise();
+        // tabify global and local workspace
+        tabifyDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock);
+        //splitDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock, Qt::Horizontal);
+        m_globalWorkspaceDock->raise();
+    }
 
-    // AddIn-Manager
-//    m_pAIManagerWidget = new AIManagerWidget();
-    m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
-	m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
-    qDebug(".. plugin manager widget loaded");
+    if (uOrg->hasFeature(featPlugins))
+    {
+        // AddIn-Manager
+    //    m_pAIManagerWidget = new AIManagerWidget();
+        m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
+	    m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
+        qDebug(".. plugin manager widget loaded");
 
-    addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
+        addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
+    }
 
     // connections
     if (pyEngine != NULL)
@@ -397,9 +413,13 @@ void MainWindow::createActions()
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     //app actions
-    m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
-    connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
-    m_appFileNew->setShortcut(QKeySequence::New);
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
+        connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
+        m_appFileNew->setShortcut(QKeySequence::New);
+    }
 
     m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
     connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
@@ -408,11 +428,14 @@ void MainWindow::createActions()
     temp = m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
-    m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties..."), this);
-    connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
+    if (uOrg->hasFeature(featUserManag))
+    {
+        m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties..."), this);
+        connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
 
-    m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management..."), this);
-    connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
+        m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management..."), this);
+        connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
+    }
 
     m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"), tr("About Qt..."), this);
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -424,50 +447,53 @@ void MainWindow::createActions()
     temp = m_actions["show_loaded_plugins"] = new QAction(tr("Loaded plugins..."), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
-    temp = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
-    temp->setShortcut(QKeySequence::HelpContents);
-
-    temp = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
-
-    temp = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
-    temp->setToolTip(tr("set whether internal python code should be executed in debug mode"));
-    temp->setCheckable(true);
-    if (pyEngine)
+    if (uOrg->hasFeature(featDeveloper))
     {
-        temp->setChecked( pyEngine->execInternalCodeByDebugger() );
+        temp = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
+        temp->setShortcut(QKeySequence::HelpContents);
+
+        temp = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
+
+        temp = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
+        temp->setToolTip(tr("set whether internal python code should be executed in debug mode"));
+        temp->setCheckable(true);
+        if (pyEngine)
+        {
+            temp->setChecked( pyEngine->execInternalCodeByDebugger() );
+        }
+        connect(temp, SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
+
+        temp = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
+        temp->setShortcut(tr("Shift+F10"));
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
+
+        temp = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
+        temp->setShortcut(tr("F6"));
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
+
+        temp = m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
+        temp->setShortcut(tr("F11"));
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
+
+        temp = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
+        temp->setShortcut(tr("F10"));
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut );
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
+
+        temp = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
+        temp->setShortcut(tr("Shift+F11"));
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
+
+
+        temp = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
+        connect(temp, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
     }
-    connect(temp, SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
-
-    temp = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
-    temp->setShortcut(tr("Shift+F10"));
-    temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
-
-    temp = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
-    temp->setShortcut(tr("F6"));
-    temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
-
-    temp = m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
-    temp->setShortcut(tr("F11"));
-    temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
-
-    temp = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
-    temp->setShortcut(tr("F10"));
-    temp->setShortcutContext(Qt::WidgetWithChildrenShortcut );
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
-
-    temp = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
-    temp->setShortcut(tr("Shift+F11"));
-    temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
-
-
-    temp = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
 }
 
 //! creates toolbar
@@ -475,21 +501,31 @@ void MainWindow::createToolBars()
 {
     m_appToolBar = addToolBar(tr("Application"));
     m_appToolBar->setObjectName("toolbarApplication");
-    m_appToolBar->addAction(m_appFileNew);
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_appToolBar->addAction(m_appFileNew);
+    }
     m_appToolBar->addAction(m_appFileOpen);
 
     m_toolToolBar = addToolBar(tr("Tools"));
     m_toolToolBar->setObjectName("toolbarTools");
-    m_toolToolBar->addAction(m_actions["open_designer"]);
-
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_toolToolBar->addAction(m_actions["open_designer"]);
+    }
 
     m_aboutToolBar = addToolBar(tr("About"));
     m_aboutToolBar->setObjectName("toolbarAbout");
+
     m_aboutToolBar->addAction(m_actions["open_assistant"]);
 
-    m_pythonToolBar = addToolBar(tr("Python"));
-    m_pythonToolBar->setObjectName("toolbarPython");
-    m_pythonToolBar->addAction(m_actions["python_global_runmode"]);
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_pythonToolBar = addToolBar(tr("Python"));
+        m_pythonToolBar->setObjectName("toolbarPython");
+        m_pythonToolBar->addAction(m_actions["python_global_runmode"]);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -498,26 +534,37 @@ void MainWindow::createMenus()
     m_pMenuFile = menuBar()->addMenu(tr("File"));
     m_pMenuFile->addAction(m_appFileNew);
     m_pMenuFile->addAction(m_appFileOpen);
-    m_pMenuFile->addAction(m_actions["properties"]);
-    m_pMenuFile->addAction(m_actions["usermanagement"]);
+
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg->hasFeature(featUserManag))
+    {
+        m_pMenuFile->addAction(m_actions["properties"]);
+        m_pMenuFile->addAction(m_actions["usermanagement"]);
+    }
     m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_actions["exit"]);
 
 	m_pMenuView = menuBar()->addMenu(tr("View"));
 	QMenu *dockWidgets = createPopupMenu();
-	dockWidgets->menuAction()->setText( tr("Toolboxes") );
-	m_pMenuView->addMenu(dockWidgets);
+    if (dockWidgets)
+    {
+	    dockWidgets->menuAction()->setText( tr("Toolboxes") );
+	    m_pMenuView->addMenu(dockWidgets);
+    }
 
-    m_pMenuPython = menuBar()->addMenu(tr("Script"));
-    m_pMenuPython->addAction(m_actions["python_stopAction"]);
-    m_pMenuPython->addAction(m_actions["python_continueAction"]);
-    m_pMenuPython->addAction(m_actions["python_stepAction"]);
-    m_pMenuPython->addAction(m_actions["python_stepOverAction"]);
-    m_pMenuPython->addAction(m_actions["python_stepOutAction"]);
-    m_pMenuPython->addSeparator();
-    m_pMenuPython->addAction(m_actions["python_global_runmode"]);
-    m_pMenuPython->addSeparator();
-    m_pMenuPython->addAction(m_actions["python_reloadModules"]);
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_pMenuPython = menuBar()->addMenu(tr("Script"));
+        m_pMenuPython->addAction(m_actions["python_stopAction"]);
+        m_pMenuPython->addAction(m_actions["python_continueAction"]);
+        m_pMenuPython->addAction(m_actions["python_stepAction"]);
+        m_pMenuPython->addAction(m_actions["python_stepOverAction"]);
+        m_pMenuPython->addAction(m_actions["python_stepOutAction"]);
+        m_pMenuPython->addSeparator();
+        m_pMenuPython->addAction(m_actions["python_global_runmode"]);
+        m_pMenuPython->addSeparator();
+        m_pMenuPython->addAction(m_actions["python_reloadModules"]);
+    }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
     m_pMenuHelp->addAction(m_actions["open_assistant"]);
@@ -628,16 +675,20 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
 //! updates actions which deal with python commands
 void MainWindow::updatePythonActions()
 {
-    m_actions["python_stopAction"]->setEnabled(pythonBusy());
-    m_actions["python_continueAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-    m_actions["python_stepAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-    m_actions["python_stepOverAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-    m_actions["python_stepOutAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-
-    bool enableUserDefMenu = (pythonBusy() && pythonInWaitingMode()) || !pythonBusy();
-    foreach(QMenu *mnu, m_userDefinedRootMenus)
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg->hasFeature(featDeveloper))
     {
-        mnu->setEnabled(enableUserDefMenu);
+        m_actions["python_stopAction"]->setEnabled(pythonBusy());
+        m_actions["python_continueAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepOverAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepOutAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+
+        bool enableUserDefMenu = (pythonBusy() && pythonInWaitingMode()) || !pythonBusy();
+        foreach(QMenu *mnu, m_userDefinedRootMenus)
+        {
+            mnu->setEnabled(enableUserDefMenu);
+        }
     }
 }
 

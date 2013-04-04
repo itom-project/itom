@@ -32,7 +32,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox_3">
+  <widget class="QGroupBox" name="groupBox_plugins">
    <property name="geometry">
     <rect>
      <x>194</x>
@@ -64,7 +64,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QGroupBox" name="groupBox_features">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -77,13 +77,6 @@
     <string>Main Application Features</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QCheckBox" name="checkBox_scriptEditor">
-      <property name="text">
-       <string>Script Editor</string>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QCheckBox" name="checkBox_devTools">
       <property name="text">
@@ -115,7 +108,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="groupBox_console">
       <property name="title">
        <string>Console</string>
       </property>
@@ -146,7 +139,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QGroupBox" name="groupBox_4">
+  <widget class="QGroupBox" name="groupBox_user">
    <property name="geometry">
     <rect>
      <x>10</x>

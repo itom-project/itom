@@ -23,7 +23,7 @@
 #ifndef APPMANAGEMENT_H
 #define APPMANAGEMENT_H
 
-#include <qstring.h>
+//#include <qstring.h>
 #include <qobject.h>
 #include <qmutex.h>
 

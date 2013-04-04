@@ -28,6 +28,7 @@
 #include <qsettings.h>
 #include <qdir.h>
 #include <qdebug.h>
+#include <QCryptographicHash>
 
 /*!
     \class userOrganizer
@@ -43,7 +44,7 @@ namespace ito
 
     //! userOrganizer implementation
     //----------------------------------------------------------------------------------------------------------------------------------
-    UserOrganizer::UserOrganizer(void) : QObject(), m_userRole(0), m_userName("ito"), m_enabledUI(0), m_settingsFile("") 
+    UserOrganizer::UserOrganizer(void) : QObject(), m_userRole(2), m_userName("ito"), m_features(allFeatures), m_settingsFile("") 
     {
         AppManagement::setUserOrganizer(this);
     }
@@ -169,7 +170,8 @@ namespace ito
             QSettings settings(settingsFile, QSettings::IniFormat);
             setUserName(settings.value("ITOMIniFile/name").toString());
             setUserRole(settings.value("ITOMIniFile/role").toString());
-            setUiFlags(settings.value("ITOMIniFile/flags").toUInt());
+
+            setUiFlags((userFeatures)getFlagsFromFile());
         }
         else
         {
@@ -177,16 +179,67 @@ namespace ito
             qDebug() << "settingsFile path: " << settingsFile;
             setSettingsFile(settingsFile);
             setUserRole("developer");
-            setUiFlags(-1);
+            setUiFlags((userFeatures)allFeatures);
         }
 
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    int UserOrganizer::getFlagsFromFile(QString fileName)
+    {
+        QString uid = getUserID(fileName);
+        QCryptographicHash nameHash(QCryptographicHash::Sha1);
+        nameHash.addData(uid.toAscii().data(), uid.length());
+
+        QSettings settings(fileName, QSettings::IniFormat);
+        settings.beginGroup("ITOMIniFile");
+        QByteArray fileFlags = settings.value("flags").toByteArray();
+        settings.endGroup();
+
+        QByteArray res;
+        for (int n = 0; n < nameHash.result().length(); n++)
+        {
+            res.append(fileFlags.at(n) ^ nameHash.result().at(n));
+        }
+
+        return res.toInt();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void UserOrganizer::writeFlagsToFile(int flags, QString iniFile)
+    {
+        QSettings settings(iniFile, QSettings::IniFormat);
+        QString uid = getUserID(iniFile);
+        settings.beginGroup("ITOMIniFile");
+        QCryptographicHash nameHash(QCryptographicHash::Sha1);
+        nameHash.addData(uid.toAscii().data(), uid.length());
+
+        QByteArray fileFlags;
+        QByteArray qbaFlags = QByteArray::number(flags);
+        for (int n = 0; n < nameHash.result().length(); n++)
+        {
+            if (n >= qbaFlags.length())
+                fileFlags.append(nameHash.result().at(n));
+            else
+                fileFlags.append(qbaFlags.at(n) ^ nameHash.result().at(n));
+        }
+        settings.setValue("flags", fileFlags);
+        settings.endGroup();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     QString UserOrganizer::getUserID(void) const
     {
         QString fname = QFileInfo(m_settingsFile).baseName();
+        fname = fname.right(fname.length() - 5);
+        return fname;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    QString UserOrganizer::getUserID(QString inifile) const
+    {
+        QString fname = QFileInfo(inifile).baseName();
         fname = fname.right(fname.length() - 5);
         return fname;
     }

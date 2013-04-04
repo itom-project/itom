@@ -29,9 +29,30 @@
 #include <qmessagebox.h>
 #include <qtimer.h>
 #include <qdebug.h>
+#include <QCryptographicHash>
 
 namespace ito {
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DialogUserManagement::getFlags()
+{
+    int flags = 0;
+    if (ui.checkBox_fileSystem->isChecked())
+        flags |= featFileSystem;
+    if (ui.checkBox_devTools->isChecked())
+        flags |= featDeveloper;
+    if (ui.checkBox_editProperties->isChecked())
+        flags |= featUserManag;
+    if (ui.checkBox_addInManager->isChecked())
+        flags |= featPlugins;
+    if (ui.radioButton_consoleNormal->isChecked())
+        flags |= featConsole | featConsoleRW;
+    if (ui.radioButton_consoleNormal->isChecked())
+        flags |= featConsole;
+
+    return flags;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::loadUserList()
@@ -148,6 +169,41 @@ void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, co
         }
         midx = m_userModel->index(curIdx.row(), 3);
         ui.lineEdit_iniFile->setText(midx.data().toString());
+        UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
+        long flags = uio->getFlagsFromFile(midx.data().toString());
+
+        if (flags & featFileSystem)
+            ui.checkBox_fileSystem->setChecked(1);
+        else
+            ui.checkBox_fileSystem->setChecked(0);
+
+        if (flags & featDeveloper)
+            ui.checkBox_devTools->setChecked(1);
+        else
+            ui.checkBox_devTools->setChecked(0);
+
+        if (flags & featUserManag)
+            ui.checkBox_editProperties->setChecked(1);
+        else
+            ui.checkBox_editProperties->setChecked(0);
+
+        if (flags & featPlugins)
+            ui.checkBox_addInManager->setChecked(1);
+        else
+            ui.checkBox_addInManager->setChecked(0);
+
+        if ((flags & featConsole) && (flags & featConsoleRW))
+        {
+            ui.radioButton_consoleNormal->setChecked(1);
+        }
+        else if (flags & featConsole)
+        {
+            ui.radioButton_consoleRO->setChecked(1);
+        }
+        else
+        {
+            ui.radioButton_consoleOff->setChecked(1);
+        }
     }
 }
 
@@ -160,6 +216,12 @@ void DialogUserManagement::on_pushButton_newUser_clicked()
     QString iniFile;
     QModelIndex startIdx = m_userModel->index(0, 1);
     QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1);
+
+    if (uid.isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("UserID is empty! Cannot create user!"), QMessageBox::Ok);
+        return;
+    }
 
     if (!uidList.isEmpty())
     {
@@ -209,6 +271,8 @@ void DialogUserManagement::on_pushButton_newUser_clicked()
     settings.beginGroup("ITOMIniFile");
     settings.setValue("name", name);
     settings.setValue("role", group);
+    UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
+    uio->writeFlagsToFile(getFlags(), iniFile);
     settings.endGroup();
 
     loadUserList();

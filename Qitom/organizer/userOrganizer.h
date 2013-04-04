@@ -29,6 +29,17 @@
 namespace ito
 {
 
+enum userFeatures {
+    featDeveloper   =   1,
+    featFileSystem  =   2,
+    featUserManag   =   4,
+    featPlugins     =   8,
+    featConsole     =   16,
+    featConsoleRW   =   32
+};
+
+#define allFeatures ((userFeatures) (featDeveloper | featFileSystem | featUserManag | featPlugins | featConsole | featConsoleRW))
+
 class UserOrganizer : QObject
 {
     Q_OBJECT
@@ -51,11 +62,17 @@ class UserOrganizer : QObject
         }
         inline int getUserRole() const { return m_userRole; }
         QString getUserID(void) const;
-        void setUiFlags(long flags) { m_enabledUI = flags; }
-        long getUiFlags(void) const { return m_enabledUI; }
+        QString getUserID(QString inifile) const;
+        int getFlagsFromFile(QString fileName);
+        inline int getFlagsFromFile(void) { return getFlagsFromFile(m_settingsFile); }
+        inline void writeFlagsToFile(int flags) { writeFlagsToFile(flags, m_settingsFile); }
+        void writeFlagsToFile(int flags, QString file);
+        void setUiFlags(userFeatures flags) { m_features = flags; }
+        userFeatures getUiFlags(void) const { return m_features; }
         void setSettingsFile(QString &settingsFile) { m_settingsFile = settingsFile; }
         inline QString getSettingsFile() const { return m_settingsFile; };
         ito::RetVal UserOrganizer::loadSettings(const QString defUserName);
+        char hasFeature(userFeatures feature) { return (m_features & feature) > 0; }
 
 private:
         UserOrganizer(void);
@@ -65,7 +82,7 @@ private:
 
         int m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
         QString m_userName;  /*< id of current user */
-        long m_enabledUI; /*< switch for enabeling and disabeling functions of itom */
+        userFeatures m_features; /*< switch for enabeling and disabeling functions of itom */
         QString m_settingsFile;
 };
 
