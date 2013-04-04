@@ -917,7 +917,7 @@ namespace ito {
 
     allPatterns.removeDuplicates();
 
-    filter << QString( "Itom Files (%1)" ).arg(allPatterns.join(" "));
+    filter << tr("Itom Files (%1)").arg(allPatterns.join(" "));
 
     if (IOfilters.testFlag(ito::IOHelper::IOAllFiles))
     {

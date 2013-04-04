@@ -4372,17 +4372,17 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="-144"/>
         <source>timeout while getting value from workspace</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Holen der Werte aus dem Arbeitsbereich</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>the number of values returned from workspace does not correspond to requested number</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl der zurückgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>An error occurred while saving to file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Speichern ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4549,6 +4549,11 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Eigene Fenster (*.ui)</translation>
     </message>
     <message>
+        <location line="+90"/>
+        <source>Itom Files (%1)</source>
+        <translation type="unfinished">Itom Dateien (%1)</translation>
+    </message>
+    <message>
         <source>Itom Files (*.py *.idc *.mat *.ui)</source>
         <translation type="obsolete">ITOM-Dateien (*.py *.idc *.mat *.ui)</translation>
     </message>
@@ -4557,7 +4562,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">ITOM-Dateien (*.idc *.mat)</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+4"/>
         <source>All Files (*.*)</source>
         <translation type="unfinished">Alle Dateien (*.*)</translation>
     </message>
