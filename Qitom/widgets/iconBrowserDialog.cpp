@@ -117,7 +117,7 @@ IconBrowserDialog::IconBrowserDialog(QWidget *parent) :  QDialog(parent),
     this->setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
     this->setWindowTitle("Icon Browser");
 
-    this->setWhatsThis("ITOM-Resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window.");
+    this->setWhatsThis("itom resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window.");
 
     connect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
 }

@@ -203,7 +203,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+698"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+708"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -1952,7 +1952,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2553"/>
+        <location filename="../python/pythonUi.cpp" line="+2555"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3276,6 +3276,16 @@ Nachricht: &apos;%1&apos;</translation>
         <source>stay on top of main window</source>
         <translation type="unfinished">Hauptfenster im Vordergrund anzeigen</translation>
     </message>
+    <message>
+        <location line="+244"/>
+        <source>toolbar &apos;%1&apos; is already available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+110"/>
+        <source>toolbar &apos;%1&apos; not found</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AbstractFigure</name>
@@ -3284,19 +3294,16 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="+78"/>
         <source>stay on top of all windows</source>
-        <translation type="unfinished">Iim Vordergrund vor allen Fenstern anzeigen</translation>
+        <translation type="obsolete">Iim Vordergrund vor allen Fenstern anzeigen</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>stay on top of main window</source>
-        <translation type="unfinished">Iim Vordergrund vor dem Hauptfenster anzeigen</translation>
+        <translation type="obsolete">Iim Vordergrund vor dem Hauptfenster anzeigen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>window</source>
-        <translation>Fenster</translation>
+        <translation type="obsolete">Fenster</translation>
     </message>
 </context>
 <context>
@@ -3741,7 +3748,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+119"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+117"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3778,13 +3785,13 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Figure &apos;%s&apos; nicht gefunden</translation>
     </message>
     <message>
-        <location line="+52"/>
-        <location line="+56"/>
+        <location line="+54"/>
+        <location line="+57"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-10"/>
         <source>no plot figure plugin could be found that fits to the given category.</source>
         <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie übereinstimmt.</translation>
     </message>
@@ -4119,7 +4126,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::FigureWidget</name>
     <message>
-        <location filename="../widgets/figureWidget.cpp" line="+119"/>
+        <location filename="../widgets/figureWidget.cpp" line="+126"/>
         <source>subplot %1 (empty)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4134,13 +4141,8 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+87"/>
-        <source>subplot %1 (plot)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+102"/>
-        <source>subplot %1 (liveImage)</source>
+        <location line="+210"/>
+        <source>subplot %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5400,8 +5402,8 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
-        <source>designer plugin widget could not be created</source>
+        <location line="+72"/>
+        <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5538,13 +5540,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+142"/>
-        <location line="+42"/>
-        <source>Plot window could not be loaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+410"/>
+        <location line="+592"/>
         <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5784,7 +5780,7 @@ Katesisch</translation>
         <translation type="unfinished">Skript-Editor</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Do you really want to delete the selected variables?</source>
         <translation type="unfinished">Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
@@ -5831,8 +5827,8 @@ Katesisch</translation>
     <name>uiMainWindow</name>
     <message>
         <location filename="../widgets/uiMainWindow.ui"/>
-        <source>iTOM</source>
-        <translation></translation>
+        <source>itom</source>
+        <translation type="unfinished">itom</translation>
     </message>
 </context>
 <context>

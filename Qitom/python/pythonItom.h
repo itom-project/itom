@@ -66,7 +66,7 @@ public:
     static PyModuleDef PythonModuleItom;
     static PyObject* PyInitItom(void);
 
-    //!< methods of module ITOM
+    //!< methods of module itom
     static PyObject* PyOpenEmptyScriptEditor(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyNewScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyOpenScript(PyObject *pSelf, PyObject *pArgs);

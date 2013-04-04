@@ -313,7 +313,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     stream.writeAttribute("itomChecksum", QString::number(checksum));
 
     stream.writeStartElement("assistant");
-    stream.writeTextElement("title", "Documentation ITOM");
+    stream.writeTextElement("title", "Documentation itom");
     stream.writeTextElement("homePage", "qthelp://org.sphinx.itom.0.0/doc/index.html");
     stream.writeTextElement("startPage", "qthelp://org.sphinx.itom.0.0/doc/index.html");
     stream.writeEndElement(); //assistant

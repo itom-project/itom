@@ -201,9 +201,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
-            PyImport_AppendInittab("itom",&PythonItom::PyInitItom);				//!< add all static, known function calls to python-module ITOM
+            PyImport_AppendInittab("itom",&PythonItom::PyInitItom);				//!< add all static, known function calls to python-module itom
 
-            PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module ITOMDBG
+            PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
             Py_Initialize();													    //!< must be called after any PyImport_AppendInittab-call
 //            PyEval_InitThreads();                                                   //!< prepare Python multithreading

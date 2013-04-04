@@ -1540,7 +1540,7 @@ None (display outPut) or PyDictionary with version information.\n\
 Notes \n\
 ----- \n\
 \n\
-Retrieve complete version information of ITOM and if specified version information of loaded plugins\n\
+Retrieve complete version information of itom and if specified version information of loaded plugins\n\
 and print it either to the console or to a PyDictionary.");
 PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 {
