@@ -154,9 +154,9 @@ QModelIndex UserModel::index(int row, int column, const QModelIndex &parent) con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int UserModel::addUser(UserInfoStruct &newUser)
+int UserModel::addUser(const UserInfoStruct &newUser)
 {
-    foreach (UserInfoStruct userInfo, m_userInfo)
+    foreach (const UserInfoStruct &userInfo, m_userInfo)
     {
         if (userInfo.id == newUser.id)
             return -1;

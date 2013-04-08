@@ -29,7 +29,7 @@
 #define ABSTRACTITOMDESIGNERPLUGIN_H
 
 #include "../common/sharedStructuresGraphics.h"
-#include "abstractFigure.h"
+#include "AbstractFigure.h"
 #include <QtDesigner/QDesignerCustomWidgetInterface>
     
 namespace ito {

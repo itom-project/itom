@@ -32,7 +32,7 @@
 //#include "../../common/apiFunctionsGraphInc.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
-#include "plot/abstractItomDesignerPlugin.h"
+#include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
 
 #include "widgetWrapper.h"
@@ -2558,12 +2558,12 @@ RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned 
         }
         else
         {
-            retval += RetVal::format(retError,0,"figHandle %i is not a handle for a figure window.",figHandle);
+            retval += RetVal::format(retError,0,"figHandle %i is not a handle for a figure window.",*figHandle);
         }
     }
     else
     {
-        retval += RetVal::format(retError,0,"figHandle %i not available.",figHandle);
+        retval += RetVal::format(retError,0,"figHandle %i not available.",*figHandle);
     }
 
     if(semaphore)

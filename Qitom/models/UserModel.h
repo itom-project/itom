@@ -60,7 +60,7 @@ namespace ito
             QModelIndex parent(const QModelIndex &index) const;
             int rowCount(const QModelIndex &parent = QModelIndex()) const;
             int columnCount(const QModelIndex &parent = QModelIndex()) const;
-            int addUser(UserInfoStruct &newUser);
+            int addUser(const UserInfoStruct &newUser);
 
         private:
             QList<QString> m_headers;               //!<  string list of names of column headers

@@ -469,7 +469,7 @@ ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
         COMMAND    subwcrev
         ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
     )
-ELSE(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
+ELSE()
     MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
     FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)

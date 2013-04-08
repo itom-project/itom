@@ -1365,17 +1365,22 @@ std::string PCLPolygonMesh::getFieldsList() const
         return "";
     }
     
-    std::vector<::sensor_msgs::PointField> fields = mesh->cloud.fields;
+    std::vector< ::sensor_msgs::PointField> fields = mesh->cloud.fields;
     std::string output;
-    for(int i=0;i<fields.size();i++)
+    for(int i=0;i<fields.size()-1;i++)
     {
         output += fields[i].name + ";";
     }
 
-    if(output.size() > 0)
+    if(fields.size() > 0)
     {
-        output.pop_back(); //remove last ;
+        output += fields[ fields.size() - 1 ].name;
     }
+
+    //if(output.size() > 0)
+    //{
+    //    output.pop_back(); //remove last ;
+    //}
 
     return output;
 }

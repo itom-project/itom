@@ -493,7 +493,7 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
                         QList< AbstractFigure::ToolBarItem >::iterator i;
                         for(i = toolbars.begin() ; i != toolbars.end() ; ++i)
                         {
-                            key_ = QString("%1_%2").arg( int(figWidget) ).arg(i->key);
+                            key_ = QString("%1_%2").arg( size_t(figWidget) ).arg(i->key);
                             addToolBar(i->toolbar, key_, i->area, i->section);
                             i->toolbar->setVisible(i->visible);
                         }
@@ -521,7 +521,7 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
                         QList< AbstractFigure::ToolBarItem >::iterator i;
                         for(i = toolbars.begin() ; i != toolbars.end() ; ++i)
                         {
-                            key_ = QString("%1_%2").arg( int(figWidget) ).arg(i->key);
+                            key_ = QString("%1_%2").arg( size_t(figWidget) ).arg(i->key);
                             removeToolBar(key_);
                         }
                     }

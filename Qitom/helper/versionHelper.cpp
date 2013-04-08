@@ -35,18 +35,10 @@
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #ifdef _DEBUG
     #undef _DEBUG
-    #if (defined linux) | (defined CMAKE)
-        #include "patchlevel.h"
-    #else
-        #include "patchlevel.h"
-    #endif
+    #include "patchlevel.h"
     #define _DEBUG
 #else
-#ifdef linux
     #include "patchlevel.h"
-#else
-    #include "patchlevel.h"
-#endif
 #endif
 
 #ifndef PCL_REVISION_VERSION
@@ -239,7 +231,7 @@ QMap<QString, QString> ito::getItomVersionMap()
         items["version_Warnings"] = QObject::tr("Build from a clean version.\n");
     }
 #else
-    items["version_Warnings"] = QObject::tr("This version of itom not under version control (no GIT or SVN)!\n")
+    items["version_Warnings"] = QObject::tr("This version of itom not under version control (no GIT or SVN)!\n");
 #endif
     
     //OpenCV

@@ -71,7 +71,7 @@ class UserOrganizer : QObject
         userFeatures getUiFlags(void) const { return m_features; }
         void setSettingsFile(QString &settingsFile) { m_settingsFile = settingsFile; }
         inline QString getSettingsFile() const { return m_settingsFile; };
-        ito::RetVal UserOrganizer::loadSettings(const QString defUserName);
+        ito::RetVal loadSettings(const QString defUserName);
         char hasFeature(userFeatures feature) { return (m_features & feature) > 0; }
 
 private:

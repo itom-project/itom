@@ -109,7 +109,7 @@ else:
 inputString = ''
 
 try:
-    inputFile = open(repositoryPath+"/qitom/version.h.in", "r")
+    inputFile = open(repositoryPath+"/Qitom/version.h.in", "r")
     inputString = inputFile.read()
     inputFile.close()
 except:
@@ -121,7 +121,7 @@ inputString = inputString.replace('$URL$', repURL)
 inputString = inputString.replace('$MODS$', str(repIsDirty))
 
 try:
-    outputFile = open(destinationFolder+"/qitom/version.h", "w")
+    outputFile = open(destinationFolder+"/Qitom/version.h", "w")
     outputFile.write(inputString)
     outputFile.close()
 except:
