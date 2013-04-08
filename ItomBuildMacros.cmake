@@ -37,10 +37,12 @@ if(MSVC)
 	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" )
 endif (MSVC)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-	message(STATUS "GNUCXX pipe flag enabled")
-	set_target_properties(qitom PROPERTIES COMPILE_FLAGS "-pipe")
-endif(CMAKE_COMPILER_IS_GNUCXX)
+MACRO (BUILD_PARALLEL_LINUX targetName)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+	  message(STATUS "GNUCXX pipe flag enabled")
+	  set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
+  endif(CMAKE_COMPILER_IS_GNUCXX)
+ENDMACRO (BUILD_PARALLEL_LINUX)
 
 
 ###########################################################################
