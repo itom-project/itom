@@ -95,47 +95,67 @@ AbstractNode::~AbstractNode()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource)
+RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
 {
     ito::RetVal retval = ito::retOk;
     Channel *thisChannel = NULL;
 
     if (!m_pInput.contains(input->getName()))
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("Parameter: does not exist in updateParam").toAscii().data()); //Todo: add parameter name in error string
+    }
+
     Channel *inpChannel = getInputChannel(input->getName());
 
     if ((!isSource) && (inpChannel != NULL))
     {
         if (inpChannel->getUpdatePending() == false)
+        {
             return ito::RetVal(ito::retError, 0, QObject::tr("Running update on a locked input channel, i.e. updatePending flag is not set").toAscii().data());
-        if (inpChannel->getChannelBuffering())
-            return ito::RetVal(ito::retError, 0, QObject::tr("Channel is already updating").toAscii().data());
+        }
 
+        if (inpChannel->getChannelBuffering())
+        {
+            return ito::RetVal(ito::retError, 0, QObject::tr("Channel is already updating").toAscii().data());
+        }
+
+        //now set the flag that this input channel is being updated right now.
         inpChannel->setChannelBuffering(true);
     }
     else
     {
         retval += setUpdatePending();
         if (retval.containsError())
+        {
             return retval;
+        }
     }
 
     // only copy parameter if the update is not called with the parameter of this node, otherwise arrays inside the parameter will be deleted
     if (m_pInput[input->getName()] != input)
+    {
         retval += m_pInput.value(input->getName())->copyValueFrom(input); 
+    }
 
     if (retval.containsError())
+    {
         return retval;
+    }
 
     foreach (thisChannel, m_pChannels) //check if all necessary input is available
     {
         if (thisChannel->isReceiver(this) && thisChannel->getUpdatePending() && thisChannel->getChannelBuffering()!=true)
+        {
             return retval;
+        }
     }
 
     retval += update(); //do what you have to do
+
     if (retval.containsError())
+    {
         return retval;
+    }
 
     if (inpChannel != NULL)
     {
@@ -149,7 +169,9 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource)
         }
     }
     if (retval.containsError())
+    {
         return retval;
+    }
 
     foreach(thisChannel, m_pChannels)
     {
@@ -179,4 +201,103 @@ bool AbstractNode::isRefreshPending()
     return temp;
 }
 */
+
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal AbstractNode::getUpdateStatus(void) const
+{
+    ito::Channel *thisChannel;
+
+    foreach(thisChannel, m_pChannels)
+    {
+        if (thisChannel->getUpdatePending() && !thisChannel->getChannelBuffering())
+        {
+            return ito::retError;
+        }
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal AbstractNode::updateChannels(QList<QString> paramNames)
+{
+    ito::RetVal retval = ito::retOk;
+    ito::Channel *thisChannel;
+    QList<QString> copyParamNames = paramNames;
+    QString thisName;
+    QList<ito::Channel *> channelList;
+
+    foreach (thisChannel, m_pChannels)
+    {
+        if ((thisChannel->isSender(this)) && (copyParamNames.contains(thisChannel->getSenderParamName())))
+        {
+            channelList.append(thisChannel);
+            copyParamNames.removeOne(thisChannel->getSenderParamName());
+            retval += setUpdatePending(thisChannel->getUniqueID());
+        }
+    }
+    if (retval.containsError()) 
+        return retval;
+    if (copyParamNames.length() != 0)
+        return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toAscii().data());
+
+    foreach (thisChannel, channelList)
+    {
+        ito::Param *partnerParam = thisChannel->getPartnerParam(this);
+        partnerParam->copyValueFrom(m_pOutput[thisChannel->getSenderParamName()]);
+        retval += thisChannel->getReceiver()->updateParam(partnerParam);
+    }
+    retval += getUpdateStatus();
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal AbstractNode::setUpdatePending(int uniqueID /*= -1*/)
+{
+    RetVal retval = 0;
+    Channel *iterChannel;
+    if (uniqueID == -1)
+    {
+        foreach(iterChannel, m_pChannels)
+        {
+            if (iterChannel->isSender(this))
+            {            
+                retval += iterChannel->propagateUpdatePending();
+            }
+        }
+    }
+    else
+    {
+        if (m_pChannels.contains(uniqueID))
+        {
+            if (m_pChannels[uniqueID]->isSender(this))
+            {
+                retval += m_pChannels[uniqueID]->propagateUpdatePending();
+            }
+            else
+            {
+                retval += RetVal(ito::retError, 0, QObject::tr("channel is not a sender in setUpdatePending").toAscii().data());
+            }
+        }
+        else
+        {
+            retval += RetVal(ito::retError, 0, QObject::tr("unknown channel in setUpdatePending").toAscii().data());
+        }
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+Channel * AbstractNode::getInputChannel(const char *inpParamName)
+{
+    Channel *thisChannel;
+    foreach(thisChannel, m_pChannels)
+    {
+        if (((thisChannel->getDirection() == Channel::parentToChild) && (strcmp(thisChannel->getChildParam()->getName(), inpParamName) == 0))
+            || ((thisChannel->getDirection() == Channel::childToParent) && (strcmp(thisChannel->getParentParam()->getName(), inpParamName) == 0)))
+        {
+            return thisChannel;
+        }
+    }
+    return NULL;
+}

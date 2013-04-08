@@ -48,8 +48,8 @@ public:
     FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~FigureWidget();
 
-    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className);
-    RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className);
+    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+    RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
 
     QWidget *getSubplot(int index) const;
 

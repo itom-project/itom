@@ -174,13 +174,15 @@ void FigureWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className)
+RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
     QString plotClassName;
     bool exists = false;
     int idx = areaCol + areaRow * m_cols;
+
+    *canvasWidget = NULL;
 
     if(dwo)
     {
@@ -207,6 +209,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
             {
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
                 dObjFigure->setSource(dataObj);
+                *canvasWidget = destWidget;
             }
             else
             {
@@ -228,13 +231,15 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className)
+RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
     QString plotClassName;
     bool exists = false;
     int idx = areaCol + areaRow * m_cols;
+
+    *canvasWidget = NULL;
 
     if(!dwo)
     {
@@ -271,6 +276,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             {
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
                 dObjFigure->setCamera(cam);
+                *canvasWidget = destWidget;
             }
             else
             {
@@ -319,6 +325,7 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                 const QMetaObject* meta = currentItemWidget->metaObject();
                 if(QString::compare(plotClassName, meta->className(), Qt::CaseInsensitive) == 0)
                 {
+                    destinationWidget = currentItemWidget;
                     exists = true;
                 }
             }

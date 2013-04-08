@@ -1720,7 +1720,8 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             if(sharedPtr->data() == NULL)
             {
-                return PyErr_Format(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
+                Py_RETURN_NONE;
+                //return PyErr_Format(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
             }
             return DataObjectToPyObject( *(sharedPtr->data()) );
         }
