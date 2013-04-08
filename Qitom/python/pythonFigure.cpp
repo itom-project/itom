@@ -205,8 +205,9 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
     if(className) defaultPlotClassName = className;
+    QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
@@ -216,8 +217,23 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     {
         return NULL;
     }
-    
-    Py_RETURN_NONE;
+
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if(pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -259,8 +275,9 @@ This function is not blocking.");
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
     if(className) defaultPlotClassName = className;
+    QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image");
@@ -271,7 +288,22 @@ This function is not blocking.");
         return NULL;
     }
     
-    Py_RETURN_NONE;
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if(pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
 }
 
 

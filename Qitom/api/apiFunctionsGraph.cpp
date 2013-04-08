@@ -25,6 +25,7 @@
 #include "../Qitom/AppManagement.h"
 #include "../organizer/addInManager.h"
 #include "../organizer/paletteOrganizer.h"
+#include "../organizer/designerWidgetOrganizer.h"
 #include "../Qitom/organizer/uiOrganizer.h"
 
 #include <qmetaobject.h>
@@ -90,21 +91,64 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdx(const int number, ito::ItomPalett
     return ito::retOk;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctionsGraph::mgetFigure(ito::uint32 &UID, const QString plugin, QObject **newFigure)
-{
-    ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-
-    if (UID)
-    {
-        *newFigure = uiOrg->getPluginReference(UID);
-        if (*newFigure)
-            return ito::retOk;
-    }
-
+////------------------------------------------------------------------------------------------------------------------------------------------------------
+//ito::RetVal apiFunctionsGraph::mgetFigure(ito::uint32 &UID, const QString plugin, QWidget **newFigure)
+//{
+//    ito::RetVal retval = ito::retOk;
+//    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+//
+//    if (UID)
+//    {
+//        *newFigure = uiOrg->getPluginReference(UID);
+//        if (*newFigure)
+//            return ito::retOk;
+//    }
+//
+////    retval += uiOrg->getNewPluginWindow(plugin, UID, newFigure);
 //    retval += uiOrg->getNewPluginWindow(plugin, UID, newFigure);
-    retval += uiOrg->getNewPluginWindow(plugin, UID, newFigure);
+//
+//    return retval;
+//}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent /*= NULL*/)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    DesignerWidgetOrganizer *dwOrg = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+
+    if(uiOrg)
+    {
+        if(UID > 0)
+        {
+            *figure = qobject_cast<QWidget*>(uiOrg->getPluginReference(UID));
+            if(*figure && parent)
+            {
+                (*figure)->setParent( parent );
+            }
+            if(*figure == NULL)
+            {
+                UID = 0;
+            }
+        }
+
+        if(UID == 0 && dwOrg)
+        {
+            QString className = dwOrg->getFigureClass(figCategoryName, figClassName, retval);
+            if(!retval.containsError())
+            {
+                retval += uiOrg->getNewPluginWindow(className, UID, figure, parent);
+            }
+        }
+        else if(!dwOrg)
+        {
+            retval += ito::RetVal(ito::retError,0,"designerWidgetOrganizer is not available");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+    }
 
     return retval;
 }

@@ -88,18 +88,18 @@ class Channel
         
         ~Channel() {}
        
-        inline AbstractNode* getParent() { return m_pParent; }
+        inline AbstractNode* getParent() const { return m_pParent; }
         
-        inline AbstractNode* getChild() { return m_pChild; }
+        inline AbstractNode* getChild() const { return m_pChild; }
         
-        inline ChanDirection getDirection() { return m_direction; }
+        inline ChanDirection getDirection() const { return m_direction; }
         
-        inline bool getUpdatePending() { return m_updatePending; }
+        inline bool getUpdatePending() const { return m_updatePending; }
         
-        inline unsigned int getUniqueID() { return m_uniqueID; }
+        inline unsigned int getUniqueID() const { return m_uniqueID; }
 
         /*!> returns the own node's parameter participating in this channel. Note: The roles of sender/receiver are not relevant in this context*/
-        inline ito::Param* getOwnParam(AbstractNode* self)
+        inline ito::Param* getOwnParam(AbstractNode* self) const
         {
             if(self == m_pParent)
                 return m_pParentParam;
@@ -110,7 +110,7 @@ class Channel
         }
 
         /*!> returns the other node's parameter participating in this channel. Note: The roles of sender/receiver are not relevant in this context*/
-        inline ito::Param* getPartnerParam(AbstractNode* self)
+        inline ito::Param* getPartnerParam(AbstractNode* self) const
         {
             if(self == m_pParent)
                 return m_pChildParam;
@@ -120,7 +120,7 @@ class Channel
                 return NULL;
         }
 
-        inline QString getSenderParamName()
+        inline QString getSenderParamName() const
         {
             if (m_direction == Channel::childToParent)
                 return QString(m_pChildParam->getName());
@@ -143,16 +143,16 @@ class Channel
         /*!> prepares the whole sub tree of nodes rooted at the sending node of this channel for an incoming update. Note: this function does NOT propagate any actual data */ 
         RetVal propagateUpdatePending();
 
-        inline bool getChannelBuffering() { return m_channelBuffering; }
+        inline bool getChannelBuffering() const { return m_channelBuffering; }
 
         inline void setChannelBuffering(bool buffering) { m_channelBuffering = buffering; return; }
 
         /*!> The hash identifying this channel in the connection list of the participating nodes*/
-        inline uint getHash() { return m_hashVal; }
+        inline uint getHash() const { return m_hashVal; }
 
-        inline ito::Param * getParentParam() { return m_pParentParam; }
+        inline ito::Param * getParentParam() const { return m_pParentParam; }
 
-        inline ito::Param * getChildParam() { return m_pChildParam; }
+        inline ito::Param * getChildParam() const { return m_pChildParam; }
 
         /*!> Sets the updatePending flag of this channel back to false. Note: This reset is NOT propagated down the node tree*/
         inline void resetUpdatePending(void){ m_updatePending = false;}
@@ -168,7 +168,7 @@ class Channel
         }
 
         /*!> returns true, if the node given as the argument fills the role of receiver in this channel. Useful, since parent/child do not have predefined roles */
-        inline bool isReceiver(AbstractNode *query) 
+        inline bool isReceiver(AbstractNode *query) const
         { 
             if (((m_direction == Channel::childToParent) && (m_pParent == query)) 
                 || ((m_direction == Channel::parentToChild) && (m_pChild == query)))
@@ -234,116 +234,27 @@ class AbstractNode
             return retval;
         }
 
-        inline rttiNodeType getType() { return m_NodeType; }
+        inline rttiNodeType getType() const { return m_NodeType; }
 
         //!> the addChannel and especially removeChannel are virtual since the Node might have to delete itself depending on the deleteOnDisconnect flag.
         //!> As delete(this) is frowned upon, we need QObject::deleteLater() unavailable here as the class is not derived from QObject
         virtual RetVal addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect) = 0;
-
         virtual RetVal addChannel(Channel *newChannel) = 0;
-
-        inline RetVal getUpdateStatus(void)
-        {
-            ito::Channel *thisChannel;
-
-            foreach(thisChannel, m_pChannels)
-            {
-                if (thisChannel->getUpdatePending() && !thisChannel->getChannelBuffering())
-                {
-                    return ito::retError;
-                }
-            }
-            return ito::retOk;
-        }
-
-        inline RetVal updateChannels(QList<QString> paramNames)
-        {
-            ito::RetVal retval = ito::retOk;
-            ito::Channel *thisChannel;
-            QList<QString> copyParamNames = paramNames;
-            QString thisName;
-            QList<ito::Channel *> channelList;
-
-            foreach (thisChannel, m_pChannels)
-            {
-                if ((thisChannel->isSender(this)) && (copyParamNames.contains(thisChannel->getSenderParamName())))
-                {
-                    channelList.append(thisChannel);
-                    copyParamNames.removeOne(thisChannel->getSenderParamName());
-                    retval += setUpdatePending(thisChannel->getUniqueID());
-                }
-            }
-            if (retval.containsError()) 
-                return retval;
-            if (copyParamNames.length() != 0)
-                return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toAscii().data());
-
-            foreach (thisChannel, channelList)
-            {
-                ito::Param *partnerParam = thisChannel->getPartnerParam(this);
-                partnerParam->copyValueFrom(m_pOutput[thisChannel->getSenderParamName()]);
-                retval += thisChannel->getReceiver()->updateParam(partnerParam);
-            }
-            retval += getUpdateStatus();
-
-            return retval;
-        }
 
         virtual RetVal removeChannelFromList(unsigned int UniqueID) = 0;
         virtual RetVal removeChannel(Channel *delChannel) = 0;
 
-        inline bool isConnected() { return !(m_pChannels.isEmpty()); }
+        RetVal getUpdateStatus(void) const;
+        
+        RetVal updateChannels(QList<QString> paramNames);    
 
-        inline int getUniqueID(void) { return m_uniqueID; }
+        inline bool isConnected() const { return !(m_pChannels.isEmpty()); }
 
-        inline RetVal setUpdatePending(int uniqueID = -1)
-        {
-            RetVal retval = 0;
-            Channel *iterChannel;
-            if (uniqueID == -1)
-            {
-                foreach(iterChannel, m_pChannels)
-                {
-                    if (iterChannel->isSender(this))
-                    {            
-                        retval += iterChannel->propagateUpdatePending();
-                    }
-                }
-            }
-            else
-            {
-                if (m_pChannels.contains(uniqueID))
-                {
-                    if (m_pChannels[uniqueID]->isSender(this))
-                    {
-                        retval += m_pChannels[uniqueID]->propagateUpdatePending();
-                    }
-                    else
-                    {
-                        retval += RetVal(ito::retError, 0, QObject::tr("channel is not a sender in setUpdatePending").toAscii().data());
-                    }
-                }
-                else
-                {
-                    retval += RetVal(ito::retError, 0, QObject::tr("unknown channel in setUpdatePending").toAscii().data());
-                }
-            }
-            return retval;
-        }
+        inline int getUniqueID(void) const { return m_uniqueID; }
 
-        Channel * getInputChannel(const char *inpParamName)
-        {
-            Channel *thisChannel;
-            foreach(thisChannel, m_pChannels)
-            {
-                if (((thisChannel->getDirection() == Channel::parentToChild) && (strcmp(thisChannel->getChildParam()->getName(), inpParamName) == 0))
-                    || ((thisChannel->getDirection() == Channel::childToParent) && (strcmp(thisChannel->getParentParam()->getName(), inpParamName) == 0)))
-                {
-                    return thisChannel;
-                }
-            }
-            return NULL;
-        }
+        RetVal setUpdatePending(int uniqueID = -1);
+
+        Channel * getInputChannel(const char *inpParamName);
 
         inline ito::Param* getInputParam(const QString paramName) 
         { 
@@ -351,8 +262,7 @@ class AbstractNode
             {
                 return m_pInput[paramName];
             }
-            else
-                return NULL;
+            return NULL;
         }
 
         inline ito::Param* getOutputParam(const QString paramName) 
@@ -361,8 +271,7 @@ class AbstractNode
             {
                 return m_pOutput[paramName];
             }
-            else
-                return NULL;
+            return NULL;
         }
 
     protected:

@@ -66,10 +66,10 @@ public:
 
     ito::RetVal update(void);
 
-    virtual inline QSharedPointer<ito::DataObject> getSource(void) { return QSharedPointer<ito::DataObject>(m_pInput["source"]->getVal<ito::DataObject*>()); }
+    virtual QSharedPointer<ito::DataObject> getSource(void);
     void setSource(QSharedPointer<ito::DataObject> source);
 
-    virtual inline QSharedPointer<ito::DataObject> getDisplayed(void) { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
+    virtual QSharedPointer<ito::DataObject> getDisplayed(void); // { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
 
     QPointer<ito::AddInDataIO> getCamera(void);
     void setCamera( QPointer<ito::AddInDataIO> camera );

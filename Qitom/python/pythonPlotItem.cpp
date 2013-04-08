@@ -57,20 +57,32 @@ PyObject* PythonPlotItem::PyPlotItem_new(PyTypeObject *type, PyObject * args, Py
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItemInit_doc,"figure([handle]) -> plot figure\n\
+PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.\n\
 \n\
+Use can use this constructor to access any plot or subplot (if more than one plot) of a figure. The subplotIndex \n\
+row-wisely addresses the subplots, beginning with 0. \n\
+\n\
+Parameters \n\
+------------ \n\
 doc");
 int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
     PythonFigure::PyFigure *figure = NULL;
     unsigned int subplotIndex = 0;
     ito::RetVal retval;
+    unsigned int objectID = 0;
 
-    if(!PyArg_ParseTuple(args, "O!I", &PythonFigure::PyFigureType, &figure, &subplotIndex))
+    const char *kwlist1[] = {"figure", "subplotIdx", NULL};
+    const char *kwlist2[] = {"figure", "objectID", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", const_cast<char**>(kwlist1), &PythonFigure::PyFigureType, &figure, &subplotIndex))
     {
-        return NULL;
+        PyErr_Clear();
+        if(!PyArg_ParseTupleAndKeywords(args,kwds,"|O!I", const_cast<char**>(kwlist2), &PythonFigure::PyFigureType, &figure, &objectID))
+        {
+            return NULL;
+        }
     }
-
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if(uiOrga == NULL)
@@ -79,18 +91,37 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         return -1;
     }
 
-    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QSharedPointer<unsigned int> objectIDShared(new unsigned int);
     QSharedPointer<QByteArray> widgetClassName(new QByteArray());
     QSharedPointer<QByteArray> objectName(new QByteArray());
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<unsigned int>, figure->guardedFigHandle), Q_ARG(unsigned int, subplotIndex), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-    locker.getSemaphore()->wait(-1);
-    retval += locker.getSemaphore()->returnValue;
-
-    if(!PythonCommon::transformRetValToPyException(retval))
+    if(objectID == 0)
     {
-        return -1;
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<unsigned int>, figure->guardedFigHandle), Q_ARG(unsigned int, subplotIndex), Q_ARG(QSharedPointer<unsigned int>, objectIDShared), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        locker.getSemaphore()->wait(-1);
+        retval += locker.getSemaphore()->returnValue;
+
+        if(!PythonCommon::transformRetValToPyException(retval))
+        {
+            return -1;
+        }
+
+        objectID = *objectIDShared;
+    }
+    else
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        locker.getSemaphore()->wait(-1);
+        retval += locker.getSemaphore()->returnValue;
+
+        if(!PythonCommon::transformRetValToPyException(retval))
+        {
+            return -1;
+        }
     }
 
     Py_XINCREF(figure);
@@ -101,7 +132,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
     self->uiItem.widgetClassName = new char[widgetClassName->size()+1];
     strcpy(self->uiItem.widgetClassName, widgetClassName->data() );
-    self->uiItem.objectID = *objectID;
+    self->uiItem.objectID = objectID;
 
     return 0;
 }

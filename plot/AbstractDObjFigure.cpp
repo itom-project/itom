@@ -29,8 +29,6 @@
 
 #include <qmetaobject.h>
 
-using namespace ito;
-
 namespace ito
 {
 
@@ -38,36 +36,39 @@ namespace ito
 ito::RetVal AbstractDObjFigure::update(void)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *oldDisplayed = NULL;
-
-     //lock the displayed object to prevent ugly surprises for the children
-    if (m_dataPointer.contains("displayed"))
-    {
-        oldDisplayed = (ito::DataObject*)m_dataPointer["displayed"].data();
-        oldDisplayed->lockWrite();
-    }
 
     //!> do the real update work, here the transformation from source to displayed takes place
     retval += applyUpdate();
 
     //!> input data object is different from output data object so must cache it
-/*
-    if (m_pOutput["displayed"]->getVal<const char*>() == NULL) 
-        return ito::RetVal(ito::retError, 0, QObject::tr("displayed object is null in update").toAscii().data()); // TODO: add object name to error message
-    if (m_pInput["source"]->getVal<const char*>() == NULL)
-        return ito::RetVal(ito::retError, 0, QObject::tr("source object is null in update").toAscii().data());  // TODO: add object name to error message
-*/
-    if (m_pOutput["displayed"]->getVal<const char*>() != m_pInput["source"]->getVal<const char*>())
-    {
-        m_dataPointer["displayed"] = QSharedPointer<ito::DataObject>(new ito::DataObject((*(ito::DataObject*)(m_pOutput["displayed"]->getVal<const char*>()))));
-    }
+    ito::DataObject *newDisplayed = (ito::DataObject*)(m_pOutput["displayed"]->getVal<void*>());
 
-    if (oldDisplayed)
+    if(m_dataPointer.contains("displayed") && newDisplayed == m_dataPointer["displayed"].data())
     {
-        oldDisplayed->unlock();
+        //contents remains the same
+    }
+    else if(newDisplayed == (ito::DataObject*)m_pInput["source"]->getVal<void*>() )
+    {
+        //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
+        m_dataPointer["displayed"].clear();
+    }
+    else
+    {
+        m_dataPointer["displayed"] = QSharedPointer<ito::DataObject>( new ito::DataObject( *newDisplayed ) );
     }
 
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) 
+{
+    ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
+    if(dObj)
+    {
+        return QSharedPointer<ito::DataObject>(); 
+    }
+    return QSharedPointer<ito::DataObject>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -101,8 +102,17 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
             
     ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
     retval += updateParam(&thisParam, 1);
+}
 
-    return;
+//----------------------------------------------------------------------------------------------------------------------------------
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
+{
+    ito::DataObject *dObj = m_pInput["displayed"]->getVal<ito::DataObject*>();
+    if(dObj)
+    {
+        return QSharedPointer<ito::DataObject>(); 
+    }
+    return QSharedPointer<ito::DataObject>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

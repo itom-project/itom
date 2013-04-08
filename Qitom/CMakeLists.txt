@@ -16,6 +16,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
+
 find_package(Qt4 REQUIRED)
 find_package(PythonLibs 3 REQUIRED)
 find_package(QScintilla REQUIRED)

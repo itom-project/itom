@@ -51,7 +51,9 @@ namespace ito
 	(*(ito::RetVal (*)(const int, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[2])
 
 #define apiGetFigure \
-	(*(ito::RetVal (*)(ito::uint32 &, const QString, QObject **)) ito::ITOM_API_FUNCS_GRAPH[3])
+    (*(ito::RetVal (*)(const QString &, const QString &, ito::uint32 &, QWidget **, QWidget *parent)) ito::ITOM_API_FUNCS_GRAPH[3])
+
+	//(*(ito::RetVal (*)(ito::uint32 &, const QString, QWidget **)) ito::ITOM_API_FUNCS_GRAPH[3])
 
 #define apiGetPluginList \
 	(*(ito::RetVal (*)(const ito::pluginInfo, QHash<QString, ito::pluginInfo> &, const QString)) ito::ITOM_API_FUNCS_GRAPH[4])

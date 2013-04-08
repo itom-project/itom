@@ -436,7 +436,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectID, QObject** newWidget)
+RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent /*= NULL*/)
 {
     RetVal retValue = retOk;
     UiContainer *set = NULL;
@@ -450,7 +450,7 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     if(dwo && dwo->figureClassExists(pluginName) )
     {
-        QWidget *mainParent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+        QWidget *mainParent = parent ? parent : qobject_cast<QWidget*>(AppManagement::getMainWindow());
         //mainParent will be set as parent-widget, this however is finally defined by the top-level mode of class AbstractFigure.
         *newWidget = loadDesignerPluginWidget(pluginName,retValue,AbstractFigure::ModeStandaloneWindow,mainParent);
         win = qobject_cast<QMainWindow*>(*newWidget);
@@ -507,8 +507,8 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
         objectID = -1;
     }
 
-    if (!retValue.containsError())
-        qobject_cast<QMainWindow*>(*newWidget)->show();
+    /*if (!retValue.containsError())
+        qobject_cast<QMainWindow*>(*newWidget)->show();*/
 
     return retValue;
 }
@@ -1653,6 +1653,34 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+
+    QObject *obj = getWeakObjectReference(objectID);
+
+    if(obj)
+    {
+        *objectName = obj->objectName().toAscii();
+        *widgetClassName = obj->metaObject()->className();
+    }
+    else
+    {
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object ID is not available").toAscii().data());
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore = NULL;
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
@@ -2277,7 +2305,7 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -2288,12 +2316,12 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
-        QSharedPointer<unsigned int> objectID(new unsigned int);
+        QSharedPointer<unsigned int> figObjectID(new unsigned int);
         QSharedPointer<int> row(new int);
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
+        retval += createFigure( guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -2310,7 +2338,10 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                retval += fig->plot(dataObj, areaRow, areaCol, className);
+                QWidget *destWidget;
+                retval += fig->plot(dataObj, areaRow, areaCol, className, &destWidget);
+                
+                *objectID = addObjectToList(destWidget);
             }
             else
             {
@@ -2333,7 +2364,7 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -2344,12 +2375,12 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>() );
         QSharedPointer<unsigned int> initSlotCount(new unsigned int);
-        QSharedPointer<unsigned int> objectID(new unsigned int);
+        QSharedPointer<unsigned int> figObjectID(new unsigned int);
         QSharedPointer<int> row(new int);
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure( guardedFigHandle, initSlotCount, objectID, row, col, NULL);
+        retval += createFigure( guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
         if(!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -2366,7 +2397,10 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
             fig = qobject_cast<FigureWidget*>( m_dialogList[*figHandle].container->getUiWidget() );
             if(fig)
             {
-                retval += fig->liveImage(dataIO, areaRow, areaCol, className);
+                QWidget *destWidget;
+                retval += fig->liveImage(dataIO, areaRow, areaCol, className, &destWidget);
+
+                *objectID = addObjectToList(destWidget);
             }
             else
             {
