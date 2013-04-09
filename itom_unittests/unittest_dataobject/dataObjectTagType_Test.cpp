@@ -322,21 +322,21 @@ TYPED_TEST(dataObjectTagType_Test,getVal_ToString_Test)
 	s4 << tempVal3;		//!< Creating StreamString representation of Double value for further comparision.
 	str4=s4.str();      //!< Converting StreamString into String for further comparision.
 	EXPECT_EQ(str4,Obj1.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",Obj2.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",Obj3.getVal_ToString());
+	EXPECT_EQ("NaN",Obj2.getVal_ToString());
+	EXPECT_EQ("NaN",Obj3.getVal_ToString());
 	EXPECT_EQ("Inf",Obj4.getVal_ToString());
 
 	//!< Test for getVal_ToString() function with copied objects.
 	EXPECT_EQ("Test String",CpyStrObj1.getVal_ToString() );					//!< Test for getVal_ToString() with Copied String Objects with Copy Constructor of DataObjectTagType
 	EXPECT_EQ(str4,CpyObj1.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",CpyObj2.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",CpyObj3.getVal_ToString());
+	EXPECT_EQ("NaN",CpyObj2.getVal_ToString());
+	EXPECT_EQ("NaN",CpyObj3.getVal_ToString());
 	EXPECT_EQ("Inf",CpyObj4.getVal_ToString());
 
 	//!< Test for getVal_ToString() function with copied objects using Assignment Operator "=".
 	EXPECT_EQ("Test String",AsgnStrObj1.getVal_ToString() );					//!< Test for getVal_ToString() with Copied String Objects with Assignment Operator "=" of DataObjectTagType
 	EXPECT_EQ(str4,AsgnObj1.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",AsgnObj2.getVal_ToString());
-	EXPECT_EQ("1.#QNAN",AsgnObj3.getVal_ToString());
+	EXPECT_EQ("NaN",AsgnObj2.getVal_ToString());
+	EXPECT_EQ("NaN",AsgnObj3.getVal_ToString());
 	EXPECT_EQ("Inf",AsgnObj4.getVal_ToString());
 }

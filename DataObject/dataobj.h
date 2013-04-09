@@ -202,9 +202,11 @@ class DataObjectTagType
             }
             else
             {
-                if(m_dVal == std::numeric_limits<double>::quiet_NaN()) return std::string("NaN");
+				if(cvIsNaN(m_dVal)) return std::string("NaN");
+				if(cvIsInf(m_dVal)) return std::string("Inf");
+                /*if(m_dVal == std::numeric_limits<double>::quiet_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::signaling_NaN()) return std::string("NaN");
-                if(m_dVal == std::numeric_limits<double>::infinity()) return std::string("Inf");
+                if(m_dVal == std::numeric_limits<double>::infinity()) return std::string("Inf");*/
 
                 std::ostringstream strs;
                 strs << m_dVal;
@@ -575,7 +577,7 @@ class DataObject
         struct MSize
         {
             inline MSize() : m_p(NULL) {}
-            inline MSize(size_t *_p, char *_transp) : m_p(_p) {}
+            //inline MSize(size_t *_p, char *_transp) : m_p(_p) {}
 //            Size operator()() const;
             inline size_t operator [] (const int dim) const
             {
@@ -595,7 +597,7 @@ class DataObject
                     return false;
                 if( d == 2 )
                 {                    
-                            return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];            
+                    return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];            
                 }
 
                 for( size_t i = 0; i < d - 2; i++ )
@@ -605,9 +607,9 @@ class DataObject
                         return false;
                     }
                 }                
-                        return m_p[d - 2] == sz.m_p[d - 2] && m_p[d - 1] == sz.m_p[d - 1];               
-                return true;
+                return (m_p[d - 2] == sz.m_p[d - 2]) && (m_p[d - 1] == sz.m_p[d - 1]);               
             }
+
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
 
             size_t *m_p;
@@ -615,8 +617,8 @@ class DataObject
 
         struct MROI
         {
-            inline MROI() : m_p(NULL), m_pTransp(NULL) {};
-            inline MROI(size_t *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
+            inline MROI() : m_p(NULL) {};
+            //inline MROI(size_t *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
             inline size_t operator [] (const int dim) const
             {
                 return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
@@ -645,26 +647,11 @@ class DataObject
                     }
                 }
 
-                switch (-(*m_pTransp) + (*rroi.m_pTransp))
-                {
-                    case -1:
-                        return m_p[d - 2] == rroi.m_p[d - 1] && m_p[d - 1] == rroi.m_p[d - 2];
-                    break;
-
-                   /* case 1:
-                        return m_p[d - 1] == rroi.m_p[d - 2] && m_p[d - 2] == rroi.m_p[d - 1];
-                    break;
-
-                    default:
-                        return m_p[d - 2] == rroi.m_p[d - 2] && m_p[d - 1] == rroi.m_p[d - 1];
-                    break;*/
-                }
-
-                return true;
+                return m_p[d - 2] == rroi.m_p[d - 2] && m_p[d - 1] == rroi.m_p[d - 1];
+                
             }
 
             size_t *m_p;
-            char *m_pTransp;
         };
 
 		DataObject(const DataObject& dObj, bool transposed);    /*!< copy constructor for transposed creation */
