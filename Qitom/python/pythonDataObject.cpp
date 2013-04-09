@@ -3570,10 +3570,9 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     self->dataObject->lockRead();
     
-    //retObj->dataObject = new ito::DataObject( retObj->dataObject->adj() ); //*(self->dataObject));
     try
     {
-        retObj->dataObject = new ito::DataObject( retObj->dataObject->adj() );
+        retObj->dataObject = new ito::DataObject( self->dataObject->adj() );
     }
     catch(cv::Exception exc)
     {
@@ -3606,22 +3605,26 @@ doctodo\n\
 ");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
 {
-    return PyErr_Format(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
     if(self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "data object is NULL");
         return NULL;
     }
-    //self->dataObject->lockWrite();
-    //self->dataObject->trans();
-    //self->dataObject->unlock();
-    //Py_RETURN_NONE;
-
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockWrite();
     
-    retObj->dataObject = new ito::DataObject(*(self->dataObject));
-    retObj->dataObject->trans();
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    self->dataObject->lockRead();
+    
+    try
+    {
+        retObj->dataObject = new ito::DataObject( self->dataObject->trans() );
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        self->dataObject->unlock();
+        return NULL;
+    }
 
     if(!retObj->dataObject->getOwnData())
     {
@@ -3631,6 +3634,32 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     self->dataObject->unlock();
 
     return (PyObject*)retObj;
+
+    //return PyErr_Format(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
+    //if(self->dataObject == NULL)
+    //{
+    //    PyErr_SetString(PyExc_ValueError, "data object is NULL");
+    //    return NULL;
+    //}
+    ////self->dataObject->lockWrite();
+    ////self->dataObject->trans();
+    ////self->dataObject->unlock();
+    ////Py_RETURN_NONE;
+
+    //PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    //self->dataObject->lockWrite();
+    //
+    //retObj->dataObject = new ito::DataObject(*(self->dataObject));
+    //retObj->dataObject->trans();
+
+    //if(!retObj->dataObject->getOwnData())
+    //{
+    //    PyDataObject_SetBase( retObj, (PyObject*)self );
+    //}
+
+    //self->dataObject->unlock();
+
+    //return (PyObject*)retObj;
 }
 
 PyDoc_STRVAR(pyDataObjectMakeContinuous_doc, "makeContinuous() -> return continuous representation of dataObject (if not continuous yet, else returns shallow copy of original data object\n\

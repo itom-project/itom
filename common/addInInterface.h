@@ -1018,10 +1018,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.10",//version from 2013-03-04 - 2013-03-12 (Added license and about string to the plugin)
     "ito.AddIn.InterfaceBase/1.1.11",//version from 2013-03-12 - 2013-03-22 (bugfix in ito::ParamBase)
     "ito.AddIn.InterfaceBase/1.1.12",//version from 2013-03-22 - 2013-03-25 (changes in api)
+    "ito.AddIn.InterfaceBase/1.1.13",//version from 2013-03-25 - 2013-04-08 (removed transpose flag in dataObject)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.13";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.14";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)
