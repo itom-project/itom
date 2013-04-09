@@ -211,7 +211,7 @@ latex_paper_size = 'a4'
 
 latex_documents = [
   # Gesam: FEHLER
-  #('index', 'itom_doc.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  ('index', 'itom_doc.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
   
   # script-language: FEHLER
   #('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
@@ -220,7 +220,7 @@ latex_documents = [
   #('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
   
   # Installation: viele FEHLER
-  ('Installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  #('Installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
   
   # AboutItom: OK
   #('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'), 

@@ -40,6 +40,11 @@ buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex"]
 for buildername in buildernames:
     outdir = basedir + "\\build\\" + buildername
     doctreedir = basedir + "\\build\\doctrees"	
+    
+    try:
+        os.mkdir(outdir)
+    except:
+        pass
 
 
     app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
@@ -87,7 +92,8 @@ for buildername in buildernames:
             print("HTML Help Workshop (hhc.exe) could not be found.")
             print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
             print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
-	elif(buildername == "latex"):
+            
+    elif(buildername == "latex"):
         pdflatex  = "${PDFLATEX_COMPILER}" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
         texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
         
@@ -105,7 +111,7 @@ for buildername in buildernames:
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 # mit dem Kommentar ganz hinten kann man die fenster verstecken
                 # vorsicht: man kann den Prozess nicht verandern wenn fehler auftreten und auf eine eingabe gewartet wird
-                ret = subprocess.call([pdflatex, fname,"-output-directory=F:/itom-git/build/itom/docs/userDoc/build/latex"])#,"-quiet"])#, startupinfo=startupinfo)
+                ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
                 #wenn man ret printen laesst, ist es genau umgedreht (1=Fehler, 0 = OK) nochmal che ken
                 if ret == 0:
                     print("pdf erstellt")
