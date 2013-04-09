@@ -590,7 +590,7 @@ namespace dObjHelper
 
         ito::RetVal retVal(ito::retOk);
         memset(pointer, 0, (dObj->calcNumMats() + 1) * sizeof(size_t));
-        int sizeY = dObj->getSize(dObj->getDims() - 2, false);
+        int sizeY = dObj->getSize(dObj->getDims() - 2);
 
         int** mdata = dObj->get_mdata();
 
