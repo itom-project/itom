@@ -242,7 +242,9 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
 
-    return Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    PyObject *res = Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    Py_XDECREF(pyPlotItem);
+    return res;
 }
 
 ////----------------------------------------------------------------------------------------------------------------------------------
@@ -374,7 +376,9 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
 
-    return Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    PyObject *res = Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    Py_XDECREF(pyPlotItem);
+    return res;
 }
 
 ////----------------------------------------------------------------------------------------------------------------------------------
