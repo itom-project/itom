@@ -28,7 +28,6 @@
 #include "pythonCommon.h"
 #include "pythonProxy.h"
 #include "pythonFigure.h"
-#include "pythonPlotItem.h"
 
 #include "pythonEngine.h"
 
@@ -172,7 +171,10 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className]) -> plots a dataObject in a newly created figure\n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className]) -> plots a dataObject in a newly created figure \n\
+Plot an existing dataObject in not dockable, not blocking window. \n\
+The style of the plot will depend on the object dimensions.\n\
+If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -180,17 +182,7 @@ data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Returns \n\
--------- \n\
-Tuple: [handle to figure, plotItem instance to this plot]\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Plot an existing dataObject in not dockable, not blocking window. \n\
-The style of the plot will depend on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.");
+");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"data", "className", NULL};
@@ -220,9 +212,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     QString defaultPlotClassName;
     if(className) defaultPlotClassName = className;
 
-    QSharedPointer<unsigned int> objectID(new unsigned int);
-
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
@@ -233,41 +223,86 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
     
-    //return Py_BuildValue("iO", *figHandle); //returns handle
-
-    //return new instance of PyUiItem
-    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
-    PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
-    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
-    Py_DECREF(args2);
-    Py_DECREF(kwds2);
-
-    if(pyPlotItem == NULL)
-    {
-        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
-        return NULL;
-    }
-
-    return Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    return Py_BuildValue("i", *figHandle); //returns handle
 }
+
+////----------------------------------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pyCloseFigure_doc,"closeFigure(fig-handle|'all') -> closes the figure window with the given handle-number. \n\
+//\n\
+//Parameters \n\
+//----------- \n\
+//fig-handle : {int | 'all'} \n\
+//    The number (ID) of the figure to close or all to close all.\n\
+//\n\
+//Notes \n\
+//----- \n\
+//\n\
+//Closes the figure window with the given handle-number (type int) or closes all figures ('all').");
+//PyObject* PythonItom::PyCloseFigure(PyObject * /*pSelf*/, PyObject *pArgs)
+//{
+//    int handle = 0; //0 = 'all', >0 = specific figure
+//    const char* tag;
+//
+//    if (!PyArg_ParseTuple(pArgs, "I", &handle))
+//    {
+//        PyErr_Clear();
+//        if (!PyArg_ParseTuple(pArgs, "s", &tag))
+//        {
+//            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
+//        }
+//
+//        handle = 0;
+//        if (!(strcmp(tag,"all") || strcmp(tag,"All") || strcmp(tag,"ALL")))
+//        {
+//            return PyErr_Format(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
+//        }
+//    }
+//    else
+//    {
+//        if (handle <= 0)
+//        {
+//            return PyErr_Format(PyExc_ValueError, "figure handle must be bigger than zero");
+//        }
+//    }
+//
+//    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
+//
+//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
+//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+//
+//    //QMetaObject::invokeMethod(figureOrganizer, "closeFigure", Q_ARG(unsigned int, static_cast<unsigned int>(handle)), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//
+//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
+//    //{
+//    //    if (locker.getSemaphore()->returnValue == retError)
+//    //    {
+//    //        return PyErr_Format(PyExc_RuntimeError, "error while closing figure: \n%s", locker.getSemaphore()->returnValue.errorMessage());
+//    //    }
+//    //    else
+//    //    {
+//    //        Py_RETURN_NONE;
+//    //    }
+//    //}
+//    //else
+//    //{
+//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+//    //    {
+//    //        return PyErr_Occurred();
+//    //    }
+//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while closing figure.");
+//    //}
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> shows a camera live image in a newly created figure\n\
-\n\
+Creates a plot-image (2D) and automatically grabs images into this window.\n\
+This function is not blocking.\n\
 Parameters \n\
 ----------- \n\
 cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Returns \n\
--------- \n\
-Tuple: [handle to figure, plotItem instance to this plot]\n\
-\n\
-Creates a plot-image (2D) and automatically grabs images into this window.\n\
-This function is not blocking.");
+    class name of desired plot (if not indicated default plot will be used (see application settings)");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"cam", "className", NULL};
@@ -291,9 +326,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     QString defaultPlotClassName;
     if(className) defaultPlotClassName = className;
 
-    QSharedPointer<unsigned int> objectID(new unsigned int);
-
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image of camera");
@@ -304,23 +337,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
     
-    //return Py_BuildValue("i", *figHandle); //returns handle
-
-    //return new instance of PyUiItem
-    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
-    PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
-    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
-    Py_DECREF(args2);
-    Py_DECREF(kwds2);
-
-    if(pyPlotItem == NULL)
-    {
-        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
-        return NULL;
-    }
-
-    return Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    return Py_BuildValue("i", *figHandle); //returns handle
 }
 
 ////----------------------------------------------------------------------------------------------------------------------------------
@@ -1107,6 +1124,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
 }
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s). \n \
+                               Generates an online help for the given widget or returns a list of available filter.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1121,12 +1139,7 @@ furtherInfos : {int}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of dictionary.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Generates an online help for the given widget or returns a list of available filter.");
+Returns none or a PyDictionary depending on the value of dictionary.");
 
 PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs)
 {
@@ -1135,6 +1148,7 @@ PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s). \n \
+Generates an online help for the given widget or returns a list of available widgets. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1149,12 +1163,7 @@ furtherInfos : {int}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of dictionary.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Generates an online help for the given widget or returns a list of available widgets.");
+Returns none or a PyDictionary depending on the value of dictionary.");
 PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     return PyWidgetOrFilterHelp(true, pArgs);
@@ -1217,6 +1226,8 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.\n\
+                              Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
+If dictionary is True, a dict with all plugin parameters is returned.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1227,13 +1238,7 @@ dictionary : {bool}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-Returns None or a dict depending on the value of parameter dictionary.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
-If dictionary is True, a dict with all plugin parameters is returned.");
+Returns None or a dict depending on the value of parameter dictionary.");
 PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
 	const char *kwlist[] = {"pluginName", "dictionary", NULL};
@@ -1518,7 +1523,7 @@ None (display outPut) or PyDictionary with version information.\n\
 Notes \n\
 ----- \n\
 \n\
-Retrieve complete version information of itom and if specified version information of loaded plugins\n\
+Retrieve complete version information of ITOM and if specified version information of loaded plugins\n\
 and print it either to the console or to a PyDictionary.");
 PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 {

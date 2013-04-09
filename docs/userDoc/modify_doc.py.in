@@ -1,0 +1,47 @@
+# coding=iso-8859-15 
+
+# -*- coding: utf-8 -*-
+
+import os
+
+def removeSectionInFiles(path, ending, SectionName):
+        dirList=os.listdir(path)
+        # Files in Ordner durchlaufen
+        for fname in dirList:
+            if fname.endswith(ending):
+                # Sections alleine stellen und in neue Zeilen umbrechen
+                with open(path+"\\"+fname, 'r') as f:
+                    s = f.read()
+                    s = s.replace("\\begin{"+SectionName+"}", "\n\\begin{"+SectionName+"}")
+                    s = s.replace("\\end{"+SectionName+"}", "\\end{"+SectionName+"}\n")
+                with open(path+"\\"+fname,"w") as f:
+                    f.write(s)
+                # Ein File öffnen und auslesen
+                newlist = []
+                with open(path+"\\"+fname,"r") as f:
+                    deleting = 0
+                    for line in f:
+                        if line == "\\begin{"+SectionName+"}\n":
+                            deleting = 1
+                        if deleting == 0:
+                            newlist.append(line)
+                        if line == "\\end{"+SectionName+"}\n":
+                            deleting = 0
+                            print("entfernt")
+                with open(path+"\\"+fname,"w") as f:
+                    f.writelines(newlist)
+
+def replaceInFiles(path, ending):
+    dirList=os.listdir(path)
+    # Files in Ordner durchlaufen
+    for fname in dirList:
+        if fname.endswith(ending):
+            with open(path+"\\"+fname, "r") as f:
+                s = f.read()
+                s = s.replace("\\begin{quote}\\begin{description}", "\\begin{description}")
+                s = s.replace("\\end{description}\\end{quote}", "\\end{description}")
+            with open(path+"\\"+fname,"w") as f:
+                f.write(s)
+
+
+

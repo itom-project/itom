@@ -2296,7 +2296,7 @@ caption : {str}\n\
 startDirectory : {str}\n\
     is the start directory \n\
 options : {int}, optional\n\
-    is an or-combination of the following options (see QFileDialog::Option:): \n\
+    is an or-combination of the following options (see 'QFileDialog::Option'): \n\
         * 1: ShowDirsOnly [default] \n\
         * 2: DontResolveSymlinks \n\
         * 4: DontConfirmOverwrite \n\

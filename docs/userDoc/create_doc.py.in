@@ -15,6 +15,7 @@ import subprocess
 import itom
 import __main__
 import shutil
+import modify_doc
 
 def process_docstring(app, what, name, obj, options, lines):
     pass
@@ -86,6 +87,30 @@ for buildername in buildernames:
             print("HTML Help Workshop (hhc.exe) could not be found.")
             print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
             print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
+	elif(buildername == "latex"):
+        pdflatex  = "${PDFLATEX_COMPILER}" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
+        texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
+        
+        # replace some lines in tex files
+        modify_doc.replaceInFiles(texfolder,".tex")
+        print("Modify executed")
+        
+        # Convert into pdf 
+        dirList=os.listdir(texfolder)
+        # Files in Ordner durchlaufen
+        for fname in dirList:
+            if fname.endswith(".tex"):
+                print("starte Latex to pdf")
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                # mit dem Kommentar ganz hinten kann man die fenster verstecken
+                # vorsicht: man kann den Prozess nicht verandern wenn fehler auftreten und auf eine eingabe gewartet wird
+                ret = subprocess.call([pdflatex, fname,"-output-directory=F:/itom-git/build/itom/docs/userDoc/build/latex"])#,"-quiet"])#, startupinfo=startupinfo)
+                #wenn man ret printen laesst, ist es genau umgedreht (1=Fehler, 0 = OK) nochmal che ken
+                if ret == 0:
+                    print("pdf erstellt")
+                elif ret == 1:
+                    print("Fehler beim Erstellen des pdf")
 
 del __main__.__dict__["__doxygen__xml"]
 

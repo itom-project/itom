@@ -158,22 +158,19 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure\n\
+Plot an existing dataObject in not dockable, not blocking window. \n\
+The style of the plot will depend on the object dimensions.\n\
+If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
 \n\
-Parameters \n\
------------ \n\
+Parameters\n\
+-----------\n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 areaIndex: {int}, optional \n\
     \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Notes \n\
------ \n\
-\n\
-Plot an existing dataObject in not dockable, not blocking window. \n\
-The style of the plot will depend on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.");
+");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"data", "areaIndex", "className", NULL};
@@ -238,18 +235,18 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className]) -> shows a camera live image in the current or given area of this figure\n\
+Creates a plot-image (2D) and automatically grabs images into this window.\n\
+This function is not blocking.\n\
 \n\
-Parameters \n\
------------ \n\
+Parameters\n\
+-----------\n\
 cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
 areaIndex: {int}, optional \n\
     \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-\n\
-Creates a plot-image (2D) and automatically grabs images into this window.\n\
-This function is not blocking.");
+");
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"cam", "areaIndex", "className", NULL};

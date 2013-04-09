@@ -25,6 +25,7 @@ In the course of the installation, the following third-party componenents will b
 In the following we will guide you through the installation setup with a couple of screenshots:
 
 .. figure:: images/itom_install/setup01.jpg
+    :width: 50 pt
     :alt: Language selection
     
     Please select your desired language for the setup.
