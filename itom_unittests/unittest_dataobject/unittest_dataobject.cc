@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	//::testing::FLAGS_gtest_filter = "ROITest/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     
-	
+
 	
 	::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
 	

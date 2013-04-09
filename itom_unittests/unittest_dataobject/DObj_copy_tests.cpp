@@ -55,6 +55,7 @@ public:
 		dObj2_d = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj3_d = ito::DataObject(3,3,10,ito::getDataType( (const _Tp *) NULL ));
 		dObj4_d = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+
 	};
  
 	virtual void TearDown(void) {};
@@ -132,12 +133,12 @@ TYPED_TEST(copyTests, copyTo_True_Test)
 	dObj2_sr = dObj2_s;		//!< copying dObj2_s into dObj2_sr with assignment operator.
 	dObj3_sr = dObj3_s;		//!< copying dObj3_s into dObj3_sr with assignment operator.
 	dObj4_sr = dObj4_s;		//!< copying dObj4_s into dObj4_sr with assignment operator.
-			
+
 	int matLimits1d[] = {-4,-6};			//!< defining offsets for ROI of empty data object dObj1_sr
 	int matLimits2d[] = {-4,-4,-1,-4};		//!< defining offsets for ROI of 2 dimensional data object dObj2_sr
 	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};		//!< defining offsets for ROI of 3 dimensional data object dObj3_sr
 	int matLimits5d[] = {-4,-4,-1,-4,-2,-3,-1,-1,-2,-1};		//!< defining offsets for ROI of 5 dimensional data object dObj4_sr
-
+	
 	dObj1_sr.adjustROI(0,matLimits1d);			 //!< adjust ROI (shrinking because offset values are negative)
 	dObj2_sr.adjustROI(2,matLimits2d);   //!< adjust ROI (shrinking because offset values are negative)
 	dObj3_sr.adjustROI(3,matLimits3d);   //!< adjust ROI (shrinking because offset values are negative)
