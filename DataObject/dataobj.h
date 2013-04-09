@@ -669,7 +669,7 @@ class DataObject
 
 		DataObject(const DataObject& dObj, bool transposed);    /*!< copy constructor for transposed creation */
 
-        //char    m_transpose;                         /*!< virtual transpose flag (for lazy evaluation of the transposition) */
+        
         char    m_continuous;                        /*!< continuous flag */
         char    m_owndata;                           /*!< owndata flag (false if the data object is constructed with a given continuousDataPointer, else true) */
         int     m_type;                              /*!< element data type */
@@ -967,7 +967,7 @@ class DataObject
         }
 
         //!<  Function to set the scale of the specified axis, return 1 if axis does not exist or scale is 0.0.
-        inline int setAxisScale(const unsigned int axisNum, const double scale/*, const bool considerTransposeFlag = true*/)
+        inline int setAxisScale(const unsigned int axisNum, const double scale)
         {
             if (!m_pDataObjectTags) return 1; //error
 //            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisScales.size()) return 1; //error
@@ -984,7 +984,7 @@ class DataObject
         }
 
         //!<  Function to set the unit (string value) of the specified axis, return 1 if axis does not exist
-        inline int setAxisUnit(const unsigned int axisNum, const std::string &unit/*, const bool considerTransposeFlag = true*/)
+        inline int setAxisUnit(const unsigned int axisNum, const std::string &unit)
         {
             if (!m_pDataObjectTags) return 1; //error
 //            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
@@ -1464,7 +1464,7 @@ class DataObject
             \param index is the specific zero-based dimension-index whose size is requested           
             \return size or -1 if index is out of boundaries
         */
-        size_t getOriginalSize(int index/*, bool considerTransposeFlag = false*/) const
+        size_t getOriginalSize(int index) const
         {
             if(index < 0 || index >= m_dims) return -1;           
             else
@@ -1490,7 +1490,7 @@ class DataObject
         /*!
             no data will be allocated, the number of elements and dimensions is set to zero
         */
-        DataObject(void) : /*m_transpose(0), */m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0) {}
+        DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0) {}
 
         //! constructor for one-dimensional data object. The data is newly allocated and arbitrarily filled.
         /*!
@@ -1573,7 +1573,7 @@ class DataObject
             \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
             \sa create, tDataType
         */
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous = 0) : /*m_transpose(0),*/ m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, m_continuous);
         }

@@ -2055,7 +2055,7 @@ Parameters  \n\
 ------------\n\
 axisNum : {int}\n\
     The addressed axis\n\
-	axisOffset : {double}\n\
+axisOffset : {double}\n\
     New axis offset in [px]\n\
 \n\
 Notes \n\

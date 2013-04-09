@@ -44,8 +44,7 @@ DObjIterator::DObjIterator(ito::DataObject *dObj, unsigned int matNum) :
     m_pItEnd(),
     m_pItStart()
 {
-    //m_pDObj->evaluateTransposeFlag();
-    //ito::EvaluateTransposeFlagFunc<_Tp>(&dObj);
+    
 
     //matNum is start index in vector considering range (0 means first element in range)
     size_t matIndex = m_pDObj->seekMat(matNum);
@@ -807,7 +806,7 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
 {
     m_type = type;
     m_owndata = 1;
-    //m_transpose = 0;
+   
 
     if(dimensions == 0 || dimensions == 2)
     {
@@ -2120,7 +2119,6 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
     }
 
     m_type = copyConstr.m_type;
-   // m_transpose = copyConstr.m_transpose;
     m_continuous = copyConstr.m_continuous;
     m_owndata = copyConstr.m_owndata;
 
@@ -2146,7 +2144,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 	if(!transposed) //shallow copy of dataobject
 	{
 		createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
-		//setT(copyConstr.isT());
 		m_pRefCount = dObj.m_pRefCount;
 		m_objSharedDataLock = dObj.m_objSharedDataLock; //copies pointer
 		m_pDataObjectTags = dObj.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
@@ -2441,47 +2438,16 @@ template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject 
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
 
-   /*switch (-dObj1->isT() + dObj2->isT())
-   {*/
-      /*case -1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = (*cvSrcTmat1).t() + *cvSrcTmat2;
-         }
-      break;
-
-      case 1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 + (*cvSrcTmat2).t();
-         }
-      break;*/
-
-    //  default:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 + *cvSrcTmat2;
-         }
-    //  break;
-   //}
+    for (nmat = 0; nmat < numMats; nmat++)
+    {
+		dstTmat = dObjRes->seekMat(nmat, numMats);
+		srcTmat1 = dObj1->seekMat(nmat, numMats);
+		srcTmat2 = dObj2->seekMat(nmat, numMats);
+		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+		*cvDstTmat = *cvSrcTmat1 + *cvSrcTmat2;
+    }
 
    return RetVal(retOk);
 }
@@ -2557,48 +2523,17 @@ template<typename _Tp> RetVal SubFunc(const DataObject *dObj1, const DataObject 
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
 
-   /*switch (-dObj1->isT() + dObj2->isT())
-   {*/
-      /*case -1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = (*cvSrcTmat1).t() - *cvSrcTmat2;
-         }
-      break;
-
-      case 1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 - (*cvSrcTmat2).t();
-         }
-      break;*/
-
-      //default:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
-         }
-   /*   break;
-   }*/
-
+	for (nmat = 0; nmat < numMats; nmat++)
+	{
+		dstTmat = dObjRes->seekMat(nmat, numMats);
+		srcTmat1 = dObj1->seekMat(nmat, numMats);
+		srcTmat2 = dObj2->seekMat(nmat, numMats);
+		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+		*cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
+	}
+ 
    return 0;
 }
 
@@ -2667,48 +2602,17 @@ template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObjec
    cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
-
-   /*switch (-dObj1->isT() + dObj2->isT())
-   {*/
-      /*case -1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = (*cvSrcTmat1).t() * *cvSrcTmat2;
-         }
-      break;
-
-      case 1:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 * (*cvSrcTmat2).t();
-         }
-      break;*/
-
-      //default:
-         for (nmat = 0; nmat < numMats; nmat++)
-         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-            cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-            cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-            *cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
-         }
-    /*  break;
-   }*/
+  
+    for (nmat = 0; nmat < numMats; nmat++)
+    {
+		dstTmat = dObjRes->seekMat(nmat, numMats);
+		srcTmat1 = dObj1->seekMat(nmat, numMats);
+		srcTmat2 = dObj2->seekMat(nmat, numMats);
+		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+		*cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
+    }
 
    cv::Size msize = ((cv::Mat_<_Tp> *)(dObjRes->get_mdata()[0]))->size(); //for dObjRes, the transpose flag is 0.
    dObjRes->getSize().m_p[dObjRes->getDims() - 1] = msize.width;
@@ -2891,25 +2795,9 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
       if(src1mat->depth() == 1 || src1mat->depth() == 7)
       {
           cv::error(cv::Exception(CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
-      }
-
-      /*switch (-src1->isT() + src2->isT())
-      {*/
-         //case -1:
-         //   //(*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) = src1mat->t() < src2mat;
-         //    cv::compare( (*src1mat).t(), *src2mat, *dest, cmpOp);
-         //break;
-
-         //case 1:
-         //   //(*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) =   src1mat < src2mat->t();
-         //    cv::compare(*src1mat, (*src2mat).t(), *dest, cmpOp);
-         //break;
-
-         //default:
-            (*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) =   src1mat < src2mat;
-             cv::compare(*src1mat, *src2mat, *dest, cmpOp);
-      /*   break;
-      }*/
+      }      
+	  (*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) =   src1mat < src2mat;
+	  cv::compare(*src1mat, *src2mat, *dest, cmpOp);
    }
 
    return 0;
@@ -3328,23 +3216,8 @@ template<typename _Tp> RetVal BitAndFunc(const DataObject *dObj1, const DataObje
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-
-      /*switch (-dObj1->isT() + dObj2->isT())
-      {*/
-         /*case -1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = ((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])->t() & (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-         break;
-
-         case 1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) & ((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum])->t();
-         break;
-*/
-        // default:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) & (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-       /*  break;
-      }*/
+	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) & (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));      
    }
-
    return 0;
 }
 
@@ -3469,23 +3342,8 @@ template<typename _Tp> RetVal BitOrFunc(const DataObject *dObj1, const DataObjec
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-
-      /*switch (-dObj1->isT() + dObj2->isT())
-      {*/
-         /*case -1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = ((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])->t() | (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-         break;
-
-         case 1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) | ((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum])->t();
-         break;*/
-
-         //default:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) | (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-      /*   break;
-      }*/
+	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) | (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
    }
-
    return 0;
 }
 
@@ -3607,23 +3465,8 @@ template<typename _Tp> RetVal BitXorFunc(const DataObject *dObj1, const DataObje
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-
-      /*switch (-dObj1->isT() + dObj2->isT())
-      {*/
-         /*case -1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = ((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])->t() ^ (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-         break;
-
-         case 1:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) ^ ((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum])->t();
-         break;*/
-
-         //default:
-            (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) ^ (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
-       /*  break;
-      }*/
+	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) ^ (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));   
    }
-
    return 0;
 }
 
@@ -3732,23 +3575,11 @@ DataObject DataObject::at(const ito::Range rowRange, const ito::Range colRange)
          cv::error(cv::Exception(CV_StsAssert,"DataObject::at with rowRange and colRange argument only defined for dims==2","", __FILE__, __LINE__));
    }
 
-   Range ranges[2];
-
-  /* if (isT())
-   {
-         ranges[0].start = colRange.start;
-         ranges[0].end = colRange.end;
-         ranges[1].start = rowRange.start;
-         ranges[1].end = rowRange.end;
-   }
-   else*/
-   {
+   Range ranges[2]; 
          ranges[1].start = colRange.start;
          ranges[1].end = colRange.end;
          ranges[0].start = rowRange.start;
          ranges[0].end = rowRange.end;
-   }
-
    return (*this).at(ranges);
 }
 
@@ -3806,22 +3637,8 @@ DataObject DataObject::at(ito::Range *ranges)
         if(ranges[n].start == INT_MIN) // range all
         {
             lims[ (n*2) ] = 0;
-        }
-
-		//REMOVED TRANSPOSE FLAG
-        //if(n < m_dims - 1 || !isT())
-        //{
-            size = m_size.m_p[n];
-        //}
-        //else if(n == m_dims - 2)
-        //{
-        //    size = m_size.m_p[n-1];
-        //}
-        //else // m_dims - 1
-        //{
-        //    size = m_size.m_p[n-2];
-        //}
-
+        }		
+        size = m_size.m_p[n];
         if(ranges[n].end == INT_MAX) //range all
         {
             lims[ (n*2) + 1] = 0;
@@ -3836,87 +3653,7 @@ DataObject DataObject::at(ito::Range *ranges)
 
     delete[] lims;
 
-    return resMat;
-
-
-
-
-
-   // int dtop, dbottom, dleft, dright;
-   // int oRowSize, oColSize;
-   // if (isT())
-   // {
-   //     oRowSize = resMat.m_size[m_dims - 1];
-   //     oColSize = resMat.m_size[m_dims - 2];
-   // }
-   // else
-   // {
-   //     oRowSize = resMat.m_size[m_dims - 2];
-   //     oColSize = resMat.m_size[m_dims - 1];
-   // }
-
-   //for (unsigned char n = 0; n < m_dims; n++)
-   //{
-   //   if (ranges[n].start > ranges[n].end)
-   //   {
-   //       std::swap(ranges[n].start , ranges[n].end);
-   //   }
-   //   if ((ranges[n].start < 0) || (ranges[n].start == INT_MIN))
-   //   {
-   //      ranges[n].start = 0;
-   //   }
-   //   if ((static_cast<size_t>(ranges[n].start) >= getSize(n,true)) || (ranges[n].start == INT_MAX))
-   //   {
-   //       ranges[n].start = static_cast<int>(getSize(n,true)) - 1;
-   //   }
-   //   /*if ((ranges[n].end >= m_size[n]) || (ranges[n].end == INT_MAX))
-   //   {
-   //      ranges[n].end = m_size[n] - 1;
-   //   }*/
-   //   //end always points to one position after the last one
-   //   if ((static_cast<size_t>(ranges[n].end) > getSize(n,true)) || (ranges[n].end == INT_MAX))
-   //   {
-   //      ranges[n].end = static_cast<int>(getSize(n,true)); //does consider virtual transpose flag, hence, this is only a virtual order if isT()==true
-   //   }
-
-   //   if(isT() && n >= m_dims - 2)
-   //   {
-   //       if(n == m_dims - 2)
-   //       {
-   //         resMat.m_size.m_p[n + 1] = ranges[n].end - ranges[n].start;
-   //         resMat.m_roi.m_p[n + 1] = resMat.m_roi[n] + ranges[n].start;
-   //       }
-   //       else //n == m_dims - 1
-   //       {
-   //         resMat.m_size.m_p[n - 1] = ranges[n].end - ranges[n].start;
-   //         resMat.m_roi.m_p[n - 1] = resMat.m_roi[n] + ranges[n].start;
-   //       }
-   //   }
-   //   else
-   //   {
-   //     resMat.m_size.m_p[n] = ranges[n].end - ranges[n].start;
-   //     resMat.m_roi.m_p[n] = resMat.m_roi[n] + ranges[n].start;
-   //   }
-   //}
-
-   // if (isT())
-   // {
-   //     dtop = -ranges[m_dims - 1].start;
-   //     dbottom = -(oRowSize - ranges[m_dims - 1].end);
-   //     dleft = -ranges[m_dims - 2].start;
-   //     dright = -(oColSize - ranges[m_dims - 2].end);
-   // }
-   // else
-   // {
-   //     dtop = -ranges[m_dims - 2].start;
-   //     dbottom = -(oRowSize - ranges[m_dims - 2].end);
-   //     dleft = -ranges[m_dims - 1].start;
-   //     dright = -(oColSize - ranges[m_dims - 1].end);
-   // }
-
-   // fListGetRangeFunc[m_type](&resMat, dtop, dbottom, dleft, dright);
-
-   //return resMat;
+    return resMat;   
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3997,24 +3734,8 @@ DataObject & DataObject::adjustROI(const unsigned char dims, const int *lims)
     for(int n = 0; n < dims; n++)
     {
         //TODO: why lim1 & lim2 are set when they actually aren't used?
-
-		//REMOVED TRANSPOSE FLAG
-       /* if(n < dims -  2 || !isT())
-        {*/
-            lim1 = lims[n*2];
-            lim2 = lims[n*2+1];
-        //}
-        //else if(n == dims - 2)
-        //{
-        //    lim1 = lims[(dims-1)*2];
-        //    lim2 = lims[(dims-1)*2+1];
-        //}
-        //else //n == dims - 1
-        //{
-        //    lim1 = lims[(dims-2)*2];
-        //    lim2 = lims[(dims-2)*2+1];
-        //}
-
+        lim1 = lims[n*2];
+        lim2 = lims[n*2+1];       
         startIdx = (int)m_roi.m_p[n] - lims[n*2]; //new first index
         if( startIdx < 0 || startIdx > (int)m_osize[n] ) //((int)m_roi.m_p[n] - lims[n*2] + (int)m_size.m_p[n] + lims[n*2+1]) >= (int)m_osize[n])
         {
@@ -4066,11 +3787,6 @@ DataObject & DataObject::adjustROI(const unsigned char dims, const int *lims)
 
    if(dims > 1)
    {
-       //if(isT())
-       //{
-       //     fListAdjustROIFunc[m_type](this, lims[(dims - 1) * 2], lims[(dims - 1) * 2 + 1], lims[(dims - 2) * 2], lims[(dims - 2) * 2 + 1]); //dtop, dbottom, dleft, dright
-       //}
-       //else
        {
             fListAdjustROIFunc[m_type](this, lims[(dims - 2) * 2], lims[(dims - 2) * 2 + 1], lims[(dims - 1) * 2], lims[(dims - 1) * 2 + 1]); //dtop, dbottom, dleft, dright
        }
@@ -4098,20 +3814,10 @@ RetVal DataObject::locateROI(int *wholeSizes, int *offsets)
 
    if(m_dims > 1)
    {
-       /*if (isT())
-       {
-          wholeSizes[m_dims - 2] = static_cast<int>(m_osize[m_dims - 1]);
-          offsets[m_dims - 2] = static_cast<int>(m_roi[m_dims - 1]);
-          wholeSizes[m_dims - 1] = static_cast<int>(m_osize[m_dims - 2]);
-          offsets[m_dims - 1] = static_cast<int>(m_roi[m_dims - 2]);
-       }
-       else*/
-       {
-          wholeSizes[m_dims - 2] = static_cast<int>(m_osize[m_dims - 2]);
-          offsets[m_dims - 2] = static_cast<int>(m_roi[m_dims - 2]);
-          wholeSizes[m_dims - 1] = static_cast<int>(m_osize[m_dims - 1]);
-          offsets[m_dims - 1] = static_cast<int>(m_roi[m_dims - 1]);
-       }
+      wholeSizes[m_dims - 2] = static_cast<int>(m_osize[m_dims - 2]);
+      offsets[m_dims - 2] = static_cast<int>(m_roi[m_dims - 2]);
+      wholeSizes[m_dims - 1] = static_cast<int>(m_osize[m_dims - 1]);
+      offsets[m_dims - 1] = static_cast<int>(m_roi[m_dims - 1]);       
    }
    else if(m_dims == 1)
    {
@@ -4141,14 +3847,6 @@ RetVal DataObject::locateROI(int *lims)
 
    if(m_dims > 1)
    {
-       /*if (isT())
-       {
-          lims[2*(m_dims-2)] = static_cast<int>(m_roi[(m_dims-1)]);
-          lims[2*(m_dims-2)+1] = static_cast<int>(m_size[(m_dims-1)])-static_cast<int>(m_osize[(m_dims-1)]);
-          lims[2*(m_dims-1)] = static_cast<int>(m_roi[(m_dims-2)]);
-          lims[2*(m_dims-1)+1] = static_cast<int>(m_size[(m_dims-2)])-static_cast<int>(m_osize[(m_dims-2)]);
-       }
-       else*/
        {
           lims[2*(m_dims-1)] = static_cast<int>(m_roi[(m_dims-1)]);
           lims[2*(m_dims-1)+1] = static_cast<int>(m_size[(m_dims-1)])-static_cast<int>(m_osize[(m_dims-1)]);
@@ -4345,8 +4043,6 @@ DataObject DataObject::adj() const
 	DataObject newDataObj = trans();
 	newDataObj.conj();
 	return newDataObj;
-   //m_transpose = !m_transpose;
-   //return conj();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4358,33 +4054,6 @@ DataObject DataObject::adj() const
 DataObject DataObject::trans() const
 {
 	return DataObject(*this, true);
- //   size_t numMats = calcNumMats();
-
-	////No way to contruct iterators on temporary transposed matrices so we transpose all
-	////anyway there could be situations this leads to inconsistencies
-	//for (size_t nMat = 0; nMat < numMats; nMat++)
-	//{
-	//	*((cv::Mat *)(get_mdata()[nMat])) = ((cv::Mat *)(get_mdata()[nMat]))->t();
-	//}
-
-	////flip last two dimensions in m_osize, m_roi und m_size
-	//int dims = getDims();
-	//if(dims > 1)
-	//{
-	//	size_t temp;
-	//	temp = m_osize.m_p[dims-1];
-	//	m_osize.m_p[dims-1] = m_osize.m_p[dims-2];
-	//	m_osize.m_p[dims-2] = temp;
-	//	temp = m_roi.m_p[dims-1];
-	//	m_roi.m_p[dims-1] = m_roi.m_p[dims-2];
-	//	m_roi.m_p[dims-2] = temp;
-	//	temp = m_size.m_p[dims-1];
-	//	m_size.m_p[dims-1] = m_size.m_p[dims-2];
-	//	m_size.m_p[dims-2] = temp;
-	//}
-
-	////m_transpose = !m_transpose;
-	//return retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4513,16 +4182,8 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
         lhsMatNum = src1->seekMat(nmat, numMats);
         rhsMatNum = src2->seekMat(nmat, numMats);
         resMatNum = res->seekMat(nmat, numMats);
-        srcMat1 = (cv::Mat_<_Tp> *)(src1->get_mdata()[lhsMatNum]);
-        /*if(src2->isT() && !src1->isT())
-        {
-            tempMat = cv::Mat_<_Tp>(((cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]))->t());
-            srcMat2 = &tempMat;
-        }
-        else*/
-        {
-            srcMat2 = (cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]);
-        }
+        srcMat1 = (cv::Mat_<_Tp> *)(src1->get_mdata()[lhsMatNum]);       
+        srcMat2 = (cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]);
         dstMat = (cv::Mat_<_Tp> *)(res->get_mdata()[resMatNum]);
 
         for(int i = 0; i < srcMat1->rows; i++)
@@ -4537,7 +4198,6 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
             }
         }
    }
-
    return 0;
 }
 
@@ -4553,18 +4213,10 @@ DataObject DataObject::mul(const DataObject &mat2, const double scale)
     if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
     {
         cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-    }
-
-    //if(this->isT() && !mat2.isT()) // if both are transposed, this doesn't affect the calculation
-    //{
-    //    evaluateTransposeFlag();
-    //}
+    }  
 
     unsigned char continuous = 0;
-    DataObject result(m_dims,m_size,m_type,continuous);
-    //this->copyTo(result, 1);
-    //result.setT(this->isT());
-
+    DataObject result(m_dims,m_size,m_type,continuous);    
     //int64 start = cv::getCPUTickCount();
     fListMulFunc[m_type](this, &mat2, &result, scale);
     //start = cv::getCPUTickCount() -start;
@@ -4613,16 +4265,8 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
         lhsMatNum = src1->seekMat(nmat, numMats);
         rhsMatNum = src2->seekMat(nmat, numMats);
         resMatNum = res->seekMat(nmat, numMats);
-        srcMat1 = (cv::Mat_<_Tp> *)(src1->get_mdata()[lhsMatNum]);
-        /*if(src2->isT() && !src1->isT())
-        {
-            tempMat = cv::Mat_<_Tp>(((cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]))->t());
-            srcMat2 = &tempMat;
-        }
-        else*/
-        {
-            srcMat2 = (cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]);
-        }
+        srcMat1 = (cv::Mat_<_Tp> *)(src1->get_mdata()[lhsMatNum]);        
+        srcMat2 = (cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]);     
         dstMat = (cv::Mat_<_Tp> *)(res->get_mdata()[resMatNum]);
 
         if(std::numeric_limits<_Tp>::has_signaling_NaN)
@@ -4680,17 +4324,11 @@ DataObject DataObject::div(const DataObject &mat2, const double scale)
    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
    {
         cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }
-
-   //if(this->isT() && !mat2.isT()) // if both are transposed, this doesn't affect the calculation
-   //{
-   // evaluateTransposeFlag();
-   //}
+   }  
 
    DataObject result;
-   this->copyTo(result, 1);
-   //result.setT(this->isT());
-
+   this->copyTo(result, 1); 
+                     
    //int64 start = cv::getCPUTickCount();
    fListDivFunc[m_type](this, &mat2, &result, scale);
    //start = cv::getCPUTickCount() -start;
@@ -4736,7 +4374,6 @@ DataObject DataObject::squeeze() const
     newSizes[counter+1] = getSize(m_dims - 1);
 
     DataObject resObj = DataObject(newDimensions, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
-    //resObj.setT( m_transpose );
 
     if(!copyTagMapTo(resObj).containsError())   // Now deal with the tagspace
     {
@@ -5085,7 +4722,6 @@ DataObject abs(const DataObject &dObj)
     {
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
         fListAbsFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
-        //resObj.setT(dObj.isT());
         return resObj;
     }
     else
@@ -5112,7 +4748,6 @@ DataObject abs(const DataObject &dObj)
         default:
             cv::error(cv::Exception(CV_StsAssert,"abs(), unkown type of source data object","", __FILE__, __LINE__));
         }
-        //resObj.setT(dObj.isT());
         return resObj;
     }
 }
@@ -5188,7 +4823,6 @@ DataObject arg(const DataObject &dObj)
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
         fListArgFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
-        //resObj.setT(dObj.isT());
         return resObj;
     }
     else
@@ -5269,7 +4903,6 @@ DataObject real(const DataObject &dObj)
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
         fListRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
-        //resObj.setT(dObj.isT());
         return resObj;
     }
     else
@@ -5350,7 +4983,6 @@ DataObject imag(const DataObject &dObj)
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
         fListImagFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
-        //resObj.setT(dObj.isT());
         return resObj;
     }
     else
@@ -5377,8 +5009,6 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
     }
 
     resDObj = DataObject(dObj.getDims() , dObj.m_osize, dObj.getType() , 1);
-
-    //resDObj.m_transpose = dObj.m_transpose;
     resDObj.m_owndata = 1;
 
     int dims = dObj.getDims();
