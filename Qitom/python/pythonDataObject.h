@@ -150,8 +150,6 @@ class PythonDataObject
         static PyObject* PyDataObj_GetDims(PyDataObject *self, void *closure);
         static PyObject* PyDataObj_GetType(PyDataObject *self, void *closure);
         static PyObject* PyDataObj_GetContinuous(PyDataObject *self, void *closure);
-        static PyObject* PyDataObj_GetTranspose(PyDataObject *self, void *closure);
-        static int PyDataObj_SetTranspose(PyDataObject *self, PyObject *value, void *closure);
 
         static PyObject* PyDataObject_getTagDict(PyDataObject *self, void *clousure);
 

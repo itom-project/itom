@@ -131,7 +131,7 @@ DObjIterator & DObjIterator::operator += (int ofs)
     if(m_pDObj != NULL)
     {
         int dimensions = m_pDObj->getDims();
-        matSize = m_pDObj->getSize().m_p[dimensions - 2] * m_pDObj->getSize().m_p[dimensions - 1]; //invariant with respect to transpose flag
+        matSize = m_pDObj->getSize().m_p[dimensions - 2] * m_pDObj->getSize().m_p[dimensions - 1];
     }
 
     if (m_pDObj->getDims() <= 2)
@@ -3627,7 +3627,6 @@ DataObject DataObject::at(ito::Range *ranges)
     size_t size;
     int start, end;
 
-    //transpose is handled by the adjustROI method
     for(int n = 0; n < m_dims; n++)
     {
         start = ranges[n].start;

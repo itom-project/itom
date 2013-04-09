@@ -1135,80 +1135,6 @@ PyObject* PythonDataObject::PyDataObj_GetContinuous(PyDataObject *self, void * /
     }
 }
 
-
-PyDoc_STRVAR(dataObjectAttTranspose_doc,"true if matrix''s transpose flag is set but the transposition has not been executed yet. \n\
-\n\
-By this attribute you get access to the matrix''s transpose flag. It returns true if the transpose flag\n\
-is set but the transposition has not been executed yet. \n\
-\n\
-By setting the attribut to true the matrix''s transpose flag is set to also but a transposition is not executed. \n\
-\n\
-This flag exists since the data object tries to execute the memory intensive transposition at the latest \n\
-possible time. Every operator considers the transpose flag and starts the transposition if necessary. \n\
-If the matrix is transposed two times, nothing will be done but the flag will be set to false.\n\
-Notes \n\
------ \n\
-{bool} : ReadWrite\n\
-");
-PyObject* PythonDataObject::PyDataObj_GetTranspose(PyDataObject *self, void * /*closure*/)
-{
-    return PyErr_Format(PyExc_RuntimeError,"TODO: Transpose changes");
-    /*if(self->dataObject == NULL)
-    {
-        Py_RETURN_NONE;
-    }
-    else
-    {
-        self->dataObject->lockRead();
-        bool cont = self->dataObject->isT();
-        self->dataObject->unlock();
-
-        if(cont)
-        {
-            Py_INCREF(Py_True);
-            return Py_True;
-        }
-        else
-        {
-            Py_INCREF(Py_False);
-            return Py_False;
-        }
-    }*/
-}
-
-int PythonDataObject::PyDataObj_SetTranspose(PyDataObject *self, PyObject *value, void * /*closure*/)
-{
-    PyErr_Format(PyExc_RuntimeError,"TODO: Transpose changes");
-    return -1;
-
-    /*if(value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete the transpose attribute");
-        return -1;
-    }
-    unsigned int transpose;
-
-    if(PyArg_Parse(value,"b", &transpose))
-    {
-        if(self->dataObject != NULL)
-        {
-            self->dataObject->lockWrite();
-            self->dataObject->setT(transpose);
-            self->dataObject->unlock();
-            return 0;
-        }
-        else
-        {
-            PyErr_SetString(PyExc_TypeError, "DataObject not available");
-            return -1;
-        }
-    }
-    else
-    {
-        PyErr_SetString(PyExc_TypeError, "Argument must have a boolean value.");
-        return -1;
-    }*/
-}
 //---------------------------------------Get / Set metadata / objecttags-----------------------------------------------------------
 
 PyDoc_STRVAR(dataObjectAttTags_doc,  "tag dictionary for this data object. \n\
@@ -5152,12 +5078,12 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     if(dims == 1)
     {
         sizeU = 1;
-        sizeV = self->dataObject->getSize(dims-1); //since transpose flag has been evaluated and is false now, everything is ok here
+        sizeV = self->dataObject->getSize(dims-1); 
     }
     else if(dims > 1)
     {
-        sizeU = self->dataObject->getSize(dims-2); //since transpose flag has been evaluated and is false now, everything is ok here
-        sizeV = self->dataObject->getSize(dims-1); //since transpose flag has been evaluated and is false now, everything is ok here
+        sizeU = self->dataObject->getSize(dims-2); 
+        sizeV = self->dataObject->getSize(dims-1); 
     }
 
     for(int i = 0 ; i < vectorLength ; i++)
@@ -5449,12 +5375,12 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     if(dims == 1)
     {
         sizeU = 1;
-        sizeV = self->dataObject->getSize(dims-1); //since transpose flag is false, everything is ok here
+        sizeV = self->dataObject->getSize(dims-1); 
     }
     else if(dims > 1)
     {
-        sizeU = self->dataObject->getSize(dims-2); //since transpose flag is false, everything is ok here
-        sizeV = self->dataObject->getSize(dims-1); //since transpose flag is false, everything is ok here
+        sizeU = self->dataObject->getSize(dims-2); 
+        sizeV = self->dataObject->getSize(dims-1); 
     }
 
     for(int i = 0 ; i < vectorLength ; i++)
@@ -5470,7 +5396,6 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     }
 
     //transpose must be false (checked above)
-    //self->dataObject->setT(transpose);
 
     //check tags
     if(tagTuple != NULL && PyTuple_Size(tagTuple) == 10)
@@ -6137,7 +6062,6 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"dims", (getter)PyDataObj_GetDims, NULL, dataObjectAttDims_doc, NULL},
     {"dtype", (getter)PyDataObj_GetType, NULL, dataObjectAttType_doc, NULL},
     {"continuous", (getter)PyDataObj_GetContinuous, NULL, dataObjectAttContinuous_doc, NULL},
-    {"transpose", (getter)PyDataObj_GetTranspose, (setter)PyDataObj_SetTranspose, dataObjectAttTranspose_doc, NULL},
     {"getTagDict", (getter)PyDataObject_getTagDict, NULL, dataObjectAttTagDict_doc, NULL},
 
     {"tags", (getter)PyDataObject_getTags, (setter)PyDataObject_setTags, dataObjectAttTags_doc, NULL},

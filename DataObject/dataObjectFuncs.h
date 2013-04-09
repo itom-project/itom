@@ -792,7 +792,7 @@ namespace dObjHelper
         \sa  
         \date    12.2011 
     */
-    inline bool dObjareEqualDetail(ito::DataObject *dObj1, ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag /*, bool &transFlag*/, bool &last2DimsFlag)
+    inline bool dObjareEqualDetail(ito::DataObject *dObj1, ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag, bool &last2DimsFlag)
     {
         bool retVal = true;
         typeFlag = true;

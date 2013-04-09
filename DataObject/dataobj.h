@@ -1432,13 +1432,13 @@ class DataObject
 //        std::vector<int *> get_mdata(void) const;
         int ** get_mdata(void) const;
 
-        //! returns the size-member. m_size fits to the physical organization of data in memory. For user interaction the last two dimensions have to be flipped if the transpose flag is set
+        //! returns the size-member. m_size fits to the physical organization of data in memory.
         /*!
             \return size-member of type MSize
         */
         inline MSize getSize(void) { return m_size; }
 
-        //! returns the size-member. This member does not consider the transpose flag, hence, m_size fits to the physical organization of data in memory. For user interaction the last two dimensions have to be flipped if the transpose flag is set
+        //! returns the size-member. This member does not consider the transpose flag, hence, m_size fits to the physical organization of data in memory.
         /*!
             \return size-member of type MSize
         */
@@ -1483,7 +1483,7 @@ class DataObject
         //! returns index of last-element in DataObject range incremented by one. (equal to number of elements in total range)
         size_t end(void) const
         {
-            return calcNumMats() * m_size[m_dims - 2] * m_size[m_dims - 1]; // - 1; //independent on transpose-flag
+            return calcNumMats() * m_size[m_dims - 2] * m_size[m_dims - 1];
         }
 
         //! constructor for empty data object
@@ -1556,7 +1556,7 @@ class DataObject
                     one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const uchar* continuousDataPtr,  const size_t* steps = NULL) : /*m_transpose(0),*/ m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const uchar* continuousDataPtr,  const size_t* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             size_t sizes[3] = {sizeZ, sizeY, sizeX};
 
@@ -1592,12 +1592,12 @@ class DataObject
                     one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
             \sa create, ito::tDataType
         */
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const uchar* continuousDataPtr, const size_t* steps = NULL) :/* m_transpose(0),*/ m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const uchar* continuousDataPtr, const size_t* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, m_continuous, continuousDataPtr, steps);
         }
 
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : /*m_transpose(0),*/ m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, planes, nrOfPlanes);
         }
