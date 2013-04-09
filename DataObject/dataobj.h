@@ -1820,19 +1820,9 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-            if( isT())
+            else if ((x >= m_size[1]) || (y >= m_size[0]) )
             {
-                if (((size_t)x >= m_size[0]) || ((size_t)y >= m_size[1]) )
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
-            }
-            else
-            {
-                if ((x >= m_size[1]) || (y >= m_size[0]) )
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
+                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
             }
          #endif           
                return (*(cv::Mat_<_Tp> *)(m_data[0]))(y, x);
@@ -1851,10 +1841,10 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }          
-                if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[0]) )
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
+            else if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[0]) )
+            {
+                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+            }
             
          #endif
                return (*(cv::Mat_<_Tp> *)(m_data[0]))(y, x);
@@ -1874,14 +1864,7 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-            if( isT())
-            {
-                if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[2]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
-            }
-            else
+            else if
             {
                 if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
                 {
@@ -1907,16 +1890,12 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-
-                if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
-                {
-                    cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
-                }
-
-
+            else if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
+            {
+                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+            }
          #endif
-
-               return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(y, x);
+            return (*(cv::Mat_<_Tp> *)(m_data[z + m_roi[0]]))(y, x);
         }
 
         //! addressing method for n-dimensional data object.
