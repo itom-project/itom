@@ -1789,7 +1789,7 @@ RetVal DataObject::rand(const size_t sizeZ, const size_t sizeY, const size_t siz
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method for creation of one-valued matrix-plane
+//! low-level, templated method for creation of random-valued matrix-plane
 /*!
 
     \param sizeY are the number of rows
@@ -1811,6 +1811,27 @@ template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, c
     else
     {
         cv::randu((*((cv::Mat_<_Tp> *)(*dstMat))), value1, value2);
+    }
+   return 0;
+}
+
+//! template specialisation for low-level, templated method for creation of random-valued matrix-plane of type complex128
+/*!
+    \return retOk
+    \sa  RandFunc, zeros, ones
+*/
+template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+{
+    (*((cv::Mat_<ito::complex128> *)(*dstMat))) = cv::Mat_<ito::complex128>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+
+    if(randMode)
+    {
+        cv::Mat_<ito::float64> tempMat(sizeY, sizeX * 2, ((cv::Mat*)(*dstMat))->ptr<ito::float64>());
+        cv::randn(tempMat, value1, value2);       
+    }
+    else
+    {
+        cv::randu((*((cv::Mat_<ito::complex128> *)(*dstMat))), value1, value2);
     }
    return 0;
 }
