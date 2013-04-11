@@ -1333,6 +1333,7 @@ PCLPolygonMesh::~PCLPolygonMesh()
 
 PCLPolygonMesh & PCLPolygonMesh::operator= (const PCLPolygonMesh &copy)
 {
+    m_valid = copy.m_valid;
     m_polygonMesh = copy.m_polygonMesh;
     return *this;
 }
@@ -1377,12 +1378,132 @@ std::string PCLPolygonMesh::getFieldsList() const
         output += fields[ fields.size() - 1 ].name;
     }
 
-    //if(output.size() > 0)
-    //{
-    //    output.pop_back(); //remove last ;
-    //}
-
     return output;
+}
+
+std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
+{
+    pcl::PolygonMesh *mesh = m_polygonMesh.get();
+    if(m_valid && mesh)
+    {
+        /*out << "header: " << std::endl;
+        out << mesh->header;*/
+
+        sensor_msgs::PointCloud2 *c = &(mesh->cloud);
+        sensor_msgs::PointField *f;
+        out << "points:\n------------\n" << std::endl;
+        out << " size: [" << c->height << " x " << c->width << "]\n" << std::endl;
+        if(c->is_bigendian)
+        {
+            out << " big_endian: true\n" << std::endl;
+        }
+        else
+        {
+            out << " big_endian: false\n" << std::endl;
+        }
+        if(c->is_dense)
+        {
+            out << " dense: true\n" << std::endl;
+        }
+        else
+        {
+            out << " dense: false\n" << std::endl;
+        }
+        out << " \nfields[]:\n" << std::endl;
+        for (size_t i = 0; i < c->fields.size (); ++i)
+        {
+            f = &(c->fields[i]);
+            switch(f->datatype)
+            {
+            case 1:
+                out << " [" << i << "]: '" << f->name <<  "' int8\n" << std::endl;
+                break;
+            case 2:
+                out << " [" << i << "]: '" << f->name <<  "' uint8\n" << std::endl;
+                break;
+            case 3:
+                out << " [" << i << "]: '" << f->name <<  "' int16\n" << std::endl;
+                break;
+            case 4:
+                out << " [" << i << "]: '" << f->name <<  "' uint16\n" << std::endl;
+                break;
+            case 5:
+                out << " [" << i << "]: '" << f->name <<  "' int32\n" << std::endl;
+                break;
+            case 6:
+                out << " [" << i << "]: '" << f->name <<  "' uint32\n" << std::endl;
+                break;
+            case 7:
+                out << " [" << i << "]: '" << f->name <<  "' float32\n" << std::endl;
+                break;
+            case 8:
+                out << " [" << i << "]: '" << f->name <<  "' float64\n" << std::endl;
+                break;
+            }
+        }
+
+        out << "\npoints[]:\n" << std::endl;
+        uint32_t rowStep = c->row_step;
+        uint32_t counter = 0;
+        uint8_t *ptr = &(c->data[0]);
+
+        for(uint32_t h = 0 ; h < c->height ; h++)
+        {
+            for(uint32_t w = 0 ; w < c->width ; w++)
+            {
+                out << " " << counter << " [" << h << "," << w << "]: ";
+
+                for(size_t i = 0; i < c->fields.size (); ++i)
+                {
+                    f = &(c->fields[i]);
+
+                    switch(f->datatype)
+                    {
+                    case 1:
+                        out << (ito::int8)(*(ito::int8*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 2:
+                        out << (ito::uint8)(*(ito::uint8*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 3:
+                        out << (ito::uint16)(*(ito::uint16*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 4:
+                        out << (ito::int16)(*(ito::int16*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 5:
+                        out << (ito::int32)(*(ito::int32*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 6:
+                        out << (ito::uint32)(*(ito::uint32*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 7:
+                        out << (ito::float32)(*(ito::float32*)(ptr+f->offset)) << ", ";
+                        break;
+                    case 8:
+                        out << (ito::float64)(*(ito::float64*)(ptr+f->offset)) << ", ";
+                        break;
+                    }
+                }
+                ptr += c->point_step;
+                out << "\n" << std::endl;
+                counter++;
+            }
+        }
+
+        out << "\npolygons\n------------\n" << std::endl;
+        for (size_t i = 0; i < mesh->polygons.size (); ++i)
+        {
+          out << " polygon[" << i << "]: [";
+          for( size_t j = 0 ; j < mesh->polygons[i].vertices.size(); j++)
+          {
+              out << mesh->polygons[i].vertices[j];
+              if(j < (mesh->polygons[i].vertices.size() - 1) ) out << ",";
+          }
+          out << "]\n" << std::endl; //<< std::endl;
+        }
+    }
+    return out;
 }
 
 } //end namespace ito

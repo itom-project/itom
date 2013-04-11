@@ -351,6 +351,8 @@ public:
     size_t height() const;
     size_t width() const;
     std::string getFieldsList() const;
+
+    std::ostream& streamOut(std::ostream& out);
     
 protected:
 

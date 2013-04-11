@@ -3362,6 +3362,20 @@ PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
 }
 
 //------------------------------------------------------------------------------------------------------
+PyObject* PythonPCL::PyPolygonMesh_data(PyPolygonMesh *self)
+{
+    if( self->polygonMesh )
+    {
+        self->polygonMesh->streamOut(std::cout);
+        Py_RETURN_NONE;
+    }
+    else
+    {
+        return PyErr_Format(PyExc_RuntimeError,"point cloud is NULL");
+    }
+}
+
+//------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args*/)
 {
     if(self->polygonMesh == NULL)
@@ -3526,6 +3540,7 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"name", (PyCFunction)PyPolygonMesh_name, METH_NOARGS, "name"},
 	{"__reduce__", (PyCFunction)PyPolygonMesh_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyPolygonMesh_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
+    {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, "prints content of polygon mesh"},
     {NULL}  /* Sentinel */
 };
 

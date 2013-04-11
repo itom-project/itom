@@ -131,54 +131,61 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 QDesignerCustomWidgetInterface *iface = NULL;
 
                 // try with a normal plugin, we do not support collections
-                if ((iface = qobject_cast<QDesignerCustomWidgetInterface *>(loader->instance())) && 
-                    ((loader->instance())->inherits("ito::AbstractItomDesignerPlugin")))
+                if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(loader->instance()))
                 {
-                    allowedInterface = false;
-
-                    //check interface
-                    metaObj = ((ito::AbstractItomDesignerPlugin*)(loader->instance()))->metaObject();
-                    for(int i = 0; i < metaObj->classInfoCount() ; i++)
+                    if((loader->instance())->inherits("ito::AbstractItomDesignerPlugin"))
                     {
-                        if( qstrcmp(metaObj->classInfo(i).name(),"ito.AbstractItomDesignerPlugin") == 0 )
+                        allowedInterface = false;
+
+                        //check interface
+                        metaObj = ((ito::AbstractItomDesignerPlugin*)(loader->instance()))->metaObject();
+                        for(int i = 0; i < metaObj->classInfoCount() ; i++)
                         {
-                            if(requiredInterface == metaObj->classInfo(i).value())
+                            if( qstrcmp(metaObj->classInfo(i).name(),"ito.AbstractItomDesignerPlugin") == 0 )
                             {
-                                allowedInterface = true;
+                                if(requiredInterface == metaObj->classInfo(i).value())
+                                {
+                                    allowedInterface = true;
+                                }
+                                break;
                             }
-                            break;
                         }
-                    }
 
-                    if(allowedInterface)
-                    {
-                        ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)loader->instance();
-                        infoStruct.filename = absolutePluginPath;
-                        infoStruct.classname = iface->name();
-                        infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
-                        infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
-                        infoStruct.plotFeatures = absIDP->getPlotFeatures();
-                        infoStruct.icon = iface->icon();
-                        infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
-                        m_figurePlugins.append(infoStruct);
+                        if(allowedInterface)
+                        {
+                            ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)loader->instance();
+                            infoStruct.filename = absolutePluginPath;
+                            infoStruct.classname = iface->name();
+                            infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
+                            infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
+                            infoStruct.plotFeatures = absIDP->getPlotFeatures();
+                            infoStruct.icon = iface->icon();
+                            infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
+                            m_figurePlugins.append(infoStruct);
 
-                        absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
+                            absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
 
-                        message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
-                        status.messages.append(QPair<ito::tRetValue, QString>(ito::retOk, message));
+                            message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
+                            status.messages.append(QPair<ito::tRetValue, QString>(ito::retOk, message));
+                        }
+                        else
+                        {
+                            loader->unload();
+                            message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
+                            status.messages.append( QPair<ito::tRetValue, QString>(ito::retError, message));
+                            DELETE_AND_SET_NULL(loader);
+                        }
                     }
                     else
                     {
                         loader->unload();
-                        message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
-                        status.messages.append( QPair<ito::tRetValue, QString>(ito::retError, message));
                         DELETE_AND_SET_NULL(loader);
                     }
                 }
                 else
                 {
                     loader->unload();
-                    message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin").arg(status.filename);
+                    message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
                     status.messages.append( QPair<ito::tRetValue, QString>(ito::retError, message));
                     DELETE_AND_SET_NULL(loader);
                 }
