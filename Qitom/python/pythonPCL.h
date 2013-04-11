@@ -260,6 +260,7 @@ public:
     //------------------------------------------------------------------------------------------------- 
     static PyObject *PyPolygonMesh_name(PyPolygonMesh *self);
     static PyObject *PyPolygonMesh_repr(PyPolygonMesh *self);
+    static PyObject *PyPolygonMesh_data(PyPolygonMesh *self);
 
 	//-------------------------------------------------------------------------------------------------
     // pickling
