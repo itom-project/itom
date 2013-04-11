@@ -10,9 +10,6 @@
 #define SourceDirITOMHelp "${CMAKE_CURRENT_SOURCE_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
-#define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
-#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.3\64 Bit"
-;#define SourceDirPCL "${PCL_DIR}/../bin"
 #define ExeName "Qitom.exe"
 #define Name "itom (x64)"
 #define Version "${ITOM_versionString}"
@@ -123,12 +120,6 @@ Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation";
 ; EXEs
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
-Source: "{#SourceRedistributable}\vcredist_x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\1. python-3.3.0.amd64.msi"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; DestDir: "{tmp}"
 
 ; vielleicht
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
@@ -177,33 +168,13 @@ Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64) wird nun installiert!"; Components: CREDPACK;
-Filename: "{tmp}\1. python-3.3.0.amd64.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.2 wird nun installiert!"; Components: PYTHON
-Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy wird nun installiert!"; Components: NUMPY
-Filename: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy wird nun installiert!"; Components: SCIPY
-Filename: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib wird nun installiert!"; Components: MATPLOTLIB
-Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Python Image Library wird nun installiert!"; Components: PIL
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
-
-[InstallDelete]
-Type: files; Name: "{tmp}\1. python-3.3.0.amd64.msi"
-Type: files; Name: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\vcredist_x64.exe"
 
 [Types]
 Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
-Name: "Main"; Description: "ITOM"; Types: Install; Flags: checkablealone fixed
-Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10
-Name: "PYTHON"; Description: "Python 3.2.3"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "NumPy unoptimized 1.6.2 Win-Amd64 Py 3.2"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "SciPy 0.10.1 Win-Amd64 Py 3.2"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "MatPlotLib 1.2.x Win-Amd64 Py 3.2"; Types: Install; Flags: checkablealone
-Name: "PIL"; Description: "Python Image Library 1.1.7 Win-Amd64 Py 3.2"; Types: Install; Flags: checkablealone
+Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]

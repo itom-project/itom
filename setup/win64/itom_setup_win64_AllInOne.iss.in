@@ -10,8 +10,11 @@
 #define SourceDirITOMHelp "${CMAKE_CURRENT_SOURCE_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
+#define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
+#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.3\64 Bit"
+;#define SourceDirPCL "${PCL_DIR}/../bin"
 #define ExeName "Qitom.exe"
-#define Name "itom"
+#define Name "itom (x64)"
 #define Version "${ITOM_versionString}"
 #define Publisher "ITO Uni Stuttgart"
 #define URL "http://www.ito.uni-stuttgart.de/"
@@ -20,7 +23,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{049B12B4-806D-43A2-9616-54FF0F889B30}
+AppId={{BC92C903-FB9E-49ED-AF5C-F43F37D3974A}
 AppName={#Name}
 AppVersion={#Version}
 AppVerName={#Name} {#Version}
@@ -28,7 +31,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf}\{#Name}
+DefaultDirName={pf64}\{#Name}
 DefaultGroupName={#Name}
 OutputBaseFilename=setup
 Compression=lzma
@@ -120,12 +123,18 @@ Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation";
 ; EXEs
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceRedistributable}\vcredist_x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\1. python-3.3.0.amd64.msi"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; DestDir: "{tmp}"
 
 ; vielleicht
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
 ; Default INI
-Source: "{#SourceDirITOMBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder  
 
 ; Lizenz-Datei
 Source: "{#SourceDirITOMHelp}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
@@ -147,7 +156,7 @@ Source: "{#SourceDirITOMBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\incl
 Source: "{#SourceDirITOMBuild}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\lib\vc10_x86\*.*"; DestDir: "{app}\SDK\lib\vc10_x86"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Components: SDK;  Flags: promptifolder
 
 ; DesignerPlugins
 Source: "{#SourceDirITOMBuild}\designer\matplotlibFigure.dll"; DestDir: "{app}\designer"; Flags: promptifolder
@@ -168,13 +177,33 @@ Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
 
 [Run]
+Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64) wird nun installiert!"; Components: CREDPACK;
+Filename: "{tmp}\1. python-3.3.0.amd64.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3 wird nun installiert!"; Components: PYTHON
+Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy wird nun installiert!"; Components: NUMPY
+Filename: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy wird nun installiert!"; Components: SCIPY
+Filename: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib wird nun installiert!"; Components: MATPLOTLIB
+Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Python Image Library wird nun installiert!"; Components: PIL
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
+
+[InstallDelete]
+Type: files; Name: "{tmp}\1. python-3.3.0.amd64.msi"
+Type: files; Name: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\vcredist_x64.exe"
 
 [Types]
 Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
+Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10
+Name: "PYTHON"; Description: "Python 3.3.0"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "NumPy MKL 1.7.1 for Win32-Py 3.3"; Types: Install; Flags: checkablealone
+Name: "SCIPY"; Description: "SciPy 0.12.0b1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "MatPlotLib 1.2.1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
+Name: "PILLOW"; Description: "Pillow 2.0.0 Win32-Py 3.3"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
@@ -202,7 +231,7 @@ end;
 
 function NeedInstallRP10(): Boolean;
 begin
-  Result:= not (IsMsiProductInstalled(RP86) or IsMsiProductInstalled(RP86SP1));
-//                IsMsiProductInstalled(RP64) or IsMsiProductInstalled(RP64SP1)
+  Result:= not (IsMsiProductInstalled(RP64) or IsMsiProductInstalled(RP64SP1));
+//                IsMsiProductInstalled(RP86) or IsMsiProductInstalled(RP86SP1));
 //                IsMsiProductInstalled(RPIA) or IsMsiProductInstalled(RPIASP1));
 end;
