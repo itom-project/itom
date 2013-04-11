@@ -7,13 +7,13 @@ Jedes Mal, wenn ein neues Setup von 'itom' herauskommt, wird die Patch-Nummer de
 'itom'-Version inkrementiert. Versions-Inkrementierungen bei Major und Minor erfolgen
 nur bei größeren Änderungen und werden durch die Core-Entwickler mitfestgelegt.
 
+
 Inkrementierung der 'itom'-Versions-Nummer:
 -------------------------------------------
 
 In 'global.h' sowohl die Zahl ITOM_VERSION_PATCH inkrementieren als auch den String
 ITOM_VERSION_STR anpassen.
 
-Die String-Versionsnummer im INNO-SETUP eintragen (gemäß ITOM_VERSION_STR).
 
 Überprüfung der AddInInterface-Versionsnummer:
 ----------------------------------------------
@@ -21,6 +21,7 @@ Die String-Versionsnummer im INNO-SETUP eintragen (gemäß ITOM_VERSION_STR).
 Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface vorkam. Dies führt
 zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterface.h
 vergeben werden.
+
 
 Doku erstellen:
 ---------------
@@ -37,3 +38,4 @@ CHANGE-LOG
 
 Setup 1.0.6 - Rev. 4048 - Erstellt am 18.01.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
 Setup 1.0.8 - Erstellt am 18.03.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
+Setup 1.0.9 - Erstellt am 11.04.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.14"

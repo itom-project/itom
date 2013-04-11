@@ -1588,12 +1588,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Save object failed: evaluate transpose failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
+        <location line="+35"/>
         <source>Save object failed: file not writeable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1629,12 +1624,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Load object failed: isTransposed not specified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+58"/>
+        <location line="+70"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1664,7 +1654,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+36"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2007,7 +1997,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+220"/>
+        <location filename="../helper/versionHelper.cpp" line="+212"/>
         <source>Warning: The version contains locally changed code!
 </source>
         <translation type="unfinished"></translation>
@@ -2032,7 +2022,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+1996"/>
+        <location filename="../python/pythonItom.cpp" line="+2020"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -2099,12 +2089,12 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location filename="../../plot/AbstractNode.cpp" line="+241"/>
         <source>parameters in list could not be found in channels, in updateChannels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+38"/>
         <source>channel is not a sender in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2150,22 +2140,22 @@ Type conflict for %1</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="+104"/>
+        <location filename="../../plot/AbstractNode.cpp" line="-179"/>
         <source>Parameter: does not exist in updateParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+5"/>
         <source>Channel is already updating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+179"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+223"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
@@ -3259,7 +3249,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="+211"/>
+        <location filename="../../plot/AbstractDObjFigure.cpp" line="+221"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation type="unfinished">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
@@ -4059,21 +4049,27 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogUserManagement</name>
     <message>
-        <location filename="../widgets/userManagement.cpp" line="+166"/>
+        <location filename="../widgets/userManagement.cpp" line="+222"/>
+        <location line="+6"/>
         <location line="+27"/>
         <location line="+10"/>
         <source>Error</source>
         <translation type="unfinished">Fehler</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-43"/>
+        <source>UserID is empty! Cannot create user!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>UserID already exists! Cannot create user!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
         <location line="+6"/>
-        <location line="+45"/>
+        <location line="+47"/>
         <location line="+7"/>
         <location line="+7"/>
         <location line="+6"/>
@@ -4083,7 +4079,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Warnung</translation>
     </message>
     <message>
-        <location line="-80"/>
+        <location line="-82"/>
         <source>No or invalid group entered, setting to developer!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4103,7 +4099,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>User ID not found, aborting!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4141,7 +4137,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+210"/>
+        <location line="+217"/>
         <source>subplot %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4570,22 +4566,22 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+92"/>
+        <location filename="../widgets/mainWindow.cpp" line="+93"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>Breakpoints</source>
         <translation type="unfinished">Haltepunkte</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-10"/>
         <source>File System</source>
         <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+16"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -4600,12 +4596,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Lokale Variablen</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>Plugins</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
@@ -4618,7 +4614,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+225"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4639,17 +4635,17 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Über iTOM</translation>
     </message>
     <message>
-        <location line="-8"/>
+        <location line="-9"/>
         <source>New Script...</source>
         <translation>Neues Skript...</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Open File...</source>
         <translation>Datei öffnen...</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>Properties...</source>
         <translation>Optionen...</translation>
     </message>
@@ -4659,7 +4655,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation>Benutzerverwaltung...</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>About Qt...</source>
         <translation>Über QT...</translation>
     </message>
@@ -4678,7 +4674,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4753,47 +4749,47 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Geladene Module...</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>Application</source>
         <translation type="unfinished">Anwendung</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Tools</source>
         <translation type="unfinished">Tools</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>About</source>
         <translation type="unfinished">Über</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>Python</source>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>File</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+13"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Toolboxes</source>
         <translation type="unfinished">Werkzeuge</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Script</source>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -4810,7 +4806,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Python wird ausgeführt</translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+75"/>
         <source>open file</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
@@ -5457,7 +5453,7 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="+86"/>
         <location line="+58"/>
         <location line="+100"/>
-        <location line="+31"/>
+        <location line="+59"/>
         <location line="+52"/>
         <location line="+50"/>
         <location line="+65"/>
@@ -5468,7 +5464,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-531"/>
+        <location line="-559"/>
         <location line="+7"/>
         <source>at least one property could not be read</source>
         <translation type="unfinished"></translation>
@@ -5497,7 +5493,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+62"/>
+        <source>object ID is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
         <source>could not get reference to main dialog or window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5545,7 +5546,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+592"/>
+        <location line="+598"/>
         <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5859,9 +5860,8 @@ Katesisch</translation>
         <translation type="unfinished">Hauptanwendung</translation>
     </message>
     <message>
-        <location/>
         <source>Script Editor</source>
-        <translation>Skript-Editor</translation>
+        <translation type="obsolete">Skript-Editor</translation>
     </message>
     <message>
         <location/>
