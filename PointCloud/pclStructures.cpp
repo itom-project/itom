@@ -1460,28 +1460,28 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
                     switch(f->datatype)
                     {
                     case 1:
-                        out << (ito::int8)(*(ito::int8*)(ptr+f->offset)) << ", ";
+                        out << (ito::int8)(*(ito::int8*)(ptr+f->offset)) << " ";
                         break;
                     case 2:
-                        out << (ito::uint8)(*(ito::uint8*)(ptr+f->offset)) << ", ";
+                        out << (ito::uint8)(*(ito::uint8*)(ptr+f->offset)) << " ";
                         break;
                     case 3:
-                        out << (ito::uint16)(*(ito::uint16*)(ptr+f->offset)) << ", ";
+                        out << (ito::uint16)(*(ito::uint16*)(ptr+f->offset)) << " ";
                         break;
                     case 4:
-                        out << (ito::int16)(*(ito::int16*)(ptr+f->offset)) << ", ";
+                        out << (ito::int16)(*(ito::int16*)(ptr+f->offset)) << " ";
                         break;
                     case 5:
-                        out << (ito::int32)(*(ito::int32*)(ptr+f->offset)) << ", ";
+                        out << (ito::int32)(*(ito::int32*)(ptr+f->offset)) << " ";
                         break;
                     case 6:
-                        out << (ito::uint32)(*(ito::uint32*)(ptr+f->offset)) << ", ";
+                        out << (ito::uint32)(*(ito::uint32*)(ptr+f->offset)) << " ";
                         break;
                     case 7:
-                        out << (ito::float32)(*(ito::float32*)(ptr+f->offset)) << ", ";
+                        out << (ito::float32)(*(ito::float32*)(ptr+f->offset)) << " ";
                         break;
                     case 8:
-                        out << (ito::float64)(*(ito::float64*)(ptr+f->offset)) << ", ";
+                        out << (ito::float64)(*(ito::float64*)(ptr+f->offset)) << " ";
                         break;
                     }
                 }
@@ -1494,13 +1494,12 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
         out << "\npolygons\n------------\n" << std::endl;
         for (size_t i = 0; i < mesh->polygons.size (); ++i)
         {
-          out << " polygon[" << i << "]: [";
+          out << " polygon[" << i << "]: ";
           for( size_t j = 0 ; j < mesh->polygons[i].vertices.size(); j++)
           {
-              out << mesh->polygons[i].vertices[j];
-              if(j < (mesh->polygons[i].vertices.size() - 1) ) out << ",";
+              out << mesh->polygons[i].vertices[j] << " ";
           }
-          out << "]\n" << std::endl; //<< std::endl;
+          out << "\n" << std::endl; //<< std::endl;
         }
     }
     return out;

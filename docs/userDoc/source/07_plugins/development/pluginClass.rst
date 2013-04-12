@@ -169,7 +169,7 @@ The method **init** has the following bear framework:
 .. code-block:: c++
     :linenos:
     
-    ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+    ito::RetVal MyPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue;
@@ -231,7 +231,14 @@ The method **close** is always executed as last method in the plugin thread. Dis
 getParam
 ++++++++
 
-This method is the getter-method for reading the current value of internal parameters, that usually are an item of the map **m_params**.
+This method is the getter-method for reading the current value of internal parameters, that usually are an item of the map **m_params**. In this
+method (like in others, too) methods provided by the |itom| API are used. Therefore, you need to include the API header in your source file, e.g. by
+
+.. code-block:: c++
+    
+    #include "common/apiFunctionsInc.h"
+
+The prototype for the method *getParam* then looks like this:
 
 .. code-block:: c++
     :linenos:
@@ -310,10 +317,10 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         bool hasIndex;
         int index;
         QString suffix;
-		QMap<QString,ito::Param>::iterator it;
+		QMap<QString, ito::Param>::iterator it;
 		
 		//parse the given parameter-name (if you support indexed or suffix-based parameters)
-        retValue += ito::parseParamName( val->getName(), key, hasIndex, index, suffix );
+        retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 		
 		if(isMotorMoving()) //this if-case is for actuators only.
 		{
