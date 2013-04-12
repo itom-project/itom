@@ -107,7 +107,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {
-    ito::DataObject *dObj = m_pInput["displayed"]->getVal<ito::DataObject*>();
+    ito::DataObject *dObj = m_pOutput["displayed"]->getVal<ito::DataObject*>();
     if(dObj)
     {
         return QSharedPointer<ito::DataObject>(); 

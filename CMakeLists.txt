@@ -13,7 +13,7 @@ if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
-endif (BUILD_TARGET64)
+endif (BUILD_TARGET64) 
 
 #set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #if(NOT CMAKE_SIZEOF_VOID_P)
