@@ -182,7 +182,7 @@ Filename: "{tmp}\1. python-3.3.0.amd64.msi"; Flags: shellexec waituntilterminate
 Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy wird nun installiert!"; Components: NUMPY
 Filename: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy wird nun installiert!"; Components: SCIPY
 Filename: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib wird nun installiert!"; Components: MATPLOTLIB
-Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Python Image Library wird nun installiert!"; Components: PIL
+Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Python Image Library wird nun installiert!"; Components: PILLOW
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
