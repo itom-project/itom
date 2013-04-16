@@ -2,7 +2,6 @@
 
 # -*- coding: utf-8 -*-
 
-
 import os
 import sys
 from os import path
@@ -98,28 +97,33 @@ for buildername in buildernames:
         texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
         
         # replace some lines in tex files
+        print("\n*.tex wird mit modify_doc korrigiert")
         modify_doc.replaceInFiles(texfolder,".tex")
-        print("Modify executed")
         
         # Convert into pdf 
         dirList=os.listdir(texfolder)
         # Files in Ordner durchlaufen
         for fname in dirList:
             if fname.endswith(".tex"):
-                print("starte Latex to pdf")
+                print("\nstarte Latex => pdf")
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 # mit dem Kommentar ganz hinten kann man die fenster verstecken
-                # vorsicht: man kann den Prozess nicht verandern wenn fehler auftreten und auf eine eingabe gewartet wird
+                # vorsicht: man kann den Prozess nicht veraendern wenn fehler auftreten und auf eine eingabe gewartet wird
                 ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
-                #wenn man ret printen laesst, ist es genau umgedreht (1=Fehler, 0 = OK) nochmal che ken
                 if ret == 0:
-                    print("pdf erstellt")
+                    print("------------------------------")
+                    print("******* pdf erstellt *******")
+                    print("------------------------------")
                 elif ret == 1:
-                    print("Fehler beim Erstellen des pdf")
+                    print("ERROR: Fehler beim Erstellen des pdf")
+                # Verlinkung im pdf funktioniert nur wenn der befehl zweimal aufgerufen wird
+                ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
+                if ret == 0:
+                    print("------------------------------")
+                    print("******* pdf verlinkt *******")
+                    print("------------------------------")
+                elif ret == 1:
+                    print("ERROR: Fehler beim Erstellen des pdf")
 
 del __main__.__dict__["__doxygen__xml"]
-
-
-
-    

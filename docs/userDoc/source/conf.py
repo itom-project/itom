@@ -220,7 +220,7 @@ latex_documents = [
   #('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
   
   # Installation: viele FEHLER
-  #('Installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  #('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
   
   # AboutItom: OK
   #('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'), 
