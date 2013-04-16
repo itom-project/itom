@@ -2,155 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de_DE">
 <context>
-    <name>AddInManager</name>
-    <message>
-        <location filename="../organizer/addInManager.cpp" line="+255"/>
-        <source>directory &apos;%1&apos; could not be found</source>
-        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>plugins folder could not be found</source>
-        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>filename is no AddIn-library: %1</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Unable to load translation file &apos;%1&apos;.</source>
-        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Unable to find translation file.</source>
-        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>AddIn with filename &apos;%1&apos;is unknown.</source>
-        <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>%1 (DataIO) loaded</source>
-        <translation type="unfinished">%1 (DataIO) geladen</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>%1 (Actuator) loaded</source>
-        <translation type="unfinished">%1 (Motor) geladen</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>error initializing plugin: %1</source>
-        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
-        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Filter %1 loaded</source>
-        <translation type="unfinished">Filter %1 geladen</translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
-        <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Widget %1 loaded</source>
-        <translation type="unfinished">Widget %1 geladen</translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <location line="+71"/>
-        <source>plugin not found</source>
-        <translation type="unfinished">Plugin nicht gefunden</translation>
-    </message>
-    <message>
-        <location line="+159"/>
-        <location line="+135"/>
-        <location line="+129"/>
-        <source>Wrong plugin name</source>
-        <translation type="unfinished">Falscher Plugin-Name</translation>
-    </message>
-    <message>
-        <location line="-243"/>
-        <location line="+135"/>
-        <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
-    </message>
-    <message>
-        <location line="-113"/>
-        <source>timeout while initializing dataIO</source>
-        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <location line="+132"/>
-        <location line="+92"/>
-        <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
-        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
-    </message>
-    <message>
-        <location line="-131"/>
-        <source>timeout while initializing actuator</source>
-        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
-    </message>
-    <message>
-        <location line="+638"/>
-        <source>no dock widget available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>addin not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BreakPointModel</name>
     <message>
         <location filename="../models/breakPointModel.cpp" line="+37"/>
@@ -2169,6 +2020,152 @@ Type conflict for %1</source>
         <source>Actual output data of plot</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../organizer/addInManager.cpp" line="+255"/>
+        <source>directory &apos;%1&apos; could not be found</source>
+        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>plugins folder could not be found</source>
+        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>filename is no AddIn-library: %1</source>
+        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Unable to load translation file &apos;%1&apos;.</source>
+        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Unable to find translation file.</source>
+        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>AddIn with filename &apos;%1&apos; is unknown.</source>
+        <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1 (DataIO) loaded</source>
+        <translation type="unfinished">%1 (DataIO) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1 (Actuator) loaded</source>
+        <translation type="unfinished">%1 (Motor) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>error initializing plugin: %1</source>
+        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
+        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Filter %1 loaded</source>
+        <translation type="unfinished">Filter %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
+        <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Widget %1 loaded</source>
+        <translation type="unfinished">Widget %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <location line="+71"/>
+        <source>plugin not found</source>
+        <translation type="unfinished">Plugin nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+159"/>
+        <location line="+135"/>
+        <location line="+129"/>
+        <source>Wrong plugin name</source>
+        <translation type="unfinished">Falscher Plugin-Name</translation>
+    </message>
+    <message>
+        <location line="-243"/>
+        <location line="+135"/>
+        <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
+        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+    </message>
+    <message>
+        <location line="-113"/>
+        <source>timeout while initializing dataIO</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <location line="+132"/>
+        <location line="+92"/>
+        <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
+        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+    </message>
+    <message>
+        <location line="-131"/>
+        <source>timeout while initializing actuator</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
+    </message>
+    <message>
+        <location line="+638"/>
+        <source>no dock widget available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>addin not available</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptEditorOrganizer</name>
@@ -3278,25 +3275,6 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
-    <name>ito::AbstractFigure</name>
-    <message>
-        <source>Figure does not contain an input slot for live sources</source>
-        <translation type="obsolete">Grafik enthält keinen Input-Slot für Livequellen</translation>
-    </message>
-    <message>
-        <source>stay on top of all windows</source>
-        <translation type="obsolete">Iim Vordergrund vor allen Fenstern anzeigen</translation>
-    </message>
-    <message>
-        <source>stay on top of main window</source>
-        <translation type="obsolete">Iim Vordergrund vor dem Hauptfenster anzeigen</translation>
-    </message>
-    <message>
-        <source>window</source>
-        <translation type="obsolete">Fenster</translation>
-    </message>
-</context>
-<context>
     <name>ito::AbstractFilterDialog</name>
     <message>
         <location filename="../ui/abstractFilterDialog.cpp" line="+106"/>
@@ -3433,137 +3411,6 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="+4"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInManager</name>
-    <message>
-        <source>directory %1 could not be found</source>
-        <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>plugins folder could not be found</source>
-        <translation type="obsolete">Plugin-Ordner wurden nicht gefunden</translation>
-    </message>
-    <message>
-        <source>filename is no AddIn-library: %1</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
-    </message>
-    <message>
-        <source>error loading plugin: %1</source>
-        <translation type="obsolete">Fehler beim Laden des Plugins: %1</translation>
-    </message>
-    <message>
-        <source>Filter &apos;%1&apos; already exists in global filter list</source>
-        <translation type="obsolete">Filter &apos;%1&apos; existiert bereits in der globalen Filterliste</translation>
-    </message>
-    <message>
-        <source>Widget &apos;%1&apos; already exists in global plugin widget list</source>
-        <translation type="obsolete">Element &apos;%1&apos; existiert bereits in der globalen Elementenliste</translation>
-    </message>
-    <message>
-        <source>AddIn with filename &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="obsolete">Das AddIn namens &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
-    </message>
-    <message>
-        <source>Type of AddIn with filename &apos;%1&apos;is unknown.</source>
-        <translation type="obsolete">Typ des AddIn mit dem Dateiname &apos;%1&apos; ist unbekannt.</translation>
-    </message>
-    <message>
-        <source>directory &apos;%1&apos; could not be found</source>
-        <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>Unable to load translation file &apos;%1&apos;.</source>
-        <translation type="obsolete">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
-    </message>
-    <message>
-        <source>Unable to find translation file.</source>
-        <translation type="obsolete">Übersetzungsdatei wurde nicht gefunden.</translation>
-    </message>
-    <message>
-        <source>AddIn with filename &apos;%1&apos;is unknown.</source>
-        <translation type="obsolete">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
-    </message>
-    <message>
-        <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="obsolete">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
-    </message>
-    <message>
-        <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="obsolete">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
-    </message>
-    <message>
-        <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
-        <translation type="obsolete">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
-    </message>
-    <message>
-        <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
-        <translation type="obsolete">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
-    </message>
-    <message>
-        <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="obsolete">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: &apos;%2&apos;</translation>
-    </message>
-    <message>
-        <source>%1 (DataIO) loaded</source>
-        <translation type="obsolete">%1 (DataIO) geladen</translation>
-    </message>
-    <message>
-        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
-        <translation type="obsolete">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
-    </message>
-    <message>
-        <source>%1 (Actuator) loaded</source>
-        <translation type="obsolete">%1 (Motor) geladen</translation>
-    </message>
-    <message>
-        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
-        <translation type="obsolete">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
-    </message>
-    <message>
-        <source>error initializing plugin: %1</source>
-        <translation type="obsolete">Fehler beim Initialisieren der Plugins: %1</translation>
-    </message>
-    <message>
-        <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
-        <translation type="obsolete">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
-    </message>
-    <message>
-        <source>Filter %1 loaded</source>
-        <translation type="obsolete">Filter %1 geladen</translation>
-    </message>
-    <message>
-        <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
-        <translation type="obsolete">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
-    </message>
-    <message>
-        <source>Widget %1 loaded</source>
-        <translation type="obsolete">Widget %1 geladen</translation>
-    </message>
-    <message>
-        <source>plugin not found</source>
-        <translation type="obsolete">Plugin nicht gefunden</translation>
-    </message>
-    <message>
-        <source>Wrong plugin name</source>
-        <translation type="obsolete">Falscher Plugin-Name</translation>
-    </message>
-    <message>
-        <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation type="obsolete">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
-    </message>
-    <message>
-        <source>timeout while initializing dataIO</source>
-        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von DataIO</translation>
-    </message>
-    <message>
-        <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
-        <translation type="obsolete">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
-    </message>
-    <message>
-        <source>timeout while initializing actuator</source>
-        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
 </context>
 <context>
@@ -3743,7 +3590,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+51"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -3753,9 +3600,13 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin</source>
-        <translation type="unfinished">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
+        <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+9"/>
