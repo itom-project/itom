@@ -1327,7 +1327,11 @@ end:
     {
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
-        QString pluginUniqueId = QString::number(plugin->getID());
+        QString pluginUniqueId = plugin->getIdentifier();
+        if(pluginUniqueId == "")
+        {
+            pluginUniqueId = QString::number(plugin->getID());
+        }
 
         // Generate the filename
 
@@ -1378,7 +1382,11 @@ end:
     {
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
-        QString pluginUniqueId = QString::number(plugin->getID());
+        QString pluginUniqueId = plugin->getIdentifier();
+        if(pluginUniqueId == "")
+        {
+            pluginUniqueId = QString::number(plugin->getID());
+        }
         ito::Param param1;
 
         ito::AddInInterfaceBase *aib = plugin->getBasePlugin();

@@ -35,6 +35,8 @@
 
 namespace ito
 {
+    int AddInBase::m_instCounter = 0;
+
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase::~AddInInterfaceBase()
     { 
@@ -108,10 +110,10 @@ namespace ito
         \param [in] uniqueID is the unique identifier of this plugin instance. This identifier can be changed in the constructor or
                     finally at the beginning of in the init-method. Afterwards it is used by different organizers and GUI components.
     */
-	AddInBase::AddInBase(int uniqueID) :
+	AddInBase::AddInBase() :
 		m_pThread(NULL), 
 		m_pBasePlugin(NULL), 
-		m_uniqueID(uniqueID), 
+		m_uniqueID(++m_instCounter), 
 		m_refCount(0), 
         m_createdByGUI(0),
         m_dockWidget(NULL),
@@ -382,14 +384,14 @@ namespace ito
 
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInDataIO::AddInDataIO(int uniqueID) : 
-        AddInBase(uniqueID),
+    AddInDataIO::AddInDataIO() : 
+        AddInBase(),
         m_timerID(0),
         m_timerIntervalMS(20),
         m_autoGrabbingEnabled(true)
     {
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
-        Q_ASSERT_X(1, "AddInDataIO::~AddInDataIO", tr("Constructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::AddInDataIO", tr("Constructor must be overwritten").toAscii().data());
         return;
     }
 
@@ -670,7 +672,11 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInActuator::AddInActuator(int uniqueID) : AddInBase(uniqueID), m_nrOfStatusChangedConnections(0), m_nrOfTargetChangedConnections(0), m_interruptFlag(false)
+    AddInActuator::AddInActuator() 
+        : AddInBase(), 
+        m_nrOfStatusChangedConnections(0), 
+        m_nrOfTargetChangedConnections(0), 
+        m_interruptFlag(false)
     {
         Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toAscii().data());
         return;
@@ -769,9 +775,9 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInAlgo::AddInAlgo(int uniqueID) : AddInBase(uniqueID)
+    AddInAlgo::AddInAlgo() : AddInBase()
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toAscii().data());
         return;
     }
 

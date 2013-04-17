@@ -572,7 +572,14 @@ void ParamInputParser::browsePluginPicker(int i)
             QLineEdit *le = canvas->findChild<QLineEdit*>( name );
             if (le && aib)
             {
-                le->setText( QString("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()) );
+                if(aib->getIdentifier() != "")
+                {
+                    le->setText( QString("%1, Identifier: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getIdentifier()) );
+                }
+                else
+                {
+                    le->setText( QString("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()) );
+                }
             }
             else if (le && !aib)
             {

@@ -343,8 +343,11 @@ namespace ito
 			*/
             inline const ito::RetVal getExecFuncList(QMap<QString, ExecFuncParams> **funcs) { *funcs = &m_execFuncList; return ito::retOk; }
             
-			//! retrieve the uniqueID of the instance
+			//! retrieve the uniqueID of this instance
             inline int getID() const { return m_uniqueID; }
+
+            //! retrieve the unique identifier of this instance
+            inline QString getIdentifier() const { return m_identifier; }
             
 			//! determine if a configuration dialog is available
             virtual int hasConfDialog(void);
@@ -440,7 +443,7 @@ namespace ito
 
         protected:
 			// constructor (doc in source)
-            AddInBase(int uniqueID = 0);
+            AddInBase();
 
 			// destructor (doc in source)
             ~AddInBase();
@@ -457,7 +460,8 @@ namespace ito
             QThread *m_pThread;									//!< the instance's thread
             AddInInterfaceBase *m_pBasePlugin;					//!< the AddInInterfaceBase instance of this plugin
             QMap<QString, Param> m_params;						//!< map of the available parameters
-            int m_uniqueID;										//!< uniqueID (the plugin is responsible to make it unique)
+            
+            QString m_identifier;                               //!< unique identifier (serial number, com-port...)
             int m_refCount;										//!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
             int m_createdByGUI;									//!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
             QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
@@ -481,14 +485,18 @@ namespace ito
                 m_refCount--;
                 m_refCountMutex.unlock();
             }
+
+            int m_uniqueID;					//!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
             
             QMutex m_refCountMutex;			//!< mutex for making the reference counting mechanism thread-safe.
             QDockWidget *m_dockWidget;		//!< instance-pointer to the dock-widget of the plugin or NULL if no dock-widget instatiated in constructor of plugin
             int m_alive;                    //!< member to check if thread is still responsive
             QMutex m_atomicMutex;           //!< mutex for protecting atomic getter and setter methods (e.g. alive and initialized)
             bool m_initialized;             //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
-
+            
             friend class AddInInterfaceBase; //!< AddInBase is friend with AddInInterfaceBase, such that the interface can access methods like the protected constructor or destructor of this plugin class.
+
+            static int m_instCounter;
 
 		signals:
 			//! This signal usually is emitted if the vector m_params is changed.
@@ -588,7 +596,7 @@ namespace ito
 
         protected:
             virtual ~AddInDataIO() = 0;
-            AddInDataIO(int uniqueID = 0);
+            AddInDataIO();
 
             void runStatusChanged(bool deviceStarted);
 
@@ -657,7 +665,7 @@ namespace ito
 
         protected:
             virtual ~AddInActuator() = 0;
-            AddInActuator(int uniqueID = 0);
+            AddInActuator();
 
             virtual void connectNotify ( const char * signal );
             virtual void disconnectNotify ( const char * signal );
@@ -964,7 +972,7 @@ namespace ito
 
         protected:
             virtual ~AddInAlgo();
-            AddInAlgo(int uniqueID = 0);
+            AddInAlgo();
             QHash<QString, FilterDef *> m_filterList;
             QHash<QString, AlgoWidgetDef *> m_algoWidgetList;
 
@@ -1019,10 +1027,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.11",//version from 2013-03-12 - 2013-03-22 (bugfix in ito::ParamBase)
     "ito.AddIn.InterfaceBase/1.1.12",//version from 2013-03-22 - 2013-03-25 (changes in api)
     "ito.AddIn.InterfaceBase/1.1.13",//version from 2013-03-25 - 2013-04-08 (removed transpose flag in dataObject)
+    "ito.AddIn.InterfaceBase/1.1.14",//version from 2013-04-08 - 2013-04-17 (uniqueID and identifier inserted/changed)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.14";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.15";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

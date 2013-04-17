@@ -110,7 +110,7 @@ namespace ito
         ito::DataObject m_data; /*!< variable for the recently grabbed image */
 
     public:
-        AddInGrabber(int uniqueID);
+        AddInGrabber();
         ~AddInGrabber();
 
     };

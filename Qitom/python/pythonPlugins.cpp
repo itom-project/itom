@@ -1249,8 +1249,16 @@ PyObject* PythonPlugins::PyActuatorPlugin_repr(PyActuatorPlugin *self)
     {
         PyObject *tempObj = NULL;
         if ((tempObj = getName(self->actuatorObj)) != NULL)
-        {         
-            result = PyUnicode_FromFormat("Actuator-Plugin(%U, ID: %i)", tempObj, self->actuatorObj->getID());
+        {   
+            QString ident = self->actuatorObj->getIdentifier();
+            if(ident != "")
+            {
+                result = PyUnicode_FromFormat("Actuator-Plugin(%U, %s, ID: %i)", tempObj, ident.toAscii().data(), self->actuatorObj->getID());
+            }
+            else
+            {
+                result = PyUnicode_FromFormat("Actuator-Plugin(%U, ID: %i)", tempObj, self->actuatorObj->getID());
+            }
             Py_DECREF(tempObj);    
         }
         else
@@ -3086,7 +3094,15 @@ PyObject* PythonPlugins::PyDataIOPlugin_repr(PyDataIOPlugin *self)
         PyObject *name = getName(self->dataIOObj);
         if (name)
         {
-            result = PyUnicode_FromFormat("dataIO-Plugin(%U, ID: %i)", name, self->dataIOObj->getID());
+            QString ident = self->dataIOObj->getIdentifier();
+            if(ident != "")
+            {
+                result = PyUnicode_FromFormat("DataIO-Plugin(%U, %s, ID: %i)", name, ident.toAscii().data(), self->dataIOObj->getID());
+            }
+            else
+            {
+                result = PyUnicode_FromFormat("DataIO-Plugin(%U, ID: %i)", name, self->dataIOObj->getID());
+            }
             Py_DECREF(name);
         }
         else

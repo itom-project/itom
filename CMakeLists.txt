@@ -21,7 +21,7 @@ endif (BUILD_TARGET64)
 #   set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #endif()
 
-ADD_SUBDIRECTORY(DataObject)
+ADD_SUBDIRECTORY(DataObject) 
 ADD_SUBDIRECTORY(PointCloud)
 ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(Qitom)

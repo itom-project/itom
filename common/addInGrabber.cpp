@@ -44,8 +44,8 @@ namespace ito
     
     //----------------------------------------------------------------------------------------------------------------------------------
     //! constructor
-    AddInGrabber::AddInGrabber(int uniqueID) :
-        AddInDataIO(uniqueID),
+    AddInGrabber::AddInGrabber() :
+        AddInDataIO(),
         m_started(0)
     {
         qRegisterMetaType<QMap<QString, ito::ParamBase> >("QMap<QString, ito::ParamBase>");

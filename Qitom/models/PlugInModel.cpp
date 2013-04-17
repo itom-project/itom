@@ -840,6 +840,11 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
         {
             case 0: //name
             {
+                QString ident = ai->getIdentifier();
+                if(ident.size() > 0)
+                {
+                    return ident;
+                }
                 return QString("ID: %1").arg(ai->getID());
             }
             case 7: //description
@@ -860,6 +865,11 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
     {
         if (index.column() == 0)
         {
+            QString ident = ai->getIdentifier();
+            if(ident.size() > 0)
+            {
+                return ident;
+            }
             return QString("ID: %1").arg(ai->getID());
         }
         else
