@@ -35,7 +35,6 @@ In your main header file or your plugin, called **MyPlugin** in the following, y
 
         private:
             ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-            static int m_instCounter;
     };
 
 In the code example above, the macro directives *Q_OBJECT* and *Q_INTERFACES(ito::AddInInterfaceBase)* (lines 7+8) force the compiler in the pre-compilation step to create the necessary code (done by the |Qt| framework) such that the class fits to the |Qt|-plugin system and is able to communicate by the common signal-slot-system of |Qt|. Remember that every class which is finally derived from the *QObject*-class (like *AddInInterfaceBase* is, too) must have the *Q_OBJECT* macro defined.
@@ -46,16 +45,7 @@ The destructor in line 12 usually does not require further implementation, such 
 
 Finally, there are also the methods *getAddInInst* and *closeThisInst* which are the most important methods. If an user or some other part of |itom| request an instance of this plugin (that means not an instance of the interface we are talking in this section, but of the real plugin), the AddInManager of |itom| calls the method *getAddInInst* of the corresponding interface class. Then this interface has to create an instance of the plugin and set the given double-pointer parameter to the pointer of this newly created instance.
 
-Inversely, the AddInManager of |itom| will call *closeThisInst* of an interface in order to force the plugin interface class to delete the plugin instance, given by the *addInInst* parameter. This mechanism is usually used by so-called factory-classes. Therefore we can consider the interface class to be a factory for one or more instances of the plugin itself (For information about the plugin class see :ref:`plugin-class`).
-
-You should provide every instance of your plugin with an unique identifier. Sometimes this identifier can be the serial number of your hardware device. In many cases however you don't have any real identifier. Then you can define a static instance counter in your interface class, like it has been done in line 15. If you do so, this instance counter has to be initiated in your main source file before you start writing the content of any other member method:
-
-.. code-block: python
-    
-    //myPlugin.cpp
-    
-    int MyPluginInterface::m_instCounter = 0; //! initialize the instance counter with zero
-    
+Inversely, the AddInManager of |itom| will call *closeThisInst* of an interface in order to force the plugin interface class to delete the plugin instance, given by the *addInInst* parameter. This mechanism is usually used by so-called factory-classes. Therefore we can consider the interface class to be a factory for one or more instances of the plugin itself (For information about the plugin class see :ref:`plugin-class`).    
 
 .. _plugin-interface-class-constructor:
 
@@ -223,21 +213,22 @@ The set of mandatory and optional parameters of each plugin, including their def
 Method *getAddInInst* of the plugin interface class
 ---------------------------------------------------
 
-Under the assumption that you use the static instance counter of the interface class, you can copy the following code block for your implementation of the *getAddInInst*-method:
+As default implementation, you can copy the following code block for your implementation of the *getAddInInst*-method:
 
 .. code-block:: c++
     :linenos:
     
     ito::RetVal MyPluginInterface::getAddInInst(ito::AddInBase **addInInst)
     {
-        MyPlugin* newInst = new MyPlugin(++MyPluginInterface::m_instCounter);
+        MyPlugin* newInst = new MyPlugin();
         newInst->setBasePlugin(this);
         *addInInst = qobject_cast<ito::AddInBase*>(newInst);
         m_InstList.append(*addInInst);
         return ito::retOk;
     }
 
-If you are using your own system for creating an unique identifier, you can either modify line 3 of the code above or even change the parameters of the plugin class and pass your own identifier to the constructor of the base classes **ito::addInDataIO**, **ito::addInActuator**, ....
+Since your plugin instance (**MyPlugin**) is finally derived from **AddInBase**, its private member **m_uniqueID** is automatically given an auto-incremented, unique number. Additionally you can also assign a unique
+identification string (member **m_identifier** of class **AddInBase**) to your instance which is then displayed in |itom|. Please only change **m_identifier** in the constructor or **init**-method of your actual plugin.
 
 In the method above, it is assumed that your main class of your plugin *MyPlugin* is called *MyPlugin*, too. Then in line 3, a new instance of that class is created and this new instance is noticed about its own factory class in line 4. The factory class is hereby the pointer to this singleton interface class instance. Finally the given double pointer is set to the pointer of the newly created plugin instance. Finally, every plugin interface class has a protected member vector called *m_InstList* which contains a list of plugin instances opened by this interface (or factory). The newly created plugin is added to this list in line 6.
 

@@ -76,7 +76,7 @@ The bear framework of any plugin-class of type **DataIO**, **Actuator**, ... (bu
 
         protected:
             ~MyPlugin(){};
-            MyPlugin(int uniqueID);
+            MyPlugin();
 
         public slots:
             ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
@@ -119,8 +119,8 @@ The constructor is a protected member method and should usually only be called b
 .. code-block:: c++
     :linenos:
     
-    MyPlugin::MyPlugin(int uniqueID, ... further parameters ...) : 
-        AddInActuator(uniqueID)
+    MyPlugin::MyPlugin(... further parameters ...) : 
+        AddInActuator()
     {
         //create internal parameter map
         ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyPluginName", NULL);
@@ -134,6 +134,10 @@ The constructor is a protected member method and should usually only be called b
         // connections that inform the dock widget about changes in parameters, status... should be created
         // and destroyed in the method 'dockWidgetVisibilityChanged'.
         
+        //if you can and want, you can assign the unique identification string for this plugin here:
+        //m_identifier = QString("my unique plugin nr: %1").arg(yourSerialNumber)
+        //you can also set this in the init-method.
+        
         Qt::DockWidgetAreas areas = Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea;
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget("MyDockWidgetName", features, areas, myDockWidget);
@@ -144,12 +148,12 @@ For the constructor consider the following remarks:
 #. The constructor is executed in the main thread and therefore is able to create widgets like the dock widget.
 #. The constructor can have an arbitrary amount and type of parameters; the method **getAddInInst** of the interface class must be adapted to them.
 #. Call the constructor of the base class (e.g. **AddInActuator**, **AddInDataIO**, **AddInGrabber**) in your constructor.
-#. The parameter **uniqueID** must be passed to the base-constructor. The value **uniqueID** usually is determined by the interface class.
 #. The constructor does not get the mandatory and optional parameters given by to user for initializing the plugin.
 #. Create all internal parameters that are part of the parameter-map **m_params** and provide some default values.
 #. If your plugin should provide a dock widget (that can be shown as dockable toolbox in the main window of |itom|), follow the snippet from the example above.
 #. If your dock widget should be visible at initialization of the plugin or should be undocked as default state, overwrite and change the method **dockWidgetDefaultStyle** of class **AddInBase**.
 #. See the specific documentation of each plugin to see which internal parameters must be available and which conventions exist for some specific parameters, that can be created.
+#. If you want, set the unique identification string **m_identifier** in this constructor. You can also set it later in the **init**-method. If you don't set it, the auto-assigned unique ID is used for identifying your instance.
 
 Destructor
 ++++++++++
@@ -178,6 +182,9 @@ The method **init** has the following bear framework:
         // with respect to m_initParamsMand and m_initParamsOpt of
         // interface class) in order to initialize the hardware and
         // change values of the m_params-map if necessary.
+        
+        //if you want you can set the unique identification string here:
+        //m_identifier = QString("IAmAUniqueStringDescribingThisPlugin")
         
         // emit signal about changed parameters
         emit parametersChanged(m_params);     
