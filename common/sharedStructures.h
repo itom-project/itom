@@ -654,7 +654,7 @@ namespace ito
                 all bits are set, too.
                 \sa ito::Plugin, ito::tPluginType
             */
-            explicit HWMeta(uint32 minType) : ParamMeta(ParamBase::HWRef), m_minType(minType), m_pHWAddInName(NULL) {};
+            explicit HWMeta(uint32 minType) : ParamMeta(ParamBase::HWRef), m_minType(minType), m_pHWAddInName(NULL) {}
 
             //! constructor
             /*!
@@ -662,7 +662,7 @@ namespace ito
                 allowed by the corresponding plugin-instance.
                 \sa ito::Plugin
             */
-            explicit HWMeta(char *HWAddInName) : ParamMeta(ParamBase::HWRef), m_minType(0), m_pHWAddInName(NULL)
+            explicit HWMeta(const char *HWAddInName) : ParamMeta(ParamBase::HWRef), m_minType(0), m_pHWAddInName(NULL)
             {
                 if(HWAddInName) m_pHWAddInName = _strdup(HWAddInName);
             }
