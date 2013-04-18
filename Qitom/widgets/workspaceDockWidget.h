@@ -29,6 +29,7 @@
 #include <qwidget.h>
 #include <qaction.h>
 #include <qtoolbar.h>
+#include <qevent.h>
 
 
 namespace ito {
@@ -45,6 +46,8 @@ public:
 protected:
 
     //void closeEvent(QCloseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
     void createActions();
     void createMenus();

@@ -117,7 +117,7 @@ namespace ito {
 
                 if (filter)
                 {
-                    return uiOpenFileWithFilter(filter, generalFileName, parent);
+                    return uiOpenFileWithFilter(filter, generalFileName, parent, globalNotLocalWorkspace);
                 }
             }
         }
@@ -542,7 +542,7 @@ namespace ito {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ RetVal IOHelper::uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/)
+/*static*/ RetVal IOHelper::uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/, bool globalNotLocal /*= true*/)
 {
     RetVal retval;
     ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
@@ -651,7 +651,7 @@ namespace ito {
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                         
-                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,true), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
                 if (locker.getSemaphore()->wait(10000) == false)
                 {
                     QMessageBox::critical(parent, tr("Timeout while sending values to python"), tr("A timeout occurred while content of loaded file has been sent to python workspace"));
@@ -821,7 +821,7 @@ namespace ito {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ QString IOHelper::getFileFilters(IOFilters IOfilters)
+/*static*/ QString IOHelper::getFileFilters(const IOFilters &IOfilters, QStringList *allPatterns /*= NULL*/)
 {
     QStringList filter;
 
@@ -905,19 +905,24 @@ namespace ito {
 
     //get all file-patterns from all filters and merge them together to one entry containing all, that is then added as 'Itom Files'
     QRegExp reg("^.*\\((.*)\\)$");
-    QStringList allPatterns;
+    QStringList _allPatterns;
 
     foreach(const QString &item, filter)
     {
         if( reg.indexIn(item) >= 0 )
         {
-            allPatterns.append( reg.cap(1).trimmed().split(" ") );
+            _allPatterns.append( reg.cap(1).trimmed().split(" ") );
         }
     }
 
-    allPatterns.removeDuplicates();
+    _allPatterns.removeDuplicates();
 
-    filter << tr("Itom Files (%1)").arg(allPatterns.join(" "));
+    filter << tr("Itom Files (%1)").arg(_allPatterns.join(" "));
+
+    if(allPatterns)
+    {
+        *allPatterns = _allPatterns;
+    }
 
     if (IOfilters.testFlag(ito::IOHelper::IOAllFiles))
     {
@@ -925,6 +930,25 @@ namespace ito {
     }
 
     return filter.join(";;");
+}
+
+
+/*static*/ bool IOHelper::fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters)
+{
+    QStringList allPatterns;
+    getFileFilters(IOfilters, &allPatterns);
+    QRegExp reg;
+    reg.setPatternSyntax( QRegExp::Wildcard );
+
+    foreach(const QString &pat, allPatterns)
+    {
+        reg.setPattern(pat);
+        if(reg.exactMatch(filename))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 } //end namespace ito

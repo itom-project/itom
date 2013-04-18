@@ -29,6 +29,8 @@
 
 #include <qmessagebox.h>
 #include <qapplication.h>
+#include <qurl.h>
+#include <qfileinfo.h>
 
 namespace ito {
 
@@ -83,6 +85,8 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, bool globalNotLoc
     {
         QMetaObject::invokeMethod(eng, "registerWorkspaceContainer", Q_ARG(PyWorkspaceContainer*,cont), Q_ARG(bool,true), Q_ARG(bool,m_globalNotLocal));
     }
+
+    setAcceptDrops(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -313,11 +317,22 @@ void WorkspaceDockWidget::updateActions()
             m_firstCurrentItem = NULL;
         }
 
-        bool pythonFree = (pythonBusy() == false || pythonInWaitingMode());
-        m_actDelete->setEnabled(num > 0 && pythonFree);
-        m_actExport->setEnabled(num > 0 && pythonFree);
-        m_actImport->setEnabled(pythonFree);
-        m_actRename->setEnabled(num == 1 && pythonFree);
+        if(m_globalNotLocal)
+        {
+            bool pythonFree = (pythonBusy() == false || pythonInWaitingMode());
+            m_actDelete->setEnabled(num > 0 && pythonFree);
+            m_actExport->setEnabled(num > 0 && pythonFree);
+            m_actImport->setEnabled(pythonFree);
+            m_actRename->setEnabled(num == 1 && pythonFree);
+        }
+        else
+        {
+            m_actDelete->setEnabled(num > 0 && pythonInWaitingMode());
+            m_actExport->setEnabled(num > 0 && pythonInWaitingMode());
+            m_actImport->setEnabled(pythonInWaitingMode());
+            m_actRename->setEnabled(num == 1 && pythonInWaitingMode());
+            m_pWorkspaceWidget->setEnabled( pythonInWaitingMode() );
+        }
     }
 }
 
@@ -360,6 +375,62 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
     }
 }
 
+void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(m_globalNotLocal == false && !pythonInWaitingMode())
+    {
+        //local workspace is only active if python is in waiting mode
+        return;
+    }
 
+    if( event->mimeData()->hasFormat("text/uri-list") ) //or hasUrls() should be the same result
+    {
+        QList<QUrl> urls = event->mimeData()->urls();
+
+        QStringList allPatterns;
+        IOHelper::getFileFilters( IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll) , &allPatterns);
+        QRegExp reg;
+        bool ok = false;
+        reg.setPatternSyntax( QRegExp::Wildcard );
+
+        //check files
+        foreach(const QUrl &url, urls)
+        {
+            qDebug() << url.toLocalFile();
+            if(url.isLocalFile() == false)
+            {
+                return;
+            }
+
+            foreach(const QString &pat, allPatterns)
+            {
+                reg.setPattern(pat);
+                if(reg.exactMatch( url.toLocalFile() ))
+                {
+                    ok = true;
+                    break;
+                }
+            }
+
+            if(!ok) return;
+        }
+
+
+        event->acceptProposedAction();
+    }
+}
+
+void WorkspaceDockWidget::dropEvent(QDropEvent *event)
+{
+    QList<QUrl> urls = event->mimeData()->urls();
+    bool ok = true;
+    QFileInfo finfo;
+
+    //check files
+    foreach(const QUrl &url, urls)
+    {
+        IOHelper::openGeneralFile(url.toLocalFile(), false, true, this, 0, m_globalNotLocal);
+    }
+}
 
 } //end namespace ito

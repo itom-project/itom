@@ -62,12 +62,14 @@ public:
     static RetVal uiOpenPythonScript(QString defaultPath = QString::Null(), QWidget* parent = NULL);
     static RetVal openPythonScript(QString filename);
 
-    static RetVal uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent = NULL);
+    static RetVal uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent = NULL, bool globalNotLocal = true);
     static RetVal uiSaveFileWithFilter(QSharedPointer<ito::ParamBase> &value, const QString &filename, QWidget *parent = NULL);
 
     static RetVal openUIFile(QString filename, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL);
 
-    static QString getFileFilters(IOFilters IOfilters);
+    static QString getFileFilters(const IOFilters &IOfilters, QStringList *allPatterns = NULL);
+
+    static bool fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters);
 
 private:
     IOHelper() {};
