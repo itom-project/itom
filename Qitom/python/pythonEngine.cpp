@@ -2480,7 +2480,6 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 		temp = PyObject_GetAttrString(frame2, "f_code");
 		temp2 = PyObject_GetAttrString(temp, "co_filename");
 		stack_files.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-		stack_lines.append(lineno);
 		Py_XDECREF(temp2);
 		temp2 = PyObject_GetAttrString(temp, "co_name");
 		stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
