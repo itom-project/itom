@@ -3312,6 +3312,10 @@ PyObject* PythonItom::PyInitItom(void)
         PyModule_AddObject(m, "SEPARATOR",  PyLong_FromLong(1) ); //steals reference to value
         PyModule_AddObject(m, "MENU",       PyLong_FromLong(2) ); //steals reference to value
 
+        //equivalent:
+        //PyObject_SetAttrString(m, "TEST", PyLong_FromLong(0) );
+        //PyObject_GenericSetAttr(m, PyUnicode_FromString("TEST2"), PyLong_FromLong(-1) );
+
     }
     return m;
 }

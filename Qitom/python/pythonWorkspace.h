@@ -119,6 +119,8 @@ private:
 
     QString m_delimiter;
 
+    PyObject *dictUnicode;
+
 signals:
     void updateAvailable(ito::PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
     void getChildNodes(ito::PyWorkspaceContainer *container, QString fullNameParentItem); //signal catched by python    //TODO

@@ -132,6 +132,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtSignalMapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.h
@@ -278,6 +279,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtSignalMapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.cpp

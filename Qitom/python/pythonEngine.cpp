@@ -40,6 +40,7 @@
 #include "pythonProxy.h"
 #include "pythonPlotItem.h"
 #include "pythontParamConversion.h"
+#include "pythonRegion.h"
 
 #include "../organizer/addInManager.h"
 
@@ -98,7 +99,8 @@ PythonEngine::PythonEngine() :
     itomFunctions(NULL),
     gcModule(NULL),
     m_pyFuncWeakRefHashesAutoInc(0),
-    m_executeInternalPythonCodeInDebugMode(false)
+    m_executeInternalPythonCodeInDebugMode(false),
+    dictUnicode(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<tPythonTransitions>("tPythonTransitions");
@@ -201,6 +203,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
+            dictUnicode = PyUnicode_FromString("__dict__");
+
             PyImport_AppendInittab("itom",&PythonItom::PyInitItom);				//!< add all static, known function calls to python-module itom
 
             PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
@@ -350,6 +354,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonProxy::PyProxyType);
                 PythonProxy::PyProxy_addTpDict(PythonProxy::PyProxyType.tp_dict);
                 PyModule_AddObject(itomModule, "proxy", (PyObject *)&PythonProxy::PyProxyType);
+            }
+
+            if (PyType_Ready(&PythonRegion::PyRegionType) >= 0)
+            {
+                Py_INCREF(&PythonRegion::PyRegionType);
+                PythonRegion::PyRegion_addTpDict(PythonRegion::PyRegionType.tp_dict);
+                PyModule_AddObject(itomModule, "region", (PyObject *)&PythonRegion::PyRegionType);
             }
 
             /*if (PyType_Ready(&PyUiDialogMetaObject::PyMetaObjectType) >= 0)
@@ -557,6 +568,8 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         {
             retValue += RetVal(retError, 1, tr("Python not initialized").toAscii().data());
         }
+
+        Py_XDECREF(dictUnicode);
 
         //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
@@ -2192,6 +2205,36 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &
             i = items[0].toInt(&ok);
             if (!ok || i<0 || i>=PyTuple_Size(obj)) return NULL; //error
             obj = PyTuple_GET_ITEM(obj,i);
+        }
+        else if (PyObject_HasAttr(obj, dictUnicode))
+        {
+            PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
+            if(temp)
+            {
+                tempObj = PyDict_GetItemString(temp, items[0].toAscii().data());
+                if (tempObj == NULL) //maybe key is a number
+                {
+                    i = items[0].toInt(&ok);
+                    if (ok)
+                    {
+                        tempObj = PyDict_GetItem(temp, PyLong_FromLong(i));
+                    }
+                    if (!ok || obj == NULL)
+                    {
+                        f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
+                        if (ok)
+                        {
+                            tempObj = PyDict_GetItem(temp, PyFloat_FromDouble(f));
+                        }
+                    }
+                }
+                obj = tempObj;
+                Py_DECREF(temp);
+            }
+            else
+            {
+                return NULL;
+            }
         }
         else
         {

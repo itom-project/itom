@@ -202,6 +202,8 @@ private:
     PyObject *gcModule;
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
+    PyObject *dictUnicode;
+
     QSet<PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<PyWorkspaceContainer*> m_localWorkspaceContainer;
     QHash<QString, QPair<PyObject*,PyObject*> > m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.

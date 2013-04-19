@@ -56,10 +56,13 @@ PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLoc
 {
     m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
     m_blackListType = QSet<QString>() << "builtin_function_or_method" << "module" << "type" << "function"; // << "dict"; //blacklist of python types, which should not be displayed in the workspace
+
+    dictUnicode = PyUnicode_FromString("__dict__");
 }
 
 PyWorkspaceContainer::~PyWorkspaceContainer()
 {
+    Py_XDECREF(dictUnicode);
 }
 
 void PyWorkspaceContainer::clear()
@@ -183,6 +186,13 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
                 keys = PyMapping_Keys(obj); //new ref
                 values = PyMapping_Values(obj); //new ref
             }
+            else if(PyObject_HasAttr(obj, dictUnicode))
+            {
+                PyObject *subdict = PyObject_GetAttr(obj, dictUnicode);
+                keys = PyDict_Keys(subdict);
+                values = PyDict_Values(subdict);
+                Py_DECREF(subdict);
+            }
 
             if(keys && values)
             {
@@ -280,6 +290,8 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
     //check new value
     item->m_exist = true;
     item->m_type = value->ob_type->tp_name;
+
+    PyObject *subdict = NULL;
     
 
     //at first check for possible types which have children (dict,list,tuple) or its subtypes
@@ -306,6 +318,49 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         expandableType = true;
         item->m_extendedValue = "";
         item->m_compatibleParamBaseType = 0; //not compatible
+    }
+    else if(PyObject_HasAttr(value,dictUnicode))
+    {
+        //user-defined class (has attr '__dict__')
+        expandableType = true;
+        item->m_compatibleParamBaseType = 0; //not compatible
+
+        //TODO: increase speed
+        PyObject *repr = PyObject_Repr(value);
+        if(repr == NULL)
+        {
+            PyErr_Clear();
+            item->m_extendedValue = item->m_value = "unknown";
+        }
+        else if(PyUnicode_Check(repr))
+        {
+            PyObject *repr2 = PyUnicode_AsASCIIString(repr);
+            if(repr2 != NULL)
+            {
+                item->m_extendedValue = item->m_value = PyBytes_AsString(repr2);
+                if(item->m_value.length()>20)
+                {
+                    item->m_value = item->m_value.replace("\n",";");
+                }
+                else if(item->m_value.length() > 100)
+                {
+                    item->m_value = "<double-click to show value>";
+                }
+                Py_XDECREF(repr2);
+            }
+            else
+            {
+                PyErr_Clear();
+                item->m_extendedValue = item->m_value = "unknown"; //maybe, encoding of str is unknown, therefore you could decode the string to a new encoding and parse it afterwards
+            }
+            Py_XDECREF(repr);
+        
+        }
+        else
+        {
+            item->m_extendedValue = item->m_value = "unknown";
+            Py_XDECREF(repr);
+        }
     }
 
     if(expandableType)
