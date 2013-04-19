@@ -56,12 +56,12 @@
     <message>
         <location filename="../widgets/consoleWidget.cpp" line="+708"/>
         <source>script execution</source>
-        <translation type="unfinished">Skript wird ausgeführt</translation>
+        <translation>Skript wird ausgeführt</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Python is not available</source>
-        <translation type="unfinished">Python ist nicht verfügbar</translation>
+        <translation>Python ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
@@ -236,7 +236,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source>Basic information</source>
-        <translation type="unfinished">Basisinformationen</translation>
+        <translation>Informationen</translation>
     </message>
     <message>
         <location/>
@@ -642,7 +642,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source>Path:</source>
-        <translation type="unfinished">Dateiname:</translation>
+        <translation>Dateiname:</translation>
     </message>
     <message>
         <location/>
@@ -669,41 +669,41 @@ p, li { white-space: pre-wrap; }
         <location line="-75"/>
         <location line="+75"/>
         <source>The Python Engine could not be found</source>
-        <translation type="unfinished">Python-Engine wurde nicht gefunden</translation>
+        <translation>Python-Engine wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-57"/>
         <location line="+75"/>
         <source>connection problem</source>
-        <translation type="unfinished">Verbindungsproblem</translation>
+        <translation>Verbindungsproblem</translation>
     </message>
     <message>
         <location line="-75"/>
         <source>No information about loaded modules could be retrieved by python.</source>
-        <translation type="unfinished">Keine Informationen über geladene Module von Python verfügbar.</translation>
+        <translation>Keine Informationen über geladene Module von Python verfügbar.</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+4"/>
         <source>error while getting module list</source>
-        <translation type="unfinished">Fehler beim Erstellen der Modulliste</translation>
+        <translation>Fehler beim Erstellen der Modulliste</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+74"/>
         <source>Unknown error</source>
-        <translation type="unfinished">Unbekannter Fehler</translation>
+        <translation>Unbekannter Fehler</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Timeout while forcing python to reload modules.</source>
-        <translation type="unfinished">Zeitüberschreitung beim erneuten Laden der Module.</translation>
+        <translation>Zeitüberschreitung beim erneuten Laden der Module.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+4"/>
         <source>error while reloading modules</source>
-        <translation type="unfinished">Fehler beim erneuten Laden der Module</translation>
+        <translation>Fehler beim erneuten Laden der Module</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -714,7 +714,7 @@ p, li { white-space: pre-wrap; }
         <location line="+0"/>
         <source>The following modules could not be reloaded:
 </source>
-        <translation type="unfinished">Folgende Module konnten nicht geladen werden:</translation>
+        <translation>Folgende Module konnten nicht geladen werden:</translation>
     </message>
 </context>
 <context>
@@ -916,7 +916,62 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+406"/>
+        <location filename="../mainApplication.cpp" line="+131"/>
+        <source>load translations...</source>
+        <translation>Übersetzungen wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>load style...</source>
+        <translation>Style wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>load process organizer...</source>
+        <translation>&apos;Process Organizer&apos; wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>scan and load plugins...</source>
+        <translation>Plugins werden gescannt und geladen...</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>start python...</source>
+        <translation>Python wird gestartet...</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>load main window...</source>
+        <translation>&apos;Main Window&apos; wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>load ui organizer...</source>
+        <translation>&apos;UI Organizer&apos; wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>scan and load designer widgets...</source>
+        <translation>&apos;Designer Widgets&apos; werden gescannt und geladen...</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>load script editor organizer...</source>
+        <translation>&apos;Script Editor Organizer&apos; wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>execute startup scripts...</source>
+        <translation>Startskripts werden ausgeführt...</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>scan and run scripts in autostart folder...</source>
+        <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
+    </message>
+    <message>
+        <location line="+148"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -1026,7 +1081,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+1995"/>
+        <location line="+1994"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1704,7 +1759,7 @@ Type conflict for %1</source>
     <message>
         <location line="+99"/>
         <source>- unknown message -</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">- unbekannte Meldung -</translation>
     </message>
     <message>
         <location filename="../python/pythonPlugins.cpp" line="+558"/>
@@ -1743,7 +1798,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+573"/>
+        <location line="+581"/>
         <source>timeout while calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1778,7 +1833,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1395"/>
+        <location line="+1403"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1937,7 +1992,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../../plot/AbstractNode.h" line="+209"/>
         <source>Live data source for plot</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
         <location filename="../../plot/AbstractNode.cpp" line="+241"/>
@@ -1974,13 +2029,13 @@ Type conflict for %1</source>
     <message>
         <location line="+14"/>
         <source>invalid child pointer, in addChannel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ungültiger Child-Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
         <location line="+25"/>
         <location line="+25"/>
         <source>channel does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kanal existiert nicht</translation>
     </message>
     <message>
         <source>home</source>
@@ -1993,17 +2048,17 @@ Type conflict for %1</source>
     <message>
         <location filename="../../plot/AbstractNode.cpp" line="-179"/>
         <source>Parameter: does not exist in updateParam</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parameter existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktualisierung an einem gesperrten Eingabekanal, das heißt &apos;updatePending&apos;-Flag wurde nicht gesetzt</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Channel is already updating</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kanal ist bereits aktualisiert</translation>
     </message>
     <message>
         <location filename="../api/apiFunctionsGraph.cpp" line="+223"/>
@@ -2013,12 +2068,12 @@ Type conflict for %1</source>
     <message>
         <location filename="../../plot/AbstractDObjFigure.h" line="+58"/>
         <source>Source data for plot</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Quelldaten für Plot</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Actual output data of plot</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
         <location filename="../organizer/addInManager.cpp" line="+255"/>
@@ -2031,12 +2086,17 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+40"/>
         <source>filename is no AddIn-library: %1</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+6"/>
+        <source>scan and load plugins (%1)</source>
+        <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -2157,14 +2217,14 @@ Type conflict for %1</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+638"/>
+        <location line="+646"/>
         <source>no dock widget available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keine Toolbar verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>addin not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AddIn ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
@@ -2190,7 +2250,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../widgets/scriptEditorWidget.cpp" line="+209"/>
         <source>&amp;toggle bookmark</source>
-        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+        <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2210,7 +2270,7 @@ Type conflict for %1</source>
     <message>
         <location line="+5"/>
         <source>&amp;toggle breakpoint</source>
-        <translation type="unfinished">Haltepunkt ein-/aus&amp;schalten</translation>
+        <translation>Haltepunkt ein-/aus&amp;schalten</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2387,12 +2447,12 @@ Type conflict for %1</source>
     <message>
         <location line="+30"/>
         <source>content-widget is empty.</source>
-        <translation type="unfinished">Element ist leer.</translation>
+        <translation>Element ist leer.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>dialog button role is unknown</source>
-        <translation type="unfinished">Unbekannte Rolle des Dialog-Button</translation>
+        <translation>Unbekannte Rolle des Dialog-Button</translation>
     </message>
 </context>
 <context>
@@ -3299,7 +3359,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="+675"/>
+        <location filename="../../common/addInInterface.cpp" line="+681"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
@@ -3317,7 +3377,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="+973"/>
+        <location filename="../../common/addInInterface.h" line="+981"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3335,7 +3395,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="-571"/>
+        <location filename="../../common/addInInterface.cpp" line="-575"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
@@ -4409,7 +4469,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="obsolete">ITOM-Dateien (*.idc *.mat)</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+9"/>
         <source>All Files (*.*)</source>
         <translation type="unfinished">Alle Dateien (*.*)</translation>
     </message>
@@ -4833,31 +4893,31 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Motor</translation>
     </message>
     <message>
-        <location line="+343"/>
+        <location line="+353"/>
         <source>Motor</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-339"/>
-        <location line="+347"/>
+        <location line="-349"/>
+        <location line="+357"/>
         <source>Grabber</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-343"/>
-        <location line="+347"/>
+        <location line="-353"/>
+        <location line="+357"/>
         <source>ADDA</source>
         <translation type="unfinished">ADDA Wandler</translation>
     </message>
     <message>
-        <location line="-343"/>
-        <location line="+347"/>
+        <location line="-353"/>
+        <location line="+357"/>
         <source>Raw IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-343"/>
-        <location line="+331"/>
+        <location line="-353"/>
+        <location line="+341"/>
         <source>Algorithm</source>
         <translation type="unfinished">Algorithmus</translation>
     </message>
@@ -5607,7 +5667,7 @@ Katesisch</translation>
 <context>
     <name>ito::WorkspaceDockWidget</name>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="+128"/>
+        <location filename="../widgets/workspaceDockWidget.cpp" line="+132"/>
         <source>delete item(s)</source>
         <translation type="unfinished">Objekt(e) löschen</translation>
     </message>
@@ -5642,7 +5702,7 @@ Katesisch</translation>
         <translation type="unfinished">Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location line="+156"/>
+        <location line="+167"/>
         <source>renaming variable</source>
         <translation type="unfinished">Variable umbenennen</translation>
     </message>

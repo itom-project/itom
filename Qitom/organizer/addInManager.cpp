@@ -303,7 +303,7 @@ namespace ito
         }
         else
         {
-            emit splashLoadMessage(tr("scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
+            emit splashLoadMessage(QObject::tr("scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
             QCoreApplication::processEvents();
 
             //load translation file
