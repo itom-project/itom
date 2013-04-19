@@ -37,6 +37,7 @@
 #include <qtranslator.h>
 
 //using namespace ito;
+class QSplashScreen;
 
 class MainApplication : public QObject
 {
@@ -79,6 +80,8 @@ class MainApplication : public QObject
 
         QTranslator m_Translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;
+
+        QSplashScreen *m_splashScreen;
 
     signals:
         void propertiesChanged();

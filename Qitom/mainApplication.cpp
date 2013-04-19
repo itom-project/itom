@@ -35,6 +35,7 @@
 
 #include <qdir.h>
 #include <qtextcodec.h>
+#include <qsplashscreen.h>
 
 /*!
     \class MainApplication
@@ -68,7 +69,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_mainWin(NULL), 
     m_paletteOrganizer(NULL),
     m_uiOrganizer(NULL), 
-    m_processOrganizer(NULL)
+    m_processOrganizer(NULL),
+    m_splashScreen(NULL)
 {
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
@@ -109,6 +111,12 @@ void MainApplication::setupApplication()
 	RetVal pyRetValue;
     QStringList startupScripts;
 
+    QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
+    m_splashScreen = new QSplashScreen(pixmap);
+    
+    m_splashScreen->show();
+    QCoreApplication::processEvents();
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings.beginGroup("Language");
@@ -120,6 +128,8 @@ void MainApplication::setupApplication()
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/Qitom/translation";
 
     //load translation files
+    m_splashScreen->showMessage( tr("load translations...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
     m_qtTranslator.load("qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -150,6 +160,9 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
+        m_splashScreen->showMessage( tr("load style...") , Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
+
         //set styles (if available)
         settings.beginGroup("ApplicationStyle");
         QString styleName = settings.value("style", "").toString();
@@ -178,16 +191,26 @@ void MainApplication::setupApplication()
     }
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
+    m_splashScreen->showMessage( tr("load process organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
+
     m_processOrganizer = new ito::ProcessOrganizer();
     AppManagement::setProcessOrganizer(qobject_cast<QObject*>(m_processOrganizer));
 
     qDebug("MainApplication::setupApplication");
 
    // starting AddInManager
+    m_splashScreen->showMessage( tr("scan and load plugins...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
+
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
     retValue += AIM->scanAddInDir("");
 
     qDebug("..plugins loaded");
+
+    m_splashScreen->showMessage( tr("start python...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
 
     m_pyEngine = new PythonEngine();
     AppManagement::setPythonEngine(qobject_cast<QObject*>(m_pyEngine));
@@ -211,11 +234,20 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
+        m_splashScreen->showMessage( tr("load main window...") , Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
+
         m_mainWin = new MainWindow();
         AppManagement::setMainWindow(qobject_cast<QObject*>(m_mainWin));
 
+        m_splashScreen->showMessage( tr("load ui organizer...") , Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
+
         m_uiOrganizer = new UiOrganizer();
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
+
+        m_splashScreen->showMessage( tr("scan and load designer widgets...") , Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
@@ -232,6 +264,9 @@ void MainApplication::setupApplication()
 
     qDebug("..palette organizer started");
 
+    m_splashScreen->showMessage( tr("load script editor organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
+
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != NULL);
     AppManagement::setScriptEditorOrganizer(m_scriptEditorOrganizer); //qobject_cast<QObject*>(scriptEditorOrganizer);
 
@@ -247,6 +282,8 @@ void MainApplication::setupApplication()
     qDebug("..starting load settings");
 
     //try to execute startup-python scripts
+    m_splashScreen->showMessage( tr("execute startup scripts...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
 
     settings.beginGroup("Python");
 
@@ -268,6 +305,9 @@ void MainApplication::setupApplication()
 	settings.beginGroup("CurrentStatus");
     QString currentDir = (settings.value("currentDir",QDir::currentPath()).toString());
     settings.endGroup();
+
+    m_splashScreen->showMessage( tr("scan and run scripts in autostart folder...") , Qt::AlignRight | Qt::AlignBottom);
+    QCoreApplication::processEvents();
 
     //force python to scan and run files in autostart folder in itom-packages folder
     QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir) );
@@ -306,6 +346,15 @@ void MainApplication::setupApplication()
     std::cout << "\n\tWelcome to itom program!\n\n";
 //    std::cout << "THIS ITOM-COPY IS A PREPUPLISHED ALPHA VERSION\nGIVEN TO ZEISS MICROSCOPY FOR INTERNAL USE WITHIN\nZEISS-ITO-COOPERATION.\nDO NOT DISTRIBUTE TO THIRD PARTY.\n !!! CONFIDENTIAL !!! \n\n";
     std::cout << "\tPlease report bugs under:\n\t\thttps://bitbucket.org/itom/itom/issues\n\tCheers your itom team\n" << std::endl;
+
+    if(m_mainWin)
+    {
+        m_splashScreen->finish(m_mainWin);
+    }
+    else
+    {
+        m_splashScreen->close();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -318,6 +367,8 @@ void MainApplication::setupApplication()
 */
 void MainApplication::finalizeApplication()
 {
+    DELETE_AND_SET_NULL(m_splashScreen);
+
     DELETE_AND_SET_NULL(m_scriptEditorOrganizer);
     AppManagement::setScriptEditorOrganizer(NULL);
 

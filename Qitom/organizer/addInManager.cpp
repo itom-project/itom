@@ -292,6 +292,7 @@ namespace ito
     {
         RetVal retValue(retOk);
         QString message;
+        QFileInfo finfo(filename);
         ito::PluginLoadStatus pls;
 
         if (QLibrary::isLibrary(filename) == false)
@@ -302,6 +303,9 @@ namespace ito
         }
         else
         {
+            emit splashLoadMessage(tr("scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
+            QCoreApplication::processEvents();
+
             //load translation file
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             QStringList startupScripts;

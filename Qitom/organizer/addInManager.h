@@ -280,6 +280,7 @@ namespace ito
             friend class AddInSingleton;
 */
         signals:
+            void splashLoadMessage(const QString &message, int alignment = Qt::AlignLeft, const QColor &color = Qt::black);
 
         public slots:
             ito::RetVal showConfigDialog(ito::AddInBase *addin);

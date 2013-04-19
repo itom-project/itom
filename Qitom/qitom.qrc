@@ -23,6 +23,7 @@
         <file>icons/dialog-information-4.png</file>
         <file>icons/dialog-warning-4.png</file>
         <file>icons/loader16x16.gif</file>
+        <file>icons/itomicon/splashScreen.png</file>
     </qresource>
     <qresource prefix="/arrows">
         <file>icons/2downarrow.png</file>
