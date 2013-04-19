@@ -97,6 +97,8 @@ signals:
 public slots:
     //this source is invoked by any connected camera
     virtual void setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond);
+
+    
         
 };
 

@@ -75,11 +75,15 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         virtual RetVal removeChannelFromList(unsigned int uniqueID);
         virtual RetVal removeChannel(Channel *delChannel);
 
+        virtual RetVal update(void) = 0; /*!> Calls apply () and updates all children*/
+
         //properties
         virtual void setToolbarVisible(bool visible);
         virtual bool toolbarVisible() const;
         virtual void setShowContextMenu(bool show) = 0; 
         virtual bool showContextMenu() const = 0;
+
+        
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
@@ -112,12 +116,13 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         QList<ToolBarItem> m_toolbars;
 
     signals:
-
+        
     private slots:
 
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
 
     public slots:
+        void refreshPlot() { update(); }
 };
 
 }; // namespace ito
