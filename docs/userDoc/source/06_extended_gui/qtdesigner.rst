@@ -272,6 +272,7 @@ AddInActuator*    :py:class:`~itom.actuator`
 QVariant          any of the types above can be transformed to QVariant
 QVariantMap       a dictionary where keys are strings and values are generally convertable.
 QVariantList      any sequence whose items can be convertable.
+QRegion           :py:class:`~itom.region`
 ================= ===========================================================================
 
 If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converted for them. It only becomes a little bit more difficult for pointers to

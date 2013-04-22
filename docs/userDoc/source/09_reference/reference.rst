@@ -24,6 +24,7 @@ Content:
    point.rst
    pointCloud.rst
    polygonMesh.rst
+   region.rst
 
 For an alphabetic index see:
 
