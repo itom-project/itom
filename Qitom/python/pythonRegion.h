@@ -53,7 +53,7 @@ public:
     }
     PyRegion;
 
-    #define PyRegion_Check(op) PyObject_TypeCheck(op, &PythonRegion::PyRegionType)
+    #define PyRegion_Check(op) PyObject_TypeCheck(op, &ito::PythonRegion::PyRegionType)
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
@@ -78,6 +78,13 @@ public:
     static PyObject* PyRegion_united(PyRegion *self, PyObject *args, PyObject *kwds);
     static PyObject* PyRegion_xored(PyRegion *self, PyObject *args, PyObject *kwds);
 
+    static PyObject* PyRegion_createMask(PyRegion *self, PyObject *args);
+
+    //-------------------------------------------------------------------------------------------------
+    // pickling
+    //-------------------------------------------------------------------------------------------------
+    static PyObject* PyRegion_Reduce(PyRegion *self, PyObject *args);
+    static PyObject* PyRegion_SetState(PyRegion *self, PyObject *args);
 
     //-------------------------------------------------------------------------------------------------
     // number protocol

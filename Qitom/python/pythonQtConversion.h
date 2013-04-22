@@ -43,6 +43,7 @@
 
 #include "pythonDataObject.h"
 #include "pythonPlugins.h"
+#include "pythonRegion.h"
 
 #include "pythonPCL.h"
 

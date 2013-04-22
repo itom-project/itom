@@ -22,8 +22,11 @@
 
 #include "pythonRegion.h"
 
+#include "pythonDataObject.h"
+
 #include <qvector.h>
 #include <qrect.h>
+
 
 //------------------------------------------------------------------------------------------------------
 
@@ -411,6 +414,97 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     return t;
 }
 
+//-----------------------------------------------------------------------------
+/*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self, PyObject *args)
+{
+    if(!self || self->r == NULL)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+    }
+
+    QRect r = self->r->boundingRect();
+    int w = r.width();
+    int h = r.height();
+    int x = r.x();
+    int y = r.y();
+
+    ito::DataObject *d = new ito::DataObject();
+    d->zeros(h, w, ito::tUInt8);
+    //d->setAxisOffset(0,y);
+    //d->setAxisOffset(1,x);
+
+    ito::uint8 *ptr = ((cv::Mat*)(d->get_mdata()[0]))->ptr(0); //continuous
+
+    QVector<QRect> rects = self->r->rects();
+
+    foreach(const QRect &rect, rects)
+    {
+        for(int m = rect.y(); m < (rect.y() + rect.height()) ; m++)
+        {
+            for(int n = rect.x(); n < (rect.x() + rect.width()) ; n++)
+            {
+                ptr[ (n-x) + (m-y)*w ] = 255;
+            }
+        }
+    }
+
+    ito::PythonDataObject::PyDataObject *dObj = ito::PythonDataObject::createEmptyPyDataObject();
+    dObj->dataObject = d;
+    return (PyObject*)dObj;
+}
+
+//-----------------------------------------------------------------------------
+/*static*/ PyObject* PythonRegion::PyRegion_Reduce(PyRegion *self, PyObject *args)
+{
+    PyObject *stateTuple = NULL;
+
+    if(self->r)
+    {
+        QByteArray ba;
+        QDataStream d(&ba, QIODevice::WriteOnly | QIODevice::Truncate);
+        d << *(self->r);
+
+        stateTuple = PyBytes_FromStringAndSize( ba.data(), ba.size() );
+    }
+    else
+    {
+        Py_INCREF(Py_None);
+        stateTuple = Py_None;
+    }
+
+    //the stateTuple is simply a byte array with the stream data of the QRegion.
+    PyObject *tempOut = Py_BuildValue("(O()O)", Py_TYPE(self), stateTuple);
+    Py_XDECREF(stateTuple);
+
+    return tempOut;
+}
+
+//-----------------------------------------------------------------------------
+/*static*/ PyObject* PythonRegion::PyRegion_SetState(PyRegion *self, PyObject *args)
+{
+    PyObject *data = NULL;
+	if(!PyArg_ParseTuple(args, "O", &data))
+	{
+		return NULL;
+	}
+
+	if(data == Py_None)
+	{
+		Py_RETURN_NONE;
+	}
+    else
+    {
+        QByteArray ba( PyBytes_AS_STRING(data), PyBytes_GET_SIZE(data) );
+        QDataStream d(&ba, QIODevice::ReadOnly);
+
+        if(self->r)
+        {
+            d >> *(self->r);
+        }
+    }
+
+    Py_RETURN_NONE;
+}
 
 
 //-----------------------------------------------------------------------------
@@ -501,6 +595,9 @@ PyMethodDef PythonRegion::PyRegion_methods[] = {
     {"translated", (PyCFunction)PyRegion_translated, METH_VARARGS | METH_KEYWORDS, NULL},
     {"united", (PyCFunction)PyRegion_united, METH_VARARGS | METH_KEYWORDS, NULL},
     {"xored", (PyCFunction)PyRegion_xored, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"__reduce__", (PyCFunction)PyRegion_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
+    {"__setstate__", (PyCFunction)PyRegion_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
+    {"createMask", (PyCFunction)PyRegion_createMask, METH_VARARGS, NULL },
     {NULL}  /* Sentinel */
 };
 
@@ -509,14 +606,14 @@ PyMethodDef PythonRegion::PyRegion_methods[] = {
 
 //-----------------------------------------------------------------------------
 PyModuleDef PythonRegion::PyRegionModule = {
-    PyModuleDef_HEAD_INIT, "Region", "Region (wrapper for QRegion)", -1,
+    PyModuleDef_HEAD_INIT, "region", "Region (wrapper for QRegion)", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 
 //-----------------------------------------------------------------------------
 PyTypeObject PythonRegion::PyRegionType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
-    "itom.Region",             /* tp_name */
+    "itom.region",             /* tp_name */
     sizeof(PyRegion),             /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor)PyRegion_dealloc, /* tp_dealloc */

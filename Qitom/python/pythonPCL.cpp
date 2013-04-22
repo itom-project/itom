@@ -1680,7 +1680,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
 	//the stateTuple is simply a byte array with the binary content of the temporarily written pcd file or None, if the point cloud is invalid or empty
 	//the type-number is passed as argument to the constructor of the point cloud class, if it is reconstructed.
     PyObject *tempOut = Py_BuildValue("(O(i)O)", Py_TYPE(self), type, stateTuple);
-
+    Py_XDECREF(stateTuple);
 
     return tempOut;
 }
@@ -3444,6 +3444,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
 	//the stateTuple is simply a byte array with the binary content of the temporarily written obj file or None, if the point cloud is invalid or empty
 	//the type-number is passed as argument to the constructor of the polygon mesh class, if it is reconstructed.
     PyObject *tempOut = Py_BuildValue("(O()O)", Py_TYPE(self), stateTuple);
+    Py_XDECREF(stateTuple);
 
     return tempOut;
 }

@@ -1860,12 +1860,12 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     
     if(*retOk == true)
     {
-        Py_INCREF(Py_True);
+        //Py_INCREF(Py_True);
         return Py_BuildValue("dO", *retDblValue, Py_True );
     }
     else
     {
-        Py_INCREF(Py_False);
+        //Py_INCREF(Py_False);
         return Py_BuildValue("dO", defaultValue, Py_False );
     }
 }
@@ -1940,12 +1940,12 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     
     if(*retOk == true)
     {
-        Py_INCREF(Py_True);
+        //Py_INCREF(Py_True);
         return Py_BuildValue("iO", *retIntValue, Py_True );
     }
     else
     {
-        Py_INCREF(Py_False);
+        //Py_INCREF(Py_False);
         return Py_BuildValue("iO", defaultValue, Py_False );
     }
 }
@@ -2044,13 +2044,13 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     
     if(*retOk == true)
     {
-        Py_INCREF(Py_True);
+        //Py_INCREF(Py_True);
         QByteArray ba = retString->toAscii();
         return Py_BuildValue("sO", ba.data(), Py_True );
     }
     else
     {
-        Py_INCREF(Py_False);
+        //Py_INCREF(Py_False);
         return Py_BuildValue("sO", "", Py_False );
     }
 }
@@ -2114,12 +2114,12 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     
     if(*retOk == true)
     {
-        Py_INCREF(Py_True);
+        //Py_INCREF(Py_True);
         return Py_BuildValue("sO", retStringValue->toAscii().data(), Py_True );
     }
     else
     {
-        Py_INCREF(Py_False);
+        //Py_INCREF(Py_False);
         return Py_BuildValue("sO", defaultString, Py_False );
     }
 }

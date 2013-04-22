@@ -1098,6 +1098,7 @@ PyObject* PythonDataObject::PyDataObj_GetType(PyDataObject *self, void * /*closu
     {
         return Py_BuildValue("s",typeNumberToName(self->dataObject->getType()));
     }
+
 }
 
 

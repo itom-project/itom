@@ -722,6 +722,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             // none is invalid
             type = QVariant::Invalid;
         }
+        else if(Py_TYPE(val) == &ito::PythonRegion::PyRegionType)
+        {
+            type == QVariant::Region;
+        }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if(Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
@@ -895,6 +899,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QStringList l = PyObjToStringList(val, false, ok);
         if (ok) {
         v = l;
+        }
+    }
+    break;
+
+    case QVariant::Region:
+    {
+        ito::PythonRegion::PyRegion *pyReg = (ito::PythonRegion::PyRegion*)val;
+        if(pyReg && pyReg->r)
+        {
+            v = *(pyReg->r);
         }
     }
     break;
@@ -1074,6 +1088,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         else if(PyUiItem_Check(val))
         {
             type = QMetaType::type("ito::PythonQObjectMarshal");
+        }
+        else if(PyRegion_Check(val))
+        {
+            type = QMetaType::QRegion;
         }
     }
 
@@ -1280,6 +1298,17 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (ok) 
             {
                 *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&l) );
+            }
+            break;
+        }
+
+        case QMetaType::QRegion:
+        {
+            ito::PythonRegion::PyRegion *reg = (ito::PythonRegion::PyRegion*)val;
+            if(reg && reg->r)
+            {
+                QRegion r = *(reg->r);
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&r) );
             }
             break;
         }
@@ -1679,6 +1708,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             PyList_SetItem(temp,2,PyLong_FromLong(temp2->width()));
             PyList_SetItem(temp,3,PyLong_FromLong(temp2->height()));
             return temp;
+        }
+    case QMetaType::QRegion:
+        {
+            return ito::PythonRegion::createPyRegion( *( (QRegion*)data ) );
         }
     case QMetaType::QVariant:
         {
