@@ -764,7 +764,7 @@ class DataObject
         }
 
         //!< Function return the axis-offset for the existing axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline double getAxisOffset(const int axisNum/*, const bool considerTransposeFlag = true*/) const
+        inline double getAxisOffset(const int axisNum) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
@@ -776,7 +776,7 @@ class DataObject
         }
 
         //!< Function returns the axis-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline double getAxisScale(const int axisNum/*, const bool considerTransposeFlag = true*/) const
+        inline double getAxisScale(const int axisNum) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
@@ -788,7 +788,7 @@ class DataObject
         }
 
         //!< Function returns the axis-unit-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline const std::string getAxisUnit(const int axisNum, bool &validOperation/*, const bool considerTransposeFlag = true*/) const
+        inline const std::string getAxisUnit(const int axisNum, bool &validOperation) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
@@ -805,7 +805,7 @@ class DataObject
         }
 
         //!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        const inline std::string getAxisDescription(const int axisNum, bool &validOperation/*, const bool considerTransposeFlag = true*/) const
+        const inline std::string getAxisDescription(const int axisNum, bool &validOperation) const
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
@@ -821,24 +821,6 @@ class DataObject
             validOperation = true;          
             return m_pDataObjectTags->m_axisDescription[axisNum];
         }
-
-        //!<  Function returns the string-value identified by 'key'. If key in the TagMap do not exist NULL is returned
-        /*inline std::string getTag(const std::string key, bool &validOpteration) const
-        {
-            validOpteration = false;
-            if(!m_pDataObjectTags)
-            {
-                return std::string(); //error
-            }
-            //std::map<std::string, std::string>::iterator it = m_pDataObjectTags->m_tags.find(key);
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
-            if(it != m_pDataObjectTags->m_tags.end())
-            {
-                validOpteration = true;
-                return it->second.getVal_ToString();
-            }
-            return std::string();
-        }*/
 
         inline DataObjectTagType getTag(const std::string key, bool &validOperation) const
         {
@@ -935,169 +917,16 @@ class DataObject
             return 0;
         }
 
-        //!<  Function to set the offset of the specified axis, return 1 if axis does not exist
-        inline int setAxisOffset(const unsigned int axisNum, const double offset/*, const bool considerTransposeFlag = true*/)
-        {
-            if (!m_pDataObjectTags)
-                return 1; // error
-//            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisOffsets.size()) // gcc complains axisnum is ALWAYS > 0 so the first part of the if case is sensless
-            if (axisNum >= m_pDataObjectTags->m_axisOffsets.size())
-                return 1; //error
-            uchar *ch = (uchar *)&offset;
-            if (!((ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0))
-                return 1;           
-            else
-            {
-                m_pDataObjectTags->m_axisOffsets[axisNum] = offset  + m_roi[axisNum];
-            }
-            return 0; //ok
-        }
-
-        //!<  Function to set the scale of the specified axis, return 1 if axis does not exist or scale is 0.0.
-        inline int setAxisScale(const unsigned int axisNum, const double scale)
-        {
-            if (!m_pDataObjectTags) return 1; //error
-//            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisScales.size()) return 1; //error
-            if (axisNum >= m_pDataObjectTags->m_axisScales.size()) return 1; //error
-            if (fabs(scale) < std::numeric_limits<double>::epsilon()) return 1;
-            uchar *ch = (uchar *)&scale;
-            if (!((ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0))
-                return 1;           
-            else
-            {
-                m_pDataObjectTags->m_axisScales[axisNum] = scale;
-            }
-            return 0; //ok
-        }
-
-        //!<  Function to set the unit (string value) of the specified axis, return 1 if axis does not exist
-        inline int setAxisUnit(const unsigned int axisNum, const std::string &unit)
-        {
-            if (!m_pDataObjectTags) return 1; //error
-//            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
-            if (axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
-			           
-            else
-            {
-                m_pDataObjectTags->m_axisUnit[axisNum] = unit;
-            }
-            return 0; //ok
-        }
-
-        //!<  Function to set the description (string value) of the specified axis, return 1 if axis does not exist
-        inline int setAxisDescription(const unsigned int axisNum, const std::string &description/*, const bool considerTransposeFlag = true*/)
-        {
-            if (!m_pDataObjectTags) return 1; //error
-//            if (axisNum < 0 || axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error
-            if (axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error          
-            else
-            {
-                m_pDataObjectTags->m_axisDescription[axisNum] = description;
-            }
-            return 0; //ok
-        }
-
-        //!<  Function to set the string value of the specified tag, if the tag do not exist, it will be added automatically, return 1 if tagspace does not exist
-        //inline int setTag(const std::string &key, const std::string &value)
-        inline int setTag(const std::string &key, const DataObjectTagType &value)
-        {
-            if(!m_pDataObjectTags) return 1; //error
-            m_pDataObjectTags->m_tags[key] = value;
-            return 0;
-        }
-
-        //!<  Function to check whether tag exist or not
-        inline bool existTag(const std::string &key)
-        {
-            if(!m_pDataObjectTags) return false; //Tag does not existtemplate
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
-            return it != m_pDataObjectTags->m_tags.end();
-        }
-
-        //!<  Function deletes specified tag. If tag do not exist, return value is 1 else returnvalue is 0
-        inline bool deleteTag(const std::string &key)
-        {
-            if(!m_pDataObjectTags) return false; //tag not deleted
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
-            if(it == m_pDataObjectTags->m_tags.end()) return false;
-            m_pDataObjectTags->m_tags.erase(it);
-            return true;
-        }
-
-        inline bool deleteAllTags()
-        {
-            if(!m_pDataObjectTags) return false; //tag not deleted
-            m_pDataObjectTags->m_tags.clear();
-            return true;
-        }
-
-        //!<  Function adds value to the protocol-tag. If this object is an ROI, the ROI-coordinates are added. If string do not end with an \n, \n is added.
-        inline int addToProtocol(const std::string &value)
-        {
-            if(!m_pDataObjectTags) return 1; //error
-            /* Check if object is only an ROI */
-            bool isROI = false;
-            std::string newcontent(""); // Start with an empty sting
-            for(int dim = 0; dim < m_dims; dim++)   // Check if this is an ROI
-            {
-                if(m_size[dim] != m_osize[dim])
-                {
-                    isROI = true;
-                }
-            }
-            if(isROI)   // If this is an ROI get the position for all dimensions
-            {
-                int * sizeTotal = (int*)calloc(m_dims, sizeof(int));
-                int * posROI = (int*)calloc(m_dims, sizeof(int));
-                size_t sizeDim = 0;
-                locateROI(sizeTotal, posROI);
-                newcontent.append("ROI[");
-                for(int dim = 0; dim < m_dims; dim++)
-                {
-                    sizeDim = getSize(dim);
-                    if((int)sizeDim != sizeTotal[dim])
-                    {
-                        char buf[50] ={0};
-                        _snprintf(buf, 49, " %i : %i", posROI[dim], static_cast<int>(sizeDim) - 1 + posROI[dim]);
-                        newcontent.append(buf);
-                    }
-                    else
-                    {
-                        newcontent.append(" : ");
-                    }
-                    if(dim != m_dims-1)
-                    {
-                        newcontent.append(",");
-                    }
-                    else
-                    {
-                        newcontent.append("]");
-                    }
-                }
-                free(sizeTotal);
-                free(posROI);
-            }
-            newcontent.append(value);   // Append the value to the content
-            if(newcontent[newcontent.length()-1] != '\n')   // add a \n is not aready there
-            {
-                newcontent.append("\n");
-            }
-            // Check if there is already a protocol tag
-            //std::map<std::string,std::string>::iterator it = m_pDataObjectTags->m_tags.find("protocol");
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find("protocol");
-            if(it == m_pDataObjectTags->m_tags.end())  // is not, okay create a new
-            {
-                m_pDataObjectTags->m_tags["protocol"] = newcontent;
-            }
-            else
-            {   // is there, so just append to existing tag
-                //(*it).second.append(newcontent);
-                std::string tempVal = (*it).second.getVal_ToString();
-                tempVal.append(newcontent);
-                (*it).second = tempVal;
-            }
-            return 0;
-        }
+        //inline lead to a linker error on MSVC when calling from several methods
+        int setAxisOffset(const unsigned int axisNum, const double offset);
+        int setAxisScale(const unsigned int axisNum, const double scale);
+        int setAxisUnit(const unsigned int axisNum, const std::string &unit);
+        int setAxisDescription(const unsigned int axisNum, const std::string &description);
+        int setTag(const std::string &key, const DataObjectTagType &value);
+        bool existTag(const std::string &key) const;
+        bool deleteTag(const std::string &key);
+        bool deleteAllTags();
+        int addToProtocol(const std::string &value);
 
 
         /**
