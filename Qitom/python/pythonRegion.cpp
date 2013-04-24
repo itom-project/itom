@@ -430,8 +430,8 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 
     ito::DataObject *d = new ito::DataObject();
     d->zeros(h, w, ito::tUInt8);
-    //d->setAxisOffset(0,y);
-    //d->setAxisOffset(1,x);
+    d->setAxisOffset(0,-y);
+    d->setAxisOffset(1,-x);
 
     ito::uint8 *ptr = ((cv::Mat*)(d->get_mdata()[0]))->ptr(0); //continuous
 
