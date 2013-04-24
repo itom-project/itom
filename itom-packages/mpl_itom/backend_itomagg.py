@@ -27,6 +27,7 @@ def new_figure_manager( num, *args, **kwargs ):
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
         itomUI = ui("itom://matplotlib")
+        #itomUI.show() #in order to get the right size
         embedded = False
     else:
         embedded = True

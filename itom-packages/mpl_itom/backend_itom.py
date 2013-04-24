@@ -66,6 +66,7 @@ def new_figure_manager( num, *args, **kwargs ):
     if(existingCanvas is None):
         embeddedCanvas = False
         itomUI = ui("itom://matplotlib")
+        #itomUI.show() #in order to get the right size
     else:
         embeddedCanvas = True
         if(isinstance(existingCanvas,uiItem)):
@@ -174,10 +175,11 @@ class FigureCanvasItom( FigureCanvasBase ):
         else:
             self.canvas = itomUI.canvasWidget
             itomUI["mouseTracking"] = False #by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
-            dpival = self.figure.dpi
-            winch = self.canvas["width"]/dpival
-            hinch = self.canvas["height"]/dpival
-            self.figure.set_size_inches( winch, hinch )
+            
+        #dpival = self.figure.dpi
+        #winch = self.canvas["width"]/dpival
+        #hinch = self.canvas["height"]/dpival
+        #self.figure.set_size_inches( winch, hinch )
         
         self.canvas.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
         self.canvas.connect("eventMouse(int,int,int,int)", self.mouseEvent)
@@ -379,20 +381,22 @@ class FigureManagerItom( FigureManagerBase ):
         #self.window.setWindowIcon(QtGui.QIcon( image ))
 
         self.canvas._destroying = False
-
+        
+        #the size of the toolbar is not handled by matplotlib, therefore ignore it.
+        #any resize command only addresses the size of the canvas. not more.
         self.toolbar = self._get_toolbar(self.canvas)
-        if self.toolbar is not None:
-            [tbs_width, tbs_height] = itomUI.toolbar["sizeHint"]
-            pass
-        else:
-            tbs_width = 0
-            tbs_height = 0
+        # if self.toolbar is not None:
+            # [tbs_width, tbs_height] = [0,0] #itomUI.toolbar["sizeHint"]
+            # pass
+        # else:
+            # tbs_width = 0
+            # tbs_height = 0
 
         # resize the main window so it will display the canvas with the
         # requested size:
-        cs_width, cs_height = canvas.sizeHint()
-        sbs_width, sbs_height = 0,0 #self.window.statusBar().sizeHint()
-        self.resize(cs_width, cs_height+tbs_height+sbs_height)
+        cs_width, cs_height = self.canvas.get_width_height() #canvas.sizeHint()
+        #sbs_width, sbs_height = 0,0 #self.window.statusBar().sizeHint()
+        self.resize(cs_width, cs_height) #+tbs_height+sbs_height)
 
         if matplotlib.is_interactive():
             self.show()
