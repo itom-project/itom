@@ -30,7 +30,7 @@
 #include <qaction.h>
 #include <qtoolbar.h>
 
-#include <QTextEdit>
+#include <qtextbrowser.h>
 #include <qtreeview.h>
 #include <qlabel.h>
 #include <qfilesystemmodel.h>
@@ -117,7 +117,7 @@ namespace ito
             QMenu* m_pShowDirListMenu;
             QMenu* m_pFileSystemSettingMenu;
             QMenu* m_pContextMenu;
-            QTextEdit* m_pPathEdit;
+            QTextBrowser* m_pPathEdit;
             QToolBar* m_pMainToolbar;
             FileSystemTreeView* m_pTreeView;
             QLabel* m_pLblFilter;
@@ -171,6 +171,8 @@ namespace ito
             void setTreeViewHideColumns(const bool &hide);
             void removeActionFromDirList(const int &pos);
 	        void changeDir();
+
+            void pathAnchorClicked(const QUrl &link);
 
         public slots:
             RetVal changeBaseDirectory(QString dir);

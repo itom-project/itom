@@ -43,6 +43,28 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QString getHtmlTag(QString tag)
+{
+    QString txt = "";
+    QString link = "";
+    QStringList tagList = tag.split("/");
+    txt = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
+    for (int x = 0; x < tagList.size(); x++)
+    {
+        if (x > 0)
+        {
+            txt += "/";
+            link += "/";
+        }
+        link += tagList[x];
+        txt += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+//            \\<a href='file:///U:/privat'>privat</a>\\<a href='file:///U:/privat/Verwaltung'>Verwaltung</a>\\<a href='file:///U:/privat/Verwaltung/Getränke'>Getränke</a>";
+    }
+    txt += "</span></p></body></html>";
+    return txt;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
     m_pShowDirListMenu(NULL),
@@ -96,12 +118,15 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     }
     settings.endArray();
 
-    m_pPathEdit = new QTextEdit(this);
+    m_pPathEdit = new QTextBrowser(this); //QTextEdit(this);
     m_pPathEdit->setReadOnly(true);
     m_pPathEdit->setMaximumHeight(25);
     m_pPathEdit->setLineWrapMode(QTextEdit::NoWrap);
     m_pPathEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_pPathEdit->setOpenLinks(false);
+
+    connect(m_pPathEdit, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(pathAnchorClicked(const QUrl&)));
 //m_pPathEdit->setEnabled(false);
 /*    QColor color = 433;
 //    m_pPathEdit->setTextBackgroundColor(color);
@@ -565,7 +590,9 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         m_pShowDirListMenu->actions()[x]->setText(QString::number(x+1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
     }
 
-    m_pPathEdit->setText(baseDirectory);
+    m_pPathEdit->setToolTip(baseDirectory);
+    m_pPathEdit->setHtml(getHtmlTag(baseDirectory));
+//    m_pPathEdit->setText(baseDirectory);
 
     updateActions();
 
@@ -1119,6 +1146,20 @@ void FileSystemDockWidget::processError(QProcess::ProcessError /*error*/ )
     msgBox.setIcon( QMessageBox::Information );
     msgBox.setText("An external process could not be started.");
     msgBox.exec();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
+{
+    if (link.isLocalFile())
+    {
+        QString dir = link.toLocalFile();
+        if (dir.indexOf(":") > 0)
+        {
+            dir += "/";
+        }
+        newDirSelected(dir);
+    }
 }
 
 } //end namespace ito
