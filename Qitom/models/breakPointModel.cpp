@@ -23,6 +23,9 @@
 #include <algorithm>
 #include "breakPointModel.h"
 
+#include <qfileinfo.h>
+#include <qsize.h>
+
 /*!
     \class BreakPointModel
     \brief model for management of all breakpoints. This model will be displayed by a viewer-widget in the main window
@@ -139,6 +142,8 @@ int BreakPointModel::columnCount(const QModelIndex &/*parent*/) const
 */
 QVariant BreakPointModel::data(const QModelIndex &index, int role) const
 {
+    const BreakPointItem& item = m_breakpoints.at(index.row());
+
 	if(!index.isValid())
 	{
 		return QVariant();
@@ -146,11 +151,13 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
  
     if(role == Qt::DisplayRole)
     {
-        const BreakPointItem& item = m_breakpoints.at(index.row());
         switch(index.column())
         {
         case 0: //filename
-            return item.filename;
+            {
+                QFileInfo finfo(item.filename);
+                return finfo.fileName();
+            }
         case 1: //line
             return item.lineno + 1;
         case 2: //condition
@@ -158,19 +165,59 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
         case 3: //temporary
             return item.temporary ? tr("yes") : tr("no");
 		case 4: //enabled
-			/*if(item.enabled)
-			{
-				qDebug("enabled yes");
-			}
-			else
-			{
-				qDebug("enabled no");
-			}*/
 			return item.enabled ? tr("yes") : tr("no");
 		case 5: //ignore count
 			return item.ignoreCount;
         case 6: //pythonDbgBpNumber
             return item.pythonDbgBpNumber;
+        }
+    }
+    else if(role == Qt::ToolTipRole)
+    {
+        switch(index.column())
+        {
+        case 0:
+            return item.filename;
+        }
+    }
+    else if(role == Qt::TextAlignmentRole)
+    {
+        switch(index.column())
+        {
+        case 0: //filename
+            return Qt::AlignLeft;
+        case 1: //line
+            return Qt::AlignCenter;
+        case 2: //condition
+            return Qt::AlignLeft;
+        case 3: //temporary
+            return Qt::AlignCenter;
+		case 4: //enabled
+			return Qt::AlignCenter;
+		case 5: //ignore count
+			return Qt::AlignCenter;
+        case 6: //pythonDbgBpNumber
+            return Qt::AlignCenter;
+        }
+    }
+    else if(role == Qt::SizeHintRole)
+    {
+        switch(index.column())
+        {
+        case 0: //filename
+            return QSize(130,12);
+        case 1: //line
+            return QSize(20,12);
+        case 2: //condition
+            return QSize(50,12);
+        case 3: //temporary
+            return QSize(20,12);
+		case 4: //enabled
+			return QSize(20,12);
+		case 5: //ignore count
+			return QSize(20,12);
+        case 6: //pythonDbgBpNumber
+            return QSize(20,12);
         }
     }
  

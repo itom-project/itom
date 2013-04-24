@@ -26,6 +26,8 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+#include "../organizer/scriptEditorOrganizer.h"
+
 #include <qheaderview.h>
 
 
@@ -41,15 +43,19 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, QWidget *parent
 
 	setContentWidget(m_breakPointView);
 
-	m_breakPointView->verticalHeader()->setDefaultSectionSize(22);
-	m_breakPointView->setAlternatingRowColors(true);
-	m_breakPointView->setTextElideMode( Qt::ElideLeft );
+    connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
 	PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 	if(pe)
 	{
 		m_breakPointView->setModel( pe->getBreakPointModel() );
 	}
+
+    m_breakPointView->verticalHeader()->setDefaultSectionSize(22);
+	m_breakPointView->setAlternatingRowColors(true);
+	m_breakPointView->setTextElideMode( Qt::ElideLeft );
+    m_breakPointView->setSortingEnabled(true);
+    m_breakPointView->resizeColumnsToContents();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -76,6 +82,33 @@ void BreakPointDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::updateActions()
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
+{
+    QString canonicalPath;
+	int lineNr = -1;
+    QModelIndex idx;
+    QAbstractItemModel *m = m_breakPointView->model();
+
+    if(index.isValid() && m)
+    {
+        idx = m->index( index.row(), 0, index.parent() );
+        canonicalPath = m->data(idx, Qt::ToolTipRole).toString();
+
+        idx = m->index( index.row(), 1, index.parent() );
+        lineNr = m->data(idx, Qt::DisplayRole).toInt() - 1;
+
+		if(canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
+		{
+			ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+			if(seo)
+			{
+				seo->openScript( canonicalPath, NULL, lineNr );
+			}
+		}
+	}
 }
 
 

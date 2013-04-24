@@ -58,6 +58,7 @@ namespace ito
         signals:
 
         private slots:
+	        void doubleClicked(const QModelIndex &index);
 
     };
 
