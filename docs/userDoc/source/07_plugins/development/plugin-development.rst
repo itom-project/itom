@@ -30,6 +30,7 @@ Content:
    plugin-sharedSemaphore.rst
    plugin-RetVal.rst
    plugin-itomAPI.rst
+   plugin-dataObject.rst
 
 
 

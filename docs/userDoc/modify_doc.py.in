@@ -2,34 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-import os
-
-def removeSectionInFiles(path, ending, SectionName):
-        dirList=os.listdir(path)
-        # Files in Ordner durchlaufen
-        for fname in dirList:
-            if fname.endswith(ending):
-                # Sections alleine stellen und in neue Zeilen umbrechen
-                with open(path+"\\"+fname, 'r') as f:
-                    s = f.read()
-                    s = s.replace("\\begin{"+SectionName+"}", "\n\\begin{"+SectionName+"}")
-                    s = s.replace("\\end{"+SectionName+"}", "\\end{"+SectionName+"}\n")
-                with open(path+"\\"+fname,"w") as f:
-                    f.write(s)
-                # Ein File öffnen und auslesen
-                newlist = []
-                with open(path+"\\"+fname,"r") as f:
-                    deleting = 0
-                    for line in f:
-                        if line == "\\begin{"+SectionName+"}\n":
-                            deleting = 1
-                        if deleting == 0:
-                            newlist.append(line)
-                        if line == "\\end{"+SectionName+"}\n":
-                            deleting = 0
-                            print("entfernt")
-                with open(path+"\\"+fname,"w") as f:
-                    f.writelines(newlist)
+import os, re
 
 def replaceInFiles(path, ending):
     dirList=os.listdir(path)
@@ -40,6 +13,32 @@ def replaceInFiles(path, ending):
                 s = f.read()
                 s = s.replace("\\begin{quote}\\begin{description}", "\\begin{description}")
                 s = s.replace("\\end{description}\\end{quote}", "\\end{description}")
+                
+                # nach Bildern suchen und nach jedem ca. 10. Bild ein \newpage einfügen
+                p = re.compile(r'\\begin{figure}\[htbp\]')
+                # j gibt an nach wievielen Bildern der neue Pagebreak kommen soll
+                j = 2
+                pos = 0
+                # count zaehlt die Vorkommen der Bilder
+                c = 0
+                while (pos < len(s)):
+                    m = p.search(s,pos,len(s))
+                    if (m == None):
+                        break
+                    pos = m.end();
+                    c = c +1
+                    if (c%j == 0):
+                        #ersetzen
+                        sStart = s[:m.start()]
+                        sRep = re.sub(r'\\begin{figure}\[htbp\]',r'\\newpage\n\\begin{figure}[htbp]',s[m.start():m.end()])
+                        sEnd = s[m.end():]
+                        s = sStart + sRep + sEnd
+                        
+                # Verbatim-Einzeiler rausschmeißen ... kleiner unschoener Workaround!!!
+                s = re.sub(r'\\begin{Verbatim}.*\n\\end{Verbatim}','\n',s)
+                
+                # leere Descriptions rausschmeißen
+                s = re.sub(r'\\begin{description}\s\\end{description}','\n',s)
             with open(path+"\\"+fname,"w") as f:
                 f.write(s)
 
