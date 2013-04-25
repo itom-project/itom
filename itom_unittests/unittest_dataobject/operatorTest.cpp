@@ -238,7 +238,7 @@ TYPED_TEST(operatorTest, MulFactor1_test)
 
 //MulCross_test
 /*!
-   This test checks functionality of "*=" (cross multiplication of matrices) operator for 1 and 2 dimensional matrices
+   This test checks functionality of "*" (cross multiplication of matrices) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, MulCross_test) //Note: 1)exception in 3d cross multiplication
 										//Note: 2)true for only "float32" and "float64" datatypes.
@@ -392,7 +392,7 @@ TYPED_TEST(operatorTest, sub1_test)  //Note:Test Fails for datatype Float
 
 //MulCross1_test
 /*!
-   This test checks functionality of "*=" (cross multiplication) operator for 1 and 2 dimensional matrices
+   This test checks functionality of "*=" (cross multiplication and assign) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, MulCross1_test) 
 {		
@@ -414,7 +414,7 @@ TYPED_TEST(operatorTest, MulCross1_test)
 
 //CompareEQ_test
 /*!
-   This test checks functionality of "==" (cross multiplication) operator for 1 and 2 dimensional matrices
+   This test checks functionality of "==" (Equal to) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareEQ_test)
 {		
@@ -426,7 +426,7 @@ TYPED_TEST(operatorTest, CompareEQ_test)
 
 	mat1_3d = cv::saturate_cast<TypeParam>(25);
     mat2_3d = cv::saturate_cast<TypeParam>(25);
-
+	
     if(std::numeric_limits<TypeParam>::max() == std::numeric_limits<ito::int8>::max()) //compare not implemented for int8
     {
         EXPECT_THROW({
@@ -456,7 +456,7 @@ TYPED_TEST(operatorTest, CompareEQ_test)
 
 //CompareNE_test
 /*!
-   This test checks functionality of "!=" (cross multiplication) operator for 1 and 2 dimensional matrices
+   This test checks functionality of "!=" (Not Equal To) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareNE_test)
 {		
@@ -498,7 +498,7 @@ TYPED_TEST(operatorTest, CompareNE_test)
 
 //CompareLE_test
 /*!
-   This test checks functionality of "<=" (cross multiplication) operator for 1 and 2 dimensional matrices
+   This test checks functionality of "<=" (Less Than or Equal to) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareLE_test)
 {		
@@ -539,7 +539,7 @@ TYPED_TEST(operatorTest, CompareLE_test)
 }
 //CompareGE_test
 /*!
-	This test checks functionality of ">=" (cross multiplication) operator for 1 and 2 dimensional matrices
+	This test checks functionality of ">=" (Greater than or equal to) operator for 1 and 2 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareGE_test)
 {		
@@ -581,7 +581,7 @@ TYPED_TEST(operatorTest, CompareGE_test)
 
 //CompareLT_test
 /*!
-	This test checks functionality of "<" (compare less than) operator for 1, 2 and 3 dimensional matrices
+	This test checks functionality of "<" (less than) operator for 1, 2 and 3 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareLT_test)
 {		
@@ -623,7 +623,7 @@ TYPED_TEST(operatorTest, CompareLT_test)
 
 //CompareGT_test
 /*!
-	This test checks functionality of ">" (compare greater than) operator for 1,2 and 3 dimensional matrices
+	This test checks functionality of ">" (greater than) operator for 1,2 and 3 dimensional matrices
 */
 TYPED_TEST(operatorTest, CompareGT_test)
 {		
@@ -690,7 +690,7 @@ TYPED_TEST(operatorTest, ShiftL_test) //Note: Test fails for datatypes "float32"
 
 //ShiftR_test
 /*!
-	This test checks functionality of ">>" (shift left) operator for 1, 2 and 3 dimensional matrices
+	This test checks functionality of ">>" (shift right) operator for 1, 2 and 3 dimensional matrices
 */
 TYPED_TEST(operatorTest, ShiftR_test) //Note: Test fails for datatypes "float32" and "float64"
 {		mat1_1d = cv::saturate_cast<TypeParam>(18);
