@@ -117,7 +117,7 @@ Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: promptifol
 Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: promptifolder
 
 ; Sprachen
-Source: "{#SourceDirITOMBuild}\Qitom\translation\*.qm"; DestDir: "{app}\translation"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation"; Flags: promptifolder
 
 ; EXEs
