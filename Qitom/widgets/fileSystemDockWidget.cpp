@@ -1154,7 +1154,7 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
     if (link.isLocalFile())
     {
         QString dir = link.toLocalFile();
-        if (dir.indexOf(":") > 0)
+        if (dir.size() == 2)
         {
             dir += "/";
         }
