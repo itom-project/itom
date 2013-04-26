@@ -78,7 +78,7 @@ public:
     static PyObject* PyRegion_united(PyRegion *self, PyObject *args, PyObject *kwds);
     static PyObject* PyRegion_xored(PyRegion *self, PyObject *args, PyObject *kwds);
 
-    static PyObject* PyRegion_createMask(PyRegion *self, PyObject *args);
+    static PyObject* PyRegion_createMask(PyRegion *self);
 
     //-------------------------------------------------------------------------------------------------
     // pickling

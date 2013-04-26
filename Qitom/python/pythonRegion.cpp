@@ -33,6 +33,7 @@
 namespace ito
 {
 
+//------------------------------------------------------------------------------------------------------
 void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
@@ -46,6 +47,7 @@ void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
     Py_DECREF(value);
 }
 
+//------------------------------------------------------------------------------------------------------
 void PythonRegion::PyRegion_dealloc(PyRegion* self)
 {
     if(self->r)
@@ -56,6 +58,7 @@ void PythonRegion::PyRegion_dealloc(PyRegion* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
+//------------------------------------------------------------------------------------------------------
 PyObject* PythonRegion::PyRegion_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyRegion* self = (PyRegion *)type->tp_alloc(type, 0);
@@ -67,7 +70,31 @@ PyObject* PythonRegion::PyRegion_new(PyTypeObject *type, PyObject* /*args*/, PyO
     return (PyObject *)self;
 };
 
-
+//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegion_doc,"region([x, y, w, h [,type=region.RECTANGLE]]) -> creates a rectangular or elliptical region. \n\
+\n\
+This class is a wrapper for the class QRegion of Qt. It provides possibilities for creating pixel-based regions. Furtherone you can \n\
+calculate new regions based on the intersection, union or subtraction of other regions. Based on the region it is possible to get \n\
+a uint8 masked dataObject, where every point within the entire region has the value 255 and all other values 0 \n\
+\n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of the reference corner of the region \n\
+y : {int} \n\
+    y-coordinate of the reference corner of the region \n\
+w : {int} \n\
+    width of the region \n\
+h : {int} \n\
+    height of the region \n\
+type : {int}, optional \n\
+    region.RECTANGLE creates a rectangular region (default). region.ELLIPSE creates an elliptical region, which is placed inside of the \n\
+    given boundaries. \n\
+\n\
+Notes\n\
+----- \n\
+It is also possible to create an empty instance of the region.");
 int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwds*/)
 {
     int x,y,w,h;
@@ -143,6 +170,23 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionContains_doc,"contains(x,y[,w,h]) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
+\n\
+This method returns True, if the given point (x,y) or region (x,y,w,h) is fully contained in this region. Otherwise returns False.\n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of the new rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of the new rectangular region \n\
+w : {int}, optional \n\
+    width of the new rectangular region. If not given, point is assumed. \n\
+h : {int}, optional \n\
+    height of the new rectangular region. If not given, point is assumed. \n\
+\n\
+Returns \n\
+------- \n\
+True or False");
 /*static*/ PyObject* PythonRegion::PyRegion_contains(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     if(!self || self->r == NULL)
@@ -177,6 +221,30 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionIntersected_doc,"intersected(x,y,w,h | region) -> returns a region which is the intersection of a new region and this region. \n\
+\n\
+This method returns a new region, which is the intersection of this region and the given, new region. The intersection only contains points that are \n\
+part of both given regions. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of the new rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of the new rectangular region \n\
+w : {int} \n\
+    width of the new rectangular region \n\
+h : {int} \n\
+    height of the new rectangular region \n\
+region : {region-object} \n\
+    another instance of region \n\
+\n\
+Returns \n\
+------- \n\
+new intersected region. \n\
+\n\
+Notes \n\
+----- \n\
+You can either use the parameters 'x','y','w','h' OR 'region'.");
 /*static*/ PyObject* PythonRegion::PyRegion_intersected(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -185,7 +253,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     const char *kwlist[] = {"x", "y", "w", "h", NULL};
     const char *kwlist2[] = {"region", NULL};
 
-    if(PyArg_ParseTupleAndKeywords(args, kwds, "ii|ii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
+    if(PyArg_ParseTupleAndKeywords(args, kwds, "iiii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
     {
         QRegion reg = self->r->intersected( QRect(x,y,w,h) );
         return createPyRegion(reg);
@@ -202,6 +270,29 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionIntersects_doc,"intersects(x,y,w,h | region) -> returns True if this region intersects with the given region, else False. \n\
+\n\
+This method returns True, if this region intersects with the new region, otherwise returns False. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of the new rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of the new rectangular region \n\
+w : {int} \n\
+    width of the new rectangular region \n\
+h : {int} \n\
+    height of the new rectangular region \n\
+region : {region-object} \n\
+    another instance of region \n\
+\n\
+Returns \n\
+------- \n\
+True or False \n\
+\n\
+Notes \n\
+----- \n\
+You can either use the parameters 'x','y','w','h' OR 'region'.");
 /*static*/ PyObject* PythonRegion::PyRegion_intersects(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -212,7 +303,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 
     bool result;
 
-    if(PyArg_ParseTupleAndKeywords(args, kwds, "ii|ii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
+    if(PyArg_ParseTupleAndKeywords(args, kwds, "iiii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
     {
         result = self->r->intersects( QRect(x,y,w,h) );
     }
@@ -230,6 +321,29 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionSubtracted_doc,"subtracted(x,y,w,h | region) -> returns a region which is the new region subtracted from this region. \n\
+\n\
+This method returns a new region, which is the given, new region subtracted from this region. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of the new rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of the new rectangular region \n\
+w : {int} \n\
+    width of the new rectangular region \n\
+h : {int} \n\
+    height of the new rectangular region \n\
+region : {region-object} \n\
+    another instance of region \n\
+\n\
+Returns \n\
+------- \n\
+new subtracted region. \n\
+\n\
+Notes \n\
+----- \n\
+You can either use the parameters 'x','y','w','h' OR 'region'.");
 /*static*/ PyObject* PythonRegion::PyRegion_subtracted(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -238,7 +352,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     const char *kwlist[] = {"x", "y", "w", "h", NULL};
     const char *kwlist2[] = {"region", NULL};
 
-    if(PyArg_ParseTupleAndKeywords(args, kwds, "ii|ii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
+    if(PyArg_ParseTupleAndKeywords(args, kwds, "iiii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
     {
         QRegion reg = self->r->subtracted( QRegion(QRect(x,y,w,h)) );
         return createPyRegion(reg);
@@ -255,6 +369,19 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionTranslate_doc,"translate(x,y) -> translateds this region by the given coordinates. \n\
+\n\
+This method translates this region by the given coordinates. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    translation in x-direction \n\
+y : {int} \n\
+    translation in y-direction \n\
+\n\
+See Also \n\
+--------- \n\
+translated");
 /*static*/ PyObject* PythonRegion::PyRegion_translate(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y;
@@ -274,6 +401,23 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionTranslated_doc,"translated(x,y) -> returns a region, translated by the given coordinates. \n\
+\n\
+This method returns a new region, which is translated by the given coordinates in x and y direction. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    translation in x-direction \n\
+y : {int} \n\
+    translation in y-direction \n\
+\n\
+Returns \n\
+------- \n\
+new translated region.\n\
+\n\
+See Also \n\
+--------- \n\
+translate");
 /*static*/ PyObject* PythonRegion::PyRegion_translated(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y;
@@ -292,6 +436,30 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionUnited_doc,"united(x,y,w,h | region) -> returns a region which is the union of the given region with this region. \n\
+\n\
+This method returns a new region, which is the union of this region with the region given as parameters. Union means that all values, that\n\
+are contained in any of both regions is part of the overall region, too. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of a rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of a rectangular region \n\
+w : {int} \n\
+    width of the new rectangular region \n\
+h : {int} \n\
+    height of the new rectangular region \n\
+region : {region-object} \n\
+    another instance of region \n\
+\n\
+Returns \n\
+------- \n\
+new united region. \n\
+\n\
+Notes \n\
+----- \n\
+You can either use the parameters 'x','y','w','h' OR 'region'.");
 /*static*/ PyObject* PythonRegion::PyRegion_united(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -300,7 +468,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     const char *kwlist[] = {"x", "y", "w", "h", NULL};
     const char *kwlist2[] = {"region", NULL};
 
-    if(PyArg_ParseTupleAndKeywords(args, kwds, "ii|ii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
+    if(PyArg_ParseTupleAndKeywords(args, kwds, "iiii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
     {
         QRegion reg = self->r->united( QRect(x,y,w,h) );
         return createPyRegion(reg);
@@ -317,6 +485,29 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegionXored_doc,"xored(x,y,w,h | region) -> returns a region which is an xor combination of the given region with this region. \n\
+\n\
+This method returns a new region, which is defined by an xor-combination of this region with the region given as parameters. \n\
+Parameters \n\
+----------- \n\
+x : {int} \n\
+    x-coordinate of one corner of a rectangular region \n\
+y : {int} \n\
+    y-coordinate of one corner of a rectangular region \n\
+w : {int} \n\
+    width of the new rectangular region \n\
+h : {int} \n\
+    height of the new rectangular region \n\
+region : {region-object} \n\
+    another instance of region \n\
+\n\
+Returns \n\
+------- \n\
+new xored region. \n\
+\n\
+Notes \n\
+----- \n\
+You can either use the parameters 'x','y','w','h' OR 'region'.");
 /*static*/ PyObject* PythonRegion::PyRegion_xored(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -325,7 +516,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     const char *kwlist[] = {"x", "y", "w", "h", NULL};
     const char *kwlist2[] = {"region", NULL};
 
-    if(PyArg_ParseTupleAndKeywords(args, kwds, "ii|ii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
+    if(PyArg_ParseTupleAndKeywords(args, kwds, "iiii", const_cast<char**>(kwlist), &x, &y, &w, &h) )
     {
         QRegion reg = self->r->xored( QRegion(QRect(x,y,w,h)) );
         return createPyRegion(reg);
@@ -405,6 +596,11 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 
     QRect b = self->r->boundingRect();
 
+    if(b.isNull())
+    {
+        Py_RETURN_NONE;
+    }
+
     PyObject *t = PyList_New(4);
     PyList_SetItem(t,0, PyLong_FromLong(b.x()));
     PyList_SetItem(t,1, PyLong_FromLong(b.y()));
@@ -415,7 +611,13 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self, PyObject *args)
+PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask() -> creates mask data object based on this region. \n\
+\n\
+Returns a uint8-dataObject whose size corresponds to the width and height of the bounding rectangle. \n\
+All pixels contained in the region have a value of 255 while the rest is set to 0. The offset value of \n\
+the dataObject is set such that it fits to the real position of the region, since the first element \n\
+in the dataObject corresponds to the left upper corner of the bounding rectangle.");
+/*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self)
 {
     if(!self || self->r == NULL)
     {
@@ -582,22 +784,23 @@ PyGetSetDef PythonRegion::PyRegion_getseters[] = {
     {"empty", (getter)PyRegion_getEmpty, NULL, "Returns True if region is empty, else False", NULL},
     {"rectCount", (getter)PyFigure_getRectCount, NULL, "Returns True if region is empty, else False", NULL},
     {"rects", (getter)PyFigure_getRects, NULL, "Returns list of rectangles", NULL},
+    {"boundingRect", (getter)PyFigure_getBoundingRect, NULL, "Returns (x,y,w,h) of the bounding rectangle of this region. An empty region returns None.", NULL},
     {NULL}  /* Sentinel */
 };
 
 //-----------------------------------------------------------------------------
 PyMethodDef PythonRegion::PyRegion_methods[] = {
-    {"contains", (PyCFunction)PyRegion_contains, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"intersected", (PyCFunction)PyRegion_intersected, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"intersects", (PyCFunction)PyRegion_intersects, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"subtracted", (PyCFunction)PyRegion_subtracted, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"translate", (PyCFunction)PyRegion_translate, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"translated", (PyCFunction)PyRegion_translated, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"united", (PyCFunction)PyRegion_united, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"xored", (PyCFunction)PyRegion_xored, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"__reduce__", (PyCFunction)PyRegion_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
-    {"__setstate__", (PyCFunction)PyRegion_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-    {"createMask", (PyCFunction)PyRegion_createMask, METH_VARARGS, NULL },
+    {"contains", (PyCFunction)PyRegion_contains, METH_VARARGS | METH_KEYWORDS, pyRegionContains_doc},
+    {"intersected", (PyCFunction)PyRegion_intersected, METH_VARARGS | METH_KEYWORDS, pyRegionIntersected_doc},
+    {"intersects", (PyCFunction)PyRegion_intersects, METH_VARARGS | METH_KEYWORDS, pyRegionIntersects_doc},
+    {"subtracted", (PyCFunction)PyRegion_subtracted, METH_VARARGS | METH_KEYWORDS, pyRegionSubtracted_doc},
+    {"translate", (PyCFunction)PyRegion_translate, METH_VARARGS | METH_KEYWORDS, pyRegionTranslate_doc},
+    {"translated", (PyCFunction)PyRegion_translated, METH_VARARGS | METH_KEYWORDS, pyRegionTranslated_doc},
+    {"united", (PyCFunction)PyRegion_united, METH_VARARGS | METH_KEYWORDS, pyRegionUnited_doc},
+    {"xored", (PyCFunction)PyRegion_xored, METH_VARARGS | METH_KEYWORDS, pyRegionXored_doc},
+    {"__reduce__", (PyCFunction)PyRegion_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
+    {"__setstate__", (PyCFunction)PyRegion_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
+    {"createMask", (PyCFunction)PyRegion_createMask, METH_NOARGS, pyRegionCreateMask_doc },
     {NULL}  /* Sentinel */
 };
 
@@ -632,7 +835,7 @@ PyTypeObject PythonRegion::PyRegionType = {
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    0,                         /* tp_doc */
+    pyRegion_doc,              /* tp_doc */
     0,		                   /* tp_traverse */
     0,		                   /* tp_clear */
     0,		                   /* tp_richcompare */
