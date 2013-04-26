@@ -4,7 +4,7 @@
 <context>
     <name>BreakPointModel</name>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="+37"/>
+        <location filename="../models/breakPointModel.cpp" line="+40"/>
         <source>filename</source>
         <translation>Dateiname</translation>
     </message>
@@ -39,14 +39,14 @@
         <translation>Ph HP Nr</translation>
     </message>
     <message>
-        <location line="+122"/>
-        <location line="+10"/>
+        <location line="+126"/>
+        <location line="+2"/>
         <source>yes</source>
         <translation>ja</translation>
     </message>
     <message>
-        <location line="-10"/>
-        <location line="+10"/>
+        <location line="-2"/>
+        <location line="+2"/>
         <source>no</source>
         <translation>nein</translation>
     </message>
@@ -979,7 +979,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+244"/>
+        <location filename="../python/pythonEngine.cpp" line="+248"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -1003,7 +1003,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+186"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1024,7 +1024,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+94"/>
         <source>method name not found in builtin itom</source>
         <translation type="unfinished">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
     </message>
@@ -1081,7 +1081,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+1994"/>
+        <location line="+2024"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3032,7 +3032,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../widgets/workspaceWidget.cpp" line="+53"/>
         <source>Globals</source>
-        <translation type="unfinished">Global</translation>
+        <translation>Global</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -3049,7 +3049,7 @@ Type conflict for %1</source>
     <message>
         <location line="+0"/>
         <source>Locals</source>
-        <translation type="unfinished">Lokal</translation>
+        <translation>Lokal</translation>
     </message>
 </context>
 <context>
@@ -3326,12 +3326,12 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+244"/>
         <source>toolbar &apos;%1&apos; is already available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
     <message>
         <location line="+110"/>
         <source>toolbar &apos;%1&apos; not found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Toolbar &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -3647,7 +3647,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location filename="../organizer/designerWidgetOrganizer.cpp" line="+117"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
         <location line="+51"/>
@@ -3657,7 +3657,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+6"/>
         <source>The version &apos;ito.AbstractItomDesignerPlugin&apos; in file &apos;%1&apos; does not correspond to the requested version (%2)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Version von &apos;ito.AbstractItomDesignerPlugin&apos; in der Datei &apos;%1&apos; deckt sich nicht mit der erforderlichen Version (%2)</translation>
     </message>
     <message>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin</source>
@@ -3666,7 +3666,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+14"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -4056,12 +4056,12 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::FileSystemDockWidget</name>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="+81"/>
+        <location filename="../widgets/fileSystemDockWidget.cpp" line="+103"/>
         <source>last used directories</source>
         <translation>Zuletzt verwendetet Verzeichnisse</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
@@ -4102,13 +4102,13 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+488"/>
+        <location line="+490"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-499"/>
+        <location line="-501"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -4163,7 +4163,7 @@ Nachricht: &apos;%1&apos;</translation>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+79"/>
         <source>select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
@@ -5745,7 +5745,7 @@ Katesisch</translation>
     <message>
         <location filename="../widgets/uiMainWindow.ui"/>
         <source>itom</source>
-        <translation type="unfinished">itom</translation>
+        <translation>itom</translation>
     </message>
 </context>
 <context>
