@@ -126,6 +126,11 @@ void MainApplication::setupApplication()
 
     QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/Qitom/translation";
+    QDir TransDir(itomTranslationFolder);
+    if (!TransDir.exists())
+    {
+        itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
+    }
 
     //load translation files
     m_splashScreen->showMessage( tr("load translations...") , Qt::AlignRight | Qt::AlignBottom);
