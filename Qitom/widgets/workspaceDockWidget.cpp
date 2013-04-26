@@ -363,7 +363,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 
         m_firstCurrentItemKey = QString::Null();
 
-        if(locker.getSemaphore()->wait(PLUGINWAIT))
+        if(locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
         {
             emit setStatusInformation("",0);
         }

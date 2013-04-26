@@ -724,7 +724,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if(Py_TYPE(val) == &ito::PythonRegion::PyRegionType)
         {
-            type == QVariant::Region;
+            type = QVariant::Region;
         }
 
 #if ITOM_POINTCLOUDLIBRARY > 0

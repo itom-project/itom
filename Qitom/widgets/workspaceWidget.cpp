@@ -289,7 +289,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempValue = QSharedPointer<QString>(new QString());
             QMetaObject::invokeMethod(eng,"workspaceGetValueInformation",Q_ARG(PyWorkspaceContainer*,m_workspaceContainer),Q_ARG(QString,fullName),Q_ARG(QSharedPointer<QString>,tempValue),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             
-            if (!locker.getSemaphore()->wait(1000))
+            if (!locker.getSemaphore()->waitAndProcessEvents(1000))
             {
                 extendedValue = "timeout while asking python for detailed information";
             }
