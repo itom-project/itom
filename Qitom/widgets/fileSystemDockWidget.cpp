@@ -42,27 +42,6 @@
 
 namespace ito {
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QString getHtmlTag(QString tag)
-{
-    QString txt = "";
-    QString link = "";
-    QStringList tagList = tag.split("/");
-    txt = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
-    for (int x = 0; x < tagList.size(); x++)
-    {
-        if (x > 0)
-        {
-            txt += "/";
-            link += "/";
-        }
-        link += tagList[x];
-        txt += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
-//            \\<a href='file:///U:/privat'>privat</a>\\<a href='file:///U:/privat/Verwaltung'>Verwaltung</a>\\<a href='file:///U:/privat/Verwaltung/Getränke'>Getränke</a>";
-    }
-    txt += "</span></p></body></html>";
-    return txt;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
@@ -592,7 +571,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
     m_pPathEdit->setToolTip(baseDirectory);
     m_pPathEdit->setHtml(getHtmlTag(baseDirectory));
+    //m_pPathEdit->scrollContentsBy(500,0);
+
+    //m_pPathEdit->scrollToAnchor("last");
 //    m_pPathEdit->setText(baseDirectory);
+    //m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
+    //m_pPathEdit->ensureCursorVisible();
 
     updateActions();
 
@@ -1160,6 +1144,29 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
         }
         newDirSelected(dir);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString FileSystemDockWidget::getHtmlTag(const QString &tag)
+{
+    QString txt = "";
+    QString link = "";
+    QStringList tagList = tag.split("/");
+    txt = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
+    for (int x = 0; x < tagList.size(); x++)
+    {
+        if (x > 0)
+        {
+            txt += "/";
+            link += "/";
+        }
+        link += tagList[x];
+
+        txt += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+    }
+    txt += "<a name=\"last\"></a></span></p></body></html>";
+    //qDebug() << txt;
+    return txt;
 }
 
 } //end namespace ito

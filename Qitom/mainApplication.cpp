@@ -112,6 +112,19 @@ void MainApplication::setupApplication()
     QStringList startupScripts;
 
     QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
+
+#ifdef _WIN64
+    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
+#else
+    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
+#endif
+    QPainter p;
+    p.begin(&pixmap);
+    p.setPen(Qt::black);
+    QRectF rect(311,115,200,100); //position of the version text within the image
+    p.drawText(rect, Qt::AlignRight, text);
+    p.end();
+
     m_splashScreen = new QSplashScreen(pixmap);
     
     m_splashScreen->show();

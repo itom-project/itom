@@ -90,7 +90,12 @@ MainWindow::MainWindow() :
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     // general windows settings
+#ifdef _WIN64
+    setWindowTitle(tr("itom (x64)"));
+#else
     setWindowTitle(tr("itom"));
+#endif
+
     setUnifiedTitleAndToolBarOnMac(true);
 
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea );

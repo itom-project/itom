@@ -110,6 +110,8 @@ namespace ito
             void updateActions();
             void updatePythonActions(){ updateActions(); }
 
+            QString getHtmlTag(const QString &tag);
+
         private:
             void fillFilterList();
             void showInGraphicalShell(const QString &filePath);
