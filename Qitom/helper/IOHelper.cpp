@@ -156,7 +156,17 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static */RetVal IOHelper::uiExportPyWorkspaceVars(bool globalNotLocal, QStringList varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath, QWidget* parent)
 {
-    if (defaultPath.isNull() || defaultPath.isEmpty()) defaultPath = QDir::currentPath();
+    static QString uiExportPyWorkspaceDefaultPath;
+
+    if (defaultPath.isNull() || defaultPath.isEmpty())
+    {
+        if(uiExportPyWorkspaceDefaultPath == "")
+        {
+            uiExportPyWorkspaceDefaultPath = QDir::currentPath();
+        }
+        defaultPath = uiExportPyWorkspaceDefaultPath;
+    }
+
     if (compatibleParamBaseTypes.size() == 0)
     {
         compatibleParamBaseTypes.fill(varNames.size(), 0);
@@ -192,9 +202,12 @@ namespace ito {
     else
     {
         QFileInfo info(filename);
+
+        uiExportPyWorkspaceDefaultPath = info.path(); //save directory as default for next call to this export dialog
+
         if (info.suffix() == "idc" || info.suffix() == "mat")
         {
-            QDir::setCurrent(info.path());
+            //QDir::setCurrent(info.path());
             return exportPyWorkspaceVars(filename, globalNotLocal, varNames);
         }
         else
@@ -257,7 +270,7 @@ namespace ito {
 
     QFile file(filename);
 
-    if (!file.open(QIODevice::WriteOnly))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         return RetVal(retError, 3, tr("file cannot be opened").toAscii().data());
     }
@@ -315,7 +328,17 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static */RetVal IOHelper::uiImportPyWorkspaceVars(bool globalNotLocal, IOFilters IOfilters, QString defaultPath, QWidget* parent)
 {
-    if (defaultPath.isNull() || defaultPath.isEmpty()) defaultPath = QDir::currentPath();
+
+    static QString uiImportPyWorkspaceDefaultPath;
+
+    if (defaultPath.isNull() || defaultPath.isEmpty())
+    {
+        if(uiImportPyWorkspaceDefaultPath == "")
+        {
+            uiImportPyWorkspaceDefaultPath = QDir::currentPath();
+        }
+        defaultPath = uiImportPyWorkspaceDefaultPath;
+    }
 
     IOfilters &= ~ito::IOHelper::IOOutput;
     QString filters = IOHelper::getFileFilters(IOfilters);
@@ -332,7 +355,10 @@ namespace ito {
         QFile file(filename);
         if (file.exists())
         {
-            QDir::setCurrent(QFileInfo(filename).path());
+            //QDir::setCurrent(QFileInfo(filename).path());
+
+            uiImportPyWorkspaceDefaultPath = QFileInfo(filename).canonicalPath(); //save directory as default for next call to this export dialog
+
             QFileInfo info(filename);
             return openGeneralFile(filename, false, true, parent, NULL, globalNotLocal);
         }
