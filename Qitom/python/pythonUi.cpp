@@ -1392,7 +1392,8 @@ void PythonUi::PyUi_dealloc(PyUi* self)
     
         if(!locker.getSemaphore()->wait(5000))
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while closing dialog");
+            std::cerr << "timeout while closing dialog" << std::endl;
+            //PyErr_Format(PyExc_RuntimeError, "timeout while closing dialog");
         }
     }
 

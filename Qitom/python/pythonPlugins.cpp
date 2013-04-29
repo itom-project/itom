@@ -1006,7 +1006,8 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
         ito::AddInInterfaceBase *aib = self->actuatorObj->getBasePlugin();
         if (!aib)
         {
-            PyErr_Format(PyExc_RuntimeError, "error closing plugin");
+            std::cerr << "error closing plugin" << std::endl;
+            //PyErr_Format(PyExc_RuntimeError, "error closing plugin");
         }
         else
         {
@@ -2849,7 +2850,8 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
         ito::AddInInterfaceBase *aib = self->dataIOObj->getBasePlugin();
         if (!aib)
         {
-            PyErr_Format(PyExc_RuntimeError, "error closing plugin");
+            std::cerr << "error closing plugin" << std::endl;
+            //PyErr_Format(PyExc_RuntimeError, "error closing plugin");
         }
         else
         {
