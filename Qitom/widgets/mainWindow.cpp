@@ -84,7 +84,7 @@ MainWindow::MainWindow() :
     m_isFullscreen(false)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
-    QApplication::setWindowIcon( QIcon(":/application/icons/itomicon/curAppIcon.png") );
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/curAppIcon.png"));
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -98,10 +98,10 @@ MainWindow::MainWindow() :
 
     setUnifiedTitleAndToolBarOnMac(true);
 
-    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
-    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
-    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea );
-    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea );
+    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
 
     //content
@@ -115,7 +115,7 @@ MainWindow::MainWindow() :
         m_console = new ConsoleWidget(this);
         //setCentralWidget(m_console);
         qDebug(".. console widget loaded");
-        m_contentLayout->addWidget( m_console);
+        m_contentLayout->addWidget(m_console);
     }
 
     m_contentLayout->setContentsMargins(0,0,0,0);
@@ -138,13 +138,13 @@ MainWindow::MainWindow() :
     if (uOrg->hasFeature(featDeveloper))
     {
         // breakPointDock
-        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), this, true, true, AbstractDockWidget::floatingStandard );
+        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), this, true, true, AbstractDockWidget::floatingStandard);
 	    m_breakPointDock->setObjectName("itomBreakPointDockWidget");
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
 	    // CallStack-Dock
-	    m_callStackDock = new CallStackDockWidget( tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
+	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
 	    m_callStackDock->setObjectName("itomCallStackDockWidget");
 	    m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
 	    addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
@@ -198,14 +198,14 @@ MainWindow::MainWindow() :
         connect(pyEngine, SIGNAL(pythonRemoveMenuElement(QString)), this, SLOT(pythonRemoveMenuElement(QString)));
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
-        connect( this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
 
         connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
         connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
     }
 	else
 	{
-		showInfoMessageLine( tr("Python could not be started. itom cannot be used in the desired way.") );
+		showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way."));
 		m_console->setReadOnly(true);
 	}
 
@@ -224,20 +224,20 @@ MainWindow::MainWindow() :
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 
-    //restoreGeometry( settings.value("geometry").toByteArray() );
+    //restoreGeometry(settings.value("geometry").toByteArray());
 
     bool maximized = settings.value("maximized", false).toBool();
     QDesktopWidget desktop;
-    QRect mainScreen = desktop.screenGeometry( desktop.primaryScreen() );
-    mainScreen.adjust( mainScreen.width()/6, mainScreen.height()/6, -mainScreen.width()/6, -mainScreen.height()/6 );
+    QRect mainScreen = desktop.screenGeometry(desktop.primaryScreen());
+    mainScreen.adjust(mainScreen.width()/6, mainScreen.height()/6, -mainScreen.width()/6, -mainScreen.height()/6);
     QRect geometry = settings.value("geometry", mainScreen).toRect();
 
     if (geometry != mainScreen) //check if valid
     {
         //check whether top/left and bottom/right lie in any available desktop
         QRect r1, r2;
-        r1 = desktop.availableGeometry( geometry.topLeft() );
-        r2 = desktop.availableGeometry( geometry.bottomRight() );
+        r1 = desktop.availableGeometry(geometry.topLeft());
+        r2 = desktop.availableGeometry(geometry.bottomRight());
         if (r1.isValid() == false || r2.isValid() == false  || r1.contains(geometry.topLeft()) == false || r2.contains(geometry.bottomRight()) == false)
         {
             //reset to default
@@ -246,7 +246,7 @@ MainWindow::MainWindow() :
         }
     }
 
-	restoreState( settings.value("state", "").toByteArray() );
+	restoreState(settings.value("state", "").toByteArray());
 
     settings.endGroup();
 
@@ -274,7 +274,7 @@ MainWindow::~MainWindow()
     settings.beginGroup("MainWindow");
     settings.setValue("maximized", isMaximized());
     settings.setValue("geometry", m_geometryNormalState);
-    //settings.setValue( "geometry", saveGeometry() );
+    //settings.setValue("geometry", saveGeometry());
     
 	settings.setValue("state", saveState());
 	settings.endGroup();
@@ -289,7 +289,7 @@ MainWindow::~MainWindow()
         //disconnect(pyEngine, SIGNAL(pythonModifyGlobalDict(PyObject*,ItomSharedSemaphore*)), m_globalWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         //disconnect(pyEngine, SIGNAL(pythonModifyLocalDict(PyObject*,ItomSharedSemaphore*)), m_localWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-        disconnect( this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
 
     if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
@@ -325,7 +325,7 @@ MainWindow::~MainWindow()
     while (i.hasNext()) 
     {
         i.next();
-        if(i.value().isNull() == false)
+        if (i.value().isNull() == false)
         {
             i.value().data()->deleteLater();
         }
@@ -340,7 +340,7 @@ MainWindow::~MainWindow()
 */
 void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area)
 {
-    if(dockWidget)
+    if (dockWidget)
     {
         dockWidget->setParent(this);
 
@@ -366,7 +366,7 @@ void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetA
 */
 void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 {
-    if(dockWidget)
+    if (dockWidget)
     {
         dockWidget->setParent(NULL);
         removeDockWidget(dockWidget);
@@ -435,10 +435,10 @@ void MainWindow::createActions()
 
     if (uOrg->hasFeature(featUserManag))
     {
-        m_actions["properties"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("Properties..."), this);
+        m_actions["properties"] = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
         connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
 
-        m_actions["usermanagement"] = new QAction(QIcon(":/application/icons/preferences-general.png"), tr("User Management..."), this);
+        m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
         connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
     }
 
@@ -449,7 +449,7 @@ void MainWindow::createActions()
     m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/q_itoM32.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    temp = m_actions["show_loaded_plugins"] = new QAction(tr("Loaded plugins..."), this);
+    temp = m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
     connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
     if (uOrg->hasFeature(featDeveloper))
@@ -466,7 +466,7 @@ void MainWindow::createActions()
         temp->setCheckable(true);
         if (pyEngine)
         {
-            temp->setChecked( pyEngine->execInternalCodeByDebugger() );
+            temp->setChecked(pyEngine->execInternalCodeByDebugger());
         }
         connect(temp, SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
 
@@ -487,7 +487,7 @@ void MainWindow::createActions()
 
         temp = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
         temp->setShortcut(tr("F10"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut );
+        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
         temp = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
@@ -546,6 +546,7 @@ void MainWindow::createMenus()
         m_pMenuFile->addAction(m_actions["properties"]);
         m_pMenuFile->addAction(m_actions["usermanagement"]);
     }
+    m_pMenuFile->addAction(m_actions["show_loaded_plugins"]);
     m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_actions["exit"]);
 
@@ -553,7 +554,8 @@ void MainWindow::createMenus()
 	QMenu *dockWidgets = createPopupMenu();
     if (dockWidgets)
     {
-	    dockWidgets->menuAction()->setText( tr("Toolboxes") );
+        dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
+	    dockWidgets->menuAction()->setText(tr("Toolboxes"));
 	    m_pMenuView->addMenu(dockWidgets);
     }
 
@@ -575,7 +577,7 @@ void MainWindow::createMenus()
     m_pMenuHelp->addAction(m_actions["open_assistant"]);
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
-    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
+//    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -724,15 +726,15 @@ void MainWindow::mnuOpenFile()
     QString fileName;
     RetVal retValue(retOk);
 
-    QString filter = IOHelper::getFileFilters( IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll) );
+    QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     static QString selectedFilter; //since this variable is static, it will remember the last set filter.
-    fileName = QFileDialog::getOpenFileName( this, tr("open file"), QDir::currentPath(), filter, &selectedFilter); //tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png *.mat);;all files (*.*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("open file"), QDir::currentPath(), filter, &selectedFilter); //tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png *.mat);;all files (*.*)"));
 
     QFileInfo info(fileName);
 
     if (fileName.isEmpty()) return;
 
-    QDir::setCurrent( QFileInfo(fileName).path() );
+    QDir::setCurrent(QFileInfo(fileName).path());
     IOHelper::openGeneralFile(fileName, false, true, this);
 }
 
@@ -764,7 +766,7 @@ void MainWindow::mnuShowAssistant()
 			QStringList args;
 			QFileInfo collectionFileInfo(collectionFile);
 
-			if(collectionFileInfo.exists() == false)
+			if (collectionFileInfo.exists() == false)
 			{
 				m_pHelpSystem->rebuildHelpIfNotUpToDate();
 				collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
@@ -797,7 +799,7 @@ void MainWindow::mnuAboutQitom()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::helpAssistantError ( QProcess::ProcessError /*error*/ )
+void MainWindow::helpAssistantError (QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
     msgBox.setText("The help assistant could not be started.");
@@ -880,7 +882,7 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     int i = 0;
     QIcon icon(buttonIconFilename);
 
-    if (buttonIconFilename != "" && icon.isNull() )
+    if (buttonIconFilename != "" && icon.isNull())
     {
         while(!iconFound && i < 1000)
         {
@@ -903,9 +905,9 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
 
             i++;
 
-            if(basePath.exists())
+            if (basePath.exists())
             {
-                if(basePath.exists( buttonIconFilename ))
+                if (basePath.exists(buttonIconFilename))
                 {
                     icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
                     iconFound = true;
@@ -923,7 +925,7 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     action->setData(buttonName);
     action->setToolTip(buttonName);
     connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-    m_userDefinedSignalMapper->setMapping( action, pythonCode );
+    m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
 }
 
@@ -945,10 +947,10 @@ void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonNa
             }
         }
 
-        if ( (*it)->actions().size() == 0) //remove this toolbar
+        if ((*it)->actions().size() == 0) //remove this toolbar
         {
             removeToolBar(*it);
-            m_userDefinedToolBars.remove( it.key() );
+            m_userDefinedToolBars.remove(it.key());
         }
     }
     else
@@ -977,7 +979,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
     bool iconFound = false;
     int i = 0;
 
-    if (buttonIconFilename != "" && icon.isNull() )
+    if (buttonIconFilename != "" && icon.isNull())
     {
         while(!iconFound && i < 1000)
         {
@@ -1000,9 +1002,9 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
 
             i++;
 
-            if(basePath.exists())
+            if (basePath.exists())
             {
-                if(basePath.exists( buttonIconFilename ))
+                if (basePath.exists(buttonIconFilename))
                 {
                     icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
                     iconFound = true;
@@ -1096,7 +1098,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
             {      
                 parentMnu = parentMnu->addMenu(tempKey);
                 parentMnu->menuAction()->setIconText(tempKey);
-                parentMnu->menuAction()->setData( QVariant( tempKey ));
+                parentMnu->menuAction()->setData(QVariant(tempKey));
             }
             else
             {
@@ -1105,24 +1107,24 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
                 case 0: //BUTTON
                     act = parentMnu->addAction(icon,name);
                     act->setIconText(name);
-                    act->setData( QVariant( tempKey ));
+                    act->setData(QVariant(tempKey));
                     connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-                    m_userDefinedSignalMapper->setMapping( act, code );
+                    m_userDefinedSignalMapper->setMapping(act, code);
                     break;
                 case 1: //SEPARATOR
                     act = parentMnu->addSeparator();
                     act->setIconText(name);
-                    act->setData( QVariant( tempKey ));
+                    act->setData(QVariant(tempKey));
                     break;
                 case 2: //MENU
                     parentMnu = parentMnu->addMenu(icon,name);
                     parentMnu->menuAction()->setIconText(name);
-                    parentMnu->menuAction()->setData( QVariant( tempKey ));
+                    parentMnu->menuAction()->setData(QVariant(tempKey));
 
                     /*act = parentMnu->addAction(icon,name);
                     act->setIconText(name);
-                    act->setData( QVariant( tempKey ));
-                    act->setMenu( new QMenu(name) );
+                    act->setData(QVariant(tempKey));
+                    act->setMenu(new QMenu(name));
                     parentMnu = act->menu();*/
                     break;
                 default:
@@ -1199,7 +1201,7 @@ void MainWindow::pythonRemoveMenuElement(QString key)
         }
         else
         {
-            QMessageBox::warning(this, tr("Remove menu element"), QString( tr("A user-defined menu with the key sequence '%1' could not be found")).arg(key) );
+            QMessageBox::warning(this, tr("Remove menu element"), QString(tr("A user-defined menu with the key sequence '%1' could not be found")).arg(key));
         }
     }
 
@@ -1284,7 +1286,7 @@ void MainWindow::mnuShowDesigner()
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
-            process->setProcessEnvironment( env );
+            process->setProcessEnvironment(env);
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
@@ -1294,7 +1296,7 @@ void MainWindow::mnuShowDesigner()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::designerError ( QProcess::ProcessError /*error*/ )
+void MainWindow::designerError (QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
     msgBox.setText("The UI designer (Qt designer) could not be started.");
@@ -1320,7 +1322,7 @@ void MainWindow::mnuScriptStop()
         emit(pythonDebugCommand(ito::pyDbgQuit));
         raise();
     }
-    else if(PythonEngine::getInstance())
+    else if (PythonEngine::getInstance())
     {
         PythonEngine::getInstance()->pythonInterruptExecution();
     }
@@ -1378,24 +1380,24 @@ void MainWindow::mnuExitApplication()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::showInfoMessageLine( QString text, QString winKey /*= ""*/ )
+void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
 {
     WidgetInfoBox *w = NULL;
 
-    if(winKey != "" && m_infoBoxWidgets.contains(winKey))
+    if (winKey != "" && m_infoBoxWidgets.contains(winKey))
     {
         w = m_infoBoxWidgets[winKey].data();
-        if(w == NULL)
+        if (w == NULL)
         {
             m_infoBoxWidgets.remove(winKey);
         }
     }
 
-    if(w == NULL)
+    if (w == NULL)
     {
         w = new WidgetInfoBox(text, this);
         m_contentLayout->insertWidget(0, w);
-        if(winKey != "")
+        if (winKey != "")
         {
             m_infoBoxWidgets[winKey] = QWeakPointer<WidgetInfoBox>(w);
         }

@@ -4522,7 +4522,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="-37"/>
         <source>itom (x64)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+53"/>

@@ -168,6 +168,7 @@
         <file>icons/itom_icons/bulb.png</file>
         <file>icons/preferences-orbit.png</file>
         <file>icons/itom_icons/bulb_dir.png</file>
+        <file>icons/User.png</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>
