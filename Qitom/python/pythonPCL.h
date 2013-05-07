@@ -148,7 +148,7 @@ public:
     //-------------------------------------------------------------------------------------------------
     static PyObject *PyPointCloud_fromXYZ(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_fromXYZI(PyPointCloud *self, PyObject *args);
-    static PyObject *PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args);
+    static PyObject *PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // type structures

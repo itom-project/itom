@@ -1975,18 +1975,32 @@ PointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(index, values) -> inserts a single point or a sequence of points before position given by index");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud * /*self*/, PyObject *args)
+PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.\n\
+\n\
+Parameters \n\
+----------- \n\
+disparity : {MxN data object, float32} \n\
+    The values of this dataObject represent the disparity values.\n\
+intensity : {MxN data object, float32}, optional \n\
+    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject \n\
+    deleteNaN : {bool}, optional \n\
+    If true (default: false), all NaN-values in the disparity map will not be copied into the point cloud.\n\
+\n\
+Returns \n\
+------- \n\
+PointCloud.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objDisp = NULL;
     PyObject *objI = NULL;
     bool deleteNaN = false;
+    const char *kwlist[] = {"disparity", "intensity", "deleteNaN", NULL};
 
     QSharedPointer<ito::DataObject> dispMap, IntMap;
     bool ok = true;
     ito::RetVal retval = ito::retOk;
 
-    if (!PyArg_ParseTuple(args,"O|Ob", &objDisp, &objI, &deleteNaN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Ob", const_cast<char**>(kwlist), &objDisp, &objI, &deleteNaN))
     {
         return NULL; 
     }
