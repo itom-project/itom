@@ -420,6 +420,7 @@ bool AbstractFigure::event(QEvent *e)
     {
         importItomApi(m_apiFunctionsBasePtr);
         importItomPlotApi(m_apiFunctionsGraphBasePtr);
+        init();
     }   
     return QMainWindow::event(e);
 }

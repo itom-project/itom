@@ -30,6 +30,7 @@
 
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
+#include <qsettings.h>
 
 static ito::apiFunctionsGraph singleApiFunctionsGraph;
 
@@ -48,6 +49,7 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mconnectLiveData,       /* [7] */
         (void*)&singleApiFunctionsGraph.mdisconnectLiveData,    /* [8] */
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
+        (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
 		NULL
 	};
 
@@ -296,6 +298,44 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito:
     }
     index = paletteOrganizer->getColorBarIndex(name);
     return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue /*= QVariant()*/, ito::RetVal *retval/* = NULL*/)
+{
+    if(!figureClass)
+    {
+        if(retval) (*retval) += ito::RetVal(ito::retError,0,"figureClass is NULL. No settings could be retrieved");
+        return defaultValue;
+    }
+    else if(figureClass->inherits("ito::AbstractFigure") == false)
+    {
+        if(retval) (*retval) += ito::RetVal(ito::retError,0,"figureClass is not inherited from AbstractFigure. No settings could be retrieved");
+        return defaultValue;
+    }
+
+    const QMetaObject *mo = figureClass->metaObject();
+    bool found = false;
+    QVariant value = defaultValue;
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("DesignerPlugins");
+
+    while(mo && !found)
+    {
+        settings.beginGroup(mo->className());
+        if(settings.contains(key))
+        {
+            value = settings.value(key,defaultValue);
+            found = true;
+        }
+        settings.endGroup();
+
+        mo = mo->superClass();
+    }
+
+    settings.endGroup();
+    
+    return value;
 }
 
 }; // namespace ito

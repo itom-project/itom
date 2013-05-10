@@ -62,7 +62,7 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         };
 
         AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode = ModeStandaloneInUi, QWidget *parent = 0);
-        ~AbstractFigure();
+        virtual ~AbstractFigure();
 
         virtual bool event(QEvent *e);
         void setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr);
@@ -89,6 +89,9 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
 
     protected:
+
+        virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
+
 
 		void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);

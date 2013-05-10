@@ -73,6 +73,9 @@ namespace ito
 #define apiPaletteGetColorBarIdxFromName \
 	(*(ito::RetVal (*)(const QString &, ito::int32 &)) ito::ITOM_API_FUNCS_GRAPH[9])
 
+#define apiGetFigureSetting \
+    (*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
+
 
 #if defined(ITOM_IMPORT_PLOTAPI)
 static int importItomPlotApi(void** apiArray)

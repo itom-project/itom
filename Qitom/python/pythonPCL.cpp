@@ -2060,30 +2060,30 @@ PointCloud.");
 
 //---------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPointCloud_getseters[] = {
-    {"type",        (getter)PyPoint_GetType,            NULL, pyPointCloudType_doc,     NULL},
-    {"size",        (getter)PyPointCloud_GetSize,       NULL, pyPointCloudSize_doc,     NULL},
-    {"height",      (getter)PyPointCloud_GetHeight,     NULL, pyPointCloudHeight_doc,   NULL},
-    {"width",       (getter)PyPointCloud_GetWidth,      NULL, pyPointCloudWidth_doc,    NULL},
-    {"empty",       (getter)PyPointCloud_GetEmpty,      NULL, pyPointCloudEmpty_doc,    NULL},
-    {"organized",   (getter)PyPointCloud_GetOrganized,  NULL, pyPointCloudOrganized_doc,NULL},
-    {"dense",       (getter)PyPointCloud_GetDense,      (setter)PyPointCloud_SetDense, pyPointCloudDense_doc,    NULL},
-    {"fields",      (getter)PyPointCloud_GetFields,     NULL, pyPointCloudFields_doc,   NULL},
+    {"type",        (getter)PyPoint_GetType,            NULL,                           pyPointCloudType_doc,     NULL},
+    {"size",        (getter)PyPointCloud_GetSize,       NULL,                           pyPointCloudSize_doc,     NULL},
+    {"height",      (getter)PyPointCloud_GetHeight,     NULL,                           pyPointCloudHeight_doc,   NULL},
+    {"width",       (getter)PyPointCloud_GetWidth,      NULL,                           pyPointCloudWidth_doc,    NULL},
+    {"empty",       (getter)PyPointCloud_GetEmpty,      NULL,                           pyPointCloudEmpty_doc,    NULL},
+    {"organized",   (getter)PyPointCloud_GetOrganized,  NULL,                           pyPointCloudOrganized_doc,NULL},
+    {"dense",       (getter)PyPointCloud_GetDense,      (setter)PyPointCloud_SetDense,  pyPointCloudDense_doc,    NULL},
+    {"fields",      (getter)PyPointCloud_GetFields,     NULL,                           pyPointCloudFields_doc,   NULL},
     {NULL}  /* Sentinel */
 };
 
 //---------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPointCloud_methods[] = {
-    {"name", (PyCFunction)PyPointCloud_name, METH_NOARGS, "name"},
-    {"append", (PyCFunction)PyPointCloud_append, METH_KEYWORDS | METH_VARARGS, pyPointCloudAppend_doc},
-    {"clear", (PyCFunction)PyPointCloud_clear, METH_NOARGS, pyPointCloudClear_doc},
-    {"insert", (PyCFunction)PyPointCloud_insert, METH_VARARGS, pyPointCloudInsert_doc},
-    {"erase", (PyCFunction)PyPointCloud_erase, METH_VARARGS, pyPointCloudErase_doc},
-    {"toDataObject", (PyCFunction)PyPointCloud_toDataObject, METH_NOARGS, pyPointCloudToDataObject_doc},
-    {"__reduce__", (PyCFunction)PyPointCloud_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
-    {"__setstate__", (PyCFunction)PyPointCloud_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
+    {"name",          (PyCFunction)PyPointCloud_name, METH_NOARGS, "name"},
+    {"append",        (PyCFunction)PyPointCloud_append, METH_KEYWORDS | METH_VARARGS, pyPointCloudAppend_doc},
+    {"clear",         (PyCFunction)PyPointCloud_clear, METH_NOARGS, pyPointCloudClear_doc},
+    {"insert",        (PyCFunction)PyPointCloud_insert, METH_VARARGS, pyPointCloudInsert_doc},
+    {"erase",         (PyCFunction)PyPointCloud_erase, METH_VARARGS, pyPointCloudErase_doc},
+    {"toDataObject",  (PyCFunction)PyPointCloud_toDataObject, METH_NOARGS, pyPointCloudToDataObject_doc},
+    {"__reduce__",    (PyCFunction)PyPointCloud_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
+    {"__setstate__",  (PyCFunction)PyPointCloud_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
     
-    {"fromXYZ", (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
-    {"fromXYZI", (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
+    {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
+    {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
     
     {NULL}  /* Sentinel */

@@ -25,7 +25,7 @@ Software packages
 **Optional Software-Packages**
 
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
-- Git + GUI (e.g. TortoiseGit or GitExtensions) for accessing remote repository
+- Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing remote repository
 - Doxygen (for creating the source code documentation)
 - Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
 
@@ -56,7 +56,7 @@ Create the following environment variables (Windows only - you need to logoff yo
 
 * create an entry **QTDIR** and set it to the *Qt*-base directory (e.g. **C:\\Qt\\4.8.0**)
 * create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
-* add the following text to the Path variable: ;%QTDIR%\\bin (please only **add** this string, **do not replace** the existing path-entry) 
+* add the following text to the Path variable: **;%QTDIR%\\bin** (please only **add** this string, **do not replace** the existing path-entry) 
 
 .. note::
     
@@ -100,10 +100,16 @@ QtCreator project file of QScintilla finally copies the entire output to the **b
 project settings are not ready for a multi-configuration build in **Visual Studio**, therefore you need to tackle a little bit the Qt-project file.
 
 An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** (ITO only) and copy the folder **QScintilla2.6** 
-to a directory on your hard drive (e.g. **C:\QScintilla2.6**). The open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
+to a directory on your hard drive (e.g. **C:\QScintilla2.6**, avoid Windows program directory due to restrictions in write access). 
+The open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
 Just execute the batch file and answer the given questions::
 
    qscintilla_install.bat
+
+.. note::
+    
+    If the batch file breaks with some strang error messages, please make sure, that the location where **QScintilla** is installed is writable by the batch file (e.g. the
+    Windows program directory under Windows Vista or higher). Therefore it is recommended to locate **QScintilla** in another directory than the program-directory.
 
 .. _install-depend-opencv:
 
@@ -119,8 +125,8 @@ You have different possibilities in order to get the binaries from OpenCV:
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. Then map **OpenCV_DIR** to the build-directory, indicated in CMake.
 
 Finally, add the appropriate bin-folder of OpenCV to the windows environment variable: 
-- VS2010, 32bit: ADD to the path-variable: ;C:\\OpenCV2.3\\build\\x86\\vc10\\bin (or similar)
-- VS2010, 64bit: ADD to the path-variable: ;C:\\OpenCV2.3\\build\\x64\\vc10\\bin (or similar)
+- VS2010, 32bit: ADD to the path-variable: **;C:\\OpenCV2.3\\build\\x86\\vc10\\bin** (or similar)
+- VS2010, 64bit: ADD to the path-variable: **;C:\\OpenCV2.3\\build\\x64\\vc10\\bin** (or similar)
 
 Changes to the environment variable only become active after a re-login to windows.
 
@@ -146,10 +152,21 @@ Get a version of NumPy that fits to python 3.2 and install it. On windows binari
 **Sphinx** (optional)
 
 The Python package **Sphinx** is used for generating the user documentation of |itom|. You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However,
-sphinx is dependent on other packages, such that it is worth to get the package **distribute** first. Then open a command-line (cmd.exe) and move to the directory **[YourPythonPath]/Scripts**.
+sphinx is dependent on other packages, such that it is worth to get the package **distribute** (see below) first. Then open a command-line (cmd.exe) and move to the directory **[YourPythonPath]/Scripts**.
 Type the following command in order to download **sphinx** including dependecies from the internet and install it::
     
     easy_install -U sphinx
+
+**Distribute** (optional)
+
+Distribute is a python package, than can be used for easily downloading and installing other python packages, like *Sphinx*. Download the latest version (file ending with tar.gz) of
+**Distribute** from https://pypi.python.org/pypi/distribute and unpack it to any temporary directory on your hard drive. Open a command line and switch to the directory of **Distribute**.
+
+Assuming that Python is located under **C:\Python32**, execute the following command::
+    
+    C:\python32\python.exe setup.py install
+
+The **Distribute** is installed and you can use the **easy_install** tool (see **Sphinx** installation above).
 
 **Other python packages** (optional)
 

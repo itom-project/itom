@@ -28,6 +28,8 @@
 #include "../../common/sharedStructures.h"
 #include "../../common/sharedStructuresGraphics.h"
 
+#include <qvariant.h>
+
 namespace ito 
 {
     class apiFunctionsGraph
@@ -48,6 +50,7 @@ namespace ito
             static ito::RetVal mgetColorBarIdxFromName(const QString &name, ito::int32 & index);
             
             static ito::RetVal mgetFigure(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent = NULL);
+            static QVariant mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue = QVariant(), ito::RetVal *retval = NULL);
 
         private:
     };

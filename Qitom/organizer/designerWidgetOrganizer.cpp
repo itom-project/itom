@@ -35,6 +35,8 @@
 #include <qcoreapplication.h>
 #include <qdir.h>
 
+#include <qpen.h>
+
 
 /*!
     \class DesignerWidgetOrganizer
@@ -52,6 +54,16 @@ namespace ito
 */
 DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("DesignerPlugins");
+    settings.beginGroup("ito::AbstractDObjFigure");
+    settings.setValue("zoomRubberBandPen", QPen(QBrush(Qt::red),2,Qt::DashLine) );
+    settings.setValue("trackerPen", QPen(QBrush(Qt::red),2) );
+    settings.setValue("trackerFont", QFont("Verdana",10));
+    settings.setValue("trackerBackground", QBrush(QColor(255,255,255,155), Qt::SolidPattern) );
+    settings.endGroup();
+    settings.endGroup();
+
     //create figure categories (for property dialog...)
    ito::PlotDataFormats allFormats = ~(ito::PlotDataFormats(0)); //(~ito::Format_Gray8); // | ito::Format_Gray8; //(ito::PlotDataFormats(0));
 
