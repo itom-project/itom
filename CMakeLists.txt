@@ -9,6 +9,7 @@ SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 
+
 if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
 else (BUILD_TARGET64)

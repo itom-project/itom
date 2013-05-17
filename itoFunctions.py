@@ -50,4 +50,29 @@ def at(addr):
             return o
     return None
         
+def importMatlabMatAsDataObject(value):
+    """
+    This method is called by loadMatlabMat if the containing element is a numpy-array with a field itomMetaInformation
+    
+    Then the fields are analyzed and assumed to be tags and additional information for the dataObject.
+    """
+    import numpy as np
+    import itom
+    
+    if(type(value) is np.ndarray):
+        fields = value.dtype.fields
+        itomMetaInformation = value["itomMetaInformation"] #str( value.getfield( *(fields["itomMetaInformation"]) ) )
+        if(itomMetaInformation == "dataObject"):
+            res = itom.dataObject( value["dataObject"].flat[0] )
+            
+            #res.valueUnit = float(value["valueUnit"])
+            
+        elif(itomMetaInformation == "npDataObject"):
+            res = itom.npDataObject( value["dataObject"].flat[0] )
+        else:
+            raise RuntimeError('itomMetaInformation unknown')
+    else:
+        raise RuntimeError('value must be a numpy ndarray')
+    
+    return res
     
