@@ -5075,6 +5075,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     size_t elemSize = 0;
     char *dummy = 0;
     char *startingPoint = NULL;
+    int res;
 
     if(dims == 1)
     {
@@ -5094,7 +5095,16 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         elemSize = tempMat->elemSize();
 
         byteArray = PyByteArray_FromStringAndSize(dummy,0);
-        PyByteArray_Resize(byteArray, sizeV * sizeU * elemSize);
+        if( PyByteArray_Resize(byteArray, sizeV * sizeU * elemSize) != 0 )
+        {
+            //err, message already set
+            self->dataObject->unlock();
+            Py_DECREF(byteArray);
+            Py_DECREF(dataTuple);
+            Py_DECREF(sizeList);
+            return NULL;
+        }
+
         startingPoint = PyByteArray_AsString(byteArray);
 
         for(int row = 0 ; row < sizeU ; row++)

@@ -2556,7 +2556,7 @@ PyObject* PythonItom::PyMatlabMatDataObjectConverter(PyObject *element)
     }
     else
     {
-        PyErr_Format(PyExc_ValueError, "element is NUL");
+        PyErr_Format(PyExc_ValueError, "element is NULL");
         return NULL;
     }
 

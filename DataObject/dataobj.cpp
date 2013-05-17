@@ -959,7 +959,8 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-        free(dataMat->data);
+        free(dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
+        //free(dataMat->data);
     }
 
     //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
@@ -1047,9 +1048,9 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
         if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
         {
             dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-            if(dataMat && dataMat->data)
+            if(dataMat && dataMat->datastart)
             {
-                free(dataMat->data);
+                free(dataMat->datastart);
             }
         }
 
@@ -5038,7 +5039,13 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         resDObj.m_roi.m_p[i] = dObj.m_roi.m_p[i];
     }
 
-//    size_t numMats = dObj.m_data.size();
+    size_t roiOffset = 0;
+    
+    if(dims > 1)
+    {
+        roiOffset = sizeof(_Tp) * (dObj.m_roi.m_p[dims-1] + dObj.m_roi.m_p[dims-2] * dObj.m_osize.m_p[dims-1]);
+    }
+
     size_t numMats = dObj.mdata_size();
 
     size_t matSize = sizeof(_Tp) * dObj.m_osize[dObj.getDims()-2] * dObj.m_osize[dObj.getDims()-1];
@@ -5052,8 +5059,20 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         for (size_t n = 0; n < numMats; n++)
         {
             tempMat = (cv::Mat_<_Tp>*)(dObj.m_data[n]);
-            memcpy((void*)newDataPtr , (void*)tempMat->data, matSize);
+            memcpy((void*)newDataPtr , (void*)(tempMat->datastart), matSize);
             newDataPtr += matSize;
+        }
+    }
+
+    if(roiOffset > 0)
+    {
+        int dtop = -(int)dObj.m_roi.m_p[dims-2];
+        int dleft = -(int)dObj.m_roi.m_p[dims-1];
+        int dbottom = -( (int)dObj.m_osize.m_p[dims-2] - (int)dObj.m_size.m_p[dims-2] + dtop );
+        int dright = -( (int)dObj.m_osize.m_p[dims-1] - (int)dObj.m_size.m_p[dims-1] + dleft );
+        for (size_t n = 0; n < numMats; n++)
+        {
+            ((cv::Mat*)resDObj.m_data[n])->adjustROI(dtop,dbottom,dleft,dright);
         }
     }
 
