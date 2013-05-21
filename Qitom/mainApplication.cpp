@@ -22,6 +22,7 @@
 
 #include "mainApplication.h"
 #include "global.h"
+#include "version.h"
 #include "AppManagement.h"
 
 #include "widgets/abstractDockWidget.h"
@@ -117,6 +118,10 @@ void MainApplication::setupApplication()
     QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
 #else
     QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
+#endif
+
+#if USING_GIT == 1
+    text.append( QString("\n%1").arg(GIT_HASHTAG_ABBREV) );
 #endif
     QPainter p;
     p.begin(&pixmap);

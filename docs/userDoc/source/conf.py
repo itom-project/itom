@@ -67,8 +67,8 @@ version = itomFuncs.version(1)["itom"]["itom_Version"]
 d = itomFuncs.version(1)
 if("itom_SVN_Rev" in d["itom"] and d["itom"]["itom_SVN_Rev"] != ""):
     release = d["itom"]["itom_SVN_Rev"]
-elif("itom_GIT_Rev" in d["itom"] and d["itom"]["itom_GIT_Rev"] != ""):
-    release = d["itom"]["itom_GIT_Rev"]
+elif("itom_GIT_Rev_Abbrev" in d["itom"] and d["itom"]["itom_GIT_Rev_Abbrev"] != ""):
+    release = d["itom"]["itom_GIT_Rev_Abbrev"]
 else:
     release = "unknown"
 

@@ -41,6 +41,7 @@ gitLocation = '${GIT_EXECUTABLE}'
 
 repDate = 'failed'
 repHash = 'failed'
+repHashAbbrev = 'failed'
 repURL = 'failed'
 repIsDirty = 4
 
@@ -94,6 +95,21 @@ else:
 del hash
 del error
 
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-list', '-n1','--abbrev-commit','HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+(hash,error)=pr.communicate()
+
+if(len(hash) < 1 or len(error) > 0):
+    raise RuntimeError("Calling GIT for abbreviated hashTag failed" + error)
+else:
+    first = hash.find(b'\n')
+    if(first > -1):
+        hash = hash[0:first]
+    repHashAbbrev = hash.decode("utf-8")
+
+del hash
+del error
+
 #pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
 pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
 (url,error)=pr.communicate()
@@ -116,6 +132,7 @@ except:
     raise RuntimeError("Reading templatefile failed")
 
 inputString = inputString.replace('$REV$', repHash)
+inputString = inputString.replace('$REVABBREV$', repHashAbbrev)
 inputString = inputString.replace('$DATE$', repDate)
 inputString = inputString.replace('$URL$', repURL)
 inputString = inputString.replace('$MODS$', str(repIsDirty))

@@ -34,6 +34,9 @@
 /// The current Hash Tag of this Version
 #define GIT_HASHTAG "$REV$"
 
+/// The current abbreviated Hash Tag of this Version
+#define GIT_HASHTAG_ABBREV "$REVABBREV$"
+
 /// Date of the last commit
 #define GIT_REVISION_DATE "$DATE$"
 

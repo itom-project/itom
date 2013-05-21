@@ -198,6 +198,7 @@ QMap<QString, QString> ito::getItomVersionMap()
     items["itom_SVN_Date"] = "";
     items["itom_SVN_URL"] = "";
     items["itom_GIT_Rev"] = "";
+    items["itom_GIT_Rev_Abbrev"] = "";
     items["itom_GIT_Date"] = "";
     items["itom_GIT_URL"] = "";
 
@@ -218,6 +219,7 @@ QMap<QString, QString> ito::getItomVersionMap()
 
 #elif (defined USING_GIT)
     items["itom_GIT_Rev"] = GIT_HASHTAG;
+    items["itom_GIT_Rev_Abbrev"] = GIT_HASHTAG_ABBREV;
     items["itom_GIT_Date"] = GIT_REVISION_DATE;
     items["itom_GIT_URL"] = GIT_REPOSITORY_URL;
 
