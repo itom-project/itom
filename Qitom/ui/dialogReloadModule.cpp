@@ -153,7 +153,7 @@ void DialogReloadModule::dialogAccepted()
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(pyEngine, "reloadSysModules", Q_ARG(QSharedPointer<QStringList>,mods), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-        if(locker.getSemaphore()->wait(5000) == false)
+        if(locker.getSemaphore()->waitAndProcessEvents(5000) == false) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
         {
             QMessageBox::critical(this, tr("connection problem"), tr("Timeout while forcing python to reload modules."));
         }
@@ -168,7 +168,7 @@ void DialogReloadModule::dialogAccepted()
                 QMessageBox::critical(this, tr("error while reloading modules"), tr("Unknown error"));
             }
         }
-        else if(mods->count() > 0) //some modules not not be loaded
+        else if(mods->count() > 0) //some modules could not be loaded
         {
             QMessageBox::information(this, tr("Module reload"), tr("The following modules could not be reloaded:\n") + mods->join("\n"));
         }
