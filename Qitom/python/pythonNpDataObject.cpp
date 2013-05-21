@@ -876,13 +876,19 @@ int PythonNpDataObject::PyNpDataObject_setAxisScales(PyNpDataObject *self, PyObj
         return -1;
     }
 
+    PyObject *valueItem = NULL;
+
     for(Py_ssize_t i = 0; i < PySequence_Size(value); i++)
     {
-        if(!PyLong_Check(PySequence_GetItem(value,i)) && !PyFloat_Check(PySequence_GetItem(value,i)))
+        valueItem = PySequence_GetItem(value,i); //new reference
+
+        if(!PyLong_Check(valueItem) && !PyFloat_Check(valueItem))
         {
+            Py_XDECREF(valueItem);
             PyErr_SetString(PyExc_TypeError, "axis scale values must have a numeric value");
             return -1;
         }
+        Py_XDECREF(valueItem);
     }
 
     Py_XDECREF(self->axisScales);
@@ -920,13 +926,18 @@ int PythonNpDataObject::PyNpDataObject_setAxisOffsets(PyNpDataObject *self, PyOb
         return -1;
     }
 
+    PyObject *valueItem = NULL;
+
     for(Py_ssize_t i = 0; i < PySequence_Size(value); i++)
     {
-        if(!PyLong_Check(PySequence_GetItem(value,i)) && !PyFloat_Check(PySequence_GetItem(value,i)))
+        valueItem = PySequence_GetItem(value,i); //new reference
+        if(!PyLong_Check(valueItem) && !PyFloat_Check(valueItem))
         {
+            Py_XDECREF(valueItem);
             PyErr_SetString(PyExc_TypeError, "axis offset values must have a numeric value");
             return -1;
         }
+        Py_XDECREF(valueItem);
     }
 
     Py_XDECREF(self->axisOffsets);

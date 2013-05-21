@@ -134,7 +134,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
         {
             for( i = 0 ; i < PySequence_Size(obj) ; i++)
             {
-                value = PySequence_GetItem(obj,i);
+                value = PySequence_GetItem(obj,i); //new reference
 
                 if(!m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
                 {

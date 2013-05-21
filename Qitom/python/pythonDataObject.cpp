@@ -417,12 +417,15 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     for(int i = 0; i<intDims ; i++) sizes[i]=0;
 
                     int totalElems = 1;
+                    PyObject *dimListItem = NULL;
 
                     //try to parse list to values of unsigned int
                     for(Py_ssize_t i = 0; i < dims ; i++)
                     {
-                        if(!PyArg_Parse(PySequence_GetItem(dimList,i) , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
+                        dimListItem = PySequence_GetItem(dimList,i); //new reference
+                        if(!PyArg_Parse(dimListItem , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
                         {
+                            Py_XDECREF(dimListItem);
                             PyErr_Print();
                             PyErr_Clear();
                             PyErr_Format(PyExc_TypeError,"Element %d of dimension-list is no integer number", i+1);
@@ -432,11 +435,13 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         }
                         else if(tempSizes <= 0)
                         {
+                            Py_XDECREF(dimListItem);
                             PyErr_Format(PyExc_TypeError,"Element %d must be bigger than 1");
                             retValue += RetVal(retError);
                             break;
                         }
 
+                        Py_XDECREF(dimListItem);
                         sizes[i] = tempSizes;
                         totalElems *= tempSizes;
                     }
@@ -786,7 +791,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     {
         for(Py_ssize_t i = 0; i<PySequence_Size(npDO->axisScales) ; i++)
         {
-            temp = PySequence_GetItem(npDO->axisScales,i);
+            temp = PySequence_GetItem(npDO->axisScales,i); //new reference
             if(PyFloat_Check(temp))
             {
                 dataObj->setAxisScale(i, PyFloat_AsDouble(temp));
@@ -804,7 +809,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     {
         for(Py_ssize_t i = 0; i<PySequence_Size(npDO->axisOffsets) ; i++)
         {
-            temp = PySequence_GetItem(npDO->axisOffsets,i);
+            temp = PySequence_GetItem(npDO->axisOffsets,i); //new reference
             if(PyFloat_Check(temp))
             {
                 dataObj->setAxisOffset(i, PyFloat_AsDouble(temp));
@@ -822,7 +827,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     {
         for(Py_ssize_t i = 0; i<PySequence_Size(npDO->axisDescriptions) ; i++)
         {
-            temp = PySequence_GetItem(npDO->axisDescriptions,i);
+            temp = PySequence_GetItem(npDO->axisDescriptions,i); //new reference
             retCode = parsePyObject2StdString(temp, tempString);
             if(retCode == 0)
             {
@@ -841,7 +846,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     {
         for(Py_ssize_t i = 0; i<PySequence_Size(npDO->axisUnits) ; i++)
         {
-            temp = PySequence_GetItem(npDO->axisUnits,i);
+            temp = PySequence_GetItem(npDO->axisUnits,i); //new referene
             retCode = parsePyObject2StdString(temp, tempString);
             if(retCode == 0)
             {
@@ -895,7 +900,7 @@ int PythonDataObject::parsePyObject2StdString(PyObject* pyObj, std::string &str)
     {
         bool ok = false;
         str = PythonQtConversion::PyObjGetBytes(pyObj, false, ok).data(); //PyBytes_AsString(temp2);
-        Py_XDECREF(temp);
+        //Py_XDECREF(temp);
         if(!ok) 
         {
             PyErr_Clear();
@@ -1304,7 +1309,7 @@ int PythonDataObject::PyDataObject_setAxisScales(PyDataObject *self, PyObject *v
 
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        tempObj = PySequence_GetItem(value,i);
+        tempObj = PySequence_GetItem(value,i); //new reference
         if(PyFloat_Check(tempObj))
         {
             scale = PyFloat_AsDouble(tempObj);
@@ -1315,9 +1320,11 @@ int PythonDataObject::PyDataObject_setAxisScales(PyDataObject *self, PyObject *v
         }
         else
         {
+            Py_XDECREF(tempObj);
             PyErr_SetString(PyExc_TypeError, "elements of axis scale vector must be a number");
             return -1;
         }
+        Py_XDECREF(tempObj);
 
         self->dataObject->setAxisScale(i, scale);
     }
@@ -1385,7 +1392,7 @@ int PythonDataObject::PyDataObject_setAxisOffsets(PyDataObject *self, PyObject *
 
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        tempObj = PySequence_GetItem(value,i);
+        tempObj = PySequence_GetItem(value,i); //new reference
         if(PyFloat_Check(tempObj))
         {
             offset = PyFloat_AsDouble(tempObj);
@@ -1396,9 +1403,11 @@ int PythonDataObject::PyDataObject_setAxisOffsets(PyDataObject *self, PyObject *
         }
         else
         {
+            Py_XDECREF(tempObj);
             PyErr_SetString(PyExc_TypeError, "elements of axis offset vector must be a number");
             return -1;
         }
+        Py_XDECREF(tempObj);
 
         self->dataObject->setAxisOffset(i, offset);
     }
@@ -1455,6 +1464,7 @@ PyDoc_STRVAR(pyDataObjectSetAxisDescriptions_doc, "");
 int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
     std::string tempString;
+    PyObject *seqItem = NULL;
 
     if (value == NULL)
     {
@@ -1478,11 +1488,14 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
 
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
+        seqItem = PySequence_GetItem(value,i); //new reference
         if(PythonDataObject::parsePyObject2StdString(PySequence_GetItem(value,i), tempString) == -1)
         {
+            Py_XDECREF(seqItem);
             PyErr_SetString(PyExc_TypeError, "elements of axis description vector must be a string");
             return -1;
         }
+        Py_XDECREF(seqItem);
         self->dataObject->setAxisDescription(i, tempString);
     }
 
@@ -1534,6 +1547,7 @@ PyDoc_STRVAR(pyDataObjectSetAxisUnits_doc, "");
 int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
     std::string tempString;
+    PyObject *seqItem = NULL;
 
     if (value == NULL)
     {
@@ -1557,11 +1571,14 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
 
     for(Py_ssize_t i = 0 ; i < dims ; i++)
     {
-        if(PythonDataObject::parsePyObject2StdString(PySequence_GetItem(value,i), tempString) == -1)
+        seqItem = PySequence_GetItem(value,i); //new reference
+        if(PythonDataObject::parsePyObject2StdString(seqItem, tempString) == -1)
         {
+            Py_XDECREF(seqItem);
             PyErr_SetString(PyExc_TypeError, "elements of axis unit vector must be a string");
             return -1;
         }
+        Py_XDECREF(seqItem);
         self->dataObject->setAxisUnit(i, tempString);
     }
 
@@ -5038,23 +5055,22 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 
 PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*args*/)
 {
+    //version history:
+    //21120:
+    //  - each plane is stored as a bytearray in the data tuple (this needs 16bit for values bigger than 100 since it is transformed to an unicode value)
+    //
+    //21121:
+    //  - each plane is now stored as a byte object, this can natively be pickled (faster, bytearray contains a reduce method)
+
+    long version = 21121;
+
     if(self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_NotImplementedError, "data object is NULL");
         return NULL;
     }
 
-
     self->dataObject->lockRead();
-
-    /*if(self->dataObject->isT())
-    {
-        self->dataObject->unlock();
-        self->dataObject->lockWrite();
-        self->dataObject->evaluateTransposeFlag();
-        self->dataObject->unlock();
-        self->dataObject->lockRead();
-    }*/
 
     int dims = self->dataObject->getDims();
 
@@ -5076,6 +5092,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     char *dummy = 0;
     char *startingPoint = NULL;
     int res;
+    
 
     if(dims == 1)
     {
@@ -5088,47 +5105,91 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         sizeV = self->dataObject->getSize(dims-1); 
     }
 
-    for(int i = 0 ; i < vectorLength ; i++)
+    if(version == 21120)
     {
-        seekNr = self->dataObject->seekMat(i);
-        tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-        elemSize = tempMat->elemSize();
-
-        byteArray = PyByteArray_FromStringAndSize(dummy,0);
-        if( PyByteArray_Resize(byteArray, sizeV * sizeU * elemSize) != 0 )
+        for(int i = 0 ; i < vectorLength ; i++)
         {
-            //err, message already set
-            self->dataObject->unlock();
-            Py_DECREF(byteArray);
-            Py_DECREF(dataTuple);
-            Py_DECREF(sizeList);
-            return NULL;
-        }
+            seekNr = self->dataObject->seekMat(i);
+            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+            elemSize = tempMat->elemSize();
 
-        startingPoint = PyByteArray_AsString(byteArray);
-
-        for(int row = 0 ; row < sizeU ; row++)
-        {
-            if(memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
+            //in version (checksum) 21120 the data has been stored as bytearray, which is reduced to a unicode and needs a lot of space
+            byteArray = PyByteArray_FromStringAndSize(dummy,0);
+            if( PyByteArray_Resize(byteArray, sizeV * sizeU * elemSize) != 0 )
             {
+                //err, message already set
                 self->dataObject->unlock();
-                Py_DECREF(byteArray);
-                Py_DECREF(dataTuple);
-                Py_DECREF(sizeList);
-                PyErr_Format(PyExc_NotImplementedError, "memcpy failed. (index m_data-vector: %d, row-index: %d)", i, row);
+                Py_XDECREF(byteArray);
+                Py_XDECREF(dataTuple);
+                Py_XDECREF(sizeList);
                 return NULL;
             }
-            startingPoint += (sizeV * elemSize); //move startingPoint by length (in byte) of one image row
-        }
 
-        PyTuple_SetItem(dataTuple, i, byteArray); //steals ref from byteArray
-        byteArray = NULL;
+            startingPoint = PyByteArray_AsString(byteArray);
+
+            for(int row = 0 ; row < sizeU ; row++)
+            {
+                if(memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
+                {
+                    self->dataObject->unlock();
+                    Py_XDECREF(byteArray);
+                    Py_XDECREF(dataTuple);
+                    Py_XDECREF(sizeList);
+                    PyErr_Format(PyExc_NotImplementedError, "memcpy failed. (index m_data-vector: %d, row-index: %d)", i, row);
+                    return NULL;
+                }
+                startingPoint += (sizeV * elemSize); //move startingPoint by length (in byte) of one image row
+            }
+
+            PyTuple_SetItem(dataTuple, i, byteArray); //steals ref from byteArray
+            byteArray = NULL;
+        }
+    }
+    else if(version = 21121)
+    {
+        for(int i = 0 ; i < vectorLength ; i++)
+        {
+            seekNr = self->dataObject->seekMat(i);
+            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+            elemSize = tempMat->elemSize();
+
+            //in version (checksum) 21120 the data has been stored as bytearray, which is reduced to a unicode and needs a lot of space
+            byteArray = PyBytes_FromStringAndSize(NULL, sizeV * sizeU * elemSize);
+            if(!byteArray /* || _PyBytes_Resize(&byteArray, sizeV * sizeU * elemSize) != 0 */)
+            {
+                //err, message already set
+                self->dataObject->unlock();
+                Py_XDECREF(byteArray);
+                Py_XDECREF(dataTuple);
+                Py_XDECREF(sizeList);
+                return NULL;
+            }
+
+            startingPoint = PyBytes_AS_STRING(byteArray);
+
+            for(int row = 0 ; row < sizeU ; row++)
+            {
+                if(memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
+                {
+                    self->dataObject->unlock();
+                    Py_XDECREF(byteArray);
+                    Py_XDECREF(dataTuple);
+                    Py_XDECREF(sizeList);
+                    PyErr_Format(PyExc_NotImplementedError, "memcpy failed. (index m_data-vector: %d, row-index: %d)", i, row);
+                    return NULL;
+                }
+                startingPoint += (sizeV * elemSize); //move startingPoint by length (in byte) of one image row
+            }
+
+            PyTuple_SetItem(dataTuple, i, byteArray); //steals ref from byteArray
+            byteArray = NULL;
+        }
     }
 
 
     //load tags
     PyObject *tagTuple = PyTuple_New(10);
-    PyTuple_SetItem(tagTuple,0,PyLong_FromLong(21120));
+    PyTuple_SetItem(tagTuple,0,PyLong_FromLong(version));
 
     PyObject *newTagDict = PyDataObject_getTagDict(self, NULL); //new ref
     PyObject *tempItem;
@@ -5213,65 +5274,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
 
     Py_XDECREF(newTagDict);
 
-    //DataObject *dObj = self->dataObject;
-    //int tagSize = dObj->getTagListSize();
-    //std::string tempString;
-    //std::string tempKey;
-    //bool validOp;
-    //PyObject *tempTag;
-
-    ////1. tags
-    //tempTag = PyDict_New();
-    //for(int i=0;i<tagSize;i++)
-    //{
-    //    tempKey = dObj->getTagKey(i,validOp);
-    //    if(validOp)
-    //    {
-    //        tempString = dObj->getTag(tempKey, validOp);
-    //        if(validOp) PyDict_SetItem(tempTag, PyUnicode_FromString(tempKey.data()), PyUnicode_FromString(tempString.data()));
-    //    }
-    //}
-    //PyTuple_SetItem(tagTuple,1,tempTag);
-
-    ////2. axisScales
-    //tempTag = PyList_New(dims);
-    //for(int i=0;i<dims;i++)
-    //{
-    //    PyList_SetItem(tempTag, i, PyFloat_FromDouble(dObj->getAxisScales(0,true)));
-    //}
-    //PyTuple_SetItem(tagTuple,2,tempTag);
-
-    ////3. axisOffsets
-    //tempTag = PyList_New(dims);
-    //for(int i=0;i<dims;i++)
-    //{
-    //    PyList_SetItem(tempTag, i, PyFloat_FromDouble(dObj->getAxisOffset(0,true)));
-    //}
-    //PyTuple_SetItem(tagTuple,3,tempTag);
-    ////4. axisDescriptions
-    //tempTag = PyList_New(dims);
-    //for(int i=0;i<dims;i++)
-    //{
-    //    PyList_SetItem(tempTag, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp,true).data()));
-    //}
-    //PyTuple_SetItem(tagTuple,4,tempTag);
-    ////5. axisUnits
-    //tempTag = PyList_New(dims);
-    //for(int i=0;i<dims;i++)
-    //{
-    //    PyList_SetItem(tempTag, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp,true).data()));
-    //}
-    //PyTuple_SetItem(tagTuple,5,tempTag);
-    ////6. valueUnit
-    //PyTuple_SetItem(tagTuple,6,PyUnicode_FromString(dObj->getValueUnit().data()));
-    ////7. valueDescription
-    //PyTuple_SetItem(tagTuple,7,PyUnicode_FromString(dObj->getValueDescription().data()));
-    ////8.
-    //PyTuple_SetItem(tagTuple,8,PyFloat_FromDouble(dObj->getValueOffset()));
-    ////9.
-    //PyTuple_SetItem(tagTuple,9,PyFloat_FromDouble(dObj->getValueScale()));
-
-
     PyObject *stateTuple = Py_BuildValue("(bOO)", false /*self->dataObject->isT()*/, dataTuple, tagTuple);
 
     Py_DECREF(dataTuple);
@@ -5291,12 +5293,20 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     //return NULL;
 }
 
+
+
 PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *args)
 {
+    //version history:
+    // see log in PyDataObj_Reduce
+
     bool transpose = false;
     PyObject *dataTuple = NULL; //borrowed reference
     PyObject *tagTuple = NULL;  //borrowed reference
     PyObject *tempTag = NULL;   //borrowed reference
+    long version = 21120; //this is the first version, current is 21121
+
+    
 
     if(!PyArg_ParseTuple(args,"(bO!O!)", &transpose, &PyTuple_Type, &dataTuple, &PyTuple_Type, &tagTuple))
     {
@@ -5315,25 +5325,27 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     {
         if(PyTuple_Size(tagTuple) != 10)
         {
-            Py_XDECREF(dataTuple);
-            Py_XDECREF(tagTuple);
+            //Py_XDECREF(dataTuple);
+            //Py_XDECREF(tagTuple);
             PyErr_SetString(PyExc_NotImplementedError, "tags in pickled data object does not have the required number of elements (10)");
             return NULL;
         }
         else
         {
-            tempTag = PyTuple_GetItem(tagTuple,0);
+            tempTag = PyTuple_GetItem(tagTuple,0); //borrowed ref
             if(!PyLong_Check(tempTag))
             {
-                Py_XDECREF(dataTuple);
-                Py_XDECREF(tagTuple);
+                //Py_XDECREF(dataTuple);
+                //Py_XDECREF(tagTuple);
                 PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple must be an integer number, which it is not.");
                 return NULL;
             }
-            else if(PyLong_AsLong(tempTag) != 21120)
+
+            version = PyLong_AsLong(tempTag);
+            if(version != 21120 && version != 21121)
             {
-                Py_XDECREF(dataTuple);
-                Py_XDECREF(tagTuple);
+                //Py_XDECREF(dataTuple);
+                //Py_XDECREF(tagTuple);
                 PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple is a check sum and does not have the right value.");
                 return NULL;
             }
@@ -5342,16 +5354,16 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
     if(transpose == true)
     {
-        Py_XDECREF(dataTuple);
-        Py_XDECREF(tagTuple);
+        //Py_XDECREF(dataTuple);
+        //Py_XDECREF(tagTuple);
         PyErr_SetString(PyExc_NotImplementedError, "transpose flag of unpickled data must be false (since the transposition has been evaluated before pickling). Transpose flag is obsolete now.");
         return NULL;
     }
 
     if(self->dataObject == NULL)
     {
-        Py_XDECREF(dataTuple);
-        Py_XDECREF(tagTuple);
+        //Py_XDECREF(dataTuple);
+        //Py_XDECREF(tagTuple);
         PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed");
         return NULL;
     }
@@ -5363,8 +5375,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     if(PyTuple_Size(dataTuple) != vectorLength)
     {
         self->dataObject->unlock();
-        Py_XDECREF(dataTuple);
-        Py_XDECREF(tagTuple);
+        //Py_XDECREF(dataTuple);
+        //Py_XDECREF(tagTuple);
         PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed since data dimensions does not fit");
         return NULL;
     }
@@ -5382,6 +5394,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     std::string keyString;
     PyObject *key, *value;
     Py_ssize_t pos = 0;
+    PyObject *seqItem = NULL;
 
     if(dims == 1)
     {
@@ -5394,16 +5407,33 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         sizeV = self->dataObject->getSize(dims-1); 
     }
 
-    for(int i = 0 ; i < vectorLength ; i++)
+    if(version == 21120)
     {
-        seekNr = self->dataObject->seekMat(i);
-        tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-        elemSize = tempMat->elemSize();
-        startPtr = tempMat->ptr(0); //mat is continuous!!! (should be ;) )
-        byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
+        for(int i = 0 ; i < vectorLength ; i++)
+        {
+            seekNr = self->dataObject->seekMat(i);
+            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+            elemSize = tempMat->elemSize();
+            startPtr = tempMat->ptr(0); //mat is continuous!!! (should be ;) )
+            byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
 
-        byteArrayContent = PyByteArray_AsString(byteArray); //borrowed ref
-        memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
+            byteArrayContent = PyByteArray_AsString(byteArray); //borrowed ref
+            memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
+        }
+    }
+    else if(version == 21121)
+    {
+        for(int i = 0 ; i < vectorLength ; i++)
+        {
+            seekNr = self->dataObject->seekMat(i);
+            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+            elemSize = tempMat->elemSize();
+            startPtr = tempMat->ptr(0); //mat is continuous!!! (should be ;) )
+            byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
+
+            byteArrayContent = PyBytes_AsString(byteArray); //borrowed ref
+            memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
+        }
     }
 
     //transpose must be false (checked above)
@@ -5412,7 +5442,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     if(tagTuple != NULL && PyTuple_Size(tagTuple) == 10)
     {
         //1. tags
-        tempTag = PyTuple_GetItem(tagTuple,1);
+        tempTag = PyTuple_GetItem(tagTuple,1); //borrowed
         if(PyDict_Check(tempTag))
         {
             while (PyDict_Next(tempTag, &pos, &key, &value))
@@ -5437,7 +5467,9 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                self->dataObject->setAxisScale(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)));
+                seqItem = PySequence_GetItem(tempTag,i); //new reference
+                self->dataObject->setAxisScale(i, PyFloat_AsDouble(seqItem));
+                Py_XDECREF(seqItem);
             }
         }
 
@@ -5447,7 +5479,9 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                self->dataObject->setAxisOffset(i, PyFloat_AsDouble(PySequence_GetItem(tempTag,i)));
+                seqItem = PySequence_GetItem(tempTag,i); //new reference
+                self->dataObject->setAxisOffset(i, PyFloat_AsDouble(seqItem));
+                Py_XDECREF(seqItem);
             }
         }
 
@@ -5457,10 +5491,12 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                if(parsePyObject2StdString(PySequence_GetItem(tempTag,i), tempString) == 0)
+                seqItem = PySequence_GetItem(tempTag,i); //new reference
+                if(parsePyObject2StdString(seqItem, tempString) == 0)
                 {
                     self->dataObject->setAxisDescription(i, tempString);
                 }
+                Py_XDECREF(seqItem);
             }
         }
 
@@ -5470,10 +5506,12 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             for(Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
-                if(parsePyObject2StdString(PySequence_GetItem(tempTag,i), tempString) == 0)
+                seqItem = PySequence_GetItem(tempTag,i); //new reference
+                if(parsePyObject2StdString(seqItem, tempString) == 0)
                 {
                     self->dataObject->setAxisDescription(i, tempString);
                 }
+                Py_XDECREF(seqItem);
             }
         }
 
@@ -5499,8 +5537,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
     self->dataObject->unlock();
 
-    Py_XDECREF(dataTuple);
-    Py_XDECREF(tagTuple);
+    //Py_XDECREF(dataTuple);
+    //Py_XDECREF(tagTuple);
 
     Py_RETURN_NONE;
 }

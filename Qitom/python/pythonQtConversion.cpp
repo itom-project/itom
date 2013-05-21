@@ -66,10 +66,12 @@ QStringList PythonQtConversion::PyObjToStringList(PyObject* val, bool strict, bo
     if (PySequence_Check(val)) 
     {
         int count = PySequence_Size(val);
+        PyObject *value = NULL;
         for (int i = 0;i<count;i++) 
         {
-            PyObject* value = PySequence_GetItem(val,i);
+            value = PySequence_GetItem(val,i); //new reference
             v.append(PyObjGetString(value,false,ok));
+            Py_XDECREF(value);
         }
         ok = true;
     }
@@ -428,13 +430,13 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     }
 
     Py_ssize_t len = PySequence_Size(val);
-    PyObject *t;
+    PyObject *t = NULL;
 
     for(Py_ssize_t i = 0 ; i < len ; i++)
     {
-        t = PySequence_GetItem(val,i);
-
+        t = PySequence_GetItem(val,i); //new reference
         v.append( PyObjGetDouble(t,strict,ok) );
+        Py_XDECREF(t);
         if(!ok) break;
     }
 
@@ -457,13 +459,13 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     }
 
     Py_ssize_t len = PySequence_Size(val);
-    PyObject *t;
+    PyObject *t = NULL;
 
     for(Py_ssize_t i = 0 ; i < len ; i++)
     {
-        t = PySequence_GetItem(val,i);
-
+        t = PySequence_GetItem(val,i); //new reference
         v.append( PyObjGetInt(t,strict,ok) );
+        Py_XDECREF(t);
         if(!ok) break;
     }
 
@@ -884,11 +886,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     {
         QVariantList list;
         int count = PySequence_Size(val);
-        PyObject* value;
+        PyObject* value = NULL;
         for (int i = 0;i<count;i++) 
         {
-            value = PySequence_GetItem(val,i);
+            value = PySequence_GetItem(val,i); //new reference
             list.append(PyObjToQVariant(value, -1));
+            Py_XDECREF(value);
         }
         v = list;
     }
@@ -1281,11 +1284,12 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             QVariantList list;
             int count = PySequence_Size(val);
-            PyObject* value;
+            PyObject* value = NULL;
             for (int i = 0;i<count;i++) 
             {
-                value = PySequence_GetItem(val,i);
+                value = PySequence_GetItem(val,i); //new reference
                 list.append(PyObjToQVariant(value, -1));
+                Py_XDECREF(value);
             }
             *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&list) );
             break;

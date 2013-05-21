@@ -2003,10 +2003,13 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     else
     {
         Py_ssize_t length = PySequence_Size(stringList);
+        PyObject *stringListItem = NULL;
         bool ok = false;
         for(Py_ssize_t i = 0 ; i < length ; i++)
         {
-            temp = PythonQtConversion::PyObjGetString(PySequence_GetItem(stringList,i),true,ok);
+            stringListItem = PySequence_GetItem(stringList,i); //new reference
+            temp = PythonQtConversion::PyObjGetString(stringListItem,true,ok);
+            Py_XDECREF(stringListItem);
             if(!temp.isNull()) 
             {
                 stringListQt << temp;

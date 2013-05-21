@@ -4046,6 +4046,7 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
     bool retVal = true;
+    bool released = false;
     PyObject* destinationDict = NULL;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
@@ -4083,7 +4084,11 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
 
             RetVal retValue = unpickleDictionary(destinationDict, filename, true);
 
-            if (semaphore != NULL) semaphore->release();
+            if (semaphore && !released)
+            {
+                semaphore->release();
+                released = true;
+            }
 
             if (globalNotLocal)
             {
@@ -4106,7 +4111,10 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
         }
     }
 
-    if (semaphore) semaphore->release();
+    if (semaphore && !released)
+    {
+        semaphore->release();
+    }
 
     return retVal;
 }

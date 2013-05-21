@@ -2394,6 +2394,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     char *key = NULL;
     PyObject *matrixNamesTuple = NULL;
     PyObject *matlabData = NULL;
+    PyObject *matrixNamesItem = NULL;
 
 
     if (!PyArg_ParseTuple(pArgs, "sO|O", &filename, &element, &matrixNames))
@@ -2454,11 +2455,14 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 {
                     for (Py_ssize_t i = 0 ; i < PySequence_Size(matrixNames) ; i++)
                     {
-                        if (!PyUnicode_Check(PySequence_GetItem(matrixNames,i)) && !PyBytes_Check(PySequence_GetItem(matrixNames,i)))
+                        matrixNamesItem = PySequence_GetItem(matrixNames,i); //new reference
+                        if (!PyUnicode_Check(matrixNamesItem) && !PyBytes_Check(matrixNamesItem))
                         {
                             Py_XDECREF(scipyIoModule);
+                            Py_XDECREF(matrixNamesItem);
                              return PyErr_Format(PyExc_TypeError, "each element of matrix names sequence must be a unicode object");
                         }
+                        Py_XDECREF(matrixNamesItem);
                     }
                 }
             }
@@ -2469,7 +2473,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
             for (Py_ssize_t i = 0 ; i < PySequence_Size(element) ; i++)
             {
-                tempItem = PySequence_GetItem(element,i);
+                tempItem = PySequence_GetItem(element,i); //new reference
 
                 if (tempName == matrixName)
                 {
@@ -2482,13 +2486,17 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 }
                 else
                 {
-                    matrixNamesTuple  = PyTuple_Pack(1, PySequence_GetItem(matrixNames,i));
+                    matrixNamesItem = PySequence_GetItem(matrixNames,i); //new reference
+                    matrixNamesTuple  = PyTuple_Pack(1, matrixNamesItem);
                     PyArg_ParseTuple(matrixNamesTuple, "s", &tempName);
                     matlabData = PyMatlabMatDataObjectConverter(tempItem);
                     PyDict_SetItemString(saveDict, tempName, matlabData);
                     Py_DECREF(matlabData);
                     Py_XDECREF(matrixNamesTuple);
+                    Py_XDECREF(matrixNamesItem);
                 }
+
+                Py_XDECREF(tempItem);
             }
 
         }

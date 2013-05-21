@@ -902,7 +902,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             {
                 for (int n = 0; n < listlen; n++)
                 {
-                    listElem = PySequence_GetItem(tempObj, n);
+                    listElem = PySequence_GetItem(tempObj, n); //new reference
                     if (PyErr_Clear(), PyLong_Check(listElem))
                     {
                         listType |= 2;
@@ -913,9 +913,11 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
                     }
                     else
                     {
+                        Py_XDECREF(listElem);
                         PyErr_Format(PyExc_TypeError, "invalid paramter format, invalid array item");
                         return NULL;
                     }
+                    Py_XDECREF(listElem);
                 }
 
                 //! integer type lists
@@ -925,8 +927,9 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
                     buf = (int*)malloc(listlen * sizeof(int));
                     for (int n = 0; n < listlen; n++)
                     {
-                        listElem = PySequence_GetItem(tempObj, n);
+                        listElem = PySequence_GetItem(tempObj, n); //new reference
                         ((int *)buf)[n] = PyLong_AsLong(listElem);
+                        Py_XDECREF(listElem);
                     }
                     param.setVal<int*>(buf, listlen);
                     free(buf);
@@ -938,8 +941,9 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
                     buf = (double*)malloc(listlen * sizeof(double));
                     for (int n = 0; n < listlen; n++)
                     {
-                        listElem = PySequence_GetItem(tempObj, n);
+                        listElem = PySequence_GetItem(tempObj, n); //new reference
                         ((double *)buf)[n] = PyFloat_AsDouble(listElem);
+                        Py_XDECREF(listElem);
                     }
                     param.setVal<double*>(buf, listlen);
                     free(buf);

@@ -1430,7 +1430,7 @@ int PythonPCL::PyPointCloud_mappingSetElem(PyPointCloud *self, PyObject *key, Py
                 {
                     temp = PySequence_GetItem(value, i); //new ref
                     retCode |= PyPointCloud_seqAssItem(self, i, temp);
-                    Py_DECREF(temp);
+                    Py_XDECREF(temp);
                 }
                 return retCode;
             }
