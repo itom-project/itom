@@ -313,7 +313,7 @@ For instance, the signatures for the signals above are::
     "clicked()" or "clicked(bool)"
     "pressed()"
     "released()"
-    "toggled()" or "toggled(bool)"
+    "toggled(bool)"
 
 Then, create a python method in your script, which you want to consider to be a slot and that should be connected with the signal. This method always requires the same number of
 arguments than given in the signature. If you want to connect a signal to a method that is a bounded method of a class in python, the first argument **self** does not count to the
@@ -363,7 +363,7 @@ the signal **triggered()** of every item in the menu with your method. In |Qt| s
     
     win = ui("testWindow.ui", ui.TYPEWINDOW)
     
-    def addItem(self):
+    def addItem():
         print("action addItem clicked")
     
     win.actionAddItem.connect("triggered()", addItem) #actionAddItem is the objectName of the action
