@@ -91,7 +91,17 @@ Create the following environment variables (Windows only - you need to logoff yo
 If you want to have a better integration of **Qt** into **Visual Studio** (e.g. better debugging information for Qt-types like lists or vectors), you should download the
 **Qt-Visual Studio-AddIn** (1.1.11 for Qt 4.8.x, 1.1.10 for Qt 4.7.x) from http://qt-project.org/downloads#qt-other and install it. Since we are using **CMake** it is not
 mandatory to use this **AddIn** like it is usually the case when developing any Qt-project with Visual Studio. Therefore it is also possible to use the Express edition of
-Visual Studio, where you cannot install this add-in.
+Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddIn** requires that you have the **.NET framework 2.0 SP 1** installed on your PC.
+
+.. note::
+    
+    Sometimes, there is still trouble when starting Visual Studio with an installed Qt-AddIn. In case that any component cannot be registered, mentioned by a message-box when
+    starting Visual Studio, you should check the bug and its fix described at https://bugreports.qt-project.org/browse/QTVSADDINBUG-77. In most cases it was sufficient, to register
+    the library **stdole.dll** using the tool **gacutil.exe** from the **Microsoft SDKs/Windows/v7.0A/bin** subfolder of your standard program folder. The call is::
+        
+        gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"
+
+    Replace the path above by your path structure and change to the directory, where *gacutil.exe* is located first.
 
 **QScintilla2** (mandatory)
 
