@@ -1135,8 +1135,13 @@ void FileSystemDockWidget::processError(QProcess::ProcessError /*error*/ )
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
 {
-    if (link.isLocalFile())
+#if QT_VERSION >= 0x040800
+    if (link.isLocalFile()) //this method has been introduced in Qt 4.8
     {
+#else
+    if (link.scheme().compare( QLatin1String("file"), Qt::CaseInsensitive ) == 0)
+    {
+#endif
         QString dir = link.toLocalFile();
         if (dir.size() == 2)
         {

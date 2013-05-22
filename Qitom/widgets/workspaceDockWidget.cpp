@@ -397,8 +397,13 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
         foreach(const QUrl &url, urls)
         {
             qDebug() << url.toLocalFile();
-            if(url.isLocalFile() == false)
+#if QT_VERSION >= 0x040800
+            if (url.isLocalFile() == false) //this method has been introduced in Qt 4.8
             {
+#else
+            if (url.scheme().compare( QLatin1String("file"), Qt::CaseInsensitive ) != 0)
+            {
+#endif
                 return;
             }
 
