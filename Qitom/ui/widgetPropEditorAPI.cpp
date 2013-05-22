@@ -49,8 +49,6 @@ WidgetPropEditorAPI::WidgetPropEditorAPI(QWidget *parent) :
 
     m_notExistAppendix = tr("[does not exist]");
 
-    ui.line->setVisible(false);
-
     m_pApiManager = ito::QsciApiManager::getInstance();
 
     m_lastApiFileDirectory = QDir::cleanPath(QCoreApplication::applicationDirPath());
