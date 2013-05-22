@@ -29,6 +29,8 @@
 #include <qsettings.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qcoreapplication.h>
+#include <qdir.h>
 
 #include "../AppManagement.h"
 
@@ -99,10 +101,14 @@ int QsciApiManager::updateAPI(QStringList files, bool forcePreparation)
     QFileInfo apiFileInfo;
     QFile apiFile;
     QByteArray fileContent;
+    QString absFile;
+
+    QDir appBaseDir = QCoreApplication::applicationDirPath();
 
     foreach(const QString &file, files)
     {
-        apiFileInfo.setFile( file );
+        absFile = appBaseDir.absoluteFilePath(file);
+        apiFileInfo.setFile( absFile );
         temp.absoluteFilename = apiFileInfo.canonicalFilePath();
         temp.exists = apiFileInfo.exists();
         if(calcChecksum)

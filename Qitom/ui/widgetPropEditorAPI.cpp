@@ -47,16 +47,17 @@ WidgetPropEditorAPI::WidgetPropEditorAPI(QWidget *parent) :
     ui.btnAdd->setEnabled(true);
     ui.btnRemove->setEnabled(false);
 
+    m_notExistAppendix = tr("[does not exist]");
+
     ui.line->setVisible(false);
-    ui.btnPrepareAPI->setVisible(false);
 
     m_pApiManager = ito::QsciApiManager::getInstance();
 
     m_lastApiFileDirectory = QDir::cleanPath(QCoreApplication::applicationDirPath());
 
-    connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationFinished()), this, SLOT(apiPreparationFinished()));
+    /*connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationFinished()), this, SLOT(apiPreparationFinished()));
     connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationCancelled()), this, SLOT(apiPreparationCancelled()));
-    connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationStarted()), this, SLOT(apiPreparationStarted()));
+    connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationStarted()), this, SLOT(apiPreparationStarted()));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -71,22 +72,25 @@ void WidgetPropEditorAPI::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
     QString filename;
+    QDir baseDir(m_canonicalBasePath);
 
     int size = settings.beginReadArray("apiFiles");
     for (int i = 0; i < size; ++i) 
     {
         settings.setArrayIndex(i);
 
-        QFileInfo fileInfo(settings.value("file",QString()).toString());
+        filename = settings.value("file",QString()).toString();
+        filename = baseDir.absoluteFilePath(filename);
+        QFileInfo fileInfo(filename);
         if (fileInfo.exists())
         {
-            filename = fileInfo.canonicalFilePath();
-            if (filename.startsWith(m_canonicalBasePath))
-            {
-                filename = filename.mid(m_canonicalBasePath.length());
-            }
-
+            filename = baseDir.relativeFilePath(filename);
             ui.listWidget->addItem(filename);    
+        }
+        else
+        {
+            filename = baseDir.relativeFilePath(filename);
+            ui.listWidget->addItem(filename + " " + m_notExistAppendix);
         }
     }
 
@@ -103,16 +107,18 @@ void WidgetPropEditorAPI::writeSettings()
     QStringList files;
     settings.beginGroup("PyScintilla");
     QString filename;
+    QDir baseDir(m_canonicalBasePath);
 
     settings.beginWriteArray("apiFiles");
     for (int i = 0 ; i < ui.listWidget->count() ; i++)
     {
         settings.setArrayIndex(i);
         filename = ui.listWidget->item(i)->text();
-        if (filename.contains(":") == false)
+        if(filename.endsWith(m_notExistAppendix))
         {
-            filename.prepend(m_canonicalBasePath);
+            filename = filename.left( filename.length() - m_notExistAppendix.length() ).trimmed();
         }
+        filename = baseDir.relativeFilePath(filename); //save relative filenames
         settings.setValue("file", filename);
         files.append(filename);
     }
@@ -133,16 +139,18 @@ void WidgetPropEditorAPI::on_listWidget_currentItemChanged(QListWidgetItem* curr
 void WidgetPropEditorAPI::on_btnAdd_clicked()
 {
     QStringList filenames = QFileDialog::getOpenFileNames(this, tr("load python api file"), m_lastApiFileDirectory, tr("python api file (*.api)"));
+    QDir baseDir(m_canonicalBasePath);
      
     foreach (QString filename, filenames)
     {
         m_lastApiFileDirectory = QDir::cleanPath(QFileInfo(filename).path());
         QFileInfo fileInfo(filename);
         filename = fileInfo.canonicalFilePath();
-        if (filename.startsWith(m_canonicalBasePath))
+        filename = baseDir.relativeFilePath(filename); //get relative filenames with respect to application directory
+        /*if (filename.startsWith(m_canonicalBasePath))
         {
             filename = filename.mid(m_canonicalBasePath.length());
-        }
+        }*/
 
         if (ui.listWidget->findItems(filename, Qt::MatchExactly).isEmpty())
         {
@@ -162,55 +170,7 @@ void WidgetPropEditorAPI::on_listWidget_itemActivated(QListWidgetItem* item)
 {
     if (item)
     {
-        item->setFlags(item->flags() | Qt::ItemIsEditable);
-        ui.listWidget->editItem(item);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorAPI::apiPreparationFinished()
-{
-    ui.btnPrepareAPI->setText(tr("generate lookup table by API files"));
-    QMessageBox msgBox(this);
-    msgBox.setText(tr("The API generation has been finished"));
-    msgBox.exec();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorAPI::apiPreparationCancelled()
-{
-    ui.btnPrepareAPI->setText(tr("generate lookup table by API files"));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorAPI::apiPreparationStarted()
-{
-    ui.btnPrepareAPI->setText(tr("cancel preparation"));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorAPI::on_btnPrepareAPI_clicked()
-{
-    if (m_pApiManager->isPreparing())
-    {
-        m_pApiManager->getQsciAPIs()->cancelPreparation();
-    }
-    else
-    {
-        QStringList files;
-        
-        for (int i = 0 ; i < ui.listWidget->count() ; i++)
-        {
-            files.append(ui.listWidget->item(i)->text());
-        }
-
-        int ret = m_pApiManager->updateAPI(files);
-
-        if (ret == 1)
-        {
-            QMessageBox msgBox(this);
-            msgBox.setText(tr("API files are already up-to-date"));
-            msgBox.exec();
-        }
+        //item->setFlags(item->flags() | Qt::ItemIsEditable);
+        //ui.listWidget->editItem(item);
     }
 }

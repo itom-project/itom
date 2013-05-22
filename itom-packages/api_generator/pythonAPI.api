@@ -1058,9 +1058,6 @@ sys.hash_info
 sys.hexversion
 sys.int_info
 sys.intern(string) -> string
-sys.last_traceback
-sys.last_type(??) [doc: Name not found globally.]
-sys.last_value
 sys.maxsize
 sys.maxunicode
 sys.meta_path
@@ -1079,7 +1076,6 @@ sys.stderr
 sys.stdin
 sys.stdout
 sys.subversion
-sys.tracebacklimit
 sys.version
 sys.version_info
 sys.warnoptions

@@ -41,15 +41,17 @@ scipy.UFUNC_BUFSIZE_DEFAULT
 scipy.UFUNC_PYVALS_NAME
 scipy.WRAP
 scipy.absolute(x[, out])
+scipy.absolute_import
 scipy.add(x1, x2[, out])
-scipy.add_docstring
+scipy.add_docstring(obj, docstring)
 scipy.add_newdoc(??) [doc: Adds documentation to obj which is in module place.]
+scipy.add_newdoc_ufunc
 scipy.add_newdocs:: [module]
 scipy.alen(??) [doc: ]
 scipy.all(??) [doc: ]
 scipy.allclose(??) [doc: ]
 scipy.alltrue(??) [doc: ]
-scipy.alterdot(??) [doc: Change `dot`, `vdot`, and `innerproduct` to use accelerated BLAS functions.]
+scipy.alterdot
 scipy.amax(??) [doc: ]
 scipy.amin(??) [doc: ]
 scipy.angle(??) [doc: ]
@@ -104,6 +106,9 @@ scipy.bool8(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool
 scipy.bool_(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool8]
 scipy.broadcast(??) [doc: Produce an object that mimics broadcasting.]
 scipy.broadcast_arrays(??) [doc: ]
+scipy.busday_count(begindates, enddates, weekmask='1111100', holidays=[], busdaycal=None, out=None)
+scipy.busday_offset(dates, offsets, roll='raise', weekmask='1111100', holidays=None, busdaycal=None, out=None)
+scipy.busdaycalendar(weekmask='1111100', holidays=None)
 scipy.byte(??) [doc: 8-bit integer. Character code ``b``. C char compatible.]
 scipy.byte_bounds(??) [doc: ]
 scipy.bytes0(??) [class]
@@ -119,13 +124,12 @@ scipy.character(??) [class]
 scipy.chararray(??) [doc: ]
 scipy.choose(??) [doc: ]
 scipy.clip(??) [doc: ]
-scipy.clongdouble(??) [doc: Composed of two 96 bit floats]
-scipy.clongfloat(??) [doc: Composed of two 96 bit floats]
+scipy.clongdouble(??) [doc: Composed of two 64 bit floats]
+scipy.clongfloat(??) [doc: Composed of two 64 bit floats]
 scipy.column_stack(??) [doc: ]
 scipy.common_type(??) [doc: ]
 scipy.compare_chararrays
 scipy.complex128(??) [doc: Composed of two 64 bit floats]
-scipy.complex192(??) [doc: Composed of two 96 bit floats]
 scipy.complex64(??) [doc: Composed of two 32 bit floats]
 scipy.complex_(??) [doc: Composed of two 64 bit floats]
 scipy.complexfloating(??) [class]
@@ -136,6 +140,7 @@ scipy.conjugate(x[, out])
 scipy.convolve(??) [doc: ]
 scipy.copy(??) [doc: ]
 scipy.copysign(x1, x2[, out])
+scipy.copyto(dst, src, casting='same_kind', where=None, preservena=False)
 scipy.corrcoef(??) [doc: ]
 scipy.correlate(??) [doc: ]
 scipy.cos(x[, out])
@@ -149,8 +154,8 @@ scipy.cumprod(??) [doc: ]
 scipy.cumproduct(??) [doc: ]
 scipy.cumsum(??) [doc: ]
 scipy.datetime64(??) [class]
-scipy.datetime_(??) [class]
-scipy.datetime_data(??) [doc: Return (unit, numerator, denominator, events) from a datetime dtype]
+scipy.datetime_as_string
+scipy.datetime_data
 scipy.deg2rad(x[, out])
 scipy.degrees(x[, out])
 scipy.delete(??) [doc: ]
@@ -162,9 +167,10 @@ scipy.diag_indices_from(??) [doc: ]
 scipy.diagflat(??) [doc: ]
 scipy.diagonal(??) [doc: ]
 scipy.diff(??) [doc: ]
-scipy.digitize(x, bins)
+scipy.digitize(x, bins, right=False)
 scipy.disp(??) [doc: ]
 scipy.divide
+scipy.division
 scipy.dot(a, b, out=None)
 scipy.double(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
 scipy.dsplit(??) [doc: ]
@@ -187,7 +193,7 @@ scipy.eye(??) [doc: ]
 scipy.fabs(x[, out])
 scipy.fastCopyAndTranspose
 scipy.fft(??) [doc: ]
-scipy.fill_diagonal(??) [doc: ]
+scipy.fill_diagonal(??) [doc: Fill the main diagonal of the given array of any dimensionality.]
 scipy.find_common_type(??) [doc: ]
 scipy.finfo(??) [doc: ]
 scipy.fix(??) [doc: ]
@@ -199,7 +205,6 @@ scipy.flipud(??) [doc: ]
 scipy.float16(??) [class]
 scipy.float32(??) [doc: 32-bit floating-point number. Character code 'f'. C float compatible.]
 scipy.float64(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
-scipy.float96(??) [class]
 scipy.float_(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
 scipy.floating(??) [class]
 scipy.floor(x[, out])
@@ -223,7 +228,7 @@ scipy.get_array_wrap(??) [doc: Find the wrapper for the array with the highest p
 scipy.get_include(??) [doc: ]
 scipy.get_numarray_include(??) [doc: ]
 scipy.get_printoptions(??) [doc: ]
-scipy.getbufsize(??) [doc: Return the size of the buffer used in ufuncs.]
+scipy.getbufsize(??) [doc: ]
 scipy.geterr(??) [doc: ]
 scipy.geterrcall(??) [doc: ]
 scipy.geterrobj()
@@ -268,6 +273,8 @@ scipy.intp(??) [class]
 scipy.invert(x[, out])
 scipy.ipmt(??) [doc: ]
 scipy.irr(??) [doc: ]
+scipy.is_busday(dates, weekmask='1111100', holidays=None, busdaycal=None, out=None)
+scipy.isclose(??) [doc: ]
 scipy.iscomplex(??) [doc: ]
 scipy.iscomplexobj(??) [doc: ]
 scipy.isfinite(x[, out])
@@ -310,7 +317,7 @@ scipy.logical_xor(x1, x2[, out])
 scipy.logn(??) [doc: ]
 scipy.logspace(??) [doc: ]
 scipy.long(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
-scipy.longcomplex(??) [doc: Composed of two 96 bit floats]
+scipy.longcomplex(??) [doc: Composed of two 64 bit floats]
 scipy.longdouble(??) [class]
 scipy.longfloat(??) [class]
 scipy.longlong(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
@@ -368,9 +375,10 @@ scipy.object_(??) [doc: Any Python object.  Character code: 'O'.]
 scipy.ogrid
 scipy.oldnumeric:: [module]
 scipy.ones(??) [doc: ]
-scipy.ones_like(x[, out])
+scipy.ones_like(??) [doc: ]
 scipy.outer(??) [doc: ]
 scipy.packbits(myarray, axis=None)
+scipy.pad(??) [doc: ]
 scipy.percentile(??) [doc: ]
 scipy.pi
 scipy.piecewise(??) [doc: ]
@@ -389,6 +397,7 @@ scipy.polysub(??) [doc: ]
 scipy.polyval(??) [doc: ]
 scipy.power(??) [doc: ]
 scipy.ppmt(??) [doc: ]
+scipy.print_function
 scipy.prod(??) [doc: ]
 scipy.product(??) [doc: ]
 scipy.promote_types(type1, type2)
@@ -419,7 +428,7 @@ scipy.repeat(??) [doc: ]
 scipy.require(??) [doc: ]
 scipy.reshape(??) [doc: ]
 scipy.resize(??) [doc: ]
-scipy.restoredot(??) [doc: Restore `dot`, `vdot`, and `innerproduct` to the default non-BLAS]
+scipy.restoredot
 scipy.result_type(*arrays_and_dtypes)
 scipy.right_shift(x1, x2[, out])
 scipy.rint(x[, out])
@@ -486,8 +495,6 @@ scipy.tensordot(??) [doc: ]
 scipy.test
 scipy.tile(??) [doc: ]
 scipy.timedelta64(??) [class]
-scipy.timedelta_(??) [class]
-scipy.timeinteger(??) [class]
 scipy.trace(??) [doc: ]
 scipy.transpose(??) [doc: ]
 scipy.trapz(??) [doc: ]
@@ -527,7 +534,7 @@ scipy.unwrap(??) [doc: ]
 scipy.ushort(??) [class]
 scipy.vander(??) [doc: ]
 scipy.var(??) [doc: ]
-scipy.vdot(??) [doc: Return the dot product of two vectors.]
+scipy.vdot(a, b)
 scipy.vectorize(??) [doc: ]
 scipy.version:: [module]
 scipy.void(??) [class]

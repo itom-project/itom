@@ -121,7 +121,7 @@ void MainApplication::setupApplication()
 #endif
 
 #if USING_GIT == 1
-    text.append( QString("\n%1").arg(GIT_HASHTAG_ABBREV) );
+    text.append( QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV) );
 #endif
     QPainter p;
     p.begin(&pixmap);

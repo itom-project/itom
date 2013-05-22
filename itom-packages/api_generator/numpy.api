@@ -45,14 +45,15 @@ numpy._mat:: [module]
 numpy.abs
 numpy.absolute(x[, out])
 numpy.add(x1, x2[, out])
-numpy.add_docstring
+numpy.add_docstring(obj, docstring)
 numpy.add_newdoc(??) [doc: Adds documentation to obj which is in module place.]
+numpy.add_newdoc_ufunc
 numpy.add_newdocs:: [module]
 numpy.alen(??) [doc: ]
 numpy.all(??) [doc: ]
 numpy.allclose(??) [doc: ]
 numpy.alltrue(??) [doc: ]
-numpy.alterdot(??) [doc: Change `dot`, `vdot`, and `innerproduct` to use accelerated BLAS functions.]
+numpy.alterdot
 numpy.amax(??) [doc: ]
 numpy.amin(??) [doc: ]
 numpy.angle(??) [doc: ]
@@ -108,6 +109,9 @@ numpy.bool8(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool
 numpy.bool_(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool8]
 numpy.broadcast(??) [doc: Produce an object that mimics broadcasting.]
 numpy.broadcast_arrays(??) [doc: ]
+numpy.busday_count(begindates, enddates, weekmask='1111100', holidays=[], busdaycal=None, out=None)
+numpy.busday_offset(dates, offsets, roll='raise', weekmask='1111100', holidays=None, busdaycal=None, out=None)
+numpy.busdaycalendar(weekmask='1111100', holidays=None)
 numpy.byte(??) [doc: 8-bit integer. Character code ``b``. C char compatible.]
 numpy.byte_bounds(??) [doc: ]
 numpy.bytes0(??) [class]
@@ -123,15 +127,14 @@ numpy.character(??) [class]
 numpy.chararray(??) [doc: ]
 numpy.choose(??) [doc: ]
 numpy.clip(??) [doc: ]
-numpy.clongdouble(??) [doc: Composed of two 96 bit floats]
-numpy.clongfloat(??) [doc: Composed of two 96 bit floats]
+numpy.clongdouble(??) [doc: Composed of two 64 bit floats]
+numpy.clongfloat(??) [doc: Composed of two 64 bit floats]
 numpy.column_stack(??) [doc: ]
 numpy.common_type(??) [doc: ]
 numpy.compare_chararrays
 numpy.compat:: [module]
 numpy.complex(real[, imag]) -> complex number
 numpy.complex128(??) [doc: Composed of two 64 bit floats]
-numpy.complex192(??) [doc: Composed of two 96 bit floats]
 numpy.complex64(??) [doc: Composed of two 32 bit floats]
 numpy.complex_(??) [doc: Composed of two 64 bit floats]
 numpy.complexfloating(??) [class]
@@ -142,6 +145,7 @@ numpy.conjugate(x[, out])
 numpy.convolve(??) [doc: ]
 numpy.copy(??) [doc: ]
 numpy.copysign(x1, x2[, out])
+numpy.copyto(dst, src, casting='same_kind', where=None, preservena=False)
 numpy.core:: [module]
 numpy.corrcoef(??) [doc: ]
 numpy.correlate(??) [doc: ]
@@ -156,8 +160,8 @@ numpy.cumprod(??) [doc: ]
 numpy.cumproduct(??) [doc: ]
 numpy.cumsum(??) [doc: ]
 numpy.datetime64(??) [class]
-numpy.datetime_(??) [class]
-numpy.datetime_data(??) [doc: Return (unit, numerator, denominator, events) from a datetime dtype]
+numpy.datetime_as_string
+numpy.datetime_data
 numpy.deg2rad(x[, out])
 numpy.degrees(x[, out])
 numpy.delete(??) [doc: ]
@@ -169,7 +173,7 @@ numpy.diag_indices_from(??) [doc: ]
 numpy.diagflat(??) [doc: ]
 numpy.diagonal(??) [doc: ]
 numpy.diff(??) [doc: ]
-numpy.digitize(x, bins)
+numpy.digitize(x, bins, right=False)
 numpy.disp(??) [doc: ]
 numpy.divide
 numpy.dot(a, b, out=None)
@@ -194,7 +198,7 @@ numpy.eye(??) [doc: ]
 numpy.fabs(x[, out])
 numpy.fastCopyAndTranspose
 numpy.fft:: [module]
-numpy.fill_diagonal(??) [doc: ]
+numpy.fill_diagonal(??) [doc: Fill the main diagonal of the given array of any dimensionality.]
 numpy.find_common_type(??) [doc: ]
 numpy.finfo(??) [doc: ]
 numpy.fix(??) [doc: ]
@@ -207,7 +211,6 @@ numpy.float(x) -> floating point number
 numpy.float16(??) [class]
 numpy.float32(??) [doc: 32-bit floating-point number. Character code 'f'. C float compatible.]
 numpy.float64(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
-numpy.float96(??) [class]
 numpy.float_(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
 numpy.floating(??) [class]
 numpy.floor(x[, out])
@@ -231,7 +234,7 @@ numpy.get_array_wrap(??) [doc: Find the wrapper for the array with the highest p
 numpy.get_include(??) [doc: ]
 numpy.get_numarray_include(??) [doc: ]
 numpy.get_printoptions(??) [doc: ]
-numpy.getbufsize(??) [doc: Return the size of the buffer used in ufuncs.]
+numpy.getbufsize(??) [doc: ]
 numpy.geterr(??) [doc: ]
 numpy.geterrcall(??) [doc: ]
 numpy.geterrobj()
@@ -276,6 +279,8 @@ numpy.intp(??) [class]
 numpy.invert(x[, out])
 numpy.ipmt(??) [doc: ]
 numpy.irr(??) [doc: ]
+numpy.is_busday(dates, weekmask='1111100', holidays=None, busdaycal=None, out=None)
+numpy.isclose(??) [doc: ]
 numpy.iscomplex(??) [doc: ]
 numpy.iscomplexobj(??) [doc: ]
 numpy.isfinite(x[, out])
@@ -319,7 +324,7 @@ numpy.logical_or(x1, x2[, out])
 numpy.logical_xor(x1, x2[, out])
 numpy.logspace(??) [doc: ]
 numpy.long(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
-numpy.longcomplex(??) [doc: Composed of two 96 bit floats]
+numpy.longcomplex(??) [doc: Composed of two 64 bit floats]
 numpy.longdouble(??) [class]
 numpy.longfloat(??) [class]
 numpy.longlong(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
@@ -378,9 +383,10 @@ numpy.object0(??) [doc: Any Python object.  Character code: 'O'.]
 numpy.object_(??) [doc: Any Python object.  Character code: 'O'.]
 numpy.ogrid
 numpy.ones(??) [doc: ]
-numpy.ones_like(x[, out])
+numpy.ones_like(??) [doc: ]
 numpy.outer(??) [doc: ]
 numpy.packbits(myarray, axis=None)
+numpy.pad(??) [doc: ]
 numpy.percentile(??) [doc: ]
 numpy.pi
 numpy.piecewise(??) [doc: ]
@@ -428,7 +434,7 @@ numpy.repeat(??) [doc: ]
 numpy.require(??) [doc: ]
 numpy.reshape(??) [doc: ]
 numpy.resize(??) [doc: ]
-numpy.restoredot(??) [doc: Restore `dot`, `vdot`, and `innerproduct` to the default non-BLAS]
+numpy.restoredot
 numpy.result_type(*arrays_and_dtypes)
 numpy.right_shift(x1, x2[, out])
 numpy.rint(x[, out])
@@ -497,8 +503,6 @@ numpy.test
 numpy.testing:: [module]
 numpy.tile(??) [doc: ]
 numpy.timedelta64(??) [class]
-numpy.timedelta_(??) [class]
-numpy.timeinteger(??) [class]
 numpy.trace(??) [doc: ]
 numpy.transpose(??) [doc: ]
 numpy.trapz(??) [doc: ]
@@ -538,13 +542,14 @@ numpy.unwrap(??) [doc: ]
 numpy.ushort(??) [class]
 numpy.vander(??) [doc: ]
 numpy.var(??) [doc: ]
-numpy.vdot(??) [doc: Return the dot product of two vectors.]
+numpy.vdot(a, b)
 numpy.vectorize(??) [doc: ]
 numpy.version:: [module]
 numpy.void(??) [class]
 numpy.void0(??) [class]
 numpy.vsplit(??) [doc: ]
 numpy.vstack(??) [doc: ]
+numpy.warnings:: [module]
 numpy.where(condition, [x, y])
 numpy.who(??) [doc: ]
 numpy.zeros(shape, dtype=float, order='C')

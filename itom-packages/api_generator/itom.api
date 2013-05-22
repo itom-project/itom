@@ -4,18 +4,21 @@ itom.SEPARATOR
 itom.actuator(name[, mandparams, optparams]) -> constructor
 itom.actuator.calib(axis[, axis1, ...]) -> starts calibration of given axes (0-based).
 itom.actuator.exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an actuator-plugin.
-itom.actuator.getExecFuncInfo
+itom.actuator.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description to the specified execFunc.
 itom.actuator.getParam(name) -> value of the parameter 'name'.
 itom.actuator.getParamList() -> returns the list of available parameters of the plugin
 itom.actuator.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
 itom.actuator.getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes.
 itom.actuator.getStatus() -> retrieve the actuator status.
 itom.actuator.getType() -> returns actuator type
+itom.actuator.hideToolbox() -> hides toolbox of the plugin
 itom.actuator.name() -> returns the plugin name
 itom.actuator.setOrigin(axis[, axis1, ...]) -> defines the actual position of the given axes to value 0.
 itom.actuator.setParam(name, value) -> sets parameter 'name' to the given value.
 itom.actuator.setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves axis to given absolute value (in mm).
 itom.actuator.setPosRel(axis, pos[, axis1, pos1, ...]) -> relatively moves given axes by the given distances [in mm].
+itom.actuator.showConfiguration() -> open configuration dialog of the plugin
+itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar.
 itom.algo(??) [doc: algo plugins]
@@ -27,7 +30,7 @@ itom.algo.getType() -> returns AlgoPlugin type
 itom.algo.name() -> returns name of algorithm plugin
 itom.algo.setParam(name,value) -> sets value of given parameter
 itom.checkSignals
-itom.closeFigure(fig-handle|'all') -> closes the figure window with the given handle-number.
+itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.dataIO(name[, mandparams, optparams]) -> constructor
 itom.dataIO.acquire() -> triggers the camera-plugin
 itom.dataIO.copyVal(dataObject) -> gets deep copy of data of this plugin, stored in the given data object.
@@ -41,18 +44,21 @@ itom.dataIO.getParamList() -> returns list of possible parameters.
 itom.dataIO.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
 itom.dataIO.getType() -> returns dataIO type
 itom.dataIO.getVal(buffer=dataObject|byteArray|bytes [,length=maxlength]) -> returns shallow copy of internal camera image if dataObject-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer.
+itom.dataIO.hideToolbox() -> hides toolbox of the plugin
 itom.dataIO.name() -> returns name of plugin.
-itom.dataIO.setAutoGrabbing(on) -> Sets auto grabbing of the grabber device to on (True) or off (False)
+itom.dataIO.setAutoGrabbing(on) -> Sets auto grabbing of the grabber device on or off
 itom.dataIO.setParam(name,value) -> sets value of parameter, given by name.
 itom.dataIO.setVal(dataObject) -> transfers given dataObject to dataIO-plugin.
+itom.dataIO.showConfiguration() -> open configuration dialog of the plugin
+itom.dataIO.showToolbox() -> open toolbox of the plugin
 itom.dataIO.startDevice([count=1]) -> starts the given dataIO-plugin.
 itom.dataIO.stopDevice([count=1]) -> stops the given dataIO-plugin.
 itom.dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]]) -> constructor to get a new dataObject.
 itom.dataObject.addToProtocol([newLine]) -> Appends a protocol line to the protocol. ROIs are added automatically.
-itom.dataObject.adj
-itom.dataObject.adjugate
-itom.dataObject.adjustROI
-itom.dataObject.astype(char type)
+itom.dataObject.adj() -> Adjugate all elements (inline)
+itom.dataObject.adjugate() -> Return the adjugate, element-wise
+itom.dataObject.adjustROI() ->
+itom.dataObject.astype() -> todo
 itom.dataObject.axisDescriptions
 itom.dataObject.axisOffsets
 itom.dataObject.axisScales
@@ -61,25 +67,25 @@ itom.dataObject.base
 itom.dataObject.conj() -> complex-conjugates all elements of this dataObject (inline).
 itom.dataObject.conjugate() -> returns a copy of this dataObject where every element is complex-conjugated.
 itom.dataObject.continuous
-itom.dataObject.copy(region_only=0)
+itom.dataObject.copy(region_only=0) -> todo
 itom.dataObject.data() -> prints the content of the dataObject in a readable form.
 itom.dataObject.deleteTag(key) -> Delete the tag specified by key.
 itom.dataObject.dims
-itom.dataObject.div
+itom.dataObject.div() -> a.div(b) returns element wise division of a./b and returns result
 itom.dataObject.dtype
 itom.dataObject.existTag(key) -> return 1 if tag exists, else return 0.
 itom.dataObject.eye([dims [, dtype='uint8'[, continuous = 0]]]) -> creates a 2D, square, eye-matrix.
 itom.dataObject.getTagDict
 itom.dataObject.getTagListSize() -> returns the number of tags in tag map
-itom.dataObject.locateROI
-itom.dataObject.makeContinuous
-itom.dataObject.mul
-itom.dataObject.name
+itom.dataObject.locateROI() -> todo
+itom.dataObject.makeContinuous() -> return continuous representation of dataObject (if not continuous yet, else returns shallow copy of original data object
+itom.dataObject.mul() -> a.mul(b) returns element wise multiplication of a*b and returns result
+itom.dataObject.name() -> prints the content of the dataObject in a readable form.
 itom.dataObject.ones([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with ones.
 itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.
 itom.dataObject.randN([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with gaussian distributed random values.
 itom.dataObject.reshape(newSizes) -> Returns reshaped shallow copy of data object
-itom.dataObject.setAxisDescription
+itom.dataObject.setAxisDescription([axisNum [, axisDescription]]) -> Set the description of the specified axis.
 itom.dataObject.setAxisOffset([axisNum [,axisOffset]]) -> Set the offset of the specified axis.
 itom.dataObject.setAxisScale([axisNum [,axisScale]]) -> Set the scale of the specified axis.
 itom.dataObject.setAxisUnit([axisNum [, axisUnit]]) -> Set the unit of the specified axis.
@@ -87,9 +93,8 @@ itom.dataObject.setTag(key, tagvalue) -> Set the value of tag specified by key.
 itom.dataObject.size([index]) -> returns the size of this dataObject (tuple of the sizes in all dimensions or size in dimension indicated by optional value index).
 itom.dataObject.squeeze() -> returns a squeezed shallow copy (if possible) of this data object.
 itom.dataObject.tags
-itom.dataObject.tolist
-itom.dataObject.trans
-itom.dataObject.transpose
+itom.dataObject.tolist() -> returns nested list of content of data object
+itom.dataObject.trans() -> returns transposed matrix
 itom.dataObject.value
 itom.dataObject.valueDescription
 itom.dataObject.valueOffset
@@ -97,6 +102,15 @@ itom.dataObject.valueScale
 itom.dataObject.valueUnit
 itom.dataObject.xyRotationalMatrix
 itom.dataObject.zeros([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with zeros.
+itom.figure([handle, [rows, cols]]) -> plot figure
+itom.figure.close(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)
+itom.figure.docked
+itom.figure.handle
+itom.figure.hide() -> hides figure without deleting it
+itom.figure.liveImage(cam, [areaIndex, className]) -> shows a camera live image in the current or given area of this figure
+itom.figure.plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure
+itom.figure.show() -> shows figure
+itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function within an algorithm-plugin.
 itom.filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s).
 itom.gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list.
@@ -105,10 +119,8 @@ itom.getAppPath() -> returns absolute path of application base directory.
 itom.getCurrentPath() -> returns absolute path of current working directory.
 itom.getDebugger() -> returns new reference to debugger instance
 itom.getDefaultScaleableUnits
-itom.getFigParam(figHandle, name, OR name) -> gets the parameter 'name' of given figure
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
-itom.liveImage(dataIO) -> shows camera image in a live window
-itom.liveLine(dataIO) -> shows grabber data in a live line view window
+itom.liveImage(cam, [className]) -> shows a camera live image in a newly created figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive to an existing dataObject.
 itom.loadMatlabMat(filename) -> loads matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
@@ -126,8 +138,9 @@ itom.npDataObject.valueScale
 itom.npDataObject.valueUnit
 itom.numeric:: [module]
 itom.openScript(filename) -> opens the given script in current script window.
-itom.plot(dataObject) -> plot a DataObject in a new plot-window.
-itom.pluginHelp(pluginName [, dictionary = 0]) -> generates an online help for the specified plugin.
+itom.plot(data, [className]) -> plots a dataObject in a newly created figure
+itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
+itom.pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.
 itom.pluginLoaded(pluginname) -> checks if a certain plugin was loaded.
 itom.point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.
 itom.point.PointInvalid
@@ -152,7 +165,7 @@ itom.pointCloud.dense
 itom.pointCloud.empty
 itom.pointCloud.erase(indices) -> erases the points in point clouds indicated by indices (single number of slice)
 itom.pointCloud.fields
-itom.pointCloud.fromDisparity(index, values) -> inserts a single point or a sequence of points before position given by index
+itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.
 itom.pointCloud.fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object
 itom.pointCloud.fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object
 itom.pointCloud.height
@@ -160,10 +173,11 @@ itom.pointCloud.insert(index, values) -> inserts a single point or a sequence of
 itom.pointCloud.name
 itom.pointCloud.organized
 itom.pointCloud.size
-itom.pointCloud.toDataObject() -> returns a PxN data object (float), where P is determined by the point type in the point cloud. N is the number of points.
+itom.pointCloud.toDataObject() -> returns a PxN data object, where P is determined by the point type in the point cloud. N is the number of points.
 itom.pointCloud.type
 itom.pointCloud.width
 itom.polygonMesh() -> creates empty polygon mesh.
+itom.polygonMesh.data
 itom.polygonMesh.name
 itom.processEvents
 itom.proxy(??) [class]
@@ -172,15 +186,31 @@ itom.pythonStream.flush
 itom.pythonStream.name
 itom.pythonStream.type
 itom.pythonStream.write
+itom.region([x, y, w, h [,type=region.RECTANGLE]]) -> creates a rectangular or elliptical region.
+itom.region.ELLIPSE
+itom.region.RECTANGLE
+itom.region.boundingRect
+itom.region.contains(x,y[,w,h]) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False.
+itom.region.createMask() -> creates mask data object based on this region.
+itom.region.empty
+itom.region.intersected(x,y,w,h | region) -> returns a region which is the intersection of a new region and this region.
+itom.region.intersects(x,y,w,h | region) -> returns True if this region intersects with the given region, else False.
+itom.region.rectCount
+itom.region.rects
+itom.region.subtracted(x,y,w,h | region) -> returns a region which is the new region subtracted from this region.
+itom.region.translate(x,y) -> translateds this region by the given coordinates.
+itom.region.translated(x,y) -> returns a region, translated by the given coordinates.
+itom.region.united(x,y,w,h | region) -> returns a region which is the union of the given region with this region.
+itom.region.xored(x,y,w,h | region) -> returns a region which is an xor combination of the given region with this region.
 itom.removeButton(toolbarName, buttonName) -> removes a button from a given toolbar.
 itom.removeMenu(key) -> remove a menu element with the given key.
 itom.saveDataObject(filename, dataObject [, tagsAsBinary]) -> save a dataObject to harddrive.
 itom.saveMatlabMat(filename, dictionary[, matrixName]) -> saves strings, numbers, arrays or combinations to a Matlab matrix.
 itom.scaleDoubleUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
+itom.setApplicationCursor
 itom.setCurrentPath(newPath) -> sets absolute path of current working directory
-itom.setFigParam(figHandle, name, value OR name, value) -> sets the parameter 'name' of figure to value
-itom.ui(filename, [type(TYPEDIALOG|TYPEWINDOW|TYPEDOCKWIDGET), dialogButtonBar(BUTTONBAR_NO|BUTTONBAR_HORIZONTAL|BUTTONBAR_VERTICAL), dialogButtons, childOfMainWindow, deleteOnClose]) -> new instance of user defined dialog
+itom.ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface
 itom.ui.BUTTONBAR_HORIZONTAL
 itom.ui.BUTTONBAR_NO
 itom.ui.BUTTONBAR_VERTICAL
@@ -234,15 +264,15 @@ itom.uiItem.call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any p
 itom.uiItem.connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method
 itom.uiItem.disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.
 itom.uiItem.getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.
-itom.uiItem.getProperty(property) -> returns tuple of requested properties (single property or tuple of properties)
-itom.uiItem.getPropertyInfo([propertyName]) ->  returns information about the property 'propertyName' of this widget or all properties, if no name indicated.
+itom.uiItem.getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)
+itom.uiItem.getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.
 itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal.
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
 itom.uiTimer(timeOut, callbackFunc, [args]) -> new callback timer
 itom.uiTimer.isActive() -> returns timer status
-itom.uiTimer.setInterval(int interval) -> sets timer interval in [ms]
+itom.uiTimer.setInterval(interval) -> sets timer interval in [ms]
 itom.uiTimer.start() -> starts uiTimer
-itom.uiTimer.stop() -> stops uiTimer
+itom.uiTimer.stop() -> stopps uiTimer
 itom.version([toggle-output [, include-plugins]])) -> retrive complete informations about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).

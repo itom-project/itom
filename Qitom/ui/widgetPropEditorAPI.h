@@ -52,23 +52,15 @@ private:
     ito::QsciApiManager *m_pApiManager;
 
     QString m_lastApiFileDirectory;
+    QString m_notExistAppendix;
 
     QString m_canonicalBasePath;
-    
-
-signals:
-
-public slots:
-    void apiPreparationFinished();
-    void apiPreparationCancelled();
-    void apiPreparationStarted();
 
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
     void on_listWidget_itemActivated(QListWidgetItem* item);
     void on_btnAdd_clicked();
     void on_btnRemove_clicked();
-    void on_btnPrepareAPI_clicked();
 
 };
 

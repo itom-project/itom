@@ -66,20 +66,6 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btnPrepareAPI">
-     <property name="text">
-      <string>generate lookup table by API files</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>
