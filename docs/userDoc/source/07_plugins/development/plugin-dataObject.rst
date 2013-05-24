@@ -118,10 +118,9 @@ All indices are zero-based, hence the first element in this dimension is **0**.
     
     The **at** method is templated where the template parameter must correspond to the type of the corresponding
     data object.
-
     
 method 2: get line pointer for each line in matrix and work with line pointer to address elements of a data object
-----------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: c++
 	:linenos:
@@ -137,7 +136,7 @@ method 2: get line pointer for each line in matrix and work with line pointer to
 		std::cout << "Row " << m << ":";
 		for(size_t n=0 ; n < width; n++)
 		{
-			rowPtr[n] = m; 				//accessing each element of data object with line pointer
+			rowPtr[n] = m;  //accessing each element of data object with line pointer
 		}
 	}
 	std::cout << d1 << std::endl;
@@ -146,7 +145,7 @@ Here, **seekMat()** method gets the internal plane number of the 1st plane.
 In line no 2, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
 Now accessing each element of row pointer will access each element of the data object in that row. 
 
-To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
+To use this row pointer method for data objects with more than 2 dimensions, following code can be used. 
 
 .. code-block:: c++
     :linenos:
