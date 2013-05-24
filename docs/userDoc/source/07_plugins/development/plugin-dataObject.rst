@@ -5,14 +5,33 @@
 DataObject
 ================================
 
-dataObject is a class type which contains a n-dimensional matrix
+The class **DataObject** (part of the library **dataObject**) provides a *n*-dimensional matrix that is used both in the core of |itom| as well as
+in any plugins. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
+in the file *typeDefs.h* and are as follows:
 
-    The n-dimensional matrix can have different element types. Recently the following types are supported:
-    int8, uint8, int16, uint16, int32, uint32, float32, float64 (=> double), complex64 (2x float32), complex128 (2x float64)
+================ ================ =========================================
+Typedef          Enumeration      Description
+================ ================ =========================================
+ito::int8		 ito::tInt8		  8bit, signed, fixed point
+ito::uint8		 ito::tUint8	  8bit, unsigned, fixed point
+ito::int16		 ito::tInt16	  16bit, signed, fixed point
+ito::uint16		 ito::tUint16	  16bit, unsigned, fixed point
+ito::int32		 ito::tInt32	  32bit, signed, fixed point
+ito::uint32		 ito::tUint32     32bit, unsigned, fixed point
+ito::float32	 ito::tFloat32	  32bit, single-precision floating point
+ito::float64	 ito::tFloat64	  64bit, double-precision floating point
+ito::complex64	 ito::tComplex64  real and imaginary part is float32 each
+ito::complex128	 ito::tComplex128 real and imaginary part is float64 each
+	
+The last two dimensions of each dataObject are denoted *plane* and physically correspond to images. In order to also handle huge matrices in memory, 
+The entire matrix is divided into planes, where each plane can be allocated at arbitrary positions and memory and is of type **cv::Mat_<type>**,
+derived from **cv::Mat** of the **OpenCV** library. Therefore every plane can be used with every operator given by the **OpenCV**-framework (version 2.3.1
+or higher). If available, the first *(n-2)* are allocated as one vector of pointers, each pointing to its corresponding plane. This kind of
+dataObject and its way of allocating memory is called *unorganized*.
 
-    In order to handle huge matrices, the data object can divide one matrix into subparts in memory. Each subpart (called matrix-plane)
-    is two-dimensional and covers data of the last two dimensions. Each of these matrix-planes is of type cv::Mat_<type> and can be used with every
-    operator given by the openCV-framework (version 2.3.1 or higher).
+In order to make the *dataObject* compatible to matrices that are allocated in one huge memory block (like Numpy arrays), it is also possible to
+make any *dataObject* continuous. Then, a huge data block is allocated, such that all planes lie consecutively in memory. Nevertheless, the pointer-tree
+is still available, pointing to the starting points of all planes. This reallocation is implicitely done, when creating a Numpy-array from a dataObjct.
 	
 DataObject can be declared in different possible ways with different dimensions and different data types.
 Various possible implementations of declaring DataObject are listed below.
@@ -22,7 +41,7 @@ Various possible implementations of declaring DataObject are listed below.
 #.	DataObject(const size_t sizeY, const size_t sizeX, const int type);
 #.	DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type ,const unsigned char continuous = (unsigned char)'\000');
 #.	DataObject(const unsigned char diimesions, const size_t *sizes, const int type, const unsigned char continuous = (unsigned char)'\000');
-#.	DataObject(const unsigned char dimensions, const size_t '*sizes, const int type, const uchar "continousouDataPtr, const size_t *steps = (const size_t *)0);
+#.	DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const uchar "continousouDataPtr, const size_t *steps = (const size_t *)0);
 #.	DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const uchar*continuousDataPtr, const size_t *steps = (const size_t *)0);
 #.	DataObject(const ito::DataObject &copyConstr);
 #.	DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat *planes, const unsigned int nrOfPlanes);
@@ -47,7 +66,7 @@ The following code creates empty data object with no dimensions (0) and no type 
 	
 .. note::
 
-	Here getDims() method returns the dimensions of data object d0, whereas getType() method returns the type of d0.
+	Here **getDims()** method returns the dimensions of data object d0, whereas **getType()** method returns the type of d0.
 
 Now, lets take an example of creating a two dimensional data object.
 
@@ -71,46 +90,93 @@ The following code creates such 2 dimensional data object of dimensions Y=2, X=5
 	**getType()** method returns the type of d1.
 	**getTotal()** method returns total number of elements in d1.
 	
-.. note::
+Addressing the elements of a data object
+==========================================
 	
-	Addressing elements.
-	
-Elements of data objects can be addressed in one of the following ways.
+Now, we know how to create a data object, so lets have a look how can one address the elements of a data object. 
+Elements of a data object can be addressed in one of the following ways.
+
 method 1: direct access of one single value
-	
+--------------------------------------------------	
+
 .. code-block:: c++
 	:linenos:
 	
 	ito::DataObject d1(2,5, ito::tFloat32);
-    d1.at<ito::float32>(0,1) = 5.2;
-    std::cout << "d1(0,1) = " << d1.at<ito::float32>(0,1) << "\n" << std::endl;
+	d1.at<ito::float32>(0,1) = 5.2;
+	std::cout << "d1(0,1) = " << d1.at<ito::float32>(0,1) << "\n" << std::endl;
+	
+.. note::
+
+	Here, templeted method **at<datatype>()** is used to assign data to each element of the data object. 
+
+Here we want to assign a float value to the (0,1) element of the data object, therefore we pass datatype "ito::float32" as a templet.
     
-method 2: get line pointer for line in matrix and work with line pointer.
+method 2: get line pointer for each line in matrix and work with line pointer to address elements of a data object
+----------------------------------------------------------------------------
 
 .. code-block:: c++
 	:linenos:
 	
-    ito::DataObject d1(3,5, ito::tInt16);
-	size_t planeID = d1.seekMat(0);	    //get internal plane number for the first plane
-    ito::int16 *rowPtr = (ito::int16*)d1.rowPtr(planeID,0);
+	ito::DataObject d1(3,5, ito::tInt16);
+	size_t planeID = d1.seekMat(0);   //get internal plane number for the first plane
+	ito::int16 *rowPtr = (ito::int16*)d1.rowPtr(planeID,0);
 	size_t height = d1.getSize(0);
-    size_t width = d1.getSize(1);
+	size_t width = d1.getSize(1);	
+	for(size_t m = 0 ; m< height ; m++)
+	{
+		rowPtr = (ito::int16*)d1.rowPtr(planeID,m);
+		std::cout << "Row " << m << ":";
+		for(size_t n=0 ; n < width; n++)
+		{
+			rowPtr[n] = m; 				//accessing each element of data object with line pointer
+		}
+	}
+	std::cout << d1 << std::endl;
+  
+Here, **seekMat()** method gets the internal plane number of the 1st plane. 
+In line no 2, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
+Now accessing each element of row pointer will access each element of the data object in that row. 
 
-    for(size_t m = 0 ; m < height ; m++)
-    {
-        rowPtr = (ito::int16*)d1.rowPtr(planeID,m);
-        std::cout << "Row " << m << ":";
-        for(size_t n=0 ; n< width; n++)
-        {
-			rowPtr[n] = m;				//accessing each element of data object with line pointer
-        } 
-    }
-	 std::cout << d1 << std::endl;   
-   
+To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
+
+.. code-block:: c++
+	:linenos:
+	
+	ito::int16 *rowPtr1= NULL;
+	int dim1 = d1.getSize(0);
+	int dim2 = d1.getSize(1);
+	int dim3 = d1.getSize(2);
+	int dim4 = d1.getSize(3);
+	int dim5 = d1.getSize(4);
+	size_t dataIdx = 0;
+	for(int i=0; i<dim1; i++)
+	{
+		for(int j=0; j<dim2;j++)
+		{
+			for(int k=0; k<dim3;k++)
+			{
+				dataIdx = i*(dim2*dim3) + j*dim3 + k;
+				for(int l=0; l<dim4;l++)
+				{
+					rowPtr1= (TypeParam*)d1.rowPtr(dataIdx,l);
+					for(int m=0; m<dim5;m++)
+					{
+						rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));		//!< Assigning unique value to each element of d1.
+					}
+				}
+			}
+		}
+	}
+	
 .. note::
 
-	Defining 5 dimensional data object d1 and assign one value to all elements of d1.
-	
+	Here **dataIdx** represents the number of the plane in the matrix.
+	The formula in line #15 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
+
+One can assign a single value to all elements of the data object using assignment operator "=" in the following way. 
+Here we will also have a look on how to declare a 5 dimensional data object and assign a single floating point value to each element of the data object.
+
 .. code-block:: c++
 	:linenos:
 	
@@ -121,90 +187,150 @@ method 2: get line pointer for line in matrix and work with line pointer.
 	temp_size[3] = 18;
 	temp_size[4] = 10;
 	ito::DataObject d1 = ito::DataObject(5,temp_size,ito::tFloat32);
-    d1 = 3.7;
-    std::cout << d1 << std::endl;
+	d1 = 3.7;
+	std::cout << d1 << std::endl;
+	delete[] temp_size;
+	
+Here line #7 uses implementation #4 for declaring 5 dimensional data object d1.
+
+Working with Data Objects
+=====================
+
+Now, lets have a look on various methods to work with data objects.
+
+Creating Eye Matrix
+------------------------------------
+
+.. code-block:: c++
+	:linenos:
+	
+	ito::DataObject *d2 = new ito::DataObject();
+	d2->eye(3, ito::tInt8);
+	std::cout << "3x3-eye matrix (int8)" << *d2 << std::endl;
+	delete d2;
+	d2 = NULL;	
+	
+Here, the function eye() has been used with pointer variable d2 to convert the data object d2 into eye matrix. 
 
 .. note::
 
-	Defining 5 dimensional data object d1 and assign one value to all elements of d1.
+	eye() function accepts only square matrices as inputs, otherwise it throws exception.
+	
+Creating Ones Matrix
+-----------------------
+
+.. code-block:: c++
+	:linenos:
+	
+	ito::DataObject *d3 = new ito::DataObject();
+	d3->ones(2,3,4,ito::tFloat64);
+	std::cout << "2x3x4-ones matrix (double)" << *d3 << std::endl;
+	delete d3;
+	d3 = NULL;
+	
+Here, the function ones() has been used with pointer variable d3 to convert the data object d3 into ones matrix. 
+	
+Creating Zeros Matrix
+-----------------------
+
+.. code-block:: c++
+	:linenos:
+	
+	ito::DataObject *dObjZeros = new ito::DataObject();
+	dObjZeros->zeros(2,3,4,ito::tFloat64);
+	std::cout << "3x4x5-zeros matrix (double)" << *dObjZeros << std::endl;
+	delete dObjZeros;
+	dObjZeros = NULL;
+	
+Here, line number 2 shows the way to use zeros() function to convert data object dObjZeros into zero matrix. 
+
+Direct Access to the underlying cv::Mat
+---------------------------------------
+
+Following example shows one of the methods to access underlying planes in multidimensional matrices. 
+
+.. code-block:: c++
+	:linenos:
+	
+	// 4 x 5 x 3 DataObject, int16
+	ito::DataObject d4(4,5,3,ito::tInt16);
+	std::cout << "DataObject (4x5x3), int16 \n" << std::endl;
+	d4 = 3;		//assign value 3 to all elements
+	//access to the third plane (index 2)
+	planeID = d4.seekMat(2);
+	cv::Mat *plane3 = (cv::Mat*)d4.get_mdata()[planeID];
+	std::cout << "OpenCV plane" << std::endl;
+	std::cout << *plane3 << std::endl;
+	//accessing second line in plane3
+	ito::int16* rowPtr2 = (ito::int16*)plane3->ptr(1);
+	//regions of interest
+	//d5 = d4[1:3,0:2,:]
+	ito::Range ranges[3] = { ito::Range(1,3), ito::Range(0,2), ito::Range::all() };
+	ito::DataObject  d5 = d4.at(ranges);
+	d5 = 7;
+	
+Let's try to analyse the code above. As we can see in line #6, we used seekMat() method to retrieve the plane id of 3th plane in 3 dimensional matrix d4. 
+
+line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. line #11 declares a row pointer to point a perticular row in plane 3 of data object d4.
+
+line #14 defines the exemplary ranges to create a new data object d5 from a part of data object d4.
+
+The other way to perform the same operation of line #14 is shown below.
+
+.. code-block:: c++
+	:linenos:
+	
+	ito::Range *ranges = new ito::Range[3];
+	ranges[0] = ito::Range(1,3);
+	ranges[1] = ito::Range(0,2);
+	ranges[2] = ito::Range::all();
+	
+This code shows the way to modify ranges individually, which can be very useful if one needs to modify this range later in this code to work on other data objects perhaps.
+
+Adjusting ROI of a Data Object
+------------------------------------
+
+This section will teach you about how to adjust Region of Interest (ROI) in any data object. 
+
+The following example code shows the way to adjust ROI with adjustROI() method and to locate ROI with locateROI() method.
+
+.. code-block:: c++
+	:linenos:
+	
+	//adjusting ROI of 6x7 data object.
+	ito::DataObject d6(6,7,ito::tInt16);
+	int roiLocate[]= {0,0,0,0}; //Empty Array to locate ROI of 2 dimensional data object d6.
+	d6.adjustROI(-2,0,-1,-4);
+	d6.locateROI(roiLocate);
+	std::cout << d6 << std::endl;
+	for(int i =0;i<4; i++)
+	{
+		std::cout << roiLocate[i] << std::endl;
+	}
+	
+Here, line #4 shows the use of adjustROI() function where negative parameters indicate that the ROI is shrinking in perticular dimension. More detailed description of adjustROI() and locateROI() methods can be seen at `Document </Description document for adjustROI and locateROI methods>`_ .
+
+One can also pass an array as a parameter to this adjustROI() function describing the offset details as shown in the following code.
+
+.. code-block:: c++
+	:linenos:
+	
+	int matLimits2d[] = {-2,0,-1,-4};
+	d6.adjustROI(2,matLimits2d);
+	std::cout << d6 << std::endl;
+
+Here, adjustROI() function is called with 2 parameters and as can be seen in line #1, the array matLimits2d[] contains the same offset values as passed in adjustROI() method in the previous example.
+
+One can use this example to adjust Region of Interest of data objects more than 2 dimensions as well as shown in later examples below. 
+	
+The following code shows such an example to modify Region of Interest of a 3 dimensional data object.
 	
 .. code-block:: c++
 	:linenos:
 	
-    //create 3x3 eye matrix: (Note: matrix should be square matrix)
-    ito::DataObject *d2 = new ito::DataObject();
-    d2->eye(3, ito::tInt8);
-    std::cout << "3x3-eye matrix (int8)" << *d2 << std::endl;
-    delete d2;
-    d2 = NULL;
-
-    //create 2x3x4 ones matrix:
-    ito::DataObject *d3 = new ito::DataObject();
-    d3->ones(2,3,4,ito::tFloat64);
-    std::cout << "2x3x4-ones matrix (double)" << *d3 << std::endl;
-    delete d3;
-    d3 = NULL;
-
-	//create 3x4x5 zeros matrix:
-    ito::DataObject *dObjZeros = new ito::DataObject();
-    dObjZeros->zeros(2,3,4,ito::tFloat64);
-    std::cout << "3x4x5-zeros matrix (double)" << *dObjZeros << std::endl;
-    delete dObjZeros;
-    dObjZeros = NULL;
-	
-    // 4 x 5 x 3 DataObject, int16
-    ito::DataObject d4(4,5,3,ito::tInt16);
-    std::cout << "DataObject (4x5x3), int16 \n" << std::endl;
-
-    //assign value 3 to all elements
-    d4 = 3;
-
-    //direct access to the underlying cv::Mat.
-    //access to the third plane (index 2)
-    planeID = d4.seekMat(2);
-    cv::Mat *plane3 = (cv::Mat*)d4.get_mdata()[planeID];
-
-    std::cout << "OpenCV plane" << std::endl;
-    std::cout << *plane3 << std::endl;
-
-    //accessing second line in plane3
-    ito::int16* rowPtr2 = (ito::int16*)plane3->ptr(1);
-
-    //regions of interest
-    //d5 = d4[1:3,0:2,:]
-    ito::Range ranges[3] = { ito::Range(1,3), ito::Range(0,2), ito::Range::all() };
-    //equivalent to:
-    /*
-    ito::Range *ranges = new ito::Range[3];
-    ranges[0] = ito::Range(0,3);
-    ranges[1] = ito::Range(0,2);
-    ranges[2] = ito::Range::all();
-    --> delete ranges later
-    */
-    ito::DataObject  d5 = d4.at(ranges);
-    d5 = 7;
-	
-	//adjusting ROI of 6x7 data object.
-	//Method:1
-	ito::DataObject d6(6,7,ito::tInt16);
-	int lims2d[]= {0,0,0,0}; //Empty Array to locate ROI of 2 dimensional data object d6.
-	d6.adjustROI(-2,0,-1,-4);
-	d6.locateROI(lims2d);
-	std::cout << d6 << std::endl;
-	for(int i =0;i<4; i++)
-	{
-		std::cout << lims2d[i] << std::endl;		
-	}
-	
-	//Method:2
-	int matLimits2d[] = {2,0,1,4};
-	//adjusting back to original size of ROI
-	d6.adjustROI(2,matLimits2d);
-	std::cout << d6 << std::endl;
-	
 	//adjusting ROI of 6x7x8 data object.
 	ito::DataObject d7(6,7,8,ito::tFloat32);
-	int matLimists3d[] = {-1,-2,0,-2,-3,-1};
+	int matLimits3d[] = {-1,-2,0,-2,-3,-1};
 	int lims3d[]= {0,0,0,0,0,0}; //Empty Array to locate ROI of 3 dimensional data object d7.
 	d7.adjustROI(3,matLimits3d);
 	d7.locateROI(lims3d);
@@ -214,17 +340,47 @@ method 2: get line pointer for line in matrix and work with line pointer.
 		std::cout << lims3d[i] << std::endl;
 	}
 	
-	//setting and getting axis units.
+Here, a 3 dimensional data object d7 of dimensions 6x7x8 is declared in line #1 using the implementation #4 for data objects.
+
+As can be seen in line #3, array matLimits3d[] of return type int contains required 6 offset values to adjust ROI of 3 dimensional data object d7. As shown in line #4, an empty array lims3d[] of int as return type is defined to locate the ROI of data object d7 using locateROI() function. 
+Line #7 will print the resultant data object after being adjusted by adjustROI() method in line #5 and the for loop in line #8-11 will print these located offset values of the resultant ROI of d7.
+		
+Setting and Getting Axis Units
+-------------------------------------------------------------
+
+In this section, you will study about assigning and retrieving the axis units at each dimension of a data object.
+
+.. code-block:: c++
+	:linenos:
+	
 	ito::DataObject d8(6,7,ito::tFloat32);
 	bool vop1, vop2 = 0;
 	d8.setAxisUnit(0,"µm");
 	d8.setAxisUnit(1,"cm");
 	std::string AxisUnit1 =d8.getAxisUnit(0,vop1); //Getting axis unit of 1st dimension of data object d8
-	std::string AxisUnit2 =d8.getAxisUnit(1,vop2); //Getting axis unit of 1st dimension of data object d8
+	std::string AxisUnit2 =d8.getAxisUnit(1,vop2); //Getting axis unit of 2nd dimension of data object d8
 	std::cout << "Axis Unit of 1st Dimension:" << AxisUnit1 << std::endl;
 	std::cout << "Axis Unit of 2nd Dimension:" << AxisUnit2 << std::endl;
 	
-	//setting and getting axis scale
+Here, a 2 dimensional data object *d8* of dimensions *6x7* is declared in line #1. Line #2 declares boolean variables vop1 and vop2 to pass as parameters in getAxisUnit() method later. 
+Line #3 and #4 sets the units for dimensions 1 and 2 of data object d8 respectively. 
+
+These assigned axis units can be retrieved by getAxisUnit() method as shown in line #5 and #6. Line #7 and #8 prints these retrieved axis units of data object d8.
+
+Setting and Getting Axis Scale
+--------------------------------------------------
+
+In this section, we will learn about setting and getting the scale values of perticular Axis (dimension) of a data object. 
+This can be done using setAxisScale() and getAxisScale() functions as shown below. These both functions are declared under *DataObject* class.
+Syntax for the setAxisScale() function is shown below:
+
+*DataObjectName.setAxisScale(const unsigned int axisNum, const double scale);*
+
+Return Type: int
+
+.. code-block:: c++
+	:linenos:
+	
 	ito::DataObject d9(6,5,3,ito::tInt16);
 	d9.setAxisScale(0,5);
 	d9.setAxisScale(1,-0.5);
@@ -233,6 +389,8 @@ method 2: get line pointer for line in matrix and work with line pointer.
 	double AxisScale2 =d9.getAxisScale(1);
 	double AxisScale3 =d9.getAxisScale(2);
 	std::cout << "Axis 1 Scale:" << AxisScale1 << "Axis 2 Scale:" << AxisScale2 << "Axis 3 Scale:" << AxisScale3 << std::endl; 
+
+Documentation is to be written here.
 	
 	//adjugate the data object
 	ito::DataObject d10(6,5,3,ito::tComplex128);
