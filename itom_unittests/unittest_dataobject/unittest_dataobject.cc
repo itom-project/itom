@@ -15,8 +15,8 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "makeContinuousFunc_test/*.nonContTest_big4d"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
-	//::testing::FLAGS_gtest_filter = "makeContinuousFunc_test/*.*";
+	//::testing::FLAGS_gtest_filter = "makeContinuousFunc_test/*.ContTest_3d"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	::testing::FLAGS_gtest_filter = "makeContinuousFunc_test/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     
 
