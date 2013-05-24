@@ -102,7 +102,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	
 	dObj2.adjustROI(2,1,1,2);	//!< Adjusting back the ROI back to normal position.
 	dObj2.adjustROI(2,matLimits2d);	//!< adjusting ROI of dObj2 with general 2 parameter adjustROI method to desired position
-	dObj3.adjustROI(3,matLimits3d);	//!< adjusting ROI of dObj3 with general 3 parameter adjustROI method to desired position
+	dObj3.adjustROI(3,matLimits3d);	//!< adjusting ROI of dObj3 with general 2 parameter adjustROI method to desired position
 
 	//!< Checking values of 2 dimensional data object dObj2 after applying adjustROI().
 	temp=0;
@@ -129,14 +129,12 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	
 	//!< test for checking values of  5 dimensional data object dObj5 after applying adjustROI().
 	TypeParam *rowPtr1= NULL; 
-	TypeParam *rowPtr_d1= NULL;	
 	size_t dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
 	size_t dim2 = dObj4.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
 	size_t dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
 	size_t dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
 	size_t dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
-	size_t dataIdx = 0;					
-	size_t dataIdx_d = 0; 
+	size_t dataIdx = 0;		
 	temp=0;
 	for(int i=0; i<dim1; i++)
 	{

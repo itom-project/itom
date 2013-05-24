@@ -76,6 +76,7 @@ set(unittest_dataobject_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/saturateTest_real.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/seekMat_calcNumMats_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_dataobject.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/makeContinuousFuncTest.cpp
 )
 
 # #add filters to visual studio
