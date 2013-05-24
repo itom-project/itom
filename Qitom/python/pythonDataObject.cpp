@@ -6111,7 +6111,7 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"dims", (getter)PyDataObj_GetDims, NULL, dataObjectAttDims_doc, NULL},
     {"dtype", (getter)PyDataObj_GetType, NULL, dataObjectAttType_doc, NULL},
     {"continuous", (getter)PyDataObj_GetContinuous, NULL, dataObjectAttContinuous_doc, NULL},
-    {"getTagDict", (getter)PyDataObject_getTagDict, NULL, dataObjectAttTagDict_doc, NULL},
+    {"metaDict", (getter)PyDataObject_getTagDict, NULL, dataObjectAttTagDict_doc, NULL},
 
     {"tags", (getter)PyDataObject_getTags, (setter)PyDataObject_setTags, dataObjectAttTags_doc, NULL},
     {"axisScales", (getter)PyDataObject_getAxisScales, (setter)PyDataObject_setAxisScales, dataObjectAttAxisScales_doc, NULL},

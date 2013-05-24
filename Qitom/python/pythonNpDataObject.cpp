@@ -111,7 +111,7 @@ PyGetSetDef PythonNpDataObject::PyNpDataObject_getseters[] = {
     {"valueDescription", (getter)PyNpDataObject_getValueDescription, (setter)PyNpDataObject_setValueDescription, npDataObject_valueDescription_doc, NULL},
     {"valueScale", (getter)PyNpDataObject_getValueScale, NULL, npDataObject_valueScale_doc, NULL},
     {"valueOffset", (getter)PyNpDataObject_getValueOffset, NULL, npDataObject_valueOffset_doc, NULL},
-    {"getTagDict", (getter)PyNpDataObject_getTagDict, NULL, npDataObject_getTagDict_doc, NULL},
+    {"metaDict", (getter)PyNpDataObject_getTagDict, NULL, npDataObject_getTagDict_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
