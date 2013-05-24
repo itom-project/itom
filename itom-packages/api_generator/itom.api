@@ -32,7 +32,8 @@ itom.algo.setParam(name,value) -> sets value of given parameter
 itom.checkSignals
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.dataIO(name[, mandparams, optparams]) -> constructor
-itom.dataIO.acquire() -> triggers the camera-plugin
+itom.dataIO.TRIGGER_SOFTWARE
+itom.dataIO.acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers the camera acquisition
 itom.dataIO.copyVal(dataObject) -> gets deep copy of data of this plugin, stored in the given data object.
 itom.dataIO.disableAutoGrabbing() -> Disables auto grabbing for the grabber (camera...),
 itom.dataIO.enableAutoGrabbing() -> enables auto grabbing for the grabber (camera...),

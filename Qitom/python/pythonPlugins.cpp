@@ -3436,15 +3436,14 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire() -> triggers the camera-plugin \n\
+PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers the camera acquisition \n\
+Use this command to start the image acquisition depending on the trigger parameter. \n\
 \n\
-Notes \n\
------ \n\
-such that the image acquisition process will start in this moment.\n\
-\n\
-See Also \n\
---------- \n\
-\n\
+Parameters \n\
+----------- \n\
+trigger : {Integer}, optional\n\
+    default = 0, dataIO.TRIGGER_SOFTWARE\n\
+    In case of dataIO.TRIGGER_SOFTWARE (0) the acquisition is immediately started after this command. \n\
 ");
 
 /** acquire data with a dataIO device
@@ -3458,21 +3457,11 @@ See Also \n\
 */
 PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *args)
 {
-    int length = PyTuple_Size(args);
     int trigger = 0;
     ito::RetVal ret = ito::retOk;
 
-    if (length == 1)
+    if (PyArg_ParseTuple(args, "|i", &trigger) == false)
     {
-        if (PyArg_ParseTuple(args, "l", &trigger))
-        {
-            PyErr_Format(PyExc_TypeError, "invalid parameters");
-            return NULL;
-        }
-    }
-    else if (length > 1)
-    {
-        PyErr_Format(PyExc_ValueError, "too many parameters");
         return NULL;
     }
 
@@ -3495,18 +3484,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
     {
         return NULL;
     }
-    /*
-    if (ret == ito::retWarning)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("warning invoking acquire with message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-        return NULL;
-    }
-    else if (ret == ito::retError)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking acquire with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -4405,6 +4383,17 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
    PyDataIOPlugin_new                   /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
+/*static*/ void PythonPlugins::PyDataIOPlugin_addTpDict(PyObject *tp_dict)
+{
+    PyObject *value = NULL;
+
+    //add dialog types
+    value = Py_BuildValue("i", 0);
+    PyDict_SetItemString(tp_dict, "TRIGGER_SOFTWARE", value);
+    Py_DECREF(value);
+    
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 /** desctructor for algo object in python
@@ -4438,10 +4427,6 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
 //            retval = aim->closeAddIn((ito::AddInBase**)&self->algoObj);
             
 			PythonCommon::transformRetValToPyException(retval);
-            /*if (retval != ito::retOk)
-            {
-                PyErr_Format(PyExc_RuntimeError, "error closing plugin");
-            }*/
         }
     }
 
@@ -4596,27 +4581,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     {
         return -1;
     }
-    /*
-    if ((retval == ito::retError) || (self->algoObj == NULL))
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not load plugin: %s with error message: \n%s\n").toAscii(), pluginName.toAscii().data(), QObject::tr(retval.errorMessage()).toAscii().data());
-        return -1;
-    }
 
-    if (retval == ito::retWarning)
-    {
-        std::cerr << "Warning while loading plugin: " << pluginName.toAscii().data() << "\n" << std::endl;
-
-        if (retval.errorMessage() != NULL)
-        {
-            std::cerr << " Message: " << QObject::tr(retval.errorMessage()).toAscii().data() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated. \n" << std::endl;
-        }
-    }
-    */
     return 0;
 }
 

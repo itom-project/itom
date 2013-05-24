@@ -294,6 +294,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (PyType_Ready(&PythonPlugins::PyDataIOPluginType) >= 0)
             {
                 Py_INCREF(&PythonPlugins::PyDataIOPluginType);
+                PythonPlugins::PyDataIOPlugin_addTpDict(PythonPlugins::PyDataIOPluginType.tp_dict);
                 PyModule_AddObject(itomModule, "dataIO", (PyObject *)&PythonPlugins::PyDataIOPluginType);
             }
 

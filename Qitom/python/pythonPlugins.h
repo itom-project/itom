@@ -175,6 +175,7 @@ class PythonPlugins
        static PyMethodDef  PyDataIOPlugin_methods[];
        static PyTypeObject PyDataIOPluginType;
        static PyModuleDef  PyDataIOPluginModule;
+       static void PyDataIOPlugin_addTpDict(PyObject *tp_dict);
 
 
        // Algo
