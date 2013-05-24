@@ -7,22 +7,23 @@ DataObject
 
 The class **DataObject** (part of the library **dataObject**) provides a *n*-dimensional matrix that is used both in the core of |itom| as well as
 in any plugins. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
-in the file *typeDefs.h* and are as follows:
+in the file *typeDefs.h* and are as follows.
 
 ================ ================ =========================================
 Typedef          Enumeration      Description
 ================ ================ =========================================
-ito::int8		 ito::tInt8		  8bit, signed, fixed point
-ito::uint8		 ito::tUint8	  8bit, unsigned, fixed point
-ito::int16		 ito::tInt16	  16bit, signed, fixed point
-ito::uint16		 ito::tUint16	  16bit, unsigned, fixed point
-ito::int32		 ito::tInt32	  32bit, signed, fixed point
-ito::uint32		 ito::tUint32     32bit, unsigned, fixed point
-ito::float32	 ito::tFloat32	  32bit, single-precision floating point
-ito::float64	 ito::tFloat64	  64bit, double-precision floating point
-ito::complex64	 ito::tComplex64  real and imaginary part is float32 each
-ito::complex128	 ito::tComplex128 real and imaginary part is float64 each
-	
+ito::int8        ito::tInt8       8bit, signed, fixed point
+ito::uint8       ito::tUint8      8bit, unsigned, fixed point
+ito::int16       ito::tInt16      16bit, signed, fixed point
+ito::uint16      ito::tUint16     16bit, unsigned, fixed point
+ito::int32       ito::tInt32      32bit, signed, fixed point
+ito::uint32      ito::tUint32     32bit, unsigned, fixed point
+ito::float32     ito::tFloat32    32bit, single-precision floating point
+ito::float64     ito::tFloat64    64bit, double-precision floating point
+ito::complex64   ito::tComplex64  real and imaginary part is float32 each
+ito::complex128  ito::tComplex128 real and imaginary part is float64 each
+================ ================ =========================================
+
 The last two dimensions of each dataObject are denoted *plane* and physically correspond to images. In order to also handle huge matrices in memory, 
 The entire matrix is divided into planes, where each plane can be allocated at arbitrary positions and memory and is of type **cv::Mat_<type>**,
 derived from **cv::Mat** of the **OpenCV** library. Therefore every plane can be used with every operator given by the **OpenCV**-framework (version 2.3.1
@@ -50,7 +51,7 @@ Various possible implementations of declaring DataObject are listed below.
 Following are some sample codes to get one quickly understand *basic programing structure of Data Objects*.
 
 Example Codes
------------
+---------------
 
 |itom|
 
@@ -92,9 +93,10 @@ The following code creates such 2 dimensional data object of dimensions Y=2, X=5
 	
 Addressing the elements of a data object
 ==========================================
-	
+
 Now, we know how to create a data object, so lets have a look how can one address the elements of a data object. 
-Elements of a data object can be addressed in one of the following ways.
+Sometimes it is necessary to read or set single values in one matrix, sometimes one want to access all elements
+in the matrix or a certain subregion. Therefore, the addressing can be done in one of the following ways:
 
 method 1: direct access of one single value
 --------------------------------------------------	
@@ -106,11 +108,17 @@ method 1: direct access of one single value
 	d1.at<ito::float32>(0,1) = 5.2;
 	std::cout << "d1(0,1) = " << d1.at<ito::float32>(0,1) << "\n" << std::endl;
 	
+Here, the addressing is done by the method **at** of the data object, which is pretty similar to the same method
+of the **OpenCV** class **cv::Mat**. The **at** method can either be used to get the value at a certain position or
+to set this value. There are special implementations of **at** for addressing values in a two- or three-dimensional
+data object, where the first argument always is the **z-index** (3D), followed by the **y-index** and the **x-index**.
+All indices are zero-based, hence the first element in this dimension is **0**.
+
 .. note::
+    
+    The **at** method is templated where the template parameter must correspond to the type of the corresponding
+    data object.
 
-	Here, templeted method **at<datatype>()** is used to assign data to each element of the data object. 
-
-Here we want to assign a float value to the (0,1) element of the data object, therefore we pass datatype "ito::float32" as a templet.
     
 method 2: get line pointer for each line in matrix and work with line pointer to address elements of a data object
 ----------------------------------------------------------------------------
@@ -141,60 +149,61 @@ Now accessing each element of row pointer will access each element of the data o
 To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
 
 .. code-block:: c++
-	:linenos:
-	
-	ito::int16 *rowPtr1= NULL;
-	int dim1 = d1.getSize(0);
-	int dim2 = d1.getSize(1);
-	int dim3 = d1.getSize(2);
-	int dim4 = d1.getSize(3);
-	int dim5 = d1.getSize(4);
-	size_t dataIdx = 0;
-	for(int i=0; i<dim1; i++)
-	{
-		for(int j=0; j<dim2;j++)
-		{
-			for(int k=0; k<dim3;k++)
-			{
-				dataIdx = i*(dim2*dim3) + j*dim3 + k;
-				for(int l=0; l<dim4;l++)
-				{
-					rowPtr1= (TypeParam*)d1.rowPtr(dataIdx,l);
-					for(int m=0; m<dim5;m++)
-					{
-						rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));		//!< Assigning unique value to each element of d1.
-					}
-				}
-			}
-		}
-	}
-	
+    :linenos:
+    
+    ito::int16 *rowPtr1= NULL;
+    int dim1 = d1.getSize(0);
+    int dim2 = d1.getSize(1);
+    int dim3 = d1.getSize(2);
+    int dim4 = d1.getSize(3);
+    int dim5 = d1.getSize(4);
+    size_t dataIdx = 0;
+    for(int i=0; i<dim1; i++)
+    {
+        for(int j=0; j<dim2;j++)
+        {
+            for(int k=0; k<dim3;k++)
+            {
+                dataIdx = i*(dim2*dim3) + j*dim3 + k;
+                for(int l=0; l<dim4;l++)
+                {
+                    rowPtr1= (TypeParam*)d1.rowPtr(dataIdx,l);
+                    for(int m=0; m<dim5;m++)
+                    {
+                        //Assigning unique value to each element of d1.
+                        rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));
+                    }
+                }
+            }
+        }
+    }
+    
 .. note::
 
-	Here **dataIdx** represents the number of the plane in the matrix.
-	The formula in line #15 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
+    Here **dataIdx** represents the number of the plane in the matrix.
+    The formula in line #15 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
 
 One can assign a single value to all elements of the data object using assignment operator "=" in the following way. 
 Here we will also have a look on how to declare a 5 dimensional data object and assign a single floating point value to each element of the data object.
 
 .. code-block:: c++
-	:linenos:
-	
-	size_t *temp_size = new size_t[5];
-	temp_size[0] = 10;
-	temp_size[1] = 12;
-	temp_size[2] = 16;
-	temp_size[3] = 18;
-	temp_size[4] = 10;
-	ito::DataObject d1 = ito::DataObject(5,temp_size,ito::tFloat32);
-	d1 = 3.7;
-	std::cout << d1 << std::endl;
-	delete[] temp_size;
-	
+    :linenos:
+    
+    size_t *temp_size = new size_t[5];
+    temp_size[0] = 10;
+    temp_size[1] = 12;
+    temp_size[2] = 16;
+    temp_size[3] = 18;
+    temp_size[4] = 10;
+    ito::DataObject d1 = ito::DataObject(5,temp_size,ito::tFloat32);
+    d1 = 3.7;
+    std::cout << d1 << std::endl;
+    delete[] temp_size;
+
 Here line #7 uses implementation #4 for declaring 5 dimensional data object d1.
 
 Working with Data Objects
-=====================
+==========================
 
 Now, lets have a look on various methods to work with data objects.
 
@@ -469,4 +478,13 @@ normal text again. now without line numbering
 		i=3;
 	}
 
+.. note::
+    
+    For a full reference of the class **DataObject** see :ref:`plugin-DataObject-Ref`.
+    
+.. toctree::
+   :hidden:
 
+   plugin-RetVal-Ref.rst
+
+ito::DataObject :ref:`ito::DataObject`

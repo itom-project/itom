@@ -10,7 +10,19 @@ using the possibilities which are given by *Qt* (plugin management of *Qt*). Add
 is able to communicate with this plugin. Finally, the resulting plugin is compiled as a *dll*-file (on Windows) or as an appropriate *a*-file on Linux-based machines and must
 be located in the *plugin*-folder of *itom* or any subfolder. Then, the plugin is automatically recognized at startup of *itom*.
 
-Content:
+For programming plugins, you can and should use basic structures, offered by |itom|:
+
+.. toctree::
+    :maxdepth: 1
+    
+    plugin-RetVal.rst
+    plugin-sharedSemaphore.rst
+    plugin-dataObject.rst
+    plugin-params.rst
+    plugin-paramsMeta.rst
+    plugin-paramsValidate.rst
+
+The real documentation about the structure of plugins is organized as follows:
 
 .. toctree::
    :maxdepth: 1
@@ -24,13 +36,7 @@ Content:
    plugin-actuator.rst
    plugin-algo.rst
    pluginAutoLoadSavePolicy.rst
-   plugin-params.rst
-   plugin-paramsMeta.rst
-   plugin-paramsValidate.rst
-   plugin-sharedSemaphore.rst
-   plugin-RetVal.rst
    plugin-itomAPI.rst
-   plugin-dataObject.rst
 
 
 
