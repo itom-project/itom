@@ -32,6 +32,18 @@ namespace ito
 {
     class AddInBase;
 
+    /**
+    * PluginLoadStatusFlag enumeration
+    * This enum holds the four possible return states for loaded DLLs Ok, Warning, Error and Ignored
+    */
+    enum tPluginLoadStatusFlag
+    {
+        plsfOk       = 0x0,  /*!< ok */ 
+        plsfWarning  = 0x1,  /*!< warning */ 
+        plsfError    = 0x2,  /*!< error */ 
+        plsfIgnored  = 0x4   /*!< ignored */ 
+    };
+
     /*!
         \class PluginLoadStatus
         \brief This struct provides a structure for saving the load status of any plugins or designerWidgets
@@ -39,7 +51,7 @@ namespace ito
     struct PluginLoadStatus
     {
         QString filename;
-        QList< QPair<ito::tRetValue, QString> > messages;
+        QList< QPair<tPluginLoadStatusFlag, QString> > messages;
     };
 
     /** @class PlugInModel

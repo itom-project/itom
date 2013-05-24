@@ -48,17 +48,22 @@ protected:
     void init();
     void filter();
     
-    
-
     Ui::DialogLoadedPlugins ui;
     QList<PluginLoadStatus> m_content;
     QList< QPair<int, QTreeWidgetItem*> > m_items;
     QFileIconProvider *m_fileIconProvider;
+    QString m_windowTitle;
+    QString m_cmdMessage;
+    QString m_cmdWarning;
+    QString m_cmdError;
+    QString m_cmdIgnored;
 
 private slots:
     void on_cmdError_clicked(bool /*value*/) { filter(); };
     void on_cmdWarning_clicked(bool /*value*/) { filter(); };
     void on_cmdMessage_clicked(bool /*value*/) { filter(); };
+    void on_cmdIgnored_clicked(bool /*value*/) { filter(); };
+    void on_filterEdit_textChanged(const QString /*value*/) { filter(); };
     void on_tree_itemSelectionChanged();
 };
 

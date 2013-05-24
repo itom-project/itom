@@ -376,11 +376,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <source>Load status of detected plugin files:</source>
-        <translation>Ladestatus der erkannten Plugin-Dateien:</translation>
-    </message>
-    <message>
-        <location/>
         <source>Filters</source>
         <translation>Filter</translation>
     </message>
@@ -397,7 +392,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source>Messages</source>
-        <translation>Nachrichten</translation>
+        <translation>Meldungen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Plugin name</source>
+        <translation>Plugin-Name</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Ignored</source>
+        <translation>Ignoriert</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Load status of detected plugin files</source>
+        <translation>Ladestatus der erkannten Plugin-Dateien</translation>
     </message>
 </context>
 <context>
@@ -927,7 +937,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+117"/>
+        <location filename="../mainApplication.cpp" line="+118"/>
         <location line="+2"/>
         <source>Version %1
 %2</source>
@@ -944,7 +954,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+29"/>
         <source>load translations...</source>
         <translation>Übersetzungen wird geladen...</translation>
     </message>
@@ -1209,6 +1219,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+74"/>
         <source>error while reloading the modules</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QLibrary</name>
+    <message>
+        <location filename="../organizer/addInManager.cpp" line="+440"/>
+        <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1821,12 +1839,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+151"/>
-        <location line="+52"/>
+        <location line="+56"/>
         <source>parameter list type and passed list type are incompatible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+581"/>
+        <location line="+582"/>
         <source>timeout while calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1861,7 +1879,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1403"/>
+        <location line="+1404"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1876,7 +1894,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2555"/>
+        <location filename="../python/pythonUi.cpp" line="+2559"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1931,14 +1949,14 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+212"/>
+        <location filename="../helper/versionHelper.cpp" line="+213"/>
         <source>Warning: The version contains locally changed code!
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>Build from a clean version.
 </source>
         <translation type="unfinished"></translation>
@@ -2089,7 +2107,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Kanal ist bereits aktualisiert</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+223"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+225"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
@@ -2104,7 +2122,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+255"/>
+        <location filename="../organizer/addInManager.cpp" line="-182"/>
         <source>directory &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -2124,7 +2142,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+28"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -2134,7 +2152,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>AddIn with filename &apos;%1&apos; is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
@@ -2159,12 +2177,18 @@ Type conflict for %1</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
+        <source>Library &apos;%1&apos; was ignored. Message: %2</source>
+        <translation type="unfinished">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <location line="+8"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+20"/>
         <source>%1 (DataIO) loaded</source>
         <translation type="unfinished">%1 (DataIO) geladen</translation>
     </message>
@@ -2674,16 +2698,18 @@ Type conflict for %1</source>
         <translation>Stammverzeichnis: </translation>
     </message>
     <message>
-        <location/>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="+173"/>
-        <location line="+9"/>
         <source>generate lookup table by API files</source>
-        <translation type="unfinished">Generiere Umsetzungstabelle für die API-Dateien</translation>
+        <translation type="obsolete">Generiere Umsetzungstabelle für die API-Dateien</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorAPI.cpp" line="-136"/>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="+46"/>
         <source>base path for relative pathes: </source>
         <translation>Stammverzeichnis für relative Verzeichnisse: </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>[does not exist]</source>
+        <translation type="unfinished">[existiert nicht]</translation>
     </message>
     <message>
         <location line="+89"/>
@@ -2696,19 +2722,16 @@ Type conflict for %1</source>
         <translation>Pyhton API-Dateien (*.api)</translation>
     </message>
     <message>
-        <location line="+40"/>
         <source>The API generation has been finished</source>
-        <translation>Die API-Generierung ist beendet</translation>
+        <translation type="obsolete">Die API-Generierung ist beendet</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>cancel preparation</source>
-        <translation type="unfinished">Erstellung abbrechen</translation>
+        <translation type="obsolete">Erstellung abbrechen</translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>API files are already up-to-date</source>
-        <translation>API-Dateien sind bereits auf dem neusten Stand</translation>
+        <translation type="obsolete">API-Dateien sind bereits auf dem neusten Stand</translation>
     </message>
 </context>
 <context>
@@ -3171,7 +3194,7 @@ Type conflict for %1</source>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3182,8 +3205,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="-7"/>
         <source>warning while creating new instance. Message: %1</source>
-        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3193,8 +3215,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+5"/>
         <source>error while creating new instance. Message: %1</source>
-        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -3212,7 +3233,7 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="-106"/>
         <location line="+114"/>
         <source>warning while sending instance to python. Message: %1</source>
-        <translation type="unfinished">Warnung beim Senden der Instanz an Python. Nachricht: %1</translation>
+        <translation type="unfinished">Warnung beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
         <location line="-113"/>
@@ -3224,7 +3245,7 @@ Nachricht: &apos;%1&apos;</translation>
         <location line="-109"/>
         <location line="+114"/>
         <source>error while sending instance to python. Message: %1</source>
-        <translation type="unfinished">Fehler beim Senden der Instanz an Python. Nachricht: %1</translation>
+        <translation type="unfinished">Fehler beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
         <location line="-113"/>
@@ -3273,7 +3294,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+9"/>
         <source>warning while closing instance. Message: %1</source>
-        <translation type="unfinished">Warnung beim Schließen der Instanz. Nachricht: %1</translation>
+        <translation type="unfinished">Warnung beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3283,7 +3304,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+5"/>
         <source>error while closing instance. Message: %1</source>
-        <translation type="unfinished">Fehler beim Schließen der Instanz. Nachricht: %1</translation>
+        <translation type="unfinished">Fehler beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3673,7 +3694,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+117"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+129"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
@@ -3782,7 +3803,7 @@ Nachricht: &apos;%1&apos;</translation>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3793,8 +3814,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="-7"/>
         <source>warning while creating new instance. Message: %1</source>
-        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3804,8 +3824,7 @@ Nachricht: &apos;%1&apos;</translation>
     <message>
         <location line="+5"/>
         <source>error while creating new instance. Message: %1</source>
-        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
-Nachricht: &apos;%1&apos;</translation>
+        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -4257,12 +4276,12 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+45"/>
-        <location line="+633"/>
+        <location line="+659"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-633"/>
+        <location line="-659"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4287,25 +4306,25 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei kan mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+45"/>
         <source>Save selected variables as...</source>
         <translation type="unfinished">Speichern der markierten Variablen als...</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+25"/>
         <location line="+61"/>
-        <location line="+93"/>
+        <location line="+106"/>
         <source>python engine not available</source>
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-149"/>
-        <location line="+154"/>
+        <location line="-162"/>
+        <location line="+167"/>
         <source>variables cannot be imported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location line="-144"/>
+        <location line="-157"/>
         <source>timeout while getting value from workspace</source>
         <translation type="unfinished">Zeitüberschreitung beim Holen der Werte aus dem Arbeitsbereich</translation>
     </message>
@@ -4326,12 +4345,12 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+17"/>
-        <location line="+93"/>
+        <location line="+106"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-94"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
@@ -4347,17 +4366,17 @@ Nachricht: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+91"/>
+        <location line="+104"/>
         <source>suffix must be *.idc or *.mat</source>
         <translation type="unfinished">Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location line="-76"/>
+        <location line="-79"/>
         <source>Import data</source>
         <translation type="unfinished">Daten importieren</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+20"/>
         <source>file not found</source>
         <translation type="unfinished">Datei nicht gefunden</translation>
     </message>
@@ -4718,12 +4737,12 @@ Nachricht: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Toolboxes</source>
         <translation type="unfinished">Werkzeuge</translation>
     </message>
@@ -4973,7 +4992,7 @@ Nachricht: &apos;%1&apos;</translation>
 <context>
     <name>ito::QsciApiManager</name>
     <message>
-        <location filename="../organizer/qsciApiManager.cpp" line="+278"/>
+        <location filename="../organizer/qsciApiManager.cpp" line="+284"/>
         <source>The python syntax documents have changed. The API has been updated.</source>
         <translation type="unfinished"></translation>
     </message>

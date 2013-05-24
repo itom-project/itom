@@ -178,13 +178,13 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                             absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
 
                             message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
-                            status.messages.append(QPair<ito::tRetValue, QString>(ito::retOk, message));
+                            status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, message));
                         }
                         else
                         {
                             loader->unload();
                             message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
-                            status.messages.append( QPair<ito::tRetValue, QString>(ito::retError, message));
+                            status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
                             DELETE_AND_SET_NULL(loader);
                         }
                     }
@@ -198,7 +198,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 {
                     loader->unload();
                     message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
-                    status.messages.append( QPair<ito::tRetValue, QString>(ito::retError, message));
+                    status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
                     DELETE_AND_SET_NULL(loader);
                 }
                 
@@ -207,7 +207,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
             {
                 loader->unload();
                 message = tr("DesignerWidget in file '%1' could not be loaded. Error message: %2").arg(status.filename).arg(loader->errorString());
-                status.messages.append( QPair<ito::tRetValue, QString>( ito::retError, message) );
+                status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>( ito::plsfError, message) );
                 DELETE_AND_SET_NULL(loader);
             }
 

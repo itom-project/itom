@@ -151,6 +151,7 @@
         <file>icons/sendToPython.png</file>
         <file>icons/window.png</file>
         <file>icons/pluginAlgo.png</file>
+        <file>icons_m/ignored.png</file>
     </qresource>
     <qresource prefix="/misc">
         <file>icons/itom_icons/calc.png</file>

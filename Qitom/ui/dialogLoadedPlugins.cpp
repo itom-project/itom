@@ -37,9 +37,10 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     ui.setupUi(this);
     m_fileIconProvider = new QFileIconProvider();
 
-    ui.cmdError->setIcon( QIcon(":/application/icons/dialog-error-4.png") );
-    ui.cmdWarning->setIcon( QIcon(":/application/icons/dialog-warning-4.png") );
-    ui.cmdMessage->setIcon( QIcon(":/application/icons/dialog-information-4.png") );
+    ui.cmdError->setIcon(QIcon(":/application/icons/dialog-error-4.png"));
+    ui.cmdWarning->setIcon(QIcon(":/application/icons/dialog-warning-4.png"));
+    ui.cmdMessage->setIcon(QIcon(":/application/icons/dialog-information-4.png"));
+    ui.cmdIgnored->setIcon(QIcon(":/plugins/icons_m/ignored.png"));
 
     init();
     filter();
@@ -55,35 +56,42 @@ DialogLoadedPlugins::~DialogLoadedPlugins()
 void DialogLoadedPlugins::init()
 {
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddinManager());
-    if(AIM)
+    if (AIM)
     {
         m_content = AIM->getPluginLoadStatus();
     }
 
     ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
-    if(dwo)
+    if (dwo)
     {
-        m_content.append( dwo->getPluginLoadStatus() );
+        m_content.append(dwo->getPluginLoadStatus());
     }
 
-    foreach(const PluginLoadStatus& item, m_content)
+    m_windowTitle = ui.groupBox_2->title();
+    m_cmdMessage = ui.cmdMessage->text();
+    m_cmdWarning = ui.cmdWarning->text();
+    m_cmdError = ui.cmdError->text();
+    m_cmdIgnored = ui.cmdIgnored->text();
+
+    foreach (const PluginLoadStatus& item, m_content)
     {
         int overallStatus = 0;
         QFileInfo info(item.filename);
-        const QPair<ito::tRetValue,QString> *message;
+        const QPair<ito::tPluginLoadStatusFlag, QString> *message;
         QTreeWidgetItem *child = NULL;
 
         QTreeWidgetItem *plugin = new QTreeWidgetItem();
         plugin->setData(0, Qt::DisplayRole, info.fileName());
         plugin->setData(0, Qt::ToolTipRole, info.absoluteFilePath());
-        plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info) );
+        plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info));
 
-        for(int i=0;i<item.messages.size();i++)
+        for (int i = 0; i < item.messages.size(); i++)
         {
             message = &(item.messages[i]);
-            if(message->first == ito::retOk)
+            if (message->first == ito::plsfOk)
             {
-                overallStatus |= ito::retError * 2; //retOk is 0, that is bad, therefore use another value for retOk
+//                overallStatus |= ito::retError * 2; //retOk is 0, that is bad, therefore use another value for retOk
+                overallStatus |= 8; //retOk is 0, that is bad, therefore use another value for retOk
             }
             else
             {
@@ -93,48 +101,80 @@ void DialogLoadedPlugins::init()
             child = new QTreeWidgetItem(plugin);
             child->setData(0, Qt::DisplayRole, message->second);
             child->setData(0, Qt::ToolTipRole, message->second);
-            if(message->first == ito::retOk)
+            if (message->first == ito::plsfOk)
             {
                 child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-information-4.png"));
-                m_items.append( QPair<int,QTreeWidgetItem*>(ito::retError * 2, child) ); //retOk is 0, that is bad, therefore use another value for retOk
+                m_items.append(QPair<int,QTreeWidgetItem*>(8, child)); //plsfOk is 0, that is bad, therefore use another value for retOk
             }
-            else if(message->first == ito::retWarning)
+            else if (message->first == ito::plsfWarning)
             {
                 child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-warning-4.png"));
-                m_items.append( QPair<int,QTreeWidgetItem*>(ito::retWarning, child) );
+                m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfWarning, child));
+            }
+            else if (message->first == ito::plsfIgnored)
+            {
+                child->setData(0, Qt::DecorationRole, QIcon(":/plugins/icons_m/ignored.png"));
+                m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfIgnored, child));
             }
             else
             {
                 child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-error-4.png"));
-                m_items.append( QPair<int,QTreeWidgetItem*>(ito::retError, child) );
+                m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfError, child));
             }
         }
         
-        m_items.append( QPair<int,QTreeWidgetItem*>(overallStatus, plugin) );
+        m_items.append(QPair<int,QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
     }
 }
 
 void DialogLoadedPlugins::filter()
 {
-    int flag = 0;
-    if(ui.cmdError->isChecked()) flag |= ito::retError;
-    if(ui.cmdWarning->isChecked()) flag |= ito::retWarning;
-    if(ui.cmdMessage->isChecked()) flag |= ito::retError * 2; //retOk is 0, that is bad, therefore use another value for retOk
+    int stateCount[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // we need 1: plsfWarning, 2: plsfError, 4: plsfIgnored, 8: plsfOk
 
-    for(int i=0;i<m_items.size();i++)
+    int flag = ui.cmdMessage->isChecked() * 8 + 
+                ui.cmdWarning->isChecked() * ito::plsfWarning +
+                ui.cmdError->isChecked() * ito::plsfError +
+                ui.cmdIgnored->isChecked() * ito::plsfIgnored;
+
+    bool filterEditNotEmpty = ui.filterEdit->text() != "";
+    QString filterEditText = "*" + ui.filterEdit->text() + "*";
+    QRegExp rx(filterEditText, Qt::CaseInsensitive, QRegExp::Wildcard);
+
+    for (int i = m_items.size() - 1; i >= 0; i--)
     {
-        m_items[i].second->setHidden( !(m_items[i].first & flag) );
-    }
+        bool hiddenItem = false;
+        if (filterEditNotEmpty)
+        {
+            if (m_items[i].second->parent())
+            {
+                hiddenItem = m_items[i].second->parent()->isHidden();
+            }
+            else
+            {
+                hiddenItem = !rx.exactMatch(m_items[i].second->text(0));
+            }
+        }
 
+        m_items[i].second->setHidden(!(m_items[i].first & flag) || hiddenItem);
+        if (m_items[i].second->parent() && !m_items[i].second->isHidden())
+        {
+            stateCount[m_items[i].first]++;
+        }
+    }
+    ui.groupBox_2->setTitle(QString("%1 (%2)").arg(m_windowTitle).arg(stateCount[8] + stateCount[1] + stateCount[2] + stateCount[4]));
+    ui.cmdMessage->setText(QString("%1 (%2)").arg(m_cmdMessage).arg(stateCount[8]));
+    ui.cmdWarning->setText(QString("%1 (%2)").arg(m_cmdWarning).arg(stateCount[1]));
+    ui.cmdError->setText(QString("%1 (%2)").arg(m_cmdError).arg(stateCount[2]));
+    ui.cmdIgnored->setText(QString("%1 (%2)").arg(m_cmdIgnored).arg(stateCount[4]));
 }
 
 void DialogLoadedPlugins::on_tree_itemSelectionChanged()
 {
     QList<QTreeWidgetItem*> items = ui.tree->selectedItems();
-    if(items.size() >= 1)
+    if (items.size() >= 1)
     {
-        ui.lblText->setText( items[0]->data(0, Qt::ToolTipRole ).toString() );
+        ui.lblText->setText(items[0]->data(0, Qt::ToolTipRole).toString());
     }
     else
     {
