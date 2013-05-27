@@ -1840,7 +1840,13 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
     if( !PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
-        return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
+        PyErr_Clear();
+
+        if( !PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyList_Type, &argtuple))
+        {
+            return NULL;
+        }
+        //return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
     }
 
     if(code)
@@ -1881,13 +1887,20 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
                     PyTuple_SetItem(arguments,0,code); //steals ref
                     PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType , arguments); //new ref
                     Py_DECREF(arguments);
-                    //PyObject *weak = PyWeakref_NewRef(code,NULL); //new ref
-                    //PyObject *weak = code;
                         
                     if(proxy)
                     {
-                        //Py_INCREF(weak);
-                        Py_XINCREF(argtuple);
+                        if(argtuple)
+                        {
+                            if(PyTuple_Check(argtuple))
+                            {
+                                Py_INCREF(argtuple);
+                            }
+                            else //list
+                            {
+                                argtuple = PyList_AsTuple(argtuple); //returns new reference
+                            }
+                        }
                         pyEngine->m_pyFuncWeakRefHashes[qkey2] = QPair<PyObject*,PyObject*>(proxy,argtuple);
                     }
                     else
@@ -1996,7 +2009,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
 
     if( !PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
-        return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
+        PyErr_Clear();
+        if( !PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyList_Type, &argtuple))
+        {
+            return NULL;
+        }
+        //return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
     }
 
     if(code)
@@ -2049,13 +2067,20 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
                         PyTuple_SetItem(arguments,0,code); //steals ref
                         PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType , arguments); //new ref
                         Py_DECREF(arguments);
-                        //PyObject *weak = PyWeakref_NewRef(code,NULL); //new ref
-                        //PyObject *weak = code;
                         
                         if(proxy)
                         {
-                            //Py_INCREF(weak);
-                            Py_XINCREF(argtuple);
+                            if(argtuple)
+                            {
+                                if(PyTuple_Check(argtuple))
+                                {
+                                    Py_INCREF(argtuple);
+                                }
+                                else //List
+                                {
+                                    argtuple = PyList_AsTuple(argtuple); //returns new reference
+                                }
+                            }
                             pyEngine->m_pyFuncWeakRefHashes[qkey2] = QPair<PyObject*,PyObject*>(proxy,argtuple);
                         }
                         else
