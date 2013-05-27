@@ -1789,16 +1789,16 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 //
 //#################################################################################################################
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals]) -> function to get a floating point number from the user\n\
+PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user\n\
 \n\
 Parameters \n\
 ----------- \n\
 title : {str}\n\
     is the dialog title \n\
 label : {str}\n\
-    is the label above the text box \n\
-    defaultValue : {double}, optional\n\
-    is the default value in the text box \n\
+    is the label above the spin box \n\
+defaultValue : {double}, optional\n\
+    is the default value in the spin box \n\
 min : {double}, optional\n\
     default = -2147483647.0\n\
     is the allowed minimal value\n\
@@ -1806,20 +1806,15 @@ max : {double}, optional\n\
     default = 2147483647.0\n\
     is the allowed maximal value\n\
 decimals : {int}, optional\n\
-    default = 1\n\
-    are the number of shown decimals\n\
+    the maximum number of decimal places (default: 1) \n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+A tuple where the first value contains the current double value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getInt, getText, getItem");
 PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "decimals", NULL};
@@ -1872,34 +1867,30 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step]) -> function to get an integer number from the user \n\
+PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step=1]) -> shows a dialog to get an integer value from the user\n\
 \n\
 Parameters \n\
 ----------- \n\
 title : {str}\n\
     is the dialog title \n\
 label : {str}\n\
-    is the label above the text box \n\
+    is the label above the spinbox \n\
 defaultValue : {int}, optional\n\
-    is the default value in the text box \n\
+    is the default value in the spinbox \n\
 min : {int}, optional\n\
     is the allowed minimal value (default: -2147483647) \n\
 max : {int}, optional\n\
     is the allowed maximal value (default: 2147483647) \n\
 step : {int}, optional\n\
-    is the change step if user presses the up/down arrow (default: 1)\n\
+    is the step size if user presses the up/down arrow (default: 1)\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+A tuple where the first value contains the current integer value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getDouble, getText, getItem");
 PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "step", NULL};
@@ -1952,7 +1943,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex, editable]) -> function to let the user select an item from a string list \n\
+PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex=0, editable=True]) -> shows a dialog to let the user select an item from a string list\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1965,27 +1956,23 @@ stringList : {tuple or list}, optional \n\
 currentIndex : {int}, optional\n\
     defines the preselected value index (default: 0)\n\
 editable : {bool}, optional\n\
-    defines wether new entries can be added (True) or not (False, default)\n\
+    defines whether new entries can be added (True) or not (False, default)\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+A tuple where the first value contains the current active or typed string value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getInt, getDouble, getItem");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable", NULL};
+    const char *kwlist[] = {"title", "label", "stringList", "currentIndex=0", "editable=false", NULL};
     const char *title = 0;
     const char *label = 0;
     PyObject *stringList = NULL;
-    int currentIndex = 1;
-    bool editable = true;
+    int currentIndex = 0;
+    bool editable = false;
     QStringList stringListQt;
     QString temp;
 
@@ -2060,7 +2047,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString) -> function to get a string from the user \n\
+PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString) -> opens a dialog in order to ask the user for a string \n\
 Parameters \n\
 ----------- \n\
 title : {str}\n\
@@ -2072,15 +2059,11 @@ defaultString : {str}\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+A tuple where the first value contains the current string value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getInt, getDouble, getItem");
 PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultString", NULL};
@@ -2303,24 +2286,13 @@ options : {int}, optional\n\
     is an or-combination of the following options (see 'QFileDialog::Option'): \n\
         * 1: ShowDirsOnly [default] \n\
         * 2: DontResolveSymlinks \n\
-        * 4: DontConfirmOverwrite \n\
-        * 16: DontUseNativeDialog \n\
         * ... (for others see Qt-Help) \n\
 parent : {ui}, optional\n\
-    is the parent widget of this dialog\n\
+    is a parent dialog or window, this dialog becomes modal.\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-QFileDialog::Option (???)\n\
-\n\
-");
+The selected directory is returned as absolute path or None if the dialog has been rejected.");
 PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"caption", "directory", "options", "parent", NULL};
@@ -2330,7 +2302,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     PythonUi::PyUi *parentItem = NULL;
 
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ssiO!", const_cast<char**>(kwlist), &caption, &directory, &options, &PythonUi::PyUiType, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ss|iO!", const_cast<char**>(kwlist), &caption, &directory, &options, &PythonUi::PyUiType, &parentItem))
     {
         return NULL;
     }
@@ -2375,12 +2347,14 @@ PyDoc_STRVAR(pyUiGetOpenFileName_doc,"getOpenFileName([caption, startDirectory, 
 Parameters \n\
 ----------- \n\
 caption : {str}, optional\n\
-    startDirectory {str}, optional\n\
+    This is the optional title of the dialog, default: no title \n\
+startDirectory {str}, optional\n\
     optional, if not indicated currentDirectory will be taken\n\
 filters : {str}, optional\n\
     default = 0\n\
     possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-    selectedFilterIndex is the index of filters which is set by default (0 is first entry) \n\
+selectedFilterIndex : {int}, optional \n\
+    is the index of filters which is set by default (0 is first entry) \n\
 options : {int}, optional\n\
     default =  0 \n\
     or-combination of enum values QFileDialog::Options \n\
@@ -2389,24 +2363,18 @@ parent : {ui}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-filename : {str}\n\
-    filename as string or empty string if dialog has been aborted.\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+filename as string or None if dialog has been aborted.\n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getSaveFileName");
 PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     
     const char *kwlist[] = {"caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL};
-    const char *caption = 0;
-    const char *directory = 0;
-    const char *filters = 0;
+    const char *caption = "";
+    const char *directory = "";
+    const char *filters = "";
     int selectedFilterIndex = 0;
     int options = 0;
     PythonUi::PyUi *parentItem = NULL;
@@ -2455,8 +2423,9 @@ PyDoc_STRVAR(pyUiGetSaveFileName_doc,"getSaveFileName([caption, startDirectory, 
 Parameters \n\
 ----------- \n\
 caption : {str}, optional\n\
-    startDirectory : {String}, optional\n\
-    if not indicated currentDirectory will be taken\n\
+    This is the title of the dialog \n\
+startDirectory : {String}, optional\n\
+    if not indicated, the current working directory will be taken\n\
 filters : {str}, optional\n\
     possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
 selectedFilterIndex : {int}, optional\n\
@@ -2470,22 +2439,18 @@ parent : {ui}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+filename as string or None if dialog has been aborted.\n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getOpenFileName");
 PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     
     const char *kwlist[] = {"caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL};
-    const char *caption = 0;
-    const char *directory = 0;
-    const char *filters = 0;
+    const char *caption = "";
+    const char *directory = "";
+    const char *filters = "";
     int selectedFilterIndex = 0;
     int options = 0;
     PythonUi::PyUi *parentItem = NULL;
@@ -2769,14 +2734,20 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
     QMetaObject metaObject = QMessageBox::staticMetaObject;
     QMetaEnum metaEnum = metaObject.enumerator( metaObject.indexOfEnumerator( "StandardButtons" ));
     QString key;
+    QStringList obsoleteKeys = QStringList() << "YesAll" << "NoAll" << "Default" << "Escape" << "FlagMask" << "ButtonMask";
+
     //auto-parsing of StandardButtons-enumeration for key-value-pairs
     for(int i = 0 ; i < metaEnum.keyCount() ; i++)
     {
         value = Py_BuildValue("i", metaEnum.value(i));
         key = metaEnum.key(i);
-        key.prepend("MsgBox"); //Button-Constants will be accessed by ui.MsgBoxOk, ui.MsgBoxError...
-        PyDict_SetItemString(tp_dict, key.toAscii().data(), value);
-        Py_DECREF(value);
+
+        if(obsoleteKeys.contains(key) == false)
+        {
+            key.prepend("MsgBox"); //Button-Constants will be accessed by ui.MsgBoxOk, ui.MsgBoxError...
+            PyDict_SetItemString(tp_dict, key.toAscii().data(), value);
+            Py_DECREF(value);
+        }
     }
 
     //add dialog types
