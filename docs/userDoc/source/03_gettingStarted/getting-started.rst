@@ -48,6 +48,7 @@ At first, we have to initialize the stage. Therefore we select the **DummyMotor*
 A window with initialisation parameters of the plugIn opens.
 
 .. figure:: images/openDummyMotor3.png
+    :scale: 70%
 
 This PlugIn has not parameters, so we press OK. 
 
@@ -57,6 +58,7 @@ We can see the index of the initialised plugin (first time == ID: 1).
 If we right-click again on  **DummyMotor ID 1**, a contrex menu opens with the entries:
 
 .. figure:: images/openDummyMotor4.png
+    :scale: 70%
 
 * Configuration dialog
 * Show plugIn Toolbox
@@ -66,12 +68,14 @@ If we right-click again on  **DummyMotor ID 1**, a contrex menu opens with the e
 By left-clicking **Configuration dialog**, a window with basic parameter setup functions for this special plugin opens. 
 
 .. figure:: images/dummyMotorDialog.png
+    :scale: 70%
 
 As long as this window is open, iTOM will be blocked. So we close this window with the 'ok'-Button.
 
 To move this virtual stage, this plugIn comes with a **Toolbox**. We open this by right-clicking again on **DummyMotor ID 1** and than left-click on **Show plugIn Toolbox**.
 
 .. figure:: images/dummyMotorWidget.png
+    :scale: 70%
 
 This opens a non blocking widget usally docked to the GUI-Window with basic control-buttons.
 
@@ -213,10 +217,12 @@ We can also open the camera via the GUI and sent an instance to python.
 Therefore we select the **DummyGrabber** within the **Plugins-Browser** (GUI No. 6). We right-click and select 'newInstance'.
 
 .. figure:: images/openDummyGrabber1.png
+    :scale: 70%
 
 The window with initialisation parameters of the plugIn opens. Select the tab **optinal parameters** and insert maxXSize = 800, maxYSize = 600, bpp == 8. 
 
 .. figure:: images/openDummyGrabber2.png
+    :scale: 70%
 
 Than check **Access instance with python** and type 'camera' into the field **variable name**. Press ok. Now you can proceed with step 2 but hence you already set the grabber parameters you can also proceed with step 4.   
 

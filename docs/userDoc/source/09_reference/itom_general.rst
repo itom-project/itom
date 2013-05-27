@@ -1,5 +1,5 @@
 itom methods
-================================
+=============
 
 .. currentmodule:: itom
 

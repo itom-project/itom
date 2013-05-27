@@ -3,7 +3,7 @@
 .. _toolbar-start:
 
 Customize the menu and toolbars of |itom|
-==========================================
+******************************************
 
 In this section, it is shown how you can add your user-defined toolbars and menus to the main window of |itom|. Clicks to these
 execute arbitrary python code or methods. The creation of the toolbars, buttons and menus is done using python code, too.
@@ -11,7 +11,7 @@ execute arbitrary python code or methods. The creation of the toolbars, buttons 
 .. _toolbar-addtoolbar:
 
 Add toolbars and buttons
--------------------------
+=========================
 
 Using the embedded scripting language in |itom|, you can add your own toolbars and buttons in order to automatically execute specific
 |python|-commands or -methods. Every button that is created is related to a toolbar defined by its toolbar-name. If a toolbar-name
@@ -75,7 +75,7 @@ All these buttons are removed by the following lines of code:
 .. _toolbar-createmenu:
     
 Create menus
--------------
+=====================
 
 You can not only add buttons to the toolbar of |itom|'s main window but also create your menu and sub-menu structure. Therefore the commands
 :py:func:`~itom.addMenu`and :py:func:`~itom.removeMenu` are available.
@@ -118,6 +118,7 @@ is added as subitem of *Menu1*. Hence, it is appended to *Button1*. Afterwards t
 a children respectively, called *Button2* and *Button3*.
 
 .. figure:: images/menu.png
+    :scale: 70%
 
 .. note::
     
@@ -137,7 +138,7 @@ The only argument of the command :py:func:`~itom.removeMenu` is only the key of 
 .. _toolbar-icons:
 
 Icons in user-defined toolbars and menus
-------------------------------------------
+==============================================
 
 Both for toolbar-buttons as well for menu-entries you can assign an arbitrary icon. Usually it is recommended to have an icon file with a size
 of 24x24 Px or below (will be automatically resized) in any image format (*png* recommended, available is *bmp*, *gif*, *jpg*, *tiff*...). The
@@ -151,6 +152,7 @@ Besides assigning an external icon-file to the **icon** parameter, |itom| also g
 the |itom| application. All icons, that are included in these resources are listed in the **icon browser**:
 
 .. figure:: images/iconBrowser.png
+    :scale: 70%
 
 The icon browser is accessible in any script window by its menu **edit >> icon browser** (or Ctrl+B). If you found your desired icon, double click
 on the entry in order to copy the appropriate string to the clipboard and paste it afterwards into your script. Resource locations always start witha colon (:) sign.

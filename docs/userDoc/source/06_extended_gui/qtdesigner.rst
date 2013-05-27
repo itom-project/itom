@@ -1,7 +1,9 @@
 .. include:: ../include/global.inc
 
+.. _qtdesigner:
+
 Creating advanced dialogs and windows  
-*************************************
+**************************************
 
 With |itom| it is not only possible to add menus and toolbar elements to the main GUI of |itom| or to use the default set of input and message boxes, but
 it is also possible to create own user interfaces. These interfaces are designed by help of a WYSIWYG ("what you see is what you get") design tool (Qt Designer).
@@ -19,11 +21,13 @@ Qt Designer
 In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
 
 .. figure:: images_userGUI/mainsymbols2.png
+    :scale: 70%
 
 or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
 can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
+    :scale: 70%
 
 In principle you have the possibility to choose between three different base layouts:
 
@@ -79,6 +83,7 @@ at the right side or at the bottom of the dialog.
 Let us create an exemplary user interface. In **Qt Creator** the following widget has been created:
 
 .. figure:: images_userGUI/testWidget.png
+    :scale: 70%
 
 On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
 this group box two radio buttons have been placed using a simple drag&drop from the widget library. Both radio buttons are aligned inside of the group box with a vertical layout. This
@@ -111,6 +116,7 @@ that the variable *result* will be set to *0* if the user closed the dialog usin
 clicked an **OK**-button.
 
 .. figure:: images_userGUI/testWidgetItom.png
+    :scale: 70%
 
 It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
 on the parameters of :py:meth:`~itom.ui.show`. However only in the modal case above, the closing result can be tracked by |python|. Additionally, this is also only possible if 
@@ -120,6 +126,7 @@ Right now, you don't have the possibility to quit the dialog using any button (*
 :py:class:`itom.ui` needs to be changed. There is the choice between two different appearances of a button bar, which can be automatically added to your widget:
 
 .. figure:: images_userGUI/testWidgetButtonBar.png
+    :scale: 70%
 
 Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
 key-word of the item corresponds to the role of the button (see enumeration *QDialogButtonBox::ButtonRole** of the |Qt|-library documentation) and the value is the text of the
@@ -132,9 +139,11 @@ Finally, the call to :py:class:`itom.ui` must be in the following way, in order 
 
 .. code-block:: python
     
-    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
+        {"AcceptRole":"OK", "CancelRole":"Cancel"})
     #or
-    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_HORIZONTAL, {"AcceptRole":"Yes", "CancelRole":"No"})
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_HORIZONTAL, \
+        {"AcceptRole":"Yes", "CancelRole":"No"})
 
 .. note::
     
@@ -233,7 +242,8 @@ In order to set one or multiple properties, you can use similar methods. Simply 
     dialog.txtInput["enabled"] = False
     
     #2. possibility
-    dialog.txtInput.setProperty( {"text":"new text for this textfield", "enabled":False} )
+    dialog.txtInput.setProperty( {"text":"new text for this textfield", \
+        "enabled":False} )
 
 If you use :py:meth:`~itom.uiItem.setProperty`, you always need to pass a dictionary as argument. This dictionary can contain one or multiple properties, where the keyword
 always is the property-name (string) and the value is the corresponding new value (type depends on corresponding C++ type).
@@ -323,7 +333,8 @@ on the first exemplary dialog (*testWidget.ui*) has been clicked:
 
 .. code-block:: python
     
-    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+    dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
+        {"AcceptRole":"OK", "CancelRole":"Cancel"})
     
     def showMsg():
         #slot executed in button 'click me' is clicked
@@ -344,7 +355,8 @@ the exemplary code can look as follows:
     class MyDialog():
         
         def __init__(self):
-            self.dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK", "CancelRole":"Cancel"})
+            self.dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
+                {"AcceptRole":"OK", "CancelRole":"Cancel"})
             self.dialog.btnClickMe.connect("clicked()", self.showMsg)
             self.dialog.show()
         
@@ -365,7 +377,8 @@ the signal **triggered()** of every item in the menu with your method. In |Qt| s
     def addItem():
         print("action addItem clicked")
     
-    win.actionAddItem.connect("triggered()", addItem) #actionAddItem is the objectName of the action
+    win.actionAddItem.connect("triggered()", addItem) 
+    #actionAddItem is the objectName of the action
     win.show()
 
 
@@ -438,12 +451,14 @@ be useful if you want to enable or disable certain widgets depending on the stat
 with a checkbox and a textfield. Let us define a signal-slot-connection, such that the textfield gets disabled if the checkbox is unchecked.
 
 .. figure:: images_userGUI/uiSignalSlot1.png
+    :scale: 70%
 
 This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
 in the toolbar or by pressing *F4*. Then you can make a drag&drop connection between the emitting widget and the receiver-widget. After releasing the mouse button, the connection dialog,
 depicted in the following figure becomes visible:
 
 .. figure:: images_userGUI/uiSignalSlot2.png
+    :scale: 70%
 
 Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are
 visible. However, you can check the checkbox below, in order to also show the signals and slots of the inherited classes. Please make sure, that you only choose pairs of signals and

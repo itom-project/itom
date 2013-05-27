@@ -16,8 +16,12 @@ def replaceInFiles(path, ending):
                 
                 # nach Bildern suchen und nach jedem ca. 10. Bild ein \newpage einfügen
                 p = re.compile(r'\\begin{figure}\[htbp\]')
+                
+                #chapter, sections... unterbrechen die suche
+                pNeg = re.compile(r'\\chapter{|\\section{|\\subsection{|\\subsubsection{')
+                
                 # j gibt an nach wievielen Bildern der neue Pagebreak kommen soll
-                j = 2
+                j = 3
                 pos = 0
                 # count zaehlt die Vorkommen der Bilder
                 c = 0
@@ -25,8 +29,17 @@ def replaceInFiles(path, ending):
                     m = p.search(s,pos,len(s))
                     if (m == None):
                         break
+                    
+                    #pruefe ob zwischen pos und pos+m.end() irgendwo ein pNeg war, dann setze den zaehler zurueck
+                    m2 = pNeg.search(s,pos,len(s))
+                    if(not(m2 is None) and m2.end() < m.end()):
+                        print("new section or chapter, figure newline counter resetted")
+                        c = 1
+                    else:
+                        c += 1
+                    
                     pos = m.end();
-                    c = c +1
+                    #c = c +1
                     if (c%j == 0):
                         #ersetzen
                         sStart = s[:m.start()]
