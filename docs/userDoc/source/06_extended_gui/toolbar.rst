@@ -1,72 +1,156 @@
 .. include:: ../include/global.inc
 
-Customize the menu and the Quickstart Bar
-============================================
+.. _toolbar-start:
 
-In this section the creation of buttons and menu entries which executes python code after clicking is described.
-This creation is done by python code itseft.
+Customize the menu and toolbars of |itom|
+==========================================
 
-You will find exemplary implementation within the toolbars delivered with itom-installer.
+In this section, it is shown how you can add your user-defined toolbars and menus to the main window of |itom|. Clicks to these
+execute arbitrary python code or methods. The creation of the toolbars, buttons and menus is done using python code, too.
 
-Add toolbar-buttons
----------------------------------------------------
+.. _toolbar-addtoolbar:
 
-Using the embedded scripting language in |itom|, you can add your own toolbars and buttons in order to automatically execute specific |python|-commands.
-It is possible to create an arbitrary amount of different toolbars, where every toolbar is specified by an unique name. Then, you can add buttons to any desired
-toolbar.
+Add toolbars and buttons
+-------------------------
 
-The following command will create one single button:
+Using the embedded scripting language in |itom|, you can add your own toolbars and buttons in order to automatically execute specific
+|python|-commands or -methods. Every button that is created is related to a toolbar defined by its toolbar-name. If a toolbar-name
+does not already exist, a new toolbar with this name is created and the button is added to this toolbar. Every toolbar can be arbitrarily
+positioned in |itom| or undocked to any floating position on your screen.
+
+A single button in a toolbar is created using the command :py:func:`~itom.addButton`, vice-versa the button is removed with :py:func:`~itom.removeButton`. The syntax for both is:
 
 .. code-block:: python
     
-    addButton(toolbarName, buttonName, python-code [, icon-filename])
+    addButton(toolbarName, buttonName, code [, icon, argtuple])
+    removeButton(toolbarName, buttonName)
 
-The parameters are:
+Your button is accessed by its name **buttonName**, which also is printed on the button if no icon is defined. The toolbar, where the button
+is displayed, is defined by its name **toolbarName**. You can either provide a python code snippet as string or a reference to any method or function.
+If this method requires parameters, you can add these parameters as tuple to the keyword-parameter *argtuple*. Additionally, it is possible to
+assign an icon to the button. Therefore you give the absolute path of the icon to the parameter *icon*. See the :ref:`icon section <toolbar-icons>` below about the different possibilities how to assign a valid filename.
 
-* toolbaName [string] is the name of the toolbar where this button should be placed. If the toolbar does not exist, it will be created and appended to the toolbars in |itom|.
-* buttonName [string is the name of the button. This name is visible if no icon is assigned to this button (or if the icon can not be loaded or found).
-* python-code [string] is the code-snippet executed if the button is pressed (currently no method or functions references are supported - unlike this is the case when creating menus).
-* icon-filename [string, optional] is the path and filename to the icon (use png-files, ico-files are not supported), which should be used for this button. Please consider that relative pathes are searched in the application's current directory.
+In the following example, three different buttons linking to both python code and some functions are created:
 
-Please notice that any existing button with the same name that the new button and lying in the same toolbar will be deleted.
+.. code-block:: python
+    
+    def test1():
+        print("The button test1 has been clicked")
+    
+    def test2(a,b):
+        print("The result of a+b is",a+b)
+    
+    addButton("myToolbar","HelloWorld","print('Hello World')")
+    addButton("myToolbar","BtnTest1",test1, ":/application/icons/itomicon/curAppIcon.png")
+    addButton("myToolbar","BtnTest2",test2, argtuple=(4,7))
 
-Examples for buttons:
+.. note::
+    
+    In this example, it is assumed that the module :py:mod:`itom` has been globally and totally imported by::
+        
+        from itom import *
+    
+    If this is not the case, you can also import :py:mod:`itom` and call *itom.addButton(...)*.
+    Additionally, if you create a button in a toolbar, whose name already exists, the previous button will be deleted first.
+    If you assign a code-snippet to the **code**-parameter that includes quotation marks, make sure that the quotation mark around
+    the code-snippet is different to the quotation marks within the code snippet or escape your inner quotation marks by a backslash.
+    
+    .. code-block:: python
+        
+        addButton("myToolbar","QuotExample","print('different quotation mark')")
+        addButton("myToolbar","QuotExample","print(\"escaped quotation mark\")")
+
+All these buttons are removed by the following lines of code:
+
+.. code-block:: python
+    
+    removeButton("myToolbar","HelloWorld")
+    removeButton("myToolbar","BtnTest1")
+    removeButton("myToolbar","BtnTest2")
+    
+.. note::
+    
+    If the last button of a toolbar has been removed, the toolbar is removed as well.
+
+.. _toolbar-createmenu:
+    
+Create menus
+-------------
+
+You can not only add buttons to the toolbar of |itom|'s main window but also create your menu and sub-menu structure. Therefore the commands
+:py:func:`~itom.addMenu`and :py:func:`~itom.removeMenu` are available.
+
+There are three types of menu items, that can be created:
+
+* MENU (*itom.MENU* [2]) creates a menu-item, having any possible sub-item. This item cannot be connected to any code. Every menu always starts with an item of this type.
+* BUTTON (*itom.BUTTON* [0]) creates a real menu-item, that is the mode of the menu-tree. Only a click to these items can execute code.
+* SEPARATOR (*itom.SEPARATOR* [1]) creates a separater-item in the menu or submenu. It is also not connected to any code.
+
+Any menu-item is defined by its key. The key is a slash-separated list, where the single items stand for the path one has to walk through the menu-tree in order to access the desired item. If an item with a complex-tree structure is created where some of the parent-nodes do not already
+exist, they are iteratively created (type MENU) in order to finally create the desired node-element.
+
+The call to :py:func:`~itom.addMenu` is as follows:
+
+.. code-block:: python
+    
+    addMenu(type, key [,name, code, icon, argtuple])
+
+Hereby *type* is the item's type like stated above and *key* denotes the absolute key to the item, which also indicates the tree-structure, where the
+item should be added. The name of your item is given by *name*, while *code*, *icon* and *argtuple* have the same meaning like in the case of adding
+a button to the toolbar (:ref:`see above <toolbar-addtoolbar>`).
+
+Here are some examples for creating a menu:
 
 .. code-block:: python
     :linenos:
     
-    addButton("cameraTools", "start live image", "liveImage(cam)")
-    addButton("cameraTools", "camera statistics", "print(cam.getParam('xsize'))\nprint(cam.getParam('ysize'))", "icons\\stats.png")
-    absIcon = getAppPath() + 'Qitom/icon/attribute.png'
-    addButton("otherTools", "new script", "newScript()")
-    
-Using itom delivered icons for buttons:
+    def btn2(arg=None):
+        print("button 2 clicked:",arg)
 
-Itom comes with predefined buttons from ito, Qt and free icon data bases. You can address these icons like classic files via ':/pathname/filename'.
-To select a suitable button use the iconBrowser (see :doc:`../script-language/debugging`)
+    addMenu(itom.BUTTON, "Menu1/Button1","Button1","print('button1 pressed')")
+    addMenu(itom.SEPARATOR, "Menu1/Sep")
+    addMenu(itom.MENU, "Menu1/Menu1_1")
+    addMenu(itom.BUTTON, "Menu1/Menu1_1/Button2","Button2",btn2)
+    addMenu(itom.BUTTON, "Menu1/Menu1_2/Button3","Button3",btn2,argtuple=[2])
+
+In line 4, the *Button1* is created. Since its parent node *Menu1* does not exist, it will be created (type *MENU*). Next, in line 5 a separator
+is added as subitem of *Menu1*. Hence, it is appended to *Button1*. Afterwards two sub-nodes *Menu1_1* and *Menu1_2* are added which both have
+a children respectively, called *Button2* and *Button3*.
+
+.. figure:: images/menu.png
+
+.. note::
+    
+    Please consider, that in line 8 an *argtuple* is appended to the function-call to *btn2*.
+    Altough only one argument is passed it must be included in a tuple. Usually a tuple is created by the bace operator *(2)*. However, since only
+    one argument is given, python is interpreting this brace-operator as mathematical expression and it is reduced to *2* only. Therefore, we use the square bracket in order to create a list, that is implicitely converted to a tuple.
+
+In order to remove any menu item including its subitem, call :py:func:`~itom.removeMenu` with the key-word of the specific item. For instance, the
+removal of all menus created above, is done by:
 
 .. code-block:: python
-    :linenos:
     
-    addButton("itoTools", "ITO", "print(\"Hello World\")", ":/application/icons/itomicon/itologo64.png")
-    
-    
+    removeMenu("Menu1")
 
+The only argument of the command :py:func:`~itom.removeMenu` is only the key of the menu-item to delete.
 
-Remove toolbar-buttons
---------------------------------
+.. _toolbar-icons:
 
-In order to remove any button added with the commands introduced in the section above, just use the command
+Icons in user-defined toolbars and menus
+------------------------------------------
 
-.. code-block:: python
-	
-	removeButton(toolbarName, buttonName)
+Both for toolbar-buttons as well for menu-entries you can assign an arbitrary icon. Usually it is recommended to have an icon file with a size
+of 24x24 Px or below (will be automatically resized) in any image format (*png* recommended, available is *bmp*, *gif*, *jpg*, *tiff*...). The
+argument **icon** of the commands :py:func:`~itom.addButton` and :py:func:`~itom.addMenu` must be a string with the absolute or relative filename
+of the icon-file. The relative filename is always considered to be relative with respect to the current working directory, as it is printed at the
+right bottom side of |itom|'s main window (or use the command :py:func:`~itom.getCurrentPath`). Besides that, you can also pass an absolute path
+to your icon-file. The command :py:func:`~itom.getAppPath` returns the absolute path of the |itom|-application. Additionally you can use methods
+from the |python|-module :py:mod:`os.path` in order to create valid absolute paths.
 
-This command will delete the previously added button 'buttonName' in the toolbar with name 'toolbarName'. If this button was the last button in the specific toolbar, the
-toolbar will be deleted, too.
+Besides assigning an external icon-file to the **icon** parameter, |itom| also gives you access to any icons that are compiled as resources within
+the |itom| application. All icons, that are included in these resources are listed in the **icon browser**:
 
+.. figure:: images/iconBrowser.png
 
-
-
-
-	
+The icon browser is accessible in any script window by its menu **edit >> icon browser** (or Ctrl+B). If you found your desired icon, double click
+on the entry in order to copy the appropriate string to the clipboard and paste it afterwards into your script. Resource locations always start witha colon (:) sign.

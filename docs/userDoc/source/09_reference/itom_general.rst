@@ -6,7 +6,7 @@ itom methods
 Plotting and camera
 ---------------------
 .. automodule:: itom
-	:members: liveImage, liveLine, plot, getFigParam, setFigParam, closeFigure
+	:members: liveImage, plot
 
 Using algorithms and filters
 -----------------------------
@@ -24,6 +24,8 @@ Adding elements to the GUI
 --------------------------
 .. automodule:: itom
 	:members: addButton, removeButton, addMenu, removeMenu
+
+For more information about using these methods, see :ref:`toolbar-start`.
 
 Disk-IO
 ----------
@@ -43,10 +45,10 @@ Further commands
 	:members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleDoubleUnit
       
 
-Defines
-----------------  
+.. Defines
+.. ----------------  
 .. automodule:: itom
-	:members: DATA, FILE
+..	:members: DATA, FILE
     
 
 Another possibility to add methods to this page is to use the auto-summary function.

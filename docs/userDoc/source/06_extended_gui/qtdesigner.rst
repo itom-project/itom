@@ -96,8 +96,7 @@ The following properties have been directly set in **Qt Creator**:
 
 The entire widget is saved under the filename *testWidget.ui* in an arbitrary directory.
 
-Then you can load and show the widget in |itom| by creating a python-script in the same directory with the following content. You can also directly type these lines into the
-command line of |itom|, however, you should then assure that the current directory is equal to the directory where the user interface has been stored.
+Then you can load and show the widget in |itom| by creating a python-script in the same directory with the following content. You can also directly type these lines into the command line of |itom|, however, you should then assure that the current directory is equal to the directory where the user interface has been stored.
 
 .. code-block:: python
     

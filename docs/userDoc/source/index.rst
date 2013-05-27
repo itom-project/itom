@@ -8,7 +8,7 @@
 .. toctree::
    :maxdepth: 2
    
-   00_releaseNotes/whats-new.rst
+   .. 00_releaseNotes/whats-new.rst
    01_introduction/introduction.rst
    02_installation/install.rst
    03_gettingStarted/getting-started.rst
@@ -20,11 +20,21 @@
    09_reference/reference.rst
    10_miscellaneous/miscellaneous.rst
    11_test-scripts/test-scripts.rst
-.. toctree::
-    :maxdepth: 1
+
+.. only:: html
     
-    structure.rst
-    todo.rst
+    .. toctree::
+        :maxdepth: 1
+        
+        structure.rst
+        todo.rst
+
+.. only:: latex
+    
+    ..toctree::
+        :maxdepth: 1
+        
+        todo.rst
 
 .. :py:class:`zipfile.ZipFile`
    
