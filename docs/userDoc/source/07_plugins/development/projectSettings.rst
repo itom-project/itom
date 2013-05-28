@@ -2,8 +2,11 @@
 
 .. sectionauthor:: Marc Gronle
 
-General project settings for any plugin
+Project settings for plugins
 =======================================
+
+Since you are building your plugins using **CMake** most of the following settings are automatically set. However, this document gives some hints about properties, which can
+maybe be helpful in case of any problems.
 
 Prerequisites
 ----------------

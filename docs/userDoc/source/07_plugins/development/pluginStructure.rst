@@ -52,12 +52,12 @@ Basic plugin structure
 
 .. highlight:: c
 
-Every plugin consist at least oftwo classes, which are both derived of two different base classes. All possible base classes are provided in the files::
+Every plugin consists at least of two classes, which are both derived from two different base classes. All possible base classes are provided in the files::
 
     addInInterface.h
     addInInterface.cpp
 
-which are contained in the folder **common**. This folder contains further files which can be used in every plugin and contain interfaces and helper libaries with usefull functions for successfully and easily program a plugin. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
+which are contained in the folder **common** of |itom|'s SDK. This folder contains further files which can be used in every plugin and contain interfaces and helper libaries with usefull functions for successfully and easily program a plugin. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
 
 The two classes of the plugin are as follows:
 

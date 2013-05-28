@@ -3,7 +3,7 @@
 .. _plugin-dataObject:
 
 DataObject
-================================
+***************
 
 The class **DataObject** (part of the library **dataObject**) provides a *n*-dimensional matrix that is used both in the core of |itom| as well as
 in any plugins. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined

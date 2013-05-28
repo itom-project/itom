@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _install-cmake:
+
 Build with **CMake**
 ==========================
 

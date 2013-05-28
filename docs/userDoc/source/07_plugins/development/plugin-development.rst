@@ -27,16 +27,17 @@ The real documentation about the structure of plugins is organized as follows:
 .. toctree::
    :maxdepth: 1
 
-   projectSettings.rst
    pluginStructure.rst
-   plugin-externalLibraries.rst
    pluginInterfaceClass.rst
    pluginClass.rst
    plugin-dataIO.rst
    plugin-actuator.rst
    plugin-algo.rst
+   pluginCreateCMake.rst
    pluginAutoLoadSavePolicy.rst
    plugin-itomAPI.rst
+   plugin-externalLibraries.rst
+   projectSettings.rst
 
 
 
