@@ -45,8 +45,8 @@ repHashAbbrev = 'failed'
 repURL = 'failed'
 repIsDirty = 4
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
 (out,error)=pr.communicate()
 
 if(len(error) > 0):
@@ -64,8 +64,8 @@ else:
 del out
 del error
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'log', '--max-count=1'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
 (log,error)=pr.communicate()
 
 if(len(log) < 1 or len(error) > 0):
@@ -80,8 +80,8 @@ else:
 del log
 del error
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
 (hash,error)=pr.communicate()
 
 if(len(hash) < 1 or len(error) > 0):
@@ -95,8 +95,8 @@ else:
 del hash
 del error
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-list', '-n1','--abbrev-commit','HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-parse', 'HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'rev-list', '-n1','--abbrev-commit','HEAD'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
 (hash,error)=pr.communicate()
 
 if(len(hash) < 1 or len(error) > 0):
@@ -110,8 +110,8 @@ else:
 del hash
 del error
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'config', '--get', 'remote.origin.url'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
 (url,error)=pr.communicate()
 
 if(len(url) < 1 or len(error) > 0):
