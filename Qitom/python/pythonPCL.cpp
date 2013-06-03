@@ -2084,7 +2084,7 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
-    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
     
     {NULL}  /* Sentinel */
 };
