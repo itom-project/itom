@@ -1242,17 +1242,30 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PlugInModel::getIsAlgoPlugIn(size_t &internalData) const
+bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) const
 {
-    ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
-    return (aiib->getType() == m_treeFixNodes[2]);
+    if(itemType == PlugInModel::itemPlugin)
+    {
+        ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
+        return (aiib->getType() == m_treeFixNodes[2]);
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PlugInModel::getIsGrabberInstance(size_t &internalData) const
+bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData) const
 {
-    ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
-    return (aiib->getType() == typeGrabber + 1);
+    if(itemType == PlugInModel::itemInstance) //internalData can be casted to AddInBase
+    {
+        ito::AddInBase *aib = (ito::AddInBase*)(internalData);
+        if(aib->inherits("ito::AddInGrabber"))
+        {
+            return true;
+        }
+    }
+    return false;
+        /*ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
+    return (aiib->getType() == typeGrabber + 1);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

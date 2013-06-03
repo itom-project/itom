@@ -90,6 +90,7 @@ namespace ito
             void mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd);
             void mnuOpenWidget();
             void mnuToggleView();
+            void mnuShowLiveImage();
             void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
             void showDetails();

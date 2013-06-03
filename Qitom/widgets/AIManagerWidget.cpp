@@ -70,6 +70,10 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
 
     m_pContextMenu = new QMenu(this);
 
+    m_pActNewInstance = new QAction(QIcon(":/plugins/icons/pluginNewInstance.png"), tr("New Instance..."), this);
+    connect(m_pActNewInstance, SIGNAL(triggered()), this, SLOT(mnuCreateNewInstance()));
+    m_pContextMenu->addAction(m_pActNewInstance);
+
     m_pShowConfDialog = new QAction(QIcon(":/plugins/icons/pluginConfigure.png"), tr("Configuration Dialog"), this);
     connect(m_pShowConfDialog, SIGNAL(triggered()), this, SLOT(mnuShowConfdialog()));
     m_pContextMenu->addAction(m_pShowConfDialog);
@@ -79,37 +83,37 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     connect(m_pActDockWidget, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
     m_pContextMenu->addAction(m_pActDockWidget);
 
-    m_pActNewInstance = new QAction(QIcon(":/plugins/icons/pluginNewInstance.png"), tr("New Instance..."), this);
-    connect(m_pActNewInstance, SIGNAL(triggered()), this, SLOT(mnuCreateNewInstance()));
-    m_pContextMenu->addAction(m_pActNewInstance);
-
     m_pActCloseInstance = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close Instance"), this);
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
-
-    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
-    connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
-    m_pContextMenu->addAction(m_pActSendToPython);
 
     m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close all"), this);
 //    connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
-    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Live Image..."), this);
-//    connect(m_pActLiveImage, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addSeparator();
+
+    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/monitor.png"), tr("Live Image"), this);
+    connect(m_pActLiveImage, SIGNAL(triggered()), this, SLOT(mnuShowLiveImage()));
     m_pContextMenu->addAction(m_pActLiveImage);
 
     m_pActSnapDialog = new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Snap Dialog..."), this);
 //    connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 
+    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Open Widget..."), this);
+    connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
+    m_pContextMenu->addAction(m_pActOpenWidget);
+
+    m_pContextMenu->addSeparator();
+
     m_pActInfo = new QAction(QIcon(":/plugins/icons/info.png"), tr("Info..."), this);
 //    connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActInfo);
 
-    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Open Widget..."), this);
-    connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
-    m_pContextMenu->addAction(m_pActOpenWidget);
+    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
+    connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    m_pContextMenu->addAction(m_pActSendToPython);
 
     m_pSortFilterProxyModel = new QSortFilterProxyModel(this);
     m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
@@ -295,12 +299,12 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
             if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
             {
     //            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
-                bool isPlugInNode = itemType == PlugInModel::itemPlugin;
-                bool isPlugInAlgoNode = isPlugInNode && plugInModel->getIsAlgoPlugIn(itemInternalData);
-                bool isInstanceNode = itemType == PlugInModel::itemInstance;
-                bool isPlugInGrabberNode = isInstanceNode && plugInModel->getIsGrabberInstance(itemInternalData);
-                bool isFilterNode = itemType == PlugInModel::itemFilter;
-                bool isWidgetNode = itemType == PlugInModel::itemWidget;
+                bool isPlugInNode     =    (itemType == PlugInModel::itemPlugin);
+                bool isPlugInAlgoNode =    plugInModel->getIsAlgoPlugIn(itemType, itemInternalData);
+                bool isInstanceNode   =    (itemType == PlugInModel::itemInstance);
+                bool isPlugInGrabberNode = plugInModel->getIsGrabberInstance(itemType, itemInternalData);
+                bool isFilterNode     =    (itemType == PlugInModel::itemFilter);
+                bool isWidgetNode     =    (itemType == PlugInModel::itemWidget);
 
                 m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
                 m_pActCloseInstance->setVisible(isInstanceNode);
@@ -342,7 +346,7 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
 
                 m_pActInfo->setEnabled(false);  // TODO
                 m_pActCloseAllInstances->setEnabled(false);  // TODO
-                m_pActLiveImage->setEnabled(false);  // TODO
+                //m_pActLiveImage->setEnabled(false);  // TODO
                 m_pActSnapDialog->setEnabled(false);  // TODO
                 m_pActInfo->setEnabled(false);  // TODO
 
@@ -743,6 +747,38 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         }
         msgBox.setIcon( QMessageBox::Warning );
         msgBox.exec();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuShowLiveImage()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais && ais->inherits("ito::AddInGrabber") )
+        {
+            UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+            QString defaultPlotClassName;
+            QSharedPointer<unsigned int> objectID(new unsigned int);
+            QSharedPointer<unsigned int> figHandle(new unsigned int);
+            *figHandle = 0; //new figure will be requested
+
+            uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
+        }
+        else
+        {
+            QMessageBox msgBox;
+            msgBox.setText(tr("This instance is no grabber. Therefore no live image is available."));
+            msgBox.setIcon( QMessageBox::Warning );
+            msgBox.exec();
+        }
     }
 }
 

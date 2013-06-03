@@ -104,8 +104,8 @@ namespace ito
             QModelIndex getIndexByAddInInterface(ito::AddInInterfaceBase *aib) const;
             bool getModelIndexInfo(const QModelIndex &index, tItemType &type, size_t &internalData) const;
 
-            bool getIsAlgoPlugIn(size_t &internalData) const;
-            bool getIsGrabberInstance(size_t &internalData) const;
+            bool getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) const;
+            bool getIsGrabberInstance(tItemType &itemType, size_t &internalData) const;
 
             QModelIndex getTypeNode(const int type) const;
 
