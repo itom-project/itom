@@ -632,7 +632,7 @@ namespace ito
                 {
                     if (m_algoWidgetList.contains(jt.key()))
                     {
-                        algoInst->rejectAlgoWidget(it.key());
+                        algoInst->rejectAlgoWidget(jt.key());
                         message = QObject::tr("Widget '%1' rejected since widget with the same name already exists in global plugin widget list").arg(jt.key());
                         qDebug() << message;
                         retValue += RetVal(retWarning, 1005, message.toAscii().data());
