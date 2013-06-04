@@ -692,12 +692,12 @@ namespace ito {
                         if (retval.errorMessage()) text = QString("\n%1").arg(retval.errorMessage());
                         if (retval.containsError())
                         {
-                            text.prepend(tr("An error occured while sending the content of the loaded file to the python workspace."));
+                            text.prepend(tr("An error occured while importing the loaded file into the python workspace."));
                             QMessageBox::critical(parent, tr("Error while sending values to python"), text);
                         }
                         else if (retval.containsWarning())
                         {
-                            text.prepend(tr("A warning occured while sending the content of the loaded file to the python workspace."));
+                            text.prepend(tr("A warning occured while importing the loaded file into the python workspace."));
                             QMessageBox::warning(parent, tr("Warning while sending values to python"), text);
                         }
                     }

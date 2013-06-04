@@ -3546,6 +3546,42 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 }
 
 //------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_mappingGetElem(PyPolygonMesh* self, PyObject* key)
+{
+    ito::PCLPolygonMesh *pm = self->polygonMesh;
+
+    if(pm == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Polygon mesh is NULL");
+        return NULL;
+    }
+
+    size_t dims = pm->height() > 1 ? 2 : 1;
+
+    if(!PyTuple_Check(key))
+    {
+        key = PyTuple_Pack(1,key);
+    }
+
+    PyErr_SetString(PyExc_TypeError, "mapping get not implemented yet.");
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+}
+
+//------------------------------------------------------------------------------------------------------
+/*static*/ int PythonPCL::PyPolygonMesh_mappingLength(PyPolygonMesh* self)
+{
+    if (self->polygonMesh)
+    {
+        return self->polygonMesh->height() * self->polygonMesh->width();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+//------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
     {NULL}  /* Sentinel */
 };
@@ -3579,7 +3615,7 @@ PyTypeObject PythonPCL::PyPolygonMeshType = {
     (reprfunc)PythonPCL::PyPolygonMesh_repr,                         /* tp_repr */
     0,                         /* tp_as_number */
     0,                         /* tp_as_sequence */
-    0,                         /* tp_as_mapping */
+    &PyPolygonMesh_mappingProtocol, /* tp_as_mapping */
     0,                         /* tp_hash  */
     0,                         /* tp_call */
     0,                         /* tp_str */
@@ -3605,6 +3641,12 @@ PyTypeObject PythonPCL::PyPolygonMeshType = {
     (initproc)PythonPCL::PyPolygonMesh_init,                       /* tp_init */
     0,                         /* tp_alloc */ /*will be filled later before calling PyType_Ready */
     PythonPCL::PyPolygonMesh_new         /* tp_new */
+};
+
+PyMappingMethods PythonPCL::PyPolygonMesh_mappingProtocol = {
+    (lenfunc)PyPolygonMesh_mappingLength,
+    (binaryfunc)PyPolygonMesh_mappingGetElem,
+    NULL
 };
 
 //------------------------------------------------------------------------------------------------------

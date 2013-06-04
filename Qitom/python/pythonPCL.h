@@ -269,6 +269,12 @@ public:
     static PyObject* PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args);
 
     //-------------------------------------------------------------------------------------------------
+    // mapping
+    //-------------------------------------------------------------------------------------------------
+    static PyObject* PyPolygonMesh_mappingGetElem(PyPolygonMesh* self, PyObject* key);
+    static int PyPolygonMesh_mappingLength(PyPolygonMesh* self);
+
+    //-------------------------------------------------------------------------------------------------
     // type structures
     //------------------------------------------------------------------------------------------------- 
     //static PyMemberDef PyNpDataObject_members[];

@@ -3422,7 +3422,7 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toAscii().data());
     }
     else
     {
@@ -3451,24 +3451,49 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
         }
         else
         {
+            PyObject *existingItem = NULL;
+
             for (int i=0; i<names.size();i++)
             {
-                if (PyDict_GetItemString (destinationDict, names[i].toAscii().data()) != NULL)
+                existingItem = PyDict_GetItemString( destinationDict, names[i].toAscii().data() ); //borrowed ref
+
+                if(existingItem)
                 {
-                    retVal += ito::RetVal::format(ito::retError, 0, tr("name '%s' already exists.").toAscii().data(), names[i].toAscii().data());
-                    break;
+                    if(PyFunction_Check(existingItem) || PyCFunction_Check(existingItem) )
+                    {
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        break;
+                    }
+                    else if(PyMethod_Check(existingItem))
+                    {
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        break;
+                    }
+                    else if(PyType_Check(existingItem))
+                    {
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        break;
+                    }
+                    else if(PyModule_Check(existingItem))
+                    {
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        break;
+                    }
+                }
+
+                value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
+                if (value == NULL)
+                {
+                    retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toAscii().data(), names[i].toAscii().data());
                 }
                 else
                 {
-                    value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
-                    if (value == NULL)
+                    PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value);
+                    Py_XDECREF(value);
+
+                    if(existingItem)
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toAscii().data(), names[i].toAscii().data());
-                    }
-                    else
-                    {
-                        PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value);
-                        Py_XDECREF(value);
+                        Py_DECREF(existingItem);
                     }
                 }
             }
