@@ -414,7 +414,6 @@ void MainWindow::moveEvent(QMoveEvent * event)
 //! creates actions for menu and toolbar
 void MainWindow::createActions()
 {
-    QAction* temp = NULL;
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     //app actions
@@ -430,8 +429,8 @@ void MainWindow::createActions()
     connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
     m_appFileOpen->setShortcut(QKeySequence::Open);
 
-    temp = m_actions["exit"] = new QAction(tr("Exit"), this);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
+    m_actions["exit"] = new QAction(tr("Exit"), this);
+    connect(m_actions["exit"], SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
     if (uOrg->hasFeature(featUserManag))
     {
@@ -449,55 +448,55 @@ void MainWindow::createActions()
     m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/q_itoM32.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    temp = m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
-    connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
+    m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
+    connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
     if (uOrg->hasFeature(featDeveloper))
     {
-        temp = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
-        temp->setShortcut(QKeySequence::HelpContents);
+        m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+        connect(m_actions["open_assistant"] , SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
+        m_actions["open_assistant"]->setShortcut(QKeySequence::HelpContents);
 
-        temp = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
+        m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
+        connect(m_actions["open_designer"], SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
-        temp = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
-        temp->setToolTip(tr("set whether internal python code should be executed in debug mode"));
-        temp->setCheckable(true);
+        m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
+        m_actions["python_global_runmode"]->setToolTip(tr("set whether internal python code should be executed in debug mode"));
+        m_actions["python_global_runmode"]->setCheckable(true);
         if (pyEngine)
         {
-            temp->setChecked(pyEngine->execInternalCodeByDebugger());
+            m_actions["python_global_runmode"]->setChecked(pyEngine->execInternalCodeByDebugger());
         }
-        connect(temp, SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
+        connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
 
-        temp = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
-        temp->setShortcut(tr("Shift+F10"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
+        m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
+        m_actions["python_stopAction"]->setShortcut(tr("Shift+F10"));
+        m_actions["python_stopAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(m_actions["python_stopAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
-        temp = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
-        temp->setShortcut(tr("F6"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
+        m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
+        m_actions["python_continueAction"]->setShortcut(tr("F6"));
+        m_actions["python_continueAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(m_actions["python_continueAction"], SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
-        temp = m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
-        temp->setShortcut(tr("F11"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
+        m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
+        m_actions["python_stepAction"]->setShortcut(tr("F11"));
+        m_actions["python_stepAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
-        temp = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
-        temp->setShortcut(tr("F10"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
+        m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
+        m_actions["python_stepOverAction"]->setShortcut(tr("F10"));
+        m_actions["python_stepOverAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(m_actions["python_stepOverAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
-        temp = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
-        temp->setShortcut(tr("Shift+F11"));
-        temp->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
+        m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
+        m_actions["python_stepOutAction"]->setShortcut(tr("Shift+F11"));
+        m_actions["python_stepOutAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(m_actions["python_stepOutAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
 
-        temp = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
-        connect(temp, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
+        m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
+        connect(m_actions["python_reloadModules"], SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
     }
 }
 

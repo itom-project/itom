@@ -433,23 +433,24 @@ namespace ito
                     //retValue += RetVal(retError, 1003, message.toAscii().data());
                     pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
+                    delete plugin;
                 }
             }
             else
             {
-                    QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
-                    QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
-                    qDebug() << loader.errorString();
-                    if (rx.exactMatch(loader.errorString()))
-                    {
-                        message = QObject::tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader.errorString());
-                        qDebug() << message;
-                        pls.filename = filename;
-                        pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfIgnored, message));
-                        m_pluginLoadStatus.append(pls);
-                    }
-                    else
-                    {
+                QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
+                QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
+                qDebug() << loader.errorString();
+                if (rx.exactMatch(loader.errorString()))
+                {
+                    message = QObject::tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader.errorString());
+                    qDebug() << message;
+                    pls.filename = filename;
+                    pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfIgnored, message));
+                    m_pluginLoadStatus.append(pls);
+                }
+                else
+                {
 //                    QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
                     QRegExp rxDebug("* debug *", Qt::CaseInsensitive, QRegExp::Wildcard);
                     QRegExp rxRelease("* release *", Qt::CaseInsensitive, QRegExp::Wildcard);
@@ -471,8 +472,8 @@ namespace ito
                         m_pluginLoadStatus.append(pls);
                     }
                 }
+                loader.unload();
             }
-
         }
 
         return retValue;

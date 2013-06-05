@@ -240,6 +240,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     settings.endGroup();
 
     DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
+    DELETE_AND_SET_NULL(m_pFileSystemModel);
     DELETE_AND_SET_NULL(m_pTreeView);
     DELETE_AND_SET_NULL(m_pPathEdit);
     DELETE_AND_SET_NULL(m_pLblFilter);
@@ -247,7 +248,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pShowDirListMenu);
     DELETE_AND_SET_NULL(m_pFileSystemSettingMenu);
     DELETE_AND_SET_NULL(m_newDirSelectedMapper);
-    DELETE_AND_SET_NULL(m_pFileSystemModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

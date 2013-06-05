@@ -206,7 +206,7 @@ AIManagerWidget::~AIManagerWidget()
     DELETE_AND_SET_NULL(m_pActInfo);
     DELETE_AND_SET_NULL(m_pActOpenWidget);
     DELETE_AND_SET_NULL(m_pAIManagerViewSettingMenu);
-    DELETE_AND_SET_NULL(m_pColumnWidth);
+    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
