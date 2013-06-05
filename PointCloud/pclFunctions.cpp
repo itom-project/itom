@@ -32,6 +32,7 @@
 #include "../DataObject/dataObjectFuncs.h"
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/ros/conversions.h>
 
 namespace ito 
 {
@@ -78,6 +79,101 @@ void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl:
         out.points.push_back (p);
     }
 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc)
+{
+    RetVal retval = retOk;
+    if(!pc)
+    {
+        return RetVal(retError,0,"PCLPointCloud is NULL");
+    }
+
+    ito::tPCLPointType pointType = pc->getType();
+    pcl::MsgFieldMap field_map;
+
+    switch(pointType)
+    {
+    case ito::pclXYZ:
+        pcl::createMapping<pcl::PointXYZ>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZ()), field_map);
+        break;
+    case ito::pclXYZI:
+        pcl::createMapping<pcl::PointXYZI>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZI()), field_map);
+        break;
+    case ito::pclXYZRGBA:
+        pcl::createMapping<pcl::PointXYZRGBA>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZRGBA()), field_map);
+        break;
+    case ito::pclXYZNormal:
+        pcl::createMapping<pcl::PointNormal>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZNormal()), field_map);
+        break;
+    case ito::pclXYZINormal:
+        pcl::createMapping<pcl::PointXYZINormal>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZINormal()), field_map);
+        break;
+    case ito::pclXYZRGBNormal:
+        pcl::createMapping<pcl::PointXYZRGBNormal>( msg.fields, field_map );
+        pcl::fromROSMsg(msg, *(pc->toPointXYZRGBNormal()), field_map);
+        break;
+    default:
+        retval += RetVal(retError,0,"given point cloud cannot be converted into desired type");
+        break;
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
+{
+    if( pcl::getFieldIndex(msg,"x") >= 0 && pcl::getFieldIndex(msg,"y") >= 0 && pcl::getFieldIndex(msg,"z") >= 0)
+    {
+        bool rgb = (pcl::getFieldIndex(msg,"rgb") >= 0);
+        bool rgba = (pcl::getFieldIndex(msg,"rgba") >= 0);
+        bool normal = ( pcl::getFieldIndex(msg, "normal_x") >= 0 && pcl::getFieldIndex(msg,"normal_y") >= 0 && pcl::getFieldIndex(msg,"normal_z") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
+
+        //hack, since ply-files sometimes call normal_i ni. rename it now. (maybe this is fixed in pcl 1.6)
+        normal |= ( pcl::getFieldIndex(msg, "nx") >= 0 && pcl::getFieldIndex(msg,"ny") >= 0 && pcl::getFieldIndex(msg,"nz") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
+        bool intensity = (pcl::getFieldIndex(msg, "intensity") >= 0);
+
+        //pclInvalid      = 0x0000, /*!< invalid point */
+        //pclXYZ          = 0x0001, /*!< point with x,y,z-value */
+        //pclXYZI         = 0x0002, /*!< point with x,y,z and intensity value */
+        //pclXYZRGBA      = 0x0004, /*!< point with x,y,z and r,g,b,a */
+        //pclXYZNormal    = 0x0008, /*!< point with x,y,z value, its normal vector nx,ny,nz and a curvature value */
+        //pclXYZINormal   = 0x0010, /*!< point with the same values than pclXYZNormal and an additional intensity value */
+        //pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector (including curvature) */
+        if(!rgb && !rgba && !normal && !intensity)
+        {
+            return ito::pclXYZ;
+        }
+        else if(!rgb && !rgba && !normal && intensity)
+        {
+            return ito::pclXYZI;
+        }
+        else if( (rgb || rgba) && !normal && !intensity)
+        {
+            return ito::pclXYZRGBA;
+        }
+        else if(!rgb && !rgba && normal && !intensity)
+        {
+            return ito::pclXYZNormal;
+        }
+        else if(!rgb && !rgba && normal && intensity)
+        {
+            return ito::pclXYZINormal;
+        }
+        else if((rgb || rgba) && normal && !intensity)
+        {
+            return ito::pclXYZRGBNormal;
+        } 
+    }
+
+    return ito::pclInvalid;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

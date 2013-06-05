@@ -57,7 +57,7 @@
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 
-#include "../../PointCloud/pclStructures.h"
+#include "PointCloud/pclStructures.h"
 
 namespace ito
 {
@@ -262,6 +262,9 @@ public:
     static PyObject *PyPolygonMesh_repr(PyPolygonMesh *self);
     static PyObject *PyPolygonMesh_data(PyPolygonMesh *self);
 
+    static PyObject *PyPolygonMesh_get(PyPolygonMesh *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args);
+
 	//-------------------------------------------------------------------------------------------------
     // pickling
     //-------------------------------------------------------------------------------------------------
@@ -273,6 +276,11 @@ public:
     //-------------------------------------------------------------------------------------------------
     static PyObject* PyPolygonMesh_mappingGetElem(PyPolygonMesh* self, PyObject* key);
     static int PyPolygonMesh_mappingLength(PyPolygonMesh* self);
+
+    //-------------------------------------------------------------------------------------------------
+    // getter / setter
+    //-------------------------------------------------------------------------------------------------
+    //static PyObject* PyPolygonMesh_getCloud(PyPolygonMesh *self, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // type structures

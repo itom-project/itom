@@ -31,6 +31,8 @@
 
 #include "../common/typeDefs.h"
 
+#include <vector>
+
 #ifndef linux
 #pragma warning( disable: 4996) //supress deprecated warning of pcl (which occur very often)
 #endif
@@ -40,7 +42,7 @@
 #ifndef linux
 #pragma warning( default: 4996) //show 4996 warnings again
 #endif
-#include <vector>
+
 
 
 namespace ito
@@ -339,6 +341,7 @@ public:
     PCLPolygonMesh();
     PCLPolygonMesh(pcl::PolygonMesh::Ptr polygonMesh);
     PCLPolygonMesh(PCLPolygonMesh &mesh);
+    PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t> &polygonIndices);
     PCLPolygonMesh(const PCLPolygonMesh &mesh);
     ~PCLPolygonMesh();
 

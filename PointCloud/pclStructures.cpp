@@ -1325,6 +1325,94 @@ PCLPolygonMesh::PCLPolygonMesh(const PCLPolygonMesh &mesh)
     m_polygonMesh = mesh.m_polygonMesh;
 }
 
+PCLPolygonMesh::PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t> &polygonIndices)
+{
+    m_valid = mesh.m_valid;
+    m_polygonMesh = pcl::PolygonMesh::Ptr(new pcl::PolygonMesh());
+
+    pcl::PolygonMesh *input = mesh.m_polygonMesh.get();
+    pcl::PolygonMesh *output = m_polygonMesh.get();
+
+    if(m_valid && input && output && input->polygons.size() > 0)
+    {
+        //bucket for polygons (1: index in polygonIndices -> take it into output, 0: ignore it)
+        uint8_t *bucket = (uint8_t*)malloc( input->polygons.size() * sizeof(uint8_t) );
+        memset(bucket, 0, input->polygons.size() * sizeof(uint8_t) );
+        uint32_t maxIdx = input->polygons.size() - 1;
+
+        for(size_t idx = 0 ; idx < polygonIndices.size(); idx++)
+        {
+            if( polygonIndices[idx] <= maxIdx )
+            {
+                bucket[ polygonIndices[idx] ] ++;
+            }
+        }
+
+        //the following algorithm has been taken from pcl::surface::SimplificationRemoveUnusedVertices::simplify (version 1.6.0)
+        unsigned int nr_points = input->cloud.width * input->cloud.height;
+
+        std::vector<int> new_indices (nr_points, -1);
+        std::vector<int> indices;
+        indices.reserve (nr_points);
+
+        // mark all points in triangles as being used
+        for (size_t p = 0; p < input->polygons.size (); ++p)
+        {
+            if (bucket[p] > 0)
+            {
+                for (size_t point = 0; point < input->polygons[p].vertices.size (); ++point)
+                {
+                    if (new_indices[ input->polygons[p].vertices[point] ] == -1)
+                    {
+                        new_indices[ input->polygons[p].vertices[point]] = static_cast<int> (indices.size ());
+                        indices.push_back (input->polygons[p].vertices[point]);
+                    }
+                }
+            }
+        }
+
+        // copy cloud information
+        output->header = input->header;
+        output->cloud.data.clear ();
+        output->cloud.header = input->cloud.header;
+        output->cloud.fields = input->cloud.fields;
+        output->cloud.row_step = input->cloud.row_step;
+        output->cloud.point_step = input->cloud.point_step;
+        output->cloud.is_bigendian = input->cloud.is_bigendian;
+        output->cloud.height = 1; // cloud is no longer organized
+        output->cloud.width = static_cast<int> (indices.size ());
+        output->cloud.row_step = output->cloud.point_step * output->cloud.width;
+        output->cloud.data.resize (output->cloud.width * output->cloud.height * output->cloud.point_step);
+        output->cloud.is_dense = false;
+        output->polygons.clear ();
+
+        // copy (only!) used points
+        for (size_t i = 0; i < indices.size (); ++i)
+        {
+            memcpy (&output->cloud.data[i * output->cloud.point_step], &input->cloud.data[indices[i] * output->cloud.point_step], output->cloud.point_step);
+        }
+
+        // copy mesh information (and update indices)
+        output->polygons.reserve (input->polygons.size ());
+        for (size_t p = 0; p < input->polygons.size (); ++p)
+        {
+            if (bucket[p] > 0)
+            {
+                pcl::Vertices corrected_polygon;
+                corrected_polygon.vertices.resize (input->polygons[p].vertices.size () );
+                for (size_t point = 0; point < input->polygons[p].vertices.size(); ++point)
+                {
+                    corrected_polygon.vertices[point] = new_indices[input->polygons[p].vertices[point]];
+                }
+                output->polygons.push_back (corrected_polygon);
+            }
+        }
+
+        free(bucket);
+        bucket = NULL;
+    }
+}
+
 PCLPolygonMesh::~PCLPolygonMesh() 
 {
     m_polygonMesh.reset(); 
