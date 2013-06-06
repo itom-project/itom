@@ -41,16 +41,16 @@ However, if you import another script file in your main script file and you want
 Content of |pyItom|
 -------------------
 
-* **class dataObject**. This is the |itom| internal matrix class, compatible to *Numpy*, and also used by any connected grabber or camera. Every matrix is extended by fixed and user-defined tags and keywords.
-* **class npDataObject**. This class makes any **dataObject** compatible to **Numpy**, since it is directly derived from **Numpy.array**, but extended by the tags and keywords every **dataObject** has.
-* **class ui** and **class uiItem** are the main class for creating user defined dialogs and windows in |itom| and show them using some lines of script code.
-* **class dataIO** is the class in order to access any plugin instance of type **dataIO** (cameras, grabbers, AD-converter...)
-* **class actuator** is the class in order to access any plugin instance of type **actuator**, like motor stages...
+* class **dataObject**. This is the |itom| internal matrix class, compatible to *Numpy*, and also used by any connected grabber or camera. Every matrix is extended by fixed and user-defined tags and keywords. For an introduction to the data object, see :ref:`itomDataObject`, a full reference is available under :py:class:`~itom.dataObject`. The data object is compatible to any numpy array, however the tags and keywords will get lost.
+* class **npDataObject**. This class is inherited from **numpy.array** and extends it by the tags and keywords, also available in the data object. For more information see :ref:`itomNpDataObject` or the script reference :py:class:`~itom.npDataObject`.
+* classes **ui** and **uiItem** are the main classes for creating user defined dialogs and windows in |itom| and show them using some lines of script code. For more information about their use, see :ref:`qtdesigner` or their definitions in the script reference :py:class:`~itom.ui` and :py:class:`~itom.uiItem`.
+* class **dataIO** is the class in order to access any plugin instance of type **dataIO** (cameras, grabbers, AD-converter...). The full reference can be found under :py:class:`~itom.dataIO`.
+* **class actuator** is the class in order to access any plugin instance of type **actuator**, like motor stages... The full reference can be found under :py:class:`~itom.actuator`.
 * **other class free methods**. |pyItom| also directly contains a lot of methods, that makes features of |itom| accessible by a |python| script. By these methods you can
-    * add or remove buttons or items to the |itom| menu and toolbar
+    * add or remove buttons or items to the |itom| menu and toolbar (see :ref:`toolbar-start`)
     * get help about plugins and their functionality
     * call any algorithm or filter, provided by a plugin of type **algo**
-    * directly plot matrices, like dataObjects.
+    * directly plot matrices like dataObjects.
 
 
 Contents:
