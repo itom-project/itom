@@ -148,6 +148,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.h
@@ -179,7 +180,6 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/iconBrowserDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/QTabWidgetItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
@@ -199,6 +199,7 @@ set(qitom_ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.ui
@@ -295,6 +296,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.cpp
@@ -324,7 +326,6 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/iconBrowserDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp

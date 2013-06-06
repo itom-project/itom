@@ -30,6 +30,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     QDialog(parent),
     m_fileIconProvider(NULL)
@@ -48,11 +49,13 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     ui.tree->expandAll();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogLoadedPlugins::~DialogLoadedPlugins()
 {
     DELETE_AND_SET_NULL(m_fileIconProvider);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::init()
 {
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddinManager());
@@ -128,6 +131,7 @@ void DialogLoadedPlugins::init()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::filter()
 {
     int stateCount[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // we need 1: plsfWarning, 2: plsfError, 4: plsfIgnored, 8: plsfOk
@@ -169,6 +173,7 @@ void DialogLoadedPlugins::filter()
     ui.cmdIgnored->setText(QString("%1 (%2)").arg(m_cmdIgnored).arg(stateCount[4]));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::on_tree_itemSelectionChanged()
 {
     QList<QTreeWidgetItem*> items = ui.tree->selectedItems();

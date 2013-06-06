@@ -20,22 +20,25 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ICONBROWSERDOCKWIDGET_H
-#define ICONBROWSERDOCKWIDGET_H
+#ifndef DIALOGICONBROWSER_H
+#define DIALOGICONBROWSER_H
 
 #include "qdialog.h"
 #include <qtreewidget.h>
 
-class IconBrowserDialog : public QDialog
+#include "ui_dialogIconBrowser.h"
+
+class DialogIconBrowser : public QDialog
 {
     Q_OBJECT
 
 public:
-    IconBrowserDialog(QWidget *parent = NULL);
-    ~IconBrowserDialog();
+    DialogIconBrowser(QWidget *parent = NULL);
+    ~DialogIconBrowser();
 
 protected:
-
+    Ui::DialogIconBrowser ui;
+/*
     class IconRescourcesTreeView : public QTreeWidget
     {
     public:
@@ -48,14 +51,16 @@ protected:
             return QTreeWidget::selectedIndexes();
         }
     };
-
+*/
 private:
-
-    IconRescourcesTreeView* m_pTreeWidget;
+//    IconRescourcesTreeView* m_pTreeWidget;
 
 signals:
 
 private slots:
+//	void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
+    void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous );
+    void on_pushButtonClipboard_clicked(bool value);
 
 public slots:
     void copyCurrentName();

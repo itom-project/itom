@@ -32,7 +32,7 @@
 #include "../ui/dialogGoto.h"
 #include "../ui/dialogReplace.h"
 
-#include "iconBrowserDialog.h"
+#include "../ui/dialogIconBrowser.h"
 
 namespace ito {
 
@@ -1085,7 +1085,7 @@ void ScriptDockWidget::mnuTabMoveRight()
 //! Open the icon browser
 void ScriptDockWidget::mnuOpenIconBrowser()
 {
-    IconBrowserDialog *m_iconBrowser = new IconBrowserDialog(getCanvas());
+    DialogIconBrowser *m_iconBrowser = new DialogIconBrowser(getCanvas());
     if (m_iconBrowser->exec())
     {
 

@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "iconBrowserDialog.h"
+#include "dialogIconBrowser.h"
 #include "../global.h"
 
 #include <qclipboard.h>
@@ -32,24 +32,19 @@
 #include <QClipboard>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-IconBrowserDialog::IconBrowserDialog(QWidget *parent) :  QDialog(parent),  
-    m_pTreeWidget(NULL)    
+DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
+    QDialog(parent)
 {
-    
-    m_pTreeWidget = new IconRescourcesTreeView(this);
+    ui.setupUi(this);
+
     QStringList list;
     QStringList sublist;
-    list.clear();
-
-    int longestName = 0;
-    int lineCnt = 0;
-
     QList<QTreeWidgetItem *> items;
 
-    //QDirIterator it(":", QDirIterator::Subdirectories);
+//    list.clear();
 
     QDirIterator it(":", QDirIterator::NoIteratorFlags);
-	while (it.hasNext())
+    while (it.hasNext())
     {
         list.clear();
         QString curDir(it.next());
@@ -62,79 +57,59 @@ IconBrowserDialog::IconBrowserDialog(QWidget *parent) :  QDialog(parent),
             //sublist.append(subIT.next());
             //QResource temp(subIT.filePath());
             QIcon thisIcon(subIT.next());
-            if(subIT.fileName().contains(".png"))
+            if (subIT.fileName().contains(".png"))
             {
                 QTreeWidgetItem *icon = new QTreeWidgetItem(QTreeWidgetItem::DontShowIndicatorWhenChildless);
                 icon->setIcon(0, thisIcon);
                 icon->setText(0, subIT.filePath());
                 items.last()->addChild(icon);
-                if(subIT.filePath().length() > longestName)
-                {
-                    longestName = subIT.filePath().length();
-                }
-                lineCnt++;
             }
         }  
     }
 
-    longestName += 20;
-    longestName *= 5;
-    if(longestName > 420)
-        longestName = 420;
-
-    lineCnt *= 10;
-    if(lineCnt > 500)
-        lineCnt = 500;
-
-    m_pTreeWidget->headerItem()->setHidden(true);
-
-    //m_pTreeWidget->setGeometry(0, 0, 300, 400);
-    m_pTreeWidget->setItemsExpandable(true);
-    m_pTreeWidget->addTopLevelItems(items);
-    m_pTreeWidget->setItemsExpandable(true);
-    m_pTreeWidget->setExpandsOnDoubleClick(true);
-    //m_pTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_pTreeWidget->expandAll();
-    m_pTreeWidget->setIconSize(QSize(16, 16));
-
-    m_pTreeWidget->sortItems(0, Qt::AscendingOrder);
-    //m_pTreeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    //m_pTreeWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-   // m_pTreeWidget->add
-    
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->setContentsMargins(0, 0, 0, 2);
-    mainLayout->setSpacing(1);
-    mainLayout->addWidget(m_pTreeWidget);
-    setLayout(mainLayout);
-
-    QRect curGeo = geometry();
-    curGeo.setCoords(50, 50, longestName, lineCnt);
-    setGeometry(curGeo);
+//    ui.treeWidget->setItemsExpandable(true);
+    ui.treeWidget->addTopLevelItems(items);
+    ui.treeWidget->setItemsExpandable(true);
+    ui.treeWidget->setExpandsOnDoubleClick(true);
+    ui.treeWidget->expandAll();
+    ui.treeWidget->setIconSize(QSize(16, 16));
+    ui.treeWidget->sortItems(0, Qt::AscendingOrder);
 
     this->setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
     this->setWindowTitle("Icon Browser");
 
     this->setWhatsThis("itom resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window.");
 
-    connect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
+//    connect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-IconBrowserDialog::~IconBrowserDialog()
+DialogIconBrowser::~DialogIconBrowser()
 {
-    disconnect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
-    DELETE_AND_SET_NULL(m_pTreeWidget);
+/*    disconnect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
+    DELETE_AND_SET_NULL(m_pTreeWidget);*/
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-void IconBrowserDialog::copyCurrentName()
+void DialogIconBrowser::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    bool enable = current->parent() != NULL;
+    ui.pushButtonClipboard->setEnabled(enable);
+    ui.pushButtonInsert->setEnabled(enable);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogIconBrowser::on_pushButtonClipboard_clicked(bool value)
 {
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(m_pTreeWidget->currentItem()->text(0), QClipboard::Clipboard);
-    this->close();
-    
+    clipboard->setText(ui.treeWidget->currentItem()->text(0), QClipboard::Clipboard);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogIconBrowser::copyCurrentName()
+{
+/*    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(m_pTreeWidget->currentItem()->text(0), QClipboard::Clipboard);
+    this->close();*/
+    
+}
