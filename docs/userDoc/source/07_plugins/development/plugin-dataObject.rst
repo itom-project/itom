@@ -3,7 +3,7 @@
 .. _plugin-dataObject:
 
 DataObject
-***************
+================================
 
 The class **DataObject** (part of the library **dataObject**) provides a *n*-dimensional matrix that is used both in the core of |itom| as well as
 in any plugins. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
@@ -32,7 +32,7 @@ dataObject and its way of allocating memory is called *unorganized*.
 
 In order to make the *dataObject* compatible to matrices that are allocated in one huge memory block (like Numpy arrays), it is also possible to
 make any *dataObject* continuous. Then, a huge data block is allocated, such that all planes lie consecutively in memory. Nevertheless, the pointer-tree
-is still available, pointing to the starting points of all planes. This reallocation is implicitely done, when creating a Numpy-array from a dataObjct.
+is still available, pointing to the starting points of all planes. This reallocation is implicitely done, when creating a Numpy-array from a dataObject.
 	
 DataObject can be declared in different possible ways with different dimensions and different data types.
 Various possible implementations of declaring DataObject are listed below.
@@ -118,9 +118,10 @@ All indices are zero-based, hence the first element in this dimension is **0**.
     
     The **at** method is templated where the template parameter must correspond to the type of the corresponding
     data object.
+
     
 method 2: get line pointer for each line in matrix and work with line pointer to address elements of a data object
--------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: c++
 	:linenos:
@@ -136,16 +137,16 @@ method 2: get line pointer for each line in matrix and work with line pointer to
 		std::cout << "Row " << m << ":";
 		for(size_t n=0 ; n < width; n++)
 		{
-			rowPtr[n] = m;  //accessing each element of data object with line pointer
+			rowPtr[n] = m; 				//accessing each element of data object with line pointer
 		}
 	}
 	std::cout << d1 << std::endl;
   
 Here, **seekMat()** method gets the internal plane number of the 1st plane. 
-In line no 2, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
+In line #2, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
 Now accessing each element of row pointer will access each element of the data object in that row. 
 
-To use this row pointer method for data objects with more than 2 dimensions, following code can be used. 
+To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
 
 .. code-block:: c++
     :linenos:
@@ -202,12 +203,22 @@ Here we will also have a look on how to declare a 5 dimensional data object and 
 Here line #7 uses implementation #4 for declaring 5 dimensional data object d1.
 
 Working with Data Objects
-==========================
+=============================== 
 
 Now, lets have a look on various methods to work with data objects.
 
 Creating Eye Matrix
 ------------------------------------
+
+Any square Data Object might need to be converted in eye matrix during many operations in matrix calculations. 
+This can be quickly done using function **eye()** declared under *DataObject* class.
+Syntax for the function **eye()** is shown below.
+
+*dataObjectName.eye(noOfDimensions, dataType);*
+
+*Return Type: void*
+
+To understand the use of this function, following is an exemplary code given. Let's have a look at it.
 
 .. code-block:: c++
 	:linenos:
@@ -227,6 +238,14 @@ Here, the function eye() has been used with pointer variable d2 to convert the d
 Creating Ones Matrix
 -----------------------
 
+Like Eye Matrix, Ones Matrix is equally important in matrix calculations.
+So we have developed a function called **ones()** under *DataObject* class to quickly convert any *data object* into *ones matrix*.
+Syntax for the function **ones()** is shown below.
+
+*dataObjectName.ones(dim 1,dim 2,...,dim n, dataType);*
+
+*Return Type: void*
+
 .. code-block:: c++
 	:linenos:
 	
@@ -236,10 +255,33 @@ Creating Ones Matrix
 	delete d3;
 	d3 = NULL;
 	
-Here, the function ones() has been used with pointer variable d3 to convert the data object d3 into ones matrix. 
+Here, the function ones() has been used in Line #2 with pointer variable d3 to convert the data object d3 into ones matrix of dimension 2x3x4. 
 	
 Creating Zeros Matrix
 -----------------------
+
+We have developed a function called **zeros()** under *DataObject* class to quickly convert any *data object* into *zero matrix*.
+Syntax for the function **zeros()** is shown below.
+
+*dataObjectName.zeros(dataType);*      
+                                                                                                                                                        
+*dataObjectName.zeros(const size_t size, dataType);*
+
+*dataObjectName.zeros(const size_t sizeY, const size_t sizeX, dataType);*
+
+*dataObjectName.zeros(const size_t sizeZ, const size_t sizeY, const size_t sizeX, dataType);*
+
+*dataObjectName.zeros(const unsigned char dimensions, const size_t *sizes, dataType);*
+
+*Return Type: RetVal*
+
+As zeros() function is overloaded, there are more than one syntax shown above.
+
+.. note::
+	
+	The **RetVal** class is used for handling error management and return relative codes. More description on this class can be seen in :ref:`plugin-RetVal-Ref`.
+
+Following code explains the usage of **zeros()** function.
 
 .. code-block:: c++
 	:linenos:
@@ -250,7 +292,7 @@ Creating Zeros Matrix
 	delete dObjZeros;
 	dObjZeros = NULL;
 	
-Here, line number 2 shows the way to use zeros() function to convert data object dObjZeros into zero matrix. 
+Here, line number 2 shows the way to use zeros() function to convert data object dObjZeros into a yzero matrix. 
 
 Direct Access to the underlying cv::Mat
 ---------------------------------------
@@ -277,7 +319,7 @@ Following example shows one of the methods to access underlying planes in multid
 	ito::DataObject  d5 = d4.at(ranges);
 	d5 = 7;
 	
-Let's try to analyse the code above. As we can see in line #6, we used seekMat() method to retrieve the plane id of 3th plane in 3 dimensional matrix d4. 
+Let's try to analyse the code above. As we can see in line #6, we used **seekMat()** method to retrieve the plane id of 3th plane in 3 dimensional matrix d4. 
 
 line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. line #11 declares a row pointer to point a perticular row in plane 3 of data object d4.
 
@@ -285,6 +327,10 @@ line #14 defines the exemplary ranges to create a new data object d5 from a part
 
 The other way to perform the same operation of line #14 is shown below.
 
+.. note::
+	
+	**get_mdata()** is a function declared under *DataObject* class. It returns pointer to vector of *cv::_Mat-matrices*.
+	
 .. code-block:: c++
 	:linenos:
 	
