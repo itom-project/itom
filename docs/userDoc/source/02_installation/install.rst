@@ -26,10 +26,9 @@ Before installation, please review the minimum system requirements.
 Installation from setup
 ************************
 
-Currently, there is a *32bit* and *64bit* setup version of |itom| available (Windows only). For linux users there is no pre-compiled package available.
+Currently, there are both a *32bit* and a *64bit* setup version of |itom| available (Windows only). For linux users there is no pre-compiled package available.
 The use of the setup version is recommended for users that mainly want to work with |itom| without developing new algorithms or plugins. The setup
-can for instance be downloaded from https://bitbucket.org/itom/itom/downloads. Please consider that the core installation of |itom| does not contain 
-any hardware or software plugins and no designer plugins which provide plotting functionalities to |itom|.
+can be downloaded from https://bitbucket.org/itom/itom/downloads. The setup intalls the core application, a number of useful hardware plugins and the designer plugins which provide plotting functionalities to |itom|.
 
 .. toctree::
     :maxdepth: 1
@@ -40,8 +39,8 @@ any hardware or software plugins and no designer plugins which provide plotting 
 Build from Sources
 ************************ 
 
-Secondly, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
-compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and linux users. Before getting the source files,
+Alternatively, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
+compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and required of linux users. Before getting the source files,
 check the build dependencies below which contain software packages and libraries necessary to build and |itom|.
 
 .. toctree::
@@ -62,8 +61,8 @@ Get this help
 ***********************
 
 The user documentation of |itom| can be distributed in various formats. The main format is called **qthelp**, such that the documentation is
-displayed in the |Qt|-Assistant that is directly opened by |itom|. Next, on windows PCs it is possible to compile the help as a Windows Help
-Document (chm) and it is further possible to create latex-files from the help, in order to create a pdf-document. The base format of all these
+displayed in the |Qt|-Assistant that is directly accessible from the |itom| GUI. On windows PCs it is possible to compile the help as a Windows Help
+Document (chm) or to create latex-files from the help, in order to create a pdf-document. The base format of all these
 formats is a collection of *html*-pages.
 
 If you compiled |itom| from sources, no compiled documentation file is provided. Therefore, you need to compile the help by yourself:

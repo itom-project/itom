@@ -3,14 +3,14 @@
 Introduction
 ****************
 
-|itom| is a lab automation and measurement software developed and provided by ITO (Institut for Technical Optics, University Stuttgart, Germany).
-This software has been designed with an emphasis on developping and running optical systems, however it can be used for other systems, too.
-|itom| should be a versatile tool for building the control software for any measurement setup which should be highly adaptible to different
-environments and settings. Therefore it is necessary to have a powerful and fast core-program, to integrate a scripting language in order to
+|itom| is a lab automation and measurement software developed, maintained and provided by the ITO (Institut for Technical Optics, University Stuttgart, Germany).
+While this software has been designed with an emphasis on developing and running optical systems, it is not limited to this field of application.
+|itom| represents a versatile tool for building the control software for any measurement setup aimed at a high degree of adaptability to different
+parameters and variable hardware. To address these requirements it was decided to design a powerful and fast core-program, integrating a scripting language in order to
 easily modify and transfer code blocks from one part of the program to another and to provide a simple and unitary interface for controlling
-external hardware components. Nevertheless, |itom| should not only be used for controlling hardware components, butcan also use it for analysing 
-or processing your acquired data. Finally, |itom| must be considered as an open source lab automation software whose functionality lie somewhere
-in the middle between commercial software packages like Matlab or Labview.
+external hardware components. Beyond the control of the physical setup, |itom| provides a wide variety of features for the analysis and  
+processing of the acquired data. |itom| is best considered as an open source lab automation software whose functionalities lie somewhere
+between commercial software packages like Matlab or Labview.
 
 The following table shows in which way base requirements to such a software system have influenced the choice of components during the designing
 process:
@@ -35,9 +35,9 @@ In the figure below you can see the three columns on which |itom| is based:
 
 .. figure:: 3columns.png
 
-Based on this three columns you can control measurement applications, basic setups or scripted image processing.
+Based on these three columns you can control measurement applications, basic setups or scripted image processing.
 
-To learn more about how to control |itom| via script language or the GUI proceed with :ref:`gettingStarted`.
+To learn more about how to control |itom| via script language or the GUI proceed to :ref:`gettingStarted`.
 
 
 
@@ -64,14 +64,14 @@ Licensing
 itom Licensing
 ~~~~~~~~~~~~~~~
 
-The core components and the main application of |itom| is covered by **GNU Library General Public Licence** (GNU LGPL). All components belonging to
-the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are additionally covered by **itom exception**. The main idea of this exception is
-to allow other libraries (e.g. plugins) to include and link agains components of |itom| SDK independent on the specific license model of each "other" library.
+The core components and the main application of |itom| are covered by the **GNU Library General Public Licence** (GNU LGPL). All components belonging to
+the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are additionally covered by an **itom exception**. The main idea of this exception is
+to allow other libraries (e.g. plugins) to include and link agains components of |itom| SDK independent on the specific license model of the respective "other" library.
 All files belonging to the |itom| SDK are included in the folder **SDK** that is shipped with any setup or included in the build directory (when build from sources).
 
 The full text license of **LGPL** and **itom exception** is also included as file *COPYING* in the source distributions and setups.
 
-All plugins and designer-plugins that can be integrated in |itom| can have their own licensing. Therefore the user is referred to the specific licensing documents or
+All plugins and designer-plugins that can be integrated into |itom| can have their own licensing. Therefore the user is referred to the specific licensing documents or
 statements of each external library (plugin).
 
 itom Exception

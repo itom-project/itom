@@ -3,8 +3,8 @@
 Windows Setup Installation
 ==========================
 
-For your convenience you can download an installer package for Micrsoft Windows from `<https://bitbucket.org/itom/itom/downloads>`.
-There are different types of setups:
+For your convenience you can download an installer package for Microsoft Windows from `<https://bitbucket.org/itom/itom/downloads>`.
+There are several different types of setups available:
 
 * Windows, 32bit, |itom| only
 * Windows, 64bit, |itom| only
@@ -112,12 +112,12 @@ Depending on your selected components, python and/or any python packages are now
 .. figure:: images/itom_install/install13.png
     :scale: 70%
     
-    If you haven't messed up anything so far you should be able to continue right away.
+    You should be able to continue right away.
 
 .. figure:: images/itom_install/install14.png
     :scale: 70%
     
-    One more click to start the NumPy installation.
+    Start the NumPy installation.
 
 .. figure:: images/itom_install/install15.png
     :alt: alternate text

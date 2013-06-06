@@ -3,7 +3,7 @@
 Build dependencies
 ==========================
 
-This setup lists third-party software packages and libraries, that are required if you want to build |itom| from sources. If you run
+This setup lists third-party software packages and libraries that are required if you want to build |itom| from sources. If you run
 a setup-release of |itom| none of these dependencies (besides a python 3 installation) are required. Most of the following hints address
 the build on a Windows operating system. However the required packages are mainly the same for Linux and most components can directly
 be obtained by the specific package manager of your Linux distribution.
@@ -18,14 +18,14 @@ Software packages
 - Qt-framework (4.7 or higher)
 - QScintilla2
 - OpenCV 2.3 or higher
-- PythonCloudLibrary 1.6 or higher
+- PointCloudLibrary 1.6 or higher
 - Python 3.2 or higher
+- Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
 - Python-Package: NumPy
 
 **Optional Software-Packages**
 
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
-- Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing remote repository
 - Doxygen (for creating the source code documentation)
 - Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
 
@@ -50,9 +50,9 @@ project files of |itom| (CMakeList.txt) and generates the corresponding project 
 **Qt-framework** (mandatory)
 
 Download the **Qt-framework** (version 4.7 or higher, branch 5 is not supported yet) from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler,
-you can directly install it. Else, you need to configure and build **Qt** on your computer. This is also the case if you want to compile |itom| with Visual Studio for 64bit (see box below).
+you can directly install it. Otherwise, you need to configure and build **Qt** on your computer. This is also required if you want to compile |itom| with Visual Studio for 64bit (see box below).
 
-Create the following environment variables (Windows only - you need to logoff your computer in order to activate changes to environment variables):
+Create the following environment variables (Windows only - you need to log-off from your computer in order to activate changes to environment variables):
 
 * create an entry **QTDIR** and set it to the *Qt*-base directory (e.g. **C:\\Qt\\4.8.0**)
 * create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
@@ -62,9 +62,9 @@ Create the following environment variables (Windows only - you need to logoff yo
     
     **Compiling Qt for 64bit, Visual Studio**
     
-    This side-note explains how to configure and build Qt for a 64bit build, Visual Studio 2010. The general approach for other configurations is similar.
+    This side-note explains how to configure and build Qt for a 64bit build using Visual Studio 2010. The general approach for other configurations is similar.
     
-    - Delete files beginning with *sync* from **%QTDIR%\\bin** directory (in order to avoid the requirement of Perl during compilation, which is not necessary in our case). 
+    - Delete files beginning with *sync* from the **%QTDIR%\\bin** directory (in order to avoid the requirement of Perl during compilation, which is not necessary in our case). 
     - 64bit: Open **Visual Studio Commandline x64 Win64 (2010)** in your Start-Menu under *Microsoft Visual Studio >> Visual Studio Tools*. 
     - (for 32bit always use the **Visual Studio Commandline (2010)**)
     - change to Qt-Dir by typing::
@@ -76,12 +76,12 @@ Create the following environment variables (Windows only - you need to logoff yo
 
        configure -platform win32-msvc2010 -debug-and-release -opensource -no-qt3support -qt-sql-odbc -qt-sql-sqlite -qt-zlib -qt-libpng -webkit 
        
-    - Cchoose the option **open source version** and accept the license information during the configuration process. The configuration may take between 5 and 20 minutes. 
+    - choose the option **open source version** and accept the license information during the configuration process. The configuration may take between 5 and 20 minutes. 
     - now start the time-intense compilation process (1 to 5 hours) by executing the command::
 
        nmake
     
-    If you want to restart the entire compilation you need to completely remove a possible older configuration. Then open the appropriate Visual Studio command line and
+    If you want to restart the entire compilation you need to completely remove any possible older configuration. Then open the appropriate Visual Studio command line and
     execute::
         
         nmake distclean
@@ -95,26 +95,41 @@ Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddI
 
 .. note::
     
-    Sometimes, there is still trouble when starting Visual Studio with an installed Qt-AddIn. In case that any component cannot be registered, mentioned by a message-box when
-    starting Visual Studio, you should check the bug and its fix described at https://bugreports.qt-project.org/browse/QTVSADDINBUG-77. In most cases it was sufficient, to register
-    the library **stdole.dll** using the tool **gacutil.exe** from the **Microsoft SDKs/Windows/v7.0A/bin** subfolder of your standard program folder. The call is::
+    Sometimes, there are problems when starting Visual Studio with an installed Qt-AddIn. In case that any component cannot be registered, as warned by a message-box when
+    starting Visual Studio, you should check the bug and its fix described at https://bugreports.qt-project.org/browse/QTVSADDINBUG-77. In most cases it was sufficient to register
+    the library **stdole.dll** using the tool **gacutil.exe** from the **Microsoft SDKs/Windows/v7.0A/bin** subfolder of your standard program folder. Start a windows commandline and move to the directory on your computer
+    where the executable program *gacutil.exe* is located, then type::
         
         gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"
 
-    Replace the path above by your path structure and change to the directory, where *gacutil.exe* is located first.
-
 **QScintilla2** (mandatory)
 
-In general, download **QScintilla** (2.6 or higher) from http://www.riverbankcomputing.com/software/qscintilla/download and build the debug and release version. The original
-QtCreator project file of QScintilla finally copies the entire output to the **bin** directory of **Qt** such that no other settings need to be set. However, the original 
-project settings are not ready for a multi-configuration build in **Visual Studio**, therefore you need to tackle a little bit the Qt-project file.
+Download **QScintilla** (2.6 or higher) from http://www.riverbankcomputing.com/software/qscintilla/download and build the debug and release version. The original
+QtCreator project file of QScintilla finally copies the entire output to the **bin** directory of **Qt** so that no other settings need to be adapted. However, the original 
+project settings are not ready for a multi-configuration build in **Visual Studio**. As a result, you need to adapt the Qt-project file. To do this follow these steps:
+
+	* Copy the downloaded files to a directory of your choise (preferably **NOT** the windows program directory, we are assuming in the following that you placed them in **C:\\QScintilla2**)
+	* Open the Visual-Studio 2010 32-bit commandline
+	* Open the file C:\\QScintilla2\\Qt4\\QScintilla.pro in a text editor and replace the line **CONFIG** with::
+		CONFIG += qt warn_off debug_and_release build_all dll thread
+	 and add the lines::
+		CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
+	 (see also: http://www.mantidproject.org/Debugging_MantidPlot)
+	* If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
+	* Execute the following commands from the commandline console
+		- cd C:\\QScintilla2\\Qt4
+    		- nmake distclean 
+		- QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
+		- nmake
+		- nmake install
+	* copy the library files qscintilla2.dll and qscintilla2d.dll from %QTDIR%\\lib to %QTDIR%\\bin 
+
+
 
 An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** (ITO only) and copy the folder **QScintilla2.6** 
 to a directory on your hard drive (e.g. **C:\QScintilla2.6**, avoid Windows program directory due to restrictions in write access). 
-The open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
-Just execute the batch file and answer the given questions::
-
-   qscintilla_install.bat
+Open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
+Just execute the batch file **qscintilla_install.bat** and answer the given questions.
 
 .. note::
     
@@ -128,15 +143,15 @@ Just execute the batch file and answer the given questions::
 You have different possibilities in order to get the binaries from OpenCV:
 
 1. Download the OpenCV-Superpack (version 2.3) from http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3/. This superpack is a self-extracting archive. Unpack it.
-   This superpack contains pre-compiled binaries for VS2008, VS2010, MinGW in 32bit and 64bit. (Later map the CMake variable **OpenCV_DIR** to the **build** subdirectory of the
+   The superpack contains pre-compiled binaries for VS2008, VS2010, MinGW in 32bit and 64bit. (Later map the CMake variable **OpenCV_DIR** to the **build** subdirectory of the
    extracted archive).
-2. Download the current setup (version 2.4 or higher) from http://opencv.org/ and install it. This installation also contain pre-compiled binaries for VS2008, VS2010 and MinGW.
+2. Download the current setup (version 2.4 or higher) from http://opencv.org/ and install it. This installation also contains pre-compiled binaries for VS2008, VS2010 and MinGW.
    In this case map **OpenCV_DIR** to the **opencv/build** subdirectory.
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. Then map **OpenCV_DIR** to the build-directory, indicated in CMake.
 
 Finally, add the appropriate bin-folder of OpenCV to the windows environment variable: 
-- VS2010, 32bit: ADD to the path-variable: **;C:\\OpenCV2.3\\build\\x86\\vc10\\bin** (or similar)
-- VS2010, 64bit: ADD to the path-variable: **;C:\\OpenCV2.3\\build\\x64\\vc10\\bin** (or similar)
+- VS2010, 32bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x86\\vc10\\bin** (or similar)
+- VS2010, 64bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x64\\vc10\\bin** (or similar)
 
 Changes to the environment variable only become active after a re-login to windows.
 
@@ -149,7 +164,7 @@ The installation directory may for example be **C:\PCL1.6.0**. Information: Plea
 You don't have to install OpenNI, since this is only the binaries for the communication with commercial range sensors, like Kinect.
 
 If you want to debug the point cloud library (not necessary, optional) unpack the appropriate zip-archive with the pdb-files into the bin-folder of the point cloud library. 
-This is the folder where the dll's lie, too.
+This is the folder where the dll's are located as well.
 
 **Python** (mandatory, 3.2)
 
@@ -157,7 +172,7 @@ Download the installer from http://www.python.org/download/ and install python i
 
 **NumPy** (mandatory)
 
-Get a version of NumPy that fits to python 3.2 and install it. On windows binaries for many python packages can be found under http://www.lfd.uci.edu/~gohlke/pythonlibs/.
+Get a version of NumPy that fits to python 3.2 and install it. On Windows, binaries for many python packages can be found under http://www.lfd.uci.edu/~gohlke/pythonlibs/.
 
 **Sphinx** (optional)
 
@@ -169,7 +184,7 @@ Type the following command in order to download **sphinx** including dependecies
 
 **Distribute** (optional)
 
-Distribute is a python package, than can be used for easily downloading and installing other python packages, like *Sphinx*. Download the latest version (file ending with tar.gz) of
+Distribute is a python package, that can be used for easily downloading and installing other python packages, like *Sphinx*. Download the latest version (file ending with tar.gz) of
 **Distribute** from https://pypi.python.org/pypi/distribute and unpack it to any temporary directory on your hard drive. Open a command line and switch to the directory of **Distribute**.
 
 Assuming that Python is located under **C:\Python32**, execute the following command::

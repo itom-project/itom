@@ -5,7 +5,11 @@
 Get sources from Git
 ==========================
 
-The core of |itom|, some plugins as well as designer-plugins are hosted in different Git-repositories on *bitbucket.org*.
+The core of |itom|, some plugins as well as designer-plugins are hosted in different Git-repositories on *bitbucket.org*. 
+
+.. note::
+GIT is a distributed version and source code management system, that allows several developers to work on the same source code simultaneously. |itom| is hosted under GIT
+at bitbucket.org. 
 
 The different parts can be found at the following resources:
 
