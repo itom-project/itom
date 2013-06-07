@@ -8,7 +8,7 @@
 Getting Started
 ###################
 
-We give you a first example of the function of |itom|.
+The following chapter is an introduction into the functionalities of |itom| with a number of hands-on examples. 
 
 
 Quick Start
@@ -17,7 +17,7 @@ Quick Start
 The GUI
 ===========
 
-In this section we don't want to give you a detailed explanation of |itom| but here you can try |itom| for the first time. Therefore you have to know the principle GUI. After startup |itom| is by default divided into the following parts:
+In this section will help you with your first steps in using |itom|. We will start with the main GUI, the standard starting point of your interaction with the software. After startup the |itom| GUI is by default divided into the following parts:
 
 1. Menu bar
 2. Quickstart bar
@@ -32,15 +32,15 @@ In this section we don't want to give you a detailed explanation of |itom| but h
 GUI-Operations
 ===================
    
-The first examples will show you the basic GUI operations together with plugin-handling, data acquisition and writing this data to disk.
+The first examples will show you the basic GUI operations together with plugin-handling, data acquisition and saving this data to the harddrive.
 
 
 Open and move a virtual stage
 ----------------------------------
 
-Let learn more about the |itom| -GUI-PlugIn-Interaction on the examle of the **DummyMotor**.
+Let us learn more about the |itom| -GUI-PlugIn-Interaction using the example of the **DummyMotor**. You will require the **DummyMotor** plug-in. 
 
-At first, we have to initialize the stage. Therefore we select the **DummyMotor** within the **Plugins-Browser** (No. 6). We right-click and select 'newInstance'.
+At first, we have to initialize the stage. The **Plugins-Browser** (No. 6) displays a list of all available Plug-ins, sorted by type. These DLL's are already loaded but not instantiated. To access the functionality of a plug-in we need to create an instance of it. To this end, we select the **DummyMotor** within the **Plugins-Browser** (No. 6). If the **DummyMotor** is not displayed, you need to get or build the plug-in first (refer to :ref:`install-cmake`). We right-click and select 'newInstance'.
 
 .. figure:: images/openDummyMotor1.png
     :width: 70 %
@@ -50,9 +50,9 @@ A window with initialisation parameters of the plugIn opens.
 .. figure:: images/openDummyMotor3.png
     :scale: 70%
 
-This PlugIn has not parameters, so we press OK. 
+This PlugIn has requires no parameters, so we press OK. More complex plug-ins will require any number of mandatory and optional parameters for correct instantiation at this stage. 
 
-If no error message occurs during initialisation we will see a '+' before the **DummyMotor** in the **Plugins-Browser**. We expand the entry **DummyMotor**.
+If no error message occurs during initialisation we will see a '+' before the **DummyMotor** in the **Plugins-Browser**. This indicates that an instance of the plug-in has been created and is ready for use. We expand the entry **DummyMotor**.
 We can see the index of the initialised plugin (first time == ID: 1). 
 
 If we right-click again on  **DummyMotor ID 1**, a contrex menu opens with the entries:
@@ -77,15 +77,15 @@ To move this virtual stage, this plugIn comes with a **Toolbox**. We open this b
 .. figure:: images/dummyMotorWidget.png
     :scale: 70%
 
-This opens a non blocking widget usally docked to the GUI-Window with basic control-buttons.
+This opens a non blocking widget usally docked to the GUI-Window with basic control-buttons for moving the motor to the desired position.
 
 At the end we close theplugIn by right-clicking again on **DummyMotor ID 1** and than left-click on **Close instance**.
    
 Scripting
 ===================
 
-With the second part of this **getting startet** we will focus on the script language based on python.
-The instructions are without lengthy explanations. Use the **tutorial** for more detailed descriptions.
+In the second part of this **getting startet** we will focus on the script language based on python.
+The instructions are without lengthy explanations. Use the **tutorial** for more detailed information.
 
 Hello World!
 ---------------
@@ -97,19 +97,19 @@ You can get the famous \"hello world!\" in a very simple way. Just write in the 
 	
 	print("hello world!")
 	
-Because this would be a litte bit too simple as a first try, we proceed with a litte camera example.
+The command is executed immediately. Let us proceed to a more advanced example involving a camera.
 
 Getting a snapshot
 --------------------
 
-In this example we explain step by step how you can open a camera and make a snapshot. For this we only use the console and type in our commands directly. Later you can write your code in executable scripts or functions and you can control these functions with your own GUI elements.
+In this example we will explain how you can open a camera and make a snapshot step by step. Python code can be written and executed in two differnt ways, either directly, line by line, using the console, or in the form of complete scripts and fucntions, executed as small programs. In this example we will use the console and will type in our commands directly. Later you can write your code in executable scripts or functions and you can control these functions with your own GUI elements.
 
-You will need the **DummyGrabber**-PlugIn for this script.
+You will need the **DummyGrabber**-PlugIn for this script to work.
 
 Step 1: Open the camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First you have to start your camera device using the respective dataIO plugin. In our example we use the DummyGrabber, but in principal you can use every camera you have plugged in your computer and for which you have the plugin.
+First you have to start your camera device using the respective dataIO plugin. In our example we use the DummyGrabber, but in principle you can use any camera connected to your computer for which you have an |itom| plugin. Similarly to the previous example of the **DummyMotor** we need to create an instance of the **DummyGrabber**, only this time, we will instantiate from python instead of from the GUI. 
 
 .. code-block:: python
     :linenos:
@@ -141,7 +141,7 @@ You can set the parameters of the camera as you need it. For example:
 Step 4: Getting Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you are interested in the current value of a paramter you can use the following code to get it.
+If you are interested in the current value of a paramter you can use the following code to retrieve it.
 
 .. code-block:: python
     :linenos:
@@ -166,7 +166,7 @@ Following that you can acquire an image.
 	
 	camera.acquire()
 	
-If you then want to store the image you have to create a new empty dataObject und save the values of the image in this dataObject.
+If you then want to store the image you have to create a new empty dataObject (the dataObject will resize to the correct dimensions later) and save the values of the image in this dataObject.
 
 .. code-block:: python
     :linenos:
@@ -174,24 +174,24 @@ If you then want to store the image you have to create a new empty dataObject un
 	data = dataObject()
 	camera.getVal(data)
 	
-Here you have to be careful, because data is just a reference (**shallow copy!**) to the internal camera memory. If you want to have a deep copy of the image you should use the copy command.
+Here you have to be careful, because data is just a reference (**shallow copy!**, no actual data is copied from the camera's memory) to the internal camera memory. If you want to have a deep copy of the image you should use the copy command.
 	
 .. code-block:: python
     :linenos:
 	
 	dataCopy = data.copy()
 	
-Step 6: Showing the image
+Step 6: Displaying the image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Up to now you have not seen any image. You can plot your acquired image by
+Up to now you have not seen any image. You can plot your acquired image using
 
 .. code-block:: python
     :linenos:
 	
 	plot(data)
 	
-or you can watch the live image of the camera by
+or you can watch the live image of the camera using
 
 .. code-block:: python
     :linenos:
@@ -201,7 +201,7 @@ or you can watch the live image of the camera by
 Step 7: Stop/delete the camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-At the end you should stop the camera device. And if you don't need it anymore you can delete it.
+At the end you should stop the camera device. And if you don't need it anymore you can delete the instance of the camera plug-in.
 
 .. code-block:: python
     :linenos:
@@ -212,28 +212,28 @@ At the end you should stop the camera device. And if you don't need it anymore y
 Alternative Step 1: Open the camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can also open the camera via the GUI and sent an instance to python.
+We can also open the camera via the GUI and make the new instance available for access from python.
 
 Therefore we select the **DummyGrabber** within the **Plugins-Browser** (GUI No. 6). We right-click and select 'newInstance'.
 
 .. figure:: images/openDummyGrabber1.png
     :scale: 70%
 
-The window with initialisation parameters of the plugIn opens. Select the tab **optinal parameters** and insert maxXSize = 800, maxYSize = 600, bpp == 8. 
+The window with initialisation parameters of the plugIn opens. Select the tab **optional parameters** and insert maxXSize = 800, maxYSize = 600, bpp == 8. 
 
 .. figure:: images/openDummyGrabber2.png
     :scale: 70%
 
-Than check **Access instance with python** and type 'camera' into the field **variable name**. Press ok. Now you can proceed with step 2 but hence you already set the grabber parameters you can also proceed with step 4.   
+Than check **Access instance with python** and type 'camera' into the field **variable name**. Press ok. Now you can proceed with step 2 but since you already set the grabber parameters you can also proceed with step 4.   
 
 
 Apply a median-filter to a snap shot 
 -----------------------------------------
 
-In the next step, we want to explain how to use itomFilters on the dataObject on the example of a median filter. 
-By the way we will use the iTOM script editor for the first time.
+In the next step, we want to explain how to use itomFilters on the dataObject using the example of a median filter. 
+Instead of executing single python commands from the console, we will now utilize the iTOM script editor for the first time.
 
-For this exampe, you will need the **mcppfilter-PlugIn** or **m++Filter-PlugIn** and the **DummyGrabber-PlugIn**.
+For this exampe, you will need the **mcppfilter-PlugIn** or the **m++Filter-PlugIn** and the **DummyGrabber-PlugIn**.
 
 Step 1: Open a script editor window
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -245,7 +245,7 @@ First we open the script editor by left-clicking the **new Script**-button in th
 Step 2: Write a simple snap routine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We insert the following code into the editor window
+We insert the following code into the editor window. You will recognize the python commands from the previous section.
 
 .. code-block:: python
     :linenos:
@@ -264,7 +264,7 @@ We insert the following code into the editor window
 Step 3: Retrieve the call for the median filter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-What we need in the next step is the correct call for the median-filter, which is defined within the **m++Filter-PlugIn**.
+What we need in the next step is the correct call for the median-filter which is defined within the **m++Filter-PlugIn**. Each plug-in provides information concerning its usage that is accessible from python.which is defined within the **m++Filter-PlugIn**. |itom| provides 
 Therefore we switch to the itom-console and type in
 
 .. code-block:: python
@@ -272,12 +272,12 @@ Therefore we switch to the itom-console and type in
 	
     filterHelp("medianFilter")
 
-We will get a detailed description of the filter "medianFilter".
+You can see a detailed description of the filter "medianFilter".
 
 Step 4: Insert the filter-call into the script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-We use the information and append our script in the script editor with
+We use this information and append our script in the script editor with
 
 .. code-block:: python
     :linenos:
@@ -288,7 +288,7 @@ We use the information and append our script in the script editor with
     
 to filter the content dataSnap into the new object dataFiltered with a 3 x 3 filter kernel.
 
-The filter also works inplace. That means we can use the input object as the output object.
+The filter also works inplace. That means we can use the input object as the output object, overwriting the input data.
 To show how this works we add 
 
 .. code-block:: python
@@ -300,7 +300,7 @@ To show how this works we add
 Step 5: Add plot commands
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-To see the results we add
+To view the results we add
 
 .. code-block:: python
     :linenos:
@@ -313,7 +313,7 @@ to the script.
 Step 5: Run the script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-To run the script, we press the run button or "F5" on the keyboard. If we have unsaved changes in our script, we are ask to save it.
+To run the script, we press the run button or "F5" on the keyboard. If we have unsaved changes in our script, we are asked to save it.
 
 .. figure:: images/runScript.png
 
@@ -323,8 +323,7 @@ You should see two 2D-Plots.
 Getting online help
 ------------------------
 
-The python script language has a lot of methods and classes and |itom| expands these functionality even further. To keep an overview, python comes with
-a online help. You can type in help(class or method). For example:
+The python script language has a lot of methods and classes and |itom| expands these functionalities even further. To retain an overview, python provides a built-in online help. You can type help(class or method). For example:
 
 .. code-block:: python
     :linenos:
@@ -342,7 +341,7 @@ By typing
 
 you get the help for this subfunction of dataIO.
 
-To get an overview over the different itom-plugin functions you can use several functions. 
+To get an overview over the different itom-plugin functions you can use one of several options. 
 
 For Plugin-Initialisation, e.g. the DummyGrabber from the last example, use **pluginHelp("pluginName")**.
 
@@ -351,7 +350,7 @@ For Plugin-Initialisation, e.g. the DummyGrabber from the last example, use **pl
 	
     pluginHelp("DummyGrabber")
 
-For informations about already initialized plugIns, e.g. the camera / DummyGrabber from the last example use the member function **.getParamListInfo()**
+For information concerning an already initialized plugIns, e.g. the camera / DummyGrabber from the last example use the member function **.getParamListInfo()**
 
 .. code-block:: python
     :linenos:
@@ -359,7 +358,7 @@ For informations about already initialized plugIns, e.g. the camera / DummyGrabb
     camera = dataIO("DummyGrabber")
     camera.getParamListInfo() 
  
-To get a list of itomfilters use the methond **filterHelp()**
+To get a list of available (installed and loaded but not necessary instantiated) itom plug-ins of the type filter, use the methond **filterHelp()**
 
 .. code-block:: python
     :linenos:
@@ -373,7 +372,7 @@ If you want detailed information about one **itomfilter** use filterHelp("filter
 	
     filterHelp("lowFilter") 
 
-For user-defined GUI-Elements from plugIns use the similar function widgetHelp().   
+For user-defined GUI-Elements from plugIns use the function widgetHelp().   
     
     
 Tutorials
