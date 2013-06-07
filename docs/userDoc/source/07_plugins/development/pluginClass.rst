@@ -440,7 +440,8 @@ An exemplary implementation of the method **execFunc** is
         {
             waitCond->returnValue = retValue;
             waitCond->release();
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
         }
 
         return retValue;

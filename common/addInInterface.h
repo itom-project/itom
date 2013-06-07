@@ -954,7 +954,7 @@ namespace ito
                     m_interfaceMeta(interfaceMeta)
                 {}
 
-                virtual ~AlgoWidgetDef();	//!< destructor
+                    virtual ~AlgoWidgetDef() {}	//!< destructor
 
                 t_algoWidget m_widgetFunc;	//!< function pointer (unbounded, static) for widget-method
                 t_filterParam m_paramFunc;	//!< function pointer (unbounded, static) for widget's default parameter method
