@@ -384,7 +384,8 @@ ito::RetVal apiFunctions::maddInOpenActuator(const QString &name, const int plug
     //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     return retval;
 }
@@ -405,7 +406,8 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
     //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     return retval;
 }

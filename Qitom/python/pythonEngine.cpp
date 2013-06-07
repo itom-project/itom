@@ -2297,7 +2297,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
     if (semaphore)
     {
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 }
@@ -3851,7 +3851,8 @@ RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QShared
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -3920,7 +3921,8 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;

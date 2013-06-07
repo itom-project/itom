@@ -495,7 +495,8 @@ namespace ito
         if(waitCond)
         {
             waitCond->release();
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
         }
 
         return ito::retOk;
@@ -514,7 +515,8 @@ namespace ito
         if(waitCond)
         {
             waitCond->release();
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
         }
 
         return ito::retOk;

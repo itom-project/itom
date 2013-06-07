@@ -48,7 +48,7 @@
 */
 
 //! mutex initialization
-QMutex ItomSharedSemaphore::internalMutex;
+//QMutex ItomSharedSemaphore::internalMutex;
 
 
 
@@ -74,7 +74,7 @@ bool ItomSharedSemaphore::waitAndProcessEvents(int timeout, QEventLoop::ProcessE
         QCoreApplication::processEvents(flags);
     }
 
-    QMutexLocker mutexLocker(&ItomSharedSemaphore::internalMutex);
+    QMutexLocker mutexLocker(&internalMutex);
     if(available == false)
     {
         qDebug() << "ItomSharedSemaphore run into a timeout. Number of attempted listeners: " << m_numOfListeners << ", already freed: " << m_pSemaphore->available();

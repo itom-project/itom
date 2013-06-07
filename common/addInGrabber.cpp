@@ -109,7 +109,8 @@ namespace ito
                 {
                     qDebug() << "timeout in number: " << i << "number of items: " << size;
                 }
-                ItomSharedSemaphore::deleteSemaphore(waitConds[i]);  
+                waitConds[i]->deleteSemaphore();
+                waitConds[i] = NULL;
             }
 
             delete[] waitConds;
@@ -117,7 +118,6 @@ namespace ito
         }
 
         return retValue;
-
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

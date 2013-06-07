@@ -983,7 +983,8 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             ret += waitCond->returnValue;
         }
 
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+         waitCond->deleteSemaphore();
+         waitCond = NULL;
     }
 
     if (!SetReturnValueMessage(ret, "setParam"))
@@ -1023,7 +1024,8 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 //            retval = aim->closeAddIn((ito::AddInBase**)&self->actuatorObj);
             waitCond->wait(-1);
             retval += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+             waitCond->deleteSemaphore();
+             waitCond = NULL;
             
 			PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
@@ -1207,7 +1209,8 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
         waitCond->wait(-1);
         retval += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+         waitCond->deleteSemaphore();
+         waitCond = NULL;
 
         paramsMandCpy.clear();
         paramsOptCpy.clear();
@@ -2512,7 +2515,8 @@ int PythonPlugins::PyActuatorAxis_init(PyActuatorAxis *self, PyObject *args, PyO
     QMetaObject::invokeMethod(actObj, "getAxis", Q_ARG(const int, axisNum), Q_ARG(ito::ActuatorAxis**, &self->axisObj), Q_ARG(ItomSharedSemaphore*, waitCond));
     waitCond->wait(PLUGINWAIT);
     retval += waitCond->returnValue;
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+      waitCond->deleteSemaphore();
+      waitCond = NULL;
 
     if (!SetLoadPluginReturnValueMessage(retval, "axis"))
     {
@@ -2867,7 +2871,8 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
 //            ito::RetVal retval = aim->closeAddIn((ito::AddInBase**)&self->dataIOObj);
             waitCond->wait(-1);
             retval += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
 
 			PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
@@ -3047,7 +3052,8 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     //    retval = AIM->initAddIn(pluginNum, pluginName, &self->dataIOObj, paramsMand, paramsOpt, enableAutoLoadParams);
         waitCond->wait(-1);
         retval += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         paramsMandCpy.clear();
         paramsOptCpy.clear();
@@ -3317,7 +3323,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
         }
 
         ret += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         if (!SetReturnValueMessage(ret, "startDevice"))
         {
@@ -3380,7 +3387,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             }
 
             ret += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
 
             if (!SetReturnValueMessage(ret, "stopDevice"))
             {
@@ -3411,8 +3419,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             }
 
             ret += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
-            
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
         }
 
         if (timeout)
@@ -3478,7 +3486,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
 
     ret += waitCond->returnValue;
 
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     if (!SetReturnValueMessage(ret, "acquire"))
     {
@@ -3808,7 +3817,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 
         ret += waitCond->returnValue;
 
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
     }
     else
     {
@@ -3901,7 +3911,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 
         ret += waitCond->returnValue;
 
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
     }
 
     if (!SetReturnValueMessage(ret, "setVal"))
@@ -3949,7 +3960,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
 
     ret += waitCond->returnValue;
 
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     if (!SetReturnValueMessage(ret, "setVal"))
     {
@@ -4003,7 +4015,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
 
     ret += waitCond->returnValue;
 
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     if (!SetReturnValueMessage(ret, "disableAutoGrabbing"))
     {
@@ -4060,7 +4073,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
 
     ret += waitCond->returnValue;
 
-    ItomSharedSemaphore::deleteSemaphore(waitCond);
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
 
     if (!SetReturnValueMessage(ret, "setAutoGrabbing"))
     {
@@ -4423,7 +4437,9 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
             QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->algoObj), Q_ARG(ItomSharedSemaphore*, waitCond));
             waitCond->wait(-1);
             retval += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+
 //            retval = aim->closeAddIn((ito::AddInBase**)&self->algoObj);
             
 			PythonCommon::transformRetValToPyException(retval);
@@ -4571,7 +4587,8 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
         QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInAlgo**, &self->algoObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
         waitCond->wait(-1);
         retval += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         paramsMandCpy.clear();
         paramsOptCpy.clear();

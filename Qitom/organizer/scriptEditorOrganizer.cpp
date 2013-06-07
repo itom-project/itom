@@ -445,7 +445,7 @@ void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore
     if (semaphore != NULL)
     {
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 }
@@ -473,7 +473,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
     if (semaphore != NULL)
     {
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -544,7 +544,7 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
     {
 		semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 

@@ -197,7 +197,8 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
     if(waitCond)
     {
         waitCond->release();
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
     }
 }
 
