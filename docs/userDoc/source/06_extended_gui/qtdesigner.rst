@@ -65,7 +65,8 @@ In principle, you are allowed to place every widget on your user interface that 
 access properties of any widget (read and/or write) and how you can call specific functions provided by any widget. However, you will also learn that you do not have access using |python|
 to all functions a widget has and you are not able to sub-class any widget, like you can it using a native **C++** program. Therefore, it is not recommended to place any widget from the
 group **Item Views (Model-based)** on your user interface since only few functions of these widgets are accessible by a |python| script. If you need a list box, use the item-based list
-widget.
+widget. |itom| also provides some widgets (section **ITOM widgets**) that can be placed on your user interfaces, for instance some plot widgets or the widget for plotting the result of
+the python module matplotlib (see :ref:`pymod-matplotlib`).
 
 Loading user interface in |itom|
 =================================
