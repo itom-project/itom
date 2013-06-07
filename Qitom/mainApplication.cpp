@@ -135,12 +135,13 @@ void MainApplication::setupApplication()
     m_splashScreen->show();
     QCoreApplication::processEvents();
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    settings.beginGroup("Language");
-    QString language = settings.value("language", "en").toString();
-    QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
-    settings.endGroup();
+    settings->beginGroup("Language");
+    QString language = settings->value("language", "en").toString();
+    QByteArray codec =  settings->value("codec", "UTF-8" ).toByteArray();
+    settings->endGroup();
+    settings->sync();
 
     QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
@@ -172,9 +173,10 @@ void MainApplication::setupApplication()
     QTextCodec::setCodecForCStrings( textCodec );
     QTextCodec::setCodecForLocale( textCodec );
 
-    settings.beginGroup("CurrentStatus");
-    QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
-    settings.endGroup();
+    settings->beginGroup("CurrentStatus");
+    QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
+    settings->endGroup();
+    settings->sync();
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -182,10 +184,10 @@ void MainApplication::setupApplication()
         QCoreApplication::processEvents();
 
         //set styles (if available)
-        settings.beginGroup("ApplicationStyle");
-        QString styleName = settings.value("style", "").toString();
-        QString cssFile = settings.value("cssFile", "").toString();
-        settings.endGroup();
+        settings->beginGroup("ApplicationStyle");
+        QString styleName = settings->value("style", "").toString();
+        QString cssFile = settings->value("cssFile", "").toString();
+        settings->endGroup();
 
         if (styleName != "")
         {
@@ -303,26 +305,28 @@ void MainApplication::setupApplication()
     m_splashScreen->showMessage( tr("execute startup scripts...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    settings.beginGroup("Python");
+    settings->beginGroup("Python");
 
-    int size = settings.beginReadArray("startupFiles");
+    int size = settings->beginReadArray("startupFiles");
     for (int i = 0; i < size; ++i)
     {
-        settings.setArrayIndex(i);
-        startupScripts.append(settings.value("file",QString()).toString());
+        settings->setArrayIndex(i);
+        startupScripts.append(settings->value("file",QString()).toString());
     }
 
-    settings.endArray();
-    settings.endGroup();
+    settings->endArray();
+    settings->endGroup();
+    settings->sync();
 
     if (startupScripts.count()>0)
     {
         QMetaObject::invokeMethod(m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
     }
 
-	settings.beginGroup("CurrentStatus");
-    QString currentDir = (settings.value("currentDir",QDir::currentPath()).toString());
-    settings.endGroup();
+    settings->beginGroup("CurrentStatus");
+    QString currentDir = (settings->value("currentDir",QDir::currentPath()).toString());
+    settings->endGroup();
+    delete settings;
 
     m_splashScreen->showMessage( tr("scan and run scripts in autostart folder...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
@@ -413,8 +417,9 @@ void MainApplication::finalizeApplication()
 		QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
 		QCoreApplication::processEvents();
 
-		ItomSharedSemaphore::deleteSemaphore(waitCond);
-	}
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
 
     DELETE_AND_SET_NULL(m_pyEngine);
     AppManagement::setPythonEngine(NULL);
@@ -433,10 +438,12 @@ void MainApplication::finalizeApplication()
     QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
     QCoreApplication::processEvents();
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("CurrentStatus");
-    settings.setValue("currentDir",QDir::currentPath());
-    settings.endGroup();
+    QString settingsName(AppManagement::getSettingsFile());
+    QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
+    settings->beginGroup("CurrentStatus");
+    settings->setValue("currentDir",QDir::currentPath());
+    settings->endGroup();
+    delete settings;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -448,9 +455,9 @@ void MainApplication::mainWindowCloseRequest()
 {
     RetVal retValue(retOk);
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("MainWindow");
-    if (settings.value("askBeforeClose", false).toBool())
+    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings->beginGroup("MainWindow");
+    if (settings->value("askBeforeClose", false).toBool())
     {
         QMessageBox msgBox;
             msgBox.setText("Do you really want to exit the application?");
@@ -461,11 +468,13 @@ void MainApplication::mainWindowCloseRequest()
 
             if (ret == QMessageBox::Cancel)
             {
-                settings.endGroup();
+                settings->endGroup();
+		delete settings;
                 return;
             }  
     }
-    settings.endGroup();
+    settings->endGroup();
+    delete settings;
 
     if (m_pyEngine != NULL)
     {

@@ -129,19 +129,19 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
         m_pAIManagerView->expand(index);
     }
     
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("AIManagerWidget");
-    size = settings.beginReadArray("ColWidth");
+    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings->beginGroup("AIManagerWidget");
+    size = settings->beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i)
     {
-        settings.setArrayIndex(i);
-        m_pAIManagerView->setColumnWidth(i, settings.value("width", 100).toInt());
+        settings->setArrayIndex(i);
+        m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
         m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
     }
-    settings.endArray();
+    settings->endArray();
 
     m_pColumnWidth = new int[plugInModel->columnCount()];
-    size = settings.beginReadArray("StandardColWidth");
+    size = settings->beginReadArray("StandardColWidth");
     if (size != plugInModel->columnCount())
     {
         m_pColumnWidth[0] = 200;
@@ -152,15 +152,16 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     }
     for (int i = 0; i < size; ++i)
     {
-        settings.setArrayIndex(i);
-        m_pColumnWidth[i] = settings.value("width", 100).toInt();
+        settings->setArrayIndex(i);
+        m_pColumnWidth[i] = settings->value("width", 100).toInt();
         if (m_pColumnWidth[i] == 0)
         {
             m_pColumnWidth[i] = 120;
         }
     }
-    settings.endArray();
-    settings.endGroup();
+    settings->endArray();
+    settings->endGroup();
+    delete settings;    
 
     AbstractDockWidget::init();
     setContentWidget(m_pAIManagerView);
@@ -173,24 +174,32 @@ AIManagerWidget::~AIManagerWidget()
 {
     ito::AddInManager *aim = ito::AddInManager::getInstance();
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("AIManagerWidget");
-    settings.beginWriteArray("ColWidth");
-    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
-    {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pAIManagerView->columnWidth(i));
-    }
-    settings.endArray();
+    QString setFile(AppManagement::getSettingsFile());
+    QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
-    settings.beginWriteArray("StandardColWidth");
+    settings->beginGroup("AIManagerWidget");
+    
+    settings->beginWriteArray("ColWidth");
+    
     for (int i = 0 ; i < plugInModel->columnCount() ; i++)
     {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pColumnWidth[i]);
+        settings->setArrayIndex(i);
+        settings->setValue("width", m_pAIManagerView->columnWidth(i));
     }
-    settings.endArray();
-    settings.endGroup();
+    settings->endArray();
+    settings->sync();
+
+    settings->beginWriteArray("StandardColWidth");
+    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
+    {
+        settings->setArrayIndex(i);
+        settings->setValue("width", m_pColumnWidth[i]);
+    }
+    
+    settings->endArray();    
+    settings->endGroup();
+    settings->sync();
+    delete settings;
 
     DELETE_AND_SET_NULL(m_pSortFilterProxyModel);
     DELETE_AND_SET_NULL(m_pAIManagerView);
