@@ -90,7 +90,7 @@ MainWindow::MainWindow() :
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     // general windows settings
-#ifdef _WIN64
+#if QT_POINTER_SIZE == 8
     setWindowTitle(tr("itom (x64)"));
 #else
     setWindowTitle(tr("itom"));
