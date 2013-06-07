@@ -129,13 +129,13 @@ With the following command you get a list with all available paramters for your 
 Step 3: Setting Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can set the parameters of the camera as you need it. For example:
+You can set the parameters of the camera as you need it. For example, we might wish to set the upper left corner of the ROI, the integration time (in seconds) of the capturing process or the bit-depth of the captured signal:
 
 .. code-block:: python
     :linenos:
 	
-    camera.setParam("sizex",800)
-    camera.setParam("sizey",600)
+    camera.setParam("x0",0)
+    camera.setParam("integration_time",0.05)
     camera.setParam("bpp",8)
 	
 Step 4: Getting Parameters
@@ -230,10 +230,10 @@ Than check **Access instance with python** and type 'camera' into the field **va
 Apply a median-filter to a snap shot 
 -----------------------------------------
 
-In the next step, we want to explain how to use itomFilters on the dataObject using the example of a median filter. 
+In the next step, we want to explain how to use filters provided as itom-plugins on the dataObject using the example of a median filter. 
 Instead of executing single python commands from the console, we will now utilize the iTOM script editor for the first time.
 
-For this exampe, you will need the **mcppfilter-PlugIn** or the **m++Filter-PlugIn** and the **DummyGrabber-PlugIn**.
+For this exampe, you will need the **OpenCV-filters-Plugin** and the **DummyGrabber-Plugin**.
 
 Step 1: Open a script editor window
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -270,7 +270,7 @@ Therefore we switch to the itom-console and type in
 .. code-block:: python
     :linenos:
 	
-    filterHelp("medianFilter")
+    filterHelp("cvMedianBlur")
 
 You can see a detailed description of the filter "medianFilter".
 
@@ -284,9 +284,9 @@ We use this information and append our script in the script editor with
 	
     dataFiltered = dataObject() #Destination image
     
-    filter("medianFilter", dataSnap, dataFiltered, 3 , 3)
+    filter("cvMedianBlur", dataSnap, dataFiltered, 5)
     
-to filter the content dataSnap into the new object dataFiltered with a 3 x 3 filter kernel.
+to filter the content dataSnap into the new object dataFiltered with a 5 x 5 filter kernel.
 
 The filter also works inplace. That means we can use the input object as the output object, overwriting the input data.
 To show how this works we add 
@@ -294,7 +294,7 @@ To show how this works we add
 .. code-block:: python
     :linenos:
 	  
-    filter("medianFilter", dataSnap, dataSnap, 11 , 11)
+    filter("cvMedianBlur", dataSnap, dataSnap, 5)
   
   
 Step 5: Add plot commands
@@ -374,7 +374,14 @@ If you want detailed information about one **itomfilter** use filterHelp("filter
 
 For user-defined GUI-Elements from plugIns use the function widgetHelp().   
     
-    
+
+Further steps
+****************
+
+GUI :ref:`gui`
+Python scripting language: :ref:`scriptLanguage` with more information about the dataObject :ref:`itomDataObject`
+
+
 Tutorials
 ****************
 

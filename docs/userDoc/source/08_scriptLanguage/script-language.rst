@@ -1,5 +1,7 @@
 .. include:: /include/global.inc
 
+.. _scriptLanguage:
+
 Python scripting language
 #########################
 
@@ -30,7 +32,7 @@ Python module itom
 
 The main purpose of the embedded |python| interpreter in |itom| is to access the specific functionalities provided by |itom|. This is done by the |python|-module :py:mod:`itom`, that
 is importable only in the embedded |python| interpreter in |itom|. This module includes interfaces for hardware and algorithm plugins of |itom| as well as classes that wrap the
-most important internal data structures of |itom|, like matrices (class :py:class:`~itom.dataObject`), point clouds (class :py:class:`~itom.pointCloud`) or polygon meshes (class :py:class`~itom.polygonMesh`). Additionally
+most important internal data structures of |itom|, like matrices (class :py:class:`~itom.dataObject`), point clouds (class :py:class:`~itom.pointCloud`) or polygon meshes (class :py:class:`~itom.polygonMesh`). Additionally
 the module provides functions to manipulate or extend the graphical user interface of |itom| as well as to create own dialogs or windows (provided by the class :py:class:`~itom.ui` and :py:class:`~itom.uiItem`).
 
 More information about the module :py:mod:`itom` can be found under:

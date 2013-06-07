@@ -21,7 +21,7 @@ The following list gives a short description of each demo.
   | *Keywords*: creat a new class; add new function; add button
 
 
-Plugings
+Plugins
 *********
 
 - **demoDummyGrabber.py**
