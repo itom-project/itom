@@ -192,7 +192,8 @@ Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: p
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
-Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
+;Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
+Source: "E:\itom\Source\itom\itom\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
