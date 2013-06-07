@@ -128,6 +128,6 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         void refreshPlot() { update(); }
 };
 
-}; // namespace ito
+} // namespace ito
 
 #endif // ABSTRACTFIGURE_H
