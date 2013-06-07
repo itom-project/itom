@@ -47,9 +47,9 @@ Name: "{app}\plugins\DummyMotor"; Permissions: everyone-modify
 Name: "{app}\plugins\DummyMotor\translation"; Permissions: everyone-modify
 Name: "{app}\designer"; Permissions: everyone-modify
 Name: "{app}\demo"; Permissions: everyone-modify
-Name: "{app}\scripts"; Permissions: everyone-modify
-Name: "{app}\demoScripts"; Permissions: everyone-modify
-Name: "{app}\documentation"; Permissions: everyone-modify
+;Name: "{app}\scripts"; Permissions: everyone-modify
+;Name: "{app}\demoScripts"; Permissions: everyone-modify
+;Name: "{app}\documentation"; Permissions: everyone-modify
 Name: "{app}\itomSettings"; Permissions: everyone-modify
 Name: "{app}\lib"; Permissions: everyone-modify
 Name: "{app}\help"; Permissions: everyone-modify
@@ -108,7 +108,6 @@ Source: "{#SourceDirITOMBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: prompti
 Source: "{#SourceDirITOMBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: promptifolder
 
 ; Hilfe
-; Source: "{#SourceDirITOMHelp}\documentation\itom_documentation\build\qthelp\*.*"; DestDir: "{app}\documentation\itom_documentation\build\qthelp"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: promptifolder
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: promptifolder
@@ -183,7 +182,8 @@ Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: p
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
-Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
+;Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
+Source: "C:\ITOM\Source\itom\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
