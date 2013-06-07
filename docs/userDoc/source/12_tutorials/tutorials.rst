@@ -1,11 +1,9 @@
 .. include:: ../include/global.inc
 
-The |itom| User Interface
+Python tutorials
 ###########################
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
-   mainWindow.rst
-   editor.rst
-   
+   lateralShift.rst

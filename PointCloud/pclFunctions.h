@@ -43,6 +43,9 @@ namespace pclHelper
     void PointXYZRGBAtoXYZRGB (const pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
     void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
 
+    ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc);
+    ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg);
+
     ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaN = false);
     ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);
     ito::RetVal pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &out, bool deleteNaN = false);

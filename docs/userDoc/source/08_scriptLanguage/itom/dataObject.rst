@@ -1,5 +1,7 @@
 .. include:: ../../include/global.inc
 
+.. _itomDataObject:
+
 DataObject 
 ==========
 
@@ -9,7 +11,7 @@ DataObject
 Introduction
 ------------
 
-In |itom|, the class **dataObject** is the main array object. Arrays in |itom| can have the following properties:
+In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arrays in |itom| can have the following properties:
 
 * unlimited number of dimensions
 * each dimension can have an arbitrary size
@@ -27,16 +29,16 @@ In |itom|, the class **dataObject** is the main array object. Arrays in |itom| c
         "complex64"  #complex number with two float32 components
         "complex128" #complex number with two float64 components
 
-Before giving a short tutorial about how to use the class **dataObject**, the base idea and concept of the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array class **numpy.array**, one will ask why another similar array class is provided by |itom|. The reasons for this are as follows:
+Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array class **numpy.array**, one will ask why another similar array class is provided by |itom|. The reasons for this are as follows:
 
-* The python class **dataObject** is just a wrapper for the |itom| internal class **DataObject**, written in C++. This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class **DataObject** is based on OpenCV-matrices, such that functionalities provided by the open-source Computer-Vision Library (OpenCV) can be used by |itom|.
+* The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class **DataObject** is based on OpenCV-matrices, such that functionalities provided by the open-source Computer-Vision Library (OpenCV) can be used by |itom|.
 * The class **dataObject** should also be used to store real measurement data. Therefore it is possible to add tags and other meta information to every dataObject (like axes descriptions, scale and offset values, protocol entries...).
 * Usually, array classes (like the class **Numpy.array**) store the whole matrix in one non-interrupting block in memory. Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the first **n-2** dimensions of the array are represented by one vector in memory, where every cell is pointing to the corresponding sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
 
 Creating a dataObject
 ---------------------
 
-In general, a **dataObject** is created like any other class instance in |python|, hence the constructor of class **dataObject** is called. For a full reference of the constructor of class **dataObject**, type
+In general, a :py:class:`~itom.dataObject` is created like any other class instance in |python|, hence the constructor of class :py:class:`~itom.dataObject` is called. For a full reference of the constructor of class **dataObject**, type
 
 .. code-block:: python
     

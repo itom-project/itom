@@ -143,10 +143,10 @@ namespace ito
         pclInvalid      = 0x0000, /*!< invalid point */
         pclXYZ          = 0x0001, /*!< point with x,y,z-value */
         pclXYZI         = 0x0002, /*!< point with x,y,z and intensity value */
-        pclXYZRGBA      = 0x0004, /*!< point with x,y,z and r,g,b,a and curvature value */
-        pclXYZNormal    = 0x0008, /*!< point with x,y,z value and its normal vector nx,ny,nz */
+        pclXYZRGBA      = 0x0004, /*!< point with x,y,z and r,g,b,a */
+        pclXYZNormal    = 0x0008, /*!< point with x,y,z value, its normal vector nx,ny,nz and a curvature value */
         pclXYZINormal   = 0x0010, /*!< point with the same values than pclXYZNormal and an additional intensity value */
-        pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector */
+        pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector (including curvature) */
     };  
 
     // data types for images should always be the same size

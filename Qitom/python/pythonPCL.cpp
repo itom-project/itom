@@ -19,6 +19,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#include <vector>
 
 #include "pythonPCL.h"
 
@@ -47,20 +48,15 @@
 #include "pythonQtConversion.h"
 #include "pythonDataObject.h"
 
-#include "../PointCloud/pclFunctions.h"
-#include "../DataObject/dataObjectFuncs.h"
+#include "PointCloud/pclFunctions.h"
+#include "DataObject/dataObjectFuncs.h"
 #include "pythonCommon.h"
 
-#include "../api/apiFunctions.h"
+#include "api/apiFunctions.h"
 
-//#include <pcl/point_types.h>
-//#include <pcl/point_cloud.h>
 
 #include <qbytearray.h>
 #include <qstring.h>
-//#include <qtemporaryfile.h>
-
-#include <vector>
 
 //for generating a temporary file name (for pickling point clouds)
 #include <stdio.h> 
@@ -3349,10 +3345,94 @@ PyObject* PythonPCL::PyPolygonMesh_new(PyTypeObject *type, PyObject* /*args*/, P
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh() -> creates empty polygon mesh.");    
-int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * /*args*/, PyObject * /*kwds*/)
+PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh([mesh, polygons]) -> creates a polygon mesh.\n\
+\n\
+This constructor either creates an empty polygon mesh, a shallow copy of another polygon mesh (mesh parameter only) or a deep copy of \n\
+another polygon mesh where only the polygons, given by the list of indices in the parameter 'polygons', are taken. \n\
+In this case, the containing cloud is reduced and no longer organized (height=1, dense=false) \n\
+\n\
+Parameters \n\
+----------- \n\
+mesh : {polygonMesh}, optional \n\
+    another polygon mesh instance (shallow or deep copy depending on polygons-parameter)\n\
+polygons : {sequence or array-like}, optional \n\
+    If given, polygons must be a sequence or one-dimensional array-like structure, where all values can be transformed into unsigned integer values. \n\
+    Polygons must contain a list of indices pointing to all polygon from the given mesh that should be copied to this new instance.");    
+int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObject * kwds)
 {
-    self->polygonMesh = new ito::PCLPolygonMesh();
+    const char *kwlist[] = {"mesh", "polygons", NULL};
+    PyPolygonMesh *mesh = NULL;
+    PyObject *polygons = NULL;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O!O", const_cast<char**>(kwlist), &PyPolygonMeshType, &mesh, &polygons))
+    {
+        return -1;
+    }
+
+    if(!mesh && polygons)
+    {
+        PyErr_SetString(PyExc_RuntimeError,"it is not allowed to pass polygon-indices but now polygon mesh.");
+        return -1;
+    }
+
+    if(mesh)
+    {
+        if(polygons)
+        {
+            if(sizeof(npy_uint) != sizeof(uint32_t))
+            {
+                PyErr_SetString(PyExc_RuntimeError,"polygon indexing not possible since size of NPY_UINT32 does not correspond to size of uint32_t");
+                return -1;
+            }
+
+            //try to convert polygons into a numpy-array of desired type
+            PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+
+            if(polygonArray)
+            {
+                npy_intp len = PyArray_SIZE(polygonArray);
+
+                npy_uint *arrayStart = (npy_uint*)PyArray_GETPTR1(polygonArray,0);
+                npy_uint maxIdx = mesh->polygonMesh->polygonMesh()->polygons.size() - 1;
+
+                //check values for validity
+                for(npy_intp l = 0; l < len; ++l)
+                {
+                    if(arrayStart[l] > maxIdx)
+                    {
+                        Py_XDECREF(polygonArray);
+                        PyErr_Format(PyExc_RuntimeError,"The given polygon index %i is bigger than the biggest allowed index %i.", arrayStart[l], maxIdx);
+                        return -1;
+                    }
+                }
+
+                std::vector<uint32_t> polygonIndices;
+                polygonIndices.resize(len);
+                                
+                void *vecStart = (void*)( &polygonIndices[0] );
+                memcpy(vecStart, arrayStart, len * sizeof(uint32_t));
+
+                self->polygonMesh = new ito::PCLPolygonMesh( *(mesh->polygonMesh), polygonIndices );
+
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError,"polygon indices must be a one-dimensional sequence or array of unsigned integer indices.");
+                return -1;
+            }
+
+            Py_XDECREF(polygonArray);
+        }
+        else
+        {
+            self->polygonMesh = new ito::PCLPolygonMesh( *(mesh->polygonMesh) );
+        }
+    }
+    else
+    {
+        self->polygonMesh = new ito::PCLPolygonMesh();
+    }
+    
     return 0;
 };
 
@@ -3532,7 +3612,12 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 //------------------------------------------------------------------------------------------------------
 /*static*/ PythonPCL::PyPolygonMesh* PythonPCL::createEmptyPyPolygonMesh()
 {
-    PyPolygonMesh* result = (PyPolygonMesh*)PyObject_Call((PyObject*)&PyPolygonMeshType, NULL, NULL);
+    PyObject *args = PyTuple_New(0);
+
+    PyPolygonMesh* result = (PyPolygonMesh*)PyObject_Call((PyObject*)&PyPolygonMeshType, args, NULL);
+
+    Py_XDECREF(args);
+
     if(result != NULL)
     {
         DELETE_AND_SET_NULL(result->polygonMesh);
@@ -3562,7 +3647,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     {
         key = PyTuple_Pack(1,key);
     }
-
+    
     PyErr_SetString(PyExc_TypeError, "mapping get not implemented yet.");
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
@@ -3582,7 +3667,85 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 }
 
 //------------------------------------------------------------------------------------------------------
+//PyDoc_STRVAR(pyPolygonMeshGetCloud_doc,"cloud -> ");   
+///*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, void *closure)
+//{
+//    return NULL;
+//}
+
+//------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_get(PyPolygonMesh *self, PyObject *args, PyObject *kwds)
+{
+    return NULL;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshGetCloud_docs,"getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.\n\
+\n\
+If the pointType is not given or point.PointInvalid, the type of the internal pointCloud is guessed with respect to available types. \n\
+\n\
+Parameters \n\
+----------- \n\
+pointType : {int, enum point.PointXXX}, optional \n\
+    the point type value of the desired type, the point cloud should be converted too (default: point.PointInvalid)"); 
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args)
+{
+    int pointType = ito::pclInvalid;
+
+    if(!PyArg_ParseTuple(args, "|i", &pointType))
+    {
+        return NULL;
+    }
+
+    ito::PCLPolygonMesh *pm = self->polygonMesh;
+
+    if(pm == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Polygon mesh is NULL");
+        return NULL;
+    }
+
+    if(pointType == pclInvalid) //try to guess the type
+    {
+        ito::tPCLPointType t = ito::pclHelper::guessPointType( pm->polygonMesh()->cloud );
+        if(t == pclInvalid)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "The native pointType of the given polygon mesh cannot be guessed.");
+            return NULL;
+        }
+        else
+        {
+            pointType = t;
+        }
+    }
+    
+    if(pointType == ito::pclXYZ || pointType == pclInvalid || pointType == pclXYZ || pointType == pclXYZI
+        || pointType == pclXYZRGBA || pointType == pclXYZNormal || pointType == pclXYZINormal || pointType == pclXYZRGBNormal)
+    {
+        PyPointCloud* pc = createEmptyPyPointCloud();
+        pc->data = new ito::PCLPointCloud((ito::tPCLPointType)pointType);
+        ito::RetVal retval = ito::pclHelper::pointCloud2ToPCLPointCloud(pm->polygonMesh()->cloud, pc->data);
+
+        if(!PythonCommon::transformRetValToPyException( retval ))
+        {
+            Py_DECREF(pc);
+            return NULL;
+        }
+
+        return (PyObject*)pc;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The given pointType is unknown");
+        return NULL;
+    }
+      
+
+}
+
+//------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
+    //{"cloud", (getter)PyPolygonMesh_getCloud, NULL, pyPolygonMeshGetCloud_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
@@ -3592,6 +3755,8 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
 	{"__reduce__", (PyCFunction)PyPolygonMesh_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyPolygonMesh_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
     {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, "prints content of polygon mesh"},
+    //{"get", (PyCFunction)PyPolygonMesh_get, METH_VARARGS | METH_KEYWORDS, pyPolygonMeshGet_docs},
+    {"getCloud", (PyCFunction)PyPolygonMesh_getCloud, METH_VARARGS, pyPolygonMeshGetCloud_docs},
     {NULL}  /* Sentinel */
 };
 

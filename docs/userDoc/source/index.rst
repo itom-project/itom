@@ -20,6 +20,7 @@
    09_reference/reference.rst
    10_miscellaneous/miscellaneous.rst
    11_test-scripts/test-scripts.rst
+   12_tutorials/tutorials.rst
 
 .. only:: html
     

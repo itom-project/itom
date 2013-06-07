@@ -16,13 +16,29 @@ the module provides functions to manipulate or extend the graphical user interfa
 Beside the module **itom**, it is recommended to use the functionalities provided by the |python| packages **Numpy**, **Scipy** and **Matplotlib**. During the development of |itom| a
 high compatibility especially to those modules has been taken into account. For instance it is possible to render the **Matplotlib** figures in user defined windows, created by the class **ui** of the module **itom**. Additionally, the **Numpy** array is compatible to the |itom| internal **dataObject** or **npDataObject**.
 
-The function and class reference for the itom-module is found unter 
+The function and class reference for the itom-module can be found under :ref:`itom-Script-Reference`.
+
+If you don't know |python|, you probably should have a look at our python tutorial page that also contains links to recommended tutorials in the internet:
+
+.. toctree::
+    :maxdepth: 1
+    
+    py-tutorial/pytut_about.rst
+    
+An introduction to the functionalities provided by the module **itom** are found under:
+
+.. toctree::
+    :maxdepth: 1
+    
+    pymod-itom.rst
+
+
 
 .. toctree::
     :maxdepth: 1
 
     script-execution.rst
-    py-tutorial/pytut_about.rst
+    
     pymod-itom.rst
     pymod-scipy.rst
     pymod-matplotlib.rst
