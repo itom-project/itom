@@ -270,14 +270,18 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("MainWindow");
-    settings.setValue("maximized", isMaximized());
-    settings.setValue("geometry", m_geometryNormalState);
-    //settings.setValue("geometry", saveGeometry());
+    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+/*
+    settings->beginGroup("MainWindow");
+    settings->setValue("maximized", isMaximized());
+    settings->setValue("geometry", m_geometryNormalState);
+    //settings->setValue("geometry", saveGeometry());
     
-	settings.setValue("state", saveState());
-	settings.endGroup();
+    QByteArray state = saveState();
+    settings->setValue("state", state);
+    settings->endGroup();
+*/
+    delete settings;
 
 	
 	//QByteArray ba = storeDockWidgetStatus();
