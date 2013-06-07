@@ -1,4 +1,4 @@
-﻿.. include:: ../../../include/global.inc
+﻿.. include:: /include/global.inc
 
 Python tutorial
 **********************************
@@ -14,18 +14,18 @@ The goal of this tutorial is to give prospective ITOM users a quick overview abo
 .. toctree::
     :maxdepth: 2
 
-    pytut_runscript.rst
-    pytut_numbers_math.rst
-    pytut_variables_names.rst
-    pytut_strings_text.rst
-    pytut_dictionaries.rst
-    pytut_if_else.rst
-    pytut_loops_lists.rst
-    pytut_classes_objects.rst
-    pytut_functions.rst
-    pytut_modules.rst
-    pytut_prompting_passing.rst
-    pytut_reading_writing_files.rst
+    pytut-runscript.rst
+    pytut-numbers_math.rst
+    pytut-variables-names.rst
+    pytut-strings-text.rst
+    pytut-dictionaries.rst
+    pytut-if-else.rst
+    pytut-loops-lists.rst
+    pytut-classes-objects.rst
+    pytut-functions.rst
+    pytut-modules.rst
+    pytut-prompting-passing.rst
+    pytut-reading-writing-files.rst
 
 
 The following resources have been used:
@@ -39,3 +39,4 @@ The following resources have been used:
 * `Python Tutorial on javas2s.com (v2) <http://www.java2s.com/Tutorial/Python/CatalogPython.htm>`_
 * `Python examples (example source code) on javas2s.com (v2) <http://www.java2s.com/Code/Python/CatalogPython.htm>`_
 * `Python Tutorial on tutorialspoint.com (v2) <http://www.tutorialspoint.com/python/python_tutorial.pdf>`_
+
