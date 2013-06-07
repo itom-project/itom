@@ -18,7 +18,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */#include "addInManager.h"
+*********************************************************************** */
+#include "addInManager.h"
 
 #include "../api/apiFunctions.h"
 #include "../api/apiFunctionsGraph.h"
@@ -291,6 +292,7 @@ namespace ito
         return retValue;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::loadAddIn(QString &filename)
     {
         RetVal retValue(retOk);
@@ -352,8 +354,8 @@ namespace ito
                 }
             }
 
-            QPluginLoader loader(filename);
-            QObject *plugin = loader.instance();
+            QPluginLoader *loader = new QPluginLoader(filename);
+            QObject *plugin = loader->instance();
             if (plugin)
             {
                 ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
@@ -364,6 +366,7 @@ namespace ito
                     ain->setFilename(filename);
 					ain->setApiFunctions(ITOM_API_FUNCS);
                     ain->setApiFunctionsGraph(ITOM_API_FUNCS_GRAPH);
+                    ain->setLoader(loader);
                     //the event User+123 is emitted by AddInManager, if the API has been prepared and can
                     //transmitted to the plugin. This assignment cannot be done directly, since 
                     //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
@@ -427,23 +430,26 @@ namespace ito
                     }
                     else
                     {
-                        message = QObject::tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader.errorString());
+                        message = QObject::tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
                     qDebug() << message;
                     //retValue += RetVal(retError, 1003, message.toAscii().data());
                     pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
-                    delete plugin;
+
+//                    delete plugin;
+                    loader->unload();
+                    DELETE_AND_SET_NULL(loader);
                 }
             }
             else
             {
                 QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
                 QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
-                qDebug() << loader.errorString();
-                if (rx.exactMatch(loader.errorString()))
+                qDebug() << loader->errorString();
+                if (rx.exactMatch(loader->errorString()))
                 {
-                    message = QObject::tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader.errorString());
+                    message = QObject::tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
                     pls.filename = filename;
                     pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfIgnored, message));
@@ -454,9 +460,9 @@ namespace ito
 //                    QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
                     QRegExp rxDebug("* debug *", Qt::CaseInsensitive, QRegExp::Wildcard);
                     QRegExp rxRelease("* release *", Qt::CaseInsensitive, QRegExp::Wildcard);
-                    if (rxDebug.exactMatch(loader.errorString()) || rxRelease.exactMatch(loader.errorString()))
+                    if (rxDebug.exactMatch(loader->errorString()) || rxRelease.exactMatch(loader->errorString()))
                     {
-                        message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader.errorString());
+                        message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
                         pls.filename = filename;
                         pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
@@ -464,7 +470,7 @@ namespace ito
                     }
                     else
                     {
-                        message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader.errorString());
+                        message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
                         //retValue += RetVal(retError, 1003, message.toAscii().data());
                         pls.filename = filename;
@@ -472,13 +478,15 @@ namespace ito
                         m_pluginLoadStatus.append(pls);
                     }
                 }
-                loader.unload();
+                loader->unload();
+                DELETE_AND_SET_NULL(loader);
             }
         }
 
         return retValue;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::loadAddInDataIO(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         if (!m_addInListDataIO.contains(plugin))
@@ -495,6 +503,7 @@ namespace ito
         
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::loadAddInActuator(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         if (!m_addInListAct.contains(plugin))
@@ -511,6 +520,7 @@ namespace ito
         return retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         QString message;
@@ -985,7 +995,8 @@ namespace ito
             }
         }
         retval += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         if (!callInitInNewThread)
         {
@@ -1119,7 +1130,8 @@ end:
             }
         }
         retval += waitCond->returnValue;
-        ItomSharedSemaphore::deleteSemaphore(waitCond);
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         if (!callInitInNewThread)
         {
@@ -1287,7 +1299,8 @@ end:
             QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore *, waitCond));
             waitCond->wait(PLUGINWAIT);
             retval += waitCond->returnValue;
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
 
             if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
             {
@@ -1479,7 +1492,8 @@ end:
             QMetaObject::invokeMethod(plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
             ret += waitCond->returnValue;
             waitCond->wait(PLUGINWAIT);
-            ItomSharedSemaphore::deleteSemaphore(waitCond);
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
         }
 
         if (ret.containsError())
@@ -1603,23 +1617,32 @@ end:
         //step 2:
         while (m_addInListDataIO.size() > 0)
         {
-            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[0]));
+            QObject *qaib = m_addInListDataIO[0];
+            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(qaib));
             m_addInListDataIO.removeFirst();
-            delete aib;
+            QPluginLoader *loader = aib->getLoader();
+//            DELETE_AND_SET_NULL(qaib);
+            loader->unload();
+            DELETE_AND_SET_NULL(loader);
         }
 
         while (m_addInListAct.size() > 0)
         {
-            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[0]));
+            QObject *qaib = m_addInListAct[0];
+            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(qaib));
             m_addInListAct.removeFirst();
-            delete aib;
+            QPluginLoader *loader = aib->getLoader();
+//            DELETE_AND_SET_NULL(qaib);
+            loader->unload();
+            DELETE_AND_SET_NULL(loader);
         }
 
 
         //remove all algorithms
         while (m_addInListAlgo.size() > 0)
         {
-            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[0]));
+            QObject *qaib = m_addInListAlgo[0];
+            AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(qaib));
             while (aib->getInstList().size() > 0)
             {
                 AddInAlgo *ail = reinterpret_cast<AddInAlgo *>(aib->getInstList()[0]);
@@ -1640,7 +1663,10 @@ end:
                 }
             }
             m_addInListAlgo.removeFirst();
-            delete aib;
+            QPluginLoader *loader = aib->getLoader();
+//            DELETE_AND_SET_NULL(qaib);
+            loader->unload();
+            DELETE_AND_SET_NULL(loader);
         }
 
         QHashIterator<void*, ito::FilterParams*> i(filterParamHash);

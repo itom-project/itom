@@ -85,6 +85,7 @@ DesignerWidgetOrganizer::~DesignerWidgetOrganizer()
 {
     foreach(ito::FigurePlugin p, m_figurePlugins)
     {
+        p.factory->unload();
         DELETE_AND_SET_NULL(p.factory);
     }
     m_figurePlugins.clear();
@@ -165,7 +166,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
                     if(allowedInterface)
                     {
-                        ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)loader->instance();
+                        ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
                         infoStruct.filename = absolutePluginPath;
                         infoStruct.classname = iface->name();
                         infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
@@ -182,21 +183,25 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     }
                     else
                     {
+//                        delete instance;
                         loader->unload();
                         message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
                         status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
                         DELETE_AND_SET_NULL(loader);
-                        delete iface;
                     }
                 }
                 else
                 {
+//                    if (instance)
+//                        delete instance;
                     loader->unload();
                     DELETE_AND_SET_NULL(loader);
                 }
             }
             else
             {
+//                if (instance)
+//                    delete instance;
                 loader->unload();
                 message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
                 status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
@@ -390,6 +395,7 @@ QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget
 
     if(factory)
     {
+        qDebug() << "create instance\n";
         ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)( factory->instance() );
         return fac->createWidgetWithMode(winMode, parentWidget);
     }
