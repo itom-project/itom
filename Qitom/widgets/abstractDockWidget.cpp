@@ -110,7 +110,8 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
 //! destructor
 AbstractDockWidget::~AbstractDockWidget()
 {
-    DELETE_AND_SET_NULL(m_pWindow);
+    if (m_pWindow)
+        DELETE_AND_SET_NULL(m_pWindow);
     m_toolBars.clear();
 
 	if(PythonEngine::getInstance())
