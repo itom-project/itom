@@ -56,7 +56,7 @@ namespace ito {
                 m_aboutThis(""),
                 m_license("LGPL with ITO itom-exception") {}
 
-            ~AbstractItomDesignerPlugin() {}
+            virtual ~AbstractItomDesignerPlugin() {}
 
             inline ito::PlotDataTypes getPlotDataTypes(void) const { return m_plotDataTypes; }
             inline ito::PlotDataFormats getPlotDataFormats(void) const { return m_plotDataFormats; }
@@ -91,8 +91,6 @@ namespace ito {
             QString m_license;                    //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
             QString m_aboutThis;                  //!< a short string with compile informations
             QString m_itomSettingsFile;
-
-
     };
 } // namepsace ito
 
