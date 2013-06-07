@@ -189,10 +189,15 @@ Source: "{#SourceDirITOMBuild}\plugins\FireGrabber\translation\*.qm"; DestDir: "
 Source: "{#SourceDirITOMBuild}\plugins\cmu1394\cmu1394.dll"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\plugins\cmu1394\translation\*.qm"; DestDir: "{app}\plugins\cmu1394\translation"; Flags: promptifolder
 
+Source: "{#SourceDirITOMBuild}\plugins\SerialIO\SerialIO.dll"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\plugins\SerialIO\translation\*.qm"; DestDir: "{app}\plugins\SerialIO\translation"; Flags: promptifolder
+
 ; Libs
 Source: "{#SourceDirOpenCV}\opencv_calib3d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_highgui230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_imgproc230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_features2d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 [Icons]
