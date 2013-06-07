@@ -497,7 +497,6 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                         item->m_extendedValue = item->m_value = "unknown"; //maybe, encoding of str is unknown, therefore you could decode the string to a new encoding and parse it afterwards
                     }
                     Py_XDECREF(repr);
-        
                 }
                 else
                 {
