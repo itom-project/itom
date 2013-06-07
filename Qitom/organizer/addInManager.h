@@ -68,15 +68,15 @@ Q_DECLARE_METATYPE(QVector<ito::ParamBase> *)
 Q_DECLARE_METATYPE(QVector<int>)
 Q_DECLARE_METATYPE(QVector<double>)
 
-Q_DECLARE_METATYPE(QSharedPointer<double> );
-Q_DECLARE_METATYPE(QSharedPointer<int>);
-Q_DECLARE_METATYPE(QSharedPointer<QVector<double> >);
-Q_DECLARE_METATYPE(QSharedPointer<char>);
-Q_DECLARE_METATYPE(QSharedPointer<ito::Param>);
-Q_DECLARE_METATYPE(QSharedPointer<ito::ParamBase>);
+Q_DECLARE_METATYPE(QSharedPointer<double> )
+Q_DECLARE_METATYPE(QSharedPointer<int>)
+Q_DECLARE_METATYPE(QSharedPointer<QVector<double> >)
+Q_DECLARE_METATYPE(QSharedPointer<char>)
+Q_DECLARE_METATYPE(QSharedPointer<ito::Param>)
+Q_DECLARE_METATYPE(QSharedPointer<ito::ParamBase>)
 
-Q_DECLARE_METATYPE(QVector<QSharedPointer<ito::ParamBase> >);
-Q_DECLARE_METATYPE(StringMap);
+Q_DECLARE_METATYPE(QVector<QSharedPointer<ito::ParamBase> >)
+Q_DECLARE_METATYPE(StringMap)
 
 //Q_DECLARE_METATYPE(ito::PCLPointCloud)
 //Q_DECLARE_METATYPE(ito::PCLPoint)
