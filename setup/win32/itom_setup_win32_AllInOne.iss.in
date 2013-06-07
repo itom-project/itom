@@ -93,7 +93,9 @@ Source: "{#SourceDirQT}\QtWebKit4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
+
 Source: "{#SourceDirOpenCV}\opencv_core230.dll"; DestDir: "{app}"; Flags: promptifolder
+
 Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qgif4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qico4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
@@ -150,6 +152,7 @@ Source: "{#SourceDirITOMBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom
 Source: "{#SourceDirITOMBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
+
 Source: "{#SourceDirITOMBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\common"; Components: SDK; Flags: promptifolder
@@ -167,10 +170,30 @@ Source: "{#SourceDirITOMBuild}\designer\itom2DQwtFigurePlugin.dll"; DestDir: "{a
 ; Plugins
 Source: "{#SourceDirITOMBuild}\plugins\demoAlgorithms\demoAlgorithms.dll"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\plugins\demoAlgorithms\translation\*.qm"; DestDir: "{app}\plugins\demoAlgorithms\translation"; Flags: promptifolder
+
 Source: "{#SourceDirITOMBuild}\plugins\DummyGrabber\DummyGrabber.dll"; DestDir: "{app}\plugins\DummyGrabber"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\plugins\DummyGrabber\translation\*.qm"; DestDir: "{app}\plugins\DummyGrabber\translation"; Flags: promptifolder
+
 Source: "{#SourceDirITOMBuild}\plugins\DummyMotor\DummyMotor.dll"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\plugins\DummyMotor\translation\*.qm"; DestDir: "{app}\plugins\DummyMotor\translation"; Flags: promptifolder
+
+Source: "{#SourceDirITOMBuild}\plugins\OpenCVFilters\OpenCVFilters.dll"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\plugins\OpenCVFilters\translation\*.qm"; DestDir: "{app}\plugins\OpenCVFilters\translation"; Flags: promptifolder
+
+Source: "{#SourceDirITOMBuild}\plugins\OpenCVGrabber\OpenCVGrabber.dll"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\plugins\OpenCVGrabber\translation\*.qm"; DestDir: "{app}\plugins\OpenCVGrabber\translation"; Flags: promptifolder
+
+Source: "{#SourceDirITOMBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\plugins\FireGrabber\translation\*.qm"; DestDir: "{app}\plugins\FireGrabber\translation"; Flags: promptifolder
+
+Source: "{#SourceDirITOMBuild}\plugins\cmu1394\cmu1394.dll"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder
+Source: "{#SourceDirITOMBuild}\plugins\cmu1394\translation\*.qm"; DestDir: "{app}\plugins\cmu1394\translation"; Flags: promptifolder
+
+; Libs
+Source: "{#SourceDirOpenCV}\opencv_calib3d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_highgui230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_imgproc230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"

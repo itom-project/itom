@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>478</width>
+    <width>550</width>
     <height>421</height>
    </rect>
   </property>
@@ -63,7 +63,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Insert</string>
+        <string>Insert and Close</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -140,6 +140,22 @@
     <hint type="destinationlabel">
      <x>423</x>
      <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonInsert</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogIconBrowser</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>415</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>418</x>
+     <y>125</y>
     </hint>
    </hints>
   </connection>

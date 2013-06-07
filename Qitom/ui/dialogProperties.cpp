@@ -41,6 +41,7 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     QDialog(parent, f)
 {
@@ -49,8 +50,6 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     m_pStackedWidget = new QStackedWidget();
     m_pEmptyPage = new QWidget(m_pStackedWidget);
     m_pStackedWidget->addWidget(m_pEmptyPage);
-    
-    
     
     m_pCategories = new QTreeWidget();
     m_pCategories->setColumnCount(1);
@@ -95,9 +94,6 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     m_pVerticalLayout->addWidget(m_pSplitter);
     m_pVerticalLayout->addWidget(m_pButtonBox);
 
-    
-
-
     setLayout(m_pVerticalLayout);
 
     initPages();
@@ -105,18 +101,20 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     resize(700, 450);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogProperties::~DialogProperties()
 {
     PropertyPage page;
     foreach(page, m_pages)
     {
-        if(page.m_widget)
+        if (page.m_widget)
         {
             delete page.m_widget;
         }
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::initPages()
 {
     //-----------------------------------------------------------------------------------------------------
@@ -135,7 +133,7 @@ void DialogProperties::initPages()
     m_pages["04_editor/general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/api"] = PropertyPage(tr("API"), tr("Editor - API files"), "04_editor/api", new WidgetPropEditorAPI(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/calltips"] = PropertyPage(tr("Calltips"), tr("Editor - calltips"), "04_editor/calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/autocompletion"] = PropertyPage( tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/styles"] = PropertyPage(tr("Styles"), tr("Editor - styles"), "04_editor/styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - please choose subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
@@ -155,43 +153,43 @@ void DialogProperties::initPages()
         pathes = page.m_fullname.split("/");
         addPage(page, m_pCategories->invisibleRootItem(), pathes);
 
-        if(page.m_widget)
+        if (page.m_widget)
         {
             page.m_widget->readSettings();
         }
     }
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStringList remainingPathes)
 {
     QTreeWidgetItem *newItem;
     bool found = false;
 
-    if(remainingPathes.length() == 1)
+    if (remainingPathes.length() == 1)
     {
         newItem = new QTreeWidgetItem();
         newItem->setText(0, page.m_name);
         newItem->setData(1, Qt::DisplayRole, page.m_fullname);
 
-        if(!page.m_icon.isNull())
+        if (!page.m_icon.isNull())
         {
             newItem->setIcon(0, page.m_icon);
         }
 
-        parent->addChild( newItem);
+        parent->addChild(newItem);
         parent->setExpanded(true);
 
-        if(page.m_widget)
+        if (page.m_widget)
         {
             m_pStackedWidget->addWidget(qobject_cast<QWidget*>(page.m_widget));
         }
     }
-    else if(remainingPathes.length() > 0)
+    else if (remainingPathes.length() > 0)
     {
-        for(int i = 0 ; i < parent->childCount() ; i++)
+        for (int i = 0 ; i < parent->childCount() ; i++)
         {
-            if(parent->child(i)->data(1, Qt::DisplayRole).toString() == remainingPathes[0])
+            if (parent->child(i)->data(1, Qt::DisplayRole).toString() == remainingPathes[0])
             {
                 remainingPathes.pop_front();
                 addPage(page, parent->child(i), remainingPathes);
@@ -201,7 +199,7 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
             }
         }
 
-        if(!found)
+        if (!found)
         {
             qDebug() << "it was not possible to find a parent property page with name " << remainingPathes[0] << ". This should be a child of " << parent->data(0, Qt::DisplayRole).toString();
         }
@@ -212,45 +210,48 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
 {
     bool found = false;
 
-    if(current)
+    if (current)
     {
         QString key = current->data(1, Qt::DisplayRole).toString();
 
-        if(m_pages.contains(key))
+        if (m_pages.contains(key))
         {
             PropertyPage page = m_pages[key];
             m_pPageTitle->setText(page.m_title);
 
-            if(page.m_widget)
+            if (page.m_widget)
             {
                 m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(page.m_widget));
                 found = true;
             }
-
         }
     }
 
-    if(!found)
+    if (!found)
     {
         m_pStackedWidget->setCurrentWidget(m_pEmptyPage);
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::accepted()
 {
     apply();
     close();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::rejected()
 {
     close();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::apply()
 {
     PropertyPage page;
@@ -258,7 +259,7 @@ void DialogProperties::apply()
 
     foreach(page, m_pages)
     {
-        if(page.m_widget)
+        if (page.m_widget)
         {
             page.m_widget->writeSettings();
         }

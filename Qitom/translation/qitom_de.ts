@@ -368,6 +368,34 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>DialogIconBrowser</name>
+    <message>
+        <location filename="../ui/dialogIconBrowser.ui"/>
+        <source>Dialog</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Insert and Close</source>
+        <translation>Einfügen und Schließen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Copy to Clipboard</source>
+        <translation>In Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../ui/dialogIconBrowser.cpp" line="+78"/>
+        <source>Icon Browser</source>
+        <translation>Icon-Suche</translation>
+    </message>
+</context>
+<context>
     <name>DialogLoadedPlugins</name>
     <message>
         <location filename="../ui/dialogLoadedPlugins.ui"/>
@@ -1041,7 +1069,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+186"/>
+        <location line="+187"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1125,27 +1153,46 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+4"/>
-        <location line="+105"/>
+        <source>It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Function &apos;%s&apos; in this workspace can not be overwritten.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Method &apos;%s&apos; in this workspace can not be overwritten.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Type or class &apos;%s&apos; in this workspace can not be overwritten.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Module &apos;%s&apos; in this workspace can not be overwritten.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+76"/>
         <source>it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-80"/>
+        <location line="-105"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>name &apos;%s&apos; already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+37"/>
         <source>error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+64"/>
         <source>The number of names and types must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1225,7 +1272,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QLibrary</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+440"/>
+        <location filename="../organizer/addInManager.cpp" line="+441"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1879,7 +1926,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1404"/>
+        <location line="+1382"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1889,12 +1936,12 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+421"/>
+        <location line="+408"/>
         <source>Itom AlgorithmPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2559"/>
+        <location filename="../python/pythonUi.cpp" line="+2524"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1974,7 +2021,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2020"/>
+        <location filename="../python/pythonItom.cpp" line="+2038"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1989,13 +2036,13 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-148"/>
-        <location line="+168"/>
+        <location line="-153"/>
+        <location line="+180"/>
         <source>Could not create a itom.proxy-object  of the given callable method or function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-205"/>
+        <location line="-224"/>
         <source>Button must have a valid name.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2010,8 +2057,8 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
-        <location line="+168"/>
+        <location line="+33"/>
+        <location line="+180"/>
         <source>The code parameter must either be a python code snippet or a callable method or function object.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2122,7 +2169,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-182"/>
+        <location filename="../organizer/addInManager.cpp" line="-183"/>
         <source>directory &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -2177,7 +2224,7 @@ Type conflict for %1</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>Library &apos;%1&apos; was ignored. Message: %2</source>
         <translation type="unfinished">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
     </message>
@@ -2300,7 +2347,7 @@ Type conflict for %1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+209"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+212"/>
         <source>&amp;toggle bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -2326,12 +2373,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+124"/>
+        <location line="+127"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-123"/>
+        <location line="-126"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -2401,25 +2448,25 @@ Type conflict for %1</source>
         <translation>Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+107"/>
         <source>&amp;enable breakpoint</source>
         <translation>Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+393"/>
+        <location line="+412"/>
         <location line="+71"/>
-        <location line="+36"/>
+        <location line="+37"/>
         <source>unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-107"/>
-        <location line="+107"/>
+        <location line="-108"/>
+        <location line="+108"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="-37"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
@@ -2435,13 +2482,13 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+70"/>
-        <location line="+47"/>
+        <location line="+48"/>
         <source>error while accessing file</source>
         <translation>Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+47"/>
+        <location line="-48"/>
+        <location line="+48"/>
         <source>file %1 could not be accessed</source>
         <translation>Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
@@ -2451,7 +2498,7 @@ Type conflict for %1</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+551"/>
+        <location line="+559"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -2461,7 +2508,7 @@ Type conflict for %1</source>
         <translation>Diese Datei im Editor belassen?</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+17"/>
         <source>The file &apos;%1&apos; has been modified by another programm.</source>
         <translation>Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
@@ -3106,7 +3153,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="+73"/>
+        <location filename="../widgets/AIManagerWidget.cpp" line="+77"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
@@ -3121,7 +3168,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location line="-251"/>
+        <location line="-255"/>
         <source>Close Instance</source>
         <translation type="unfinished">Instanz schließen</translation>
     </message>
@@ -3130,42 +3177,46 @@ Type conflict for %1</source>
         <translation type="obsolete">An Python senden</translation>
     </message>
     <message>
-        <location line="-4"/>
+        <location line="-13"/>
         <source>New Instance...</source>
         <translation type="unfinished">Neue Instanz...</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+41"/>
         <source>Send to Python...</source>
         <translation type="unfinished">An Python senden...</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-24"/>
         <source>Close all</source>
         <translation type="unfinished">Alles schließen</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Live Image...</source>
-        <translation type="unfinished">Livebild...</translation>
+        <translation type="obsolete">Livebild...</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+10"/>
         <source>Snap Dialog...</source>
         <translation type="unfinished">Aufnahmedialog...</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+10"/>
         <source>Info...</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-6"/>
         <source>Open Widget...</source>
         <translation type="unfinished">Fenster öffnen...</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="-8"/>
+        <source>Live Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+119"/>
         <source>List</source>
         <translation type="unfinished">Liste</translation>
     </message>
@@ -3350,6 +3401,11 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+10"/>
         <source>Warning while opening user interface from plugin.</source>
         <translation type="unfinished">Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>This instance is no grabber. Therefore no live image is available.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3694,12 +3750,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+129"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+130"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+50"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -3713,14 +3769,13 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>DesignerWidget in file &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="unfinished">Designer-Widget in Datei &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
+        <translation type="obsolete">Designer-Widget in Datei &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
         <location line="+36"/>
@@ -3840,12 +3895,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="+47"/>
+        <location filename="../ui/dialogProperties.cpp" line="+48"/>
         <source>Properties</source>
         <translation type="unfinished">Optionen</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+84"/>
         <source>Editor</source>
         <translation type="unfinished">Editor</translation>
     </message>
@@ -4422,21 +4477,21 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>An error occured while sending the content of the loaded file to the python workspace.</source>
+        <source>An error occured while importing the loaded file into the python workspace.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+5"/>
+        <source>A warning occured while importing the loaded file into the python workspace.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-4"/>
         <source>Error while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>A warning occured while sending the content of the loaded file to the python workspace.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4577,7 +4632,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+225"/>
+        <location line="+224"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -5244,7 +5299,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Schnellsuche...</translation>
     </message>
     <message>
-        <location line="+647"/>
+        <location line="+6"/>
+        <source>icon &amp;browser...</source>
+        <translation type="unfinished">Icon-&amp;Suche...</translation>
+    </message>
+    <message>
+        <location line="+642"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation type="unfinished">Suchen und Ersetzen</translation>
@@ -5260,7 +5320,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-683"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5272,11 +5332,6 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>icon&amp;bowser</source>
-        <translation type="unfinished">Sym&amp;bolsucher</translation>
-    </message>
-    <message>
-        <location line="+0"/>
         <source>Ctrl+B</source>
         <comment>QShortcut</comment>
         <translation></translation>

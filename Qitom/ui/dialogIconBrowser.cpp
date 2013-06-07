@@ -64,10 +64,9 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
                 icon->setText(0, subIT.filePath());
                 items.last()->addChild(icon);
             }
-        }  
+        }
     }
 
-//    ui.treeWidget->setItemsExpandable(true);
     ui.treeWidget->addTopLevelItems(items);
     ui.treeWidget->setItemsExpandable(true);
     ui.treeWidget->setExpandsOnDoubleClick(true);
@@ -76,18 +75,13 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
     ui.treeWidget->sortItems(0, Qt::AscendingOrder);
 
     this->setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
-    this->setWindowTitle("Icon Browser");
-
-    this->setWhatsThis("itom resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window.");
-
-//    connect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
+    this->setWindowTitle(tr("Icon Browser"));
+//    this->setWhatsThis(tr("itom resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window."));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogIconBrowser::~DialogIconBrowser()
 {
-/*    disconnect(m_pTreeWidget, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(copyCurrentName()));
-    DELETE_AND_SET_NULL(m_pTreeWidget);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -106,10 +100,7 @@ void DialogIconBrowser::on_pushButtonClipboard_clicked(bool value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogIconBrowser::copyCurrentName()
+void DialogIconBrowser::on_pushButtonInsert_clicked(bool value)
 {
-/*    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(m_pTreeWidget->currentItem()->text(0), QClipboard::Clipboard);
-    this->close();*/
-    
+    emit sendIconBrowserText(ui.treeWidget->currentItem()->text(0));
 }
