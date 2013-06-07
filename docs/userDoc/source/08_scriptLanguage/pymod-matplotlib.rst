@@ -91,3 +91,5 @@ case we opened a new main window and placed on the left side a MatplotlibFigure 
     :align: center
 
 When any of the both buttons are pressed, the corresponding example should be displayed in the figure **mplFig** on the left side.
+
+Rest TODO

@@ -375,36 +375,18 @@ If you want detailed information about one **itomfilter** use filterHelp("filter
 For user-defined GUI-Elements from plugIns use the function widgetHelp().   
     
 
-Further steps
-****************
+Further Information
+*********************
 
+For additional information on the features and usage of the |itom| GUI, see
 GUI :ref:`gui`
-Python scripting language: :ref:`scriptLanguage` with more information about the dataObject :ref:`itomDataObject`
+For a short introduction to the Python scripting language and use of the |itom| internal dataObject, refer to: :ref:`scriptLanguage` with more information about the dataObject :ref:`itomDataObject`
 
 
 Tutorials
 ****************
 
-You can find all scripts used here in the **demoScripts** folder. In the :doc:`Demo Scripts <../test-scripts/test-scripts>` section of this manual you can find the overview of all demoscripts which are located in this folder and a short summary what is covered in these scripts.
-
-Just using the GUI
-=====================
-
-.. toctree::
- :maxdepth: 1
-   
- tut_0_gui/tut01.rst
- 
-Using ITOM
-============
-
-.. toctree::
- :maxdepth: 1
-   
- tut_1_itom/tut01.rst
- tut_1_itom/tut02.rst
- tut_1_itom/tut03.rst
- tut_1_itom/tut04.rst
+You can find all scripts used here in the **demo** folder. In the :ref:`demoScripts` section of this manual you can find the overview of all demoscripts which are located in this folder and a short summary what is covered in these scripts.
 
  
 

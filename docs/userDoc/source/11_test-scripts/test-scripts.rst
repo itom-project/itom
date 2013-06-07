@@ -1,10 +1,11 @@
 .. include:: ../include/global.inc
 
+.. _demoScripts:
 
 Demo scripts
 ##############
 
-There are several python demo scripts available which demonstrate the use of |itom|. All these files are in the directory: ???
+There are several python demo scripts available which demonstrate the use of |itom|. All these files are in the directory **demo**
 The following list gives a short description of each demo.
 
 |itom| Basics
@@ -17,8 +18,8 @@ The following list gives a short description of each demo.
   
 - **demoToolBar.py**
 
-  | *Description*: Creating your own Toolbar and buttons.
-  | *Keywords*: creat a new class; add new function; add button
+  | *Description*: Creating your own toolbar and buttons.
+  | *Keywords*: create a new class; add new functions; add button
 
 
 Plugins
@@ -27,38 +28,40 @@ Plugins
 - **demoDummyGrabber.py**
 
   | *Description*: Usage of a camera plugin.
-  | *Keywords*: dataIO; start device (camera); Snapshot (getVal); Live image
+  | *Keywords*: dataIO; start device (camera); snapshot (getVal); live image
 
 - **demoDummyMotor.py**
 
   | *Description*: Usage of a motor plugin.
-  | *Keywords*: Set position; Get position
-  
-- **demoAS5216.py**
-
-  | *Description*: Usage of the AS5216
-  | *Keywords*: dataIO; start device; getVal
+  | *Keywords*: set position; get position
   
 - **demoCMU1394.py**
 
-  | *Description*: Firewire grabber for different cameras. PointGray Firefly, Sony SX 900, Sony XCD-X700.
+  | *Description*: Firewire grabber for different cameras. PointGray Firefly, Sony SX 900, Sony XCD-X700...
   | *Keywords*: dataIO; start device (camera); Snapshot (getVal); Live image
   
-- **demoPIPiezoCtrl.py**
-
-  | *Description*: Using an actuator (PIPiezoCtrl)
-  | *Keywords*: PIPiezoCtrl; set parameter; get parameter
   
 Algorithm / Filter
 ********************
 
-- **demolowValueFilter.py**
-
-  | *Description*: Low Value Filtering of random noise.
-  | *Keywords*: data Object; low value filter
+- **demoOpenCVFilter.py**
   
-- **demoITOMFilter.py**
+  | *Description*: Median filtering of a randomly filled image.
 
-  | *Description*: Using a median filter for a dataObject
-  | *Keywords*: data Object; median filter
+- **demoNumpy.py**
+  
+  | *Description*: Short demonstration of some linear algebra functions provided by Numpy (numeric package of python).
 
+- **demoScipy.py**
+  
+  | *Description*: Using scipy and matplotlib to calculate the cross-correlation between two images. Scipy is a python package that contains more scientific algorithms.
+  | *Keywords*: scipy, matplotlib
+
+- **demoSignalSmooth.py**
+  
+  | *Description*: Further example on how to use matplotlib (plotting package of python) in itom.
+
+ui
+****
+
+This folder contains some examples on how to create customized user interfaces in itom (see :ref:`qtdesigner`).
