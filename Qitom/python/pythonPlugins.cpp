@@ -37,6 +37,7 @@
 
 #include <qsharedpointer.h>
 #include "../helper/sharedPointerHelper.h"
+#include "../helper/paramHelper.h"
 #include "../../common/helperCommon.h"
 
 #include "pythontParamConversion.h"
@@ -820,13 +821,18 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "sd", &paramName, &dval))
     {
-        param = aib->getParamRec(paramName,&paramNameCheck);
-        if (!paramNameCheck)
+        bool hasIndex;
+        QString pureName;
+        int index;
+        QString additionalTag;
+        if(ito::ParamHelper::parseParamName(paramName, pureName, hasIndex, index, additionalTag).containsError())
         {
             PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
             return NULL;
         }
-        else if (param.isValid() == false)
+
+        param = aib->getParamRec(paramName,&paramNameCheck);
+        if (param.isValid() == false)
         {
             PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
             return NULL;
@@ -839,11 +845,22 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             PyErr_Format(PyExc_TypeError, "wrong parameter type");
             return NULL;
         }
-        if (ito::checkNumericParamRange(param,dval,NULL) == false)
-        //if ((dval < param.getMin()) || (dval > param.getMax()))
+
+        if(!hasIndex)
         {
-            PyErr_Format(PyExc_ValueError, "out of parameter range");
-            return NULL;
+            if (ito::checkNumericParamRange(param,dval,NULL) == false)
+            {
+                PyErr_Format(PyExc_ValueError, "out of parameter range");
+                return NULL;
+            }
+        }
+        else
+        {
+            if(param.getType() != ito::ParamBase::CharArray && param.getType() != ito::ParamBase::IntArray && param.getType() != ito::ParamBase::DoubleArray)
+            {
+                PyErr_Format(PyExc_ValueError, "for index-based parameter names an array-like parameter is required");
+                return NULL;
+            }
         }
         if (param.getType() & ito::ParamBase::Pointer)
             param = ito::Param(paramName, param.getType() & ~ito::ParamBase::Pointer, dval, NULL, NULL);

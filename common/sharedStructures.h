@@ -409,7 +409,7 @@ namespace ito
 
         inline int addNameSuffix(const char *suffix) 
         { 
-            if (suffix)  
+            if (suffix && m_pName)  
             { 
                 size_t newSize = strlen(m_pName) + strlen(suffix) + 1;
                 m_pName = (char *)realloc(m_pName, newSize);
