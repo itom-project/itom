@@ -856,7 +856,7 @@ void ScriptDockWidget::createActions()
     m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H","QShortcut")), Qt::WidgetWithChildrenShortcut );
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
 
-    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon&bowser"),this, QKeySequence(tr("Ctrl+B","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon &browser..."),this, QKeySequence(tr("Ctrl+B","QShortcut")), Qt::WidgetWithChildrenShortcut );
     m_openIconBrowser->connectTrigger(this, SLOT(mnuOpenIconBrowser()));
 
     m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G","QShortcut")), Qt::WidgetWithChildrenShortcut );
@@ -1086,9 +1086,10 @@ void ScriptDockWidget::mnuTabMoveRight()
 void ScriptDockWidget::mnuOpenIconBrowser()
 {
     DialogIconBrowser *m_iconBrowser = new DialogIconBrowser(getCanvas());
+    connect(m_iconBrowser, SIGNAL(sendIconBrowserText(QString)), this, SLOT(insertIconBrowserText(QString)));
     if (m_iconBrowser->exec())
     {
-
+        
     }
     delete m_iconBrowser;
 }
@@ -1536,6 +1537,19 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     }
 
     QMessageBox::information(m_pDialogReplace, tr("find and replace"), tr("%1 occurrence(s) was replaced").arg(count));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::insertIconBrowserText(QString iconLink)
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        int line, index;
+        sew->insert(iconLink);
+        sew->getCursorPosition(&line, &index);
+        sew->setCursorPosition(line, index + iconLink.length());
+    }
 }
 
 } //end namespace ito

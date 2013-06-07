@@ -35,6 +35,7 @@ const QString ScriptEditorWidget::lineBreak = QString("\n");
 
 int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent),
     m_pFileSysWatcher(NULL),
@@ -60,7 +61,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-    if(pyEngine) 
+    if (pyEngine) 
 	{
 		pythonBusy = pyEngine->isPythonBusy();
 		connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
@@ -76,14 +77,14 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 		connect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
 		//!< check if BreakPointModel already contains breakpoints for this editor and load them
-		if(getFilename() != "")
+		if (getFilename() != "")
 		{
 			QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
 			QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
 
-			for(int i=0; i<bpItems.size() ; i++)
+			for (int i=0; i<bpItems.size() ; i++)
 			{
-				breakPointAdd( bpItems.at(i), i );
+				breakPointAdd(bpItems.at(i), i);
 			}
 
 		}
@@ -94,11 +95,12 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     setAcceptDrops(true);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::~ScriptEditorWidget()
 {
     const PythonEngine *pyEngine = PythonEngine::getInstance();
 
-	if(pyEngine)
+	if (pyEngine)
 	{
 		const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
 
@@ -113,7 +115,7 @@ ScriptEditorWidget::~ScriptEditorWidget()
 		disconnect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
 		//!< delete remaining break-points (not neccesary)
-		/*if(0)
+		/*if (0)
 		{
 			QModelIndexList list = bpModel->getBreakPointIndizes(getFilename());
 			bpModel->deleteBreakPoints(list);
@@ -126,7 +128,7 @@ ScriptEditorWidget::~ScriptEditorWidget()
     DELETE_AND_SET_NULL(m_pFileSysWatcher);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::initEditor()
 {
     setPaper(QColor(1,81,107));
@@ -175,8 +177,8 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginMarkerMask(3, markMask1);
 
     setBraceMatching(QsciScintilla::StrictBraceMatch); 
-    setMatchedBraceBackgroundColor( QColor("lightGray") );
-    setMatchedBraceForegroundColor( QColor("blue") );
+    setMatchedBraceBackgroundColor(QColor("lightGray"));
+    setMatchedBraceForegroundColor(QColor("blue"));
 
     connect(this, SIGNAL(marginClicked(int,int,Qt::KeyboardModifiers)), this, SLOT(marginClicked(int,int,Qt::KeyboardModifiers)));
 
@@ -185,12 +187,13 @@ RetVal ScriptEditorWidget::initEditor()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
-    if(settings.value("showWhitespace", true).toBool())
+    if (settings.value("showWhitespace", true).toBool())
     {
         setWhitespaceVisibility(QsciScintilla::WsVisible);
     }
@@ -202,7 +205,7 @@ void ScriptEditorWidget::loadSettings()
     AbstractPyScintillaWidget::loadSettings();
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::initMenus()
 {
     bookmarkMenu = new QMenu(this);
@@ -250,7 +253,8 @@ RetVal ScriptEditorWidget::initMenus()
     return RetVal(retOk);
 }
 
-void ScriptEditorWidget::contextMenuEvent ( QContextMenuEvent * event )
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::contextMenuEvent (QContextMenuEvent * event)
 {
     event->accept();
 
@@ -260,7 +264,7 @@ void ScriptEditorWidget::contextMenuEvent ( QContextMenuEvent * event )
     long chpos = SendScintilla(SCI_POSITIONFROMPOINT, event->pos().x(), event->pos().y());
     lineIndexFromPosition(chpos, &line, &index);
 
-    switch ( getMarginNumber(event->x()) )
+    switch (getMarginNumber(event->x()))
     {
     case 1: //!< bookmarks
         contextMenuLine = line;
@@ -280,7 +284,7 @@ void ScriptEditorWidget::contextMenuEvent ( QContextMenuEvent * event )
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-        if(lineFrom >= 0) //area is selected
+        if (lineFrom >= 0) //area is selected
         {
 
         }
@@ -296,6 +300,7 @@ void ScriptEditorWidget::contextMenuEvent ( QContextMenuEvent * event )
     contextMenuLine = -1;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::preShowContextMenuEditor()
 {
     int lineFrom, indexFrom, lineTo, indexTo;
@@ -316,6 +321,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::preShowContextMenuMargin()
 {
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
@@ -329,15 +335,15 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
         breakpointMenuActions["prevBP"]->setEnabled(breakPointMap.size() > 0);
         breakpointMenuActions["clearALLBP"]->setEnabled(breakPointMap.size() > 0);
 
-    if(contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
+    if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
     {
-        if(markersAtLine(contextMenuLine) & markMaskBreakpoints)
+        if (markersAtLine(contextMenuLine) & markMaskBreakpoints)
         {
             breakpointMenuActions["toggleBP"]->setEnabled(true);
             breakpointMenuActions["toggleBPEnabled"]->setEnabled(true);
             breakpointMenuActions["editConditionBP"]->setEnabled(true);
 
-            if(markersAtLine(contextMenuLine) & ((1 << markBreakPoint) | (1 << markCBreakPoint)))
+            if (markersAtLine(contextMenuLine) & ((1 << markBreakPoint) | (1 << markCBreakPoint)))
             {
                 breakpointMenuActions["toggleBPEnabled"]->setText(tr("&disable breakpoint"));
             }
@@ -365,6 +371,7 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 {
     //test = source->has
@@ -387,12 +394,13 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::dropEvent(QDropEvent *event)
 {
 //    qDebug() << "MIME-Type2:" << event->mimeData()->formats();
     QObject *sew = AppManagement::getScriptEditorOrganizer();
 
-    if(sew != NULL)
+    if (sew != NULL)
     {
         if (event->mimeData()->hasText() == false && (event->mimeData()->hasFormat("FileName") || event->mimeData()->hasFormat("text/uri-list")))
         {
@@ -410,14 +418,15 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 int ScriptEditorWidget::getMarginNumber(int xPos)
 {
     int tempWidth = 0;
     int nr = 1;
-    while( nr <= 4)
+    while(nr <= 4)
     {
         tempWidth += marginWidth(nr);
-        if(xPos <= tempWidth)
+        if (xPos <= tempWidth)
         {
             return nr;
         }
@@ -426,15 +435,13 @@ int ScriptEditorWidget::getMarginNumber(int xPos)
     return -1;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::copyAvailable(bool yes)
 {
     canCopy=yes;
 }
 
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
 {
     setCursorPosition(line, 0);
@@ -443,10 +450,10 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
     return retOk;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuToggleBookmark()
 {
-    if(contextMenuLine>=0)
+    if (contextMenuLine>=0)
     {
         toggleBookmark(contextMenuLine);
     }
@@ -458,24 +465,28 @@ void ScriptEditorWidget::menuToggleBookmark()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuClearAllBookmarks()
 {
     clearAllBookmarks();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGotoNextBookmark()
 {
     gotoNextBookmark();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGotoPreviousBookmark()
 {
     gotoPreviousBookmark();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuToggleBreakpoint()
 {
-   if(contextMenuLine>=0)
+   if (contextMenuLine>=0)
     {
         toggleBreakpoint(contextMenuLine);
     }
@@ -487,9 +498,10 @@ void ScriptEditorWidget::menuToggleBreakpoint()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuToggleEnableBreakpoint()
 {
-    if(contextMenuLine>=0)
+    if (contextMenuLine>=0)
     {
         toggleEnableBreakpoint(contextMenuLine);
     }
@@ -501,9 +513,10 @@ void ScriptEditorWidget::menuToggleEnableBreakpoint()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuEditBreakpoint()
 {
-    if(contextMenuLine>=0)
+    if (contextMenuLine>=0)
     {
         editBreakpoint(contextMenuLine);
     }
@@ -515,81 +528,90 @@ void ScriptEditorWidget::menuEditBreakpoint()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuClearAllBreakpoints()
 {
     clearAllBreakpoints();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGotoNextBreakPoint()
 {
     gotoNextBreakPoint();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGotoPreviousBreakPoint()
 {
     gotoPreviousBreakPoint();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuCut()
 {
     cut();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuCopy()
 {
     copy();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuPaste()
 {
     paste();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuIndent()
 {
-    if(isReadOnly() == false)
+    if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-        if(lineFrom < 0)
+        if (lineFrom < 0)
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
             indexTo = indexFrom;
         }
 
-        for(int i = lineFrom ; i <= lineTo ; i++)
+        for (int i = lineFrom ; i <= lineTo ; i++)
         {
             indent(i);
         }
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuUnindent()
 {
-    if(isReadOnly() == false)
+    if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-        if(lineFrom < 0)
+        if (lineFrom < 0)
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
             indexTo = indexFrom;
         }
 
-        for(int i = lineFrom ; i <= lineTo ; i++)
+        for (int i = lineFrom ; i <= lineTo ; i++)
         {
             unindent(i);
         }
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuComment()
 {
-    if(isReadOnly() == false)
+    if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
         QString lineText;
@@ -597,28 +619,28 @@ void ScriptEditorWidget::menuComment()
         int searchIndex;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-        if(lineFrom < 0)
+        if (lineFrom < 0)
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
             indexTo = indexFrom;
         }
 
-        for(int i = lineFrom ; i <= lineTo ; i++)
+        for (int i = lineFrom ; i <= lineTo ; i++)
         {
             lineText = text(i);
             lineTextTrimmed = lineText.trimmed();
 
             searchIndex = lineText.indexOf(lineTextTrimmed);
-            if(searchIndex >= 0)
+            if (searchIndex >= 0)
             {
                 insertAt(QString("#"), i, searchIndex);
-                if(i== lineFrom) indexFrom++;
-                if(i == lineTo) indexTo++;
+                if (i== lineFrom) indexFrom++;
+                if (i == lineTo) indexTo++;
             }
         }
 
-        if(lineFrom != lineTo || indexFrom != indexTo)
+        if (lineFrom != lineTo || indexFrom != indexTo)
         {
             setSelection(lineFrom, indexFrom, lineTo, indexTo);
         }
@@ -629,9 +651,10 @@ void ScriptEditorWidget::menuComment()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuUncomment()
 {
-    if(isReadOnly() == false)
+    if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
         QString lineText;
@@ -639,22 +662,22 @@ void ScriptEditorWidget::menuUncomment()
         QString lineTextTrimmed;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-        if(lineFrom < 0)
+        if (lineFrom < 0)
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
             indexTo = indexFrom;
         }
 
-        for(int i = lineFrom ; i <= lineTo ; i++)
+        for (int i = lineFrom ; i <= lineTo ; i++)
         {
             lineText = text(i);
             lineTextTrimmed = lineText.trimmed();
 
-            if(lineTextTrimmed.left(1) == "#")
+            if (lineTextTrimmed.left(1) == "#")
             {
                 searchIndex = lineText.indexOf("#");
-                if(searchIndex >= 0)
+                if (searchIndex >= 0)
                 {
                     setSelection(i, searchIndex, i, searchIndex + 1);
                     removeSelectedText();
@@ -662,7 +685,7 @@ void ScriptEditorWidget::menuUncomment()
             }
         }
 
-        if(lineFrom != indexFrom || lineTo != indexTo)
+        if (lineFrom != indexFrom || lineTo != indexTo)
         {
             setSelection(lineFrom, indexFrom, lineTo, indexTo);
         }
@@ -673,50 +696,53 @@ void ScriptEditorWidget::menuUncomment()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuRunScript()
 {
     RetVal retValue(retOk);
 
     retValue += saveFile(false);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //retValue += checkSaveStateForExecution();
 
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             emit pythonRunFile(getFilename());
         }
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuDebugScript()
 {
     RetVal retValue(retOk);
 
-    if(getFilename() == "")
+    if (getFilename() == "")
     {
         retValue += saveFile(true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //retValue += checkSaveStateForExecution();
 
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             emit pythonDebugFile(getFilename());
         }
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuStopScript()
 {
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-    if(eng != NULL)
+    if (eng != NULL)
     {
-        if(eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
+        if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
         {
             QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, ito::pyDbgQuit));
         }
@@ -727,22 +753,21 @@ void ScriptEditorWidget::menuStopScript()
     }
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument)
 {
     //!< check for modifications in the present document first
-    if(!ignorePresentDocument)
+    if (!ignorePresentDocument)
     {
-        if(isModified())
+        if (isModified())
         {
             int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
 
-            if(ret & QMessageBox::Cancel)
+            if (ret & QMessageBox::Cancel)
             {
                 return RetVal(retOk);
             }
-            else if(ret & QMessageBox::Yes)
+            else if (ret & QMessageBox::Yes)
             {
                 saveFile(false);
                 setModified(false);
@@ -751,12 +776,12 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     }
 
     QFile file(fileName);
-    if( ! file.open( QIODevice::ReadOnly | QIODevice::Text ))
+    if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("error while opening file"), tr("file %1 could not be loaded").arg(fileName));
     }
 
-    QString text( file.readAll() );
+    QString text(file.readAll());
     file.close();
 
     clearAllBookmarks();
@@ -766,27 +791,26 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     this->filename = fileName;
 
     QStringList watchedFiles = m_pFileSysWatcher->files();
-    if(watchedFiles.size() > 0)
+    if (watchedFiles.size() > 0)
     {
         m_pFileSysWatcher->removePaths(watchedFiles);
     }
     m_pFileSysWatcher->addPath(this->filename);
 
     //!< check if BreakPointModel already contains breakpoints for this editor and load them
-    if(getFilename() != "")
+    if (getFilename() != "")
     {
         BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
-		if(bpModel)
+		if (bpModel)
 		{
 			QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
 			QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
 
-			for(int i=0; i<bpItems.size() ; i++)
+			for (int i=0; i<bpItems.size() ; i++)
 			{
-				breakPointAdd( bpItems.at(i), i );
+				breakPointAdd(bpItems.at(i), i);
 			}
 		}
-
     }
 
     setModified(false);
@@ -794,25 +818,26 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::saveFile(bool askFirst)
 {
-    if(!isModified())
+    if (!isModified())
     {
         return RetVal(retOk);
     }
-    if(this->getFilename().isNull())
+    if (this->getFilename().isNull())
     {
         return saveAsFile(askFirst);
     }
 
-    if(askFirst)
+    if (askFirst)
     {
         int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
-        if(ret & QMessageBox::Cancel)
+        if (ret & QMessageBox::Cancel)
         {
             return RetVal(retError);
         }
-        else if(ret & QMessageBox::No)
+        else if (ret & QMessageBox::No)
         {
             return RetVal(retOk);
         }
@@ -821,7 +846,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     m_pFileSysWatcher->removePath(getFilename());
 
     QFile file(getFilename());
-    if( ! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("error while accessing file"), tr("file %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
@@ -839,16 +864,17 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 {
-    if(askFirst)
+    if (askFirst)
     {
         int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
-        if(ret & QMessageBox::Cancel)
+        if (ret & QMessageBox::Cancel)
         {
             return RetVal(retError);
         }
-        else if(ret & QMessageBox::No)
+        else if (ret & QMessageBox::No)
         {
             return RetVal(retOk);
         }
@@ -858,9 +884,9 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     QFile file;
 
     QString tempFileName = QFileDialog::getSaveFileName(this, tr("save as..."), defaultPath, "Python (*.py)");
-    if(!tempFileName.isEmpty())
+    if (!tempFileName.isEmpty())
     {
-        QDir::setCurrent( QFileInfo(tempFileName).path() );
+        QDir::setCurrent(QFileInfo(tempFileName).path());
         file.setFileName(tempFileName);
     }
     else
@@ -868,7 +894,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
         return RetVal(retError);
     }
 
-    if( ! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("error while accessing file"), tr("file %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
@@ -888,10 +914,8 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     return RetVal(retOk);
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
-
 RetVal ScriptEditorWidget::toggleBookmark(int line)
 {
 
@@ -899,9 +923,9 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
     std::list<int>::iterator it;
     bool found = false;
 
-    for ( it=bookmarkHandles.begin() ; it != bookmarkHandles.end() && !found; it++ )
+    for (it=bookmarkHandles.begin() ; it != bookmarkHandles.end() && !found; it++)
     {
-        if(markerLine(*it) == line)
+        if (markerLine(*it) == line)
         {
             markerDeleteHandle(*it);
             *it = -1; //!< in order to mark it for removal
@@ -911,7 +935,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
 
     bookmarkHandles.remove(-1);
 
-    if(!found)
+    if (!found)
     {
         bookmarkHandles.push_back(markerAdd(line, markBookmark));
     }
@@ -919,6 +943,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBookmarks()
 {
     markerDeleteAll(markBookmark);
@@ -927,6 +952,7 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoNextBookmark()
 {
 
@@ -937,18 +963,18 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
 
     line += 1;
 
-    if(line == lines())
+    if (line == lines())
     {
         line = 0;
     }
 
-    bookmarkLine = markerFindNext( line, 1 << markBookmark);
-    if(bookmarkLine < 0)
+    bookmarkLine = markerFindNext(line, 1 << markBookmark);
+    if (bookmarkLine < 0)
     {
         bookmarkLine = markerFindNext(0, 1 << markBookmark);
     }
 
-    if(bookmarkLine >= 0)
+    if (bookmarkLine >= 0)
     {
         setCursorPosAndEnsureVisible(bookmarkLine);
         return RetVal(retOk);
@@ -957,13 +983,14 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     return RetVal(retError);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoPreviousBookmark()
 {
     int line, index;
     int bookmarkLine;
     getCursorPosition(&line, &index);
 
-    if(line == 0)
+    if (line == 0)
     {
         line = lines()-1;
     }
@@ -972,13 +999,13 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         line -= 1;
     }
 
-    bookmarkLine = markerFindPrevious( line, 1 << markBookmark);
-    if(bookmarkLine < 0)
+    bookmarkLine = markerFindPrevious(line, 1 << markBookmark);
+    if (bookmarkLine < 0)
     {
         bookmarkLine = markerFindPrevious(lines() - 1, 1 << markBookmark);
     }
 
-    if(bookmarkLine >= 0)
+    if (bookmarkLine >= 0)
     {
         setCursorPosAndEnsureVisible(bookmarkLine);
         return RetVal(retOk);
@@ -987,16 +1014,17 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 {
-    if(getFilename() == "") return RetVal(retError);
+    if (getFilename() == "") return RetVal(retError);
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
     std::list<QPair<int,int> >::iterator it;
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(),line);
 
-    if(indexList.size()>0)
+    if (indexList.size()>0)
     {
         bpModel->deleteBreakPoints(indexList);
     }
@@ -1016,17 +1044,18 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
 {
-    if(getFilename() == "") return RetVal(retError);
+    if (getFilename() == "") return RetVal(retError);
 
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename() , line);
     BreakPointItem item;
 
-    if(indexList.size()>0)
+    if (indexList.size()>0)
     {
-        for(int i=0;i<indexList.size();i++)
+        for (int i=0;i<indexList.size();i++)
         {
             item = bpModel->getBreakPoint(indexList.at(i));
             item.enabled = !item.enabled;
@@ -1038,26 +1067,27 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
     return RetVal(retError);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::editBreakpoint(int line)
 {
-    if(getFilename() == "") return RetVal(retError);
+    if (getFilename() == "") return RetVal(retError);
 
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndex index;
     BreakPointItem item;
     RetVal retValue(retOk);
 
-    if(markersAtLine(line) & markMaskBreakpoints)
+    if (markersAtLine(line) & markMaskBreakpoints)
     {
         index = bpModel->getFirstBreakPointIndex(getFilename(), line);
 
-        if(index.isValid())
+        if (index.isValid())
         {
             item = bpModel->getBreakPoint(index);
 
             DialogEditBreakpoint *dlg = new DialogEditBreakpoint(item.filename, line+1, item.enabled, item.temporary , item.ignoreCount, item.condition);
             dlg->exec();
-            if(dlg->result() == QDialog::Accepted)
+            if (dlg->result() == QDialog::Accepted)
             {
                 dlg->getData(item.enabled, item.temporary, item.ignoreCount, item.condition);
                 item.conditioned = (item.condition != "") || (item.ignoreCount > 0) || item.temporary;
@@ -1075,15 +1105,14 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
     return RetVal(retError);
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBreakpoints()
 {
-    if(getFilename() == "") return RetVal(retError);
+    if (getFilename() == "") return RetVal(retError);
 
     BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
 
-	if(bpModel)
+	if (bpModel)
 	{
 		bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
 	}
@@ -1098,6 +1127,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoNextBreakPoint()
 {
 
@@ -1107,18 +1137,18 @@ RetVal ScriptEditorWidget::gotoNextBreakPoint()
 
     line += 1;
 
-    if(line == lines())
+    if (line == lines())
     {
         line = 0;
     }
 
-    breakPointLine = markerFindNext( line, markMaskBreakpoints);
-    if(breakPointLine < 0)
+    breakPointLine = markerFindNext(line, markMaskBreakpoints);
+    if (breakPointLine < 0)
     {
         breakPointLine = markerFindNext(0, markMaskBreakpoints);
     }
 
-    if(breakPointLine >= 0)
+    if (breakPointLine >= 0)
     {
         setCursorPosAndEnsureVisible(breakPointLine);
         return RetVal(retOk);
@@ -1127,13 +1157,14 @@ RetVal ScriptEditorWidget::gotoNextBreakPoint()
     return RetVal(retError);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
 {
     int line, index;
     int breakPointLine;
     getCursorPosition(&line, &index);
 
-    if(line == 0)
+    if (line == 0)
     {
         line = lines()-1;
     }
@@ -1142,13 +1173,13 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
         line -= 1;
     }
 
-    breakPointLine = markerFindPrevious( line, markMaskBreakpoints);
-    if(breakPointLine < 0)
+    breakPointLine = markerFindPrevious(line, markMaskBreakpoints);
+    if (breakPointLine < 0)
     {
         breakPointLine = markerFindPrevious(lines() - 1, markMaskBreakpoints);
     }
 
-    if(breakPointLine >= 0)
+    if (breakPointLine >= 0)
     {
         setCursorPosAndEnsureVisible(breakPointLine);
         return RetVal(retOk);
@@ -1156,46 +1187,45 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
     return RetVal(retError);
 }
 
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::marginClicked(int margin, int line, Qt::KeyboardModifiers /*state*/)
 {
 
-    if(margin == 1) //!< bookmarks
+    if (margin == 1) //!< bookmarks
     {
         toggleBookmark(line);
     }
-    else if(margin == 3) //!< set or remove breakpoint (standard form)
+    else if (margin == 3) //!< set or remove breakpoint (standard form)
     {
         toggleBreakpoint(line);
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 {
     int newHandle = -1;
 
-    if(bp.filename == getFilename() && bp.filename != "")
+    if (bp.filename == getFilename() && bp.filename != "")
     {
                 std::list<QPair<int,int> >::iterator it;
         bool found = false;
 
-        for(it = breakPointMap.begin() ; it != breakPointMap.end() && !found ; ++it)
+        for (it = breakPointMap.begin() ; it != breakPointMap.end() && !found ; ++it)
         {
-            if(it->second == bp.lineno)
+            if (it->second == bp.lineno)
             {
                 found = true;
             }
         }
 
-        if(found) return; //!< there is already a breakpoint in this line, do not add the new one
+        if (found) return; //!< there is already a breakpoint in this line, do not add the new one
 
 
-        if(bp.enabled)
+        if (bp.enabled)
         {
-            if(bp.conditioned)
+            if (bp.conditioned)
             {
                 newHandle = markerAdd(bp.lineno, markCBreakPoint);
             }
@@ -1206,7 +1236,7 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
         }
         else
         {
-            if(bp.conditioned)
+            if (bp.conditioned)
             {
                 newHandle = markerAdd(bp.lineno, markCBreakPointDisabled);
             }
@@ -1220,10 +1250,11 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*pyBpNumber*/)
 {
-    if(filename == getFilename() && filename != "")
+    if (filename == getFilename() && filename != "")
     {
                 std::list<QPair<int,int> >::iterator it;
 
@@ -1231,7 +1262,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 
         while(it != breakPointMap.end())
         {
-            if(it->second == lineNo)
+            if (it->second == lineNo)
             {
                 markerDeleteHandle(it->first);
                 it = breakPointMap.erase(it);
@@ -1244,27 +1275,29 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem newBp)
 {
-    if(oldBp.filename == getFilename())
+    if (oldBp.filename == getFilename())
     {
         breakPointDelete(oldBp.filename, oldBp.lineno, oldBp.pythonDbgBpNumber);
     }
-    if(newBp.filename == getFilename())
+    if (newBp.filename == getFilename())
     {
         breakPointAdd(newBp, -1); //!< -1 has no task
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::changeFilename(QString newFilename)
 {
     BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
     QModelIndexList modelIndexList;
 
-    if(newFilename == "" || newFilename.isNull())
+    if (newFilename == "" || newFilename.isNull())
     {
-		if(bpModel)
+		if (bpModel)
 		{
 			modelIndexList = bpModel->getBreakPointIndizes(getFilename());
 			bpModel->deleteBreakPoints(modelIndexList);
@@ -1273,13 +1306,13 @@ RetVal ScriptEditorWidget::changeFilename(QString newFilename)
     }
     else
     {
-		if(bpModel)
+		if (bpModel)
 		{
 			modelIndexList = bpModel->getBreakPointIndizes(getFilename());
 			QList<BreakPointItem> lists = bpModel->getBreakPoints(modelIndexList);
 			BreakPointItem temp;
 			QList<BreakPointItem> newList;
-			for(int i=0; i<lists.size() ;i++)
+			for (int i=0; i<lists.size() ;i++)
 			{
 				temp = lists.at(i);
 				temp.filename = newFilename;
@@ -1289,11 +1322,10 @@ RetVal ScriptEditorWidget::changeFilename(QString newFilename)
 		}
         filename = newFilename;
     }
-
-
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::nrOfLinesChanged()
 {
     std::list<QPair<int,int> >::iterator it;
@@ -1308,17 +1340,17 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         line = markerLine(it->first);
 
-        if(line == -1)
+        if (line == -1)
         {
             //!< marker has been deleted:
             index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-            if(index.isValid())
+            if (index.isValid())
             {
                 bpModel->deleteBreakPoint(index);
             }
             it = breakPointMap.erase(it);
         }
-        else if(line != it->second)
+        else if (line != it->second)
         {
             index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
 
@@ -1328,7 +1360,6 @@ void ScriptEditorWidget::nrOfLinesChanged()
             it->second = line;
 
             ++it;
-
         }
         else
         {
@@ -1338,11 +1369,12 @@ void ScriptEditorWidget::nrOfLinesChanged()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::pythonDebugPositionChanged(QString filename, int lineno)
 {
-    if(!hasNoFilename() && (QFileInfo(filename) == QFileInfo(getFilename())))
+    if (!hasNoFilename() && (QFileInfo(filename) == QFileInfo(getFilename())))
     {
-        if(markCurrentLineHandle != -1)
+        if (markCurrentLineHandle != -1)
         {
             markerDeleteHandle(markCurrentLineHandle);
         }
@@ -1352,26 +1384,27 @@ void ScriptEditorWidget::pythonDebugPositionChanged(QString filename, int lineno
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //void ScriptEditorWidget::pythonCodeExecContinued()
 //{
-//    if(markCurrentLineHandle != -1)
+//    if (markCurrentLineHandle != -1)
 //    {
 //        markerDeleteHandle(markCurrentLineHandle);
 //    }
 //}
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 {
     switch(pyTransition)
     {
     case pyTransBeginRun:
     case pyTransBeginDebug:
-        if(!hasNoFilename()) setReadOnly(true);
+        if (!hasNoFilename()) setReadOnly(true);
         pythonBusy = true;
         break;
     case pyTransDebugContinue:
-        if(markCurrentLineHandle != -1)
+        if (markCurrentLineHandle != -1)
         {
             markerDeleteHandle(markCurrentLineHandle);
         }
@@ -1379,7 +1412,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransEndRun:
     case pyTransEndDebug:
         setReadOnly(false);
-        if(markCurrentLineHandle != -1)
+        if (markCurrentLineHandle != -1)
         {
             markerDeleteHandle(markCurrentLineHandle);
         }
@@ -1393,27 +1426,28 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     }
 }
 
-void ScriptEditorWidget::fileSysWatcherFileChanged( const QString & path ) //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 {
-    if(fileSystemWatcherMutex.tryLock(1))
+    if (fileSystemWatcherMutex.tryLock(1))
     {
         QMessageBox msgBox(this);
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);
 
 
-        if(path == getFilename())
+        if (path == getFilename())
         {
             QFile file(path);
 
-            if(!file.exists()) //file deleted
+            if (!file.exists()) //file deleted
             {
                 msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
                 msgBox.setInformativeText(tr("Keep this file in editor?"));
 
                 int ret = msgBox.exec();
 
-                if(ret == QMessageBox::No)
+                if (ret == QMessageBox::No)
                 {
                     emit closeRequest(this,true);
                 }
@@ -1423,7 +1457,6 @@ void ScriptEditorWidget::fileSysWatcherFileChanged( const QString & path ) //thi
                     setSelection(0,0,0,1);
                     removeSelectedText();
                 }
-
             }
             else //file changed
             {
@@ -1431,7 +1464,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged( const QString & path ) //thi
                 msgBox.setInformativeText(tr("Do you want to reload it?"));
                 int ret = msgBox.exec();
 
-                if(ret == QMessageBox::Yes)
+                if (ret == QMessageBox::Yes)
                 {
                     openFile(path,true);
                 }
@@ -1448,6 +1481,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged( const QString & path ) //thi
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //void ScriptEditorWidget::keyPressEvent (QKeyEvent *event)
 //{
 //    int key = event->key();
@@ -1455,27 +1489,27 @@ void ScriptEditorWidget::fileSysWatcherFileChanged( const QString & path ) //thi
 //    bool acceptEvent = true;
 //    bool forwardEvent = true;
 //
-//    if(key != Qt::Key_Control && (modifiers & Qt::ControlModifier))
+//    if (key != Qt::Key_Control && (modifiers & Qt::ControlModifier))
 //    {
-//        if(key == Qt::Key_T)
+//        if (key == Qt::Key_T)
 //        {
 //            acceptEvent = false;
 //        }
-//        else if(key == Qt::Key_R)
+//        else if (key == Qt::Key_R)
 //        {
 //            forwardEvent = false;
 //        }
 //    }
 //
-//    if(acceptEvent && forwardEvent)
+//    if (acceptEvent && forwardEvent)
 //    {
 //        QsciScintilla::keyPressEvent(event);
 //    }
-//    else if(!acceptEvent)
+//    else if (!acceptEvent)
 //    {
 //        event->ignore();
 //    }
-//    else if(acceptEvent && !forwardEvent)
+//    else if (acceptEvent && !forwardEvent)
 //    {
 //        event->accept();
 //    }

@@ -38,32 +38,18 @@ public:
 
 protected:
     Ui::DialogIconBrowser ui;
-/*
-    class IconRescourcesTreeView : public QTreeWidget
-    {
-    public:
-        IconRescourcesTreeView ( QWidget * parent = 0 ) : QTreeWidget(parent) {}
-        ~IconRescourcesTreeView () {};
 
-		
-        QModelIndexList selectedIndexes() const
-        { 
-            return QTreeWidget::selectedIndexes();
-        }
-    };
-*/
 private:
 //    IconRescourcesTreeView* m_pTreeWidget;
 
 signals:
+    void sendIconBrowserText(QString iconLink);
 
 private slots:
 //	void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous );
     void on_pushButtonClipboard_clicked(bool value);
-
-public slots:
-    void copyCurrentName();
+    void on_pushButtonInsert_clicked(bool value);
 };
 
 #endif

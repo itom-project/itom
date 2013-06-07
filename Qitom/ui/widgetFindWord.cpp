@@ -22,6 +22,7 @@
 
 #include "widgetFindWord.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetFindWord::WidgetFindWord(QWidget *parent) :
     QWidget(parent)
 {
@@ -33,21 +34,25 @@ WidgetFindWord::WidgetFindWord(QWidget *parent) :
     ui.txtFind->selectAll();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetFindWord::~WidgetFindWord()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_cmdClose_clicked()
 {
     this->hide();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_txtFind_returnPressed()
 {
     on_cmdFindDown_clicked();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_cmdFindUp_clicked()
 {
     bool regExpr = (ui.checkRegExpr->checkState() == Qt::Checked);
@@ -57,6 +62,7 @@ void WidgetFindWord::on_cmdFindUp_clicked()
     emit findNext( ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, false, true);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_cmdFindDown_clicked()
 {
     bool regExpr = (ui.checkRegExpr->checkState() == Qt::Checked);
@@ -66,11 +72,13 @@ void WidgetFindWord::on_cmdFindDown_clicked()
     emit findNext( ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, true, true);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_txtFind_textChanged ( const QString & /*text*/ )
 {
     ui.txtFind->setStyleSheet("background-color: white");
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::setFindBarEnabled(bool enabled)
 {
     ui.txtFind->setEnabled(enabled);
@@ -83,9 +91,10 @@ void WidgetFindWord::setFindBarEnabled(bool enabled)
     ui.checkWrapAround->setEnabled(enabled);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::setSuccessState(bool successfull)
 {
-    if(successfull)
+    if (successfull)
     {
         ui.txtFind->setStyleSheet("background-color: white");
     }
@@ -95,6 +104,7 @@ void WidgetFindWord::setSuccessState(bool successfull)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::setCursorToTextField()
 {
     ui.txtFind->setFocus();
