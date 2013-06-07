@@ -1638,6 +1638,14 @@ end:
         }
 
 
+        QHashIterator<void*, ito::FilterParams*> i(filterParamHash);
+        while (i.hasNext()) 
+        {
+            i.next();
+            delete i.value();
+        }
+        filterParamHash.clear();
+
         //remove all algorithms
         while (m_addInListAlgo.size() > 0)
         {
@@ -1668,14 +1676,6 @@ end:
             loader->unload();
             DELETE_AND_SET_NULL(loader);
         }
-
-        QHashIterator<void*, ito::FilterParams*> i(filterParamHash);
-        while (i.hasNext()) 
-        {
-            i.next();
-            delete i.value();
-        }
-        filterParamHash.clear();
 
         DELETE_AND_SET_NULL(m_algoInterfaceValidator);
     }
