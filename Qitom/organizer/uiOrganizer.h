@@ -48,6 +48,7 @@
 #include <qtimer.h>
 #include <qfiledialog.h>
 #include <qmainwindow.h>
+#include <QtUiTools/quiloader.h>
 
 namespace ito
 {
@@ -284,6 +285,9 @@ private:
     ito::RetVal scanPlugins(QString path, QHash<QString, PluginInfo> &pluginInfoList);
 
     void setApiPointersToWidgetAndChildren(QWidget *widget);
+    //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according
+    //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
+    QUiLoader m_uiLoader;
 
 signals:
 

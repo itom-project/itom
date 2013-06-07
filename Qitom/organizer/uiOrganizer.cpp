@@ -44,7 +44,7 @@
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 #include <qfiledialog.h>
-#include <QtUiTools/quiloader.h>
+//#include <QtUiTools/quiloader.h>
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -321,7 +321,8 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBas
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -429,7 +430,8 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -641,7 +643,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
         }
         else if(type == ito::UiOrganizer::typeMainWindow)
         {
-            QUiLoader loader;
+//            QUiLoader loader;
             QFile file(QDir::cleanPath(filename));
             if (!file.exists())
             {
@@ -654,15 +656,15 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                 file.open(QFile::ReadOnly);
 		        QFileInfo fileinfo(filename);
 		        QDir workingDirectory = fileinfo.absoluteDir();
-		        loader.setWorkingDirectory(workingDirectory);
+                m_uiLoader.setWorkingDirectory(workingDirectory);
                 
                 if(childOfMainWindow)
                 {
-                    wid = loader.load(&file, mainWin);
+                    wid = m_uiLoader.load(&file, mainWin);
                 }
                 else
                 {
-                    wid = loader.load(&file, NULL);
+                    wid = m_uiLoader.load(&file, NULL);
                 }
 
                 
@@ -732,7 +734,8 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -771,10 +774,10 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
 
-    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correctly initialized!
+//    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correctly initialized!
     QWidget* widget = NULL;
 
-    QStringList availableWidgets = loader.availableWidgets();
+    QStringList availableWidgets = m_uiLoader.availableWidgets();
 
     if(availableWidgets.contains(className))
     {
@@ -787,7 +790,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 
         if(widget == NULL)
         {
-            widget = loader.createWidget(className, parent);
+            widget = m_uiLoader.createWidget(className, parent);
         }
 
         if(widget == NULL)
@@ -826,7 +829,7 @@ RetVal UiOrganizer::deleteDialog(unsigned int handle, ItomSharedSemaphore *semap
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -910,7 +913,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -936,7 +939,7 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -972,7 +975,8 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -1014,7 +1018,8 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
@@ -1039,7 +1044,7 @@ RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attrib
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1065,7 +1070,7 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1090,7 +1095,7 @@ RetVal UiOrganizer::showInputDialogGetDouble(QString title, QString label, doubl
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1115,7 +1120,7 @@ RetVal UiOrganizer::showInputDialogGetInt(QString title, QString label, int defa
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1140,7 +1145,7 @@ RetVal UiOrganizer::showInputDialogGetItem(QString title, QString label, QString
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1165,7 +1170,7 @@ RetVal UiOrganizer::showInputDialogGetText(QString title, QString label, QString
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1243,7 +1248,7 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString titl
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1275,7 +1280,7 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, QString cap
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1316,7 +1321,7 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, QString caption, Q
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1357,7 +1362,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, QString caption, Q
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1401,7 +1406,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1487,7 +1492,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1545,7 +1550,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1579,7 +1584,7 @@ RetVal UiOrganizer::getAttribute(unsigned int objectID, int attributeNumber, QSh
     {
         semaphore->returnValue = retval;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
     return retval;
@@ -1611,7 +1616,7 @@ RetVal UiOrganizer::setAttribute(unsigned int objectID, int attributeNumber, boo
     {
         semaphore->returnValue = retval;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
     return retval;
@@ -1645,7 +1650,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1673,7 +1678,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1722,7 +1727,7 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QS
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1771,7 +1776,7 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, QString objectN
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1821,7 +1826,7 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, QString objectN
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1871,7 +1876,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignatur
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1912,7 +1917,7 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, QString 
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -1968,7 +1973,7 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -2030,7 +2035,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+        semaphore->deleteSemaphore();
         semaphore = NULL;
     }
 
@@ -2525,7 +2530,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     {
         semaphore->returnValue = retValue;
         semaphore->release();
-        ItomSharedSemaphore::deleteSemaphore(semaphore);
+                semaphore->deleteSemaphore();
+        semaphore = NULL;
     }
 
     return retValue;
