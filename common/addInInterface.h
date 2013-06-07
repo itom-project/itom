@@ -44,6 +44,7 @@
 #include <qdockwidget.h>
 #include <qmutex.h>
 #include <qevent.h>
+#include <qpluginloader.h>
 
 namespace ito
 {
@@ -166,12 +167,13 @@ namespace ito
             tAutoLoadPolicy m_autoLoadPolicy;               /*!< defines the auto-load policy for automatic loading of parameters from xml-file at startup of any instance */
             tAutoSavePolicy m_autoSavePolicy;               /*!< defines the auto-save policy for automatic saving of parameters in xml-file at shutdown of any instance */
             bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
+            QPluginLoader *m_loader;
 
         public:
 			void **m_apiFunctionsBasePtr;
             void **m_apiFunctionsGraphBasePtr;
 
-            ~AddInInterfaceBase();
+            virtual ~AddInInterfaceBase();
 
             //! default constructor
             AddInInterfaceBase() :
@@ -179,7 +181,7 @@ namespace ito
                 m_maxItomVer(MAXVERSION), m_minItomVer(MINVERSION),
                 m_author(""), m_description(""), m_detaildescription(""), m_license("LGPL with ITO itom-exception"), m_aboutThis(""),
                 /*m_enableAutoLoad(false),*/ m_autoLoadPolicy(ito::autoLoadNever),
-                m_autoSavePolicy(ito::autoSaveNever),  m_callInitInNewThread(true), m_apiFunctionsBasePtr(NULL), m_apiFunctionsGraphBasePtr(NULL)
+                m_autoSavePolicy(ito::autoSaveNever),  m_callInitInNewThread(true), m_apiFunctionsBasePtr(NULL), m_apiFunctionsGraphBasePtr(NULL), m_loader(NULL)
             { }
 
             //! returns addIn type
@@ -235,7 +237,9 @@ namespace ito
             int getInstCount() { return m_InstList.length(); }
 			//! set api function pointer
 			void setApiFunctions(void **apiFunctions); 
-			void setApiFunctionsGraph(void ** apiFunctionsGraph); 
+            void setApiFunctionsGraph(void ** apiFunctionsGraph);
+            inline void setLoader(QPluginLoader *loader) { m_loader = loader; }
+            inline QPluginLoader * getLoader(void) { return m_loader; }
 
             bool event(QEvent *e);
 
@@ -396,7 +400,7 @@ namespace ito
 			*/
             int isAlive(void)
             {
-                QMutexLocker locker(&m_atomicMutex);
+//                QMutexLocker locker(&m_atomicMutex);
                 int wasalive = m_alive;
                 m_alive = 0;
                 return wasalive;
@@ -410,14 +414,14 @@ namespace ito
 			*/
             void setAlive(void)
             {
-                QMutexLocker locker(&m_atomicMutex);
+//                QMutexLocker locker(&m_atomicMutex);
                 m_alive = 1;
             }
             
             //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
             bool isInitialized(void) 
             { 
-                QMutexLocker locker(&m_atomicMutex);
+//                QMutexLocker locker(&m_atomicMutex);
                 return m_initialized;
             }
             
@@ -427,7 +431,7 @@ namespace ito
             */
             void setInitialized(bool initialized) 
             { 
-                QMutexLocker locker(&m_atomicMutex);
+//                QMutexLocker locker(&m_atomicMutex);
                 m_initialized = initialized;
             }
 
@@ -446,7 +450,7 @@ namespace ito
             AddInBase();
 
 			// destructor (doc in source)
-            ~AddInBase();
+            virtual ~AddInBase();
 
 			//doc in source
             void createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas = Qt::AllDockWidgetAreas, QWidget *content = NULL);
@@ -608,7 +612,7 @@ namespace ito
             bool m_autoGrabbingEnabled;  /*!<  defines, whether the auto-grabbing timer for any live image can be activated. If this variable becomes false and any timer is activated, this timer is killed.*/
 
         public:
-            inline int getAutoGrabbing() { return m_autoGrabbingEnabled; };  /*!< returns the state of m_autoGrabbingEnabled; consider this method as final */
+            inline int getAutoGrabbing() { return m_autoGrabbingEnabled; }  /*!< returns the state of m_autoGrabbingEnabled; consider this method as final */
 
         signals:
 
@@ -769,7 +773,7 @@ namespace ito
             */
             bool isInterrupted() 
             {
-                QMutexLocker locker(&m_interruptMutex);
+//                QMutexLocker locker(&m_interruptMutex);
                 bool res = m_interruptFlag;
                 m_interruptFlag = false;
                 return res;
@@ -786,7 +790,7 @@ namespace ito
             */
             void setInterrupt()
             {
-                QMutexLocker locker(&m_interruptMutex);
+//                QMutexLocker locker(&m_interruptMutex);
                 m_interruptFlag = true;
             }
 
@@ -912,7 +916,7 @@ namespace ito
                     m_interfaceMeta(interfaceMeta)
                 {}
 
-                ~FilterDef() {}
+                virtual ~FilterDef() {}
 
 				t_filter m_filterFunc;	//!< function pointer (unbounded, static) for filter-method
                 t_filterParam m_paramFunc;	//!< function pointer (unbounded, static) for filter's default parameter method
@@ -937,7 +941,7 @@ namespace ito
                     m_pBasePlugin(NULL),
                     m_category(ito::AddInAlgo::catNone),
                     m_interface(ito::AddInAlgo::iNotSpecified)
-                {};
+                {}
 				
 				//!< constructor with all necessary arguments.
                 AlgoWidgetDef(AddInAlgo::t_algoWidget algoWidgetFunc, AddInAlgo::t_filterParam algoWidgetParamFunc, QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, QString interfaceMeta = QString()) : 
@@ -948,9 +952,9 @@ namespace ito
                     m_category(category),
                     m_interface(interf),
                     m_interfaceMeta(interfaceMeta)
-                {};
+                {}
 
-                ~AlgoWidgetDef() {}		//!< destructor
+                virtual ~AlgoWidgetDef();	//!< destructor
 
                 t_algoWidget m_widgetFunc;	//!< function pointer (unbounded, static) for widget-method
                 t_filterParam m_paramFunc;	//!< function pointer (unbounded, static) for widget's default parameter method
@@ -1029,6 +1033,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.13",//version from 2013-03-25 - 2013-04-08 (removed transpose flag in dataObject)
     "ito.AddIn.InterfaceBase/1.1.14",//version from 2013-04-08 - 2013-04-17 (uniqueID and identifier inserted/changed)
     "ito.AddIn.InterfaceBase/1.1.15",//version from 2013-04-17 - 2013-04-23 (made some tag-space related methods non-inline (due to linker errors in MSVC))
+    "ito.AddIn.InterfaceBase/1.1.16",//version from 2013-04-23 - 2013-06-07 (added qpluginloader to the interface for cleaner unloading of plugins)
     NULL
 };
 

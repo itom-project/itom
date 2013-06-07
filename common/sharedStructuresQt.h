@@ -35,15 +35,16 @@
 
 #include "sharedStructures.h"
 
+
 class ItomSharedSemaphore
 {
     private:
         QSemaphore *m_pSemaphore;        /*!< underlying instance of QSemaphore. This semaphore is created and destructed in the constructor and destructor respectively. */
-        int m_numOfListeners;            /*!< number of called methods (listeners) in different threads. Every listener must release this semaphore before it is finally unlocked. */
         int m_instCounter;                /*!<  counts how many instances are remaining, which are still participating at this wait condition */
         bool m_enableDelete;              /*!<  helper member variable avoiding that this instance is deleted directly by "delete"-keyword */
+        int m_numOfListeners;            /*!< number of called methods (listeners) in different threads. Every listener must release this semaphore before it is finally unlocked. */
         bool m_callerStillWaiting;        /*!< true if caller is still waiting, false if caller finished or run into a timeout */
-        static QMutex internalMutex;    /*!<  static mutex internally used for protecting some commands */
+        QMutex internalMutex;           /*!<  static mutex internally used for protecting some commands */
 
     public:
         //! constructor
@@ -98,7 +99,7 @@ class ItomSharedSemaphore
             bool temp;
             temp = m_pSemaphore->tryAcquire(m_numOfListeners, timeout);
 
-            QMutexLocker mutexLocker(&ItomSharedSemaphore::internalMutex);
+            QMutexLocker mutexLocker(&internalMutex);
             if(temp == false)
             {
                 qDebug() << "ItomSharedSemaphore run into a timeout. Number of attempted listeners: " << m_numOfListeners << ", already freed: " << m_pSemaphore->available();
@@ -135,34 +136,35 @@ class ItomSharedSemaphore
             @return true if caller-method is still waiting (in \sa wait-method) that all listeners are calling the release method
             in order to free the lock of the semaphore. else: false
         */
-        inline bool isCallerStillWaiting() { QMutexLocker mutexLocker(&ItomSharedSemaphore::internalMutex); return m_callerStillWaiting; }
+        inline bool isCallerStillWaiting() { QMutexLocker mutexLocker(&internalMutex); return m_callerStillWaiting; }
 
         //! static method to decrease the reference counter of any ItomSharedSemaphore or delete it if the reference counter drops to zero
-        /*
-            Every listener and the caller-method must call this static method with the pointer to the corresponding ItomSharedSemaphore
-            in order to guarantee the final deletion of the semaphore, if it is not needed any more by any participating method (caller or listener).
+        //
+        //  Every listener and the caller-method must call this static method with the pointer to the corresponding ItomSharedSemaphore
+        //  in order to guarantee the final deletion of the semaphore, if it is not needed any more by any participating method (caller or listener).
+        //
+        //  In every listener method (called method) you should call this method after you released the semaphore (\sa release).
+        // The ItomSharedSemaphore consists of a internal reference counter, which is set to the number of listeners plus 1 at
+        //  construction time. Every call to deleteSemaphore decreases this counter and if this counter drops to zero, no method
+        //  uses the semaphore any more such that it is safely deleted. Be careful that you don't access the semaphore in a method
+        //  where you already called deleteSemaphore with the semaphore-pointer as parameter.
+        //
+        //  In order to simplify the handling of ItomSharedSemaphore consider to used ItomSharedSemaphoreLocker.
 
-            In every listener method (called method) you should call this method after you released the semaphore (\sa release).
-            The ItomSharedSemaphore consists of a internal reference counter, which is set to the number of listeners plus 1 at 
-            construction time. Every call to deleteSemaphore decreases this counter and if this counter drops to zero, no method
-            uses the semaphore any more such that it is safely deleted. Be careful that you don't access the semaphore in a method
-            where you already called deleteSemaphore with the semaphore-pointer as parameter.
-
-            In order to simplify the handling of ItomSharedSemaphore consider to used ItomSharedSemaphoreLocker.
-        */
-        inline static bool deleteSemaphore(ItomSharedSemaphore *instance)
+        inline void deleteSemaphore(void)
         {
-            QMutexLocker mutexLocker(&ItomSharedSemaphore::internalMutex);
+            QMutexLocker mutexLocker(&internalMutex);
 
-            instance->m_instCounter --;
-            if(instance->m_instCounter <= 0)
+            m_instCounter --;
+            if(m_instCounter <= 0)
             {
-                instance->m_enableDelete = true;
-                delete instance;
-                return true;
+                m_enableDelete = true;
+                mutexLocker.unlock();
+                delete this;
+                return;
             }
 
-            return false;
+            return;
         }
 
         ito::RetVal returnValue; /*!< public returnValue member variable of ItomSharedSemaphore. This return value can be used to return the result of any called method (listener) to the caller. Please access this value in caller only if the wait-method returned with true. Write to returnValue in called method (listener) before releasing the semaphore. This is important, since the returnValue is not fully thread safe.*/
@@ -190,7 +192,7 @@ class ItomSharedSemaphoreLocker
         {
             if(m_semaphore)
             {
-                ItomSharedSemaphore::deleteSemaphore(m_semaphore);
+                m_semaphore->deleteSemaphore();
                 m_semaphore = NULL;
             }
         }
@@ -204,7 +206,11 @@ class ItomSharedSemaphoreLocker
         */
         inline ItomSharedSemaphoreLocker & operator = (ItomSharedSemaphore *newSemaphoreInstance)
         {
-            if(m_semaphore) ItomSharedSemaphore::deleteSemaphore(m_semaphore);
+            if(m_semaphore)
+            {
+                m_semaphore->deleteSemaphore();
+                m_semaphore = NULL;
+            }
             m_semaphore = newSemaphoreInstance;
             return *this;
         }
