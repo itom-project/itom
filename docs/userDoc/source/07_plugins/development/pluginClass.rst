@@ -258,24 +258,24 @@ The prototype for the method *getParam* then looks like this:
         bool hasIndex = false;
         int index;
         QString suffix;
-		QMap<QString,ito::Param>::iterator it;
+        QMap<QString,ito::Param>::iterator it;
         
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-		
-		if(retValue == ito::retOk)
-		{
-			//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
-			retValue += apiGetParamFromMapByKey(m_params, key, it, false);
-		}
+        
+        if(retValue == ito::retOk)
+        {
+            //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+            retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+        }
 
-		if(!retValue.containsError())
-		{
-			//put your switch-case.. for getting the right value here
-			
-			//finally, save the desired value in the argument val (this is a shared pointer!)
-			*val = it.value();
-		}
+        if(!retValue.containsError())
+        {
+            //put your switch-case.. for getting the right value here
+            
+            //finally, save the desired value in the argument val (this is a shared pointer!)
+            *val = it.value();
+        }
 
 		if (waitCond) 
 		{

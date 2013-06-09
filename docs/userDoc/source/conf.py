@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'itom Documentation'
-copyright = '2011-2013, Institut for Technical Optics (ITO), University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues'
+copyright = '2011-2013, Institut fuer Technische Optik (ITO), University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

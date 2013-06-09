@@ -93,11 +93,11 @@ Scheme of the inter-thread communication
             //timeout occurred
         }
 
-5. Finally all participants at the communcation process (*here*: caller and called method) have to delete the semaphore. Be careful: This can not be done by simply **deleting the pointer to waitCond**. Instead both the caller and the called method have to execute the following command, hence, call the static method **deleteSemaphore** of *ItomSharedSemaphore*:
+5. Finally all participants at the communcation process (*here*: caller and called method) have to delete the semaphore. Be careful: This can not be done by simply **deleting the pointer to waitCond**. Instead both the caller and the called method have to execute the following command, hence, call the method **deleteSemaphore** of the semaphore pointer:
     
     .. code-block:: c++
         
-        ItomSharedSemaphore::deleteSemaphore(waitCond)
+        waitCond->deleteSemaphore()
 
 6. After that the last participant at the communcation process deleted the semaphore, it is really deleted by |itom|. Then you don't have access to the semaphore any more, hence, you also don't have access to the internal return value.
 
