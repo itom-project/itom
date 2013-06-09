@@ -150,8 +150,8 @@ You have different possibilities in order to get the binaries from OpenCV:
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. Then map **OpenCV_DIR** to the build-directory, indicated in CMake.
 
 Finally, add the appropriate bin-folder of OpenCV to the windows environment variable: 
-- VS2010, 32bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x86\\vc10\\bin** (or similar)
-- VS2010, 64bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x64\\vc10\\bin** (or similar)
+- VS2010, 32bit: Add to the path-variable: **;C:\OpenCV2.3\build\x86\vc10\bin** (or similar)
+- VS2010, 64bit: Add to the path-variable: **;C:\OpenCV2.3\build\x64\vc10\bin** (or similar)
 
 Changes to the environment variable only become active after a re-login to windows.
 
@@ -165,6 +165,10 @@ You don't have to install OpenNI, since this is only the binaries for the commun
 
 If you want to debug the point cloud library (not necessary, optional) unpack the appropriate zip-archive with the pdb-files into the bin-folder of the point cloud library. 
 This is the folder where the dll's are located as well.
+
+Add the path to the bin-folder of PointCloud-library to the windows environment variable:
+
+- Add to the path-variable: **;C:\PCL\1.6.0\bin** (or similar)
 
 **Python** (mandatory, 3.2)
 
