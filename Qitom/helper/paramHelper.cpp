@@ -422,8 +422,18 @@ namespace ito {
     ito::RetVal ParamHelper::validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict /*= true*/, bool mandatory /*= false*/)
     {
         ito::RetVal retVal;
+        bool hasIndex = false;
+        int index;
 
-        if(templateParam.getType() == param.getType())
+        //check whether param has an index
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
+        if(rx.indexIn(param.getName()) >= 0)
+        {
+            hasIndex = true;
+            index = rx.capturedTexts()[3].toInt();
+        }
+
+        if(!hasIndex && (templateParam.getType() == param.getType()))
         {
 
             switch(templateParam.getType())
@@ -491,6 +501,37 @@ namespace ito {
 				{
 					retVal += validateHWMeta( dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory );
 				}
+                break;
+            }
+        }
+        else if(hasIndex && (templateParam.getType() & ito::ParamBase::Pointer) && (templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)))
+        {
+            if (index < 0 || index >= templateParam.getLen())
+            {
+                retVal += ito::RetVal::format(ito::retError,0,QObject::tr("Index value is out of range [0,%i]").toAscii().data(),templateParam.getLen()-1);
+            }
+
+            switch(templateParam.getType())
+            {
+            case ito::ParamBase::CharArray:
+                {
+					retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
+                }
+				break;
+			case ito::ParamBase::IntArray:
+                {
+					retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
+                }
+				break;
+			case ito::ParamBase::DoubleArray:
+                {
+					retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
+                }
+				break;
+            default:
+                {
+                    retVal += ito::RetVal(ito::retError,0,QObject::tr("Index-based parameter name requires an array-type parameter.").toAscii().data());
+                }
                 break;
             }
         }

@@ -334,6 +334,7 @@ namespace ito
                     return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::Char, c) ); //does not require the special deleter
                 }
             }
+            break;
         }
     case ito::ParamBase::Int:
         {
@@ -374,6 +375,38 @@ namespace ito
             }
         }
         break;
+    case ito::ParamBase::IntArray:
+        {
+            QVector<int> ia = PythonQtConversion::PyObjGetIntArray(obj, strict, ok);
+            if(ok)
+            {
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::IntArray, ia.size(), ia.constData() ) );
+            }
+            break;
+        }
+    case ito::ParamBase::DoubleArray:
+        {
+            QVector<double> da = PythonQtConversion::PyObjGetDoubleArray(obj, strict, ok);
+            if(ok)
+            {
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::DoubleArray, da.size(), da.constData() ) );
+            }
+            break;
+        }
+    case ito::ParamBase::CharArray:
+        {
+            if (PyByteArray_Check(obj))
+            {
+                char *buf  = (char *)PyByteArray_AsString(obj);
+                Py_ssize_t listlen = PyByteArray_Size(obj);
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::CharArray, listlen, buf ) );
+            }
+            else
+            {
+                ok = false;
+            }
+            break;
+        }
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
         {
             ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok);

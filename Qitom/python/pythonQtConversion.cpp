@@ -432,12 +432,54 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     Py_ssize_t len = PySequence_Size(val);
     PyObject *t = NULL;
 
-    for(Py_ssize_t i = 0 ; i < len ; i++)
+    if (strict)
     {
-        t = PySequence_GetItem(val,i); //new reference
-        v.append( PyObjGetDouble(t,strict,ok) );
-        Py_XDECREF(t);
-        if(!ok) break;
+        for(Py_ssize_t i = 0 ; i < len ; i++)
+        {
+            t = PySequence_GetItem(val,i); //new reference
+            if( PyFloat_Check(t) )
+            {
+                v.append( PyFloat_AS_DOUBLE(t) );
+            }
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
+    }
+    else
+    {
+        for(Py_ssize_t i = 0 ; i < len ; i++)
+        {
+            t = PySequence_GetItem(val,i); //new reference
+            
+            if (PyFloat_Check(t)) 
+            {
+                v.append( floor(PyFloat_AS_DOUBLE(t)) );
+            } 
+            else if( PyLong_Check(t) )
+            {
+                v.append( PyLong_AsLong(t) );
+            }
+            else if (t == Py_False) 
+            {
+                v.append(0);
+            } 
+            else if (t == Py_True) 
+            {
+                v.append(1);
+            } 
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
     }
 
     if(!ok)
@@ -461,12 +503,53 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     Py_ssize_t len = PySequence_Size(val);
     PyObject *t = NULL;
 
-    for(Py_ssize_t i = 0 ; i < len ; i++)
+    if (strict)
     {
-        t = PySequence_GetItem(val,i); //new reference
-        v.append( PyObjGetInt(t,strict,ok) );
-        Py_XDECREF(t);
-        if(!ok) break;
+        for(Py_ssize_t i = 0 ; i < len ; i++)
+        {
+            t = PySequence_GetItem(val,i); //new reference
+            if( PyLong_Check(t) )
+            {
+                v.append( PyLong_AsLong(t) );
+            }
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
+    }
+    else
+    {
+        for(Py_ssize_t i = 0 ; i < len ; i++)
+        {
+            t = PySequence_GetItem(val,i); //new reference
+            if( PyLong_Check(t) )
+            {
+                v.append( PyLong_AsLong(t) );
+            }
+            else if (PyFloat_Check(t)) 
+            {
+                v.append( floor(PyFloat_AS_DOUBLE(t)) );
+            } 
+            else if (t == Py_False) 
+            {
+                v.append(0);
+            } 
+            else if (t == Py_True) 
+            {
+                v.append(1);
+            } 
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
     }
 
     if(!ok)

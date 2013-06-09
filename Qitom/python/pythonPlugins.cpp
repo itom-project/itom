@@ -339,7 +339,7 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 
    if (paramList)
    {
-      std::cout << "\n Plugin parameters are:\n\n";
+      std::cout << "Plugin parameters are:\n";
 
       QVector<ito::Param> parameter = paramList->values().toVector();
       result = PrntOutParams(&parameter, false, true, -1);
@@ -350,7 +350,7 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
        std::cout << " \nPlugin does not accept parameters! \n";
    }
 
-   std::cout << "\n";
+   //std::cout << "\n";
 
     if ((length == 0) || (output==0))
     {
@@ -712,9 +712,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 {
     PyObject *result = NULL;
     const char *paramName = NULL;
-    bool paramNameCheck;
-
-    //char *name = (char*)calloc(255, sizeof(char));
+    //bool paramNameCheck;
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
@@ -726,20 +724,32 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
         return NULL;
     }
 
-    ito::Param param = ((ito::AddInBase*)addInObj)->getParamRec(paramName,&paramNameCheck);
-    if (!paramNameCheck)
+    //check parameter name and split it into its components
+    bool hasIndex;
+    QString nameOnly;
+    int index;
+    QString additionalTag;
+    if(ito::ParamHelper::parseParamName(paramName, nameOnly, hasIndex, index, additionalTag).containsError())
     {
-        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
-        return NULL;
-    }
-    else if (param.isValid() == false)
-    {
-        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
+        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
         return NULL;
     }
 
-    //QSharedPointer<ito::Param> qsParam(new ito::Param(param2));
-    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
+    //now get pointer to the parameter-map from plugin and check whether paramName is available
+    QMap<QString, Param> *params;
+    QMap<QString, Param>::iterator it;
+    ((ito::AddInBase*)addInObj)->getParamList(&params); //always returns ok
+
+    //find parameter in params
+    it = params->find(nameOnly);
+    if (it == params->end())
+    {
+        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", nameOnly.toAscii().data());
+        return NULL;
+    }
+
+    QSharedPointer<ito::Param> qsParam(new ito::Param(paramName)); //here it is sufficient to provide an empty param container with name only, the content will be filled by the plugin (including type)
+    
     QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     while (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -773,215 +783,75 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 */
 template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
 {
-    const char *paramName = NULL;
-    const char *cVal = NULL;
-    double dval = 0;
+    const char *key = NULL;
     ItomSharedSemaphore *waitCond = NULL;
-    int length = PyTuple_Size(args);
     ito::RetVal ret = ito::retOk;
-    ito::Param param;
+    //ito::Param param;
     ito::AddInBase* aib = (ito::AddInBase*)addInObj;
-    bool paramNameCheck;
+    PyObject *value = NULL;
 
-    if (length == 0)
+    QSharedPointer<ito::ParamBase> qsParam;
+
+    if(!PyArg_ParseTuple(args, "sO", &key, &value))
     {
-        PyErr_Format(PyExc_ValueError, "no parameter name specified");
-        return NULL;
-    }
-    else if (length == 1)
-    {
-        PyErr_Format(PyExc_ValueError, "no parameter supplied");
-        return NULL;
-    }
-    else if (length > 2)
-    {
-        PyErr_Format(PyExc_ValueError, "too many parameters supplied");
+        PyErr_Format(PyExc_ValueError, "Parameter name and its value required.");
         return NULL;
     }
 
-    if (PyArg_ParseTuple(args, "ss", &paramName, &cVal))
+    //check parameter name and split it into its components
+    bool hasIndex;
+    QString paramName;
+    int index;
+    QString additionalTag;
+    if(ito::ParamHelper::parseParamName(key, paramName, hasIndex, index, additionalTag).containsError())
     {
-        param = aib->getParamRec(paramName,&paramNameCheck);
-        if (!paramNameCheck)
-        {
-            PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
-            return NULL;
-        }
-        else if (param.isValid() == false)
-        {
-            PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
-            return NULL;
-        }
-        if ((param.getType() != (ito::ParamBase::Char & ito::paramTypeMask)) && (param.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
-        {
-            PyErr_Format(PyExc_TypeError, "wrong parameter type");
-            return NULL;
-        }
-        param.setVal<char*>(const_cast<char*>(cVal), strlen(cVal));
+        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
+        return NULL;
     }
-    else if (PyErr_Clear(), PyArg_ParseTuple(args, "sd", &paramName, &dval))
+
+    //now get pointer to the parameter-map from plugin and check whether paramName is available
+    QMap<QString, Param> *params;
+    QMap<QString, Param>::iterator it;
+    aib->getParamList(&params); //always returns ok
+
+    //find parameter in params
+    it = params->find(paramName);
+    if (it == params->end())
     {
-        bool hasIndex;
-        QString pureName;
-        int index;
-        QString additionalTag;
-        if(ito::ParamHelper::parseParamName(paramName, pureName, hasIndex, index, additionalTag).containsError())
-        {
-            PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
-            return NULL;
-        }
-
-        param = aib->getParamRec(paramName,&paramNameCheck);
-        if (param.isValid() == false)
-        {
-            PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
-            return NULL;
-        }
-        
-        if (((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Double & ito::paramTypeMask)) 
-            && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Int & ito::paramTypeMask)) 
-            && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Char & ito::paramTypeMask)))
-        {
-            PyErr_Format(PyExc_TypeError, "wrong parameter type");
-            return NULL;
-        }
-
-        if(!hasIndex)
-        {
-            if (ito::checkNumericParamRange(param,dval,NULL) == false)
-            {
-                PyErr_Format(PyExc_ValueError, "out of parameter range");
-                return NULL;
-            }
-        }
-        else
-        {
-            if(param.getType() != ito::ParamBase::CharArray && param.getType() != ito::ParamBase::IntArray && param.getType() != ito::ParamBase::DoubleArray)
-            {
-                PyErr_Format(PyExc_ValueError, "for index-based parameter names an array-like parameter is required");
-                return NULL;
-            }
-        }
-        if (param.getType() & ito::ParamBase::Pointer)
-            param = ito::Param(paramName, param.getType() & ~ito::ParamBase::Pointer, dval, NULL, NULL);
-            //param = ito::tParam(paramName, param.getType() & ~ito::ParamBase::Pointer, param.getMin(), param.getMax(), dval, param.getInfo());
-        else
-            param.setVal<double>(dval);
+        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", paramName.toAscii().data());
+        return NULL;
     }
-    else if (length == 2)
+
+    if(hasIndex)
     {
-        PyObject *tempObj = PyTuple_GetItem(args, 0);
-        //char *paramname = NULL;
-
-        int listlen = 0;
-
-        if (PyErr_Clear(), !PyUnicode_Check(tempObj))
+        switch(it->getType())
         {
-            PyErr_Format(PyExc_TypeError, "missing parameter name");
-            return NULL;
-        }
-        //paramname = PyBytes_AsString(PyUnicode_AsASCIIString(tempObj));
-        param = aib->getParamRec(paramName, &paramNameCheck);
-        if (!paramNameCheck)
-        {
-            PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
-            return NULL;
-        }
-        else if (param.isValid() == false)
-        {
-            PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
-            return NULL;
-        }
-
-        tempObj = PyTuple_GetItem(args, 1);
-
-        if (PyErr_Clear(), PySequence_Check(tempObj))
-        {
-            PyObject *listElem = NULL;
-            int listType = 0;
-            listlen = PySequence_Size(tempObj);
-
-            if (PyByteArray_Check(tempObj))
-            {
-                //! byte type lists
-                if (param.getType() == (ito::ParamBase::CharArray & ito::paramTypeMask))
-                {
-                    char *buf  = (char *)PyByteArray_AsString(tempObj);
-                    listlen = PyByteArray_Size(tempObj);
-                    param.setVal<char*>(buf, listlen);
-                }
-                else
-                {
-                    ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
-                }
-            }
-            else
-            {
-                for (int n = 0; n < listlen; n++)
-                {
-                    listElem = PySequence_GetItem(tempObj, n); //new reference
-                    if (PyErr_Clear(), PyLong_Check(listElem))
-                    {
-                        listType |= 2;
-                    }
-                    else if (PyErr_Clear(), PyFloat_Check(listElem))
-                    {
-                        listType |= 4;
-                    }
-                    else
-                    {
-                        Py_XDECREF(listElem);
-                        PyErr_Format(PyExc_TypeError, "invalid paramter format, invalid array item");
-                        return NULL;
-                    }
-                    Py_XDECREF(listElem);
-                }
-
-                //! integer type lists
-                if ((param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask)) && listType <= 3)
-                {
-                    int *buf;
-                    buf = (int*)malloc(listlen * sizeof(int));
-                    for (int n = 0; n < listlen; n++)
-                    {
-                        listElem = PySequence_GetItem(tempObj, n); //new reference
-                        ((int *)buf)[n] = PyLong_AsLong(listElem);
-                        Py_XDECREF(listElem);
-                    }
-                    param.setVal<int*>(buf, listlen);
-                    free(buf);
-                    buf = NULL;
-                }
-                else if ((param.getType() == (ito::ParamBase::DoubleArray & ito::paramTypeMask)) && listType <= 7)
-                {
-                    double *buf;
-                    buf = (double*)malloc(listlen * sizeof(double));
-                    for (int n = 0; n < listlen; n++)
-                    {
-                        listElem = PySequence_GetItem(tempObj, n); //new reference
-                        ((double *)buf)[n] = PyFloat_AsDouble(listElem);
-                        Py_XDECREF(listElem);
-                    }
-                    param.setVal<double*>(buf, listlen);
-                    free(buf);
-                    buf = NULL;
-                }
-                else
-                {
-                    ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
-                }
-            }
-        }
-        else
-        {
-            PyErr_Format(PyExc_TypeError, "invalid parameter format, parameter #2 must be either byte, int or double array");
+        case ito::ParamBase::CharArray:
+            qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Char, false);
+            break;
+        case ito::ParamBase::IntArray:
+            qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Int, false);
+            break;
+        case ito::ParamBase::DoubleArray:
+            qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Double, false);
+            break;
+        default:
+            PyErr_Format(PyExc_ValueError, "Parameter '%s' of plugin is no array.", paramName.toAscii().data());
             return NULL;
         }
     }
-
-    if (!ret.containsError())
+    else
     {
-        QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param));
+        qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, it->getType(), false);
+    }
+
+    if(ret.containsError())
+    {
+        PyErr_Format(PyExc_ValueError, "The given value could not be transformed to type of parameter.", paramName.toAscii().data());
+        return NULL;
+    }
+    else
+    {
         bool timeout = false;
         waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
@@ -1010,6 +880,230 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     }
     
     Py_RETURN_NONE;
+
+
+
+
+    //if (length == 0)
+    //{
+    //    PyErr_Format(PyExc_ValueError, "no parameter name specified");
+    //    return NULL;
+    //}
+    //else if (length == 1)
+    //{
+    //    PyErr_Format(PyExc_ValueError, "no parameter supplied");
+    //    return NULL;
+    //}
+    //else if (length > 2)
+    //{
+    //    PyErr_Format(PyExc_ValueError, "too many parameters supplied");
+    //    return NULL;
+    //}
+
+    //if (PyArg_ParseTuple(args, "ss", &paramName, &cVal))
+    //{
+    //    param = aib->getParamRec(paramName,&paramNameCheck);
+    //    if (!paramNameCheck)
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['[index]'][:additionalTag]");
+    //        return NULL;
+    //    }
+    //    else if (param.isValid() == false)
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin.", paramName);
+    //        return NULL;
+    //    }
+
+    //    if ((param.getType() != (ito::ParamBase::Char & ito::paramTypeMask)) && (param.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "wrong parameter type");
+    //        return NULL;
+    //    }
+    //    param.setVal<char*>(const_cast<char*>(cVal), strlen(cVal));
+    //}
+    //else if (PyErr_Clear(), PyArg_ParseTuple(args, "sd", &paramName, &dval))
+    //{
+    //    
+
+    //    param = aib->getParamRec(paramName,&paramNameCheck);
+    //    if (param.isValid() == false)
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
+    //        return NULL;
+    //    }
+    //    
+    //    if (((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Double & ito::paramTypeMask)) 
+    //        && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Int & ito::paramTypeMask)) 
+    //        && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Char & ito::paramTypeMask)))
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "wrong parameter type");
+    //        return NULL;
+    //    }
+
+    //    if(!hasIndex)
+    //    {
+    //        if (ito::checkNumericParamRange(param,dval,NULL) == false)
+    //        {
+    //            PyErr_Format(PyExc_ValueError, "out of parameter range");
+    //            return NULL;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if(param.getType() != ito::ParamBase::CharArray && param.getType() != ito::ParamBase::IntArray && param.getType() != ito::ParamBase::DoubleArray)
+    //        {
+    //            PyErr_Format(PyExc_ValueError, "for index-based parameter names an array-like parameter is required");
+    //            return NULL;
+    //        }
+    //    }
+    //    if (param.getType() & ito::ParamBase::Pointer)
+    //        param = ito::Param(paramName, param.getType() & ~ito::ParamBase::Pointer, dval, NULL, NULL);
+    //        //param = ito::tParam(paramName, param.getType() & ~ito::ParamBase::Pointer, param.getMin(), param.getMax(), dval, param.getInfo());
+    //    else
+    //        param.setVal<double>(dval);
+    //}
+    //else if (length == 2)
+    //{
+    //    PyObject *tempObj = PyTuple_GetItem(args, 0);
+    //    //char *paramname = NULL;
+
+    //    int listlen = 0;
+
+    //    if (PyErr_Clear(), !PyUnicode_Check(tempObj))
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "missing parameter name");
+    //        return NULL;
+    //    }
+    //    //paramname = PyBytes_AsString(PyUnicode_AsASCIIString(tempObj));
+    //    param = aib->getParamRec(paramName, &paramNameCheck);
+    //    if (!paramNameCheck)
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
+    //        return NULL;
+    //    }
+    //    else if (param.isValid() == false)
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
+    //        return NULL;
+    //    }
+
+    //    tempObj = PyTuple_GetItem(args, 1);
+
+    //    if (PyErr_Clear(), PySequence_Check(tempObj))
+    //    {
+    //        PyObject *listElem = NULL;
+    //        int listType = 0;
+    //        listlen = PySequence_Size(tempObj);
+
+    //        if (PyByteArray_Check(tempObj))
+    //        {
+    //            //! byte type lists
+    //            if (param.getType() == (ito::ParamBase::CharArray & ito::paramTypeMask))
+    //            {
+    //                char *buf  = (char *)PyByteArray_AsString(tempObj);
+    //                listlen = PyByteArray_Size(tempObj);
+    //                param.setVal<char*>(buf, listlen);
+    //            }
+    //            else
+    //            {
+    //                ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
+    //            }
+    //        }
+    //        else
+    //        {
+    //            for (int n = 0; n < listlen; n++)
+    //            {
+    //                listElem = PySequence_GetItem(tempObj, n); //new reference
+    //                if (PyErr_Clear(), PyLong_Check(listElem))
+    //                {
+    //                    listType |= 2;
+    //                }
+    //                else if (PyErr_Clear(), PyFloat_Check(listElem))
+    //                {
+    //                    listType |= 4;
+    //                }
+    //                else
+    //                {
+    //                    Py_XDECREF(listElem);
+    //                    PyErr_Format(PyExc_TypeError, "invalid paramter format, invalid array item");
+    //                    return NULL;
+    //                }
+    //                Py_XDECREF(listElem);
+    //            }
+
+    //            //! integer type lists
+    //            if ((param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask)) && listType <= 3)
+    //            {
+    //                int *buf;
+    //                buf = (int*)malloc(listlen * sizeof(int));
+    //                for (int n = 0; n < listlen; n++)
+    //                {
+    //                    listElem = PySequence_GetItem(tempObj, n); //new reference
+    //                    ((int *)buf)[n] = PyLong_AsLong(listElem);
+    //                    Py_XDECREF(listElem);
+    //                }
+    //                param.setVal<int*>(buf, listlen);
+    //                free(buf);
+    //                buf = NULL;
+    //            }
+    //            else if ((param.getType() == (ito::ParamBase::DoubleArray & ito::paramTypeMask)) && listType <= 7)
+    //            {
+    //                double *buf;
+    //                buf = (double*)malloc(listlen * sizeof(double));
+    //                for (int n = 0; n < listlen; n++)
+    //                {
+    //                    listElem = PySequence_GetItem(tempObj, n); //new reference
+    //                    ((double *)buf)[n] = PyFloat_AsDouble(listElem);
+    //                    Py_XDECREF(listElem);
+    //                }
+    //                param.setVal<double*>(buf, listlen);
+    //                free(buf);
+    //                buf = NULL;
+    //            }
+    //            else
+    //            {
+    //                ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        PyErr_Format(PyExc_TypeError, "invalid parameter format, parameter #2 must be either byte, int or double array");
+    //        return NULL;
+    //    }
+    //}
+
+    //if (!ret.containsError())
+    //{
+    //    QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param));
+    //    bool timeout = false;
+    //    waitCond = new ItomSharedSemaphore();
+    //    QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
+    //    while (!waitCond->wait(PLUGINWAIT))
+    //    {
+    //        if (!addInObj->isAlive())
+    //        {
+    //            ret += ito::RetVal(ito::retError, 0, "timeout.");
+    //            timeout = true;
+    //            break;
+    //        }
+    //    }
+
+    //    if (!timeout)
+    //    {
+    //        ret += waitCond->returnValue;
+    //    }
+
+    //     waitCond->deleteSemaphore();
+    //     waitCond = NULL;
+    //}
+
+    //if (!SetReturnValueMessage(ret, "setParam"))
+    //{
+    //    return NULL;
+    //}
+    //
+    //Py_RETURN_NONE;
 }
 
 
