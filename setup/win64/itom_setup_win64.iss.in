@@ -10,6 +10,7 @@
 #define SourceDirITOMHelp "${CMAKE_CURRENT_SOURCE_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
+#define SourceDirPCL "${PCL_DIR}\.."
 #define ExeName "Qitom.exe"
 #define Name "itom (x64)"
 #define Version "${ITOM_versionString}"
@@ -92,6 +93,7 @@ Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_core230.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qgif4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qico4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
