@@ -277,11 +277,11 @@ The prototype for the method *getParam* then looks like this:
             *val = it.value();
         }
 
-		if (waitCond) 
-		{
-			waitCond->returnValue = retValue;
-			waitCond->release();
-		}
+        if (waitCond) 
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
 
         return retValue;
     }
@@ -324,54 +324,54 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         bool hasIndex;
         int index;
         QString suffix;
-		QMap<QString, ito::Param>::iterator it;
-		
-		//parse the given parameter-name (if you support indexed or suffix-based parameters)
+        QMap<QString, ito::Param>::iterator it;
+        
+        //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
-		
-		if(isMotorMoving()) //this if-case is for actuators only.
-		{
-			retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
-		}
-		
-		if(!retValue.containsError())
-		{
-			//gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
-			retValue += apiGetParamFromMapByKey(m_params, key, it, true);
-		}
+        
+        if(isMotorMoving()) //this if-case is for actuators only.
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
+        }
+        
+        if(!retValue.containsError())
+        {
+            //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+            retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+        }
 
         if(!retValue.containsError())
         {
-			//here the new parameter is checked whether it's type corresponds or can be cast into the
-			// value in m_params and whether the new type fits to the requirements of any possible
-			// meta structure.
-			retValue += apiValidateParam(*it, *val, false, true);
-		}
-		
-		if(!retValue.containsError())
-		{			
-			if(key == "async")
-			{
-				//check the new value and if ok, assign it to the internal parameter
-				retValue += it->copyValueFrom( &(*val) );
-			}
-            else if(key == "demoKey")
-			{
-				//check the new value and if ok, assign it to the internal parameter
-				retValue += it->copyValueFrom( &(*val) );
-			}
-			else
-			{
-				//all parameters that don't need further checks can simply be assigned
-				//to the value in m_params (the rest is already checked above)
-				retValue += it->copyValueFrom( &(*val) );
-			}
+            //here the new parameter is checked whether it's type corresponds or can be cast into the
+            // value in m_params and whether the new type fits to the requirements of any possible
+            // meta structure.
+            retValue += apiValidateParam(*it, *val, false, true);
         }
-		
-		if(!retValue.containsError())
-		{
-			emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-		}
+        
+        if(!retValue.containsError())
+        { 
+            if(key == "async")
+            {
+                //check the new value and if ok, assign it to the internal parameter
+                retValue += it->copyValueFrom( &(*val) );
+            }
+            else if(key == "demoKey")
+            {
+                //check the new value and if ok, assign it to the internal parameter
+                retValue += it->copyValueFrom( &(*val) );
+            }
+            else
+            {
+                //all parameters that don't need further checks can simply be assigned
+                //to the value in m_params (the rest is already checked above)
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        
+        if(!retValue.containsError())
+        {
+            emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+        }
 
         if (waitCond) 
         {
