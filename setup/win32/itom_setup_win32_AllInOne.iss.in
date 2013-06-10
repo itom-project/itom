@@ -12,7 +12,7 @@
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
 #define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
 #define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.3\32 Bit"
-;#define SourceDirPCL "${PCL_DIR}/../bin"
+#define SourceDirPCL "${PCL_DIR}\.."
 #define ExeName "Qitom.exe"
 #define Name "itom"
 #define Version "${ITOM_versionString}"
@@ -50,9 +50,9 @@ Name: "{app}\plugins\DummyMotor"; Permissions: everyone-modify
 Name: "{app}\plugins\DummyMotor\translation"; Permissions: everyone-modify
 Name: "{app}\designer"; Permissions: everyone-modify
 Name: "{app}\demo"; Permissions: everyone-modify
-Name: "{app}\scripts"; Permissions: everyone-modify
-Name: "{app}\demoScripts"; Permissions: everyone-modify
-Name: "{app}\documentation"; Permissions: everyone-modify
+;Name: "{app}\scripts"; Permissions: everyone-modify
+;Name: "{app}\demoScripts"; Permissions: everyone-modify
+;Name: "{app}\documentation"; Permissions: everyone-modify
 Name: "{app}\itomSettings"; Permissions: everyone-modify
 Name: "{app}\lib"; Permissions: everyone-modify
 Name: "{app}\help"; Permissions: everyone-modify
@@ -95,6 +95,7 @@ Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_core230.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qgif4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qico4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
@@ -111,7 +112,6 @@ Source: "{#SourceDirITOMBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: prompti
 Source: "{#SourceDirITOMBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: promptifolder
 
 ; Hilfe
-; Source: "{#SourceDirITOMHelp}\documentation\itom_documentation\build\qthelp\*.*"; DestDir: "{app}\documentation\itom_documentation\build\qthelp"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: promptifolder
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: promptifolder
@@ -141,7 +141,7 @@ Source: "{#SourceDirITOMBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\it
 Source: "{#SourceDirITOMHelp}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
 
 ; itom-packages
-Source: "{#SourceDirITOMBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder  
+Source: "{#SourceDirITOMBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
 Source: "{#SourceDirITOMBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
 ;Source: "{#SourceDirITOMBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
@@ -192,8 +192,8 @@ Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: p
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
-;Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
-Source: "E:\itom\Source\itom\itom\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder
+;Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
+Source: "E:\itom\Source\itom\itom\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
