@@ -49,6 +49,7 @@ namespace ito
         (void*)&ParamHelper::validateParam,             /* [13] */
         (void*)&ParamHelper::getParamFromMapByKey,      /* [14] */
         (void*)&ParamHelper::parseParamName,            /* [15] */
+        (void*)&ParamHelper::getItemFromArray,          /* [16] */
 		NULL
 	};
 

@@ -715,4 +715,59 @@ namespace ito {
         return retValue;
     }
 
+
+    ito::RetVal ParamHelper::getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam)
+    {
+        ito::RetVal retval;
+        int len = arrayParam.getLen();
+
+        if(index < 0 || index >= len)
+        {
+            return ito::RetVal(ito::retError,0, QObject::tr("index is ouf of range").toAscii().data());
+        }
+
+        QString newName = QString("%1[%2]").arg( arrayParam.getName() ).arg( index );
+
+        switch(arrayParam.getType())
+        {
+        case ito::ParamBase::IntArray & ito::paramTypeMask:
+            {
+                int *val = arrayParam.getVal<int*>();
+                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::IntArray) | ito::ParamBase::Int, val[index], NULL, arrayParam.getInfo() );
+                const ito::ParamMeta *m = arrayParam.getMeta();
+                if (m)
+                {
+                    itemParam.copyMetaFrom( m );
+                }
+            }
+            break;
+        case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+            {
+                double *val = arrayParam.getVal<double*>();
+                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::DoubleArray) | ito::ParamBase::Double, val[index], NULL, arrayParam.getInfo() );
+                const ito::ParamMeta *m = arrayParam.getMeta();
+                if (m)
+                {
+                    itemParam.copyMetaFrom( m );
+                }
+            }
+            break;
+        case ito::ParamBase::CharArray & ito::paramTypeMask:
+            {
+                char *val = arrayParam.getVal<char*>();
+                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::CharArray) | ito::ParamBase::Char, val[index], NULL, arrayParam.getInfo() );
+                const ito::ParamMeta *m = arrayParam.getMeta();
+                if (m)
+                {
+                    itemParam.copyMetaFrom( m );
+                }
+            }
+            break;
+        default:
+            retval += ito::RetVal(ito::retError,0, QObject::tr("param is no array").toAscii().data());
+            break;
+        }
+        return retval;
+    }
+
 } //end namespace ito

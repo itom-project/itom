@@ -1034,10 +1034,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.14",//version from 2013-04-08 - 2013-04-17 (uniqueID and identifier inserted/changed)
     "ito.AddIn.InterfaceBase/1.1.15",//version from 2013-04-17 - 2013-04-23 (made some tag-space related methods non-inline (due to linker errors in MSVC))
     "ito.AddIn.InterfaceBase/1.1.16",//version from 2013-04-23 - 2013-06-07 (added qpluginloader to the interface for cleaner unloading of plugins)
+    "ito.AddIn.InterfaceBase/1.1.17",//version from 2013-06-07 - 2013-06-11 (apis extended, changes in param-class)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.16";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.18";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

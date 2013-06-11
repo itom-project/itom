@@ -865,6 +865,8 @@ namespace ito
             */
             bool setMeta(ParamMeta* meta, bool takeOwnership = false);
 
+            bool copyMetaFrom(const ParamMeta *meta);
+
             double getMin() const;
             double getMax() const;
     };

@@ -1051,6 +1051,52 @@ bool Param::setMeta(ParamMeta* meta, bool takeOwnership)
     return true;
 }
 
+bool Param::copyMetaFrom(const ParamMeta *meta)
+{
+    if(m_pMeta) 
+    {
+        delete m_pMeta; 
+        m_pMeta = NULL;
+    }
+
+    if(meta)
+    {
+        uint32 metaType = meta->getType();
+        if((metaType & m_type) != metaType)
+        {
+            return false;
+        }
+        else
+        {
+            switch(metaType & ito::paramTypeMask)
+            {
+            case Param::Int:
+                m_pMeta = new IntMeta( *(IntMeta*)(meta) );
+                break;
+            case Param::Double:
+                m_pMeta = new DoubleMeta( *(DoubleMeta*)(meta) );
+                break;
+            case Param::Char:
+                m_pMeta = new CharMeta( *(CharMeta*)(meta) );
+                break;
+            case Param::String:
+                m_pMeta = new StringMeta( *(StringMeta*)(meta) );
+                break;
+            case Param::DObjPtr & ito::paramTypeMask:
+                m_pMeta = new DObjMeta( *(DObjMeta*)(meta) );
+                break;
+            case Param::HWRef & ito::paramTypeMask:
+                m_pMeta = new HWMeta( *(HWMeta*)(meta) );
+                break;
+            default:
+                throw std::logic_error("Type of meta [ParamMeta] is unknown and cannot not be copied or assigned.");
+            }
+        }
+    }
+    return true;
+}
+
+
 double Param::getMin() const
 {
     if(m_pMeta)

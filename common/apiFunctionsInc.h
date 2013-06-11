@@ -28,10 +28,6 @@
 #ifndef APIFUNCTIONSINC_H
 #define APIFUNCTIONSINC_H
 
-//#include <qlist.h>
-//#include "sharedStructures.h"
-//#include "addInInterface.h"
-
 namespace ito 
 {
 
@@ -88,6 +84,9 @@ namespace ito
     
     #define apiParseParamName \
         (*(ito::RetVal (*)(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)) ito::ITOM_API_FUNCS[15])
+
+    #define apiGetItemFromParamArray \
+        (*(ito::RetVal (*)(const ito::Param &arrayParam, const int index, ito::Param &itemParam)) ito::ITOM_API_FUNCS[16])
 
 #if defined(ITOM_IMPORT_API)
 static int importItomApi(void** apiArray)
