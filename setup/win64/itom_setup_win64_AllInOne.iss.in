@@ -6,8 +6,8 @@
 
 ; Ggf. zu ändern!
 #define SourceDirSys32 "C:\Windows\System32"
-#define SourceDirITOMBuild "${CMAKE_CURRENT_BINARY_DIR}"
-#define SourceDirITOMHelp "${CMAKE_CURRENT_SOURCE_DIR}"
+#define SourceDirItomSource "${CMAKE_CURRENT_SOURCE_DIR}"
+#define SourceDirItomBuild "${CMAKE_CURRENT_BINARY_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
 #define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
@@ -37,7 +37,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 
-LicenseFile={#SourceDirITOMHelp}\COPYING.txt
+LicenseFile={#SourceDirItomSource}\COPYING.txt
 
 [Dirs]
 Name: "{app}\"; Permissions: everyone-modify
@@ -70,7 +70,7 @@ Name: "English"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#SourceDirITOMBuild}\{#ExeName}"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: promptifolder
 
 ; DLLs
 Source: "{#SourceDirQT}\phonon4.dll"; DestDir: "{app}"; Flags: promptifolder
@@ -108,17 +108,17 @@ Source: "{#SourceDirQT}\..\plugins\imageformats\qtgad4.dll"; DestDir: "{app}\ima
 Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 
 ; Python-Scripts
-Source: "{#SourceDirITOMBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: promptifolder
 
 ; Hilfe
-Source: "{#SourceDirITOMBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: promptifolder
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: promptifolder
 
 ; Sprachen
-Source: "{#SourceDirITOMBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation"; Flags: promptifolder
 
 ; EXEs
@@ -130,58 +130,59 @@ Source: "{#SourceDirPython}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; DestDir:
 Source: "{#SourceDirPython}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\6. pyparsing-2.0.0.win-amd64-py3.3.exe"; DestDir: "{tmp}"
 
 ; vielleicht
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
 ; Default INI
-Source: "{#SourceDirITOMBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder  
+Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder  
 
 ; Lizenz-Datei
-Source: "{#SourceDirITOMHelp}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
 
 ; itom-packages
-Source: "{#SourceDirITOMBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder  
-Source: "{#SourceDirITOMBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
-;Source: "{#SourceDirITOMBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\camToolbar\*.*"; DestDir: "{app}\itom-packages\camToolbar"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\measurementSystem\*.*"; DestDir: "{app}\itom-packages\measurementSystem"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom-packages\mpl_itom"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\common"; Components: SDK; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder  
+Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
+;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\camToolbar\*.*"; DestDir: "{app}\itom-packages\camToolbar"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\measurementSystem\*.*"; DestDir: "{app}\itom-packages\measurementSystem"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom-packages\mpl_itom"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\common"; Components: SDK; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Components: SDK;  Flags: promptifolder
 
 ; DesignerPlugins
-Source: "{#SourceDirITOMBuild}\designer\matplotlibFigure.dll"; DestDir: "{app}\designer"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\designer\itom1DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\designer\itom2DGVFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\designer\itom2DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\matplotlibFigure.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom1DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom2DGVFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom2DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 
 ; Plugins
-Source: "{#SourceDirITOMBuild}\plugins\demoAlgorithms\demoAlgorithms.dll"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\demoAlgorithms\translation\*.qm"; DestDir: "{app}\plugins\demoAlgorithms\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\DummyGrabber\DummyGrabber.dll"; DestDir: "{app}\plugins\DummyGrabber"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\DummyGrabber\translation\*.qm"; DestDir: "{app}\plugins\DummyGrabber\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\DummyMotor\DummyMotor.dll"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\DummyMotor\translation\*.qm"; DestDir: "{app}\plugins\DummyMotor\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\OpenCVFilters\OpenCVFilters.dll"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\OpenCVFilters\translation\*.qm"; DestDir: "{app}\plugins\OpenCVFilters\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\OpenCVGrabber\OpenCVGrabber.dll"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\OpenCVGrabber\translation\*.qm"; DestDir: "{app}\plugins\OpenCVGrabber\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\FireGrabber\translation\*.qm"; DestDir: "{app}\plugins\FireGrabber\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\cmu1394\cmu1394.dll"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\cmu1394\translation\*.qm"; DestDir: "{app}\plugins\cmu1394\translation"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\SerialIO\SerialIO.dll"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder
-Source: "{#SourceDirITOMBuild}\plugins\SerialIO\translation\*.qm"; DestDir: "{app}\plugins\SerialIO\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\demoAlgorithms.dll"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\translation\*.qm"; DestDir: "{app}\plugins\demoAlgorithms\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\DummyGrabber.dll"; DestDir: "{app}\plugins\DummyGrabber"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\translation\*.qm"; DestDir: "{app}\plugins\DummyGrabber\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\DummyMotor\DummyMotor.dll"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\DummyMotor\translation\*.qm"; DestDir: "{app}\plugins\DummyMotor\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\OpenCVFilters.dll"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\translation\*.qm"; DestDir: "{app}\plugins\OpenCVFilters\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\OpenCVGrabber.dll"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\translation\*.qm"; DestDir: "{app}\plugins\OpenCVGrabber\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FireGrabber\translation\*.qm"; DestDir: "{app}\plugins\FireGrabber\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\cmu1394\cmu1394.dll"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\cmu1394\translation\*.qm"; DestDir: "{app}\plugins\cmu1394\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\SerialIO\SerialIO.dll"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\SerialIO\translation\*.qm"; DestDir: "{app}\plugins\SerialIO\translation"; Flags: promptifolder
 
 ; Libs
 Source: "{#SourceDirOpenCV}\opencv_calib3d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
@@ -192,8 +193,7 @@ Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: p
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
-;Source: "{#SourceDirITOMBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
-Source: "C:\ITOM\Source\itom\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -206,6 +206,7 @@ Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; Flags: shellexec wa
 Filename: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
 Filename: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
 Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Pillow..."; Components: PILLOW
+Filename: "{tmp}\6. pyparsing-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
@@ -214,6 +215,7 @@ Type: files; Name: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"
 Type: files; Name: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"
 Type: files; Name: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"
 Type: files; Name: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\6. pyparsing-2.0.0.win-amd64-py3.3.exe"
 Type: files; Name: "{tmp}\vcredist_x64.exe"
 
 [Types]
@@ -227,6 +229,7 @@ Name: "NUMPY"; Description: "NumPy MKL 1.7.1 for Win32-Py 3.3"; Types: Install; 
 Name: "SCIPY"; Description: "SciPy 0.12.0b1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
 Name: "MATPLOTLIB"; Description: "MatPlotLib 1.2.1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
 Name: "PILLOW"; Description: "Pillow 2.0.0 Win32-Py 3.3"; Types: Install; Flags: checkablealone
+Name: "PYPARSING"; Description: "PyParsing 2.0.0 Win32-Py 3.3"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
