@@ -76,10 +76,10 @@ itom.dataObject.div() -> a.div(b) returns element wise division of a./b and retu
 itom.dataObject.dtype
 itom.dataObject.existTag(key) -> return 1 if tag exists, else return 0.
 itom.dataObject.eye([dims [, dtype='uint8'[, continuous = 0]]]) -> creates a 2D, square, eye-matrix.
-itom.dataObject.getTagDict
 itom.dataObject.getTagListSize() -> returns the number of tags in tag map
 itom.dataObject.locateROI() -> todo
 itom.dataObject.makeContinuous() -> return continuous representation of dataObject (if not continuous yet, else returns shallow copy of original data object
+itom.dataObject.metaDict
 itom.dataObject.mul() -> a.mul(b) returns element wise multiplication of a*b and returns result
 itom.dataObject.name() -> prints the content of the dataObject in a readable form.
 itom.dataObject.ones([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with ones.
@@ -130,7 +130,7 @@ itom.npDataObject.axisDescriptions
 itom.npDataObject.axisOffsets
 itom.npDataObject.axisScales
 itom.npDataObject.axisUnits
-itom.npDataObject.getTagDict
+itom.npDataObject.metaDict
 itom.npDataObject.name
 itom.npDataObject.tags
 itom.npDataObject.valueDescription
@@ -177,8 +177,11 @@ itom.pointCloud.size
 itom.pointCloud.toDataObject() -> returns a PxN data object, where P is determined by the point type in the point cloud. N is the number of points.
 itom.pointCloud.type
 itom.pointCloud.width
-itom.polygonMesh() -> creates empty polygon mesh.
+itom.polygonMesh([mesh, polygons]) -> creates a polygon mesh.
 itom.polygonMesh.data
+itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons.
+itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
+itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name
 itom.processEvents
 itom.proxy(??) [class]
@@ -217,19 +220,14 @@ itom.ui.BUTTONBAR_NO
 itom.ui.BUTTONBAR_VERTICAL
 itom.ui.MsgBoxAbort
 itom.ui.MsgBoxApply
-itom.ui.MsgBoxButtonMask
 itom.ui.MsgBoxCancel
 itom.ui.MsgBoxClose
-itom.ui.MsgBoxDefault
 itom.ui.MsgBoxDiscard
-itom.ui.MsgBoxEscape
 itom.ui.MsgBoxFirstButton
-itom.ui.MsgBoxFlagMask
 itom.ui.MsgBoxHelp
 itom.ui.MsgBoxIgnore
 itom.ui.MsgBoxLastButton
 itom.ui.MsgBoxNo
-itom.ui.MsgBoxNoAll
 itom.ui.MsgBoxNoButton
 itom.ui.MsgBoxNoToAll
 itom.ui.MsgBoxOk
@@ -240,19 +238,18 @@ itom.ui.MsgBoxRetry
 itom.ui.MsgBoxSave
 itom.ui.MsgBoxSaveAll
 itom.ui.MsgBoxYes
-itom.ui.MsgBoxYesAll
 itom.ui.MsgBoxYesToAll
 itom.ui.TYPEDIALOG
 itom.ui.TYPEDOCKWIDGET
 itom.ui.TYPEWINDOW
 itom.ui.createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui'
-itom.ui.getDouble(title, label, defaultValue [, min, max, decimals]) -> function to get a floating point number from the user
+itom.ui.getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user
 itom.ui.getExistingDirectory(caption, startDirectory [, options, parent]) -> opens a dialog to choose an existing directory
-itom.ui.getInt(title, label, defaultValue [, min, max, step]) -> function to get an integer number from the user
-itom.ui.getItem(title, label, stringList [, currentIndex, editable]) -> function to let the user select an item from a string list
+itom.ui.getInt(title, label, defaultValue [, min, max, step=1]) -> shows a dialog to get an integer value from the user
+itom.ui.getItem(title, label, stringList [, currentIndex=0, editable=True]) -> shows a dialog to let the user select an item from a string list
 itom.ui.getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file.
 itom.ui.getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save.
-itom.ui.getText(title, label, defaultString) -> function to get a string from the user
+itom.ui.getText(title, label, defaultString) -> opens a dialog in order to ask the user for a string
 itom.ui.hide() -> hides initialized UI-Dialog
 itom.ui.isVisible() -> returns true if dialog is still visible
 itom.ui.msgCritical(title, text [, buttons, defaultButton, parent]) -> opens a critical message box

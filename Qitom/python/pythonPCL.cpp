@@ -3796,7 +3796,14 @@ PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> ");
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud, polygons) -> "); 
+PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons. \n\
+\n\
+Parameters \n\
+----------- \n\
+cloud : {pointCloud} \n\
+    the input point cloud \n\
+polygons : {array-like, MxN} \n\
+    an array-like matrix with the indices of the polygons. The array contains M polygons and every row gives the indices of the vertices of the cloud belonging to the polygon."); 
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromCloudAndPolygons(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
