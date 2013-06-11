@@ -127,6 +127,44 @@ ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLP
     return retval;
 }
 
+ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::PointCloud2 &msg)
+{
+    RetVal retval = retOk;
+    
+    ito::tPCLPointType pointType = pc.getType();
+    pcl::MsgFieldMap field_map;
+
+    switch(pointType)
+    {
+    case ito::pclXYZ:
+        pcl::toROSMsg(*(pc.toPointXYZ()), msg);
+        break;
+    case ito::pclXYZI:
+        pcl::toROSMsg(*(pc.toPointXYZI()), msg);
+        break;
+    case ito::pclXYZRGBA:
+        pcl::toROSMsg(*(pc.toPointXYZRGBA()), msg);
+        break;
+    case ito::pclXYZNormal:
+        pcl::toROSMsg(*(pc.toPointXYZNormal()), msg);
+        break;
+    case ito::pclXYZINormal:
+        pcl::toROSMsg(*(pc.toPointXYZINormal()), msg);
+        break;
+    case ito::pclXYZRGBNormal:
+        pcl::toROSMsg(*(pc.toPointXYZRGBNormal()), msg);
+        break;
+    case ito::pclInvalid:
+        msg = sensor_msgs::PointCloud2();
+        break;
+    default:
+        retval += RetVal(retError,0,"given point cloud cannot be converted into sensor_msgs::PointCloud2");
+        break;
+    }
+
+    return retval;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
 {

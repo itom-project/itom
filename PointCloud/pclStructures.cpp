@@ -31,6 +31,8 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 
+#include "pclFunctions.h"
+
 namespace ito {
 
 #define PCLMAKEFUNCLIST(FuncName) static t##FuncName fList##FuncName[] =   \
@@ -1411,6 +1413,16 @@ PCLPolygonMesh::PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t>
         free(bucket);
         bucket = NULL;
     }
+}
+
+PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons)
+{
+    m_polygonMesh = pcl::PolygonMesh::Ptr(new pcl::PolygonMesh());
+    m_polygonMesh->header = cloud.header();
+    m_polygonMesh->polygons = polygons;
+    sensor_msgs::PointCloud2 msg;
+    ito::pclHelper::pclPointCloudToPointCloud2(cloud, msg);
+    m_polygonMesh->cloud = msg;
 }
 
 PCLPolygonMesh::~PCLPolygonMesh() 

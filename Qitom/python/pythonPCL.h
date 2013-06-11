@@ -59,6 +59,7 @@
 
 #include "PointCloud/pclStructures.h"
 
+
 namespace ito
 {
 
@@ -264,6 +265,7 @@ public:
 
     static PyObject *PyPolygonMesh_get(PyPolygonMesh *self, PyObject *args, PyObject *kwds);
     static PyObject* PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args);
+    static PyObject* PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args);
 
 	//-------------------------------------------------------------------------------------------------
     // pickling
@@ -276,6 +278,11 @@ public:
     //-------------------------------------------------------------------------------------------------
     static PyObject* PyPolygonMesh_mappingGetElem(PyPolygonMesh* self, PyObject* key);
     static int PyPolygonMesh_mappingLength(PyPolygonMesh* self);
+
+    //-------------------------------------------------------------------------------------------------
+    // static methods
+    //-------------------------------------------------------------------------------------------------
+    static PyObject* PyPolygonMesh_FromCloudAndPolygons(PyObject *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter

@@ -342,6 +342,7 @@ public:
     PCLPolygonMesh(pcl::PolygonMesh::Ptr polygonMesh);
     PCLPolygonMesh(PCLPolygonMesh &mesh);
     PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t> &polygonIndices);
+    PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons);
     PCLPolygonMesh(const PCLPolygonMesh &mesh);
     ~PCLPolygonMesh();
 

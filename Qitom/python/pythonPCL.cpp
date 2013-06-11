@@ -3744,6 +3744,111 @@ pointType : {int, enum point.PointXXX}, optional \n\
 }
 
 //------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> "); 
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ""))
+    {
+        return NULL;
+    }
+
+    ito::PCLPolygonMesh *pm = self->polygonMesh;
+
+    if(pm == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Polygon mesh is NULL");
+        return NULL;
+    }
+
+    std::vector<pcl::Vertices> *p = &(pm->polygonMesh()->polygons);
+
+    PythonDataObject::PyDataObject* dataObj = PythonDataObject::createEmptyPyDataObject();
+
+    size_t numVertices = 0;
+    pcl::Vertices *verticePtr = &(p->front());
+    size_t psize = p->size();
+
+    for (size_t i = 0 ; i < psize; i++)
+    {
+        numVertices = std::max( numVertices, verticePtr->vertices.size() );
+        verticePtr++;
+    }
+
+    dataObj->dataObject = new ito::DataObject( p->size(), numVertices, ito::tInt32 );
+    ito::int32 *ptr = (ito::int32*)dataObj->dataObject->rowPtr(0,0);
+
+    verticePtr = &(p->front());
+
+    for (size_t i = 0 ; i < psize; i++)
+    {
+        memcpy(ptr, &(verticePtr->vertices.front()), verticePtr->vertices.size() * sizeof(ito::int32));
+          
+        for(size_t j = verticePtr->vertices.size(); j < numVertices; j++)
+        {
+            ptr[j] = -1;
+        }
+
+        ptr += numVertices;
+        verticePtr++;
+    }
+
+    return (PyObject*)dataObj;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud, polygons) -> "); 
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_FromCloudAndPolygons(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyPointCloud *cloud = NULL;
+    PyObject *polygons = NULL;
+    const char *kwlist[] = {"cloud", "polygons", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O!O", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud, &polygons))
+    {
+        return NULL;
+    }
+
+    if(sizeof(npy_int) != sizeof(ito::int32))
+    {
+        PyErr_SetString(PyExc_RuntimeError,"polygon indexing not possible since size of NPY_UINT32 does not correspond to size of uint32_t");
+        return NULL;
+    }
+
+    //try to convert polygons into a numpy-array of desired type
+    PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+
+    if(polygonArray)
+    {
+        npy_intp len = PyArray_SIZE(polygonArray);
+        npy_intp y = PyArray_DIM(polygonArray, 0);
+        npy_intp x = PyArray_DIM(polygonArray, 1);
+
+        std::vector<pcl::Vertices> p;
+        pcl::Vertices v;
+        p.resize(y);
+        v.vertices.resize(x);
+        ito::int32 *linePtr;
+
+        for(npy_intp m = 0; m < y; m++)
+        {
+            linePtr = (ito::int32*)(PyArray_GETPTR1(polygonArray, m));
+            memcpy( &v.vertices.front(), linePtr, sizeof(ito::int32) * x );
+            p[m] = v;
+        }
+
+        Py_DECREF(polygonArray);
+
+        PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
+        mesh->polygonMesh = new ito::PCLPolygonMesh( *(cloud->data), p );
+        return (PyObject*)mesh;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
     //{"cloud", (getter)PyPolygonMesh_getCloud, NULL, pyPolygonMeshGetCloud_doc, NULL},
     {NULL}  /* Sentinel */
@@ -3757,6 +3862,8 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, "prints content of polygon mesh"},
     //{"get", (PyCFunction)PyPolygonMesh_get, METH_VARARGS | METH_KEYWORDS, pyPolygonMeshGet_docs},
     {"getCloud", (PyCFunction)PyPolygonMesh_getCloud, METH_VARARGS, pyPolygonMeshGetCloud_docs},
+    {"getPolygons", (PyCFunction)PyPolygonMesh_getPolygons, METH_VARARGS, pyPolygonMeshGetPolygons_docs},
+    {"fromCloudAndPolygons", (PyCFunction)PyPolygonMesh_FromCloudAndPolygons, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromCloudAndPolygons_docs},
     {NULL}  /* Sentinel */
 };
 
