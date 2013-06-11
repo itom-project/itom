@@ -53,6 +53,8 @@ WidgetPropEditorAPI::WidgetPropEditorAPI(QWidget *parent) :
 
     m_lastApiFileDirectory = QDir::cleanPath(QCoreApplication::applicationDirPath());
 
+    m_changes = false;
+
     /*connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationFinished()), this, SLOT(apiPreparationFinished()));
     connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationCancelled()), this, SLOT(apiPreparationCancelled()));
     connect(m_pApiManager->getQsciAPIs(), SIGNAL(apiPreparationStarted()), this, SLOT(apiPreparationStarted()));*/
@@ -124,7 +126,11 @@ void WidgetPropEditorAPI::writeSettings()
     settings.endArray();
     settings.endGroup();
 
-    m_pApiManager->updateAPI(files);
+    if(m_changes)
+    {
+        m_pApiManager->updateAPI(files);
+        m_changes = false;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -141,6 +147,8 @@ void WidgetPropEditorAPI::on_btnAdd_clicked()
      
     foreach (QString filename, filenames)
     {
+        m_changes = true;
+
         m_lastApiFileDirectory = QDir::cleanPath(QFileInfo(filename).path());
         QFileInfo fileInfo(filename);
         filename = fileInfo.canonicalFilePath();
@@ -161,6 +169,8 @@ void WidgetPropEditorAPI::on_btnAdd_clicked()
 void WidgetPropEditorAPI::on_btnRemove_clicked()
 {
     qDeleteAll(ui.listWidget->selectedItems());
+    m_changes = true;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

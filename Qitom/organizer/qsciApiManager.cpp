@@ -221,7 +221,7 @@ int QsciApiManager::updateAPI(QStringList files, bool forcePreparation)
                         forcePreparation = true;
                         break;
                     }
-                    qDebug() << apiFiles[i].lastModified << " - " << compiledApiFiles[i].lastModified;
+                    //qDebug() << apiFiles[i].lastModified << " - " << compiledApiFiles[i].lastModified;
                     if(calcModified && (apiFiles[i].lastModified != compiledApiFiles[i].lastModified) )
                     {
                         forcePreparation = true;

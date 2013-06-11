@@ -219,14 +219,16 @@ void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem
     {
         QString key = current->data(1, Qt::DisplayRole).toString();
 
-        if (m_pages.contains(key))
-        {
-            PropertyPage page = m_pages[key];
-            m_pPageTitle->setText(page.m_title);
+        QMap<QString, PropertyPage>::iterator it = m_pages.find(key);
 
-            if (page.m_widget)
+        if ( it != m_pages.end() )
+        {
+            m_pPageTitle->setText(it->m_title);
+
+            if (it->m_widget)
             {
-                m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(page.m_widget));
+                it->m_visited = true;
+                m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(it->m_widget));
                 found = true;
             }
         }
@@ -259,7 +261,7 @@ void DialogProperties::apply()
 
     foreach(page, m_pages)
     {
-        if (page.m_widget)
+        if (page.m_widget && page.m_visited)
         {
             page.m_widget->writeSettings();
         }

@@ -42,13 +42,14 @@ public:
 
     struct PropertyPage
     {
-        PropertyPage() : m_widget(NULL), m_icon() {}
-        PropertyPage(QString name, QString title, QString fullname, AbstractPropertyPageWidget* widget, QIcon icon) : m_title(title), m_name(name), m_fullname(fullname), m_widget(widget), m_icon(icon) {}
+        PropertyPage() : m_widget(NULL), m_icon(), m_visited(false) {}
+        PropertyPage(QString name, QString title, QString fullname, AbstractPropertyPageWidget* widget, QIcon icon) : m_title(title), m_name(name), m_fullname(fullname), m_widget(widget), m_icon(icon), m_visited(false) {}
         QString m_title;
         QString m_name;
         QString m_fullname;
         AbstractPropertyPageWidget* m_widget;
         QIcon m_icon;
+        bool m_visited;
     };
 
     DialogProperties(QWidget * parent = 0, Qt::WindowFlags f = 0);
