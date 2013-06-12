@@ -229,6 +229,7 @@ set(qitom_ui
 
 QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
 
+
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
@@ -338,6 +339,10 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp	
 )
+
+if(MSVC)
+    list(APPEND qitom_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+endif(MSVC)
 
 #handle translations
 # see e.g. http://stackoverflow.com/questions/5630155/how-to-integrate-qt-internationalization-to-cmake
@@ -449,6 +454,19 @@ FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
 #ADD a batch file for itom-release 
 if(MSVC)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
+ENDIF (MSVC)
+
+#Configure a RC file for MS visual studio to add version information in explorer to exe file
+if(MSVC)
+    MESSAGE(STATUS "Using rc-File for version information under windows")
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyItomFileVersion.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py )
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rctmpl ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
+    ADD_CUSTOM_COMMAND (
+        TARGET qitom
+        PRE_BUILD
+        COMMAND    ${PYTHON_EXECUTABLE}
+        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py"
+    ) 
 ENDIF (MSVC)
 
 UNSET(GIT_FOUND CACHE)
