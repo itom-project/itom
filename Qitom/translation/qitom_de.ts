@@ -982,12 +982,12 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>load translations...</source>
         <translation>Übersetzungen wird geladen...</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>load style...</source>
         <translation>Style wird geladen...</translation>
     </message>
@@ -1032,12 +1032,12 @@ p, li { white-space: pre-wrap; }
         <translation>Startskripts werden ausgeführt...</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+26"/>
         <source>scan and run scripts in autostart folder...</source>
         <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
-        <location line="+148"/>
+        <location line="+153"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -1248,23 +1248,23 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+58"/>
-        <location line="+71"/>
+        <location line="+72"/>
         <source>it is not allowed to get modules if python is currently executed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-55"/>
-        <location line="+71"/>
+        <location line="-56"/>
+        <location line="+72"/>
         <source>the script itomFunctions.py is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-63"/>
+        <location line="-64"/>
         <source>error while loading the modules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+75"/>
         <source>error while reloading the modules</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1272,7 +1272,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QLibrary</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+441"/>
+        <location filename="../organizer/addInManager.cpp" line="+447"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1340,13 +1340,13 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+654"/>
+        <location filename="../helper/paramHelper.cpp" line="+695"/>
         <location filename="../../common/helperCommon.cpp" line="+55"/>
         <source>invalid parameter name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-614"/>
+        <location line="-655"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1460,7 +1460,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+100"/>
+        <source>Index value is out of range [0,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Index-based parameter name requires an array-type parameter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>Parameter could not be converted to destination type.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1482,6 +1492,16 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Parameter &apos;%1&apos; not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+70"/>
+        <source>index is ouf of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>param is no array</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1779,7 +1799,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+134"/>
+        <location filename="../api/apiFunctions.cpp" line="+135"/>
         <location filename="../python/pythonCommon.cpp" line="+214"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
@@ -1830,12 +1850,12 @@ Type conflict for %1</source>
     <message>
         <location line="+19"/>
         <location line="+19"/>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Fatal error! Could not get addInManager instance!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-35"/>
+        <location line="-36"/>
         <source>No plugin name specified.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1855,7 +1875,7 @@ Type conflict for %1</source>
         <translation type="unfinished">- unbekannte Meldung -</translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="+558"/>
+        <location filename="../python/pythonPlugins.cpp" line="+559"/>
         <source>timeout while getting name parameter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1880,18 +1900,12 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+125"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+151"/>
-        <location line="+56"/>
-        <source>parameter list type and passed list type are incompatible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+582"/>
+        <location line="+892"/>
         <source>timeout while calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1926,17 +1940,17 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1382"/>
+        <location line="+1388"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+610"/>
+        <location line="+615"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+411"/>
         <source>Itom AlgorithmPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2169,7 +2183,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-183"/>
+        <location filename="../organizer/addInManager.cpp" line="-188"/>
         <source>directory &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -2179,7 +2193,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>filename is no AddIn-library: %1</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
@@ -2199,14 +2213,14 @@ Type conflict for %1</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>AddIn with filename &apos;%1&apos; is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veralteten Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veraltete Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2224,7 +2238,7 @@ Type conflict for %1</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+19"/>
         <source>Library &apos;%1&apos; was ignored. Message: %2</source>
         <translation type="unfinished">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
     </message>
@@ -2235,7 +2249,7 @@ Type conflict for %1</source>
         <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+22"/>
         <source>%1 (DataIO) loaded</source>
         <translation type="unfinished">%1 (DataIO) geladen</translation>
     </message>
@@ -2245,7 +2259,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>%1 (Actuator) loaded</source>
         <translation type="unfinished">%1 (Motor) geladen</translation>
     </message>
@@ -2255,7 +2269,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>error initializing plugin: %1</source>
         <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
@@ -2287,36 +2301,36 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+159"/>
-        <location line="+135"/>
-        <location line="+129"/>
+        <location line="+136"/>
+        <location line="+130"/>
         <source>Wrong plugin name</source>
         <translation type="unfinished">Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location line="-243"/>
-        <location line="+135"/>
+        <location line="-245"/>
+        <location line="+136"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
         <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location line="-113"/>
+        <location line="-114"/>
         <source>timeout while initializing dataIO</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <location line="+132"/>
+        <location line="+42"/>
+        <location line="+133"/>
         <location line="+92"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
         <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location line="-131"/>
+        <location line="-132"/>
         <source>timeout while initializing actuator</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+646"/>
+        <location line="+661"/>
         <source>no dock widget available</source>
         <translation type="unfinished">Keine Toolbar verfügbar</translation>
     </message>
@@ -2759,7 +2773,7 @@ Type conflict for %1</source>
         <translation type="unfinished">[existiert nicht]</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+95"/>
         <source>load python api file</source>
         <translation type="unfinished">Pyhton API-Dateien laden</translation>
     </message>
@@ -3159,7 +3173,7 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+260"/>
+        <location line="+269"/>
         <source>Show Plugin Toolbox</source>
         <translation type="unfinished">Plugin-Toolbox anzeigen</translation>
     </message>
@@ -3168,7 +3182,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-264"/>
         <source>Close Instance</source>
         <translation type="unfinished">Instanz schließen</translation>
     </message>
@@ -3216,7 +3230,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+128"/>
         <source>List</source>
         <translation type="unfinished">Liste</translation>
     </message>
@@ -3411,7 +3425,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="+221"/>
+        <location filename="../../plot/AbstractDObjFigure.cpp" line="+222"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation type="unfinished">Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
@@ -3429,7 +3443,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+244"/>
+        <location line="+245"/>
         <source>toolbar &apos;%1&apos; is already available</source>
         <translation type="unfinished">Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
@@ -3464,7 +3478,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="+681"/>
+        <location filename="../../common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
@@ -3482,7 +3496,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="+981"/>
+        <location filename="../../common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3500,7 +3514,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="-575"/>
+        <location filename="../../common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
@@ -3548,7 +3562,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+94"/>
         <location line="+20"/>
         <location line="+18"/>
         <location line="+18"/>
@@ -3750,7 +3764,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+130"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+131"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
@@ -3760,7 +3774,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>The version &apos;ito.AbstractItomDesignerPlugin&apos; in file &apos;%1&apos; does not correspond to the requested version (%2)</source>
         <translation type="unfinished">Die Version von &apos;ito.AbstractItomDesignerPlugin&apos; in der Datei &apos;%1&apos; deckt sich nicht mit der erforderlichen Version (%2)</translation>
     </message>
@@ -3769,7 +3783,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+18"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
     </message>
@@ -4632,7 +4646,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+224"/>
+        <location line="+228"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -5381,7 +5395,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>widget is NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5391,7 +5405,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5421,7 +5435,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+73"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5435,24 +5449,24 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+84"/>
         <location line="+26"/>
         <location line="+36"/>
-        <location line="+42"/>
-        <location line="+25"/>
+        <location line="+43"/>
+        <location line="+26"/>
         <location line="+26"/>
         <source>dialog handle does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="-100"/>
         <source>dialog cannot be docked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>dialog cannot be docked or undocked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+194"/>
+        <location line="+195"/>
         <source>defaultButton must be within enum QMessageBox::StandardButton</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5564,7 +5578,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+598"/>
+        <location line="+599"/>
         <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished"></translation>
     </message>
