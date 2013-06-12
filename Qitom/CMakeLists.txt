@@ -444,7 +444,23 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindXsd.cmake         DESTINATION ${CMA
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindXerces.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindITOM_SDK.cmake DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
+
+#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
+
+#Find ITOM_VERION version by looking at global.h
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
+#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSIONS_TMP REGEX "^.*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=+.*$")
+string(REGEX REPLACE ".*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=[ \t]+.([a-zA-Z0-9\\./]+).*" "\\1" ITOM_VERSION_STRING_WITH_API ${ITOM_VERSIONS_TMP})
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../translation           DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. FILES_MATCHING PATTERN "*.qm")
@@ -459,14 +475,16 @@ ENDIF (MSVC)
 #Configure a RC file for MS visual studio to add version information in explorer to exe file
 if(MSVC)
     MESSAGE(STATUS "Using rc-File for version information under windows")
-    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyItomFileVersion.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py )
-    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rctmpl ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-    ADD_CUSTOM_COMMAND (
-        TARGET qitom
-        PRE_BUILD
-        COMMAND    ${PYTHON_EXECUTABLE}
-        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py"
-    ) 
+    #CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyItomFileVersion.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py )
+    #CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rctmpl ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
+    #ADD_CUSTOM_COMMAND (
+    #    TARGET qitom
+    #    PRE_BUILD
+    #    COMMAND    ${PYTHON_EXECUTABLE}
+    #    ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py"
+    #)
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
+    
 ENDIF (MSVC)
 
 UNSET(GIT_FOUND CACHE)
