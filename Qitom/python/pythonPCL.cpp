@@ -3451,7 +3451,7 @@ PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
     }
     else
     {
-        return PyUnicode_FromFormat("PolygonMesh (size: [%u x %u], fields: %s)", self->polygonMesh->height(), self->polygonMesh->width(), self->polygonMesh->getFieldsList().data() );
+        return PyUnicode_FromFormat("PolygonMesh (%u polygons, [%u x %u] points, fields: %s)", self->polygonMesh->polygonMesh()->polygons.size(), self->polygonMesh->height(), self->polygonMesh->width(), self->polygonMesh->getFieldsList().data() );
     }
 }
 

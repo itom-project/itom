@@ -22,8 +22,6 @@
 
 #include "pythonUiTimer.h"
 
-
-
 #if (defined linux) | (defined CMAKE)
     #include "structmember.h"
 #else
@@ -31,17 +29,6 @@
 #endif
 
 #include "../global.h"
-
-//#include "../organizer/uiOrganizer.h"
-//#include "../organizer/addInManager.h"
-//
-//#include "pythonQtConversion.h"
-//
-//#include <qmap.h>
-//#include <qsharedpointer.h>
-//#include <qmessagebox.h>
-//#include <qmetaobject.h>
-//#include <qcoreapplication.h>
 
 #include "pythonEngineInc.h"
 #include "AppManagement.h"
@@ -140,7 +127,7 @@ void TimerCallback::timeout()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonUiTimer::PyUiTimer_dealloc(PyUiTimer* self)
+void PythonTimer::PyTimer_dealloc(PyTimer* self)
 {
     if (self->timer)
     {
@@ -155,9 +142,9 @@ void PythonUiTimer::PyUiTimer_dealloc(PyUiTimer* self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonUiTimer::PyUiTimer_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
+PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
-    PyUiTimer* self = (PyUiTimer *)type->tp_alloc(type, 0);
+    PyTimer* self = (PyTimer *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
         self->timer = NULL;
@@ -167,14 +154,22 @@ PyObject* PythonUiTimer::PyUiTimer_new(PyTypeObject *type, PyObject * /*args*/, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerInit_doc,"uiTimer(timeOut, callbackFunc, [args]) -> new callback timer \n\
-                                Parameters: \n\
-                                timeOut [int]: time out in ms \n\
-                                callbackFunc: Python function that should be called when timer event raises \n\
-                                args: parameters for Python function");
-int PythonUiTimer::PyUiTimer_init(PyUiTimer *self, PyObject *args, PyObject *kwds)
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, [argTuple]) -> new callback timer \n\
+\n\
+Creates a timer object that continuously calls a python callback function or method with a certain interval. The timer is active after construction and \n\
+stops when this instance is destroyed or stop() is called. \n\
+\n\
+Parameters \n\
+----------- \n\
+interval : {double} \n\
+    time out interval in ms \n\
+callbackFunc: {function or method} \n\
+    Python function that should be called when timer event raises \n\
+argTuple: {tuple}, optional \n\
+    tuple of parameters passed as arguments to the callback function");
+int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"timeOut", "callbackFunc", "parameters", NULL};
+    const char *kwlist[] = {"interval", "callbackFunc", "argTuple", NULL};
 
     if(args == NULL || PyTuple_Size(args) == 0) //empty constructor
     {
@@ -186,9 +181,9 @@ int PythonUiTimer::PyUiTimer_init(PyUiTimer *self, PyObject *args, PyObject *kwd
     double timeOut = -1;
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "dO|O!", const_cast<char**>(kwlist), &timeOut, &tempObj, &PyTuple_Type, &self->callbackFunc->m_callbackArgs))
     {
-        PyErr_Format(PyExc_TypeError,"Arguments do not fit to required list of arguments");
         return -1;
     }
+
     if (timeOut < 1)
     {
         PyErr_Format(PyExc_TypeError, "minimum timeout is 1ms.");
@@ -218,6 +213,7 @@ int PythonUiTimer::PyUiTimer_init(PyUiTimer *self, PyObject *args, PyObject *kwd
     }
     else
     {
+        Py_XDECREF(self->callbackFunc->m_callbackArgs);
         PyErr_Format(PyExc_TypeError, "given method reference is not callable.");
         delete self->callbackFunc;
         return -1;
@@ -227,38 +223,34 @@ int PythonUiTimer::PyUiTimer_init(PyUiTimer *self, PyObject *args, PyObject *kwd
     self->timer->setInterval(timeOut);
     int ret;
     if (!(ret=QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()))))
+    {
         return -1;
+    }
+
     self->timer->start();
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonUiTimer::PyUiTimer_repr(PyUiTimer *self)
+PyObject* PythonTimer::PyTimer_repr(PyTimer *self)
 {
     PyObject *result;
     if(self->timer == 0)
     {
-        result = PyUnicode_FromFormat("UiTimer(empty)");
+        result = PyUnicode_FromFormat("timer(empty)");
     }
     else
     {
-        result = PyUnicode_FromFormat("UiTimer(timeOut %d, callbackFunc %s)", self->timer->interval());
+        result = PyUnicode_FromFormat("timer(timeOut %d, callbackFunc %s)", self->timer->interval());
     }
     return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerStart_doc,"start() -> starts uiTimer\n\
+PyDoc_STRVAR(PyTimerStart_doc,"start() -> starts timer\n\
 \n\
-Notes \n\
------ \n\
-Starts uiTimer.\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-PyObject* PythonUiTimer::PyUiTimer_start(PyUiTimer *self) 
+Starts or restarts the timer with its timeout interval. If the timer is already running, it will be stopped and restarted.");
+PyObject* PythonTimer::PyTimer_start(PyTimer *self) 
 { 
     if (self->timer) 
         self->timer->start(); 
@@ -266,17 +258,8 @@ PyObject* PythonUiTimer::PyUiTimer_start(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerStop_doc,"stop() -> stopps uiTimer\n\
-\n\
-Notes \n\
------ \n\
-Stopps uiTimer.\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-PyObject* PythonUiTimer::PyUiTimer_stop(PyUiTimer *self) 
+PyDoc_STRVAR(PyTimerStop_doc,"stop() -> stops timer");
+PyObject* PythonTimer::PyTimer_stop(PyTimer *self) 
 { 
     if (self->timer) 
         self->timer->stop(); 
@@ -284,48 +267,37 @@ PyObject* PythonUiTimer::PyUiTimer_stop(PyUiTimer *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerIsActive_doc,"isActive() -> returns timer status\n\
+PyDoc_STRVAR(PyTimerIsActive_doc,"isActive() -> returns timer status\n\
 \n\
 Returns \n\
 ------- \n\
 status : {bool} \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-PyObject* PythonUiTimer::PyUiTimer_isActive(PyUiTimer *self)
+    True if the timer is running, otherwise False.");
+PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
 { 
     if (self->timer) 
-        return PyLong_FromLong((long)self->timer->isActive());
+    {
+        if( self->timer->isActive() )
+        {
+            Py_RETURN_TRUE;
+        }
+        else
+        {
+            Py_RETURN_FALSE;
+        }
+    }
     else
+    {
+        PyErr_Format(PyExc_RuntimeError, "timer is not available.");
         return NULL;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiTimerSetInterval_doc,"setInterval(interval) -> sets timer interval in [ms]\n\
+PyDoc_STRVAR(PyTimerSetInterval_doc,"setInterval(interval) -> sets timer interval in [ms]\n\
 \n\
-Parameters \n\
------------ \n\
-interval : {int}\n\
-    interval in ms\n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-sets the uiTimerinterval in ms.\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-PyObject* PythonUiTimer::PyUiTimer_setInterval(PyUiTimer *self, PyObject *args)
+This method sets the timeout interval in milliseconds. The timer calls the callback function continuously after this interval (if started)");
+PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
 { 
     int timeout; 
     if(!PyArg_ParseTuple(args, "i", &timeout))
@@ -338,45 +310,45 @@ PyObject* PythonUiTimer::PyUiTimer_setInterval(PyUiTimer *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyMethodDef PythonUiTimer::PyUiTimer_methods[] = {
-        {"start", (PyCFunction)PyUiTimer_start, METH_NOARGS, pyUiTimerStart_doc},
-        {"stop", (PyCFunction)PyUiTimer_stop, METH_NOARGS, pyUiTimerStop_doc},
-        {"isActive", (PyCFunction)PyUiTimer_isActive, METH_NOARGS, pyUiTimerIsActive_doc},
-        {"setInterval", (PyCFunction)PyUiTimer_setInterval, METH_VARARGS, pyUiTimerSetInterval_doc},
+PyMethodDef PythonTimer::PyTimer_methods[] = {
+        {"start", (PyCFunction)PyTimer_start, METH_NOARGS, PyTimerStart_doc},
+        {"stop", (PyCFunction)PyTimer_stop, METH_NOARGS, PyTimerStop_doc},
+        {"isActive", (PyCFunction)PyTimer_isActive, METH_NOARGS, PyTimerIsActive_doc},
+        {"setInterval", (PyCFunction)PyTimer_setInterval, METH_VARARGS, PyTimerSetInterval_doc},
         {NULL}  /* Sentinel */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyMemberDef PythonUiTimer::PyUiTimer_members[] = {
+PyMemberDef PythonTimer::PyTimer_members[] = {
         {NULL}  /* Sentinel */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyModuleDef PythonUiTimer::PyUiTimerModule = {
+PyModuleDef PythonTimer::PyTimerModule = {
         PyModuleDef_HEAD_INIT,
-        "uiTimer",
+        "timer",
         "timer for callback function",
         -1,
         NULL, NULL, NULL, NULL, NULL
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyGetSetDef PythonUiTimer::PyUiTimer_getseters[] = {
+PyGetSetDef PythonTimer::PyTimer_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyTypeObject PythonUiTimer::PyUiTimerType = {
+PyTypeObject PythonTimer::PyTimerType = {
         PyVarObject_HEAD_INIT(NULL, 0)
-        "itom.uiTimer",             /* tp_name */
-        sizeof(PyUiTimer),             /* tp_basicsize */
+        "itom.timer",             /* tp_name */
+        sizeof(PyTimer),             /* tp_basicsize */
         0,                         /* tp_itemsize */
-        (destructor)PyUiTimer_dealloc, /* tp_dealloc */
+        (destructor)PyTimer_dealloc, /* tp_dealloc */
         0,                         /* tp_print */
         0,                         /* tp_getattr */
         0,                         /* tp_setattr */
         0,                         /* tp_reserved */
-        (reprfunc)PyUiTimer_repr,         /* tp_repr */
+        (reprfunc)PyTimer_repr,         /* tp_repr */
         0,                         /* tp_as_number */
         0,                         /* tp_as_sequence */
         0,                         /* tp_as_mapping */
@@ -387,24 +359,24 @@ PyTypeObject PythonUiTimer::PyUiTimerType = {
         0,                         /* tp_setattro */
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
-        pyUiTimerInit_doc /*"dataObject objects"*/,           /* tp_doc */
+        PyTimerInit_doc /*"dataObject objects"*/,           /* tp_doc */
         0,		               /* tp_traverse */
         0,		               /* tp_clear */
         0,            /* tp_richcompare */
         0,		               /* tp_weaklistoffset */
         0,		               /* tp_iter */
         0,		               /* tp_iternext */
-        PyUiTimer_methods,             /* tp_methods */
-        PyUiTimer_members,             /* tp_members */
-        PyUiTimer_getseters,            /* tp_getset */
+        PyTimer_methods,             /* tp_methods */
+        PyTimer_members,             /* tp_members */
+        PyTimer_getseters,            /* tp_getset */
         0,                         /* tp_base */
         0,                         /* tp_dict */
         0,                         /* tp_descr_get */
         0,                         /* tp_descr_set */
         0,                         /* tp_dictoffset */
-        (initproc)PyUiTimer_init,      /* tp_init */
+        (initproc)PyTimer_init,      /* tp_init */
         0,                         /* tp_alloc */
-        PyUiTimer_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
+        PyTimer_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
 } //end namespace ito

@@ -71,7 +71,7 @@ class TimerCallback : public QObject
         void timeout(); 
 };
 
-class PythonUiTimer
+class PythonTimer
 {
 public:
 
@@ -85,25 +85,25 @@ public:
         PyObject* base;
         TimerCallback *callbackFunc;
     }
-    PyUiTimer;
+    PyTimer;
 
     //-------------------------------------------------------------------------------------------------
     // Timer
     //------------------------------------------------------------------------------------------------- 
-    static void PyUiTimer_dealloc(PyUiTimer *self);
-    static PyObject *PyUiTimer_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-    static int PyUiTimer_init(PyUiTimer *self, PyObject *args, PyObject *kwds);
-    static PyObject *PyUiTimer_repr(PyUiTimer *self);
+    static void PyTimer_dealloc(PyTimer *self);
+    static PyObject *PyTimer_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+    static int PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds);
+    static PyObject *PyTimer_repr(PyTimer *self);
 
-    static PyGetSetDef  PyUiTimer_getseters[];
-    static PyMemberDef  PyUiTimer_members[];
-    static PyMethodDef  PyUiTimer_methods[];
-    static PyTypeObject PyUiTimerType;
-    static PyModuleDef  PyUiTimerModule;
-    static PyObject *PyUiTimer_start(PyUiTimer *self);
-    static PyObject *PyUiTimer_stop(PyUiTimer *self);
-    static PyObject *PyUiTimer_isActive(PyUiTimer *self);
-    static PyObject *PyUiTimer_setInterval(PyUiTimer *self, PyObject *args);
+    static PyGetSetDef  PyTimer_getseters[];
+    static PyMemberDef  PyTimer_members[];
+    static PyMethodDef  PyTimer_methods[];
+    static PyTypeObject PyTimerType;
+    static PyModuleDef  PyTimerModule;
+    static PyObject *PyTimer_start(PyTimer *self);
+    static PyObject *PyTimer_stop(PyTimer *self);
+    static PyObject *PyTimer_isActive(PyTimer *self);
+    static PyObject *PyTimer_setInterval(PyTimer *self, PyObject *args);
 };
 
 }; //end namespace ito

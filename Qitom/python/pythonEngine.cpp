@@ -313,10 +313,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 				PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
 			}
 
-            if (PyType_Ready(&PythonUiTimer::PyUiTimerType) >= 0)
+            if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
-                Py_INCREF(&PythonUiTimer::PyUiTimerType);
-                PyModule_AddObject(itomModule, "uiTimer", (PyObject *)&PythonUiTimer::PyUiTimerType);
+                Py_INCREF(&PythonTimer::PyTimerType);
+                PyModule_AddObject(itomModule, "timer", (PyObject *)&PythonTimer::PyTimerType);
             }
 
             if (PyType_Ready(&PythonUi::PyUiItemType) >= 0)
