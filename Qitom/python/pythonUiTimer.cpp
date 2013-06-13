@@ -241,7 +241,7 @@ PyObject* PythonTimer::PyTimer_repr(PyTimer *self)
     }
     else
     {
-        result = PyUnicode_FromFormat("timer(timeOut %d, callbackFunc %s)", self->timer->interval());
+        result = PyUnicode_FromFormat("timer(interval %i ms)", self->timer->interval());
     }
     return result;
 }
