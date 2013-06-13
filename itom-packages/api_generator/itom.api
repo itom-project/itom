@@ -214,6 +214,11 @@ itom.scaleDoubleUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
 itom.setApplicationCursor
 itom.setCurrentPath(newPath) -> sets absolute path of current working directory
+itom.timer(interval, callbackFunc, [argTuple]) -> new callback timer
+itom.timer.isActive() -> returns timer status
+itom.timer.setInterval(interval) -> sets timer interval in [ms]
+itom.timer.start() -> starts timer
+itom.timer.stop() -> stops timer
 itom.ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface
 itom.ui.BUTTONBAR_HORIZONTAL
 itom.ui.BUTTONBAR_NO
@@ -267,10 +272,5 @@ itom.uiItem.getPropertyInfo([propertyName]) -> returns information about the pro
 itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal.
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
-itom.uiTimer(timeOut, callbackFunc, [args]) -> new callback timer
-itom.uiTimer.isActive() -> returns timer status
-itom.uiTimer.setInterval(interval) -> sets timer interval in [ms]
-itom.uiTimer.start() -> starts uiTimer
-itom.uiTimer.stop() -> stopps uiTimer
 itom.version([toggle-output [, include-plugins]])) -> retrive complete informations about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).
