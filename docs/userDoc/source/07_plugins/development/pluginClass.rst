@@ -62,7 +62,7 @@ Finally, if the plugin should be closed, the inverse function calls with respect
 Plugin-Framework
 ----------------
 
-The bear framework of any plugin-class of type **DataIO**, **Actuator**, ... (but not **Algo**), looks like this:
+The bare framework of any plugin-class of type **DataIO**, **Actuator**, ... (but not **Algo**), looks like this:
 
 .. code-block:: c++
     :linenos:
@@ -168,7 +168,7 @@ Use the destructor (executed in main thread) for some final deletion work. Usual
 Init
 ++++
 
-The method **init** has the following bear framework:
+The method **init** has the following bare framework:
 
 .. code-block:: c++
     :linenos:
