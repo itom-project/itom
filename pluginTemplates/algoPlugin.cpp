@@ -1,4 +1,5 @@
 #include "algoPlugin.h"
+#include "pluginVersion.h"
 
 #include "common/helperCommon.h"
 
@@ -53,6 +54,7 @@ AlgoPluginInterface::AlgoPluginInterface()
     m_description = QObject::tr("Filter-Plugin for fitting-methods.");
     m_author = "ITO";
     m_license = QObject::tr("LGPL with ITO itom-exception");
+    m_version = PLUGIN_VERSION_MAJOR << 16 + PLUGIN_VERSION_MINOR << 8 + PLUGIN_VERSION_PATCH;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

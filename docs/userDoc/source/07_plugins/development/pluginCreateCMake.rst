@@ -14,6 +14,8 @@ The source folder of your plugin mainly consists of these files:
 #. **yourPlugin.h** and **yourPlugin.cpp**. This are the main header and source files of your plugin.
 #. **dialogYourPlugin.h** and **dialogYourPlugin.cpp** (optional, not for algorithms). Use these files if you want to provide a configuration dialog for your plugin (can also be added later).
 #. **dockWidgetYourPlugin.h** and **dockWidgetYourPlugin.cpp** (optional, not for algorithms). Use these files if you want to provide a dock widget of your plugin that is inserted into |itom|'s main window (can also be added later).
+#. **pluginVersion.h** (optional). This header contains some defines for your current plugin version. It sould be included in **yourPlugin.cpp** and under MSVC / windows in **version.rc**.
+#. **version.rc** (optional, only under MSVC / windows). Under windows the content of this file will be automatically added to the meta-Data of your DLL.
 
 Templates
 ----------

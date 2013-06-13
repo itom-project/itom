@@ -81,6 +81,7 @@ set(plugin_HEADERS
     #${CMAKE_CURRENT_SOURCE_DIR}/dialogPluginName.h
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPluginName.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginName.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
@@ -106,6 +107,11 @@ set(plugin_SOURCES
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPluginName.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginName.cpp
 )
+
+#If you want to use automatical metadata for dlls under windows use the following if-case.
+if(MSVC)
+    list(APPEND plugin_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
 
 #handle translations BEGIN STEP 1
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})

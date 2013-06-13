@@ -1,4 +1,5 @@
 #include "CameraPlugin.h"
+#include "pluginVersion.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
@@ -81,7 +82,9 @@ CameraPluginInterface::CameraPluginInterface()
     m_detaildescription = QObject::tr("The CameraPlugin is a template for cameras.");
     m_author = "ITO";
     m_license = tr("LGPL");
-
+    
+    m_version = PLUGIN_VERSION_MAJOR << 16 + PLUGIN_VERSION_MINOR << 8 + PLUGIN_VERSION_PATCH;
+    
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
 
