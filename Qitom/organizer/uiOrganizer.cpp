@@ -1623,6 +1623,57 @@ RetVal UiOrganizer::setAttribute(unsigned int objectID, int attributeNumber, boo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getWindowFlags(unsigned int objectID, QSharedPointer<int> flags, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    QObject *obj = getWeakObjectReference(objectID);
+    QWidget *widget = qobject_cast<QWidget*>(obj);
+    *flags = 0;
+    RetVal retval;
+    if(widget)
+    {
+        *flags = widget->windowFlags();
+    }
+    else
+    {
+        retval += RetVal(retError,0,tr("the objectID cannot be cast to a widget").toAscii().data() );
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::setWindowFlags(unsigned int objectID, int flags, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    QObject *obj = getWeakObjectReference(objectID);
+    QWidget *widget = qobject_cast<QWidget*>(obj);
+    RetVal retval;
+    if(widget)
+    {
+        widget->setWindowFlags( Qt::WindowFlags(flags) );
+    }
+    else
+    {
+        retval += RetVal(retError,0,tr("the objectID cannot be cast to a widget").toAscii().data() );
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer<int> classInfoCount, QSharedPointer<int> enumeratorCount, QSharedPointer<int> methodCount, QSharedPointer<int> propertyCount, ItomSharedSemaphore *semaphore)
 {
     *classInfoCount = -1;

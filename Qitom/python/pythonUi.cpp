@@ -1167,6 +1167,90 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) -> sets window flags of corresponding widget.\n\
+\n\
+Parameters \n\
+----------- \n\
+flags : {int} \n\
+window flags to set (or-combination, see Qt::WindowFlags)");
+PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
+{
+    int value;
+
+    if(!PyArg_ParseTuple(args, "i", &value))
+    {
+        return NULL;
+    }
+    
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+    QMetaObject::invokeMethod(uiOrga, "setWindowFlags", Q_ARG(unsigned int, self->objectID), Q_ARG(int, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while setting window flags");
+        return NULL;
+    }
+
+    retValue += locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetWindowFlags_doc,"getWindowFlags(flags) -> gets window flags of corresponding widget. \n\
+\n\
+The flags-value is an or-combination of the enumeration Qt::WindowFlag. See Qt documentation for more information.");
+PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
+{
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+    QSharedPointer<int> value(new int);
+
+    QMetaObject::invokeMethod(uiOrga, "getWindowFlags", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<int>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting window flag");
+        return NULL;
+    }
+
+    retValue += locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    return Py_BuildValue("i", *value);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
@@ -1297,6 +1381,8 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"getPropertyInfo", (PyCFunction)PyUiItem_getPropertyInfo, METH_VARARGS, PyUiItemGetPropertyInfo_doc},
         {"setAttribute", (PyCFunction)PyUiItem_setAttribute, METH_VARARGS, PyUiItemSetAttribute_doc},
         {"getAttribute", (PyCFunction)PyUiItem_getAttribute, METH_VARARGS, PyUiItemGetAttribute_doc},
+        {"getWindowFlags", (PyCFunction)PyUiItem_getWindowFlags, METH_NOARGS, PyUiItemGetWindowFlags_doc},
+        {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
         {NULL}  /* Sentinel */
 };

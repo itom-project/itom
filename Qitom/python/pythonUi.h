@@ -105,6 +105,9 @@ public:
     static PyObject* PyUiItem_setAttribute(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_getAttribute(PyUiItem *self, PyObject *args);
 
+    static PyObject* PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args);
+    static PyObject* PyUiItem_getWindowFlags(PyUiItem *self);
+
     //-------------------------------------------------------------------------------------------------
     // helpers
     //------------------------------------------------------------------------------------------------- 

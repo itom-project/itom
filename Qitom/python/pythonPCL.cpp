@@ -3445,7 +3445,7 @@ PyObject* PythonPCL::PyPolygonMesh_name(PyPolygonMesh* /*self*/)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
 {
-    if (self->polygonMesh == NULL)
+    if (self->polygonMesh == NULL || self->polygonMesh->polygonMesh().get() == NULL )
     {
         return PyUnicode_FromString("PolygonMesh (empty)");
     }

@@ -323,6 +323,8 @@ public slots:
     RetVal writeProperties(unsigned int handle, QString widgetName, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal getAttribute(unsigned int objectID, int attributeNumber, QSharedPointer<bool> value, ItomSharedSemaphore *semaphore = NULL);
     RetVal setAttribute(unsigned int objectID, int attributeNumber, bool value, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getWindowFlags(unsigned int objectID, QSharedPointer<int> flags, ItomSharedSemaphore *semaphore = NULL);
+    RetVal setWindowFlags(unsigned int objectID, int flags, ItomSharedSemaphore *semaphore = NULL);
     RetVal widgetMetaObjectCounts(unsigned int objectID, QSharedPointer<int> classInfoCount, QSharedPointer<int> enumeratorCount, QSharedPointer<int> methodCount, QSharedPointer<int> propertyCount, ItomSharedSemaphore *semaphore = NULL );
 
     RetVal getChildObject(unsigned int uiHandle, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);

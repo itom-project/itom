@@ -397,7 +397,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
             {
                 dims = PySequence_Size(dimList);
 
-                if(dims <= 0)
+                if(dims < 0)
                 {
                     retValue += RetVal(retError);
                     PyErr_Format(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
@@ -1009,7 +1009,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
         {
             dims = PyList_Size(dimList);
 
-            if(dims <= 0)
+            if(dims < 0)
             {
                 retValue += RetVal(retError);
                 PyErr_Format(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
