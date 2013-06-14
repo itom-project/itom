@@ -185,7 +185,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/QTabWidgetItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptTabWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
@@ -331,7 +330,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptTabWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
