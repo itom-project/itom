@@ -139,7 +139,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
         if (QLibrary::isLibrary(absolutePluginPath))
         {
             loader = new QPluginLoader(absolutePluginPath);
-            
+
             QDesignerCustomWidgetInterface *iface = NULL;
             QObject *instance = loader->instance();
 
@@ -192,16 +192,21 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 }
                 else
                 {
-//                    if (instance)
-//                        delete instance;
+
+
+#if QT_VERSION >= 0x040800 
+                    /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here, 
+                       since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO 
+
+                       \todo this bug seems only to be there with Qt 4.7.x
+                    */
                     loader->unload();
+#endif
                     DELETE_AND_SET_NULL(loader);
                 }
             }
             else
             {
-//                if (instance)
-//                    delete instance;
                 loader->unload();
                 message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
                 status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
