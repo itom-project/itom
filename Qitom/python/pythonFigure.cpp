@@ -514,13 +514,13 @@ of itom, else it is a independent window. \n\
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
-        return NULL;
+        return -1;
     }
 
     if( *(self->guardedFigHandle) <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
-        return NULL;
+        return -1;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -529,8 +529,8 @@ of itom, else it is a independent window. \n\
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while getting dock status");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
+        return -1;
     }
     
     retValue = locker.getSemaphore()->returnValue;
