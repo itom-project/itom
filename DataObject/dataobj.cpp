@@ -31,168 +31,505 @@
 
 namespace ito {
 
-/*!
-    \class DObjIterator
-    \brief iterator for the whole data object
-    \todo completely untested
-*/
-DObjIterator::DObjIterator(ito::DataObject *dObj, unsigned int matNum) :
-    m_curMatNumber(matNum),
-    m_curPos(0),
-    m_pDObj(dObj),
-    m_pItCur(),
-    m_pItEnd(),
-    m_pItStart()
+//-------------------------------------------------------------------------  
+//! default constructor
+DObjConstIterator::DObjConstIterator() :
+    dObj(NULL),
+    elemSize(0),
+    ptr(NULL),
+    sliceStart(NULL),
+    sliceEnd(NULL),
+    planeContinuous(false),
+    plane(0)
 {
+}
+
+//-------------------------------------------------------------------------  
+//! constructor that sets the iterator to the beginning of the matrix 
+DObjConstIterator::DObjConstIterator(const DataObject* _dObj, int pos /*= 0*/):
+    dObj(_dObj)
+{
+    elemSize = _dObj->elemSize();
+    size_t dims = dObj->getDims();
+
+    if(dObj->getSize(dims-1) == dObj->getOriginalSize(dims-1))
+    {
+        planeContinuous = true;
+    }
+    else
+    {
+        planeContinuous = false;
+    }
+
+    seekAbs(pos);
+}
+
+//-------------------------------------------------------------------------  
+//! copy constructor
+DObjConstIterator::DObjConstIterator(const DObjConstIterator& it)
+{
+    dObj = it.dObj;
+    planeContinuous = it.planeContinuous;
+    elemSize = it.elemSize;
+    ptr = it.ptr; //current pointer to current element
+    sliceStart = it.sliceStart;
+    sliceEnd = it.sliceEnd;
+    plane = it.plane;
+}
+
+//-------------------------------------------------------------------------  
+//! copy operator
+DObjConstIterator& DObjConstIterator::operator = (const DObjConstIterator& it)
+{
+    dObj = it.dObj;
+    planeContinuous = it.planeContinuous;
+    elemSize = it.elemSize;
+    ptr = it.ptr; //current pointer to current element
+    sliceStart = it.sliceStart;
+    sliceEnd = it.sliceEnd;
+    plane = it.plane;
+    return *this;
+}
+
+//-------------------------------------------------------------------------   
+//! returns the current matrix element
+uchar* DObjConstIterator::operator *() const
+{
+    return ptr;
+}
+
+//-------------------------------------------------------------------------  
+//! returns the i-th matrix element, relative to the current
+uchar* DObjConstIterator::operator [](int i) const
+{
+    DObjConstIterator it2(*this);
+    it2+=i;
+    return (*it2);
+}
     
 
-    //matNum is start index in vector considering range (0 means first element in range)
-    size_t matIndex = m_pDObj->seekMat(matNum);
-    m_pItCur = getBegin((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType());// ->begin();
-    m_pItEnd = getEnd((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType()); //->end();
-    m_pItStart = m_pItCur;
-}
-
-cv::MatConstIterator DObjIterator::getBegin(cv::Mat* mat, int dataType)
+//-------------------------------------------------------------------------  
+//! shifts the iterator forward by the specified number of elements
+DObjConstIterator& DObjConstIterator::operator += (int ofs)
 {
-    switch(dataType)
+    if( !dObj || ofs == 0 )
+        return *this;
+    int ofsb = ofs*elemSize;
+    ptr += ofsb;
+    if( ptr < sliceStart || sliceEnd <= ptr )
     {
-    case tInt8:
-        return mat->begin<ito::int8>();
-    case tUInt8:
-        return mat->begin<ito::uint8>();
-    case tInt16:
-        return mat->begin<ito::int16>();
-    case tUInt16:
-        return mat->begin<ito::uint16>();
-    case tInt32:
-        return mat->begin<ito::int32>();
-    case tUInt32:
-        return mat->begin<ito::uint32>();
-    case tFloat32:
-        return mat->begin<ito::float32>();
-    case tFloat64:
-        return mat->begin<ito::float64>();
-    case tComplex64:
-        return mat->begin<ito::complex64>();
-    case tComplex128:
-        return mat->begin<ito::complex128>();
-    }
-    return cv::MatConstIterator();
-}
-
-cv::MatConstIterator DObjIterator::getEnd(cv::Mat* mat, int dataType)
-{
-    switch(dataType)
-    {
-    case tInt8:
-        return mat->end<ito::int8>();
-    case tUInt8:
-        return mat->end<ito::uint8>();
-    case tInt16:
-        return mat->end<ito::int16>();
-    case tUInt16:
-        return mat->end<ito::uint16>();
-    case tInt32:
-        return mat->end<ito::int32>();
-    case tUInt32:
-        return mat->end<ito::uint32>();
-    case tFloat32:
-        return mat->end<ito::float32>();
-    case tFloat64:
-        return mat->end<ito::float64>();
-    case tComplex64:
-        return mat->end<ito::complex64>();
-    case tComplex128:
-        return mat->end<ito::complex128>();
-    }
-    return cv::MatConstIterator();
-}
-
-uchar* DObjIterator::operator[] (int idx)
-{
-    if(m_pDObj->getDims() <= 2)
-    {
-        return (uchar*)((m_pItCur.ptr) + idx);
-    }
-    else
-    {
-        DObjIterator iter2 = *this;
-        iter2 += idx;
-        return *(iter2);
-    }
-}
-
-DObjIterator & DObjIterator::operator += (int ofs)
-{
-    size_t matIndex;
-    size_t matSize = 0;
-
-    if(m_pDObj != NULL)
-    {
-        int dimensions = m_pDObj->getDims();
-        matSize = m_pDObj->getSize().m_p[dimensions - 2] * m_pDObj->getSize().m_p[dimensions - 1];
-    }
-
-    if (m_pDObj->getDims() <= 2)
-    {
-        m_pItCur += ofs;
-        m_curPos += ofs; /*!< actual total index, beginning with zero */
-        if(m_pItCur == m_pItStart) m_curPos = 0;
-        if(m_pItCur == m_pItEnd) m_curPos = matSize;
-    }
-    else
-    {
-        m_pItCur += ofs;
-
-        if(m_pItCur < m_pItEnd && m_pItCur >= m_pItStart)
-        {
-            m_curPos += ofs;  /*!< actual total index, beginning with zero */
-        }
-        else if(m_curPos < -ofs)
-        {
-            m_curPos = 0;
-            matIndex = m_pDObj->seekMat(0);
-            //m_pItEnd = ((cv::Mat *)(m_pDObj->get_mdata()[matIndex]))->end();
-            m_pItEnd = getEnd((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType()); //->end();
-            m_pItStart = getBegin((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType());// ->begin();
-            m_pItCur = m_pItStart;
-            m_curMatNumber = 0;
-        }
-        else if(m_curPos + ofs >= m_pDObj->end()) //m_pDObj->calcNumMats() * m_matSize)
-        {
-            m_curPos = m_pDObj->calcNumMats() * matSize;
-            m_curMatNumber = m_pDObj->calcNumMats()-1;
-            matIndex = m_pDObj->seekMat(m_curMatNumber);
-            //m_pItEnd = ((cv::Mat *)(m_pDObj->get_mdata()[matIndex]))->end();
-            m_pItEnd = getEnd((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType()); //->end();
-            m_pItStart = getBegin((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType());// ->begin();
-            m_pItCur = m_pItEnd;
-
-        }
-        else
-        {
-            m_curPos += ofs;
-            unsigned int modulo = m_curPos % matSize;
-            m_curMatNumber = (m_curPos - modulo) / matSize;
-            matIndex = m_pDObj->seekMat(m_curMatNumber);
-            //m_pItEnd = ((cv::Mat *)(m_pDObj->get_mdata()[matIndex]))->end();
-            m_pItEnd = getEnd((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType()); //->end();
-            //m_pItCur = ((cv::Mat *)(m_pDObj->get_mdata()[matIndex]))->begin();
-            m_pItCur = getBegin((cv::Mat *)(m_pDObj->get_mdata()[matIndex]), m_pDObj->getType());// ->begin();
-            m_pItCur += modulo;
-        }
-
+        ptr -= ofsb;
+        seekRel(ofs);
     }
     return *this;
 }
 
-size_t DObjIterator::len() const
+//-------------------------------------------------------------------------  
+//! shifts the iterator backward by the specified number of elements
+DObjConstIterator& DObjConstIterator::operator -= (int ofs)
 {
-    if(m_pDObj) return m_pDObj->getTotal();
-    return 0;
+    return (*this) += -ofs;
 }
 
+//-------------------------------------------------------------------------  
+//! decrements the iterator
+DObjConstIterator& DObjConstIterator::operator --()
+{
+    if( dObj && (ptr -= elemSize) < sliceStart )
+    {
+        ptr += elemSize;
+        seekRel(-1); 
+    }
+    return *this;
+}
+
+//-------------------------------------------------------------------------  
+//! decrements the iterator
+DObjConstIterator DObjConstIterator::operator --(int)
+{
+    DObjConstIterator b = *this;
+    *this -= 1;
+    return b;
+}
+
+//-------------------------------------------------------------------------  
+//! increments the iterator
+DObjConstIterator& DObjConstIterator::operator ++()
+{
+    if(dObj && (ptr += elemSize) >= sliceEnd )
+    {
+        ptr -= elemSize;
+        seekRel(1); 
+    }
+    return *this;
+}
+   
+//-------------------------------------------------------------------------   
+//! increments the iterator
+DObjConstIterator DObjConstIterator::operator ++(int)
+{
+    DObjConstIterator b = *this;
+    *this += 1;
+    return b;
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator == (const DObjConstIterator& dObjIt)
+{
+    return (plane == dObjIt.plane && ptr == dObjIt.ptr);
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator != (const DObjConstIterator& dObjIt)
+{
+    return plane != dObjIt.plane || ptr != dObjIt.ptr;
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator < (const DObjConstIterator& dObjIt)
+{
+    return (plane < dObjIt.plane) || (plane == dObjIt.plane && ptr < dObjIt.ptr);
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator > (const DObjConstIterator& dObjIt)
+{
+    return (plane > dObjIt.plane) || (plane == dObjIt.plane && ptr > dObjIt.ptr);
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator <= (const DObjConstIterator& dObjIt)
+{
+    return (plane < dObjIt.plane) || (plane == dObjIt.plane && ptr <= dObjIt.ptr);
+}
+
+//-------------------------------------------------------------------------  
+bool DObjConstIterator::operator >= (const DObjConstIterator& dObjIt)
+{
+    return (plane > dObjIt.plane) || (plane == dObjIt.plane && ptr >= dObjIt.ptr);
+}
+
+//-------------------------------------------------------------------------  
+//! moves the iterator at pos ofs.
+void DObjConstIterator::seekAbs(int ofs)
+{
+    if(dObj)
+    {
+        size_t matIndex;
+        size_t dims = dObj->getDims();
+
+        if(ofs <= 0) //begin
+        {
+            //ptr = dObj->rowPtr(0,0);
+            size_t matIndex = dObj->seekMat(0);
+            ptr = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+
+            sliceStart = ptr;
+            plane = 0;
+
+            if(planeContinuous)
+            {
+                sliceEnd = ptr + elemSize * dObj->getSize(dims-1) * dObj->getSize(dims-2); //one after the last ptr
+            }
+            else
+            {
+                sliceEnd = ptr + elemSize * dObj->getSize(dims-1);
+            }
+        }
+        else if(ofs >= dObj->getTotal()) //end
+        {
+            plane = dObj->calcNumMats() - 1;
+
+            if(planeContinuous)
+            {
+                
+                //sliceStart = dObj->rowPtr(plane, 0 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+                ptr = sliceStart + elemSize * dObj->getSize(dims-1) * dObj->getSize(dims-2);
+            }
+            else
+            {
+                //sliceStart = dObj->rowPtr(plane, dObj->getSize(dims-2)-1 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->ptr( dObj->getSize(dims-2)-1 );
+                ptr = sliceStart + elemSize * dObj->getSize(dims-1);
+            }
+            
+            sliceEnd = ptr;
+        }
+        else
+        {
+            //determine the plane, where it lies in
+            size_t planeSize = dObj->getSize( dims-1 ) * dObj->getSize( dims-2 );
+            plane = ofs / planeSize; //floor value
+            ofs -= (plane * planeSize);
+
+            if (planeContinuous)
+            {
+                //sliceStart = dObj->rowPtr(plane, 0 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+                ptr = sliceStart + elemSize * ofs;
+                sliceEnd = sliceStart + elemSize * dObj->getSize(dims-1) * dObj->getSize(dims-2);
+            }
+            else
+            {
+                size_t row = ofs / dObj->getSize(dims-2); //floor value
+
+                //sliceStart = dObj->rowPtr(plane,row);
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->ptr( row );
+
+                sliceEnd = sliceStart + elemSize * dObj->getSize(dims-1);
+                ptr = sliceStart + elemSize * (ofs - row * dObj->getSize(dims-2));
+            }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------  
+//! moves the iterator by pos ofs.
+void DObjConstIterator::seekRel(int ofs)
+{
+    if(dObj)
+    {
+        size_t matIndex;
+        size_t dims = dObj->getDims();
+        size_t width = dObj->getSize(dims-1);
+        size_t stride = dObj->getOriginalSize(dims-1);
+
+        size_t curRowIdx = (ptr - dObj->rowPtr(plane,0)) / stride; //floor
+        int curElemIdxInPlane;
+        if(planeContinuous)
+        {
+            curElemIdxInPlane = (ptr - dObj->rowPtr(plane,0)) / elemSize;
+        }
+        else
+        {
+            curElemIdxInPlane = curRowIdx * width + (ptr - sliceStart) / elemSize;
+        }
+        int planeSize = static_cast<int>(dObj->getSize(dims-1) * dObj->getSize(dims-2));
+
+        curElemIdxInPlane += ofs;
+
+        if(curElemIdxInPlane >= planeSize) //any plane after this plane
+        {
+            ofs = (curElemIdxInPlane - planeSize);
+        }
+        else if(curElemIdxInPlane < 0) //any plane before this plane
+        {
+            ofs = curElemIdxInPlane;
+        }
+        else //same plane
+        {
+            if(planeContinuous)
+            {
+                ptr = sliceStart + curElemIdxInPlane * elemSize; //sliceStart, sliceEnd still the same
+            }
+            else
+            {
+                curRowIdx = (curElemIdxInPlane / width);
+                
+                //sliceStart = dObj->rowPtr( plane, curRowIdx );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->ptr( curRowIdx );
+
+                sliceEnd = sliceStart + width * elemSize;
+                ptr = sliceStart + (curElemIdxInPlane - curRowIdx * width) * elemSize;
+            }
+            return;
+        }
+
+        //calc destination plane and adjust ofs
+        int planeOffset = ofs / planeSize;
+        plane += planeOffset;
+        ofs -= (planeOffset * planeSize);
+        plane += ((ofs >= 0) ? +1 : -1); //the destination plane is one before or after the last plane, that has been fully skipped
+        
+        if( plane < 0) //move to begin
+        {
+            //ptr = dObj->rowPtr(0,0);
+            size_t matIndex = dObj->seekMat(0);
+            ptr = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+            sliceStart = ptr;
+            plane = 0;
+
+            if(planeContinuous)
+            {
+                sliceEnd = ptr + elemSize * planeSize; //one after the last ptr
+            }
+            else
+            {
+                sliceEnd = ptr + elemSize * width;
+            }
+        }
+        else if ( plane >= dObj->calcNumMats() ) //move to end
+        {
+            plane = dObj->calcNumMats() - 1;
+
+            if(planeContinuous)
+            {
+                //sliceStart = dObj->rowPtr(plane, 0 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+                ptr = sliceStart + elemSize * planeSize;
+            }
+            else
+            {
+                //sliceStart = dObj->rowPtr(plane, dObj->getSize(dims-2)-1 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->ptr( dObj->getSize(dims-2)-1 );
+                ptr = sliceStart + elemSize * width;
+            }
+            
+            sliceEnd = ptr;
+        }
+        else //move to another plane or stay within this plane
+        {
+            curElemIdxInPlane = ((ofs >= 0) ? ofs : (planeSize - ofs));
+            if(planeContinuous)
+            {
+                //sliceStart = dObj->rowPtr(plane, 0 );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
+                ptr = sliceStart + curElemIdxInPlane * elemSize;
+                sliceEnd = sliceStart + (planeSize * elemSize);
+            }
+            else
+            {
+                curRowIdx = (curElemIdxInPlane / width);
+                //sliceStart = dObj->rowPtr( plane, curRowIdx );
+                matIndex = dObj->seekMat(plane);
+                sliceStart = ((cv::Mat*)dObj->get_mdata()[matIndex])->ptr( curRowIdx );
+                sliceEnd = sliceStart + width * elemSize;
+                ptr = sliceStart + (curElemIdxInPlane - curRowIdx * width) * elemSize;
+            }
+        }
+
+    }
+}
+
+//-------------------------------------------------------------------------  
+//-------------------------------------------------------------------------  
+//! default constructor
+DObjIterator::DObjIterator() : DObjConstIterator() {}
+
+//-------------------------------------------------------------------------  
+//! constructor that sets the iterator to the beginning of the matrix 
+DObjIterator::DObjIterator(DataObject* _dObj, int pos /*= 0*/):
+    DObjConstIterator(_dObj, pos)
+{
+}
+
+//-------------------------------------------------------------------------  
+//! copy constructor
+DObjIterator::DObjIterator(const DObjIterator& it)
+{
+    dObj = it.dObj;
+    planeContinuous = it.planeContinuous;
+    elemSize = it.elemSize;
+    ptr = it.ptr; //current pointer to current element
+    sliceStart = it.sliceStart;
+    sliceEnd = it.sliceEnd;
+    plane = it.plane;
+}
+
+//-------------------------------------------------------------------------  
+//! copy operator
+DObjIterator& DObjIterator::operator = (const DObjIterator& it)
+{
+    dObj = it.dObj;
+    planeContinuous = it.planeContinuous;
+    elemSize = it.elemSize;
+    ptr = it.ptr; //current pointer to current element
+    sliceStart = it.sliceStart;
+    sliceEnd = it.sliceEnd;
+    plane = it.plane;
+    return *this;
+}
+
+//-------------------------------------------------------------------------  
+//! returns the current matrix element
+uchar* DObjIterator::operator *()
+{
+    return ptr;
+}
+
+//-------------------------------------------------------------------------  
+//! returns the i-th matrix element, relative to the current
+uchar* DObjIterator::operator [](int i)
+{
+    DObjConstIterator it2(*this);
+    it2 += i;
+    return (*it2);
+}
+    
+
+//-------------------------------------------------------------------------  
+//! shifts the iterator forward by the specified number of elements
+DObjIterator& DObjIterator::operator += (int ofs)
+{
+    if( !dObj || ofs == 0 )
+        return *this;
+    int ofsb = ofs*elemSize;
+    ptr += ofsb;
+    if( ptr < sliceStart || sliceEnd <= ptr )
+    {
+        ptr -= ofsb;
+        seekRel(ofs);
+    }
+    return *this;
+}
+
+//-------------------------------------------------------------------------  
+//! shifts the iterator backward by the specified number of elements
+DObjIterator& DObjIterator::operator -= (int ofs)
+{
+    return (*this) += -ofs;
+}
+
+//-------------------------------------------------------------------------  
+//! decrements the iterator
+DObjIterator& DObjIterator::operator --()
+{
+    if( dObj && (ptr -= elemSize) < sliceStart )
+    {
+        ptr += elemSize;
+        seekRel(-1); 
+    }
+    return *this;
+}
+
+//-------------------------------------------------------------------------  
+//! decrements the iterator
+DObjIterator DObjIterator::operator --(int)
+{
+    DObjIterator b = *this;
+    *this -= 1;
+    return b;
+}
+
+//-------------------------------------------------------------------------    
+//! increments the iterator
+DObjIterator& DObjIterator::operator ++()
+{
+    if(dObj && (ptr += elemSize) >= sliceEnd )
+    {
+        ptr -= elemSize;
+        seekRel(1); 
+    }
+    return *this;
+}
+
+//-------------------------------------------------------------------------
+//! increments the iterator
+DObjIterator DObjIterator::operator ++(int)
+{
+    DObjIterator b = *this;
+    *this += 1;
+    return b;
+}
 
 
 /*!
@@ -1329,58 +1666,67 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    }
 
    //_Tp is source type
-   rhs.freeData();
+   
 
-   switch (type)
+   if(type == lhs.getType())
    {
-      case ito::tInt8:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
-      break;
+       rhs = lhs;
+   }
+   else
+   {
+       rhs.freeData();
 
-      case ito::tUInt8:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
-      break;
+       switch (type)
+       {
+          case ito::tInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tInt16:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tUInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tUInt16:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tInt32:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tUInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tFloat32:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tFloat64:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tFloat32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tComplex64:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tFloat64:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
+          break;
 
-      case ito::tComplex128:
-         rhs.create(lhs.m_dims, lhs.m_size, type,lhs.m_continuous);
-         CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
-      break;
+          case ito::tComplex64:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
+          break;
 
-      default:
-         cv::error(cv::Exception(CV_StsAssert, "not defined cast", "", __FILE__, __LINE__));
-      break;
+          case ito::tComplex128:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
+          break;
+
+          default:
+             cv::error(cv::Exception(CV_StsAssert, "not defined cast", "", __FILE__, __LINE__));
+          break;
+       }
    }
 
    return 0;
@@ -4612,9 +4958,14 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
 */
 template<typename T2> DataObject::operator T2 ()
 {
-    DataObject resObj;
-    convertTo(resObj, m_type);
-    return resObj;
+    ito::tDataType newType = getDataType2<T2*>();
+    if(newType != m_type)
+    {
+        DataObject resObj;
+        convertTo(resObj, newType);
+        return resObj;
+    }
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4971,6 +5322,7 @@ template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj
             }
         }
 
+
 //        dstMatNum = resObj->seekMat(nmat, numMats);
 //        cv::MatIterator_<_Tp> itRes = ((cv::Mat_<_Tp> *)(resObj->get_mdata()[dstMatNum]))->begin();
 //        cv::MatIterator_<_Tp> itRes_end = ((cv::Mat_<_Tp> *)(resObj->get_mdata()[dstMatNum]))->end();
@@ -5276,6 +5628,51 @@ int DataObject::addToProtocol(const std::string &value)
         (*it).second = tempVal;
     }
     return 0;
+}
+
+
+size_t DataObject::elemSize() const
+{
+    switch(m_type)
+    {
+    case tInt8:
+    case tUInt8:
+        return 1;
+    case tInt16:
+    case tUInt16:
+        return 2;
+    case tInt32:
+    case tUInt32:
+        return 4;
+    case tFloat32:
+        return 4;
+    case tFloat64:
+    case tComplex64:
+        return 8;
+    case tComplex128:
+        return 16;
+    default: return 0;
+    }
+}
+
+DObjIterator DataObject::begin()
+{
+    return DObjIterator(this, 0);
+}
+
+DObjIterator DataObject::end()
+{
+    return DObjIterator(this, getTotal());
+}
+
+DObjConstIterator DataObject::constBegin() const
+{
+    return DObjConstIterator(this, 0);
+}
+
+DObjConstIterator DataObject::constEnd() const
+{
+    return DObjConstIterator(this, getTotal());
 }
 
 

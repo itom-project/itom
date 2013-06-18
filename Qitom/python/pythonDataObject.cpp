@@ -1682,23 +1682,20 @@ PyObject* PythonDataObject::PyDataObject_getValueOffset(PyDataObject *self, void
     return PyFloat_FromDouble(self->dataObject->getValueOffset());
 }
 
-PyDoc_STRVAR(dataObjectAttValue_doc, "return the values within the ROI. Only for Points or 1D-Slices.\n\
+//---------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttValue_doc, "get/set the values within the ROI as a one-dimensional tuple.\n\
 \n\
-This function deepcopys values from the defined point or slice (ROI) to a python tuple.\n\
+This method gets or sets the values within the ROI. If this attribute is called by means of a getter, \n\
+a tuple is returned which is created by iterating through the values of the data object (row-wise). \n\
+In the same way of iterating, the values are set to the data object if you provide a tuple of the size of the data object \n\
+or its ROI, respectively. \n\
 \n\
-getter: Tuple of value with the same type as the object copied from the dataObjec.\n\
+Example ::\n\
 \n\
-Example:\n\
-::\n\
 	b = dataObject[1,1:10,1,1].value\n\
 	# or for the first value \n\
 	b = dataObject[1,1:10,1,1].value[0]\n\
-	# The elements of the tuple are adressed with b[n]. \n\
-\n\
-Notes \n\
------ \n\
-{touple of Value} : ReadOnly\n\
-");
+	# The elements of the tuple are adressed with b[idx].");
 PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*closure*/)
 {
     PyObject *OutputTuple = NULL;
@@ -1710,193 +1707,228 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         return OutputTuple = PyTuple_New(0);
     }
 
-    int numDims = 0;
-    int axis = dims - 1;
+    OutputTuple = PyTuple_New( self->dataObject->getTotal() );
 
-    for(int dim = 0; dim < dims; dim++)
+    ito::DObjConstIterator it = self->dataObject->constBegin();
+    ito::DObjConstIterator itEnd = self->dataObject->constEnd();
+    Py_ssize_t cnt = 0;
+
+    switch (self->dataObject->getType())
     {
-        if(self->dataObject->getSize(dim) > 1)
-        {
-            numDims++;
-            axis = dim;
-        }
-    }
-
-    if(numDims > 1)
-    {
-        PyErr_Format(PyExc_ValueError, "Only implemented for Points and 1D-Slices");
-        return NULL;
-    }
-    else
-    {
-        OutputTuple = PyTuple_New(self->dataObject->getSize(axis));
-
-        if(axis < dims - 2)
-        {
-            cv::Mat* myMat = NULL;
-            int axisSize = static_cast<int>(self->dataObject->getSize(axis));
-
-            switch (self->dataObject->getType())
+        case ito::tInt8:
+            for(; it < itEnd; ++it)
             {
-                case ito::tInt8:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int8>(0))));
-                    }
-                    break;
-                case ito::tUInt8:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<uint8>(0))));
-                    }
-                    break;
-                case ito::tInt16:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int16>(0))));
-                    }
-                    break;
-                case ito::tUInt16:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<uint16>(0))));
-                    }
-                    break;
-                case ito::tInt32:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int32>(0))));
-                    }
-                    break;
-                case ito::tFloat32:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyFloat_FromDouble((double)(myMat->at<float32>(0))));
-                    }
-                    break;
-                case ito::tFloat64:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        PyTuple_SetItem(OutputTuple, cnt, PyFloat_FromDouble((double)(myMat->at<float64>(0))));
-                    }
-                    break;
-                case ito::tComplex64:
-                {
-                    complex64 value = 0;
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        value = (complex64)myMat->at<complex128>(0);
-                        PyTuple_SetItem(OutputTuple, cnt, PyComplex_FromDoubles((double)value.real(),(double)value.imag()));
-                    }
-                    break;
-                }
-                case ito::tComplex128:
-                {
-                    complex128 value = 0;
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        myMat = (cv::Mat*)self->dataObject->get_mdata()[cnt];
-                        value = (complex128)myMat->at<complex128>(0);
-                        PyTuple_SetItem(OutputTuple, cnt, PyComplex_FromDoubles((double)value.real(),(double)value.imag()));
-                    }
-                    break;
-                }
-                default:
-                    Py_XDECREF(OutputTuple);
-                    PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
-                    return NULL;
-
-
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::int8*)(*it)) )));
             }
-        }
-        else
-        {
-            cv::Mat* myMat = (cv::Mat*)self->dataObject->get_mdata()[0];
-            int axisSize = static_cast<int>(self->dataObject->getSize(axis));
-
-            switch (self->dataObject->getType())
+            break;
+        case ito::tUInt8:
+            for(; it < itEnd; ++it)
             {
-                case ito::tInt8:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int8>(cnt))));
-                    }
-                    break;
-                case ito::tUInt8:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<uint8>(cnt))));
-                    }
-                    break;
-                case ito::tInt16:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int16>(cnt))));
-                    }
-                    break;
-                case ito::tUInt16:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<uint16>(cnt))));
-                    }
-                    break;
-                case ito::tInt32:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyLong_FromLong((long)(myMat->at<int32>(cnt))));
-                    }
-                    break;
-                case ito::tFloat32:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyFloat_FromDouble((double)(myMat->at<float32>(cnt))));
-                    }
-                    break;
-                case ito::tFloat64:
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        PyTuple_SetItem(OutputTuple, cnt, PyFloat_FromDouble((double)(myMat->at<float64>(cnt))));
-                    }
-                    break;
-                case ito::tComplex64:
-                {
-                    complex64 value = 0;
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        value = myMat->at<complex64>(cnt);
-                        PyTuple_SetItem(OutputTuple, cnt, PyComplex_FromDoubles((double)value.real(),(double)value.imag()));
-                    }
-                    break;
-                }
-                case ito::tComplex128:
-                {
-                    complex128 value = 0;
-                    for(int cnt = 0; cnt < axisSize; cnt++)
-                    {
-                        value = myMat->at<complex128>(cnt);
-                        PyTuple_SetItem(OutputTuple, cnt, PyComplex_FromDoubles((double)value.real(),(double)value.imag()));
-                    }
-                    break;
-                }
-                default:
-                    Py_XDECREF(OutputTuple);
-                    PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
-                    return NULL;
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::uint8*)(*it)) )));
             }
+            break;
+        case ito::tInt16:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::int16*)(*it)) )));
+            }
+            break;
+        case ito::tUInt16:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::uint16*)(*it)) )));
+            }
+            break;
+        case ito::tInt32:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::int32*)(*it)) )));
+            }
+            break;
+        case ito::tFloat32:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyFloat_FromDouble((double)( *((ito::float32*)(*it)) )));
+            }
+            break;
+        case ito::tFloat64:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyFloat_FromDouble((double)( *((ito::float64*)(*it)) )));
+            }
+            break;
+        case ito::tComplex64:
+        {
+            complex64 *value;
+            for(; it < itEnd; ++it)
+            {
+                value = (complex64*)(*it);
+                PyTuple_SetItem(OutputTuple, cnt++, PyComplex_FromDoubles((double)value->real(),(double)value->imag()));
+            }
+            break;
         }
+        case ito::tComplex128:
+        {
+            complex128 *value;
+            for(; it < itEnd; ++it)
+            {
+                value = (complex128*)(*it);
+                PyTuple_SetItem(OutputTuple, cnt++, PyComplex_FromDoubles((double)value->real(),(double)value->imag()));
+            }
+            break;
+        }
+        default:
+            Py_XDECREF(OutputTuple);
+            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+            return NULL;
     }
+
     return OutputTuple;
 }
 
-PyDoc_STRVAR(dataObjectAttRotationalMatrix_doc, "Access the 3x3 rotational maxtrix in the dataObject tagspace \n\
+
+
+/*static*/ int PythonDataObject::PyDataObject_setValue(PyDataObject *self, PyObject *value, void *closure)
+{
+    if(self->dataObject == NULL)
+    {
+        PyErr_Format(PyExc_RuntimeError, "dataObject is NULL");
+        return -1;
+    }
+    
+    size_t total = self->dataObject->getTotal();
+    int typenum;
+
+    switch( self->dataObject->getType() )
+    {
+    case ito::tInt8:
+        typenum = NPY_INT8;
+        break;
+    case ito::tUInt8:
+        typenum = NPY_UINT8;
+        break;
+    case ito::tInt16:
+        typenum = NPY_INT16;
+        break;
+    case ito::tUInt16:
+        typenum = NPY_UINT16;
+        break;
+    case ito::tInt32:
+        typenum = NPY_INT32;
+        break;
+    case ito::tUInt32:
+        typenum = NPY_UINT32;
+        break;
+    case ito::tFloat32:
+        typenum = NPY_FLOAT32;
+        break;
+    case ito::tFloat64:
+        typenum = NPY_FLOAT64;
+        break;
+    case ito::tComplex64:
+        typenum = NPY_COMPLEX64;
+        break;
+    case ito::tComplex128:
+        typenum = NPY_COMPLEX128;
+        break;
+    default:
+        PyErr_Format(PyExc_RuntimeError, "type of dataObject is unknown.");
+        return -1;
+    }
+
+    //try to convert value to a numpy-array
+    PyObject* arr = PyArray_FromObject(value, typenum, 1, 1);  //new ref
+
+    if(arr == NULL)
+    {
+        return -1;
+    }
+
+    if( PyArray_DIM(arr, 0) != total)
+    {
+        Py_DECREF(arr);
+        PyErr_Format(PyExc_RuntimeError, "The given array-like object (array, tuple, list...) must have a length of %i", total);
+        return -1;
+    }
+
+    ito::DObjIterator it = self->dataObject->begin();
+    ito::DObjIterator itEnd = self->dataObject->end();
+
+    Py_ssize_t cnt = 0;
+
+    switch (self->dataObject->getType())
+    {
+        case ito::tInt8:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::int8*)(*it)) = *( (ito::int8*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tUInt8:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::uint8*)(*it)) = *( (ito::uint8*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tInt16:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::int16*)(*it)) = *( (ito::int16*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tUInt16:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::uint16*)(*it)) = *( (ito::uint16*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tInt32:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::int32*)(*it)) = *( (ito::int32*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tFloat32:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::float32*)(*it)) = *( (ito::float32*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tFloat64:
+            for(; it < itEnd; ++it)
+            {
+                *((ito::float64*)(*it)) = *( (ito::float64*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tComplex64:
+        {
+            for(; it < itEnd; ++it)
+            {
+                *((ito::complex64*)(*it)) = *( (ito::complex64*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        }
+        case ito::tComplex128:
+        {
+            for(; it < itEnd; ++it)
+            {
+                *((ito::complex128*)(*it)) = *( (ito::complex128*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        }
+        default:
+            Py_XDECREF(arr);
+            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+            return -1;
+    }
+
+    Py_XDECREF(arr);
+
+    return 0;
+}
+
+//--------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttRotationalMatrix_doc, "Access the 3x3 rotational matrix in the dataObject tagspace \n\
 \n\
 This attribute gives access to the xyRotationalMatrix in the metaData-Tagspace.\n\
 The getter method retuns a 3x3-Array deepcopied from the internal matrix,\n\
@@ -3297,20 +3329,11 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyDataObject* o1, PyDataObject
 
 PyObject* PythonDataObject::PyDataObj_getiter(PyDataObject* self)
 {
-    PyDataObjectIter* result = (PyDataObjectIter*)PyObject_Call((PyObject*)&PyDataObjectIterType, NULL, NULL);
+    PyObject *args = PyTuple_Pack(1, self); //new ref
+    PyDataObjectIter* result = (PyDataObjectIter*)PyObject_Call((PyObject*)&PyDataObjectIterType, args, NULL);
+    Py_DECREF(args);
     if(result != NULL)
     {
-        Py_INCREF(self);
-        result->base = (PyObject*)self;
-        result->curIndex = 0;
-        if(self->dataObject)
-        {
-            result->endIndex = self->dataObject->getTotal();
-        }
-        else
-        {
-            result->endIndex = 1;
-        }
         return (PyObject*)result; // result is always a new reference
     }
     else
@@ -6122,7 +6145,7 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"valueDescription", (getter)PyDataObject_getValueDescription, (setter)PyDataObject_setValueDescription, dataObjectAttValueDescription_doc, NULL},
     {"valueScale", (getter)PyDataObject_getValueScale, NULL, dataObjectAttValueScale_doc, NULL},
     {"valueOffset", (getter)PyDataObject_getValueOffset, NULL, dataObjectAttValueOffset_doc, NULL},
-    {"value", (getter)PyDataObject_getValue, NULL, dataObjectAttValue_doc, NULL},
+    {"value", (getter)PyDataObject_getValue, (setter)PyDataObject_setValue, dataObjectAttValue_doc, NULL},
     {"xyRotationalMatrix", (getter)PyDataObject_getXYRotationalMatrix, (setter)PyDataObject_setXYRotationalMatrix, dataObjectAttRotationalMatrix_doc, NULL},
 
     {"__array_struct__", (getter)PyDataObj_Array_StructGet, NULL, dataObjectArray_StructGet_doc, NULL},
@@ -6221,12 +6244,30 @@ PyMappingMethods PythonDataObject::PyDataObject_mappingProtocol = {
 
 PyObject* PythonDataObject::PyDataObjectIter_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    PyObject *dataObject = NULL;
+
+    if(!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &dataObject))
+    {
+        return NULL;
+    }
+
     PyDataObjectIter* self = (PyDataObjectIter *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->base = NULL;
-        self->curIndex = 0;
-        self->endIndex = 1;
+        PythonDataObject::PyDataObject *dobj = (PyDataObject*)dataObject;
+        Py_INCREF(dataObject);
+        self->base = dataObject;
+
+        if(dobj->dataObject)
+        {
+            self->it = dobj->dataObject->begin();
+            self->itEnd = dobj->dataObject->end();
+            self->len = dobj->dataObject->getTotal();
+        }
+        else
+        {
+            self->len = 0;
+        }
     }
 
     return (PyObject *)self;
@@ -6239,13 +6280,15 @@ int PythonDataObject::PyDataObjectIter_init(PyDataObjectIter* /*self*/, PyObject
 
 void PythonDataObject::PyDataObjectIter_dealloc(PyDataObjectIter *self)
 {
+    self->it = ito::DObjConstIterator();
+    self->itEnd = self->it;
     Py_XDECREF(self->base);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
 {
-    if(self->curIndex == self->endIndex)
+    if(self->it == self->itEnd)
     {
         PyErr_SetString(PyExc_StopIteration, "");
         return NULL;
@@ -6258,13 +6301,55 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
         return NULL;
     }
 
-    return PyDataObj_At(dObj->dataObject, self->curIndex++);
+    PyObject *output = NULL;
+
+    switch (dObj->dataObject->getType())
+    {
+        case ito::tInt8:
+            output = PyLong_FromLong((long)( *((ito::int8*)(*(self->it))) ));
+            break;
+        case ito::tUInt8:
+            output = PyLong_FromLong((long)( *((ito::uint8*)(*(self->it))) ));
+            break;
+        case ito::tInt16:
+            output = PyLong_FromLong((long)( *((ito::int16*)(*(self->it))) ));
+            break;
+        case ito::tUInt16:
+            output = PyLong_FromLong((long)( *((ito::uint16*)(*(self->it))) ));
+            break;
+        case ito::tInt32:
+            output = PyLong_FromLong((long)( *((ito::int32*)(*(self->it))) ));
+            break;
+        case ito::tFloat32:
+            output = PyFloat_FromDouble((double)( *((ito::float32*)(*(self->it))) ));
+            break;
+        case ito::tFloat64:
+            output = PyFloat_FromDouble((double)( *((ito::float64*)(*(self->it))) ));
+            break;
+        case ito::tComplex64:
+        {
+            complex64 *value = (complex64*)(*(self->it));
+            output = PyComplex_FromDoubles((double)value->real(),(double)value->imag());
+            break;
+        }
+        case ito::tComplex128:
+        {
+            complex128 *value = (complex128*)(*(self->it));
+            output = PyComplex_FromDoubles((double)value->real(),(double)value->imag());
+            break;
+        }
+        default:
+            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+    }
+
+    self->it++;
+    return output;
 }
 
 PyDoc_STRVAR(pyDataObjectIterLen_doc, "Private method returning an estimate of len(list(it)).");
 PyObject * PythonDataObject::PyDataObjectIter_len(PyDataObjectIter* self)
 {
-    return PyLong_FromUnsignedLong( self->endIndex );
+    return PyLong_FromUnsignedLong( self->len );
 }
 
 PyMethodDef PythonDataObject::PyDataObjectIter_methods[] = {

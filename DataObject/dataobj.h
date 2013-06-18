@@ -292,82 +292,88 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-class DObjIterator
+class DObjConstIterator
 {
-    private:
+public:
+     
+    //! default constructor
+    DObjConstIterator();
+    //! constructor that sets the iterator to the beginning of the matrix 
+    DObjConstIterator(const DataObject* _dObj, int pos = 0);
+    //! copy constructor
+    DObjConstIterator(const DObjConstIterator& it);
+    
+    //! copy operator
+    DObjConstIterator& operator = (const DObjConstIterator& it);
+    //! returns the current matrix element
+    uchar* operator *() const;
+    //! returns the i-th matrix element, relative to the current
+    uchar* operator [](int i) const;
+    
+    //! shifts the iterator forward by the specified number of elements
+    DObjConstIterator& operator += (int ofs);
+    //! shifts the iterator backward by the specified number of elements
+    DObjConstIterator& operator -= (int ofs);
+    //! decrements the iterator
+    DObjConstIterator& operator --();
+    //! decrements the iterator
+    DObjConstIterator operator --(int);
+    //! increments the iterator
+    DObjConstIterator& operator ++();
+    //! increments the iterator
+    DObjConstIterator operator ++(int);
 
-        size_t m_curMatNumber;            /*!< current matrix number (beginning with 0) under consideration of range */
-        size_t m_curPos;                  /*!< current total index of the iterator object, 0 <= m_curPos < dataObject.getTotal() */
-        ito::DataObject *m_pDObj;               /*!< pointer to data object, if transpose flag is set, will be transposed if necessary before iterating */
-        cv::MatConstIterator m_pItCur;    /*!< start iterator of last-two-dimensional plane */
-        cv::MatConstIterator m_pItEnd;    /*!< end iterator of last-two-dimensional plane */
-        cv::MatConstIterator m_pItStart;  /*!< begin iterator of last-two-dimensional plane */
+    bool operator == (const DObjConstIterator& dObjIt);
+    bool operator != (const DObjConstIterator& dObjIt);
+    bool operator < (const DObjConstIterator& dObjIt);
+    bool operator > (const DObjConstIterator& dObjIt);
+    bool operator <= (const DObjConstIterator& dObjIt);
+    bool operator >= (const DObjConstIterator& dObjIt);
 
-    public:
-        DObjIterator(void) : m_curMatNumber(0), m_curPos(0), m_pDObj(NULL), m_pItCur(), m_pItEnd(), m_pItStart() {}
+protected:
+    void seekAbs(int ofs);
+    void seekRel(int ofs);
+    
+    const DataObject* dObj;
+    bool   planeContinuous;
+    size_t elemSize;
+    uchar* ptr;
+    uchar* sliceStart;
+    uchar* sliceEnd;
+    int plane;
+};
 
-        DObjIterator(ito::DataObject *dObj, unsigned int matNum = 0);
-
-        DObjIterator & operator = (DObjIterator &rhs)
-        {
-            m_curMatNumber = rhs.m_curMatNumber;
-            m_curPos = rhs.m_curPos;
-            m_pDObj = rhs.m_pDObj;
-            m_pItCur = rhs.m_pItCur;
-            m_pItEnd = rhs.m_pItEnd;
-//            m_pItStart = m_pItStart;
-            return *this;
-        }
-
-        uchar* operator* ()
-        {
-            return m_pItCur.ptr;
-        }
-
-        uchar* operator[] (int idx);
-
-        DObjIterator operator ++ (int)
-        {
-            *this += 1;
-            return *this;
-        }
-
-        DObjIterator operator -- (int)
-        {
-            *this += -1;
-            return *this;
-        }
-
-        DObjIterator & operator -= (int ofs)
-        {
-            *this += -ofs;
-            return *this;
-        }
-
-        DObjIterator & operator += (int ofs);
-
-        bool operator == (const DObjIterator dObjIt)
-        {
-            return (m_curPos == dObjIt.m_curPos);
-        }
-        bool operator == (unsigned int idx)
-        {
-            return (m_curPos == idx);
-        }
-        bool operator != (const DObjIterator dObjIt)
-        {
-            return !(m_curPos == dObjIt.m_curPos);
-        }
-        bool operator != (unsigned int idx)
-        {
-            return !(m_curPos == idx);
-        }
-
-        size_t len() const;
-
-    protected:
-        cv::MatConstIterator getBegin(cv::Mat* mat, int dataType);
-        cv::MatConstIterator getEnd(cv::Mat* mat, int dataType);
+//----------------------------------------------------------------------------------------------------------------------------------
+class DObjIterator : public DObjConstIterator
+{
+public:
+     
+    //! default constructor
+    DObjIterator();
+    //! constructor that sets the iterator to the beginning of the matrix 
+    DObjIterator(DataObject* _dObj, int pos = 0);
+    //! copy constructor
+    DObjIterator(const DObjIterator& it);
+    
+    //! copy operator
+    DObjIterator& operator = (const DObjIterator& it);
+    //! returns the current matrix element
+    uchar* operator *();
+    //! returns the i-th matrix element, relative to the current
+    uchar* operator [](int i);
+    
+    //! shifts the iterator forward by the specified number of elements
+    DObjIterator& operator += (int ofs);
+    //! shifts the iterator backward by the specified number of elements
+    DObjIterator& operator -= (int ofs);
+    //! decrements the iterator
+    DObjIterator& operator --();
+    //! decrements the iterator
+    DObjIterator operator --(int);
+    //! increments the iterator
+    DObjIterator& operator ++();
+    //! increments the iterator
+    DObjIterator operator ++(int);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1291,16 +1297,15 @@ class DataObject
         }
 
         //! returns 0, this is the index of the first element in valid DataObject range.
-        inline size_t begin(void) const
-        {
-            return 0;
-        }
-
+        DObjIterator begin();
         //! returns index of last-element in DataObject range incremented by one. (equal to number of elements in total range)
-        size_t end(void) const
-        {
-            return calcNumMats() * m_size[m_dims - 2] * m_size[m_dims - 1];
-        }
+        DObjIterator end();
+
+        DObjConstIterator constBegin() const;
+        DObjConstIterator constEnd() const;
+
+        
+
 
         //! constructor for empty data object
         /*!
@@ -1515,6 +1520,8 @@ class DataObject
         DataObject div(const DataObject &mat2, const double scale = 1.0);
 
         DataObject squeeze() const;
+
+        size_t elemSize() const;
 
 /*
         // Adressing operators ()

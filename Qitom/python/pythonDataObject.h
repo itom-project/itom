@@ -169,9 +169,12 @@ class PythonDataObject
         static int PyDataObject_setValueDescription(PyDataObject *self, PyObject *value, void *closure);
         static PyObject* PyDataObject_getValueScale(PyDataObject *self, void *closure);
         static PyObject* PyDataObject_getValueOffset(PyDataObject *self, void *closure);
-        static PyObject* PyDataObject_getValue(PyDataObject *self, void *closure);
+        
         static int PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyObject *value, void *closure);        
         static PyObject* PyDataObject_getXYRotationalMatrix(PyDataObject *self, void *closure);
+
+        static PyObject* PyDataObject_getValue(PyDataObject *self, void *closure);
+        static int PyDataObject_setValue(PyDataObject *self, PyObject *value, void *closure);
 
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
@@ -277,8 +280,9 @@ class PythonDataObject
         typedef struct
         {
             PyObject_HEAD
-            size_t curIndex;
-            size_t endIndex;
+            ito::DObjConstIterator it;
+            ito::DObjConstIterator itEnd;
+            Py_ssize_t len;
             PyObject* base;
         }
         PyDataObjectIter;
