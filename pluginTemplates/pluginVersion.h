@@ -31,8 +31,11 @@
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
 #define PLUGIN_VERSION_PATCH 1
-#define PLUGIN_VERSION_PATCH_SMALL 0
+#define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION_STRING "0.0.1"
+#define PLUGIN_COMPANY        "your company name"
+#define PLUGIN_COPYRIGHT        "the copyright and lincense of your plugin"
+#define PLUGIN_NAME           "fileNameOfPluginWithoutSuffix"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

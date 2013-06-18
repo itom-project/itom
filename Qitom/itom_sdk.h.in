@@ -29,5 +29,6 @@
 #define ITOM_PATCH_VERSION  ${ITOM_VERSION_PATCH}
 #define ITOM_VERSION_STRING "${ITOM_VERSION_STRING}"
 #define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
+#define ITOM_APP_NAME       "itom - ito measurement software"
 
 #endif

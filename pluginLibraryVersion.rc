@@ -30,7 +30,7 @@
 #include "pluginVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_PATCH_SMALL
+FILEVERSION         PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_REVISION
 PRODUCTVERSION      PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, 0
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
@@ -53,30 +53,30 @@ BEGIN
     BEGIN
         BLOCK   "040904b0"
         BEGIN
-            VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
+            VALUE   "CompanyName",      PLUGIN_COMPANY "\0"
 #ifdef _WIN64
     #ifdef _DEBUG
-                VALUE   "FileDescription", "pluginDLL for itom (x64, debug)\0"
+                VALUE   "FileDescription", "library for itom (x64, debug)\0"
     #else
-                VALUE   "FileDescription", "pluginDLL for itom (x64, release)\0"
+                VALUE   "FileDescription", "library for itom (x64, release)\0"
     #endif
 #else
     #ifdef _DEBUG
-                VALUE   "FileDescription", "pluginDLL for itom (x86, debug)\0"
+                VALUE   "FileDescription", "library for itom (x86, debug)\0"
     #else
-                VALUE   "FileDescription", "pluginDLL for itom (x86, release)\0"
+                VALUE   "FileDescription", "library for itom (x86, release)\0"
     #endif
 #endif
             VALUE   "FileVersion",      PLUGIN_VERSION_STRING "\0"
-            VALUE   "InternalName",     "fillInPlugInName\0"
-            VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
+            VALUE   "InternalName",     PLUGIN_NAME "\0"
+            VALUE   "LegalCopyright",   PLUGIN_COPYRIGHT "\0"
 #ifdef _DEBUG
-            VALUE   "OriginalFilename", "fillInPlugInName.dll\0"
+            VALUE   "OriginalFilename", PLUGIN_NAME "d.dll\0"
 #else
-            VALUE   "OriginalFilename", "fillInPlugInName.dll\0"
+            VALUE   "OriginalFilename", PLUGIN_NAME ".dll\0"
 #endif
-            VALUE   "ProductName",      "ito measurement programm (itom)\0"
-            VALUE   "ProductVersion",   "Itom-Version " ITOM_VERSION_STRING " (" INTERFACE_VERSION ")\0"
+            VALUE   "ProductName",      ITOM_APP_NAME "\0"
+            VALUE   "ProductVersion",   "itom version " ITOM_VERSION_STRING " (" INTERFACE_VERSION ")\0"
         END
     END
 END
