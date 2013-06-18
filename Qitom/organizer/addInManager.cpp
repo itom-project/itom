@@ -1505,8 +1505,7 @@ end:
 
 	//----------------------------------------------------------------------------------------------------------------------------------
     AddInManager::AddInManager(void) :
-        m_algoInterfaceValidator(NULL),
-        m_Translator(NULL)
+        m_algoInterfaceValidator(NULL)
     {
         ito::RetVal retValue;
         // this needs to be done in combination with Q_DECLARE_METATYPE to register a user data type
