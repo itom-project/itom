@@ -381,34 +381,66 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 	set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
+# HANDLE VERSION (FROM SVN, GIT...)
+UNSET(GIT_FOUND CACHE)
+find_package(Git)
+UNSET(SUBWCREV_FOUND CACHE)
+FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
+MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked
+SET( VERSION_DEPENDENCY "")
 
+IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+    MESSAGE(STATUS "Using GIT as repository information")
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
+    
+    ADD_CUSTOM_TARGET (
+        ${target_name}_prebuild
+        COMMAND    ${PYTHON_EXECUTABLE}
+        "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+    )
+ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
+    MESSAGE(STATUS "Using SVN as repository information")
 
-#handle translations BEGIN STEP 1
+    ADD_CUSTOM_TARGET (
+        ${target_name}_prebuild
+        COMMAND    subwcrev
+        " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
+    )
+ELSE()
+    MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
+    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+    
+    #empty target, necessary for translations (later). All prebuild-events are connected to this target.
+    ADD_CUSTOM_TARGET (
+        ${target_name}_prebuild
+    )
+ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+# END HANDLE VERSION
+
+#handle translations BEGIN
 set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
-
 set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
-
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations BEGIN END 1
+if (UPDATE_TRANSLATIONS)
+    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    
+    ADD_DEPENDENCIES(${target_name}_prebuild ${TRANSLATION_OUTPUT_FILES})
+    
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+else (UPDATE_TRANSLATIONS)
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+endif (UPDATE_TRANSLATIONS)
+#handle translations END
 
-message( WARNING "Version-Dependency: " ${VERSION_DEPENCENDY} )
+
 ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
-#handle translations BEGIN STEP 2
-if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-	
-	add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-        add_dependencies(${target_name} ${target_name}_translation)
-	
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name} ${TRANSLATIONS_FILES})
-else (UPDATE_TRANSLATIONS)
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-endif (UPDATE_TRANSLATIONS)
-#handle translations END STEP 2
 
 SET( WINICONRES "" )
 
@@ -491,63 +523,5 @@ if(MSVC)
     
 ENDIF (MSVC)
 
-# HANDLE VERSION (FROM SVN, GIT...)
 
-UNSET(GIT_FOUND CACHE)
-find_package(Git)
-UNSET(SUBWCREV_FOUND CACHE)
-FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
-SET( VERSION_DEPENDENCY "")
-
-IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
-    MESSAGE(STATUS "Using GIT as repository information")
-    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
-    ADD_CUSTOM_COMMAND (
-        TARGET qitom
-        PRE_BUILD
-        COMMAND    ${PYTHON_EXECUTABLE}
-        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
-    )
-
-    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
-        ADD_CUSTOM_COMMAND (
-            OUTPUT version.h
-            COMMAND    ${PYTHON_EXECUTABLE}
-            ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
-        )
-
-        set(VERSION_DEPENCENDY "version.h")
-    endif(UNIX)
-
-ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
-    MESSAGE(STATUS "Using SVN as repository information")
-    ADD_CUSTOM_COMMAND (
-        TARGET qitom
-        PRE_BUILD
-        COMMAND    subwcrev
-        ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
-    )
-
-    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
-        ADD_CUSTOM_COMMAND (
-            OUTPUT version.h
-            COMMAND    subwcrev
-            ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
-        )
-
-        set(VERSION_DEPENCENDY "version.h")
-    endif(UNIX)
-ELSE()
-    MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
-    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-
-ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
-
-MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked
-
-
-
-# END HANDLE VERSION
 
