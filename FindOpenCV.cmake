@@ -144,7 +144,7 @@ if(EXISTS "${OpenCV_DIR}")
 
 	set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
 	
-	#message(STATUS "this ${OpenCV_BIN_DIR} vs ${OpenCV_DIR}${CVLIB_LIBSUFFIX}")
+#	message(STATUS "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR}; OpenCV_DIR: ${OpenCV_DIR}")
 	
 	## Loop over each components
 	foreach(__CVLIB ${OPENCV_LIB_COMPONENTS})
