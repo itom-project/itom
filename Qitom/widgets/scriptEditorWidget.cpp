@@ -311,6 +311,7 @@ void ScriptEditorWidget::contextMenuEvent (QContextMenuEvent * event)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::preShowContextMenuEditor()
 {
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     int lineFrom, indexFrom, lineTo, indexTo;
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -323,7 +324,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
-    editorMenuActions["runSelection"]->setEnabled(!pythonBusy);
+    editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 

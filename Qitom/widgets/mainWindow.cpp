@@ -1228,7 +1228,10 @@ void MainWindow::currentDirectoryChanged()
         m_statusLblCurrentDir->setText(tr("Current Directory: %1").arg(cd));
     }
 
-    if (m_fileSystemDock)    m_fileSystemDock->changeBaseDirectory(cd);
+    if (m_fileSystemDock)
+    {
+        m_fileSystemDock->changeBaseDirectory(cd);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

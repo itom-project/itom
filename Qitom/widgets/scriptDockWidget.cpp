@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../widgets/mainWindow.h"
 #include "../global.h"
 
 #include "scriptDockWidget.h"
@@ -71,8 +72,10 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
     m_tab->setMovable(true);
     m_tab->setTabPosition(QTabWidget::South);
 
+    const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+
     connect(m_tab, SIGNAL(tabContextMenuEvent(QContextMenuEvent*)), this, SLOT(tabContextMenuEvent(QContextMenuEvent*)));
-//    connect(this, SIGNAL(pythonRunSelection(QString)), pyEngine, SLOT(pythonRunString(QString)));
+    connect(this, SIGNAL(pythonRunSelection(QString)), mainWin, SLOT(pythonRunSelection(QString)));
 
     AbstractDockWidget::init();
 
@@ -681,6 +684,7 @@ void ScriptDockWidget::updateEditorActions()
         }
     }
 
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     const ScriptEditorWidget *sew = NULL;
     if (m_actTabIndex > -1)
     {
@@ -707,6 +711,8 @@ void ScriptDockWidget::updateEditorActions()
     m_gotoAction->setEnabled(m_actTabIndex > -1);
     m_openIconBrowser->setEnabled(m_actTabIndex > -1);
 
+    m_scriptRunSelectionAction->setEnabled(sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+
 //    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1));
     if (m_pWidgetFindWord != NULL)
     {
@@ -718,10 +724,23 @@ void ScriptDockWidget::updateEditorActions()
 //! updates actions which deal with python commands
 void ScriptDockWidget::updatePythonActions()
 {
+    int lineFrom = -1;
+    int lineTo = -1;
+    int indexFrom = -1;
+    int indexTo = -1;
+
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew)
+    {
+        sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+    }
+
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     bool busy1 = pythonBusy();
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
+
     m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(!busy1);
+    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
@@ -836,7 +855,7 @@ void ScriptDockWidget::createActions()
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
     m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run selection"), this);
-    m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()()));
+    m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
 
     m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
@@ -1303,7 +1322,6 @@ void ScriptDockWidget::mnuScriptRun()
     {
         emit (pythonRunFileRequest(sew->getFilename()));
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1325,7 +1343,14 @@ void ScriptDockWidget::mnuScriptRunSelection()
         if (lineFrom != lineTo)
         {
             indexFrom = 0;
-            indexTo = sew->lineLength(lineTo) - 1;
+            if (lineTo == sew->lines() - 1)
+            {
+                indexTo = sew->lineLength(lineTo);
+            }
+            else
+            {
+                indexTo = sew->lineLength(lineTo) - 1;
+            }
 
             sew->setSelection(lineFrom, indexFrom, lineTo, indexTo);
         }
