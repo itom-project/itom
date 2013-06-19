@@ -117,6 +117,7 @@ private:
     ShortcutAction *m_indentAction;
     ShortcutAction *m_unindentAction;
     ShortcutAction *m_scriptRunAction;
+    ShortcutAction *m_scriptRunSelectionAction;
     ShortcutAction *m_scriptDebugAction;
     ShortcutAction *m_scriptStopAction;
     ShortcutAction *m_scriptContinueAction;
@@ -149,6 +150,7 @@ signals:
     void pythonDebugFileRequest(QString filename);                                              /*!<  will be received by scriptEditorOrganizer, in order to save all unsaved changes first */
     void pythonInterruptExecution();                                                            /*!<  will be received by PythonThread, directly */
     void pythonDebugCommand(tPythonDbgCmd cmd);                                                 /*!<  will be received by PythonThread, directly */
+    void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);
@@ -193,6 +195,7 @@ private slots:
     void mnuIndent();
     void mnuUnindent();
     void mnuScriptRun();
+    void mnuScriptRunSelection();
     void mnuScriptDebug();
     void mnuScriptStop();
     void mnuScriptContinue();

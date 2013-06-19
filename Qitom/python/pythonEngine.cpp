@@ -1637,7 +1637,7 @@ void PythonEngine::pythonRunString(QString cmd)
 	}
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginRun);
@@ -1664,7 +1664,7 @@ void PythonEngine::pythonRunFile(QString filename)
 {
     QStringList list;
 
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginRun);
@@ -1692,7 +1692,7 @@ void PythonEngine::pythonRunFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugFile(QString filename)
 {
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
@@ -1719,7 +1719,7 @@ void PythonEngine::pythonDebugString(QString cmd)
 		ba.prepend("pass"); //a single comment while cause an error in python
 	}
 
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
@@ -1747,7 +1747,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 	}
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
 
@@ -1783,7 +1783,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
 {
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
@@ -1808,7 +1808,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
 //do not execute this method from another thread, only execute it within python-thread since this method is not thread safe
 void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
 {
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginRun);
@@ -1930,7 +1930,7 @@ RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     RetVal retValue(retOk);
     pythonStateChangeMutex.lock();
 
-    switch(pythonState)
+    switch (pythonState)
     {
     case pyStateIdle:
         if (transition == pyTransBeginRun)
@@ -2210,7 +2210,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &
         else if (PyObject_HasAttr(obj, dictUnicode))
         {
             PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
-            if(temp)
+            if (temp)
             {
                 tempObj = PyDict_GetItemString(temp, items[0].toAscii().data());
                 if (tempObj == NULL) //maybe key is a number
@@ -2605,7 +2605,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
         recentDbgCmd = pyEngine->dequeueDbgCmd();
 
-        switch(recentDbgCmd)
+        switch (recentDbgCmd)
         {
         case ito::pyDbgStep:
             if (!PyObject_CallMethod(self, "set_step", ""))
@@ -2672,7 +2672,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
     QString namefilter;
     const char* filterstring;
 
-    switch(length)
+    switch (length)
     {
     case 0:
         namefilter.fromAscii(0);
@@ -3455,26 +3455,26 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
 
             for (int i=0; i<names.size();i++)
             {
-                existingItem = PyDict_GetItemString( destinationDict, names[i].toAscii().data() ); //borrowed ref
+                existingItem = PyDict_GetItemString(destinationDict, names[i].toAscii().data()); //borrowed ref
 
-                if(existingItem)
+                if (existingItem)
                 {
-                    if(PyFunction_Check(existingItem) || PyCFunction_Check(existingItem) )
+                    if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
                         break;
                     }
-                    else if(PyMethod_Check(existingItem))
+                    else if (PyMethod_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
                         break;
                     }
-                    else if(PyType_Check(existingItem))
+                    else if (PyType_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
                         break;
                     }
-                    else if(PyModule_Check(existingItem))
+                    else if (PyModule_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
                         break;
@@ -3491,7 +3491,7 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
                     PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value);
                     Py_XDECREF(value);
 
-                    if(existingItem)
+                    if (existingItem)
                     {
                         Py_DECREF(existingItem);
                     }

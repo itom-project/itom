@@ -138,6 +138,7 @@ public slots:
 
     void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename);
     void pythonRemoveMenuElement(QString key);
+    void pythonRunSelection(QString selectionText);
 
     void setCursor(const Qt::CursorShape cursor);
     void resetCursor();

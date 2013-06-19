@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../widgets/mainWindow.h"
 #include "scriptEditorWidget.h"
 
 #include "../global.h"
@@ -60,21 +61,24 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
     if (pyEngine) 
 	{
-		pythonBusy = pyEngine->isPythonBusy();
-		connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-		connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        pythonBusy = pyEngine->isPythonBusy();
+        connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
+        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
     
-		connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
-		connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
+        connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
+        connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
-		const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+        connect(this, SIGNAL(pythonRunSelection(QString)), mainWin, SLOT(pythonRunSelection(QString)));
 
-		connect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
-		connect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
-		connect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
+        const BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+
+        connect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
+        connect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
+        connect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
 		//!< check if BreakPointModel already contains breakpoints for this editor and load them
 		if (getFilename() != "")
@@ -99,6 +103,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 ScriptEditorWidget::~ScriptEditorWidget()
 {
     const PythonEngine *pyEngine = PythonEngine::getInstance();
+    const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
 	if (pyEngine)
 	{
@@ -110,7 +115,9 @@ ScriptEditorWidget::~ScriptEditorWidget()
 		disconnect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
 		disconnect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
-		disconnect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
+		disconnect(this, SIGNAL(pythonRunSelection(QString)), mainWin, SLOT(pythonRunSelection(QString)));
+
+        disconnect(bpModel,SIGNAL(breakPointAdded(BreakPointItem,int)),this,SLOT(breakPointAdd(BreakPointItem,int)));
 		disconnect(bpModel,SIGNAL(breakPointDeleted(QString,int,int)),this,SLOT(breakPointDelete(QString,int,int)));
 		disconnect(bpModel,SIGNAL(breakPointChanged(BreakPointItem,BreakPointItem)),this,SLOT(breakPointChange(BreakPointItem,BreakPointItem)));
 
@@ -240,9 +247,10 @@ RetVal ScriptEditorWidget::initMenus()
     //editorMenuActions["save"] = editorMenu->addAction(QIcon("icons/fileSave.png"), tr("&save"),this,SLOT(menuSave()),tr("Ctrl+S"));
     //editorMenuActions["saveas"] = editorMenu->addAction(QIcon("icons/fileSaveAs.png"), tr("save &as"),this,SLOT(menuSaveAs()));
     editorMenu->addSeparator();
-    editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/editor/icons/runScript.png"),tr("&run script"),this,SLOT(menuRunScript()));
-    editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/editor/icons/debugScript.png"),tr("&debug script"),this,SLOT(menuDebugScript()));
-    editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/editor/icons/stopScript.png"),tr("sto&p script"),this,SLOT(menuStopScript()));
+    editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"),tr("&run script"),this,SLOT(menuRunScript()));
+    editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"),tr("&run selection"),this,SLOT(menuRunSelection()));
+    editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"),tr("&debug script"),this,SLOT(menuDebugScript()));
+    editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"),tr("sto&p script"),this,SLOT(menuStopScript()));
 
     
 
@@ -315,6 +323,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
+    editorMenuActions["runSelection"]->setEnabled(!pythonBusy);
     editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
@@ -711,6 +720,39 @@ void ScriptEditorWidget::menuRunScript()
         {
             emit pythonRunFile(getFilename());
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuRunSelection()
+{
+    int lineFrom = -1;
+    int lineTo = -1;
+    int indexFrom = -1;
+    int indexTo = -1;
+
+    //check whether text has been marked
+    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+    if (lineFrom >= 0)
+    {
+        //text has been marked
+        if (lineFrom != lineTo)
+        {
+            indexFrom = 0;
+            if (lineTo == lines() - 1)
+            {
+                indexTo = lineLength(lineTo);
+            }
+            else
+            {
+                indexTo = lineLength(lineTo) - 1;
+            }
+
+            setSelection(lineFrom, indexFrom, lineTo, indexTo);
+        }
+        QString defaultText = selectedText();
+
+        emit pythonRunSelection(defaultText);
     }
 }
 

@@ -33,6 +33,7 @@
 #include "../ui/dialogReplace.h"
 
 #include "../ui/dialogIconBrowser.h"
+#include "../Qitom/AppManagement.h"
 
 namespace ito {
 
@@ -71,6 +72,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
     m_tab->setTabPosition(QTabWidget::South);
 
     connect(m_tab, SIGNAL(tabContextMenuEvent(QContextMenuEvent*)), this, SLOT(tabContextMenuEvent(QContextMenuEvent*)));
+//    connect(this, SIGNAL(pythonRunSelection(QString)), pyEngine, SLOT(pythonRunString(QString)));
 
     AbstractDockWidget::init();
 
@@ -78,7 +80,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
     //The action is not triggered by shortcut in docked-mode. Therefore we have the following QShortcut-instance.
     //In undocked mode, the parent-dock-widget of the QShortcut is invisble, hence disabled, and the QAction-shortcut is triggered.
     //The shortcut is deleted when this instance is deleted (due to parent-indication).
-    //QShortcut *s = new QShortcut( QKeySequence::Find, this, SLOT(mnuFindTextExpr()), 0, Qt::WidgetWithChildrenShortcut );
+    //QShortcut *s = new QShortcut(QKeySequence::Find, this, SLOT(mnuFindTextExpr()), 0, Qt::WidgetWithChildrenShortcut);
 
     resizeDockWidget(700,400);
 
@@ -87,7 +89,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
     {
         connect(m_tabContextMenu, SIGNAL(aboutToShow()), this, SLOT(updateTabContextActions()));
     }
-    connect( m_tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
+    connect(m_tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 
     m_pWidgetFindWord = new WidgetFindWord(this);
     connect(m_pWidgetFindWord, SIGNAL(findNext(QString,bool,bool,bool,bool,bool,bool)), this, SLOT(findTextExpr(QString,bool,bool,bool,bool,bool,bool)));
@@ -120,7 +122,7 @@ ScriptDockWidget::~ScriptDockWidget()
     {
         disconnect(m_tabContextMenu, SIGNAL(aboutToShow()), this, SLOT(updateTabContextActions()));
     }
-    disconnect( m_tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
+    disconnect(m_tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 
     for (int i = m_tab->count()-1 ; i >= 0 ; i--)
     {
@@ -197,12 +199,12 @@ RetVal ScriptDockWidget::openScript()
 {
     QString fileName;
 
-    fileName = QFileDialog::getOpenFileName( getActiveInstance(), tr("file open"), QDir::currentPath(), "Python (*.py)");
+    fileName = QFileDialog::getOpenFileName(getActiveInstance(), tr("file open"), QDir::currentPath(), "Python (*.py)");
 
     if (!fileName.isEmpty())
     {
         QDir::setCurrent(QFileInfo(fileName).path());
-        emit(openScriptRequest(fileName, this));
+        emit (openScriptRequest(fileName, this));
         return RetVal(retOk);
     }
     return RetVal(retError);
@@ -224,7 +226,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     {
         if (!silent)
         {
-            QMessageBox msg(QMessageBox::Warning, tr("file not found"), tr("the file %1 could not be found").arg(filename) );
+            QMessageBox msg(QMessageBox::Warning, tr("file not found"), tr("the file %1 could not be found").arg(filename));
             msg.exec();
         }
         return RetVal(retError);
@@ -236,7 +238,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
         {
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("invalid file format"), tr("the file %1 is no python macro").arg(filename) );
+                QMessageBox msg(QMessageBox::Warning, tr("invalid file format"), tr("the file %1 is no python macro").arg(filename));
                 msg.exec();
             }
             return RetVal(retError);
@@ -305,7 +307,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
         sew = getEditorByIndex(i);
         if ((!sew->hasNoFilename() || !ignoreNewScripts) && i != excludeIndex)
         {
-            retValue += saveTab(i, false, askFirst);
+            retValue += saveTab(i, false, false);
         }
     }
     return retValue;
@@ -356,7 +358,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
     \param editorWidget ScriptEditorWidget to append
     \return retOk
 */
-RetVal ScriptDockWidget::appendEditor( ScriptEditorWidget* editorWidget)
+RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
 {
     QString name = editorWidget->getFilename();
     QString toolTip = name;
@@ -719,6 +721,7 @@ void ScriptDockWidget::updatePythonActions()
     bool busy1 = pythonBusy();
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
     m_scriptRunAction->setEnabled(!busy1);
+    m_scriptRunSelectionAction->setEnabled(!busy1);
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
@@ -772,7 +775,7 @@ void ScriptDockWidget::createActions()
     m_tabMoveLastAction = new ShortcutAction(QIcon(":/arrows/icons/2rightarrow.png"), tr("move last"), this);
     m_tabMoveLastAction->connectTrigger(this, SLOT(mnuTabMoveLast()));
 
-    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.png"), tr("close"), this, QKeySequence::Close, Qt::WidgetWithChildrenShortcut );
+    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.png"), tr("close"), this, QKeySequence::Close, Qt::WidgetWithChildrenShortcut);
     m_tabCloseAction->connectTrigger(this, SLOT(mnuTabClose()));
 
     m_tabCloseOthersAction = new ShortcutAction(QIcon(), tr("close others"), this);
@@ -787,40 +790,40 @@ void ScriptDockWidget::createActions()
     m_tabUndockAction = new ShortcutAction(QIcon(), tr("undock"), this);
     m_tabUndockAction->connectTrigger(this, SLOT(mnuTabUndock()));
 
-    m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("new"), this, QKeySequence::New, Qt::WidgetWithChildrenShortcut );
+    m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("new"), this, QKeySequence::New, Qt::WidgetWithChildrenShortcut);
     m_newScriptAction->connectTrigger(this, SLOT(mnuNewScript()));
 
-    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("open"), this, QKeySequence::Open, Qt::WidgetWithChildrenShortcut );
+    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("open"), this, QKeySequence::Open, Qt::WidgetWithChildrenShortcut);
     m_openScriptAction->connectTrigger(this, SLOT(mnuOpenScript()));
 
-    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.png"), tr("save"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut );
+    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.png"), tr("save"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAction->connectTrigger(this, SLOT(mnuSaveScript()));
 
-    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.png"), tr("save as..."), this, QKeySequence::SaveAs, Qt::WidgetWithChildrenShortcut );
+    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.png"), tr("save as..."), this, QKeySequence::SaveAs, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAsAction->connectTrigger(this, SLOT(mnuSaveScriptAs()));
 
     m_saveAllScriptsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAll.png"), tr("save all"), this);
     m_saveAllScriptsAction->connectTrigger(this, SLOT(mnuSaveAllScripts()));
 
-    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut );
+    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_cutAction->connectTrigger(this, SLOT(mnuCut()));
 
-    m_copyAction = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut );
+    m_copyAction = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_copyAction->connectTrigger(this, SLOT(mnuCopy()));
 
-    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut );
+    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pasteAction->connectTrigger(this, SLOT(mnuPaste()));
 
-    m_undoAction = new ShortcutAction(QIcon(":/editor/icons/editUndo.png"), tr("undo"), this, QKeySequence::Undo, Qt::WidgetWithChildrenShortcut );
+    m_undoAction = new ShortcutAction(QIcon(":/editor/icons/editUndo.png"), tr("undo"), this, QKeySequence::Undo, Qt::WidgetWithChildrenShortcut);
     m_undoAction->connectTrigger(this, SLOT(mnuUndo()));
 
-    m_redoAction = new ShortcutAction(QIcon(":/editor/icons/editRedo.png"), tr("redo"), this, QKeySequence::Redo, Qt::WidgetWithChildrenShortcut );
+    m_redoAction = new ShortcutAction(QIcon(":/editor/icons/editRedo.png"), tr("redo"), this, QKeySequence::Redo, Qt::WidgetWithChildrenShortcut);
     m_redoAction->connectTrigger(this, SLOT(mnuRedo()));
 
-    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("comment"), this, QKeySequence(tr("Ctrl+R","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("comment"), this, QKeySequence(tr("Ctrl+R","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_commentAction->connectTrigger(this, SLOT(mnuComment()));
 
-    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("uncomment"), this, QKeySequence(tr("Ctrl+Shift+R","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("uncomment"), this, QKeySequence(tr("Ctrl+Shift+R","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_uncommentAction->connectTrigger(this, SLOT(mnuUncomment()));
 
     m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("indent"), this);
@@ -829,37 +832,40 @@ void ScriptDockWidget::createActions()
     m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("unindent"), this);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
 
-    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run"), this, QKeySequence(tr("F5","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run"), this, QKeySequence(tr("F5","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
-    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run selection"), this);
+    m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()()));
+
+    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
-    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F10","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F10","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
-    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("continue"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("continue"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptContinueAction->connectTrigger(this, SLOT(mnuScriptContinue()));
 
-    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("step"), this, QKeySequence(tr("F11","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("step"), this, QKeySequence(tr("F11","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepAction->connectTrigger(this, SLOT(mnuScriptStep()));
 
-    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this, QKeySequence(tr("F10","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this, QKeySequence(tr("F10","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepOverAction->connectTrigger(this, SLOT(mnuScriptStepOver()));
 
-    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this, QKeySequence(tr("Shift+F11","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this, QKeySequence(tr("Shift+F11","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepOutAction->connectTrigger(this, SLOT(mnuScriptStepOut()));
 
-    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("quick search..."), this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut );
+    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("quick search..."), this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 
-    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
 
-    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon &browser..."),this, QKeySequence(tr("Ctrl+B","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon &browser..."),this, QKeySequence(tr("Ctrl+B","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_openIconBrowser->connectTrigger(this, SLOT(mnuOpenIconBrowser()));
 
-    m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G","QShortcut")), Qt::WidgetWithChildrenShortcut );
+    m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_gotoAction->connectTrigger(this, SLOT(mnuGoto()));
 
     updatePythonActions();
@@ -868,7 +874,7 @@ void ScriptDockWidget::createActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//void ScriptDockWidget::windowStateChanged( bool windowNotToolbox )
+//void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
 //{
 //    //Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
 //    //if (windowNotToolbox)
@@ -898,44 +904,45 @@ void ScriptDockWidget::createActions()
 void ScriptDockWidget::createMenus()
 {
     m_fileMenu = getMenuBar()->addMenu(tr("&File"));
-    m_fileMenu->addAction(m_newScriptAction->action() );
-    m_fileMenu->addAction(m_openScriptAction->action() );
+    m_fileMenu->addAction(m_newScriptAction->action());
+    m_fileMenu->addAction(m_openScriptAction->action());
     m_fileMenu->addSeparator();
-    m_fileMenu->addAction(m_saveScriptAction->action() );
-    m_fileMenu->addAction(m_saveScriptAsAction->action() );
-    m_fileMenu->addAction(m_saveAllScriptsAction->action() );
+    m_fileMenu->addAction(m_saveScriptAction->action());
+    m_fileMenu->addAction(m_saveScriptAsAction->action());
+    m_fileMenu->addAction(m_saveAllScriptsAction->action());
     m_fileMenu->addSeparator();
-    m_fileMenu->addAction(m_tabCloseAction->action() );
-    m_fileMenu->addAction(m_tabCloseAllAction->action() );
+    m_fileMenu->addAction(m_tabCloseAction->action());
+    m_fileMenu->addAction(m_tabCloseAllAction->action());
 
 
     m_editMenu = getMenuBar()->addMenu(tr("&Edit"));
-    m_editMenu->addAction(m_undoAction->action() );
-    m_editMenu->addAction(m_redoAction->action() );
+    m_editMenu->addAction(m_undoAction->action());
+    m_editMenu->addAction(m_redoAction->action());
     m_editMenu->addSeparator();
-    m_editMenu->addAction(m_cutAction->action() );
-    m_editMenu->addAction(m_copyAction->action() );
-    m_editMenu->addAction(m_pasteAction->action() );
+    m_editMenu->addAction(m_cutAction->action());
+    m_editMenu->addAction(m_copyAction->action());
+    m_editMenu->addAction(m_pasteAction->action());
     m_editMenu->addSeparator();
-    m_editMenu->addAction(m_commentAction->action() );
-    m_editMenu->addAction(m_uncommentAction->action() );
-    m_editMenu->addAction(m_indentAction->action() );
-    m_editMenu->addAction(m_unindentAction->action() );
+    m_editMenu->addAction(m_commentAction->action());
+    m_editMenu->addAction(m_uncommentAction->action());
+    m_editMenu->addAction(m_indentAction->action());
+    m_editMenu->addAction(m_unindentAction->action());
     m_editMenu->addSeparator();
-    m_editMenu->addAction(m_findTextExprAction->action() );
+    m_editMenu->addAction(m_findTextExprAction->action());
     m_editMenu->addAction(m_replaceTextExprAction->action());
-    m_editMenu->addAction(m_gotoAction->action() );
-    m_editMenu->addAction(m_openIconBrowser->action() );
+    m_editMenu->addAction(m_gotoAction->action());
+    m_editMenu->addAction(m_openIconBrowser->action());
 
     m_scriptMenu = getMenuBar()->addMenu(tr("&Script"));
-    m_scriptMenu->addAction(m_scriptRunAction->action() );
-    m_scriptMenu->addAction(m_scriptDebugAction->action() );
-    m_scriptMenu->addAction(m_scriptStopAction->action() );
+    m_scriptMenu->addAction(m_scriptRunAction->action());
+    m_scriptMenu->addAction(m_scriptRunSelectionAction->action());
+    m_scriptMenu->addAction(m_scriptDebugAction->action());
+    m_scriptMenu->addAction(m_scriptStopAction->action());
     m_scriptMenu->addSeparator();
-    m_scriptMenu->addAction(m_scriptContinueAction->action() );
-    m_scriptMenu->addAction(m_scriptStepAction->action() );
+    m_scriptMenu->addAction(m_scriptContinueAction->action());
+    m_scriptMenu->addAction(m_scriptStepAction->action());
     m_scriptMenu->addAction(m_scriptStepOverAction->action());
-    m_scriptMenu->addAction(m_scriptStepOutAction->action() );
+    m_scriptMenu->addAction(m_scriptStepOutAction->action());
 
     m_winMenu = getMenuBar()->addMenu(tr("&Windows"));
     if (m_actStayOnTop)
@@ -948,19 +955,19 @@ void ScriptDockWidget::createMenus()
     }
 
     m_tabContextMenu = new QMenu(this);
-    m_tabContextMenu->addAction(m_tabMoveLeftAction->action() );
-    m_tabContextMenu->addAction(m_tabMoveRightAction->action() );
-    m_tabContextMenu->addAction(m_tabMoveFirstAction->action() );
-    m_tabContextMenu->addAction(m_tabMoveLastAction->action() );
+    m_tabContextMenu->addAction(m_tabMoveLeftAction->action());
+    m_tabContextMenu->addAction(m_tabMoveRightAction->action());
+    m_tabContextMenu->addAction(m_tabMoveFirstAction->action());
+    m_tabContextMenu->addAction(m_tabMoveLastAction->action());
     m_tabContextMenu->addSeparator();
-    m_tabContextMenu->addAction(m_saveScriptAction->action() );
-    m_tabContextMenu->addAction(m_saveScriptAsAction->action() );
-    m_tabContextMenu->addAction(m_tabCloseAction->action() );
-    m_tabContextMenu->addAction(m_tabCloseOthersAction->action() );
-    m_tabContextMenu->addAction(m_tabCloseAllAction->action() );
+    m_tabContextMenu->addAction(m_saveScriptAction->action());
+    m_tabContextMenu->addAction(m_saveScriptAsAction->action());
+    m_tabContextMenu->addAction(m_tabCloseAction->action());
+    m_tabContextMenu->addAction(m_tabCloseOthersAction->action());
+    m_tabContextMenu->addAction(m_tabCloseAllAction->action());
     m_tabContextMenu->addSeparator();
-    m_tabContextMenu->addAction(m_tabDockAction->action() );
-    m_tabContextMenu->addAction(m_tabUndockAction->action() );
+    m_tabContextMenu->addAction(m_tabDockAction->action());
+    m_tabContextMenu->addAction(m_tabUndockAction->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -970,27 +977,28 @@ void ScriptDockWidget::createToolBars()
     m_mainToolBar = new QToolBar(tr("script editor"),this);
     addToolBar(m_mainToolBar, "mainToolBar");
 
-    m_mainToolBar->addAction(m_newScriptAction->action() );
-    m_mainToolBar->addAction(m_openScriptAction->action() );
-    m_mainToolBar->addAction(m_saveScriptAction->action() );
-    m_mainToolBar->addAction(m_saveScriptAsAction->action() );
-    m_mainToolBar->addAction(m_saveAllScriptsAction->action() );
+    m_mainToolBar->addAction(m_newScriptAction->action());
+    m_mainToolBar->addAction(m_openScriptAction->action());
+    m_mainToolBar->addAction(m_saveScriptAction->action());
+    m_mainToolBar->addAction(m_saveScriptAsAction->action());
+    m_mainToolBar->addAction(m_saveAllScriptsAction->action());
     m_mainToolBar->addSeparator();
-    m_mainToolBar->addAction(m_cutAction->action() );
-    m_mainToolBar->addAction(m_copyAction->action() );
-    m_mainToolBar->addAction(m_pasteAction->action() );
-    m_mainToolBar->addAction(m_undoAction->action() );
-    m_mainToolBar->addAction(m_redoAction->action() );
-    m_mainToolBar->addAction(m_findTextExprAction->action() );
+    m_mainToolBar->addAction(m_cutAction->action());
+    m_mainToolBar->addAction(m_copyAction->action());
+    m_mainToolBar->addAction(m_pasteAction->action());
+    m_mainToolBar->addAction(m_undoAction->action());
+    m_mainToolBar->addAction(m_redoAction->action());
+    m_mainToolBar->addAction(m_findTextExprAction->action());
     m_mainToolBar->addAction(m_replaceTextExprAction->action());
     m_mainToolBar->addSeparator();
-    m_mainToolBar->addAction(m_scriptRunAction->action() );
-    m_mainToolBar->addAction(m_scriptDebugAction->action() );
-    m_mainToolBar->addAction(m_scriptStopAction->action() );
-    m_mainToolBar->addAction(m_scriptContinueAction->action() );
-    m_mainToolBar->addAction(m_scriptStepAction->action() );
-    m_mainToolBar->addAction(m_scriptStepOverAction->action() );
-    m_mainToolBar->addAction(m_scriptStepOutAction->action() );
+    m_mainToolBar->addAction(m_scriptRunAction->action());
+//    m_mainToolBar->addAction(m_scriptRunSelectionAction->action());
+    m_mainToolBar->addAction(m_scriptDebugAction->action());
+    m_mainToolBar->addAction(m_scriptStopAction->action());
+    m_mainToolBar->addAction(m_scriptContinueAction->action());
+    m_mainToolBar->addAction(m_scriptStepAction->action());
+    m_mainToolBar->addAction(m_scriptStepOverAction->action());
+    m_mainToolBar->addAction(m_scriptStepOutAction->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1026,7 +1034,7 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
             finfo2.setFile(sew->getFilename());
             temp = finfo1.canonicalFilePath().toLower();
                 temp2 = finfo2.canonicalFilePath().toLower();
-            if ( filename== finfo2.canonicalFilePath().toLower())
+            if (filename== finfo2.canonicalFilePath().toLower())
             {
 
 
@@ -1142,7 +1150,7 @@ void ScriptDockWidget::mnuTabCloseAll()
 //! dock the active tab and closes this ScriptDockWidget, if it is not docked and empty after docking
 void ScriptDockWidget::mnuTabDock()
 {
-    emit(dockScriptTab(this, m_actTabIndex, !docked()));
+    emit (dockScriptTab(this, m_actTabIndex, !docked()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1150,7 +1158,7 @@ void ScriptDockWidget::mnuTabDock()
 void ScriptDockWidget::mnuTabUndock()
 {
     bool undockToNewScriptWindow = !docked();
-    emit(undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, !docked()));
+    emit (undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, !docked()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1293,9 +1301,38 @@ void ScriptDockWidget::mnuScriptRun()
 
     if (!retValue.containsError())
     {
-        emit(pythonRunFileRequest(sew->getFilename()));
+        emit (pythonRunFileRequest(sew->getFilename()));
     }
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuScriptRunSelection()
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew == NULL) return;
+
+    int lineFrom = -1;
+    int lineTo = -1;
+    int indexFrom = -1;
+    int indexTo = -1;
+
+    //check whether text has been marked
+    sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+    if (lineFrom >= 0)
+    {
+        //text has been marked
+        if (lineFrom != lineTo)
+        {
+            indexFrom = 0;
+            indexTo = sew->lineLength(lineTo) - 1;
+
+            sew->setSelection(lineFrom, indexFrom, lineTo, indexTo);
+        }
+        QString defaultText = sew->selectedText();
+
+        emit pythonRunSelection(defaultText);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1314,7 +1351,7 @@ void ScriptDockWidget::mnuScriptDebug()
 
     if (!retValue.containsError())
     {
-        emit(pythonDebugFileRequest(sew->getFilename()));
+        emit (pythonDebugFileRequest(sew->getFilename()));
     }
 }
 
@@ -1324,7 +1361,7 @@ void ScriptDockWidget::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        emit(pythonDebugCommand(ito::pyDbgQuit));
+        emit (pythonDebugCommand(ito::pyDbgQuit));
         //activateWindow(); (if you uncomment this line,the script window will always dissappear in the background - that's a little bit crazy, therefore don't activate it here)
     }
     else if(PythonEngine::getInstance())
@@ -1337,28 +1374,28 @@ void ScriptDockWidget::mnuScriptStop()
 //! slot invoked to continue debugging process if actually waiting at breakpoint
 void ScriptDockWidget::mnuScriptContinue()
 {
-    emit(pythonDebugCommand(ito::pyDbgContinue));
+    emit (pythonDebugCommand(ito::pyDbgContinue));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step
 void ScriptDockWidget::mnuScriptStep()
 {
-    emit(pythonDebugCommand(ito::pyDbgStep));
+    emit (pythonDebugCommand(ito::pyDbgStep));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step over
 void ScriptDockWidget::mnuScriptStepOver()
 {
-    emit(pythonDebugCommand(ito::pyDbgStepOver));
+    emit (pythonDebugCommand(ito::pyDbgStepOver));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step out
 void ScriptDockWidget::mnuScriptStepOut()
 {
-    emit(pythonDebugCommand(ito::pyDbgStepOut));
+    emit (pythonDebugCommand(ito::pyDbgStepOut));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1433,7 +1470,7 @@ void ScriptDockWidget::mnuGoto()
     int curIndex;
     sew->getCursorPosition(&curLine,&curIndex);
 
-    DialogGoto *d = new DialogGoto(sew->lines(),curLine+1,sew->length(),sew->positionFromLineIndex(curLine,curIndex), getCanvas() );
+    DialogGoto *d = new DialogGoto(sew->lines(),curLine+1,sew->length(),sew->positionFromLineIndex(curLine,curIndex), getCanvas());
     
     if(d->exec())
     {
@@ -1473,7 +1510,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     else
     {
         event->accept();
-        emit(removeAndDeleteScriptDockWidget(this));
+        emit (removeAndDeleteScriptDockWidget(this));
     }
 }
 

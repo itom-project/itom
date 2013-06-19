@@ -1214,6 +1214,12 @@ void MainWindow::pythonRemoveMenuElement(QString key)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::pythonRunSelection(QString selectionText)
+{
+    m_console->pythonRunSelection(selectionText);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::currentDirectoryChanged()
 {
     QString cd = QDir::cleanPath(QDir::currentPath());

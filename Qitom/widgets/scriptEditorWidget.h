@@ -88,8 +88,6 @@ private:
 
     int getMarginNumber(int xPos);
 
-    
-
     RetVal initMenus();
 
     RetVal toggleBookmark(int line);
@@ -156,6 +154,7 @@ private:
 
 signals:
     void pythonRunFile(QString filename);
+    void pythonRunSelection(QString selectionText);
     void pythonDebugFile(QString filename);
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     
@@ -182,6 +181,7 @@ public slots:
     void menuUncomment();
 
     void menuRunScript();
+    void menuRunSelection();
     void menuDebugScript();
     void menuStopScript();
 

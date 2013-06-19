@@ -67,6 +67,7 @@ public:
     
     RetVal printMessage(QStringList msg, ito::tMsgType type = msgTextInfo);
     RetVal printMessage(QString msg, ito::tMsgType type = msgTextInfo);
+    void pythonRunSelection(QString selectionText);
 
 protected:
     virtual void loadSettings();
@@ -78,8 +79,6 @@ public slots:
     void receiveStream( QString text, tMsgType msgType );
 
     void pythonStateChanged(tPythonTransitions pyTransition);
-
-    
 
 signals:
     void wantToCopy();
@@ -96,7 +95,6 @@ private slots:
     void selChanged (); 
 
 private:
-
     struct cmdQueueStruct
     { 
         cmdQueueStruct() {singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1;};

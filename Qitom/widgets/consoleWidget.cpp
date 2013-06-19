@@ -60,12 +60,12 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     connect(this, SIGNAL(wantToCopy()), SLOT(copy()));
     connect(this, SIGNAL(selectionChanged()), SLOT(selChanged()));
 
-    if(qout) connect(qout, SIGNAL(flushStream( QString, tMsgType )), this, SLOT(receiveStream(QString, tMsgType)));
-    if(qerr) connect(qerr, SIGNAL(flushStream( QString, tMsgType )), this, SLOT(receiveStream(QString, tMsgType)));
+    if (qout) connect(qout, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
+    if (qerr) connect(qerr, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
 
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 
-	if(pyEngine)
+	if (pyEngine)
 	{
 		connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
 		connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
@@ -91,7 +91,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 ConsoleWidget::~ConsoleWidget()
 {
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
-	if(pyEngine)
+	if (pyEngine)
 	{
 		disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
 		disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
@@ -113,8 +113,8 @@ RetVal ConsoleWidget::initEditor()
     setMarginSensitivity(1,false);
     setMarginLineNumbers(1,true);
 
-    setWrapMode( QsciScintilla::WrapWord);
-    setWrapVisualFlags( QsciScintilla::WrapFlagByBorder, QsciScintilla::WrapFlagNone , 2);
+    setWrapMode(QsciScintilla::WrapWord);
+    setWrapVisualFlags(QsciScintilla::WrapFlagByBorder, QsciScintilla::WrapFlagNone , 2);
 
     markErrorLine = markerDefine(QsciScintilla::Background);
     setMarkerBackgroundColor(QColor(255,0,0,25), markErrorLine);
@@ -135,8 +135,8 @@ void ConsoleWidget::loadSettings()
     QsciScintilla::WrapVisualFlag start, end;
 
     int wrapMode = settings.value("WrapMode", 0).toInt(&ok);
-    if(!ok) wrapMode = 0;
-    switch(wrapMode)
+    if (!ok) wrapMode = 0;
+    switch (wrapMode)
     {
         case 0: setWrapMode(QsciScintilla::WrapNone); break;
         case 1: setWrapMode(QsciScintilla::WrapWord); break;
@@ -144,27 +144,27 @@ void ConsoleWidget::loadSettings()
     };
 
     QString flagStart = settings.value("WrapFlagStart", "NoFlag").toString();
-    if(flagStart == "NoFlag") start = QsciScintilla::WrapFlagNone;
-    if(flagStart == "FlagText") start = QsciScintilla::WrapFlagByText;
-    if(flagStart == "FlagBorder") start = QsciScintilla::WrapFlagByBorder;
+    if (flagStart == "NoFlag") start = QsciScintilla::WrapFlagNone;
+    if (flagStart == "FlagText") start = QsciScintilla::WrapFlagByText;
+    if (flagStart == "FlagBorder") start = QsciScintilla::WrapFlagByBorder;
 
     QString flagEnd = settings.value("WrapFlagEnd", "NoFlag").toString();
-    if(flagEnd == "NoFlag") end = QsciScintilla::WrapFlagNone;
-    if(flagEnd == "FlagText") end = QsciScintilla::WrapFlagByText;
-    if(flagEnd == "FlagBorder") end = QsciScintilla::WrapFlagByBorder;
+    if (flagEnd == "NoFlag") end = QsciScintilla::WrapFlagNone;
+    if (flagEnd == "FlagText") end = QsciScintilla::WrapFlagByText;
+    if (flagEnd == "FlagBorder") end = QsciScintilla::WrapFlagByBorder;
 
     int indent = settings.value("WrapIndent", 2).toInt(&ok);
-    if(!ok) indent = 2;
+    if (!ok) indent = 2;
 
     setWrapVisualFlags(end,start,indent);
 
     int indentMode = settings.value("WrapIndentMode", 0).toInt(&ok);
-    if(!ok) indentMode = 0;
-    switch(indentMode)
+    if (!ok) indentMode = 0;
+    switch (indentMode)
     {
-        case 0: setWrapIndentMode( QsciScintilla::WrapIndentFixed); break;
-        case 1: setWrapIndentMode( QsciScintilla::WrapIndentSame); break;
-        case 2: setWrapIndentMode( QsciScintilla::WrapIndentIndented); break;
+        case 0: setWrapIndentMode(QsciScintilla::WrapIndentFixed); break;
+        case 1: setWrapIndentMode(QsciScintilla::WrapIndentSame); break;
+        case 2: setWrapIndentMode(QsciScintilla::WrapIndentIndented); break;
     };
 
     settings.endGroup();
@@ -176,18 +176,18 @@ void ConsoleWidget::loadSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 {
-    switch(pyTransition)
+    switch (pyTransition)
     {
     case pyTransBeginRun:
     case pyTransBeginDebug:
     case pyTransDebugContinue:
     case pyTransDebugExecCmdBegin:
-        if(!waitForCmdExecutionDone)
+        if (!waitForCmdExecutionDone)
         {
             //copy text from startLineBeginCmd on to temporaryRemovedCommands
             QStringList temp;
 
-            for(int i=startLineBeginCmd ; i<=lines()-1 ; i++)
+            for (int i=startLineBeginCmd ; i<=lines()-1 ; i++)
             {
                 temp.push_back(text(i));
             }
@@ -209,7 +209,7 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransDebugWaiting:
     case pyTransDebugExecCmdEnd:
 
-        if(!waitForCmdExecutionDone)
+        if (!waitForCmdExecutionDone)
         {
             startLineBeginCmd = lines()-1;
             append(temporaryRemovedCommands);
@@ -237,13 +237,13 @@ RetVal ConsoleWidget::clearEditor()
 //!< new command is a new line starting with ">>"
 RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
 {
-    if(clearEditorFirst)
+    if (clearEditorFirst)
     {
         markerDeleteAll(markErrorLine);
         clear();
     }
 
-    if(text()=="")
+    if (text()=="")
     {
         //!< empty editor, just start new command
         append(">>");
@@ -253,7 +253,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     else
     {
         //!< append at the end of the existing text
-        if(lineLength(lines()-1)>0)
+        if (lineLength(lines()-1)>0)
         {
             append(ConsoleWidget::lineBreak);
         }
@@ -270,9 +270,9 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
     QString cmd("");
     int lineFrom, lineTo, indexFrom, indexTo;
 
-    if(startLineBeginCmd >= 0)
+    if (startLineBeginCmd >= 0)
     {
-        if(dir==1)
+        if (dir==1)
         {
             cmd = cmdList->getPrevious();
         }
@@ -310,9 +310,9 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
 
 
-    if(key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
+    if (key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
     {
-		if(PythonEngine::getInstance())
+		if (PythonEngine::getInstance())
 		{
 			//PyErr_SetInterrupt();
 			PythonEngine::getInstance()->pythonInterruptExecution();
@@ -320,13 +320,13 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         acceptEvent = false; //!< no action necessary
         forwardEvent = false;
     }
-    else if(hasFocus() && !waitForCmdExecutionDone && !pythonBusy)
+    else if (hasFocus() && !waitForCmdExecutionDone && !pythonBusy)
     {
         switch (key)
         {
         case Qt::Key_Up:
 
-            if(isCallTipActive() || isListActive())
+            if (isCallTipActive() || isListActive())
             {
                 acceptEvent = true;
                 forwardEvent = true;
@@ -335,12 +335,12 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             {
                 getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-                if(lineFrom == -1)
+                if (lineFrom == -1)
                 {
                     getCursorPosition(&lineFrom, &indexFrom);
                 }
 
-                if(lineFrom <= startLineBeginCmd)
+                if (lineFrom <= startLineBeginCmd)
                 {
                     acceptEvent = true;
                     forwardEvent = false;
@@ -355,7 +355,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             break;
 
         case Qt::Key_Down:
-            if(isCallTipActive() || isListActive())
+            if (isCallTipActive() || isListActive())
             {
                 acceptEvent = true;
                 forwardEvent = true;
@@ -364,12 +364,12 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             {
                 getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-                if(lineFrom == -1)
+                if (lineFrom == -1)
                 {
                     getCursorPosition(&lineFrom, &indexFrom);
                 }
 
-                if(lineFrom == lines()-1 || lineFrom < startLineBeginCmd)
+                if (lineFrom == lines()-1 || lineFrom < startLineBeginCmd)
                 {
                     acceptEvent = true;
                     forwardEvent = false;
@@ -402,7 +402,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 		// Löscht die aktuelle Eingabe
 		
         case Qt::Key_Escape:
-            if(isListActive() == false)
+            if (isListActive() == false)
             {
 			    lineTo = lines()-1;
 			    indexTo = lineLength(lineTo);
@@ -410,7 +410,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 			    setSelection(startLineBeginCmd, 2, lineTo, indexTo);
 			    removeSelectedText();
 
-                if(isCallTipActive())
+                if (isCallTipActive())
                 {
                     SendScintilla(SCI_CALLTIPCANCEL);
                 }
@@ -427,16 +427,16 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Home: //Pos1
             getCursorPosition(&lineFrom, &indexFrom);
 
-            if(lineFrom == startLineBeginCmd && indexFrom>=2)
+            if (lineFrom == startLineBeginCmd && indexFrom>=2)
             {
-				if(modifiers & Qt::ShiftModifier)
+				if (modifiers & Qt::ShiftModifier)
 					setSelection(startLineBeginCmd,2,lineFrom,indexFrom);
 				else
 					setCursorPosition(startLineBeginCmd, 2);
             }
             else
             {
-				if(modifiers & Qt::ShiftModifier)
+				if (modifiers & Qt::ShiftModifier)
 					setSelection(lineFrom,0,lineFrom,indexFrom);
 				else
 					setCursorPosition(lineFrom, 0);
@@ -450,12 +450,12 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
         case Qt::Key_Return:
         case Qt::Key_Enter:
-            if((modifiers & Qt::ShiftModifier)==0)
+            if ((modifiers & Qt::ShiftModifier)==0)
             {
                 //!> return pressed
-                if(startLineBeginCmd >= 0 && !pythonBusy)
+                if (startLineBeginCmd >= 0 && !pythonBusy)
                 {
-                    /*if(isListActive())
+                    /*if (isListActive())
                     {
                         acceptEvent = true;
                         forwardEvent = false;
@@ -499,11 +499,11 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Backspace:
             //!< check that del and backspace is only pressed in valid cursor context
             getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-            if(lineFrom == -1) //!< no selection
+            if (lineFrom == -1) //!< no selection
             {
                 getCursorPosition(&lineFrom, &indexFrom);
 
-                if(lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom<=2))
+                if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom<=2))
                 {
                     acceptEvent = false;
                     forwardEvent = false;
@@ -516,12 +516,12 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                if(lineFrom > startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom>=2))
+                if (lineFrom > startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom>=2))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
                 }
-                else if((lineTo == startLineBeginCmd && indexTo > 2) || (lineTo > startLineBeginCmd))
+                else if ((lineTo == startLineBeginCmd && indexTo > 2) || (lineTo > startLineBeginCmd))
                 {
                     setSelection(startLineBeginCmd, 2, lineTo, indexTo);
                     acceptEvent = true;
@@ -537,11 +537,11 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Delete:
             //!< check that del and backspace is only pressed in valid cursor context
             getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-            if(lineFrom == -1)
+            if (lineFrom == -1)
             {
                 getCursorPosition(&lineFrom, &indexFrom);
 
-                if(lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom<2))
+                if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom<2))
                 {
                     acceptEvent = false;
                     forwardEvent = false;
@@ -554,12 +554,12 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                if(lineFrom > startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom>=2))
+                if (lineFrom > startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom>=2))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
                 }
-                else if((lineTo == startLineBeginCmd && indexTo>2) || (lineTo > startLineBeginCmd))
+                else if ((lineTo == startLineBeginCmd && indexTo>2) || (lineTo > startLineBeginCmd))
                 {
                     setSelection(startLineBeginCmd, 2, lineTo, indexTo);
                     acceptEvent = true;
@@ -574,7 +574,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
             break;
          case Qt::Key_C:
-            if((modifiers & Qt::ControlModifier))
+            if ((modifiers & Qt::ControlModifier))
             {
                 copy();
                 acceptEvent = true;
@@ -588,7 +588,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             break;
         case Qt::Key_X:
-            if((modifiers & Qt::ControlModifier))
+            if ((modifiers & Qt::ControlModifier))
             {
                 cut();
                 acceptEvent = true;
@@ -602,7 +602,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             break;
         case Qt::Key_V:
-            if((modifiers & Qt::ControlModifier))
+            if ((modifiers & Qt::ControlModifier))
             {
                 paste();
                 acceptEvent = true;
@@ -631,15 +631,15 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             break;
         }
 
-        if(acceptEvent && forwardEvent)
+        if (acceptEvent && forwardEvent)
         {
             AbstractPyScintillaWidget::keyPressEvent(event);
         }
-        else if(!acceptEvent)
+        else if (!acceptEvent)
         {
             event->ignore();
         }
-        else if(acceptEvent && !forwardEvent)
+        else if (acceptEvent && !forwardEvent)
         {
             event->accept();
         }
@@ -658,10 +658,10 @@ RetVal ConsoleWidget::executeCmdQueue()
 {
     cmdQueueStruct value;
 
-    if(cmdQueue.empty())
+    if (cmdQueue.empty())
     {
         markerDeleteAll(markCurrentLine);
-        if(waitForCmdExecutionDone)
+        if (waitForCmdExecutionDone)
         {
             waitForCmdExecutionDone = false;
             startNewCommand(false);
@@ -677,17 +677,17 @@ RetVal ConsoleWidget::executeCmdQueue()
         cmdQueue.pop();
 
         markerDeleteAll(markCurrentLine);
-        for(int i = 0 ; i < value.m_nrOfLines; i++)
+        for (int i = 0 ; i < value.m_nrOfLines; i++)
         {
             markerAdd(value.m_lineBegin + i,markCurrentLine);
         }
 
-        if(value.singleLine == "")
+        if (value.singleLine == "")
         {
             //do nothing, emit end of command
             executeCmdQueue();
         }
-        else if(value.singleLine == "clc" || value.singleLine == "cls" || value.singleLine == "clear")
+        else if (value.singleLine == "clc" || value.singleLine == "cls" || value.singleLine == "clear")
         {
             clear();
             startLineBeginCmd = -1;
@@ -698,8 +698,8 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             //emit pythonExecuteString(value.singleLine);
 
-            QObject *pyEngine = AppManagement::getPythonEngine(); //qobject_cast<PythonEngine*>( AppManagement::getPythonEngine() );
-			if(pyEngine)
+            QObject *pyEngine = AppManagement::getPythonEngine(); //qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+			if (pyEngine)
 			{
 				QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
 			}
@@ -724,34 +724,34 @@ RetVal ConsoleWidget::executeCmdQueue()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 {
-    if(endLine<beginLine) return RetVal(retError);
+    if (endLine<beginLine) return RetVal(retError);
 
     QString singleLine;
     QStringList buffer;
 
-    if(beginLine == endLine)
+    if (beginLine == endLine)
     {
         singleLine = text(beginLine);
-        if(singleLine.endsWith('\n'))
+        if (singleLine.endsWith('\n'))
         {
             singleLine.chop(1);
         }
-        if(singleLine.startsWith(">>"))
+        if (singleLine.startsWith(">>"))
         {
             singleLine.remove(0,2);
         }
-        cmdQueue.push( cmdQueueStruct(singleLine, beginLine, 1) );
+        cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 1));
     }
     else
     {
-        for(int i=beginLine;i<=endLine;i++)
+        for (int i=beginLine;i<=endLine;i++)
         {
             singleLine = text(i);
-            if(singleLine.endsWith('\n'))
+            if (singleLine.endsWith('\n'))
             {
                 singleLine.chop(1);
             }
-            if(singleLine.startsWith(">>"))
+            if (singleLine.startsWith(">>"))
             {
                 singleLine.remove(0,2);
             }
@@ -763,49 +763,49 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         QStringList temp;
         QByteArray encoding;
         singleLine = buffer.join("\n");
-        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents( singleLine.toAscii().data(), encoding ); //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
-        if(lines.length() == 0 || (encoding.length() > 0 && lines.length() == 1) ) //probably error while execution, execute it in one block
+        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toAscii().data(), encoding); //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
+        if (lines.length() == 0 || (encoding.length() > 0 && lines.length() == 1)) //probably error while execution, execute it in one block
         {
-            if(encoding.length() > 0)
+            if (encoding.length() > 0)
             {
                 //singleLine = buffer.join("\n");
-                cmdQueue.push( cmdQueueStruct(singleLine, beginLine, 2 ) );
+                cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 2));
             }
             else
             {
-                cmdQueue.push( cmdQueueStruct(singleLine, beginLine, buffer.length() ) );
+                cmdQueue.push(cmdQueueStruct(singleLine, beginLine, buffer.length()));
             }
         }
         else
         {
-            lines.append( buffer.length() + 1 ); //append last index
-            for(int i = 0 ; i < lines.length() - 1 ; i++)
+            lines.append(buffer.length() + 1); //append last index
+            for (int i = 0 ; i < lines.length() - 1 ; i++)
             {
-                temp = buffer.mid( lines[i] - 1 , lines[i+1] - lines[i] );
+                temp = buffer.mid(lines[i] - 1 , lines[i+1] - lines[i]);
                 singleLine = temp.join("\n");
 
-                if(encoding.length() > 0)
+                if (encoding.length() > 0)
                 {
                     singleLine.prepend("#coding=" + encoding + "\n");
                 }
 
-                cmdQueue.push( cmdQueueStruct(singleLine, beginLine + lines[i] - 1, temp.length() ) );
+                cmdQueue.push(cmdQueueStruct(singleLine, beginLine + lines[i] - 1, temp.length()));
 
             }
         }
 
 
         ////old method //line-by-line
-        //for(int i=beginLine;i<=endLine;i++)
+        //for (int i=beginLine;i<=endLine;i++)
         //{
         //    singleLine = text(i).simplified();
         //    
-        //    if(singleLine.startsWith(">>"))
+        //    if (singleLine.startsWith(">>"))
         //    {
         //        singleLine.remove(0,2);
         //    }
 
-        //    cmdQueue.push( cmdQueueStruct(singleLine, i) );
+        //    cmdQueue.push(cmdQueueStruct(singleLine, i));
         //}
    
     }
@@ -817,7 +817,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::receiveStream( QString text, tMsgType msgType )
+void ConsoleWidget::receiveStream(QString text, tMsgType msgType)
 {
     printMessage(text, msgType);
 }
@@ -836,14 +836,14 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
         fromLine = lines()-1;
         append(totalMsg);
         toLine = lines()-1;
-        if(lineLength(toLine)==0) toLine--;
-        for(int i=fromLine; i<=toLine; i++)
+        if (lineLength(toLine)==0) toLine--;
+        for (int i=fromLine; i<=toLine; i++)
         {
             markerAdd(i, markErrorLine);
         }
         moveCursorToEnd();
         startLineBeginCmd = -1;
-        if(!pythonBusy)
+        if (!pythonBusy)
         {
             this->startNewCommand(false);
         }
@@ -855,7 +855,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
         moveCursorToEnd();
         startLineBeginCmd = -1;
 
-        if(!pythonBusy)
+        if (!pythonBusy)
         {
             this->startNewCommand(false);
         }
@@ -874,7 +874,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::printMessage(QString msg, tMsgType type)
 {
-    if(msg!="")
+    if (msg!="")
     {
         return printMessage(QStringList(msg), type);
     }
@@ -893,22 +893,22 @@ RetVal ConsoleWidget::moveCursorToEnd()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::dropEvent ( QDropEvent * event )
+void ConsoleWidget::dropEvent(QDropEvent * event)
 {
     QsciScintilla::dropEvent(event);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::dragEnterEvent ( QDragEnterEvent * event )
+void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
 {
-    if(event->mimeData()->hasText())
+    if (event->mimeData()->hasText())
     {
         event->acceptProposedAction();
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
+void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 {
     QsciScintilla::dragMoveEvent(event);
 
@@ -918,9 +918,9 @@ void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
     //!< check, that selections are only in valid area
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-    if(lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2))
+    if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2))
     {
-        if(event->dropAction() & Qt::MoveAction)
+        if (event->dropAction() & Qt::MoveAction)
         {
             event->ignore();
         }
@@ -929,7 +929,7 @@ void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
     {
         int res = checkValidDropRegion(event->pos());
 
-        if(res==0)
+        if (res==0)
         {
             event->ignore();
         }
@@ -946,7 +946,7 @@ void ConsoleWidget::dragMoveEvent ( QDragMoveEvent * event )
 */
 int ConsoleWidget::checkValidDropRegion(QPoint pos)
 {
-    if(waitForCmdExecutionDone || pythonBusy)
+    if (waitForCmdExecutionDone || pythonBusy)
     {
         return 0;
     }
@@ -963,7 +963,7 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
 
 
         position = SendScintilla(SCI_POSITIONFROMPOINTCLOSE, pos2.x(), pos2.y());
-        if(position>=0)
+        if (position>=0)
         {
             lineIndexFromPosition(position, &line, &index);
         }
@@ -972,12 +972,12 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
             line = -1;
         }
 
-        if(line == -1)
+        if (line == -1)
         {
             //!< pos is below last line
             return 2;
         }
-        else if(line == startLineBeginCmd)
+        else if (line == startLineBeginCmd)
         {
             if (pos.x()<=margin)
             {
@@ -988,7 +988,7 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
             {
                 position = SendScintilla(SCI_POSITIONFROMPOINTCLOSE, pos.x(),pos.y());
 
-                if(position == -1)
+                if (position == -1)
                 {
                     return 2; //!< mouse at the end of this line
                 }
@@ -996,7 +996,7 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
                 {
                     lineIndexFromPosition(position, &line, &index);
 
-                    if(index<2)
+                    if (index<2)
                     {
                         return 0;
                     }
@@ -1007,7 +1007,7 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
                 }
             }
         }
-        else if(line > startLineBeginCmd)
+        else if (line > startLineBeginCmd)
         {
             return 1;
         }
@@ -1018,9 +1018,9 @@ int ConsoleWidget::checkValidDropRegion(QPoint pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::selChanged ()
+void ConsoleWidget::selChanged()
 {
-    if( waitForCmdExecutionDone )
+    if (waitForCmdExecutionDone)
     {
         canCut = false;
         canCopy = false;
@@ -1030,17 +1030,17 @@ void ConsoleWidget::selChanged ()
         int lineFrom, lineTo, indexFrom, indexTo;
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-        if(lineFrom == -1 ) //nothing selected
+        if (lineFrom == -1) //nothing selected
         {
             canCut = false;
             canCopy = false;
         }
-        else if(lineFrom < startLineBeginCmd)
+        else if (lineFrom < startLineBeginCmd)
         {
             canCut = false;
             canCopy = true;
         }
-        else if(lineFrom == startLineBeginCmd && indexFrom < 2 )
+        else if (lineFrom == startLineBeginCmd && indexFrom < 2)
         {
             canCut = false;
             canCopy = true;
@@ -1054,16 +1054,16 @@ void ConsoleWidget::selChanged ()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::copy ()
+void ConsoleWidget::copy()
 {
-    if(canCopy)
+    if (canCopy)
     {
         QsciScintilla::copy();
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::paste ()
+void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
     QsciScintilla::paste();
@@ -1071,9 +1071,9 @@ void ConsoleWidget::paste ()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::cut ()
+void ConsoleWidget::cut()
 {
-    if(canCut)
+    if (canCut)
     {
         QsciScintilla::cut();
     }
@@ -1086,20 +1086,20 @@ RetVal ConsoleWidget::moveCursorToValidRegion()
 
     //!< check, that selections are only in valid area
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-    if(lineFrom == -1)
+    if (lineFrom == -1)
     {
         getCursorPosition(&lineFrom, &indexFrom);
     }
 
-    if(lineFrom == -1)
+    if (lineFrom == -1)
     {
         //do nothing
     }
-    else if(lineFrom < startLineBeginCmd)
+    else if (lineFrom < startLineBeginCmd)
     {
         moveCursorToEnd();
     }
-    else if(lineFrom == startLineBeginCmd && indexFrom < 2)
+    else if (lineFrom == startLineBeginCmd && indexFrom < 2)
     {
         moveCursorToEnd();
     }
@@ -1107,8 +1107,27 @@ RetVal ConsoleWidget::moveCursorToValidRegion()
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::pythonRunSelection(QString selectionText)
+{
+    selectionText += ConsoleWidget::lineBreak;
 
+    if (text(startLineBeginCmd) == ">>")
+    {
+        insertAt(selectionText, startLineBeginCmd, 2);
+    }
+    else if (text(startLineBeginCmd).left(2) == "") 
+    {
+        //clear all after ">>" until end
+        setSelection(startLineBeginCmd, 2, lines()-1, lineLength(lines()-1));
+        removeSelectedText();
+        insertAt(selectionText, startLineBeginCmd, 0);
+    }
 
+    execCommand(startLineBeginCmd, lines()-2);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 DequeCommandList::DequeCommandList(int maxLength)
 {
@@ -1131,7 +1150,7 @@ RetVal DequeCommandList::add(QString cmd)
     *rit = cmd;
     cmdList.push_back(QString());
 
-    if(static_cast<int>(cmdList.size()) > this->maxItems)
+    if (static_cast<int>(cmdList.size()) > this->maxItems)
     {
         cmdList.pop_front();
     }
@@ -1151,11 +1170,11 @@ RetVal DequeCommandList::moveLast()
 //----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getPrevious()
 {
-    if(cmdList.size()>1)
+    if (cmdList.size()>1)
     {
-        if(rit < cmdList.rend())
+        if (rit < cmdList.rend())
         {
-            if((++rit) < cmdList.rend())
+            if ((++rit) < cmdList.rend())
             {
                 return *rit;
             }
@@ -1174,9 +1193,9 @@ QString DequeCommandList::getPrevious()
 //----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getNext()
 {
-    if(cmdList.size()>1)
+    if (cmdList.size()>1)
     {
-        if(rit > cmdList.rbegin())
+        if (rit > cmdList.rbegin())
         {
             --rit;
             return *rit;
