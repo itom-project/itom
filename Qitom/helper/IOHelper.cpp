@@ -541,7 +541,9 @@ namespace ito {
 
                 QStringList arguments;
                 arguments << "-server" << filename;
-                process->start(QLatin1String("designer"), arguments);
+
+                QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+                process->start(app, arguments);
             }
         }
         else
@@ -560,7 +562,8 @@ namespace ito {
 
             QStringList arguments;
             arguments << "-server" << filename;
-            process->start(QLatin1String("designer"), arguments);
+            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            process->start(app, arguments);
         }
     }
 

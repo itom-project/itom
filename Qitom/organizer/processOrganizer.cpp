@@ -23,6 +23,10 @@
 #include "processOrganizer.h"
 
 #include <qdebug.h>
+#include <qfileinfo.h>
+#include <qdir.h>
+#include <qcoreapplication.h>
+#include <qlibraryinfo.h>
 
 #ifndef linux
 #include <Windows.h>
@@ -96,6 +100,52 @@ ProcessOrganizer::~ProcessOrganizer()
 
     m_processes.clear();
 }
+
+
+/*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
+{
+#ifdef linux
+    return binaryName;
+
+#else
+
+    QDir dir;
+    QString binaryName2 = binaryName;
+    if(!binaryName2.endsWith(".exe"))
+    {
+        binaryName2.append(".exe");
+    }
+
+    //1. first try: in this application dir
+    dir.setPath( QCoreApplication::applicationDirPath() );
+    if(dir.exists(binaryName2))
+    {
+        return dir.absoluteFilePath( binaryName2 );
+    }
+
+    //2. next try: qt binary dir (when installing qt from sources)
+    dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
+    if(dir.exists(binaryName2))
+    {
+        return dir.absoluteFilePath( binaryName2 );
+    }
+
+    //3. QTDIR
+    QByteArray qtdirenv = qgetenv( "QTDIR" );
+    if(qtdirenv.size() > 0)
+    {
+        dir.setPath( qtdirenv );
+        if(dir.exists(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+    }
+
+    //4. return as is
+    return binaryName;
+#endif
+}
+
 
 RetVal ProcessOrganizer::collectGarbage(bool forceToCloseAll /*= false*/)
 {

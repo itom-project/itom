@@ -52,6 +52,8 @@ public:
 
     bool bringWindowsOnTop(const QString &windowName);
 
+    static QString getAbsQtToolPath(const QString &binaryName);
+
 protected:
 
     RetVal collectGarbage(bool forceToCloseAll = false);

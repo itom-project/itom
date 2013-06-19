@@ -33,6 +33,8 @@
 #include <qxmlstream.h>
 #include <qdebug.h>
 
+#include "../organizer/processOrganizer.h"
+
 using namespace ito;
 
 namespace ito
@@ -348,7 +350,10 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     QStringList args;
     args << file.fileName();
     qDebug() << args;
-    process.start("qcollectiongenerator", args);
+
+    QString app = ProcessOrganizer::getAbsQtToolPath( "qcollectiongenerator" );
+
+    process.start(app.toAscii().data() , args);
     process.waitForFinished(60000);
 
 

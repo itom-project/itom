@@ -76,6 +76,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
 
+    //qDebug() << QLibraryInfo::location( QLibraryInfo::BinariesPath );
+
     AppManagement::setMainApplication(qobject_cast<QObject*>(this));
 
     //global settings: the settings file will be stored in itomSettings/{organization}/{applicationName}.ini
