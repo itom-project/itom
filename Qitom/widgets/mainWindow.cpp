@@ -778,7 +778,10 @@ void MainWindow::mnuShowAssistant()
             args << QLatin1String("-collectionFile");
             args << QLatin1String(collectionFile.toAscii().data());
             args << QLatin1String("-enableRemoteControl");
-            process->start(QLatin1String("assistant"), args);
+
+            QString app = ProcessOrganizer::getAbsQtToolPath( "assistant" );
+
+            process->start(app, args);
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(helpAssistantError(QProcess::ProcessError)));
         }
@@ -1293,7 +1296,8 @@ void MainWindow::mnuShowDesigner()
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
-            process->start(QLatin1String("designer"), QStringList());
+            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            process->start(app, QStringList());
         }
     }
 }
