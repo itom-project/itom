@@ -382,66 +382,6 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 
-# HANDLE VERSION (FROM SVN, GIT...)
-
-UNSET(GIT_FOUND CACHE)
-find_package(Git)
-UNSET(SUBWCREV_FOUND CACHE)
-FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
-SET( VERSION_DEPENDENCY "")
-
-IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
-    MESSAGE(STATUS "Using GIT as repository information")
-    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
-    ADD_CUSTOM_COMMAND (
-        TARGET qitom
-        PRE_BUILD
-        COMMAND    ${PYTHON_EXECUTABLE}
-        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
-    )
-
-    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
-        ADD_CUSTOM_COMMAND (
-            OUTPUT version.h
-            COMMAND    ${PYTHON_EXECUTABLE}
-            ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
-        )
-
-        set(VERSION_DEPENCENDY "version.h")
-    endif(UNIX)
-
-ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
-    MESSAGE(STATUS "Using SVN as repository information")
-    ADD_CUSTOM_COMMAND (
-        TARGET qitom
-        PRE_BUILD
-        COMMAND    subwcrev
-        ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
-    )
-
-    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
-        ADD_CUSTOM_COMMAND (
-            OUTPUT version.h
-            COMMAND    subwcrev
-            ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
-        )
-
-        set(VERSION_DEPENCENDY "version.h")
-    endif(UNIX)
-ELSE()
-    MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
-    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-
-ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
-
-MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked
-
-
-
-# END HANDLE VERSION
-
 
 #handle translations BEGIN STEP 1
 set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
@@ -548,5 +488,63 @@ if(MSVC)
     
 ENDIF (MSVC)
 
+# HANDLE VERSION (FROM SVN, GIT...)
 
+UNSET(GIT_FOUND CACHE)
+find_package(Git)
+UNSET(SUBWCREV_FOUND CACHE)
+FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
+SET( VERSION_DEPENDENCY "")
+
+IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+    MESSAGE(STATUS "Using GIT as repository information")
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
+    ADD_CUSTOM_COMMAND (
+        TARGET qitom
+        PRE_BUILD
+        COMMAND    ${PYTHON_EXECUTABLE}
+        ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+    )
+
+    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
+        ADD_CUSTOM_COMMAND (
+            OUTPUT version.h
+            COMMAND    ${PYTHON_EXECUTABLE}
+            ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+        )
+
+        set(VERSION_DEPENCENDY "version.h")
+    endif(UNIX)
+
+ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
+    MESSAGE(STATUS "Using SVN as repository information")
+    ADD_CUSTOM_COMMAND (
+        TARGET qitom
+        PRE_BUILD
+        COMMAND    subwcrev
+        ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
+    )
+
+    if(UNIX) #this is a hack, since PRE_BUILD on linux is executed after compiling (pre_link), however this is only executed if not up-to-date, therefore we let the custom command above.
+        ADD_CUSTOM_COMMAND (
+            OUTPUT version.h
+            COMMAND    subwcrev
+            ARGS       " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
+        )
+
+        set(VERSION_DEPENCENDY "version.h")
+    endif(UNIX)
+ELSE()
+    MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
+    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+
+ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+
+MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked
+
+
+
+# END HANDLE VERSION
 
