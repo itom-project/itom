@@ -965,7 +965,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+118"/>
+        <location filename="../mainApplication.cpp" line="+120"/>
         <location line="+2"/>
         <source>Version %1
 %2</source>
@@ -1274,7 +1274,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../organizer/addInManager.cpp" line="+447"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
     </message>
 </context>
 <context>
@@ -1442,12 +1442,12 @@ p, li { white-space: pre-wrap; }
         <location line="-49"/>
         <location line="+13"/>
         <source>value out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wert liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Value out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wert liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1955,7 +1955,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2524"/>
+        <location filename="../python/pythonUi.cpp" line="+2610"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1980,7 +1980,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="+189"/>
+        <location filename="../organizer/helpSystem.cpp" line="+191"/>
         <source>file could not be opened.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2330,7 +2330,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+661"/>
+        <location line="+660"/>
         <source>no dock widget available</source>
         <translation type="unfinished">Keine Toolbar verfügbar</translation>
     </message>
@@ -2361,7 +2361,7 @@ Type conflict for %1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+212"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+219"/>
         <source>&amp;toggle bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -2387,12 +2387,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+127"/>
+        <location line="+130"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-126"/>
+        <location line="-129"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -2452,7 +2452,7 @@ Type conflict for %1</source>
         <translation>Skript &amp;starten</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>&amp;debug script</source>
         <translation>Skript im &amp;Debug-Modus starten</translation>
     </message>
@@ -2462,12 +2462,12 @@ Type conflict for %1</source>
         <translation>Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+109"/>
         <source>&amp;enable breakpoint</source>
         <translation>Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+412"/>
+        <location line="+445"/>
         <location line="+71"/>
         <location line="+37"/>
         <source>unsaved changes</source>
@@ -2490,7 +2490,12 @@ Type conflict for %1</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-573"/>
+        <source>run &amp;selection</source>
+        <translation>Auswahl &amp;starten</translation>
+    </message>
+    <message>
+        <location line="+573"/>
         <source>file %1 could not be loaded</source>
         <translation>Datei %1 konnte nicht geladen werden</translation>
     </message>
@@ -3227,7 +3232,7 @@ Type conflict for %1</source>
     <message>
         <location line="-8"/>
         <source>Live Image</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Livebild</translation>
     </message>
     <message>
         <location line="+128"/>
@@ -3419,7 +3424,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+35"/>
         <source>This instance is no grabber. Therefore no live image is available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Instanz ist kein Grabber. Daher ist kein Livebild verfügbar.</translation>
     </message>
 </context>
 <context>
@@ -3521,7 +3526,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+29"/>
         <source>Toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+147"/>
@@ -3783,7 +3788,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
     </message>
@@ -4345,12 +4350,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+45"/>
-        <location line="+659"/>
+        <location line="+662"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-659"/>
+        <location line="-662"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4475,7 +4480,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+201"/>
+        <location line="+204"/>
         <source>The algorithm interface is not supported</source>
         <translation type="unfinished">Die Algorithmusschnittstelle wird nicht unterstützt</translation>
     </message>
@@ -4843,7 +4848,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
@@ -4884,7 +4889,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+18"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
     </message>
@@ -5079,7 +5084,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+200"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+205"/>
         <source>file open</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
@@ -5109,7 +5114,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+477"/>
+        <location line="+494"/>
         <source>move left</source>
         <translation type="unfinished">Nach Links verschieben</translation>
     </message>
@@ -5248,6 +5253,11 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>run selection</source>
+        <translation>Auswahl starten</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>debug</source>
         <translation type="unfinished">Debug</translation>
     </message>
@@ -5318,7 +5328,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Icon-&amp;Suche...</translation>
     </message>
     <message>
-        <location line="+642"/>
+        <location line="+679"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation type="unfinished">Suchen und Ersetzen</translation>
@@ -5334,7 +5344,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-683"/>
+        <location line="-720"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5377,7 +5387,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Skript</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>&amp;Windows</source>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
@@ -5484,7 +5494,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+181"/>
         <location line="+86"/>
         <location line="+58"/>
-        <location line="+100"/>
+        <location line="+151"/>
         <location line="+59"/>
         <location line="+52"/>
         <location line="+50"/>
@@ -5496,7 +5506,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-559"/>
+        <location line="-610"/>
         <location line="+7"/>
         <source>at least one property could not be read</source>
         <translation type="unfinished"></translation>
@@ -5521,6 +5531,8 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-23"/>
         <location line="+32"/>
+        <location line="+26"/>
+        <location line="+25"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>

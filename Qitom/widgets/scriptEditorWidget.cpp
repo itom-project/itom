@@ -248,7 +248,7 @@ RetVal ScriptEditorWidget::initMenus()
     //editorMenuActions["saveas"] = editorMenu->addAction(QIcon("icons/fileSaveAs.png"), tr("save &as"),this,SLOT(menuSaveAs()));
     editorMenu->addSeparator();
     editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"),tr("&run script"),this,SLOT(menuRunScript()));
-    editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"),tr("&run selection"),this,SLOT(menuRunSelection()));
+    editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"),tr("run &selection"),this,SLOT(menuRunSelection()));
     editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"),tr("&debug script"),this,SLOT(menuDebugScript()));
     editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"),tr("sto&p script"),this,SLOT(menuStopScript()));
 
