@@ -421,11 +421,35 @@ TYPED_TEST(operatorTest, CompareEQ_test)
     mat1_1d = cv::saturate_cast<TypeParam>(1);
     mat2_1d = cv::saturate_cast<TypeParam>(1);
 
-	mat1_2d = cv::saturate_cast<TypeParam>(5);
-    mat2_2d = cv::saturate_cast<TypeParam>(5);
+	mat1_2d.at<TypeParam>(0,0) = 3;
+	mat1_2d.at<TypeParam>(0,1) = 2;
+	mat1_2d.at<TypeParam>(1,0) = 5;
+	mat1_2d.at<TypeParam>(1,1) = 8;
 
-	mat1_3d = cv::saturate_cast<TypeParam>(25);
-    mat2_3d = cv::saturate_cast<TypeParam>(25);
+	mat2_2d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(3);
+	mat2_2d.at<TypeParam>(0,1) = cv::saturate_cast<TypeParam>(3);
+	mat2_2d.at<TypeParam>(1,0) = cv::saturate_cast<TypeParam>(3);
+	mat2_2d.at<TypeParam>(1,1) = cv::saturate_cast<TypeParam>(8);
+
+	mat1_3d.at<TypeParam>(0,0,0) = cv::saturate_cast<TypeParam>(25);
+	mat1_3d.at<TypeParam>(0,0,1) = cv::saturate_cast<TypeParam>(12);
+	mat1_3d.at<TypeParam>(0,1,0) = cv::saturate_cast<TypeParam>(34);
+	mat1_3d.at<TypeParam>(1,0,2) = cv::saturate_cast<TypeParam>(65);
+	mat1_3d.at<TypeParam>(1,1,3) = cv::saturate_cast<TypeParam>(34);
+	mat1_3d.at<TypeParam>(2,0,0) = cv::saturate_cast<TypeParam>(85);
+	mat1_3d.at<TypeParam>(2,0,1) = cv::saturate_cast<TypeParam>(84);
+	mat1_3d.at<TypeParam>(2,1,0) = cv::saturate_cast<TypeParam>(95);
+	mat1_3d.at<TypeParam>(2,1,1) = cv::saturate_cast<TypeParam>(149);
+
+    mat2_3d.at<TypeParam>(0,0,0) = cv::saturate_cast<TypeParam>(25);
+	mat2_3d.at<TypeParam>(0,0,1) = cv::saturate_cast<TypeParam>(56);	 //!< This value is not kept equal to the same as on the same location in mat1_3d for testing purpose
+	mat2_3d.at<TypeParam>(0,1,0) = cv::saturate_cast<TypeParam>(34);
+	mat2_3d.at<TypeParam>(1,0,2) = cv::saturate_cast<TypeParam>(65);
+	mat2_3d.at<TypeParam>(1,1,3) = cv::saturate_cast<TypeParam>(35);	 //!< This value is not kept equal to the same as on the same location in mat1_3d for testing purpose
+	mat2_3d.at<TypeParam>(2,0,0) = cv::saturate_cast<TypeParam>(85);
+	mat2_3d.at<TypeParam>(2,0,1) = cv::saturate_cast<TypeParam>(82);	 //!< This value is not kept equal to the same as on the same location in mat1_3d for testing purpose
+	mat2_3d.at<TypeParam>(2,1,0) = cv::saturate_cast<TypeParam>(95);
+	mat2_3d.at<TypeParam>(2,1,1) = cv::saturate_cast<TypeParam>(149);
 	
     if(std::numeric_limits<TypeParam>::max() == std::numeric_limits<ito::int8>::max()) //compare not implemented for int8
     {
@@ -447,10 +471,24 @@ TYPED_TEST(operatorTest, CompareEQ_test)
 		
 	    EXPECT_EQ ( this->mat3_1d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(255));
 	    EXPECT_NE ( this->mat3_1d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(0));
-	    EXPECT_EQ ( this->mat3_2d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(255));
-	    EXPECT_NE ( this->mat3_2d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(0));
-	    EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(255));
-	    EXPECT_NE ( this->mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(0));	
+
+		EXPECT_EQ ( this->mat3_2d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(255));	//!< The values of the elements on locations (0,0) and (1,1) in both matrices are kept intentionally similar, which should be resulted as '255' in the result matrix mat3_2d on those same locations.
+		EXPECT_EQ ( this->mat3_2d.at<ito::uint8>(0,1), cv::saturate_cast<ito::uint8>(0));	//!< The values of the elements on locations (0,1) and (1,0) in both matrices are kept intentionally different, which should be resulted as '0' in the result matrix mat3_2d on those same locations. 
+		EXPECT_EQ ( this->mat3_2d.at<ito::uint8>(1,0), cv::saturate_cast<ito::uint8>(0));
+		EXPECT_EQ ( this->mat3_2d.at<ito::uint8>(1,1), cv::saturate_cast<ito::uint8>(255));
+
+	   // EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(255));
+	   // EXPECT_NE ( this->mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(0));	
+
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(0,0,1), cv::saturate_cast<ito::uint8>(0));		//!< Values of the elements on this location are kept different in both matrices mat1_3d and mat2_3d to check if the resultant matrix mat3_3d contains '0' value on the same location.
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(0,1,0), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(1,0,2), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(1,1,3), cv::saturate_cast<ito::uint8>(0));		//!< Values of the elements on this location are kept different in both matrices mat1_3d and mat2_3d to check if the resultant matrix mat3_3d contains '0' value on the same location.
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,0,0), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,0,1), cv::saturate_cast<ito::uint8>(0));		//!< Values of the elements on this location are kept different in both matrices mat1_3d and mat2_3d to check if the resultant matrix mat3_3d contains '0' value on the same location.
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,1,0), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,1,1), cv::saturate_cast<ito::uint8>(255));
     }		 
 }
 
