@@ -228,6 +228,11 @@ public:
         typeDockWidget = 0x0002
     };
 
+    enum tObjectInfo
+    {
+        infoShowInherited = 0x0001
+    };
+
     UiOrganizer();
     ~UiOrganizer();
 
@@ -332,6 +337,8 @@ public slots:
     RetVal getChildObject3(unsigned int parentObjectID, QString objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSignalIndex(unsigned int objectID, QString signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
+
+    RetVal getObjectInfo(unsigned int objectID, int type, QSharedPointer<QVariantMap> infoMap, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, QString signalSignature, ItomSharedSemaphore *semaphore = NULL);
 

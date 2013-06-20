@@ -2099,6 +2099,129 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PyErr_SetInterrupt();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointer<QVariantMap> infoMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+    QObject *obj = getWeakObjectReference(objectID);
+
+    if(obj)
+    {
+        const QMetaObject *mo = obj->metaObject();
+
+        std::cout << "WIDGET '" << mo->className() << "'\n--------------------------\n\n" << std::endl;
+
+        if(mo->classInfoCount() > 0 && ((type & infoShowInherited) || (mo->classInfoOffset() < mo->classInfoCount()) ))
+        {
+            std::cout << "Class Info\n---------------\n";
+
+            for(int i = mo->classInfoCount() - 1; i >= 0; i--)
+            {
+                QMetaClassInfo ci = mo->classInfo(i);
+                if(i < mo->classInfoOffset())
+                {
+                    if(type & infoShowInherited)
+                        std::cout << " " << ci.name() << " (inherited): " << ci.value() << "\n";
+                }
+                else
+                {
+                    std::cout << " " << ci.name() << " : " << ci.value() << "\n";
+                }
+            }
+
+            std::cout << "\n" << std::endl;
+        }
+
+        if(mo->propertyCount() > 0 && ((type & infoShowInherited) || (mo->propertyOffset() < mo->propertyCount())))
+        {
+            std::cout << "Properties\n---------------\n";
+
+            for(int i = mo->propertyCount() - 1; i >= 0; i--)
+            {
+                QMetaProperty prop = mo->property(i);
+                if(i < mo->propertyOffset())
+                {
+                    if(type & infoShowInherited)
+                        std::cout << " " << prop.name() << " (inherited): " << prop.typeName() << "\n";
+                }
+                else
+                {
+                    std::cout << " " << prop.name() << ": " << prop.typeName() << "\n";
+                }
+            }
+
+            std::cout << "\n" << std::endl;
+        }
+
+        if(mo->methodCount() > 0 && ((type & infoShowInherited) || (mo->methodOffset() < mo->methodCount())))
+        {
+            //search for signals
+            std::cout << "Signals\n---------------\n";
+
+            for(int i = mo->methodCount() - 1; i >= 0; i--)
+            {
+                QMetaMethod meth = mo->method(i);
+
+                if(meth.methodType() == QMetaMethod::Signal)
+                {
+                    if(i < mo->methodOffset())
+                    {
+                        if(type & infoShowInherited)
+                            std::cout << " " << meth.signature() << " (inherited)\n";
+                    }
+                    else
+                    {
+                        std::cout << " " << meth.signature() << "\n";
+                    }
+                }
+            }
+
+            std::cout << "\n" << std::endl;
+
+            //search for slots
+            std::cout << "Slots\n---------------\n";
+
+            for(int i = mo->methodCount() - 1; i >= 0; i--)
+            {
+                QMetaMethod meth = mo->method(i);
+
+                if(meth.methodType() == QMetaMethod::Slot)
+                {
+                    if(i < mo->methodOffset())
+                    {
+                        if(type & infoShowInherited)
+                            std::cout << " " << meth.signature() << " (inherited)\n";
+                    }
+                    else
+                    {
+                        std::cout << " " << meth.signature() << "\n";
+                    }
+                }
+            }
+
+            std::cout << "\n" << std::endl;
+        }
+
+
+        
+
+    }
+    else
+    {
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("There exists no object with the given id.").toAscii().data());
+    }
+
+    if(semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
+    }
+
+    return retValue;
+}
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 ////----------------------------------------------------------------------------------------------------------------------------------
 //RetVal UiOrganizer::plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)

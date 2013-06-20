@@ -1252,6 +1252,40 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self)
+{
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+    QSharedPointer< QVariantMap > value(new QVariantMap );
+
+    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, self->objectID), Q_ARG(int,0), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting information");
+        return NULL;
+    }
+
+    retValue += locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
     if(self->methodList == NULL)
@@ -1384,6 +1418,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"getWindowFlags", (PyCFunction)PyUiItem_getWindowFlags, METH_NOARGS, PyUiItemGetWindowFlags_doc},
         {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
+        {"info", (PyCFunction)PyUiItem_info, METH_NOARGS, NULL},
         {NULL}  /* Sentinel */
 };
 
