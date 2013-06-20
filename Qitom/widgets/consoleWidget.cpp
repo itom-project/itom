@@ -1110,6 +1110,39 @@ RetVal ConsoleWidget::moveCursorToValidRegion()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::pythonRunSelection(QString selectionText)
 {
+    // we have to remove the indent
+    if (selectionText.length() > 0)
+    {
+        // 1. identify the indent typ
+        QChar indentTyp = 0;
+        if (selectionText[0] == '\t')
+        {
+            indentTyp = '\t';
+        }
+        else if (selectionText[0] == ' ')
+        {
+            indentTyp = ' ';
+        }
+
+        if (indentTyp != 0)
+        {
+            // 2. if any indent typ read the first indent
+            QString indent = ConsoleWidget::lineBreak + ' ';
+            int indentSize = 1;
+            while (indentSize < selectionText.length() && selectionText[indentSize] == indentTyp)
+            {
+                ++indentSize;
+                indent += indentTyp;
+            }
+
+            // 3. now we have to remove this indent size in first line
+            selectionText.remove(0, indentSize); 
+
+            // 4. now we have to remove this indent size in every other lines
+            selectionText.replace(indent, ConsoleWidget::lineBreak);
+        }
+    }
+
     selectionText += ConsoleWidget::lineBreak;
 
     if (text(startLineBeginCmd) == ">>")
