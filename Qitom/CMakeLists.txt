@@ -426,8 +426,9 @@ set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
     QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    
-    ADD_DEPENDENCIES(${target_name}_prebuild ${TRANSLATION_OUTPUT_FILES})
+	
+	add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
     QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
