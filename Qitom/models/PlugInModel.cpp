@@ -422,7 +422,7 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
                     else
                     {
                         aia->getAlgoWidgetList(widgets);
-                        qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" << (void*)widgets.values()[row - filters.count()];
+                        //qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" << (void*)widgets.values()[row - filters.count()];
                         return createIndex(row, column, (void*)widgets.values()[row - filters.count()]);
                     }
 
