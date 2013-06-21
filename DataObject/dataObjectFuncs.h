@@ -489,7 +489,7 @@ namespace dObjHelper
     RetVal minValue(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf = true);
        
     //! Find the max-value of this data object and the first position <Templated version>.
-    template<typename _Tp> RetVal maxValueFunc(const DataObject *dObj, float64 &maxValue, bool ignoreInf = true);
+    template<typename _Tp> RetVal maxValueFunc(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
 
     //! Find the max-value of this data object and the first position.
     RetVal maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
