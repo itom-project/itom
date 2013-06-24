@@ -1361,6 +1361,17 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
+    //! calculate the 1D-FFT / 1D-IFFT or 2D-FFT / 2D-IFFT of a dataObject
+    /*!
+        This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated linewise or pointwise.
+
+        \param[in|out]  dObjIO              handle to the dataObject. Must be float-type or complex-type
+        \param[in]      inverse             toogle between IFFT or FFT
+        \param[out]     inverseAsReal       toogle output for the IFFT between real and complex
+        \param[out]     lineWise            toogle between 1D-linewise and 2D-FFT
+
+        \return retOK
+    */
     RetVal calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise)
     {
         unsigned int numMats = dObjIO->calcNumMats();
@@ -1369,12 +1380,21 @@ namespace dObjHelper
         
         bool createNewObj = false;
         bool createNewInputMat = false;
+        bool clearInMat = false;
 
         if(dObjIO == NULL || dObjIO->getDims() > 2 || numMats != 1)
             return ito::RetVal(ito::retError, 0, "DFT-Error: source object empty or not a single plane");
 
-        int flags = cv::DFT_COMPLEX_OUTPUT;
+        int flags = 0;
 
+        if(inverse && inverseAsReal)
+        {
+            flags += cv::DFT_COMPLEX_OUTPUT;
+        }
+        else
+        {
+            flags += cv::DFT_REAL_OUTPUT;
+        }
         if(inverse)
         {
             flags += cv::DFT_INVERSE;
@@ -1393,7 +1413,7 @@ namespace dObjHelper
         cv::Mat *cvplaneIn = NULL;
         cv::Mat *cvplaneOut = NULL;
 
-        ito::DataObject *tempObject = NULL;
+        ito::DataObject tempObject;
 
         if(inverse)
         {
@@ -1404,10 +1424,10 @@ namespace dObjHelper
                     {
                         cvplaneIn = (cv::Mat_<complex64> *)(dObjIO->get_mdata())[0];
 
-                        tempObject = new ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tFloat32);             
-                        dObjIO->copyAxisTagsTo(*tempObject);
-                        dObjIO->copyTagMapTo(*tempObject);
-                        cvplaneOut = (cv::Mat_<float32> *)(tempObject->get_mdata())[0];
+                        tempObject = ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tFloat32);             
+                        dObjIO->copyAxisTagsTo(tempObject);
+                        dObjIO->copyTagMapTo(tempObject);
+                        cvplaneOut = (cv::Mat_<float32> *)(tempObject.get_mdata())[0];
 
                         createNewObj = true;
                     }
@@ -1422,10 +1442,10 @@ namespace dObjHelper
                     {
                         cvplaneIn = (cv::Mat_<complex128> *)(dObjIO->get_mdata())[0];
 
-                        tempObject = new ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tFloat64);             
-                        dObjIO->copyAxisTagsTo(*tempObject);
-                        dObjIO->copyTagMapTo(*tempObject);
-                        cvplaneOut = (cv::Mat_<float64> *)(tempObject->get_mdata())[0];
+                        tempObject = ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tFloat64);             
+                        dObjIO->copyAxisTagsTo(tempObject);
+                        dObjIO->copyTagMapTo(tempObject);
+                        cvplaneOut = (cv::Mat_<float64> *)(tempObject.get_mdata())[0];
                         
                         createNewObj = true;
                     }
@@ -1445,30 +1465,40 @@ namespace dObjHelper
             {
             
                 case ito::tFloat32:
-                    cvplaneIn = (cv::Mat_<float32> *)(dObjIO->get_mdata())[0];
+                {
+                    cvplaneIn = ((cv::Mat_<float64> *)(dObjIO->get_mdata())[0]);
+                    cv::Mat planes[] = {cv::Mat_<ito::float32>(*cvplaneIn), cv::Mat::zeros(cvplaneIn->size(), CV_32F)};
+                    cvplaneIn = NULL;
+                    cvplaneIn = new cv::Mat;
+                    cv::merge(planes, 2, *cvplaneIn);
 
-                    tempObject = new ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tComplex64);             
-                    dObjIO->copyAxisTagsTo(*tempObject);
-                    dObjIO->copyTagMapTo(*tempObject);
-                    cvplaneOut = (cv::Mat_<complex64> *)(tempObject->get_mdata())[0];
+                    tempObject = ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tComplex64);             
+                    dObjIO->copyAxisTagsTo(tempObject);
+                    dObjIO->copyTagMapTo(tempObject);
+                    cvplaneOut = (cv::Mat_<complex64> *)(tempObject.get_mdata())[0];
                         
                     createNewObj = true;
                     createNewInputMat = true;
-
+                    clearInMat = true;
+                }
                 break;
                 case ito::tFloat64:
+                {
+                    cvplaneIn = ((cv::Mat_<float64> *)(dObjIO->get_mdata())[0]);
+                    cv::Mat planes[] = {cv::Mat_<ito::float64>(*cvplaneIn), cv::Mat::zeros(cvplaneIn->size(), CV_64F)};
+                    cvplaneIn = NULL;
                     cvplaneIn = new cv::Mat;
-                    cv::merge((cv::Mat_<float64> *)(dObjIO->get_mdata())[0], 2, *cvplaneIn);
+                    cv::merge(planes, 2, *cvplaneIn);
 
-                    cvplaneIn = (cv::Mat_<float64> *)(dObjIO->get_mdata())[0];
-
-                    tempObject = new ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tComplex128);             
-                    dObjIO->copyAxisTagsTo(*tempObject);
-                    dObjIO->copyTagMapTo(*tempObject);
-                    cvplaneOut = (cv::Mat_<complex128> *)(tempObject->get_mdata())[0];
+                    tempObject = ito::DataObject(dObjIO->getDims(), dObjIO->getSize(), ito::tComplex128);             
+                    dObjIO->copyAxisTagsTo(tempObject);
+                    dObjIO->copyTagMapTo(tempObject);
+                    cvplaneOut = (cv::Mat_<complex128> *)(tempObject.get_mdata())[0];
                         
                     createNewObj = true;
                     createNewInputMat = true;
+                    clearInMat = true;
+                }
                 break;
             
                 case ito::tComplex64:
@@ -1494,10 +1524,15 @@ namespace dObjHelper
             retval += ito::RetVal(ito::retError, 0, exc.err.data());
         }
 
+        if((clearInMat == true) && (cvplaneIn != NULL))
+        {
+            delete cvplaneIn;
+            cvplaneIn = NULL;
+        }
 
         if(createNewObj)
         {
-            *dObjIO = *tempObject;        
+            *dObjIO = tempObject;        
         }
 
         dObjIO->addToProtocol(protocol);
