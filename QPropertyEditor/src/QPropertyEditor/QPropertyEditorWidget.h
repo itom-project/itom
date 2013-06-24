@@ -110,6 +110,10 @@ public:
 	 */
 	void unregisterCustomPropertyCB(UserTypeCB callback);
 
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+
 private:
 	/// The Model for this view
 	QPropertyModel*			m_model;

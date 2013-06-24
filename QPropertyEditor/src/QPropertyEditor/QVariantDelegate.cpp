@@ -25,8 +25,8 @@
 
 #include "Property.h"
 
-#include <QtGui/QAbstractItemView>
-#include <QtCore/QSignalMapper>
+#include <qabstractitemview.h>
+#include <qsignalmapper.h>
 
 
 QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
@@ -47,6 +47,7 @@ QWidget *QVariantDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 	Property* p = static_cast<Property*>(index.internalPointer());
 	switch(p->value().type())
 	{
+    case QVariant::Bool:
 	case QVariant::Color:
 	case QVariant::Int:
 	case QMetaType::Float:	
@@ -76,6 +77,7 @@ void QVariantDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 	
 	switch(data.type())
 	{
+    case QVariant::Bool:
 	case QVariant::Color:		 		
 	case QMetaType::Double:
 	case QMetaType::Float:
@@ -95,6 +97,7 @@ void QVariantDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 	QVariant data = index.model()->data(index, Qt::EditRole);	
 	switch(data.type())
 	{
+    case QVariant::Bool:
 	case QVariant::Color:		
 	case QMetaType::Double:
 	case QMetaType::Float:				

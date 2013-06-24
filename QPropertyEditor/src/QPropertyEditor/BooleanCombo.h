@@ -21,32 +21,27 @@
 //
 // *************************************************************************************************
 
-#ifndef COLORCOMBO_H_
-#define COLORCOMBO_H_
+#ifndef BOOLEANCOMBO_H_
+#define BOOLEANCOMBO_H_
 
 #include <qcombobox.h>
 
-class ColorCombo : public QComboBox
+class BooleanCombo : public QComboBox
 {
 	Q_OBJECT
 public:
-	ColorCombo(QWidget* parent = 0);
-	virtual ~ColorCombo();
+	BooleanCombo(QWidget* parent = 0);
+	virtual ~BooleanCombo();
 
-    QColor color() const;
-    void setColor(QColor c);
+    bool value() const;
+    void setValue(bool c);
 
 signals:
     /** slot that is being called by the editor widget */
-	void colorChanged(QColor c);
+	void boolChanged(bool c);
 
 private slots:
 	void currentChanged(int index);	
-
-
-
-private:
-	QColor	m_init;
 
 };
 #endif

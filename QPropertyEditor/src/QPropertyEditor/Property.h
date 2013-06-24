@@ -138,6 +138,10 @@ private slots:
 	 */
 	void setValue(int value);
 
+    void setValue(QColor value);
+
+    void setValue(bool value);
+
 protected:
 	QObject*	m_propertyObject;
 	QString		m_hints;	

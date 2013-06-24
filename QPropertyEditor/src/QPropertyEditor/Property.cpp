@@ -22,6 +22,7 @@
 // *************************************************************************************************
 #include "Property.h"
 #include "ColorCombo.h"
+#include "BooleanCombo.h"
 
 #include <qmetaobject.h>
 #include <qspinbox.h>
@@ -62,8 +63,13 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
 	QWidget* editor = 0;
 	switch(value().type())
 	{
+        case QVariant::Bool:
+            editor = new BooleanCombo(parent);
+            connect(editor, SIGNAL(boolChanged(bool)), this, SLOT(setValue(bool)));
+            break;
         case QVariant::Color:
             editor = new ColorCombo(parent);
+            connect(editor, SIGNAL(colorChanged(const QColor)), this, SLOT(setValue(const QColor)));
             break;
         case QVariant::Int:
             editor = new QSpinBox(parent);
@@ -91,7 +97,10 @@ bool Property::setEditorData(QWidget *editor, const QVariant &data)
 	{
         case QVariant::Color:
             static_cast<ColorCombo*>(editor)->setColor(data.value<QColor>());
-            return true;;
+            return true;
+        case QVariant::Bool:
+            static_cast<BooleanCombo*>(editor)->setValue(data.toBool());
+            return true;
         case QVariant::Int:
             editor->blockSignals(true);
             static_cast<QSpinBox*>(editor)->setValue(data.toInt());
@@ -116,6 +125,8 @@ QVariant Property::editorData(QWidget *editor)
 	{
         case QVariant::Color:
             return QVariant::fromValue(static_cast<ColorCombo*>(editor)->color());
+        case QVariant::Bool:
+            return QVariant(static_cast<BooleanCombo*>(editor)->value());
         case QVariant::Int:
             return QVariant(static_cast<QSpinBox*>(editor)->value());
         case QMetaType::Float:
@@ -148,4 +159,14 @@ void Property::setValue(double value)
 void Property::setValue(int value)
 {
 	setValue(QVariant(value));
+}
+
+void Property::setValue(QColor value)
+{
+    setValue(QVariant(value));
+}
+
+void Property::setValue(bool value)
+{
+    setValue(QVariant(value));
 }

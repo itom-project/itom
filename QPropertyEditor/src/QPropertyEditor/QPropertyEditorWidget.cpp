@@ -25,13 +25,18 @@
 #include "QPropertyModel.h"
 #include "QVariantDelegate.h"
 #include "Property.h"
+#include <qevent.h>
+#include <qheaderview.h>
 
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
 	m_model = new QPropertyModel(this);		
 	setModel(m_model);
 	setItemDelegate(new QVariantDelegate(this));
-    setEditTriggers( QAbstractItemView::AllEditTriggers );
+    //setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed /*QAbstractItemView::AllEditTriggers*/ );
+    setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
+    setSelectionBehavior( QAbstractItemView::SelectRows );
+    setAlternatingRowColors(true);
 }
 
 
@@ -68,3 +73,59 @@ void QPropertyEditorWidget::unregisterCustomPropertyCB(UserTypeCB callback)
 	m_model->unregisterCustomPropertyCB(callback);
 }
 
+
+void QPropertyEditorWidget::mousePressEvent(QMouseEvent *event)
+{
+    QTreeView::mousePressEvent(event);
+    QModelIndex index = indexAt( event->pos() );
+
+    if (index.isValid()) 
+    {
+        if (/*(item != m_editorPrivate->editedItem()) && */(event->button() == Qt::LeftButton) 
+                && (header()->logicalIndexAt(event->pos().x()) == 1)
+                && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+        {
+            //editItem(item, 1);
+            edit(index);
+        } 
+        /*else if (!m_editorPrivate->hasValue(item) && m_editorPrivate->markPropertiesWithoutValue() && !rootIsDecorated()) 
+        {
+            if (event->pos().x() + header()->offset() < 20)
+                item->setExpanded(!item->isExpanded());
+        }*/
+    }
+}
+
+void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) 
+    {
+    case Qt::Key_Return:
+    case Qt::Key_Enter:
+    case Qt::Key_Space: // Trigger Edit
+        //if (!m_editorPrivate->editedItem())
+        {
+            const QModelIndex index = currentIndex();
+            if (index.isValid() )
+            {
+                if (m_model->columnCount(index) >= 2 && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+                {
+                    event->accept();
+                    // If the current position is at column 0, move to 1.
+                    QModelIndex index = currentIndex();
+                    if (index.column() == 0) 
+                    {
+                        index = index.sibling(index.row(), 1);
+                        setCurrentIndex(index);
+                    }
+                    edit(index);
+                    return;
+                }
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    QTreeView::keyPressEvent(event);
+}
