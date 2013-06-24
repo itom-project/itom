@@ -236,7 +236,7 @@ void DObjConstIterator::seekAbs(int ofs)
                 sliceEnd = ptr + elemSize * dObj->getSize(dims-1);
             }
         }
-        else if(ofs >= dObj->getTotal()) //end
+        else if((size_t)ofs >= dObj->getTotal()) //end, (ofs > 0)
         {
             plane = dObj->calcNumMats() - 1;
 
@@ -364,7 +364,7 @@ void DObjConstIterator::seekRel(int ofs)
                 sliceEnd = ptr + elemSize * width;
             }
         }
-        else if ( plane >= dObj->calcNumMats() ) //move to end
+        else if ( (size_t)plane >= dObj->calcNumMats() ) //move to end (plane cannot be negative again)
         {
             plane = dObj->calcNumMats() - 1;
 

@@ -411,7 +411,7 @@ index : {unsigned int} \n\
         return NULL;
     }
 
-    if(index >= (self->cols * self->rows))
+    if(index >= (unsigned int)(self->cols * self->rows))
     {
         return PyErr_Format(PyExc_RuntimeError,"index exceeds maximum number of existing subplots. The allowed range is [0,%i]", (self->cols * self->rows - 1));
     }

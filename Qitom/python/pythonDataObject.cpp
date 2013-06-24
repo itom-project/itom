@@ -5114,7 +5114,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     size_t elemSize = 0;
     char *dummy = 0;
     char *startingPoint = NULL;
-    int res;
+    //int res;
     
 
     if(dims == 1)
