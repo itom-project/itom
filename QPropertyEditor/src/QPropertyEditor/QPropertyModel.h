@@ -97,6 +97,10 @@ public:
 	 * Adds custom callback that will be used to create Property instances for custom datatypes
 	 */
 	void unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback);
+
+    void setSorted(bool value);
+
+    bool sorted() const { return m_sorted; }
 		
 
 private:
@@ -109,6 +113,9 @@ private:
 
 	/// Custom callback
 	QList<QPropertyEditorWidget::UserTypeCB>	m_userCallbacks;
+
+    bool m_sorted;
+    
 	
 };
 #endif

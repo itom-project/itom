@@ -16,7 +16,7 @@ if(CMAKE_HOST_WIN32)
 		#ok
 	endif()
 endif()
-
+  
 #compile as static library (always)
 SET(LIBRARY_TYPE STATIC)
 
@@ -24,7 +24,7 @@ SET(LIBRARY_TYPE STATIC)
 IF(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 ENDIF(UNIX)
-
+ 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
@@ -49,6 +49,7 @@ INCLUDE(${QT_USE_FILE})
 
 set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/ColorCombo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/BooleanCombo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/EnumProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/Property.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyEditorWidget.h
@@ -60,6 +61,7 @@ QT4_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
 
 set(qpropertyeditor_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/ColorCombo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/BooleanCombo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/EnumProperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/Property.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyEditorWidget.cpp
@@ -67,13 +69,14 @@ set(qpropertyeditor_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QVariantDelegate.cpp
 )
 
-add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qproperteditor_HEADERS_MOC})
+add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC})
 
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES})
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor/src/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/ColorCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+FILE(COPY ${SOURCEFILE}/BooleanCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/EnumProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/Property.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/QPropertyEditorWidget.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)

@@ -30,8 +30,10 @@
 
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
-	m_model = new QPropertyModel(this);		
-	setModel(m_model);
+	m_model = new QPropertyModel(this);	
+
+    setModel(m_model);
+
 	setItemDelegate(new QVariantDelegate(this));
     //setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed /*QAbstractItemView::AllEditTriggers*/ );
     setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
@@ -47,14 +49,19 @@ QPropertyEditorWidget::~QPropertyEditorWidget()
 void QPropertyEditorWidget::addObject(QObject* propertyObject)
 {
 	m_model->addItem(propertyObject);
-	expandToDepth(0);
+    if(!m_model->sorted())
+    {
+	    expandToDepth(0);
+    }
 }
 
 void QPropertyEditorWidget::setObject(QObject* propertyObject)
 {
 	m_model->clear();
 	if (propertyObject)
+    {
 		addObject(propertyObject);
+    }
 }
 
 void QPropertyEditorWidget::updateObject(QObject* propertyObject)
@@ -105,14 +112,14 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Space: // Trigger Edit
         //if (!m_editorPrivate->editedItem())
         {
-            const QModelIndex index = currentIndex();
+            QModelIndex index = currentIndex();
+
             if (index.isValid() )
             {
                 if (m_model->columnCount(index) >= 2 && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
                 {
                     event->accept();
                     // If the current position is at column 0, move to 1.
-                    QModelIndex index = currentIndex();
                     if (index.column() == 0) 
                     {
                         index = index.sibling(index.row(), 1);
@@ -128,4 +135,24 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     QTreeView::keyPressEvent(event);
+}
+
+void QPropertyEditorWidget::setSorted(bool value)
+{
+    m_model->setSorted(value);
+    
+    m_sorted = value;
+
+    if(m_sorted)
+    {
+    }
+    else
+    {
+        expandToDepth(0);
+    }
+}
+
+bool QPropertyEditorWidget::sorted() const
+{
+    return m_model->sorted();
 }

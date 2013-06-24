@@ -110,6 +110,10 @@ public:
 	 */
 	void unregisterCustomPropertyCB(UserTypeCB callback);
 
+    void setSorted(bool value);
+
+    bool sorted() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
@@ -117,6 +121,9 @@ protected:
 private:
 	/// The Model for this view
 	QPropertyModel*			m_model;
+
+    bool m_sorted;
+
 
 };
 #endif

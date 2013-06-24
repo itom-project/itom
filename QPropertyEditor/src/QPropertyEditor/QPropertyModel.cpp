@@ -41,7 +41,7 @@ struct PropertyPair
 };
 
 
-QPropertyModel::QPropertyModel(QObject* parent /*= 0*/) : QAbstractItemModel(parent)
+QPropertyModel::QPropertyModel(QObject* parent /*= 0*/) : QAbstractItemModel(parent), m_sorted(true)
 {	
 	m_rootItem = new Property("Root",0, this);   
 }
@@ -53,12 +53,30 @@ QPropertyModel::~QPropertyModel()
 
 QModelIndex QPropertyModel::index ( int row, int column, const QModelIndex & parent /*= QModelIndex()*/ ) const
 {
-	Property *parentItem = m_rootItem;
-	if (parent.isValid())
-		parentItem = static_cast<Property*>(parent.internalPointer());	
-	if (row >= parentItem->children().size() || row < 0)
-		return QModelIndex();		
-	return createIndex(row, column, parentItem->children().at(row));	
+    Property *parentItem = m_rootItem;
+
+    if(m_sorted && parent.isValid() == false)
+    {      
+        int newRow = row;
+
+        foreach(const QObject *obj, parentItem->children()) //iterate through all metaObjects
+        {
+            if(newRow >= 0 && newRow < obj->children().size())
+            {
+                return createIndex(row, column, obj->children().at(newRow));
+            }
+            newRow -= obj->children().size();
+        }
+        return QModelIndex();
+    }
+    else
+    {
+	    if (parent.isValid())
+		    parentItem = static_cast<Property*>(parent.internalPointer());	
+	    if (row >= parentItem->children().size() || row < 0)
+		    return QModelIndex();		
+	    return createIndex(row, column, parentItem->children().at(row));	
+    }
 		
 }
 
@@ -71,7 +89,14 @@ QModelIndex QPropertyModel::parent ( const QModelIndex & index ) const
 	Property *parentItem = qobject_cast<Property*>(childItem->parent());
 
 	if (!parentItem || parentItem == m_rootItem)
+    {
 		return QModelIndex();
+    }
+
+    if (m_sorted && parentItem->isRoot())
+    {
+        return QModelIndex();
+    }
 
 	return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -79,9 +104,25 @@ QModelIndex QPropertyModel::parent ( const QModelIndex & index ) const
 int QPropertyModel::rowCount ( const QModelIndex & parent /*= QModelIndex()*/ ) const
 {
 	Property *parentItem = m_rootItem;
-	if (parent.isValid())
-		parentItem = static_cast<Property*>(parent.internalPointer());	
-	return parentItem->children().size();
+
+    if (m_sorted && parent.isValid() == false)
+    {
+        int rows = 0;
+        foreach(const QObject *obj, parentItem->children()) //iterate through all metaObjects
+        {
+            rows += obj->children().size();
+        }
+
+        return rows;
+    }
+    else
+    {
+	    if (parent.isValid())
+        {
+		    parentItem = static_cast<Property*>(parent.internalPointer());	
+        }
+	    return parentItem->children().size();
+    }
 }
 
 int QPropertyModel::columnCount ( const QModelIndex & /*parent = QModelIndex()*/ ) const
@@ -357,4 +398,14 @@ void QPropertyModel::unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeC
 	int index = m_userCallbacks.indexOf(callback);
 	if( index != -1 )
 		m_userCallbacks.removeAt(index);
+}
+
+void QPropertyModel::setSorted(bool value)
+{
+    if(value != m_sorted)
+    {
+        beginResetModel();
+        m_sorted = value;
+        endResetModel();
+    }
 }
