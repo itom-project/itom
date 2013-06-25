@@ -1389,11 +1389,11 @@ namespace dObjHelper
 
         if(inverse && inverseAsReal)
         {
-            flags += cv::DFT_COMPLEX_OUTPUT;
+            flags += cv::DFT_REAL_OUTPUT;
         }
         else
         {
-            flags += cv::DFT_REAL_OUTPUT;
+            flags += cv::DFT_COMPLEX_OUTPUT;
         }
         if(inverse)
         {
