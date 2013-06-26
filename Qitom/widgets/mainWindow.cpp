@@ -286,7 +286,7 @@ MainWindow::MainWindow() :
 MainWindow::~MainWindow()
 {
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-/*
+
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
@@ -295,10 +295,9 @@ MainWindow::~MainWindow()
     QByteArray state = saveState();
     settings->setValue("state", state);
     settings->endGroup();
-*/
+
     delete settings;
 
-	
 	//QByteArray ba = storeDockWidgetStatus();
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
