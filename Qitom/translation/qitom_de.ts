@@ -54,7 +54,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+708"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+740"/>
         <source>script execution</source>
         <translation>Skript wird ausgeführt</translation>
     </message>
@@ -4618,7 +4618,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+59"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -4651,7 +4651,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+234"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4711,7 +4711,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-320"/>
+        <source>Command History</source>
+        <translation type="unfinished">Befehlsliste</translation>
+    </message>
+    <message>
+        <location line="+325"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5014,7 +5019,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Beschreibung</translation>
     </message>
     <message>
-        <location line="+659"/>
+        <location line="+673"/>
         <source>Actuator</source>
         <translation type="unfinished">Motor</translation>
     </message>

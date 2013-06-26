@@ -143,6 +143,12 @@ MainWindow::MainWindow() :
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
+        // lastCommandDock
+        m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), this, true, true, AbstractDockWidget::floatingStandard);
+	    m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
+        m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
+
 	    // CallStack-Dock
 	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
 	    m_callStackDock->setObjectName("itomCallStackDockWidget");
@@ -212,6 +218,9 @@ MainWindow::MainWindow() :
     // signal mapper for user defined actions
     m_userDefinedSignalMapper = new QSignalMapper(this);
     connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
+
+	connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
+	connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
     //
     createActions();
@@ -298,6 +307,9 @@ MainWindow::~MainWindow()
 
     if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
     if (m_localWorkspaceDock)  disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+
+	disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
+	disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
 //    delete m_pAIManagerView;
 //    delete m_pAIManagerDock;

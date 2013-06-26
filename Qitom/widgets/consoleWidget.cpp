@@ -26,6 +26,8 @@
 #include "../AppManagement.h"
 #include <QMessageBox>
 #include <qfile.h>
+//#include "../widgets/lastCommandDockWidget.h"
+//#include "../widgets/mainWindow.h"
 
 //!< constants
 const QString ConsoleWidget::lineBreak = QString("\n");
@@ -72,9 +74,21 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 	}
 
     cmdList = new DequeCommandList(20);
+    QString settingsName(AppManagement::getSettingsFile());
+    QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
+    settings->beginGroup("ConsoleDequeCommandList");
+    int size = settings->beginReadArray("LastCommandList");
+    for (int i = size - 1; i > -1; --i)
+    {
+        settings->setArrayIndex(i);
+        cmdList->add(settings->value("cmd", "").toString());
+    }
+    settings->endArray();
+    settings->endGroup();
+    delete settings;
 
     //!< empty queue
-    while(!cmdQueue.empty())
+    while (!cmdQueue.empty())
     {
         cmdQueue.pop();
     }
@@ -84,12 +98,29 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     /*freopen ("D:\\test.txt","w",stdout);
     fprintf(stdout, "Test");
     fclose(stdout);*/
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::~ConsoleWidget()
 {
+    cmdList->moveLast();
+    QString settingsName(AppManagement::getSettingsFile());
+    QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
+    settings->beginGroup("ConsoleDequeCommandList");
+    settings->beginWriteArray("LastCommandList");
+    int i = 0;
+    QString cmd = cmdList->getPrevious(); 
+    while (cmd != "")
+    {
+        settings->setArrayIndex(i);
+        settings->setValue("cmd", cmd);
+        cmd = cmdList->getPrevious();
+        ++i;
+    }
+    settings->endArray();
+    settings->endGroup();
+    delete settings;
+
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 	if (pyEngine)
 	{
@@ -693,6 +724,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             startLineBeginCmd = -1;
             cmdList->add(value.singleLine);
             executeCmdQueue();
+            emit sendToLastCommand(value.singleLine);
         }
         else
         {
@@ -713,6 +745,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             //pyThread->pythonInterruptExecution();
 
             cmdList->add(value.singleLine);
+            emit sendToLastCommand(value.singleLine);
         }
 
 

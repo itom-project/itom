@@ -29,6 +29,7 @@
 #include "AIManagerWidget.h"
 #include "fileSystemDockWidget.h"
 #include "breakPointDockWidget.h"
+#include "lastCommandDockWidget.h"
 #include "userManagement.h"
 
 #include <qtableview.h>
@@ -79,7 +80,8 @@ private:
 
     QVBoxLayout *m_contentLayout;
 	
-    BreakPointDockWidget* m_breakPointDock;
+    BreakPointDockWidget *m_breakPointDock;
+    LastCommandDockWidget *m_lastCommandDock;
     WorkspaceDockWidget *m_globalWorkspaceDock;
     WorkspaceDockWidget *m_localWorkspaceDock;
 	CallStackDockWidget *m_callStackDock;

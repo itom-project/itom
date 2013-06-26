@@ -46,7 +46,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, QWidget *parent
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
 	PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-	if(pe)
+	if (pe)
 	{
 		m_breakPointView->setModel( pe->getBreakPointModel() );
 	}
@@ -92,7 +92,7 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
     QModelIndex idx;
     QAbstractItemModel *m = m_breakPointView->model();
 
-    if(index.isValid() && m)
+    if (index.isValid() && m)
     {
         idx = m->index( index.row(), 0, index.parent() );
         canonicalPath = m->data(idx, Qt::ToolTipRole).toString();
@@ -100,10 +100,10 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
         idx = m->index( index.row(), 1, index.parent() );
         lineNr = m->data(idx, Qt::DisplayRole).toInt() - 1;
 
-		if(canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
+		if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
 		{
 			ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-			if(seo)
+			if (seo)
 			{
 				seo->openScript( canonicalPath, NULL, lineNr );
 			}

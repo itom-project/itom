@@ -647,19 +647,33 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
         switch(itemType)
         {
             case itemCatDataIO:
+            {
                 return ito::typeDataIO;
+            }
             case itemCatActuator:
+            {
                 return ito::typeActuator;
+            }
             case itemCatAlgo:
+            {
                 return ito::typeAlgo;
+            }
             case itemSubCategoryDataIO_Grabber:
+            {
                 return ito::typeDataIO | ito::typeGrabber;
+            }
             case itemSubCategoryDataIO_ADDA:
+            {
                 return ito::typeDataIO | ito::typeADDA;
+            }
             case itemSubCategoryDataIO_RawIO:
+            {
                 return ito::typeDataIO | ito::typeRawIO;
+            }
             default:
+            {
                 return QVariant();
+            }
         }
         return itemType;
     }

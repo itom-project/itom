@@ -181,6 +181,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/QTabWidgetItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
@@ -327,6 +328,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp	
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp

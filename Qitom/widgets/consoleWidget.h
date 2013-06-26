@@ -67,22 +67,22 @@ public:
     
     RetVal printMessage(QStringList msg, ito::tMsgType type = msgTextInfo);
     RetVal printMessage(QString msg, ito::tMsgType type = msgTextInfo);
-    void pythonRunSelection(QString selectionText);
 
 protected:
     virtual void loadSettings();
 
 public slots:
-    virtual void copy ();
-    virtual void paste ();
-    virtual void cut ();
-    void receiveStream( QString text, tMsgType msgType );
-
+    virtual void copy();
+    virtual void paste();
+    virtual void cut();
+    void receiveStream(QString text, tMsgType msgType);
+    void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
 
 signals:
     void wantToCopy();
 	void pythonExecuteString(QString cmd);
+    void sendToLastCommand(QString cmd);
 
 
 protected:
@@ -92,12 +92,12 @@ protected:
     void dragMoveEvent (QDragMoveEvent *event);
 
 private slots:
-    void selChanged (); 
+    void selChanged(); 
 
 private:
     struct cmdQueueStruct
     { 
-        cmdQueueStruct() {singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1;};
+        cmdQueueStruct() { singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1; };
         cmdQueueStruct(QString text, int lineBegin, int nrOfLines) {singleLine = text; m_lineBegin = lineBegin; m_nrOfLines = nrOfLines; };
         QString singleLine;
         int m_lineBegin;
