@@ -299,7 +299,7 @@ void DObjConstIterator::seekRel(int ofs)
         size_t width = dObj->getSize(dims-1);
         size_t stride = dObj->getOriginalSize(dims-1);
 
-        size_t curRowIdx = (ptr - dObj->rowPtr(plane,0)) / stride; //floor
+        size_t curRowIdx = (ptr - dObj->rowPtr(plane,0)) / (stride * elemSize); //floor
         int curElemIdxInPlane;
         if(planeContinuous)
         {

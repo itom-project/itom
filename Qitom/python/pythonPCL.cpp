@@ -3856,8 +3856,28 @@ polygons : {array-like, MxN} \n\
 }
 
 //------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void */*closure*/)
+{
+    ito::PCLPolygonMesh *pm = self->polygonMesh;
+
+    if(pm == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Polygon mesh is NULL");
+        return NULL;
+    }
+
+    if(pm->polygonMesh().get() == NULL)
+    {
+        return Py_BuildValue("i",0);
+    }
+
+    return Py_BuildValue("i", pm->polygonMesh()->polygons.size());
+}
+
+//------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
     //{"cloud", (getter)PyPolygonMesh_getCloud, NULL, pyPolygonMeshGetCloud_doc, NULL},
+    {"nrOfPolygons", (getter)PyPolygonMesh_getNrOfPolygons, NULL, "returns the number of polygons in this mesh", NULL},
     {NULL}  /* Sentinel */
 };
 

@@ -287,7 +287,7 @@ public:
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //-------------------------------------------------------------------------------------------------
-    //static PyObject* PyPolygonMesh_getCloud(PyPolygonMesh *self, void *closure);
+    static PyObject* PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
