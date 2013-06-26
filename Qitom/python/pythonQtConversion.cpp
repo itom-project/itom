@@ -458,7 +458,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
             
             if (PyFloat_Check(t)) 
             {
-                v.append( floor(PyFloat_AS_DOUBLE(t)) );
+                v.append( PyFloat_AS_DOUBLE(t) );
             } 
             else if( PyLong_Check(t) )
             {
