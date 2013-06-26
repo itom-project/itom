@@ -29,6 +29,7 @@
 #include "AIManagerWidget.h"
 #include "fileSystemDockWidget.h"
 #include "breakPointDockWidget.h"
+#include "helpDockWidget.h"
 #include "lastCommandDockWidget.h"
 #include "userManagement.h"
 
@@ -82,6 +83,7 @@ private:
 	
     BreakPointDockWidget *m_breakPointDock;
     LastCommandDockWidget *m_lastCommandDock;
+    HelpDockWidget *m_helpDock;
     WorkspaceDockWidget *m_globalWorkspaceDock;
     WorkspaceDockWidget *m_localWorkspaceDock;
 	CallStackDockWidget *m_callStackDock;
