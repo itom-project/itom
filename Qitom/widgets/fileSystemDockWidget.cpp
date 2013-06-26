@@ -123,7 +123,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
 
     m_pFileSystemModel = new QFileSystemModel(m_pTreeView);
-    //m_pFileSystemModel->setFilter( QDir::AllEntries | QDir::AllDirs );
+    //m_pFileSystemModel->setFilter(QDir::AllEntries | QDir::AllDirs);
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
 
@@ -288,20 +288,20 @@ void FileSystemDockWidget::createActions()
 void FileSystemDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction( m_pActOpenFile->action() );
-    m_pContextMenu->addAction( m_pActExecuteFile->action() );
-    m_pContextMenu->addAction( m_pActLocateOnDisk->action() );
+    m_pContextMenu->addAction(m_pActOpenFile->action());
+    m_pContextMenu->addAction(m_pActExecuteFile->action());
+    m_pContextMenu->addAction(m_pActLocateOnDisk->action());
     m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction( m_pActRenameItem->action() );
-    m_pContextMenu->addAction( m_pActDeleteItems->action() );
+    m_pContextMenu->addAction(m_pActRenameItem->action());
+    m_pContextMenu->addAction(m_pActDeleteItems->action());
     m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction( m_pActCutItems->action() );
-    m_pContextMenu->addAction( m_pActCopyItems->action() );
-    m_pContextMenu->addAction( m_pActPasteItems->action() );
+    m_pContextMenu->addAction(m_pActCutItems->action());
+    m_pContextMenu->addAction(m_pActCopyItems->action());
+    m_pContextMenu->addAction(m_pActPasteItems->action());
     m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction( m_pActMoveCDUp->action() );
-    m_pContextMenu->addAction( m_pActNewDir->action() );
-    m_pContextMenu->addAction( m_pActNewPyFile->action() );
+    m_pContextMenu->addAction(m_pActMoveCDUp->action());
+    m_pContextMenu->addAction(m_pActNewDir->action());
+    m_pContextMenu->addAction(m_pActNewPyFile->action());
 
     m_pFileSystemSettingMenu = new QMenu(tr("settings"), this);
     m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
@@ -446,7 +446,7 @@ void FileSystemDockWidget::fillFilterList()
     int defFilterNumber = 0;
     int cnt = 0;
     QString itomFiles = tr("Itom Files");
-    QString filters = IOHelper::getFileFilters( IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll) );
+    QString filters = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     QStringList fList = filters.split(";;");
     defaultFilterPatterns.clear();
     QRegExp regExp("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
@@ -632,7 +632,7 @@ void FileSystemDockWidget::mnuLocateOnDisk()
             else
             {
                 dirSet.insert(fileInfo.canonicalFilePath());
-                //dirSet.insert( fileInfo.absoluteDir().canonicalPath());
+                //dirSet.insert(fileInfo.absoluteDir().canonicalPath());
             }
         }
     }
@@ -702,7 +702,7 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
     {
         if (!this->m_pFileSystemModel->fileInfo(index).isDir())
         {
-            IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)) );
+            IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
         }
     }
 }
@@ -1124,10 +1124,10 @@ void FileSystemDockWidget::removeActionFromDirList(const int &pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::processError(QProcess::ProcessError /*error*/ )
+void FileSystemDockWidget::processError(QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
-    msgBox.setIcon( QMessageBox::Information );
+    msgBox.setIcon(QMessageBox::Information);
     msgBox.setText("An external process could not be started.");
     msgBox.exec();
 }
@@ -1139,7 +1139,7 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
     if (link.isLocalFile()) //this method has been introduced in Qt 4.8
     {
 #else
-    if (link.scheme().compare( QLatin1String("file"), Qt::CaseInsensitive ) == 0)
+    if (link.scheme().compare(QLatin1String("file"), Qt::CaseInsensitive) == 0)
     {
 #endif
         QString dir = link.toLocalFile();

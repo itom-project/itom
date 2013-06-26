@@ -52,12 +52,16 @@ namespace ito
 
         private:
 			QTreeWidget *m_lastCommandTreeWidget;
+            QMenu* m_pContextMenu;
+            ShortcutAction* m_pActClearList;
 
         signals:
             void runPythonCommand(const QString cmd);
 
         private slots:
             void itemDoubleClicked(QTreeWidgetItem *item, int column);
+            void mnuClearList();
+            void treeWidgetContextMenuRequested(const QPoint &pos);
 
         public slots:
             void addLastCommand(const QString cmd);

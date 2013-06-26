@@ -1955,7 +1955,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2610"/>
+        <location filename="../python/pythonUi.cpp" line="+2645"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2775,12 +2775,12 @@ Type conflict for %1</source>
     <message>
         <location line="+4"/>
         <source>[does not exist]</source>
-        <translation type="unfinished">[existiert nicht]</translation>
+        <translation>[existiert nicht]</translation>
     </message>
     <message>
         <location line="+95"/>
         <source>load python api file</source>
-        <translation type="unfinished">Pyhton API-Dateien laden</translation>
+        <translation>Pyhton API-Dateien laden</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -2815,7 +2815,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>threshold</source>
-        <translation type="unfinished">Schwelle</translation>
+        <translation>Schwelle</translation>
     </message>
     <message>
         <location/>
@@ -2825,37 +2825,37 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>Use fill-up characters</source>
-        <translation type="unfinished">Füllzeichen benutzen</translation>
+        <translation>Füllzeichen benutzen</translation>
     </message>
     <message>
         <location/>
         <source>replace word right of the cursor if entry from list is selected</source>
-        <translation type="unfinished">Ersetze Wörter hinter dem Cursors wenn der Eintrag von der Liste ausgewählt wird</translation>
+        <translation>Ersetze Wörter hinter dem Cursor wenn der Eintrag von der Liste ausgewählt wird</translation>
     </message>
     <message>
         <location/>
         <source>show single</source>
-        <translation type="unfinished">Einzeln anzeigen</translation>
+        <translation>Einzeln anzeigen</translation>
     </message>
     <message>
         <location/>
         <source>Sources for auto-completion</source>
-        <translation type="unfinished">Quelle der Autovervollständigung</translation>
+        <translation>Quellen der Autovervollständigung</translation>
     </message>
     <message>
         <location/>
         <source>Use all available sources</source>
-        <translation type="unfinished">Verwendung aller verfügbaren Quellen</translation>
+        <translation>Alle verfügbaren Quellen nutzen</translation>
     </message>
     <message>
         <location/>
         <source>Use text in the current document as source</source>
-        <translation type="unfinished">Verwendung des Texts im aktuellen Dokument als Quelle</translation>
+        <translation>Den Text im aktuellen Dokument als Quelle nutzen</translation>
     </message>
     <message>
         <location/>
         <source>Use any installed APIs as source</source>
-        <translation type="unfinished">Verwendung irgendwelcher installierten APIs als Quelle </translation>
+        <translation>Jede installierte API als Quelle nutzen</translation>
     </message>
 </context>
 <context>
@@ -2868,27 +2868,27 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>calltips enabled</source>
-        <translation type="unfinished">Vorschläge aktivieren</translation>
+        <translation>Vorschläge aktivieren</translation>
     </message>
     <message>
         <location/>
         <source>number of calltips</source>
-        <translation type="unfinished">Anzahl der Vorschläge</translation>
+        <translation>Anzahl der Vorschläge</translation>
     </message>
     <message>
         <location/>
         <source>Context display options</source>
-        <translation type="unfinished">Kontextanzeige-Optionen</translation>
+        <translation>Optionen der Kontextanzeige</translation>
     </message>
     <message>
         <location/>
         <source>Don&apos;t show context information</source>
-        <translation type="unfinished">Kontextinformationen nicht anzeigen</translation>
+        <translation>Kontextinformationen nicht anzeigen</translation>
     </message>
     <message>
         <location/>
         <source>Show context information, if no prior autocompletion</source>
-        <translation type="unfinished">Nur Kontextinformationen anzeigen wenn die Autovervollständigung nichts liefert</translation>
+        <translation>Nur Kontextinformationen anzeigen wenn die Autovervollständigung nichts liefert</translation>
     </message>
     <message>
         <location/>
@@ -2898,7 +2898,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>A context is any scope (e.g. Python module) prior to the function/method name</source>
-        <translation type="unfinished">Ein Kontext ist jeder Bereich (z. B. Python-Modul) vor dem Namen der Funktion/Methode</translation>
+        <translation>Ein Kontext ist jeder Bereich (z. B. Python-Modul) vor dem Namen der Funktion/Methode</translation>
     </message>
 </context>
 <context>
@@ -4596,6 +4596,14 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
+    <name>ito::LastCommandDockWidget</name>
+    <message>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+132"/>
+        <source>clear list</source>
+        <translation>Liste löschen</translation>
+    </message>
+</context>
+<context>
     <name>ito::MainWindow</name>
     <message>
         <location filename="../widgets/mainWindow.cpp" line="+96"/>
@@ -4618,7 +4626,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+65"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -4711,12 +4719,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-320"/>
+        <location line="-326"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+325"/>
+        <location line="+331"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5595,7 +5603,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+599"/>
+        <location line="+197"/>
+        <source>There exists no object with the given id.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+525"/>
         <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished"></translation>
     </message>

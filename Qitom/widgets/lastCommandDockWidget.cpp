@@ -37,7 +37,8 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
-    m_lastCommandTreeWidget(NULL)
+    m_lastCommandTreeWidget(NULL),
+    m_pActClearList(NULL)
 {
     AbstractDockWidget::init();
 
@@ -78,6 +79,8 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *pare
     m_lastCommandTreeWidget->setItemsExpandable(true);
     m_lastCommandTreeWidget->setExpandsOnDoubleClick(false);
     m_lastCommandTreeWidget->expandAll();
+    m_lastCommandTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_lastCommandTreeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
 
     if (childItem)
     {
@@ -126,11 +129,15 @@ LastCommandDockWidget::~LastCommandDockWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 void LastCommandDockWidget::createActions()
 {
+    m_pActClearList = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("clear list"), this);
+    m_pActClearList->connectTrigger(this, SLOT(mnuClearList()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void LastCommandDockWidget::createMenus()
 {
+    m_pContextMenu = new QMenu(this);
+    m_pContextMenu->addAction(m_pActClearList->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -179,6 +186,18 @@ void LastCommandDockWidget::itemDoubleClicked(QTreeWidgetItem *item, int column)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void LastCommandDockWidget::mnuClearList()
+{
+    m_lastCommandTreeWidget->clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void LastCommandDockWidget::treeWidgetContextMenuRequested(const QPoint &pos)
+{
+    updateActions();
+    m_pContextMenu->exec(pos + m_lastCommandTreeWidget->mapToGlobal(m_lastCommandTreeWidget->pos()));
+}
 
 
 } //end namespace ito
