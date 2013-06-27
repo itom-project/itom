@@ -144,6 +144,10 @@ if(EXISTS "${OpenCV_DIR}")
 
 	set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
 	
+    #IF(EXISTS "${OpenCV_BIN_DIR}/release/" AND "${OpenCV_BIN_DIR}/debug/"}
+    #    set(OpenCV_BIN_RELEASE_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
+    #    set(OpenCV_BIN_DEBUG_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
+    #ENDIF
 #	message(STATUS "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR}; OpenCV_DIR: ${OpenCV_DIR}")
 	
 	## Loop over each components

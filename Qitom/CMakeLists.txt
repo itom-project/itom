@@ -509,8 +509,18 @@ FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
 
 #ADD a batch file for itom-release 
-if(MSVC)
+IF(MSVC)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
+    CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
+ENDIF (MSVC)
+
+#ADD relevant and bug sensitive path to visual studio debug enviroment via qitom.vcxproj.user
+IF(MSVC)
+    IF(BUILD_TARGET64)
+        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.x64 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
+    ELSE(BUILD_TARGET64)
+        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.win32 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
+    ENDIF(BUILD_TARGET64)
 ENDIF (MSVC)
 
 #Configure a RC file for MS visual studio to add version information in explorer to exe file
