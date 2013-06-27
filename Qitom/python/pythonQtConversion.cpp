@@ -23,6 +23,7 @@
 #include "pythonQtConversion.h"
 
 #include "pythonUi.h"
+#include "pythonCommon.h"
 
 #include <qstringlist.h>
 #include <qurl.h>
@@ -1812,6 +1813,15 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     if(QMetaType::isRegistered(type))
     {
         const char *name = QMetaType::typeName(type);
+        if(strcmp(name, "ito::RetVal") == 0)
+        {
+            ito::RetVal *v = (ito::RetVal*)data;
+            if(ito::PythonCommon::transformRetValToPyException(*v))
+            {
+                Py_RETURN_NONE;
+            }
+            return NULL;
+        }
 		if(strcmp(name, "ito::DataObject") == 0)
         {
             return DataObjectToPyObject( *((ito::DataObject*)data) );
