@@ -199,6 +199,34 @@ void benchmarkTest4()
     //int i=1;
 };
 
+void benchmarkTest5()
+{
+    ito::DataObject *do1 = NULL; //new ito::DataObject(10000,100,100,ito::tFloat32);
+    ito::DataObject *do2 = NULL;//new ito::DataObject(*do1);
+
+    qDebug("benchmarkTest5");
+    int64 start, ende;
+    double freq = cv::getTickFrequency();
+    size_t j = 0;
+
+    start = cv::getTickCount();
+    for (size_t i = 0 ; i < 1000000; i++)
+    {
+        j += i;
+    }
+    ende = cv::getTickCount();
+    qDebug() << "time: " << (ende-start)/freq;
+
+    j = 0;
+    start = cv::getTickCount();
+    for (size_t i = 0 ; i < 1000000; ++i)
+    {
+        j += i;
+    }
+    ende = cv::getTickCount();
+    qDebug() << "time: " << (ende-start)/freq;
+};
+
 
 //#include "memoryCheck/setDebugNew.h"
 //#include "memoryCheck/reportingHook.h"
@@ -276,6 +304,7 @@ int main(int argc, char *argv[])
     //benchmarkTest2();
     //benchmarkTest3();
     //benchmarkTest4();
+    //benchmarkTest5();
 
     //QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
     QApplication a(argc, argv);

@@ -1164,7 +1164,7 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
     {
         if (size < 0 || size >= static_cast<Py_ssize_t>(self->data->size()))
         {
-            PyErr_Format(PyExc_RuntimeError, "index must be in range [%d,%d]", 0, self->data->size()-1);
+            PyErr_Format(PyExc_IndexError, "index must be in range [%d,%d]", 0, self->data->size()-1); //it is important to have an index or stopIteration exception here, such that "for i in pointCloud:" will stop
             return NULL;
         }
 
