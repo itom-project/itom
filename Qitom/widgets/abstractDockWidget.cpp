@@ -756,8 +756,9 @@ void AbstractDockWidget::raiseAndActivate()
     else if(m_floatingStyle == floatingWindow)
     {
         raise();
-        m_pWindow->raise();
-        m_pWindow->activateWindow();
+        m_pWindow->setWindowState( (m_pWindow->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+        m_pWindow->raise(); //for MacOS
+        m_pWindow->activateWindow(); //for Windows
     }
     else
     {

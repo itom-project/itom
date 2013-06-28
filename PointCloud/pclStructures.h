@@ -347,6 +347,8 @@ public:
     ~PCLPolygonMesh();
 
     inline pcl::PolygonMesh::Ptr polygonMesh() { return m_polygonMesh; }
+    inline pcl::PolygonMesh::ConstPtr polygonMesh() const { return m_polygonMesh; }
+
     inline void setPolygonMesh(pcl::PolygonMesh::Ptr &mesh) { m_polygonMesh = mesh; }
     PCLPolygonMesh & operator= (const PCLPolygonMesh &copy);
 
