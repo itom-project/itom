@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "operatorTest/*.CompareEQ_test"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	::testing::FLAGS_gtest_filter = "operatorTest/*.divTest"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
 	//::testing::FLAGS_gtest_filter = "makeContinuousFunc_test/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     

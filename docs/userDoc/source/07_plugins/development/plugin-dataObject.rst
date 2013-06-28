@@ -575,16 +575,16 @@ Follwing is the explanation of each possible operator to work with data object.
 **Add Operator '+'**
 +++++++++++++++++++++++++++++++
 
-If mat1, mat2 and mat3 are data objects of same size and same type, then "+" operator can be used in the following way. 
+If mat1, mat2 and mat3 are data objects of same size and same type, then "+" operator can be used to perform elementwise addition in the following way. 
 
 *mat3 = mat1 + mat2;*
 
-"+" operator performs elementwise addition operation on mat1 and mat2 and returns a resultant data object. This operator returns the resultant data object of same size and type needs to be stored in some other data object of same size and type (mat3) as shown in the statement above.
+"+" operator performs elementwise addition on mat1 and mat2 and returns a resultant data object. This operator returns the resultant data object of same size and type which needs to be stored in some other data object of same size and type (mat3) as shown in the statement above.
 
 **Add and Assign Operator '+='**
 +++++++++++++++++++++++++++++++++++++++++++
 
-If mat1 and mat2 are data objects of same size and same type, then "+=" operator can be used in the following way. 
+If mat1 and mat2 are data objects of same size and same type, then "+=" operator can be used to perform elementwise add and assign operation in the following way. 
 
 *mat2 += mat1;*
 
@@ -593,201 +593,309 @@ If mat1 and mat2 are data objects of same size and same type, then "+=" operator
 **Subtract Operator '-'** 
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
+If mat1, mat2 and mat3 are data objects of same size and type, then "-" operator can be used to perform elementwise subtraction between these data objects in the following way.
+
 *mat3 = mat1 - mat2;*
 
-Subtract and Assign Operator '-='
+In the statement above, mat2 is subtracted from mat1 elementwise and the resultant data object is stored in mat3. 
+
+**Subtract and Assign Operator '-='**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+If mat1 and mat2 are data objects of same size and type, then "-=" operator can be used to perform elementwise subtraction between these data objects in the following way.
+
 *mat2 -= mat1;*
+
+In the statement above, mat1 is subtracted from mat2 elementwise and the resultant data object is stored back to mat2. 
  
-Multiplication with Constant Factor '*'
+**Multiplication with Constant Factor '*'**
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat2 = mat1 * 7;*
+Operator "*" is overloaded to perform multiplication of a data object with constant factor in the following way. 
 
-Multiplication with Constant Factor and Assign '*=' 
+*mat2 = mat1 * x;*
+
+Here, the data type of mat2 must proper enough to store the correct resultant data object obtained from multiplication of each element of mat1 with constant factor **"x"**.
+
+**Multiplication with Constant Factor and Assign '*='**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat2 *= 7;*
+One can multiply all elements of a data object with a constant factor and assign the result back to the same data object as shown in the following statement. 
 
-Cross Multiplication Operator '*'
+*mat1 *= x;*
+
+Here each element of the data object **mat1** gets multiplied with a constant factor **"x"** and the result is stored back into data object mat1.
+
+**Cross Multiplication Operator '*'**
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+One can use the operator "*" to perform a cross multiplication between two data objects with adequate dimensions in the following way.
 
 *crossMul_mat = mat1 * mat2;*
 
-Dot Multiplication Operator 'mul'
+In the statement above, operator **"*"** is used to perform cross multiplication between data objects mat1 and mat2. If sizes of mat1 and mat2 are axb and bxc respectively, then the size of crossMul_mat should be declared axc according to the principle of cross multiplication of matrices.
+
+.. note::
+
+	This operator is defined only for "float32" and "float64" datatypes.
+
+**Dot Multiplication Operator 'mul'**
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+With the use of "mul" operator, one can perform dot product (elementwise multiplication) between two data objects in the following way.
 
 *mul_mat=mat1.mul(mat2);*
 
-Division Operator 'div'
+Here, "mul" operator takes two data objects mat1 and mat2 of same type and same size as arguments and perform dot product between them. The result of this dot product is saved in data object of same size mul_mat. Here, the size of mul_mat should be big enough to store correct result of dot product. 
+
+**Division Operator 'div'**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator is used to perform elementwise division between two data objects in the following way.
 
 *div_mat = mat1.div(mat2);*
 
-Compare Operators
+Here, data object **mat1** is divided from data object **mat2** elementwise using **"div"** operator and the result is stored in data object **div_mat**. Sizes and data types of mat1, mat2 and mat2 should be same.
+
+.. note::
+	
+	**"div"** operator can not be used to calculate inverse matrix. 
+
+**Compare Operators**
 ......................................
 
-== (Equal to)  (Elementwise operator) 
+Compare operations are frequently needed while working with data objects. Keeping this in mind, we have developed some overloaded compare operators as well which we will discuss in this section.
+
+**== (Equal to)  (Elementwise operator)**
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d == mat2_3d;*
+This operator compares the element values of two different data objects on respective positions and retunrs a resultant data object with **0s** and **1s** according to the comparision result.
+If two values on the respective positions match in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
+The way to use this **== (Equal to)** operator is shown as follows.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d and mat2_3d are equal, otherwise
-'0' where the values are unequal.
+*mat3 = mat1 == mat2;*
 
-!= (unequal to) (Elementwise operator) 
+Here, a comparision between data objects mat1 and mat2 is done with **==** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are equal, otherwise '0' where the values are unequal.
+Sizes of mat1, mat2 and mat3 should be equal.
+
+**!= (unEqual to) (Elementwise operator)** 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d != mat2_3d;*
+This operator compares the element values of two different data objects on respective positions and retunrs a resultant data object with **0s** and **1s** according to the comparision result.
+If two values on the respective positions differ in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
+The way to use this **!= (unEqual to)** operator is shown as follows.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d and mat2_3d are unequal, otherwise
-'0' where the values are equal.
+*mat3 = mat1 != mat2;*
 
-< (lower than) (Elementwise operator) 
+Here, a comparision between data objects mat1 and mat2 is done with **!=** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are unequal, otherwise '0' where the values are equal.
+Sizes of mat1, mat2 and mat3 should be equal.
+
+**< (lower than) (Elementwise operator)**
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d < mat2_3d;*
+This operator performs "lower than" comparision operation between the element values of two data objects. The way to perform this comparision is shown in the following statement.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d are lower than the values in mat2_3d are unequal, otherwise
-'0' where this condition doesn't satisfy.
+*mat3 = mat1 < mat2;*
 
-<= (lower or equal to) (Elementwise operator) 
+In the statement above, elements of **mat1 are** compared with elements of mat2 for **lower than** operation with use of **<** operator. The resultant data object **mat3** contains **'1'** at the postions where the element values in data object mat1 are lower than those of mat2 at respective positions, otherwise it containes **'0'** where this condition doesn't satisfy.
+Sizes of all three data objects mat1, mat2 and mat3 should be the same.
+
+**<= (lower or equal to) (Elementwise operator)** 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d <= mat2_3d;*
+This operator compares two data objects and helps us to find out which elements in one data object are **"lower or equal to"** the respective elements in the other data object in the following way.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d are lower than or equal to the values in mat2_3d are unequal, otherwise
-'0' where this condition doesn't satisfy.
+*mat3 = mat1 <= mat2;*
 
-> (bigger than) (Elementwise operator) 
+Here, **"<="** operator compares data object **mat1** with **mat2** and generates a resultant data object mat3 such as, mat3 contains **1s** at the positions where elements in **mat1** are lower or equal to the respective elements in **mat2**, otherwise contains **0s** where the condition doesn't satisfy.
+Sizes of mat1, mat2 and mat3 should be equal.
+
+**> (bigger than) (Elementwise operator)**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d > mat2_3d;*
+With the use of this over loaded operator, one can easily find out at which positions the values of elements in one data object are **bigger than** the values of the other data object in the following way.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d are bigger than the values in mat2_3d are unequal, otherwise
-'0' where this condition doesn't satisfy.
+*mat3 = mat1 > mat2;*
 
->= (bigger or equal to) (Elementwise operator) 
+Here in the above statement, comparision operation between **mat1** and **mat2** is done with **">"** operator and the final result is stored in data object **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are bigger than the element values on the respective postions in **mat2**.
+Data sizes of mat1, mat2 and mat3 should be the same for the successful comparision with this operator.
+
+**>= (bigger or equal to) (Elementwise operator)**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-*mat3_3d = mat1_3d >= mat2_3d;*
+This operator is used to find out if the element values of one data objects are **bigger or equal to** the element values of the other data object.
 
-mat3_3d contains '1' at the positions where the values in mat1_3d are bigger than or equal to the values in mat2_3d are unequal, otherwise
-'0' where this condition doesn't satisfy.
+Syntax to use this operator with data objects is shown below.
 
-Shift Operators
+*mat3 = mat1 >= mat2;*
+
+As shown above, element values of **mat1** are compared with the element values of **mat2** and the result is stored in **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are **bigger or equal to** the element values in **mat2**, otherwise contains **0s** at the positions where the condition doesn't satisfy.
+Sizes of mat1, mat2 and mat3 should be equal.
+
+**Shift Operators**
 ....................................
 
-<< (shift left) 
+Shift operators play a significant role during some arithmatic operations (i.e. division/multiplication by 2), bit level calculations, etc. With the over loading of some shift operators to let them be used for data objects, many matrix calculations can be made much easier. 
+We will go through such over loaded shift operators in this section.
+
+**<< (shift left)**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+**<<** or in words **"Shift Left"** operator is overloaded to work with data objects. It shifts the element values of the data object at the bit level by a required amount on left.
 
 Syntax to use this operator with data objects is shown below.
 
-*mat3_1d = mat1_1d << 'x';*
+*mat2 = mat1 << 'x';*
 
 Here **'x'** is the Shiftbits number.
-The values of the elements in mat1_1d are shifted left by 'x' number of times and the resultant data object is stored in mat3_1d. Data type of the Shiftbits 'x' is const unsigned int.  
+The values of the elements in mat1 are shifted left by 'x' number of times and the resultant data object is stored in mat2d. Data type of the Shiftbits 'x' is const unsigned int.  
 
-<<= (shift left and assign) 
+**<<= (shift left and assign)** 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator is used to **shift left** the element values on a data object at a bit level and **assign back** these values to the same data object.
 
 Syntax to use this operator with data objects is shown below.
 
-*mat1_1d <<= 'x';*
+*mat1 <<= 'x';*
 
 Here 'x' is the Shiftbits number.
-The values of the elements in mat1_1d are shifted left by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
+The values of the elements in mat1 are shifted left by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
 
->> (shift right) 
+**>> (shift right)**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator is used to **shift right** the elements of a data object at a bit level. As a result, this operation returns a data object with shifted element values which needs to be stored in some data object with same size and type.
 
 Syntax to use this operator with data objects is shown below.
 
-*mat3_1d = mat1_1d >> 'x';*
+*mat2 = mat1 >> 'x';*
 
 Here 'x' is the Shiftbits number.
-The values of the elements in mat1_1d are shifted right by 'x' number of times and the resultant data object is stored in mat3_1d. Data type of the Shiftbits 'x' is const unsigned int.  
+The values of the elements in mat1 are shifted right by 'x' number of times and the resultant data object is stored in mat2. Data type of the Shiftbits 'x' is const unsigned int.  
 
->>= (shift right and assign) 
+**>>= (shift right and assign)**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator is used to **shift right** the elements of a data object at a bit level and **assign back** the shifted values to the same data object.
 
 Syntax to use this operator with data objects is shown below.
 
-*mat1_1d >>= 'x';*
+*mat1 >>= 'x';*
 
 Here 'x' is the Shiftbits number.
-The values of the elements in mat1_1d are shifted right by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
+The values of the elements in mat1are shifted right by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
 
-Bitwise Operations
+**Bitwise Operations**
 ............................................
 
-**'&'** (Bitwise AND) Operator
+Bitwise operators play important role in logical operations such as AND, OR and NOT. In this section, some of such over loaded logical operators for data objects are described. 
+
+**'&' (Bitwise AND) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator performs a **bitwise AND** opearation between the elements of two data objects. 
 
 Syntax to use this operator with data objects is shown below.
 
 *d3 = d1 & d2 ;* 
 
-With the use of **'&'** operator, elementwise AND operation occurs between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
+As shown in the statement above, with the use of **'&'** operator, **elementwise AND** operation occurs at the bit level between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
 
 .. note:: 
 	
 	Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
 
-"|" (Bitwise OR) Operator
+**"|" (Bitwise OR) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator performs a **bitwise OR** operation between the elements of two data objects.
 
 Syntax to use this operator with data objects is shown below.
 
 *d3 = d1 | d2 ;* 
 
-With the use of **'|'** operator, elementwise OR operation occurs between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
+With the use of **'|'** operator, **elementwise OR** operation occurs at the bit level between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
 
 .. note:: 
 	
 	Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
 
-"^" (Bitwise NOT) Operator
+**"^" (Bitwise NOT) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This operator performs a **bitwise NOT** operation between the elements of two data objects.
 
 Syntax to use this operator with data objects is shown below.
 
 *d3 = d1 ^ d2 ;* 
 
-With the use of **'^'** operator, elementwise NOT operation occurs between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
+With the use of **'^'** operator, **elementwise NOT** operation at the bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
 
 .. note:: 
 	
 	Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
 
-"&=" (Bitwise AND and Assign) Operator
+**"&=" (Bitwise AND and Assign) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
+This operator performs a **bitwise AND** operation between the elements of two data objects and **assigns back** the result into the first data object. 
+	
+Syntax to use this operator with data objects is given below.	
 	
 *d2 &= d1;*
 
-With the use of **'&='** operator, elementwise AND operation occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
+With the use of **'&='** operator, **elementwise AND** operation occurs at bit level between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 back.
 
-"|=" (Bitwise OR and Assign) Operator
+.. note:: 
+	
+	Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
+	
+**"|=" (Bitwise OR and Assign) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
+This operator performs a **bitwise OR** operation between the elements of two data objects and **assigns back** the result into the first data objects.	
+	
+Syntax to use this operator with data objects is given below.
 	
 *d2 |= d1;*
 
-With the use of **'|='** operator, elementwise OR operation occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
+With the use of **'|='** operator, **elementwise OR** operation  at bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
 
-"^=" (Bitwise NOT and Assign) Operator
+.. note:: 
+	
+	Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
+
+**"^=" (Bitwise NOT and Assign) Operator**
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
+This operator performs a **bitwise NOT** operation between the elements of two data objects and **assign back** the result into the first data object.
+	
+Syntax to use this operator with data objects is given below.	
 	
 *d2 ^= d1;*
 
-With the use of **'^='** operator, elementwise NOT operation occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
+With the use of **'^='** operator, **elementwise NOT** operation at bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
 
-Combination of Different Operators
+.. note:: 
+	
+	Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
+
+**Combination of Different Operators**
 .......................................
 
 Different operators (explained above) can be used in different possible combinations with data objects for speedy calculations.
 
-*d4 = d1 + d2 - d3;*
+Some of the examples of such combinations are shown below.
+
+.. code-block:: c++
+    :linenos:
+
+	d4 = d1 + d2 - d3;
+	d3 = (d1 | d2).div((d1 << 1) + d1);
+	d4= (d1 & d2).mul(d3 >> 2);
+	
+With the close observation of the example statements above, one can get an idea on how to use these operators in different combinations to get the desired operation done.
 
 .. note::
     
