@@ -137,7 +137,6 @@ ScriptDockWidget::~ScriptDockWidget()
     DELETE_AND_SET_NULL(m_pVBox);
     DELETE_AND_SET_NULL(m_pCenterWidget);
     DELETE_AND_SET_NULL(m_pDialogReplace);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -305,7 +304,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
         }
     }
 
-    for (int i = 0; i < m_tab->count();i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         sew = getEditorByIndex(i);
         if ((!sew->hasNoFilename() || !ignoreNewScripts) && i != excludeIndex)
@@ -381,10 +380,10 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     m_tab->setTabToolTip(m_tab->count()-1, toolTip);
     m_tab->setTabText(m_tab->count()-1,name);
     
-
     connect(editorWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     connect(editorWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
-    connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*,bool)));
+    connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
+	connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     updateEditorActions();
     updatePythonActions();
@@ -412,7 +411,8 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     m_tab->removeTab(index);
     disconnect(removedWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     disconnect(removedWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
-    disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*,bool)));
+    disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
+	disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     updateEditorActions();
     updatePythonActions();
@@ -552,7 +552,10 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
 */
 RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
 {
-    if (index < 0 || index >= m_tab->count()) return RetVal(retError);
+    if (index < 0 || index >= m_tab->count())
+    {
+        return RetVal(retError);
+    }
     RetVal retValue(retOk);
 
     if (saveFirst)
@@ -581,10 +584,16 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
 */
 RetVal ScriptDockWidget::saveTab(int index, bool forceSaveAs, bool askFirst)
 {
-    if (index < 0 || index >= m_tab->count()) return RetVal(retError);
+    if (index < 0 || index >= m_tab->count())
+    {
+        return RetVal(retError);
+    }
 
     ScriptEditorWidget* sew = getEditorByIndex(index);
-    if (sew == NULL) return RetVal(retError);
+    if (sew == NULL)
+    {
+        return RetVal(retError);
+    }
 
     if (forceSaveAs)
     {
@@ -625,7 +634,10 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
 */
 int ScriptDockWidget::getIndexByEditor(ScriptEditorWidget* sew) const
 {
-    if (sew == NULL) return -1;
+    if (sew == NULL)
+    {
+        return -1;
+    }
     for (int i = 0; i < m_tab->count() ; i++)
     {
         if (getEditorByIndex(i) == sew)
@@ -710,6 +722,10 @@ void ScriptDockWidget::updateEditorActions()
     m_replaceTextExprAction->setEnabled(m_actTabIndex > -1);
     m_gotoAction->setEnabled(m_actTabIndex > -1);
     m_openIconBrowser->setEnabled(m_actTabIndex > -1);
+    m_bookmarkToggle->setEnabled(sew != NULL);
+    m_bookmarkNext->setEnabled(sew != NULL && sew->isBookmarked());
+    m_bookmarkPrevious->setEnabled(sew != NULL && sew->isBookmarked());
+    m_bookmarkClearAll->setEnabled(sew != NULL && sew->isBookmarked());
 
     m_scriptRunSelectionAction->setEnabled(sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
 
@@ -887,6 +903,18 @@ void ScriptDockWidget::createActions()
     m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G","QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_gotoAction->connectTrigger(this, SLOT(mnuGoto()));
 
+    m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&toggle bookmark"), this);
+    m_bookmarkToggle->connectTrigger(this, SLOT(mnuToggleBookmark()));
+
+    m_bookmarkNext = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("&next bookmark"), this);
+    m_bookmarkNext->connectTrigger(this, SLOT(mnuGotoNextBookmark()));
+
+    m_bookmarkPrevious = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("&previous bookmark"), this);
+    m_bookmarkPrevious->connectTrigger(this, SLOT(mnuGotoPreviousBookmark()));
+
+    m_bookmarkClearAll = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("&clear all bookmarks"), this);
+    m_bookmarkClearAll->connectTrigger(this, SLOT(mnuClearAllBookmarks()));
+
     updatePythonActions();
     updateTabContextActions();
     updateEditorActions();
@@ -933,6 +961,15 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_tabCloseAction->action());
     m_fileMenu->addAction(m_tabCloseAllAction->action());
 
+//    m_viewMenu = getMenuBar()->addMenu(tr("&View"));
+//    m_viewMenu->addAction();
+/*	QMenu *dockWidgets = createPopupMenu();
+    if (dockWidgets)
+    {
+        dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
+	    dockWidgets->menuAction()->setText(tr("Toolboxes"));
+	    m_viewMenu->addMenu(dockWidgets);
+    }*/
 
     m_editMenu = getMenuBar()->addMenu(tr("&Edit"));
     m_editMenu->addAction(m_undoAction->action());
@@ -951,6 +988,12 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_replaceTextExprAction->action());
     m_editMenu->addAction(m_gotoAction->action());
     m_editMenu->addAction(m_openIconBrowser->action());
+    m_editMenu->addSeparator();
+    m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("bookmark"));
+    m_bookmark->addAction(m_bookmarkToggle->action());
+    m_bookmark->addAction(m_bookmarkNext->action());
+    m_bookmark->addAction(m_bookmarkPrevious->action());
+    m_bookmark->addAction(m_bookmarkClearAll->action());
 
     m_scriptMenu = getMenuBar()->addMenu(tr("&Script"));
     m_scriptMenu->addAction(m_scriptRunAction->action());
@@ -993,31 +1036,41 @@ void ScriptDockWidget::createMenus()
 //! create toolbars
 void ScriptDockWidget::createToolBars()
 {
-    m_mainToolBar = new QToolBar(tr("script editor"),this);
-    addToolBar(m_mainToolBar, "mainToolBar");
+    m_fileToolBar = new QToolBar(tr("file toolbar"), this);
+    addToolBar(m_fileToolBar, "fileToolBar");
+    m_fileToolBar->addAction(m_newScriptAction->action());
+    m_fileToolBar->addAction(m_openScriptAction->action());
+    m_fileToolBar->addAction(m_saveScriptAction->action());
+    m_fileToolBar->addAction(m_saveScriptAsAction->action());
+    m_fileToolBar->addAction(m_saveAllScriptsAction->action());
 
-    m_mainToolBar->addAction(m_newScriptAction->action());
-    m_mainToolBar->addAction(m_openScriptAction->action());
-    m_mainToolBar->addAction(m_saveScriptAction->action());
-    m_mainToolBar->addAction(m_saveScriptAsAction->action());
-    m_mainToolBar->addAction(m_saveAllScriptsAction->action());
-    m_mainToolBar->addSeparator();
-    m_mainToolBar->addAction(m_cutAction->action());
-    m_mainToolBar->addAction(m_copyAction->action());
-    m_mainToolBar->addAction(m_pasteAction->action());
-    m_mainToolBar->addAction(m_undoAction->action());
-    m_mainToolBar->addAction(m_redoAction->action());
-    m_mainToolBar->addAction(m_findTextExprAction->action());
-    m_mainToolBar->addAction(m_replaceTextExprAction->action());
-    m_mainToolBar->addSeparator();
-    m_mainToolBar->addAction(m_scriptRunAction->action());
-//    m_mainToolBar->addAction(m_scriptRunSelectionAction->action());
-    m_mainToolBar->addAction(m_scriptDebugAction->action());
-    m_mainToolBar->addAction(m_scriptStopAction->action());
-    m_mainToolBar->addAction(m_scriptContinueAction->action());
-    m_mainToolBar->addAction(m_scriptStepAction->action());
-    m_mainToolBar->addAction(m_scriptStepOverAction->action());
-    m_mainToolBar->addAction(m_scriptStepOutAction->action());
+    m_editToolBar = new QToolBar(tr("edit toolbar"), this);
+    addToolBar(m_editToolBar, "editToolBar");
+    m_editToolBar->addAction(m_cutAction->action());
+    m_editToolBar->addAction(m_copyAction->action());
+    m_editToolBar->addAction(m_pasteAction->action());
+    m_editToolBar->addAction(m_undoAction->action());
+    m_editToolBar->addAction(m_redoAction->action());
+    m_editToolBar->addAction(m_findTextExprAction->action());
+    m_editToolBar->addAction(m_replaceTextExprAction->action());
+
+    m_scriptToolBar = new QToolBar(tr("script toolbar"), this);
+    addToolBar(m_scriptToolBar, "scriptToolBar");
+    m_scriptToolBar->addAction(m_scriptRunAction->action());
+//    m_scriptToolBar->addAction(m_scriptRunSelectionAction->action());
+    m_scriptToolBar->addAction(m_scriptDebugAction->action());
+    m_scriptToolBar->addAction(m_scriptStopAction->action());
+    m_scriptToolBar->addAction(m_scriptContinueAction->action());
+    m_scriptToolBar->addAction(m_scriptStepAction->action());
+    m_scriptToolBar->addAction(m_scriptStepOverAction->action());
+    m_scriptToolBar->addAction(m_scriptStepOutAction->action());
+
+    m_bookmarkToolBar = new QToolBar(tr("bookmark toolbar"), this);
+    addToolBar(m_bookmarkToolBar, "bookmarkToolBar");
+    m_bookmarkToolBar->addAction(m_bookmarkToggle->action());
+    m_bookmarkToolBar->addAction(m_bookmarkNext->action());
+    m_bookmarkToolBar->addAction(m_bookmarkPrevious->action());
+    m_bookmarkToolBar->addAction(m_bookmarkClearAll->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1237,7 +1290,10 @@ void ScriptDockWidget::mnuSaveAllScripts()
 void ScriptDockWidget::mnuCut()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuCut();
+    if (sew != NULL)
+    {
+        sew->menuCut();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1245,7 +1301,10 @@ void ScriptDockWidget::mnuCut()
 void ScriptDockWidget::mnuCopy()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuCopy();
+    if (sew != NULL)
+    {
+        sew->menuCopy();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1253,7 +1312,10 @@ void ScriptDockWidget::mnuCopy()
 void ScriptDockWidget::mnuPaste()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuPaste();
+    if (sew != NULL)
+    {
+        sew->menuPaste();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1277,7 +1339,10 @@ void ScriptDockWidget::mnuRedo()
 void ScriptDockWidget::mnuComment()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuComment();
+    if (sew != NULL)
+    {
+        sew->menuComment();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1285,7 +1350,10 @@ void ScriptDockWidget::mnuComment()
 void ScriptDockWidget::mnuUncomment()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuUncomment();
+    if (sew != NULL)
+    {
+        sew->menuUncomment();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1293,7 +1361,10 @@ void ScriptDockWidget::mnuUncomment()
 void ScriptDockWidget::mnuIndent()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuIndent();
+    if (sew != NULL)
+    {
+        sew->menuIndent();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1301,7 +1372,10 @@ void ScriptDockWidget::mnuIndent()
 void ScriptDockWidget::mnuUnindent()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew!=NULL) sew->menuUnindent();
+    if (sew != NULL)
+    {
+        sew->menuUnindent();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1515,6 +1589,50 @@ void ScriptDockWidget::mnuGoto()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuToggleBookmark()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuToggleBookmark();
+        updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuClearAllBookmarks()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuClearAllBookmarks();
+        updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuGotoNextBookmark()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuGotoNextBookmark();
+        updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuGotoPreviousBookmark()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuGotoPreviousBookmark();
+        updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! this method is invoked if this ScriptDockWidget should be closed.
 /*!
     First, tries to save every script. If this process is successfully executed, the close event is accepted in order to close this instance,
@@ -1612,6 +1730,12 @@ void ScriptDockWidget::insertIconBrowserText(QString iconLink)
         sew->getCursorPosition(&line, &index);
         sew->setCursorPosition(line, index + iconLink.length());
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::editorMarginChanged()
+{
+    updateEditorActions();
 }
 
 } //end namespace ito

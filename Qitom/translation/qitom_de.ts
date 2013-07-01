@@ -2356,7 +2356,7 @@ Type conflict for %1</source>
 <context>
     <name>ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+61"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+62"/>
         <source>Untitled%1</source>
         <translation>Unbenannt%1</translation>
     </message>
@@ -2387,12 +2387,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+130"/>
+        <location line="+136"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-129"/>
+        <location line="-135"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -2462,12 +2462,12 @@ Type conflict for %1</source>
         <translation>Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+115"/>
         <source>&amp;enable breakpoint</source>
         <translation>Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+445"/>
+        <location line="+448"/>
         <location line="+71"/>
         <location line="+37"/>
         <source>unsaved changes</source>
@@ -2490,12 +2490,12 @@ Type conflict for %1</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location line="-573"/>
+        <location line="-582"/>
         <source>run &amp;selection</source>
         <translation>Auswahl &amp;starten</translation>
     </message>
     <message>
-        <location line="+573"/>
+        <location line="+582"/>
         <source>file %1 could not be loaded</source>
         <translation>Datei %1 konnte nicht geladen werden</translation>
     </message>
@@ -2517,7 +2517,7 @@ Type conflict for %1</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+559"/>
+        <location line="+560"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -3448,7 +3448,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+245"/>
+        <location line="+51"/>
+        <source>docking toolbar</source>
+        <translation type="unfinished">Symbolleiste Fensterandocken</translation>
+    </message>
+    <message>
+        <location line="+194"/>
         <source>toolbar &apos;%1&apos; is already available</source>
         <translation type="unfinished">Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
@@ -4659,7 +4664,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+234"/>
+        <location line="+233"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4719,12 +4724,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-326"/>
+        <location line="-325"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+331"/>
+        <location line="+330"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5097,7 +5102,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+205"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+204"/>
         <source>file open</source>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
@@ -5127,7 +5132,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+494"/>
+        <location line="+511"/>
         <source>move left</source>
         <translation type="unfinished">Nach Links verschieben</translation>
     </message>
@@ -5341,10 +5346,55 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Icon-&amp;Suche...</translation>
     </message>
     <message>
-        <location line="+679"/>
+        <location line="+6"/>
+        <source>&amp;toggle bookmark</source>
+        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;next bookmark</source>
+        <translation>&amp;Nächstes Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;previous bookmark</source>
+        <translation>&amp;Vorheriges Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;clear all bookmarks</source>
+        <translation>Alle Lesezeichen &amp;löschen</translation>
+    </message>
+    <message>
+        <location line="+77"/>
+        <source>bookmark</source>
+        <translation>Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>file toolbar</source>
+        <translation>Symbolleiste Datei</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>edit toolbar</source>
+        <translation>Symbolleiste Bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>script toolbar</source>
+        <translation>Symbolleiste Skript</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>bookmark toolbar</source>
+        <translation>Symbolleiste Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+613"/>
         <location line="+38"/>
         <source>find and replace</source>
-        <translation type="unfinished">Suchen und Ersetzen</translation>
+        <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
         <location line="-38"/>
@@ -5357,7 +5407,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-822"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5385,17 +5435,17 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+50"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Datei</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+21"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+24"/>
         <source>&amp;Script</source>
         <translation type="unfinished">&amp;Skript</translation>
     </message>
@@ -5405,9 +5455,8 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+30"/>
         <source>script editor</source>
-        <translation type="unfinished">Skript-Editor</translation>
+        <translation type="obsolete">Skript-Editor</translation>
     </message>
 </context>
 <context>

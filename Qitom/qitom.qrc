@@ -66,6 +66,7 @@
         <file>icons/bookmarkNext.png</file>
         <file>icons/bookmarkPrevious.png</file>
         <file>icons/bookmarkToggle.png</file>
+        <file>icons/bookmarkClearAll.png</file>
     </qresource>
     <qresource prefix="/editor">
         <file>icons/editBookmarks.png</file>

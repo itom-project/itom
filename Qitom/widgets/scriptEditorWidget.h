@@ -58,6 +58,7 @@ public:
     inline QString getFilename() const {return filename; }
     inline bool hasNoFilename() const { return filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
+    inline bool isBookmarked() const { return bookmarkHandles.size() > 0; }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
 
     RetVal setCursorPosAndEnsureVisible(int line);
@@ -71,7 +72,6 @@ protected:
     virtual void loadSettings();
 
 private:
-
     enum msgType
     {
         msgReturnInfo,
@@ -157,7 +157,7 @@ signals:
     void pythonRunSelection(QString selectionText);
     void pythonDebugFile(QString filename);
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
-    
+    void marginChanged();    
 
 public slots:
     void menuToggleBookmark();

@@ -58,7 +58,7 @@ public:
     inline int getTabCount() const { return m_tab->count(); };      /*!<  returns number of tabs */
     bool containsNewScripts() const;
 
-    RetVal appendEditor( ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
+    RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(QString filename, int line = -1);
 	bool activeTabEnsureLineVisible(int lineNr);
@@ -128,14 +128,23 @@ private:
     ShortcutAction *m_replaceTextExprAction;
     ShortcutAction *m_gotoAction;
     ShortcutAction *m_openIconBrowser;
+    ShortcutAction *m_bookmarkToggle;
+    ShortcutAction *m_bookmarkNext;
+    ShortcutAction *m_bookmarkPrevious;
+    ShortcutAction *m_bookmarkClearAll;
 
-    QMenu* m_tabContextMenu;
-    QMenu* m_fileMenu;
-    QMenu* m_editMenu;
-    QMenu* m_scriptMenu;
-    QMenu* m_winMenu;
+    QMenu *m_tabContextMenu;
+    QMenu *m_fileMenu;
+    QMenu *m_viewMenu;
+    QMenu *m_editMenu;
+    QMenu *m_scriptMenu;
+    QMenu *m_winMenu;
+    QMenu *m_bookmark;
 
-    QToolBar* m_mainToolBar;
+    QToolBar* m_fileToolBar;
+    QToolBar* m_editToolBar;
+    QToolBar* m_scriptToolBar;
+    QToolBar* m_bookmarkToolBar;
 
 
 signals:
@@ -205,6 +214,13 @@ private slots:
     void mnuFindTextExpr();
     void mnuReplaceTextExpr();
     void mnuGoto();
+    void mnuToggleBookmark();
+    void mnuClearAllBookmarks();
+    void mnuGotoNextBookmark();
+    void mnuGotoPreviousBookmark();
+
+public slots:
+    void editorMarginChanged();
 };
 
 } //end namespace ito
