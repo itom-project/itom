@@ -463,11 +463,16 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
     if (activeWidget != NULL)
     {
         retValue += activeWidget->newScript();
+        activeWidget->raiseAndActivate();
     }
     else
     {
         activeWidget = createEmptyScriptDock(false);
-        if (activeWidget != NULL) retValue += activeWidget->newScript();
+        if (activeWidget != NULL) 
+        {
+            retValue += activeWidget->newScript();
+            activeWidget->raiseAndActivate();
+        }
     }
 
     if (semaphore != NULL)
