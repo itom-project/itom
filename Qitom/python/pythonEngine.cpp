@@ -1458,73 +1458,36 @@ RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool /*sho
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::printPythonError()
+ito::RetVal PythonEngine::checkForPyExceptions()
 {
+    ito::RetVal retval;
+
     if (PyErr_Occurred())
     {
         PyObject* pyErrType = NULL;
         PyObject* pyErrValue = NULL;
         PyObject* pyErrTrace = NULL;
         PyObject* pyErrSubValue = NULL;
+        QString errType;
+        QString errText;
+        QString errLine;
 
-        const char* errType ="unknown";
-        char* line = new char[128];
-        line[0] = '?';
-        line[1] = 0;
-        const char* character = "?";
-        const char* filename = "";
-        const char* code = "";
-       // int i=4;
+        PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace); //new references
+        PyErr_NormalizeException(&pyErrType, &pyErrValue, &pyErrTrace);
 
-        PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace);
+        errType = PythonQtConversion::PyObjGetString( pyErrType );
+        errText = PythonQtConversion::PyObjGetString( pyErrValue );
 
-        if (PyTuple_Size(pyErrValue)>0)
-        {
-            errType = PythonEngine::asString(PyTuple_GetItem(pyErrValue, 0), "unknown");
-            pyErrSubValue = PyTuple_GetItem(pyErrValue, 1);
-            filename = PythonEngine::asString(PyTuple_GetItem(pyErrSubValue, 0), "unknown");
-            line = PythonEngine::asString(PyTuple_GetItem(pyErrSubValue, 1), "unknown");
-            character = PythonEngine::asString(PyTuple_GetItem(pyErrSubValue, 2),"unknown");
-            code = PythonEngine::asString(PyTuple_GetItem(pyErrSubValue, 3), "unknown");
-
-            if (pyErrTrace != NULL)
-            {
-                            sprintf(line, "%d", ((PyTracebackObject*)pyErrTrace)->tb_lineno);
-                                //_itoa(((PyTracebackObject*)pyErrTrace)->tb_lineno , line , 10);
-            }
-        }
-        else
-        {
-            if (pyErrTrace != NULL)
-            {
-                //PyFile_WriteObject(PyUnicode_FromString("Traceback (most recent call last):\n"), fileStream, Py_PRINT_RAW);
-                //pyPrintTraceback((PyTracebackObject*)pyErrTrace, fileStream, 2, -1);
-
-                //PyFile_WriteObject(pyErrType, fileStream, Py_PRINT_RAW);
-            }
-            errType = PythonEngine::asString(pyErrType, "unknown");
-            filename = PythonEngine::asString(pyErrValue, "unkown");
-            //PyFile_WriteObject(pyErrType, fileStream, Py_PRINT_RAW);
-            //PyErr_Print();
-            //int z=PyFile_WriteObject(PyUnicode_AsUTF8String(PyObject_Str(pyErrValue)), fileStream, Py_PRINT_RAW);
-
-        }
-
-        std::cerr << "--------------------------------------" << endl;
-        std::cerr << "The file " << filename << " contains the error " << errType << endl;
-        std::cerr << " in line " << line << ", character " << character << endl;
-        std::cerr << " -> " << code << endl;
-        std::cerr << "--------------------------------------" << endl;
+        retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toAscii().data(), errType.toAscii().data());
 
         Py_XDECREF(pyErrTrace);
         Py_DECREF(pyErrType);
         Py_DECREF(pyErrValue);
-        if (pyErrSubValue) Py_XDECREF(pyErrSubValue);
-        pyErrType = NULL;
-        pyErrValue = NULL;
-        pyErrSubValue = NULL;
-        pyErrTrace = NULL;
+
+        PyErr_Clear();
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3929,18 +3892,17 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
+RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
     tPythonState oldState = pythonState;
-    bool retVal = true;
+    RetVal retVal;
     PyObject* dict = NULL;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        std::cerr << "it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
-        retVal = false;
+        retVal += ito::RetVal(retError, 0, "it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
     }
     else
     {
@@ -3964,8 +3926,7 @@ bool PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStrin
 
         if (dict == NULL)
         {
-            retVal = false;
-            std::cerr << "variables can not be pickled since dictionary is not available\n" << std::endl;
+            retVal += ito::RetVal(retError, 0, "variables can not be pickled since dictionary is not available");
         }
         else
         {
@@ -3987,7 +3948,7 @@ bool PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStrin
                 }
             }
 
-            RetVal retValue = pickleDictionary(exportDict, filename);
+            retVal += pickleDictionary(exportDict, filename);
 
             PyDict_Clear(exportDict);
             Py_DECREF(exportDict);
@@ -4005,7 +3966,11 @@ bool PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStrin
         }
     }
 
-    if (semaphore != NULL) semaphore->release();
+    if (semaphore != NULL)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
 
     return retVal;
 }
@@ -4013,27 +3978,27 @@ bool PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStrin
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
 {
+    RetVal retval;
+
+    if (mainModule == NULL)
+    {
+        return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
+    }
+
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
     if (pickleModule == NULL)
     {
-        PyErr_Print();
-        qDebug("pickle module could not be loaded");
-        return RetVal(retError);
-    }
-
-    if (mainModule == NULL)
-    {
-        qDebug("main dictionary is empty or can not be accessed");
-        return RetVal(retError);
+        retval += checkForPyExceptions();
+        return retval;
     }
 
     PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
 
     if (builtinsModule == NULL)
     {
-        PyErr_Print();
-        return RetVal(retError);
+        retval += checkForPyExceptions();
+        return retval;
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
@@ -4041,46 +4006,42 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
 
     if (fileHandle == NULL)
     {
-        qDebug() << "file " << filename << " could not be opened";
-        PyErr_Print();
-        return RetVal(retError);
+        retval += checkForPyExceptions();
     }
-
-
-    if (!PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL))
+    else
     {
-        qDebug() << "error while pickling";
-        PyErr_Print();
-    }
+        PyObject *result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
 
+        if (result == NULL)
+        {
+            retval += checkForPyExceptions();
+        }
 
-    if (!PyObject_CallMethod(fileHandle, "close", ""))
-    {
-        qDebug() << "file handle of file '" << filename << "' could not be opened";
-        PyErr_Print();
-        Py_XDECREF(fileHandle);
-        return RetVal(retError);
+        Py_XDECREF(result);
+
+        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        {
+            retval += checkForPyExceptions();
+        }
     }
 
     Py_XDECREF(fileHandle);
 
     return RetVal(retOk);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
-    bool retVal = true;
+    RetVal retVal;
     bool released = false;
     PyObject* destinationDict = NULL;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        std::cerr << "it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
-        retVal = false;
+        retVal += RetVal(retError,0,"it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
     }
     else
     {
@@ -4104,16 +4065,16 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
 
         if (destinationDict == NULL)
         {
-            retVal = false;
-            std::cerr << "variables can not be unpickled since dictionary is not available\n" << std::endl;
+            retVal += RetVal(retError,0,"variables can not be unpickled since dictionary is not available");
         }
         else
         {
 
-            RetVal retValue = unpickleDictionary(destinationDict, filename, true);
+            retVal += unpickleDictionary(destinationDict, filename, true);
 
             if (semaphore && !released)
             {
+                semaphore->returnValue = retVal;
                 semaphore->release();
                 released = true;
             }
@@ -4141,6 +4102,7 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
 
     if (semaphore && !released)
     {
+        semaphore->returnValue = retVal;
         semaphore->release();
     }
 
@@ -4150,27 +4112,27 @@ bool PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, Itom
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite)
 {
+    RetVal retval;
+
+    if (mainModule == NULL)
+    {
+        return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
+    }
+
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
     if (pickleModule == NULL)
     {
-        PyErr_Print();
-        qDebug("pickle module could not be loaded");
-        return RetVal(retError);
-    }
-
-    if (mainModule == NULL)
-    {
-        qDebug("mainModule is empty or can not be accessed");
-        return RetVal(retError);
+        retval += checkForPyExceptions();
+        return retval;
     }
 
     PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
 
     if (builtinsModule == NULL)
     {
-        PyErr_Print();
-        return RetVal(retError);
+        retval += checkForPyExceptions();
+        return retval;
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
@@ -4178,65 +4140,59 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
 
     if (fileHandle == NULL)
     {
-        qDebug() << "file " << filename << " could not be opened";
-        PyErr_Print();
-        return RetVal(retError);
+        retval += checkForPyExceptions();
     }
-
-
-    PyObject *unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL);
-
-    if (unpickledItem == NULL)
+    else
     {
-        qDebug() << "error while unpickling";
-        PyErr_Print();
-        return RetVal(retError);
-    }
+        PyObject *unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
 
-    if (!PyDict_Check(unpickledItem))
-    {
-        Py_XDECREF(unpickledItem);
-        qDebug() << "unpickling error. This file contains no dictionary as base element";
-    }
-
-    //try to write every element of unpickledItem-dict to destinationDictionary
-    PyObject *key, *value;
-    Py_ssize_t pos = 0;
-
-    while (PyDict_Next(unpickledItem, &pos, &key, &value))
-    {
-
-        if (PyDict_Contains(destinationDict, key) && overwrite)
+        if (unpickledItem == NULL)
         {
-            if (overwrite)
-            {
-                PyDict_DelItem(destinationDict, key);
-                //Py_INCREF(value);
-                PyDict_SetItem(destinationDict, key, value); //value is not stolen by SetItem
-            }
-            else
-            {
-                qDebug() << "variable with key '" << PyUnicode_AS_DATA(key) << "' already exists and must not be overwritten.";
-            }
+            retval += checkForPyExceptions();
+        }
+        else if (!PyDict_Check(unpickledItem))
+        {
+            retval += RetVal(retError,0,"unpickling error. This file contains no dictionary as base element.");
         }
         else
         {
-            PyDict_SetItem(destinationDict, key, value);
+            //try to write every element of unpickledItem-dict to destinationDictionary
+            PyObject *key, *value;
+            Py_ssize_t pos = 0;
+
+            while (PyDict_Next(unpickledItem, &pos, &key, &value))
+            {
+                if (PyDict_Contains(destinationDict, key) && overwrite)
+                {
+                    if (overwrite)
+                    {
+                        PyDict_DelItem(destinationDict, key);
+                        //Py_INCREF(value);
+                        PyDict_SetItem(destinationDict, key, value); //value is not stolen by SetItem
+                    }
+                    else
+                    {
+                        qDebug() << "variable with key '" << PyUnicode_AS_DATA(key) << "' already exists and must not be overwritten.";
+                    }
+                }
+                else
+                {
+                    PyDict_SetItem(destinationDict, key, value);
+                }
+            }
+  
         }
+
+        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        {
+            retval += checkForPyExceptions();
+        }
+
+        Py_XDECREF(fileHandle);
+        Py_XDECREF(unpickledItem);
     }
 
-
-    if (!PyObject_CallMethod(fileHandle, "close", ""))
-    {
-        qDebug() << "file handle of file '" << filename << "' could not be opened";
-        PyErr_Print();
-        return RetVal(retError);
-    }
-
-    Py_XDECREF(fileHandle);
-    Py_XDECREF(unpickledItem);
-
-    return RetVal(retOk);
+    return retval;
 
 }
 

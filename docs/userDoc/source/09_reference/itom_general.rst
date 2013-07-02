@@ -30,7 +30,7 @@ For more information about using these methods, see :ref:`toolbar-start`.
 Disk-IO
 ----------
 .. automodule:: itom
-	:members: loadDataObject, saveDataObject, loadMatlabMat, saveMatlabMat
+	:members: loadDataObject, saveDataObject, loadMatlabMat, saveMatlabMat, loadIDC, saveIDC
 	
 Debug-Tools
 --------------

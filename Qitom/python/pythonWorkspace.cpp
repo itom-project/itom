@@ -196,6 +196,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
 
             if(keys && values)
             {
+                int overflow;
                 for( i = 0 ; i < PyList_Size(values) ; i++)
                 {
                     value = PyList_GetItem(values, i); //borrowed
@@ -209,7 +210,11 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
                             PyErr_Clear();
                             if(PyLong_Check(key))
                             {
-                                keyText = QString::number( PyLong_AsLong(key) );
+                                keyText = QString::number( PyLong_AsLongAndOverflow(key, &overflow) );
+                                if (overflow)
+                                {
+                                    keyText = QString::number( PyLong_AsLongLong(key) );
+                                }
                             }
                             else if(PyFloat_Check(key))
                             {
@@ -395,7 +400,12 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         }
         else if(PyLong_Check(value))
         {
-            item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLong(value));
+            int overflow;
+            item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLongAndOverflow(value, &overflow));
+            if (overflow)
+            {
+                item->m_extendedValue = item->m_value = (overflow > 0 ? "int too big" : "int too small");
+            }
             item->m_compatibleParamBaseType = ito::ParamBase::Int;
         }
         else if(PyComplex_Check(value))

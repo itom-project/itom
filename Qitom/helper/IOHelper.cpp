@@ -300,6 +300,10 @@ namespace ito {
         {
             retValue += RetVal(retError, 2, tr("timeout while pickling variables").toAscii().data());
         }
+        else
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
 
         QApplication::restoreOverrideCursor();
     }
@@ -313,6 +317,10 @@ namespace ito {
         if (!locker.getSemaphore()->wait(120000))
         {
             retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toAscii().data());
+        }
+        else
+        {
+            retValue += locker.getSemaphore()->returnValue;
         }
 
         QApplication::restoreOverrideCursor();
@@ -405,6 +413,10 @@ namespace ito {
         {
             retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toAscii().data());
         }
+        else
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
 
         QApplication::restoreOverrideCursor();
     }
@@ -417,6 +429,10 @@ namespace ito {
         if (!locker.getSemaphore()->wait(120000))
         {
             retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toAscii().data());
+        }
+        else
+        {
+            retValue += locker.getSemaphore()->returnValue;
         }
 
         QApplication::restoreOverrideCursor();

@@ -20,9 +20,9 @@ ui-Class
     :members:
 
     
-uiTimer-Class
+timer-Class
 ------------------
 
-.. autoclass:: itom.uiTimer
+.. autoclass:: itom.timer
     :member-order: groupwise
     :members:

@@ -253,7 +253,12 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
     ok = true;
     if (PyLong_Check(val)) 
     {
-        d = PyLong_AsLong(val);
+        int overflow;
+        d = PyLong_AsLongAndOverflow(val, &overflow);
+        if (overflow) //1: too big, -1: too small
+        {
+            ok = false;
+        }
     } 
     else if (!strict) 
     {
@@ -298,7 +303,12 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
     ok = true;
     if (PyLong_Check(val)) 
     {
-        d = PyLong_AsLongLong(val);
+        int overflow;
+        d = PyLong_AsLongLongAndOverflow(val, &overflow);
+        if (overflow) //1: too big, -1: too small
+        {
+            ok = false;
+        }
     } 
     else if (!strict) 
     {
@@ -398,7 +408,12 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
     {
         if (PyLong_Check(val)) 
         {
-            d = PyLong_AsLong(val);
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (overflow)
+            {
+                ok = false;
+            }
         } 
         else if (val == Py_False) 
         {
@@ -453,6 +468,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     }
     else
     {
+        int overflow;
         for(Py_ssize_t i = 0 ; i < len ; i++)
         {
             t = PySequence_GetItem(val,i); //new reference
@@ -463,7 +479,18 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
             } 
             else if( PyLong_Check(t) )
             {
-                v.append( PyLong_AsLong(t) );
+                qreal v2 = PyLong_AsLongAndOverflow(t, &overflow);
+                if (overflow)
+                {
+                    v2 = PyLong_AsLongLongAndOverflow(t, &overflow);
+                    if (overflow)
+                    {
+                        ok = false;
+                        Py_XDECREF(t);
+                        break;
+                    }
+                }
+                v.append( v2 );
             }
             else if (t == Py_False) 
             {
@@ -495,6 +522,8 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
 QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bool &ok)
 {
     QVector<int> v;
+    int overflow;
+
     if(PySequence_Check(val) == false)
     {
         ok = false;
@@ -511,7 +540,13 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
             t = PySequence_GetItem(val,i); //new reference
             if( PyLong_Check(t) )
             {
-                v.append( PyLong_AsLong(t) );
+                v.append( PyLong_AsLongAndOverflow(t, &overflow) );
+                if (overflow)
+                {
+                    ok = false;
+                    Py_XDECREF(t);
+                    break;
+                }
             }
             else
             {
@@ -529,7 +564,13 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
             t = PySequence_GetItem(val,i); //new reference
             if( PyLong_Check(t) )
             {
-                v.append( PyLong_AsLong(t) );
+                v.append( PyLong_AsLongAndOverflow(t, &overflow) );
+                if (overflow)
+                {
+                    ok = false;
+                    Py_XDECREF(t);
+                    break;
+                }
             }
             else if (PyFloat_Check(t)) 
             {
@@ -1895,7 +1936,7 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     char* textArg;
     if (PyLong_Check(argument))
     {
-        qVarArg = (int)PyLong_AsLong(argument) ;
+        qVarArg = (int)PyLong_AsLong(argument) ; //overflow error is checked here and returned as error.
     }
     else if (PyFloat_Check(argument))
     {

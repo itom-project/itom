@@ -3207,6 +3207,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 {
     int i = -1;
@@ -3255,6 +3256,7 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 //	}
 //}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
 \n\
 This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
@@ -3272,6 +3274,131 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
 See Also \n\
 --------- \n\
 figure.close");
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> loads a pickled idc-file and returns the content as dictionary\n\
+\n\
+This methods loads the given idc-file using the method load from the python-buildin module pickle and returns the loaded dictionary.\n\
+\n\
+Parameters \n\
+----------- \n\
+filename : {String} \n\
+    absolute filename or filename relative to the current directory. \n\
+\n\
+See Also \n\
+--------- \n\
+pickle.load");
+PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = {"filename", NULL};
+    char* filename = NULL;
+
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s", const_cast<char**>(kwlist), &filename) )
+    {
+        return NULL;
+    }
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
+    if (pyEngine)
+    {
+        QFileInfo info(filename);
+
+        if (info.exists())
+        {
+            PyObject *dict = PyDict_New();
+            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true);
+
+            if (!PythonCommon::transformRetValToPyException(retval))
+            {
+                Py_DECREF(dict);
+                return NULL;
+            }
+
+            return dict;
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The file '%s' does not exist", info.absoluteFilePath().toAscii().data());
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Python Engine not available");
+        return NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.\n\
+\n\
+This method saves the given dictionary as pickled icd-file using the method dump from the builtin module pickle.\n\
+\n\
+Parameters \n\
+----------- \n\
+filename : {string} \n\
+    absolute filename or filename relative to the current directory. \n\
+dict : {dict} \n\
+    dictionary which should be pickled. \n\
+overwriteIfExists : {bool}, default: True \n\
+    if True, an existing file will be overwritten. \n\
+\n\
+See Also \n\
+--------- \n\
+pickle.dump");
+PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = {"filename", "dict", "overwriteIfExists", NULL};
+    char* filename = NULL;
+    PyObject *dict = NULL;
+
+#if PY_VERSION_HEX < 0x03030000
+	unsigned char overwriteIfExists = 1;
+
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|b", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists) ) //all borrowed
+    {
+        return NULL;
+    }
+#else //only python 3.3 or higher has the 'p' (bool) type string
+	bool overwriteIfExists = true;
+
+    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|p", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists) ) //all borrowed
+    {
+        return NULL;
+    }
+#endif
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
+    if (pyEngine)
+    {
+        QFileInfo info(filename);
+
+        if (!info.exists() || (info.exists() && overwriteIfExists) )
+        {
+            PyObject *dict = PyDict_New();
+            RetVal retval = pyEngine->pickleDictionary(dict, filename);
+
+            if (!PythonCommon::transformRetValToPyException(retval))
+            {
+                Py_DECREF(dict);
+                return NULL;
+            }
+
+            Py_RETURN_NONE;
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The file '%s' cannot be overwritten", info.absoluteFilePath().toAscii().data());
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Python Engine not available");
+        return NULL;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3324,6 +3451,8 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
 	//{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
     {"getScreenInfo", (PyCFunction)PythonItom::PyGetScreenInfo, METH_NOARGS, getScreenInfo_doc},
     {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, NULL},
+    {"loadIDC", (PyCFunction)PythonItom::PyLoadIDC, METH_VARARGS | METH_KEYWORDS, pyLoadIDC_doc},
+    {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
     {NULL, NULL, 0, NULL}
 };
 
