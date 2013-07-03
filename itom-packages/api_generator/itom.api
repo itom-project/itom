@@ -123,6 +123,7 @@ itom.getDefaultScaleableUnits
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
 itom.liveImage(cam, [className]) -> shows a camera live image in a newly created figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive to an existing dataObject.
+itom.loadIDC(filename) -> loads a pickled idc-file and returns the content as dictionary
 itom.loadMatlabMat(filename) -> loads matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
 itom.npDataObject(??) [doc: npDataObject objects]
@@ -183,6 +184,7 @@ itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh
 itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
 itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name
+itom.polygonMesh.nrOfPolygons
 itom.processEvents
 itom.proxy(??) [class]
 itom.pythonStream(??) [doc: PythonStream objects]
@@ -209,6 +211,7 @@ itom.region.xored(x,y,w,h | region) -> returns a region which is an xor combinat
 itom.removeButton(toolbarName, buttonName) -> removes a button from a given toolbar.
 itom.removeMenu(key) -> remove a menu element with the given key.
 itom.saveDataObject(filename, dataObject [, tagsAsBinary]) -> save a dataObject to harddrive.
+itom.saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.
 itom.saveMatlabMat(filename, dictionary[, matrixName]) -> saves strings, numbers, arrays or combinations to a Matlab matrix.
 itom.scaleDoubleUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
@@ -269,8 +272,11 @@ itom.uiItem.disconnect(signalSignature, callableMethod) -> disconnects a connect
 itom.uiItem.getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.
 itom.uiItem.getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)
 itom.uiItem.getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.
+itom.uiItem.getWindowFlags(flags) -> gets window flags of corresponding widget.
+itom.uiItem.info
 itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal.
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
+itom.uiItem.setWindowFlags(flags) -> sets window flags of corresponding widget.
 itom.version([toggle-output [, include-plugins]])) -> retrive complete informations about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).
