@@ -19,7 +19,7 @@ endif()
   
 #compile as static library (always)
 SET(LIBRARY_TYPE STATIC)
-
+ 
 #if QPropertyEditor is static, add -fPIC as compiler flag for linux
 IF(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")

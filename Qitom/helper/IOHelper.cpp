@@ -426,6 +426,7 @@ namespace ito {
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        
         if (!locker.getSemaphore()->wait(120000))
         {
             retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toAscii().data());

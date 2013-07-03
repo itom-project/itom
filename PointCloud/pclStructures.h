@@ -207,8 +207,12 @@ public:
 
     inline ito::tPCLPointType getType() const 
     { 
-    return m_type; 
+        return m_type; 
     };
+
+    inline int hasRGB() const { return m_type & (ito::pclXYZRGBNormal | ito::pclXYZRGBA); }
+    inline int hasNormal() const { return m_type & (ito::pclXYZINormal | ito::pclXYZNormal); }
+    inline int hasIntensity() const { return m_type & ( ito::pclXYZI | ito::pclXYZINormal ); }
 
     inline pcl::PointCloud<pcl::PointXYZ>::Ptr toPointXYZ() const                   
     { 

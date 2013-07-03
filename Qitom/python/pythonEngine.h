@@ -138,8 +138,6 @@ protected:
 
     RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
-    static char* asString(PyObject *value, char *defaultString = NULL);
-
 private:
     static PythonEngine *getInstanceInternal();
 
@@ -270,8 +268,8 @@ public slots:
     bool deleteVariable(bool globalNotLocal, QStringList keys, ItomSharedSemaphore *semaphore = NULL);
     RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
     RetVal unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
-    bool saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
-    bool loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
+    RetVal saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
+    RetVal loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
     RetVal registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore = NULL);

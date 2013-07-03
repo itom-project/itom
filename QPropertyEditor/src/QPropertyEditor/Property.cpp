@@ -77,6 +77,7 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
             editor = new QSpinBox(parent);
             editor->setProperty("minimum", -INT_MAX);
             editor->setProperty("maximum", INT_MAX);
+            ((QAbstractSpinBox*)editor)->setKeyboardTracking(false);
             connect(editor, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
             break;
         case QMetaType::Float:
@@ -84,6 +85,7 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
             editor = new QDoubleSpinBox(parent);
             editor->setProperty("minimum", -INT_MAX);
             editor->setProperty("maximum", INT_MAX);
+            ((QAbstractSpinBox*)editor)->setKeyboardTracking(false);
             connect(editor, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
             break;
         default:

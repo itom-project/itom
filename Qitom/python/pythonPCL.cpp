@@ -1035,16 +1035,7 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudClear_doc,"clear() -> clears the whole point cloud\n\
-\n\
-Notes \n\
------ \n\
-Clears the whole pointcloud.\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+PyDoc_STRVAR(pyPointCloudClear_doc,"clear() -> clears the whole point cloud");
 PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
 {
     if (self->data == NULL)

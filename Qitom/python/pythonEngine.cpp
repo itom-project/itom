@@ -1521,45 +1521,6 @@ void PythonEngine::printPythonErrorWithoutTraceback()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-char* PythonEngine::asString(PyObject *value, char *defaultString)
-{
-    char *retValue;
-    if (value == NULL)
-    {
-        return defaultString;
-    }
-    if (PyBytes_Check(value))
-    {
-        return PyBytes_AsString(value);
-    }
-    else if (PyUnicode_Check(value))
-    {
-
-        PyObject *v = PythonQtConversion::PyUnicodeToPyByteObject(value); //PyUnicode_AsASCIIString(value); //PyUnicode_AsUTF8String(value);
-        if (v == NULL)
-        {
-            Py_XDECREF(v);
-            return defaultString;
-        }
-        retValue = PyBytes_AsString(v);
-        Py_DECREF(v);
-        return retValue;
-    }
-    else
-    {
-        PyObject *v = PyObject_Str(value);
-        if (v == NULL)
-        {
-            return defaultString;
-        }
-
-        retValue = PythonEngine::asString(v,defaultString);
-        Py_DECREF(v);
-        return retValue;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::setGlobalDictionary(PyObject* globalDict)
 {
     dictChangeMutex.lock();
@@ -3185,18 +3146,17 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
+RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
     tPythonState oldState = pythonState;
-    bool retVal = true;
+    RetVal retVal;
     PyObject* dict = NULL;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        std::cerr << "it is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
-        retVal = false;
+        retVal += RetVal(retError,0,"it is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
     }
     else
     {
@@ -3220,8 +3180,7 @@ bool PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QS
 
         if (dict == NULL)
         {
-            retVal = false;
-            std::cerr << "variables can not be saved since dictionary is not available\n" << std::endl;
+            retVal += RetVal(retError,0,"variables can not be saved since dictionary is not available");
         }
         else
         {
@@ -3253,11 +3212,7 @@ bool PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QS
             PyTuple_SetItem(pArgs,2,keyList);
             pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
 
-            if (PyErr_Occurred())
-            {
-                PyErr_Print();
-                PyErr_Clear();
-            }
+            retVal += checkForPyExceptions();
 
             Py_XDECREF(pArgs);
         }
@@ -3273,23 +3228,27 @@ bool PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QS
         }
     }
 
-    if (semaphore != NULL) semaphore->release();
+    if (semaphore != NULL) 
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
 
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
-    bool retVal = true;
+    RetVal retVal;
     PyObject* destinationDict = NULL;
+    bool released = false;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        std::cerr << "it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
-        retVal = false;
+        retVal += RetVal(retError,0,"it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
     }
     else
     {
@@ -3313,8 +3272,7 @@ bool PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, It
 
         if (destinationDict == NULL)
         {
-            retVal = false;
-            std::cerr << "variables can not be load since dictionary is not available\n" << std::endl;
+            retVal += RetVal(retError,0,"variables can not be load since dictionary is not available");
         }
         else
         {
@@ -3322,10 +3280,10 @@ bool PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, It
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
-            if (dict == NULL || PyErr_Occurred())
+            retVal += checkForPyExceptions();
+
+            if (dict == NULL || retVal.containsError())
             {
-                PyErr_Print();
-                PyErr_Clear();
             }
             else
             {
@@ -3340,7 +3298,12 @@ bool PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, It
 
             Py_XDECREF(dict);
 
-            if (semaphore != NULL) semaphore->release();
+            if (semaphore) 
+            {
+                semaphore->returnValue = retVal;
+                semaphore->release();
+                released = true;
+            }
 
             if (globalNotLocal)
             {
@@ -3362,7 +3325,11 @@ bool PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, It
         }
     }
 
-    if (semaphore) semaphore->release();
+    if (semaphore && !released)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
 
     return retVal;
 }
