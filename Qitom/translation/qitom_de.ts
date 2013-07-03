@@ -3450,7 +3450,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+51"/>
         <source>docking toolbar</source>
-        <translation type="unfinished">Symbolleiste Fensterandocken</translation>
+        <translation type="unfinished">Symbolleiste Fenster andocken</translation>
     </message>
     <message>
         <location line="+194"/>
