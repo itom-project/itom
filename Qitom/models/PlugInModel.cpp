@@ -916,20 +916,12 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
     }
     else if (role == Qt::BackgroundRole)
     {
-        if (index.column() == 0)
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais)
         {
-            ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-            if (ais)
+            if (ais->createdByGUI() == 0 || ais->getRefCount() > 0)
             {
-                if (ais->createdByGUI() == 0 || ais->getRefCount() > 0)
-                {
-//                    return QColor(Qt::yellow);
-                    return QColor(255, 255, 175);
-                }
-            }
-            else
-            {
-                return QVariant();
+                return QColor(255, 255, 175);
             }
         }
         else
