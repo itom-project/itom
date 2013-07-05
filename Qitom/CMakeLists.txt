@@ -517,13 +517,13 @@ IF(MSVC)
 ENDIF (MSVC)
 
 #ADD relevant and bug sensitive path to visual studio debug enviroment via qitom.vcxproj.user
-IF(MSVC)
-    IF(BUILD_TARGET64)
-        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.x64 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
-    ELSE(BUILD_TARGET64)
-        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.win32 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
-    ENDIF(BUILD_TARGET64)
-ENDIF (MSVC)
+#IF(MSVC)
+#    IF(BUILD_TARGET64)
+#        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.x64 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
+#    ELSE(BUILD_TARGET64)
+#        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.win32 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
+#    ENDIF(BUILD_TARGET64)
+#ENDIF (MSVC)
 
 #Configure a RC file for MS visual studio to add version information in explorer to exe file
 if(MSVC)
