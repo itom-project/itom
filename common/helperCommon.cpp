@@ -306,10 +306,10 @@ namespace ito
                 }
                 else
                 {
-                    double val = value.getVal<double>();
+                    double *val = value.getVal<double *>();
                     for (int num = 0; num < param.getLen(); num++)
                     {
-                        ((double*)dPtr)[num] = val;
+                        ((double*)dPtr)[num] = val[num];
                     }
                 }
             break;
