@@ -1202,23 +1202,48 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
         cv::error(cv::Exception(CV_BadImageSize, "nrOfPlanes must be equal to the product of the first (n-2) dimensions." ,"", __FILE__, __LINE__));
     }
 
-    for(size_t i = 0 ; i < numMats ; i++)
+    if (type & (ito::tComplex64 | ito::tComplex128))
     {
-        planeSize = planes[i].size();
-
-        if((size_t)planeSize.height != sizey || (size_t)planeSize.width != sizex)
+        for(size_t i = 0 ; i < numMats ; i++)
         {
-            cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
+            planeSize = planes[i].size();
+
+            if((size_t)planeSize.height != sizey || (size_t)planeSize.width != sizex)
+            {
+                cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
+            }
+
+            if(planes[i].channels() != 2)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "at least one cv::Mat-plane has not two channels (complex type).", "", __FILE__, __LINE__));
+            }
+
+            if((planes[i].elemSize1()*2) != requiredElemSize)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
+            }
         }
-
-        if(planes[i].channels() != 1)
+    }
+    else
+    {
+        for(size_t i = 0 ; i < numMats ; i++)
         {
-            cv::error(cv::Exception(CV_StsUnsupportedFormat, "at least one cv::Mat-plane has not one channel.", "", __FILE__, __LINE__));
-        }
+            planeSize = planes[i].size();
 
-        if(planes[i].elemSize1() != requiredElemSize)
-        {
-            cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
+            if((size_t)planeSize.height != sizey || (size_t)planeSize.width != sizex)
+            {
+                cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
+            }
+
+            if(planes[i].channels() != 1)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "at least one cv::Mat-plane has not one channel.", "", __FILE__, __LINE__));
+            }
+
+            if(planes[i].elemSize1() != requiredElemSize)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
+            }
         }
     }
 
