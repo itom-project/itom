@@ -24,6 +24,9 @@
         <file>icons/dialog-warning-4.png</file>
         <file>icons/loader16x16.gif</file>
         <file>icons/itomicon/splashScreen.png</file>
+        <file>icons/empty.png</file>
+        <file>icons/pin.png</file>
+        <file>icons/pinChecked.png</file>
     </qresource>
     <qresource prefix="/arrows">
         <file>icons/2downarrow.png</file>

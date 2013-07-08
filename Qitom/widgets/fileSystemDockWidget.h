@@ -62,7 +62,6 @@ namespace ito
                 FileSystemTreeView ( QWidget * parent = 0 ) : QTreeView(parent) {}
                 ~FileSystemTreeView () {}
 
-		
                 QModelIndexList selectedIndexes() const
                 { 
                     return QTreeView::selectedIndexes();
@@ -112,6 +111,8 @@ namespace ito
 
             QString getHtmlTag(const QString &tag);
 
+            bool eventFilter(QObject *obj, QEvent *event);
+
         private:
             void fillFilterList();
             void showInGraphicalShell(const QString &filePath);
@@ -146,6 +147,8 @@ namespace ito
             ShortcutAction* m_pActNewPyFile;
             ShortcutAction* m_pViewList;
             ShortcutAction* m_pViewDetails;
+
+            QAction *m_lastMovedShowDirAction;
 
         signals:
             void currentDirChanged();

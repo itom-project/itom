@@ -71,10 +71,14 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     m_pActNewDir(NULL),
     m_pActNewPyFile(NULL),
     m_pViewList(NULL),
-    m_pViewDetails(NULL)
+    m_pViewDetails(NULL),
+    m_lastMovedShowDirAction(NULL)
 {
     int size = 0;
     QAction *act = NULL;
+    QString actCheckedStr = "";
+    QString actDir = "";
+    QIcon actIcon = NULL;
 
     m_newDirSelectedMapper = new QSignalMapper(this);
     connect(m_newDirSelectedMapper, SIGNAL(mapped(const QString &)), this, SLOT(newDirSelected(const QString &)));
@@ -83,6 +87,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.png"));
     connect(m_pShowDirListMenu->menuAction(), SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
 
+    m_pShowDirListMenu->installEventFilter(this);
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("fileSystemDockWidget");
     size = settings.beginReadArray("lastUsedDirs");
@@ -90,10 +96,25 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     {
         settings.setArrayIndex(i);
         QString dir = settings.value("dir", QString()).toString();
-        act = m_pShowDirListMenu->addAction(QString::number(i+1) + " " + dir);
-        act->setData(dir);
+        if (dir.mid(0, 1) == "@")
+        {
+            actIcon= QIcon(":/application/icons/pinChecked.png");
+            actCheckedStr = "@";
+            actDir = dir.mid(1);
+        }
+        else
+        {
+            actIcon= QIcon(":/application/icons/empty.png");
+            actCheckedStr = "";
+            actDir = dir;
+        }
+        act = m_pShowDirListMenu->addAction(QString::number(i+1) + " " + actDir);
+        act->setIcon(actIcon);
+        act->setData(actDir);
+        act->setCheckable(false);
+        act->setWhatsThis(actCheckedStr);
         connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
-        m_newDirSelectedMapper->setMapping(act, dir);
+        m_newDirSelectedMapper->setMapping(act, actDir);
     }
     settings.endArray();
 
@@ -218,7 +239,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     for (int i = 0 ; i < m_pShowDirListMenu->actions().count() ; i++)
     {
         settings.setArrayIndex(i);
-        settings.setValue("dir", m_pShowDirListMenu->actions()[i]->data().toString());
+        settings.setValue("dir", m_pShowDirListMenu->actions()[i]->whatsThis() + m_pShowDirListMenu->actions()[i]->data().toString());
     }
     settings.endArray();
 
@@ -543,7 +564,9 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
             QDir baseDir(baseDirectory);
             act = new QAction(baseDirectory, m_pShowDirListMenu);
             act->setData(baseDirectory);
-
+            act->setWhatsThis("");
+            act->setIcon(QIcon(":/application/icons/empty.png"));
+            act->setCheckable(false);
             connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
             m_newDirSelectedMapper->setMapping(act, baseDirectory);
         }
@@ -559,7 +582,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
         if (m_pShowDirListMenu->actions().count() == 11)
         {
-            removeActionFromDirList(10);
+            int i = 10;
+            while (m_pShowDirListMenu->actions()[i]->whatsThis() == "@")
+            {
+                --i;
+            }
+            removeActionFromDirList(i);
         }
     }
     
@@ -1172,6 +1200,64 @@ QString FileSystemDockWidget::getHtmlTag(const QString &tag)
     txt += "<a name=\"last\"></a></span></p></body></html>";
     //qDebug() << txt;
     return txt;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseMove) 
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        QAction *actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
+        if (m_lastMovedShowDirAction != actionUnderMouse)
+        {
+            if (m_lastMovedShowDirAction && m_lastMovedShowDirAction->whatsThis() == "")
+            {
+                m_lastMovedShowDirAction->setIcon(QIcon(":/application/icons/empty.png"));
+            }
+            m_lastMovedShowDirAction = actionUnderMouse;
+        }
+
+        if (actionUnderMouse && actionUnderMouse->whatsThis() == "")
+        {
+            if (mouseEvent->pos().x() < 24 && mouseEvent->pos().x() > 1)
+            {
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.png"));
+            }
+            else
+            {
+                actionUnderMouse->setIcon(QIcon(":/application/icons/empty.png"));
+            }
+        }
+        return true;
+    } 
+    else if (event->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        QAction *actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
+        if (actionUnderMouse && (mouseEvent->pos().x() < 24 && mouseEvent->pos().x() > 1))
+        {
+            if (actionUnderMouse->whatsThis() == "")
+            {
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pinChecked.png"));
+                actionUnderMouse->setWhatsThis("@");
+            }
+            else
+            {
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.png"));
+                actionUnderMouse->setWhatsThis("");
+            }
+            return true;
+        }
+        else
+        {
+            return QObject::eventFilter(obj, event);
+        }
+    }
+    else 
+    {
+        return QObject::eventFilter(obj, event);
+    }
 }
 
 } //end namespace ito
