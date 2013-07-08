@@ -323,13 +323,15 @@ int main(int argc, char *argv[])
     QString libDir = QDir::cleanPath(appLibPath.filePath(""));
 
 #if (defined WIN32 || defined WIN64)
+    libDir = QDir::toNativeSeparators( libDir );
+
     char *oldpath = getenv("path");
     char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + 10);
     newpath[0] = 0;
     strcat(newpath, "path=");
-    strcat(newpath, oldpath);
+    strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
     strcat(newpath, ";");
-    strcat(newpath, libDir.toAscii().data());
+    strcat(newpath, oldpath);
     //strcat(newpath, ";D:\\itom\\trunk\\iTOM\\lib"); //;./lib;../lib");
     _putenv(newpath);
     free(newpath);
