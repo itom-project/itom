@@ -15,7 +15,7 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
-  
+   
 find_package(Qt4 REQUIRED)
 find_package(PythonLibs 3 REQUIRED) 
 find_package(QScintilla REQUIRED)  

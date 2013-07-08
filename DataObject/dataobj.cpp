@@ -1202,7 +1202,7 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
         cv::error(cv::Exception(CV_BadImageSize, "nrOfPlanes must be equal to the product of the first (n-2) dimensions." ,"", __FILE__, __LINE__));
     }
 
-    if (type & (ito::tComplex64 | ito::tComplex128))
+    if ((type == ito::tComplex64) || (type ==ito::tComplex128))
     {
         for(size_t i = 0 ; i < numMats ; i++)
         {
