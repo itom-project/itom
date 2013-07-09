@@ -1147,7 +1147,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2024"/>
+        <location line="+1954"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2387,12 +2387,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+136"/>
+        <location line="+138"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-135"/>
+        <location line="-137"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -2412,7 +2412,7 @@ Type conflict for %1</source>
         <translation>Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>&amp;cut</source>
         <translation>&amp;Ausschneiden</translation>
     </message>
@@ -3211,11 +3211,12 @@ Type conflict for %1</source>
         <translation type="unfinished">Alles schließen</translation>
     </message>
     <message>
+        <location line="+6"/>
         <source>Live Image...</source>
-        <translation type="obsolete">Livebild...</translation>
+        <translation type="unfinished">Livebild...</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+4"/>
         <source>Snap Dialog...</source>
         <translation type="unfinished">Aufnahmedialog...</translation>
     </message>
@@ -3230,12 +3231,11 @@ Type conflict for %1</source>
         <translation type="unfinished">Fenster öffnen...</translation>
     </message>
     <message>
-        <location line="-8"/>
         <source>Live Image</source>
-        <translation type="unfinished">Livebild</translation>
+        <translation type="obsolete">Livebild</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+120"/>
         <source>List</source>
         <translation type="unfinished">Liste</translation>
     </message>
@@ -4182,12 +4182,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::FileSystemDockWidget</name>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="+82"/>
+        <location filename="../widgets/fileSystemDockWidget.cpp" line="+86"/>
         <source>last used directories</source>
         <translation>Zuletzt verwendetet Verzeichnisse</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+50"/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
@@ -4200,6 +4200,16 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+2"/>
         <source>change to parent folder</source>
         <translation>Zum übergeordneten Verzeichnis wechseln</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>copy path to clipboard</source>
+        <translation>Pfad in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>set clipboard to path</source>
+        <translation>Pfad aus der Zwischenablage übernehmen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4228,13 +4238,13 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+495"/>
+        <location line="+528"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-506"/>
+        <location line="-539"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -4279,7 +4289,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Dateisystem</translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+129"/>
         <source>Itom Files</source>
         <translation>ITOM-Dateien</translation>
     </message>
@@ -4289,12 +4299,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+91"/>
         <source>select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+167"/>
+        <location line="+191"/>
         <source> the selected items</source>
         <translation>en die ausgewählten Objekte</translation>
     </message>
@@ -4355,12 +4365,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+45"/>
-        <location line="+662"/>
+        <location line="+679"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-662"/>
+        <location line="-679"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4392,18 +4402,18 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+25"/>
         <location line="+61"/>
-        <location line="+106"/>
+        <location line="+114"/>
         <source>python engine not available</source>
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-162"/>
-        <location line="+167"/>
+        <location line="-170"/>
+        <location line="+175"/>
         <source>variables cannot be imported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location line="-157"/>
+        <location line="-165"/>
         <source>timeout while getting value from workspace</source>
         <translation type="unfinished">Zeitüberschreitung beim Holen der Werte aus dem Arbeitsbereich</translation>
     </message>
@@ -4424,12 +4434,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+17"/>
-        <location line="+106"/>
+        <location line="+114"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="-94"/>
+        <location line="-102"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
@@ -4439,18 +4449,18 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Pickeln&quot; von Variablen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>timeout while saving variables to matlab file</source>
         <translation type="unfinished">Zeitüberschreitung beim Speichern von Variablen in eine Matlab-Datei</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+104"/>
+        <location line="+11"/>
+        <location line="+113"/>
         <source>suffix must be *.idc or *.mat</source>
         <translation type="unfinished">Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-88"/>
         <source>Import data</source>
         <translation type="unfinished">Daten importieren</translation>
     </message>
@@ -4465,12 +4475,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+18"/>
         <source>timeout while loading matlab variables</source>
         <translation type="unfinished">Zeitüberschreitung beim Laden von Matlab-Variablen</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+24"/>
         <source>open python script</source>
         <translation type="unfinished">Python-Skript öffnen</translation>
     </message>
@@ -5037,31 +5047,31 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Motor</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+368"/>
         <source>Motor</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-349"/>
-        <location line="+357"/>
+        <location line="-364"/>
+        <location line="+372"/>
         <source>Grabber</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-353"/>
-        <location line="+357"/>
+        <location line="-368"/>
+        <location line="+372"/>
         <source>ADDA</source>
         <translation type="unfinished">ADDA Wandler</translation>
     </message>
     <message>
-        <location line="-353"/>
-        <location line="+357"/>
+        <location line="-368"/>
+        <location line="+372"/>
         <source>Raw IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-353"/>
-        <location line="+341"/>
+        <location line="-368"/>
+        <location line="+356"/>
         <source>Algorithm</source>
         <translation type="unfinished">Algorithmus</translation>
     </message>
@@ -5902,7 +5912,24 @@ Katesisch</translation>
         <translation type="unfinished">Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location line="+167"/>
+        <location line="+57"/>
+        <source>Export data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+21"/>
+        <source>Error while importing variables: 
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Import data</source>
+        <translation type="unfinished">Daten importieren</translation>
+    </message>
+    <message>
+        <location line="+91"/>
         <source>renaming variable</source>
         <translation type="unfinished">Variable umbenennen</translation>
     </message>

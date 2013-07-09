@@ -93,7 +93,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
 
     m_pContextMenu->addSeparator();
 
-    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/monitor.png"), tr("Live Image"), this);
+    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/monitor.png"), tr("Live Image..."), this);
     connect(m_pActLiveImage, SIGNAL(triggered()), this, SLOT(mnuShowLiveImage()));
     m_pContextMenu->addAction(m_pActLiveImage);
 

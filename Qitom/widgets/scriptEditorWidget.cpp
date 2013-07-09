@@ -233,6 +233,8 @@ RetVal ScriptEditorWidget::initMenus()
 
     connect(breakpointMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 
+//QPrintDialog
+
     editorMenu = new QMenu(this);
     editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&cut"), this, SLOT(menuCut()));
     editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("cop&y"), this, SLOT(menuCopy()));

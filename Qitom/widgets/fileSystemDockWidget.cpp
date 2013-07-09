@@ -278,6 +278,10 @@ void FileSystemDockWidget::createActions()
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
     m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("change to parent folder"), this);
     m_pActMoveCDUp->connectTrigger(this, SLOT(mnuMoveCDUp()));
+    m_pActCopyDir = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy path to clipboard"), this);
+    m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
+    m_pActPasteDir = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("set clipboard to path"), this);
+    m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
     m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("open file"), this);
     m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
     m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("execute file"), this);
@@ -346,6 +350,8 @@ void FileSystemDockWidget::createToolBars()
     m_pMainToolbar->addAction(m_pShowDirListMenu->menuAction());
     m_pMainToolbar->addAction(m_pActSelectCD->action());
     m_pMainToolbar->addAction(m_pActMoveCDUp->action());
+    m_pMainToolbar->addAction(m_pActCopyDir->action());
+    m_pMainToolbar->addAction(m_pActPasteDir->action());
     m_pMainToolbar->addWidget(spacerWidget);
     m_pMainToolbar->addAction(m_pFileSystemSettingMenu->menuAction());
     connect(m_pFileSystemSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
@@ -634,6 +640,30 @@ void FileSystemDockWidget::mnuMoveCDUp()
 
     if (baseDir.exists() && baseDir.cdUp())
     {
+        changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::mnuCopyDir()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(QDir::toNativeSeparators(baseDirectory));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::mnuPasteDir()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    QString text = clipboard->text();
+    QFileInfo file(text);
+    if (file.exists())
+    {
+        if (QString(file.fileName()).indexOf('.') > -1)
+        {
+            text = file.absoluteDir().path();
+        }
+        QDir baseDir(text);
         changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
     }
 }
@@ -1182,24 +1212,30 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
 //----------------------------------------------------------------------------------------------------------------------------------
 QString FileSystemDockWidget::getHtmlTag(const QString &tag)
 {
-    QString txt = "";
+#ifdef __linux__
+    QChar separator = '/';
+#else
+    QChar separator = '\\';
+#endif
+
+    QString text = "";
     QString link = "";
     QStringList tagList = tag.split("/");
-    txt = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
+    text = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
     for (int x = 0; x < tagList.size(); x++)
     {
         if (x > 0)
         {
-            txt += "/";
-            link += "/";
+            text += separator;
+            link += '/';
         }
         link += tagList[x];
 
-        txt += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+        text += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
     }
-    txt += "<a name=\"last\"></a></span></p></body></html>";
+    text += "<a name=\"last\"></a></span></p></body></html>";
     //qDebug() << txt;
-    return txt;
+    return text;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1229,7 +1265,6 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
                 actionUnderMouse->setIcon(QIcon(":/application/icons/empty.png"));
             }
         }
-        return true;
     } 
     else if (event->type() == QEvent::MouseButtonPress)
     {
@@ -1249,15 +1284,8 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
             }
             return true;
         }
-        else
-        {
-            return QObject::eventFilter(obj, event);
-        }
     }
-    else 
-    {
-        return QObject::eventFilter(obj, event);
-    }
+    return QObject::eventFilter(obj, event);
 }
 
 } //end namespace ito

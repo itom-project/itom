@@ -135,6 +135,8 @@ namespace ito
 
             ShortcutAction* m_pActMoveCDUp;
             ShortcutAction* m_pActSelectCD;
+            ShortcutAction* m_pActCopyDir;
+            ShortcutAction* m_pActPasteDir;
             ShortcutAction* m_pActOpenFile;
             ShortcutAction* m_pActExecuteFile;
             ShortcutAction* m_pActLocateOnDisk;
@@ -156,6 +158,8 @@ namespace ito
         private slots:
             void mnuMoveCDUp();
             void mnuSelectCD();
+            void mnuCopyDir();
+            void mnuPasteDir();
             void mnuLocateOnDisk();
             void mnuExecuteFile();
             void mnuOpenFile();
