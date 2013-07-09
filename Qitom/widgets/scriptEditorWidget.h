@@ -192,6 +192,8 @@ public slots:
     void breakPointDelete(QString filename, int lineNo, int pyBpNumber);
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
 
+    void print();
+
 
 private slots:
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);

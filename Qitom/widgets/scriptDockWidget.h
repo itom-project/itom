@@ -107,6 +107,7 @@ private:
     ShortcutAction *m_saveScriptAction;
     ShortcutAction *m_saveScriptAsAction;
     ShortcutAction *m_saveAllScriptsAction;
+    ShortcutAction *m_printAction;
     ShortcutAction *m_cutAction;
     ShortcutAction *m_copyAction;
     ShortcutAction *m_pasteAction;
@@ -194,6 +195,7 @@ private slots:
     void mnuSaveScript();
     void mnuSaveScriptAs();
     void mnuSaveAllScripts();
+    void mnuPrint();
     void mnuCut();
     void mnuCopy();
     void mnuPaste();

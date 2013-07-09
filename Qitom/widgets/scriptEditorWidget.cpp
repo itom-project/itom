@@ -30,6 +30,7 @@
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
 
+#include <qsciprinter.h>
 
 //!< constants
 const QString ScriptEditorWidget::lineBreak = QString("\n");
@@ -232,8 +233,6 @@ RetVal ScriptEditorWidget::initMenus()
     breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(tr("&clear all breakpoint"), this, SLOT(menuClearAllBreakpoints()));
 
     connect(breakpointMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
-
-//QPrintDialog
 
     editorMenu = new QMenu(this);
     editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&cut"), this, SLOT(menuCut()));
@@ -1341,6 +1340,19 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
     if (newBp.filename == getFilename())
     {
         breakPointAdd(newBp, -1); //!< -1 has no task
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::print()
+{
+	QsciPrinter printer;
+	printer.setWrapMode(WrapWord);
+    QPrintDialog printDialog(&printer);
+//    QPrintPreviewDialog printDialog(&printer);
+    if (printDialog.exec())
+    {
+        printer.printRange( this );
     }
 }
 

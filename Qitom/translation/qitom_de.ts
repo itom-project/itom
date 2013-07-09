@@ -2361,7 +2361,7 @@ Type conflict for %1</source>
         <translation>Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+219"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+220"/>
         <source>&amp;toggle bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -2387,12 +2387,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+138"/>
+        <location line="+136"/>
         <source>&amp;disable breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-137"/>
+        <location line="-135"/>
         <source>&amp;edit condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -2412,7 +2412,7 @@ Type conflict for %1</source>
         <translation>Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+5"/>
         <source>&amp;cut</source>
         <translation>&amp;Ausschneiden</translation>
     </message>
@@ -2517,7 +2517,7 @@ Type conflict for %1</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+560"/>
+        <location line="+573"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -5112,134 +5112,134 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+204"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+207"/>
         <source>file open</source>
-        <translation type="unfinished">Datei öffnen</translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>file not found</source>
-        <translation type="unfinished">Datei nicht gefunden</translation>
+        <translation>Datei nicht gefunden</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>the file %1 could not be found</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht gefunden werden</translation>
+        <translation>Die Datei &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>invalid file format</source>
-        <translation type="unfinished">Unzulässiges Dateiformat</translation>
+        <translation>Unzulässiges Dateiformat</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>the file %1 is no python macro</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos;  ist keine Python-Makro</translation>
+        <translation>Die Datei &apos;%1&apos;  ist kein Python-Makro</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>The following files have been changed and should be safed:</source>
-        <translation type="unfinished">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
+        <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
         <location line="+511"/>
         <source>move left</source>
-        <translation type="unfinished">Nach Links verschieben</translation>
+        <translation>Nach Links verschieben</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>move right</source>
-        <translation type="unfinished">Nach rechts verschieben</translation>
+        <translation>Nach rechts verschieben</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>move first</source>
-        <translation type="unfinished">An den Anfang verschieben</translation>
+        <translation>An den Anfang verschieben</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>move last</source>
-        <translation type="unfinished">Ans Ende verschieben</translation>
+        <translation>Ans Ende verschieben</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>close</source>
-        <translation type="unfinished">Schließen</translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>close others</source>
-        <translation type="unfinished">Alle anderen schließen</translation>
+        <translation>Alle anderen schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>close all</source>
-        <translation type="unfinished">Alles schließen</translation>
+        <translation>Alles schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>dock</source>
-        <translation type="unfinished">Andocken</translation>
+        <translation>Andocken</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>undock</source>
-        <translation type="unfinished">Lösen</translation>
+        <translation>Lösen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>new</source>
-        <translation type="unfinished">Neu</translation>
+        <translation>Neu</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>open</source>
-        <translation type="unfinished">Öffnen</translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>save</source>
-        <translation type="unfinished">Speichern</translation>
+        <translation>Speichern</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>save as...</source>
-        <translation type="unfinished">Speichern unter...</translation>
+        <translation>Speichern unter...</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>save all</source>
-        <translation type="unfinished">Alles speichern</translation>
+        <translation>Alles speichern</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>cut</source>
-        <translation type="unfinished">Ausschneiden</translation>
+        <translation>Ausschneiden</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>copy</source>
-        <translation type="unfinished">Kopieren</translation>
+        <translation>Kopieren</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>paste</source>
-        <translation type="unfinished">Einfügen</translation>
+        <translation>Einfügen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>undo</source>
-        <translation type="unfinished">Rückgängig</translation>
+        <translation>Rückgängig</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>redo</source>
-        <translation type="unfinished">Wiederholen</translation>
+        <translation>Wiederholen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>comment</source>
-        <translation type="unfinished">Kommentieren</translation>
+        <translation>Kommentieren</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5250,7 +5250,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>uncomment</source>
-        <translation type="unfinished">Auskommentieren</translation>
+        <translation>Auskommentieren</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5261,17 +5261,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>indent</source>
-        <translation type="unfinished">Einrücken</translation>
+        <translation>Einrücken</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>unindent</source>
-        <translation type="unfinished">Ausrücken</translation>
+        <translation>Ausrücken</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>run</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5287,7 +5287,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>debug</source>
-        <translation type="unfinished">Debug</translation>
+        <translation>Debug</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5299,7 +5299,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-3"/>
         <source>stop</source>
-        <translation type="unfinished">Stop</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5310,12 +5310,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>continue</source>
-        <translation type="unfinished">Fortsetzen</translation>
+        <translation>Fortsetzen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>step</source>
-        <translation type="unfinished">Einzelschritt</translation>
+        <translation>Einzelschritt</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5326,7 +5326,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>step over</source>
-        <translation type="unfinished">Prozedurschritt</translation>
+        <translation>Prozedurschritt</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5337,7 +5337,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>step out</source>
-        <translation type="unfinished">Ausführen bis Rücksprung</translation>
+        <translation>Ausführen bis Rücksprung</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5348,17 +5348,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>quick search...</source>
-        <translation type="unfinished">Schnellsuche...</translation>
+        <translation>Schnellsuche...</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>icon &amp;browser...</source>
-        <translation type="unfinished">Icon-&amp;Suche...</translation>
+        <translation>Icon &amp;suchen...</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;toggle bookmark</source>
-        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+        <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5376,7 +5376,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+79"/>
         <source>bookmark</source>
         <translation>Lesezeichen</translation>
     </message>
@@ -5401,7 +5401,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+613"/>
+        <location line="+623"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
@@ -5409,23 +5409,28 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-38"/>
         <source>&apos;%1&apos; was not found</source>
-        <translation type="unfinished">&apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+38"/>
         <source>%1 occurrence(s) was replaced</source>
-        <translation type="unfinished">%1 Vorkommen ersetzt</translation>
+        <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-822"/>
+        <location line="-834"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-57"/>
+        <source>print...</source>
+        <translation>Drucken...</translation>
+    </message>
+    <message>
+        <location line="+57"/>
         <source>find and replace...</source>
-        <translation type="unfinished">Suchen und Ersetzen...</translation>
+        <translation>Suchen und Ersetzen...</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5436,7 +5441,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>goto...</source>
-        <translation type="unfinished">Gehe zu...</translation>
+        <translation>Gehe zu...</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5447,22 +5452,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+50"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Datei</translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Bearbeiten</translation>
+        <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>&amp;Script</source>
-        <translation type="unfinished">&amp;Skript</translation>
+        <translation>&amp;Skript</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>&amp;Windows</source>
-        <translation type="unfinished">&amp;Fenster</translation>
+        <translation>&amp;Fenster</translation>
     </message>
     <message>
         <source>script editor</source>

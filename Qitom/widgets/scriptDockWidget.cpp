@@ -33,6 +33,9 @@
 #include "../ui/dialogGoto.h"
 #include "../ui/dialogReplace.h"
 
+//#include <QPrinter>
+//#include <QPrintDialog>
+
 #include "../ui/dialogIconBrowser.h"
 #include "../Qitom/AppManagement.h"
 
@@ -840,6 +843,9 @@ void ScriptDockWidget::createActions()
     m_saveAllScriptsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAll.png"), tr("save all"), this);
     m_saveAllScriptsAction->connectTrigger(this, SLOT(mnuSaveAllScripts()));
 
+    m_printAction = new ShortcutAction(QIcon(":/plots/icons/print.png"), tr("print..."), this, QKeySequence::Print, Qt::WidgetWithChildrenShortcut);
+    m_printAction->connectTrigger(this, SLOT(mnuPrint()));
+
     m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_cutAction->connectTrigger(this, SLOT(mnuCut()));
 
@@ -957,6 +963,8 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_saveScriptAction->action());
     m_fileMenu->addAction(m_saveScriptAsAction->action());
     m_fileMenu->addAction(m_saveAllScriptsAction->action());
+    m_fileMenu->addSeparator();
+    m_fileMenu->addAction(m_printAction->action());
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_tabCloseAction->action());
     m_fileMenu->addAction(m_tabCloseAllAction->action());
@@ -1282,6 +1290,16 @@ void ScriptDockWidget::mnuSaveAllScripts()
         {
             retValue += sew->saveFile(false);
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuPrint()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->print();
     }
 }
 
