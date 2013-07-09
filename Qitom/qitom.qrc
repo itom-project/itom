@@ -52,6 +52,8 @@
         <file>icons/dirOpen.png</file>
         <file>icons/dir-parent-folder.png</file>
         <file>icons/newDir.png</file>
+        <file>icons/dirCopy.png</file>
+        <file>icons/dirPaste.png</file>
     </qresource>
     <qresource prefix="/breakpoints">
         <file>icons/breakpointToggle.png</file>

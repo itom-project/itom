@@ -278,9 +278,9 @@ void FileSystemDockWidget::createActions()
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
     m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("change to parent folder"), this);
     m_pActMoveCDUp->connectTrigger(this, SLOT(mnuMoveCDUp()));
-    m_pActCopyDir = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy path to clipboard"), this);
+    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("copy path to clipboard"), this);
     m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
-    m_pActPasteDir = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("set clipboard to path"), this);
+    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("set clipboard to path"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
     m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("open file"), this);
     m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
