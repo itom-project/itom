@@ -29,6 +29,8 @@
 #include <qurl.h>
 #include <qtextcodec.h>
 
+#include "pythonSharedPointerGuard.h"
+
 
 /*!
     \class PythonQtConversion
@@ -1456,6 +1458,15 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 m.m_objName = val2->objName;
                 m.m_className = val2->widgetClassName;
                 *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&m) );
+            }
+            else if(type == QMetaType::type("QSharedPointer<ito::DataObject>"))
+            {
+                ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
+                if (val2 && val2->dataObject)
+                {
+                    QSharedPointer<ito::DataObject> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(val2->dataObject, val);
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer) );
+                }
             }
 #if ITOM_POINTCLOUDLIBRARY > 0
             else if(type == QMetaType::type("ito::PCLPointCloud"))

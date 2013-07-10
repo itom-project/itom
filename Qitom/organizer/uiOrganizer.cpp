@@ -2185,7 +2185,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
             {
                 QMetaMethod meth = mo->method(i);
 
-                if(meth.methodType() == QMetaMethod::Slot)
+                if(meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
                     if(i < mo->methodOffset())
                     {
