@@ -63,6 +63,8 @@ namespace ito
             QAction *m_pActSnapDialog;
             QAction *m_pActInfo;
             QAction *m_pActOpenWidget;
+            QAction *m_pMainToolbarSeparator1;
+            QAction *m_pMainToolbarSeparator2;
 
             ShortcutAction* m_pViewList;
             ShortcutAction* m_pViewDetails;

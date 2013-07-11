@@ -103,7 +103,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
 //    connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 
-    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Open Widget..."), this);
+    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/window.png"), tr("Open Widget..."), this);
     connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
     m_pContextMenu->addAction(m_pActOpenWidget);
 
@@ -257,18 +257,19 @@ void AIManagerWidget::createToolBars()
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 
+    m_pMainToolbar->addAction(m_pActNewInstance);
     m_pMainToolbar->addAction(m_pShowConfDialog);
     m_pMainToolbar->addAction(m_pActDockWidgetToolbar);
-    m_pMainToolbar->addAction(m_pActNewInstance);
     m_pMainToolbar->addAction(m_pActCloseInstance);
     m_pMainToolbar->addAction(m_pActCloseAllInstances);
-    m_pMainToolbar->addAction(m_pActSendToPython);
+    m_pMainToolbar->addAction(m_pActOpenWidget);
+    m_pMainToolbarSeparator1 = m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pActLiveImage);
     m_pMainToolbar->addAction(m_pActSnapDialog);
+    m_pMainToolbarSeparator2 = m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pActInfo);
-    m_pMainToolbar->addAction(m_pActOpenWidget);
+    m_pMainToolbar->addAction(m_pActSendToPython);
     m_pMainToolbar->addWidget(spacerWidget);
-
     m_pMainToolbar->addAction(m_pAIManagerViewSettingMenu->menuAction());
     connect(m_pAIManagerViewSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
 }
@@ -346,7 +347,6 @@ void AIManagerWidget::updateActions()
                     m_pActCloseAllInstances->setEnabled(indexChild.isValid());
                 }
 
-                m_pActInfo->setEnabled(false);  // TODO
                 //m_pActCloseAllInstances->setEnabled(false);  // TODO
                 //m_pActLiveImage->setEnabled(false);  // TODO
                 m_pActSnapDialog->setEnabled(false);  // TODO
@@ -368,6 +368,11 @@ void AIManagerWidget::updateActions()
         m_pActSnapDialog->setVisible(false);
         m_pShowConfDialog->setVisible(false);
     }
+
+    m_pMainToolbarSeparator1->setVisible(m_pActLiveImage->isVisible() || m_pActSnapDialog->isVisible());
+    m_pMainToolbarSeparator2->setVisible((m_pActInfo->isVisible() || m_pActSendToPython->isVisible()) && 
+        (m_pMainToolbarSeparator1->isVisible() || m_pActCloseAllInstances->isVisible() || m_pActNewInstance->isVisible() || m_pShowConfDialog->isVisible() ||
+        m_pActDockWidget->isVisible() || m_pActDockWidgetToolbar->isVisible() || m_pActCloseInstance->isVisible() || m_pActOpenWidget->isVisible()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

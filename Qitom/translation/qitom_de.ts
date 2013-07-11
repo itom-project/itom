@@ -3177,7 +3177,7 @@ Type conflict for %1</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+262"/>
+        <location line="+263"/>
         <source>Show Plugin Toolbox</source>
         <translation>Plugin-Toolbox anzeigen</translation>
     </message>
@@ -3186,7 +3186,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location line="-250"/>
+        <location line="-251"/>
         <source>Close Instance</source>
         <translation>Instanz schließen</translation>
     </message>
@@ -3254,7 +3254,7 @@ Type conflict for %1</source>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+160"/>
+        <location line="+165"/>
         <source>The instance %1 cannot be closed by GUI since it has been created by Python</source>
         <translation>Die Instanz %1 kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
     </message>
@@ -3269,17 +3269,17 @@ Type conflict for %1</source>
         <translation>Die Instanz %1 kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
     </message>
     <message>
-        <location line="-99"/>
+        <location line="-103"/>
         <source>Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location line="-248"/>
+        <location line="-249"/>
         <source>Show/Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ein-/ausblenden</translation>
     </message>
     <message>
-        <location line="+531"/>
+        <location line="+536"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
