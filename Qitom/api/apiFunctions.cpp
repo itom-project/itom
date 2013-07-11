@@ -25,6 +25,7 @@
 #include "apiFunctions.h"
 #include "../Qitom/AppManagement.h"
 #include "../organizer/paletteOrganizer.h"
+#include "../common/sharedFunctionsQt.h"
 
 static ito::apiFunctions singleApiFunctions;
 
@@ -50,6 +51,8 @@ namespace ito
         (void*)&ParamHelper::getParamFromMapByKey,      /* [14] */
         (void*)&ParamHelper::parseParamName,            /* [15] */
         (void*)&ParamHelper::getItemFromArray,          /* [16] */
+        (void*)&saveQLIST2XML,                          /* [17] */
+        (void*)&loadXML2QLIST,                          /* [18] */
 		NULL
 	};
 
