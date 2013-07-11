@@ -1352,7 +1352,7 @@ void ScriptEditorWidget::print()
 //    QPrintPreviewDialog printDialog(&printer);
     if (printDialog.exec())
     {
-        printer.printRange( this );
+        printer.printRange(this);
     }
 }
 

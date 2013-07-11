@@ -38,13 +38,12 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle)
-    : AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
-//AIManagerWidget::AIManagerWidget() :
-//    AbstractDockWidget(tr("Plugins")),
+AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
     m_pContextMenu(NULL),
     m_pShowConfDialog(NULL),
     m_pActDockWidget(NULL),
+    m_pActDockWidgetToolbar(NULL),
     m_pActNewInstance(NULL),
     m_pActCloseInstance(NULL),
     m_pActCloseAllInstances(NULL),
@@ -66,7 +65,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pAIManagerView->setSortingEnabled(true);
-    connect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    connect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint&)));
 
     m_pContextMenu = new QMenu(this);
 
@@ -78,17 +77,20 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     connect(m_pShowConfDialog, SIGNAL(triggered()), this, SLOT(mnuShowConfdialog()));
     m_pContextMenu->addAction(m_pShowConfDialog);
 
-    m_pActDockWidget = new QAction(QIcon(":/plugins/icons/pluginToolbox.png"), tr("Show Plugin Toolbox"), this);
+    m_pActDockWidget = new QAction(QIcon(":/plugins/icons/pluginToolbox.png"), "", this);
     m_pActDockWidget->setCheckable(true);
     connect(m_pActDockWidget, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
     m_pContextMenu->addAction(m_pActDockWidget);
+
+    m_pActDockWidgetToolbar = new QAction(QIcon(":/plugins/icons/pluginToolbox.png"), tr("Show/Hide Plugin Toolbox"), this);
+    connect(m_pActDockWidgetToolbar, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
 
     m_pActCloseInstance = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close Instance"), this);
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
 
     m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close all"), this);
-//    connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuCloseAllInstances()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
     m_pContextMenu->addSeparator();
@@ -119,6 +121,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
     m_pAIManagerView->setModel(m_pSortFilterProxyModel);
     m_pAIManagerView->sortByColumn(1,Qt::AscendingOrder);
+    connect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
 
     // expanding DataIO node
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
@@ -166,6 +169,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     AbstractDockWidget::init();
     setContentWidget(m_pAIManagerView);
 
+    updateActions();
     return;
 }
 
@@ -201,12 +205,16 @@ AIManagerWidget::~AIManagerWidget()
     settings->sync();
     delete settings;
 
+    disconnect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    disconnect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+
     DELETE_AND_SET_NULL(m_pSortFilterProxyModel);
     DELETE_AND_SET_NULL(m_pAIManagerView);
     DELETE_AND_SET_NULL(m_pContextMenu);
     DELETE_AND_SET_NULL(m_pShowConfDialog);
     DELETE_AND_SET_NULL(m_pActNewInstance);
     DELETE_AND_SET_NULL(m_pActDockWidget);
+    DELETE_AND_SET_NULL(m_pActDockWidgetToolbar);
     DELETE_AND_SET_NULL(m_pActCloseInstance);
     DELETE_AND_SET_NULL(m_pActCloseAllInstances);
     DELETE_AND_SET_NULL(m_pActSendToPython);
@@ -249,7 +257,18 @@ void AIManagerWidget::createToolBars()
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 
+    m_pMainToolbar->addAction(m_pShowConfDialog);
+    m_pMainToolbar->addAction(m_pActDockWidgetToolbar);
+    m_pMainToolbar->addAction(m_pActNewInstance);
+    m_pMainToolbar->addAction(m_pActCloseInstance);
+    m_pMainToolbar->addAction(m_pActCloseAllInstances);
+    m_pMainToolbar->addAction(m_pActSendToPython);
+    m_pMainToolbar->addAction(m_pActLiveImage);
+    m_pMainToolbar->addAction(m_pActSnapDialog);
+    m_pMainToolbar->addAction(m_pActInfo);
+    m_pMainToolbar->addAction(m_pActOpenWidget);
     m_pMainToolbar->addWidget(spacerWidget);
+
     m_pMainToolbar->addAction(m_pAIManagerViewSettingMenu->menuAction());
     connect(m_pAIManagerViewSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
 }
@@ -257,6 +276,104 @@ void AIManagerWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::updateActions()
 {
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        PlugInModel::tItemType itemType;
+        size_t itemInternalData;
+        PlugInModel *plugInModel = (PlugInModel*)(index.model());
+
+        if (plugInModel->flags(index) & Qt::ItemIsEnabled)
+        {
+    //        int itemType = plugInModel->data(index, Qt::UserRole + 3).toInt();
+            if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
+            {
+    //            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
+                bool isPlugInNode     =    (itemType == PlugInModel::itemPlugin);
+                bool isPlugInAlgoNode =    plugInModel->getIsAlgoPlugIn(itemType, itemInternalData);
+                bool isInstanceNode   =    (itemType == PlugInModel::itemInstance);
+                bool isPlugInGrabberNode = plugInModel->getIsGrabberInstance(itemType, itemInternalData);
+                bool isFilterNode     =    (itemType == PlugInModel::itemFilter);
+                bool isWidgetNode     =    (itemType == PlugInModel::itemWidget);
+
+                m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
+                m_pActCloseInstance->setVisible(isInstanceNode);
+                m_pActDockWidget->setVisible(isInstanceNode);
+                m_pActDockWidgetToolbar->setVisible(isInstanceNode);
+                m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
+                m_pActLiveImage->setVisible(isPlugInGrabberNode);
+                m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
+                m_pActOpenWidget->setVisible(isWidgetNode);
+                m_pActSendToPython->setVisible(isInstanceNode);
+                m_pActSnapDialog->setVisible(isPlugInGrabberNode);
+                m_pShowConfDialog->setVisible(isInstanceNode);
+
+                if (isInstanceNode)
+                {
+                    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+
+                    m_pActCloseInstance->setEnabled(ais->createdByGUI() > 0);
+
+                    QObject *engine = AppManagement::getPythonEngine();
+                    m_pActSendToPython->setEnabled(engine);
+
+                    m_pShowConfDialog->setEnabled(ais->hasConfDialog());
+                    m_pActDockWidget->setEnabled(ais->hasDockWidget());
+                    m_pActDockWidgetToolbar->setEnabled(ais->hasDockWidget());
+
+                    if (m_pActDockWidget->isEnabled())
+                    {
+                        if (ais->getDockWidget() && ais->getDockWidget()->toggleViewAction()->isChecked())
+                        {
+                            m_pActDockWidget->setText(tr("Hide Plugin Toolbox"));
+                            m_pActDockWidget->setChecked(true);
+                        }
+                        else
+                        {
+                            m_pActDockWidget->setText(tr("Show Plugin Toolbox"));
+                            m_pActDockWidget->setChecked(false);
+                        }
+                    }
+                }
+                else if (m_pActCloseAllInstances->isVisible())
+                {
+                    QModelIndex indexChild = index.child(0, 0);
+                    m_pActCloseAllInstances->setEnabled(indexChild.isValid());
+                }
+
+                m_pActInfo->setEnabled(false);  // TODO
+                //m_pActCloseAllInstances->setEnabled(false);  // TODO
+                //m_pActLiveImage->setEnabled(false);  // TODO
+                m_pActSnapDialog->setEnabled(false);  // TODO
+                m_pActInfo->setEnabled(false);  // TODO
+            }
+        }
+    }
+    else
+    {
+        m_pActCloseAllInstances->setVisible(false);
+        m_pActCloseInstance->setVisible(false);
+        m_pActDockWidget->setVisible(false);
+        m_pActDockWidgetToolbar->setVisible(false);
+        m_pActInfo->setVisible(false);
+        m_pActLiveImage->setVisible(false);
+        m_pActNewInstance->setVisible(false);
+        m_pActOpenWidget->setVisible(false);
+        m_pActSendToPython->setVisible(false);
+        m_pActSnapDialog->setVisible(false);
+        m_pShowConfDialog->setVisible(false);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection)
+{
+    updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -288,9 +405,62 @@ void AIManagerWidget::updateActions()
 }*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool AIManagerWidget::CloseInstance(const QModelIndex index)
+{
+    bool notCloseable = false;
+    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+    if (ais)
+    {
+        if (ais->createdByGUI() == 0)
+        {
+            QMessageBox::warning(this, tr("closing not possible"), tr("The instance %1 cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
+            notCloseable = true;
+        }
+        else if (ais->getRefCount() > 1)
+        {
+            QMessageBox::warning(this, tr("closing not possible"), tr("The instance %1 can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
+            notCloseable = true;
+        }
+        else
+        {
+            //it may be that an instance has been created by gui and then a reference has been created in python. If we now close the instance
+            //in the GUI, python still holds it, therefore the createdByGUI-flag must be false after that the instance is closed by the GUI-side
+            ais->setCreatedByGUI(false);
+
+            if (ais->getRefCount() > 0)
+            {
+                QMessageBox::information(this, tr("final closing not possible"), tr("The instance %1 can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
+                notCloseable = true;
+            }
+
+            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::RetVal retValue = aim->closeAddIn(&ais,NULL);
+
+            if (retValue.containsWarning())
+            {
+                char* msg = retValue.errorMessage();
+                QString message = tr("warning while closing instance. Message: %1").arg(msg);
+                QMessageBox::warning(this, tr("Warning while closing instance"), message);
+                notCloseable = true;
+            }
+            else if (retValue.containsError())
+            {
+                char* msg = retValue.errorMessage();
+                QString message = tr("error while closing instance. Message: %1").arg(msg);
+                QMessageBox::critical(this, tr("Error while closing instance"), message);
+                notCloseable = true;
+            }
+        }
+    }
+    return notCloseable;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index = m_pAIManagerView->currentIndex();
+    updateActions();
+    m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
+/*    QModelIndex index = m_pAIManagerView->currentIndex();
     if (m_pSortFilterProxyModel)
     {
         index = m_pSortFilterProxyModel->mapToSource(index);
@@ -352,9 +522,14 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
                         }
                     }
                 }
+                else if (m_pActCloseAllInstances->isVisible())
+                {
+                    QModelIndex indexChild = index.child(0, 0);
+                    m_pActCloseAllInstances->setEnabled(indexChild.isValid());
+                }
 
                 m_pActInfo->setEnabled(false);  // TODO
-                m_pActCloseAllInstances->setEnabled(false);  // TODO
+                //m_pActCloseAllInstances->setEnabled(false);  // TODO
                 //m_pActLiveImage->setEnabled(false);  // TODO
                 m_pActSnapDialog->setEnabled(false);  // TODO
                 m_pActInfo->setEnabled(false);  // TODO
@@ -362,7 +537,7 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
                 m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
             }
         }
-    }
+    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -526,6 +701,7 @@ void AIManagerWidget::mnuCreateNewInstance()
             DELETE_AND_SET_NULL(dialog);
         }
     }
+    updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -539,7 +715,8 @@ void AIManagerWidget::mnuCloseInstance()
 
     if (index.isValid())
     {
-        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        CloseInstance(index);
+/*        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais)
         {
             if (ais->createdByGUI() == 0)
@@ -577,8 +754,34 @@ void AIManagerWidget::mnuCloseInstance()
                     QMessageBox::critical(this, tr("Error while closing instance"), message);
                 }
             }
+        }*/
+    }
+    updateActions();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuCloseAllInstances()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        int childCount = 0;
+        QModelIndex indexChild = index.child(childCount, 0);
+        while (indexChild.isValid())
+        {
+            if (CloseInstance(indexChild))
+            {
+                ++childCount;
+            }
+            indexChild = index.child(childCount, 0);
         }
     }
+    updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

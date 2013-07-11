@@ -3172,53 +3172,52 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="+77"/>
+        <location filename="../widgets/AIManagerWidget.cpp" line="+76"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+269"/>
+        <location line="+262"/>
         <source>Show Plugin Toolbox</source>
-        <translation type="unfinished">Plugin-Toolbox anzeigen</translation>
+        <translation>Plugin-Toolbox anzeigen</translation>
     </message>
     <message>
         <source>New Instance</source>
         <translation type="obsolete">Neue Instanz</translation>
     </message>
     <message>
-        <location line="-264"/>
+        <location line="-250"/>
         <source>Close Instance</source>
-        <translation type="unfinished">Instanz schließen</translation>
+        <translation>Instanz schließen</translation>
     </message>
     <message>
         <source>Send to Python</source>
         <translation type="obsolete">An Python senden</translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="-16"/>
         <source>New Instance...</source>
-        <translation type="unfinished">Neue Instanz...</translation>
+        <translation>Neue Instanz...</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+44"/>
         <source>Send to Python...</source>
-        <translation type="unfinished">An Python senden...</translation>
+        <translation>An Python senden...</translation>
     </message>
     <message>
         <location line="-24"/>
         <source>Close all</source>
-        <translation type="unfinished">Alles schließen</translation>
+        <translation>Alles schließen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Live Image...</source>
-        <translation type="unfinished">Livebild...</translation>
+        <translation>Livebild...</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Snap Dialog...</source>
-        <translation type="unfinished">Aufnahmedialog...</translation>
+        <translation>Aufnahmedialog...</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3228,16 +3227,16 @@ Type conflict for %1</source>
     <message>
         <location line="-6"/>
         <source>Open Widget...</source>
-        <translation type="unfinished">Fenster öffnen...</translation>
+        <translation>Fenster öffnen...</translation>
     </message>
     <message>
         <source>Live Image</source>
         <translation type="obsolete">Livebild</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+126"/>
         <source>List</source>
-        <translation type="unfinished">Liste</translation>
+        <translation>Liste</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3247,184 +3246,201 @@ Type conflict for %1</source>
     <message>
         <location line="+7"/>
         <source>settings</source>
-        <translation type="unfinished">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>plugins</source>
-        <translation type="unfinished">Plugins</translation>
+        <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+97"/>
+        <location line="+160"/>
+        <source>The instance %1 cannot be closed by GUI since it has been created by Python</source>
+        <translation>Die Instanz %1 kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The instance %1 can temporarily not be closed since it is still in use by another element.</source>
+        <translation>Die Instanz %1 kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The instance %1 can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
+        <translation>Die Instanz %1 kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
+    </message>
+    <message>
+        <location line="-99"/>
         <source>Hide Plugin Toolbox</source>
-        <translation type="unfinished">Plugin-Toolbox ausblenden</translation>
+        <translation>Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="-248"/>
+        <source>Show/Hide Plugin Toolbox</source>
+        <translation>Plugin-Toolbox ein-/ausblenden</translation>
+    </message>
+    <message>
+        <location line="+531"/>
         <source>error while creating new instance. 
 Message: %1</source>
-        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
+        <translation>Fehler beim Erzeugen einer neuen Instanz.
 Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+38"/>
         <source>Error while creating new instance</source>
-        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz</translation>
+        <translation>Fehler beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
         <location line="-7"/>
         <source>warning while creating new instance. Message: %1</source>
-        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
+        <translation>Warnung beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning while creating new instance</source>
-        <translation type="unfinished">Warnung beim Erzeugen einer neuen Instanz</translation>
+        <translation>Warnung beim Erzeugen einer neuen Instanz</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>error while creating new instance. Message: %1</source>
-        <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
+        <translation>Fehler beim Erzeugen einer neuen Instanz. Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+114"/>
+        <location line="+142"/>
         <source>Timeout</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location line="-114"/>
-        <location line="+114"/>
+        <location line="-142"/>
+        <location line="+142"/>
         <source>Python did not response to the request within a certain timeout.</source>
-        <translation type="unfinished">Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
+        <translation>Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
     </message>
     <message>
-        <location line="-106"/>
-        <location line="+114"/>
+        <location line="-134"/>
+        <location line="+142"/>
         <source>warning while sending instance to python. Message: %1</source>
-        <translation type="unfinished">Warnung beim Senden der Instanz an Python. Meldung: %1</translation>
+        <translation>Warnung beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+114"/>
+        <location line="-141"/>
+        <location line="+142"/>
         <source>Warning while sending instance to python</source>
-        <translation type="unfinished">Warnung beim Senden der Instanz an Python</translation>
+        <translation>Warnung beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+114"/>
+        <location line="-137"/>
+        <location line="+142"/>
         <source>error while sending instance to python. Message: %1</source>
-        <translation type="unfinished">Fehler beim Senden der Instanz an Python. Meldung: %1</translation>
+        <translation>Fehler beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+114"/>
+        <location line="-141"/>
+        <location line="+142"/>
         <source>Error while sending instance to python</source>
-        <translation type="unfinished">Fehler beim Senden der Instanz an Python</translation>
+        <translation>Fehler beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+115"/>
+        <location line="-137"/>
+        <location line="+143"/>
         <source>Python not available</source>
-        <translation type="unfinished">Python nicht verfügbar</translation>
+        <translation>Python nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-115"/>
-        <location line="+115"/>
+        <location line="-143"/>
+        <location line="+143"/>
         <source>The Python engine is not available</source>
-        <translation type="unfinished">Die Python-Engine ist nicht verfügbar</translation>
+        <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-86"/>
-        <location line="+4"/>
+        <location line="-420"/>
+        <location line="+5"/>
         <source>closing not possible</source>
-        <translation type="unfinished">Schließen nicht möglich</translation>
+        <translation>Schließen nicht möglich</translation>
     </message>
     <message>
-        <location line="-4"/>
         <source>this instance cannot be closed by GUI since it has been created by Python</source>
-        <translation type="unfinished">Diese Instanz kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
+        <translation type="obsolete">Diese Instanz kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>this instance can temporarily not be closed since it is still in use by another element.</source>
-        <translation type="unfinished">Diese Instanz kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
+        <translation type="obsolete">Diese Instanz kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>final closing not possible</source>
+        <translation>Endgültiges Schließen nicht möglich</translation>
+    </message>
+    <message>
+        <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
+        <translation type="obsolete">Diese Instanz kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>final closing not possible</source>
-        <translation type="unfinished">Endgültiges Schließen nicht möglich</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
-        <translation type="unfinished">Diese Instanz kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
-    </message>
-    <message>
-        <location line="+9"/>
         <source>warning while closing instance. Message: %1</source>
-        <translation type="unfinished">Warnung beim Schließen der Instanz. Meldung: %1</translation>
+        <translation>Warnung beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning while closing instance</source>
-        <translation type="unfinished">Warnung beim Schließen der Instanz</translation>
+        <translation>Warnung beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>error while closing instance. Message: %1</source>
-        <translation type="unfinished">Fehler beim Schließen der Instanz. Meldung: %1</translation>
+        <translation>Fehler beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error while closing instance</source>
-        <translation type="unfinished">Fehler beim Schließen der Instanz</translation>
+        <translation>Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+355"/>
         <source>Python variable name</source>
-        <translation type="unfinished">Variablenname in Python</translation>
+        <translation>Variablenname in Python</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Python variable name for saving this instance in global workspace</source>
-        <translation type="unfinished">Variablenname in Python um diese Instanz in den globalen Workspace zu schreiben</translation>
+        <translation>Variablenname in Python um diese Instanz in den globalen Workspace zu schreiben</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>instance</source>
-        <translation type="unfinished">Instanz</translation>
+        <translation>Instanz</translation>
     </message>
     <message>
         <location line="+100"/>
         <source>Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters</source>
-        <translation type="unfinished">Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
+        <translation>Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>User interface of plugin could not be created. Returned handle is invalid.</source>
-        <translation type="unfinished">Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
+        <translation>Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>could not find instance of UiOrganizer</source>
-        <translation type="unfinished">Die Instanz des UI-Organizers konnte nicht gefunden werden</translation>
+        <translation>Die Instanz des UI-Organizers konnte nicht gefunden werden</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Error while opening user interface from plugin.</source>
-        <translation type="unfinished">Fehler beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
+        <translation>Fehler beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Warning while opening user interface from plugin.</source>
-        <translation type="unfinished">Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
+        <translation>Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>This instance is no grabber. Therefore no live image is available.</source>
-        <translation type="unfinished">Diese Instanz ist kein Grabber. Daher ist kein Livebild verfügbar.</translation>
+        <translation>Diese Instanz ist kein Grabber. Daher ist kein Livebild verfügbar.</translation>
     </message>
 </context>
 <context>
@@ -3432,7 +3448,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../../plot/AbstractDObjFigure.cpp" line="+222"/>
         <source>Figure does not contain an input slot for live sources</source>
-        <translation type="unfinished">Grafik enthält keinen Input-Slot für Livequellen</translation>
+        <translation>Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
 </context>
 <context>
@@ -3440,27 +3456,27 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/abstractDockWidget.cpp" line="+102"/>
         <source>stay on top</source>
-        <translation type="unfinished">Im Vordergrund anzeigen</translation>
+        <translation>Im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>stay on top of main window</source>
-        <translation type="unfinished">Hauptfenster im Vordergrund anzeigen</translation>
+        <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+51"/>
         <source>docking toolbar</source>
-        <translation type="unfinished">Symbolleiste Fenster andocken</translation>
+        <translation>Symbolleiste Fenster andocken</translation>
     </message>
     <message>
         <location line="+194"/>
         <source>toolbar &apos;%1&apos; is already available</source>
-        <translation type="unfinished">Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
+        <translation>Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
     <message>
         <location line="+110"/>
         <source>toolbar &apos;%1&apos; not found</source>
-        <translation type="unfinished">Toolbar &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>Toolbar &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -3472,17 +3488,17 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+36"/>
         <location line="+18"/>
         <source>size</source>
-        <translation type="unfinished">Größe</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location line="-39"/>
         <source>dims</source>
-        <translation type="unfinished">Dimensionen</translation>
+        <translation>Dimensionen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation>Typ</translation>
     </message>
 </context>
 <context>
@@ -3490,12 +3506,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../../common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
-        <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
+        <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation type="unfinished">Destruktor muss überschrieben werden</translation>
+        <translation>Destruktor muss überschrieben werden</translation>
     </message>
 </context>
 <context>
@@ -4207,8 +4223,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Pfad in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>set clipboard to path</source>
+        <translation type="obsolete">Pfad aus der Zwischenablage übernehmen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>get path from clipboard</source>
         <translation>Pfad aus der Zwischenablage übernehmen</translation>
     </message>
     <message>

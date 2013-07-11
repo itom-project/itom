@@ -54,6 +54,7 @@ namespace ito
 
             QAction *m_pShowConfDialog;
 			QAction *m_pActDockWidget;
+            QAction *m_pActDockWidgetToolbar;
             QAction *m_pActNewInstance;
             QAction *m_pActCloseInstance;
             QAction *m_pActCloseAllInstances;
@@ -72,6 +73,7 @@ namespace ito
             void createStatusBar(){}
             void updateActions();
             void updatePythonActions(){ updateActions(); }
+            bool CloseInstance(const QModelIndex index);
 
         private:
             QTreeView *m_pAIManagerView;
@@ -82,10 +84,12 @@ namespace ito
 
         private slots:
             void treeViewContextMenuRequested(const QPoint &pos);
+            void selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
             void mnuShowConfdialog();
 			void mnuToggleDockWidget();
             void mnuCreateNewInstance();
             void mnuCloseInstance();
+            void mnuCloseAllInstances();
             void mnuSendToPython();
             void mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd);
             void mnuOpenWidget();

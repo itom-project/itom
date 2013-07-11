@@ -90,7 +90,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
 
     resizeDockWidget(700,400);
 
-    connect(m_tab,SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+    connect(m_tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
     if (m_tabContextMenu != NULL)
     {
         connect(m_tabContextMenu, SIGNAL(aboutToShow()), this, SLOT(updateTabContextActions()));
