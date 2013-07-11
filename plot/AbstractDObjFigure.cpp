@@ -90,9 +90,12 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
         if(m_dataPointer["source"].data() != source.data())
         {
             oldSource = m_dataPointer["source"];
-            oldSource->lockWrite();
+            if (oldSource)
+                oldSource->lockWrite();
+            // sometimes crash here when replacing the source
             m_dataPointer["source"] = source;
-            oldSource->unlock();
+            if (oldSource)
+                oldSource->unlock();
         }  
     }
 	else
