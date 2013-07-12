@@ -3446,7 +3446,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="+222"/>
+        <location filename="../../plot/AbstractDObjFigure.cpp" line="+225"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation>Grafik enthält keinen Input-Slot für Livequellen</translation>
     </message>
