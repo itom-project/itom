@@ -265,7 +265,9 @@ namespace ito
                 //    .arg(errorLine)
                 //    .arg(errorColumn)
                 //    .arg(errorStr));
-                return retWarning;
+                QString errStr;
+                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr);
+                return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toAscii().data()).toAscii().data());
         }
 
         QDomElement root = paramDomDoc.documentElement();
@@ -286,7 +288,7 @@ namespace ito
         QDomElement child = root.firstChildElement("instance");
         while (!child.isNull())
         {
-            if (child.attribute("id").toInt() == id.toInt())
+            if (child.attribute("id") == id)
             {
 
                 QDomElement instParam = child.firstChildElement();

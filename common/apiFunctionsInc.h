@@ -89,10 +89,10 @@ namespace ito
         (*(ito::RetVal (*)(const ito::Param &arrayParam, const int index, ito::Param &itemParam)) ito::ITOM_API_FUNCS[16])
 
     #define apiSaveQLIST2XML \
-        (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[16])
+        (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[17])
 
     #define apiLoadXML2QLIST \
-        (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[16])
+        (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[18])
 
 #if defined(ITOM_IMPORT_API)
 static int importItomApi(void** apiArray)
