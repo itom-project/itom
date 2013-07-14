@@ -400,7 +400,7 @@ QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget
 
     if(factory)
     {
-        qDebug() << "create instance\n";
+        //qDebug() << "create instance\n";
         ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)( factory->instance() );
         return fac->createWidgetWithMode(winMode, parentWidget);
     }

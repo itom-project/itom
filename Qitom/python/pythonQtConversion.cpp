@@ -1468,6 +1468,14 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer) );
                 }
             }
+			else if(type == QMetaType::type("ito::DataObject"))
+			{
+				ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
+                if (val2 && val2->dataObject)
+                {
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(val2->dataObject) );
+                }
+			}
 #if ITOM_POINTCLOUDLIBRARY > 0
             else if(type == QMetaType::type("ito::PCLPointCloud"))
             {

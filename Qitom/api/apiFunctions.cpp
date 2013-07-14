@@ -53,6 +53,7 @@ namespace ito
         (void*)&ParamHelper::getItemFromArray,          /* [16] */
         (void*)&saveQLIST2XML,                          /* [17] */
         (void*)&loadXML2QLIST,                          /* [18] */
+		(void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
 		NULL
 	};
 
@@ -414,6 +415,54 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
     waitCond = NULL;
 
     return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
+{
+	ito::DataObject *output = NULL;
+	ito::RetVal ret;
+
+	if (dObj)
+	{
+		if (dObj->getDims() != nrDims)
+		{
+			ret += ito::RetVal::format(ito::retError,0,"The given data object must have %i dimensions (%i given)", nrDims, dObj->getDims());
+		}
+		else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
+		{
+			for (int i = 0; i < nrDims; ++i)
+			{
+				size_t s = dObj->getSize(i);
+				if (s < sizeLimits[i*2] || s > sizeLimits[i*2+1])
+				{
+					ret += ito::RetVal::format(ito::retError, 0, "The size of the %i. dimension exeeds the given boundaries [%i,%i]", sizeLimits[i*2], sizeLimits[i*2+1]);
+					break;
+				}
+			}
+		}
+
+		if (!ret.containsError())
+		{
+			if (dObj->getType() == type)
+			{
+				output = new ito::DataObject(*dObj);
+			}
+			else
+			{
+				output = new ito::DataObject();
+				ret += dObj->convertTo(*output, type);
+			}
+		}
+	}
+
+	if (ret.containsError() && output)
+	{
+		DELETE_AND_SET_NULL(output);
+	}
+
+	if (retval) *retval = ret;
+	return output;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

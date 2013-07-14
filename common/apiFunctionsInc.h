@@ -93,6 +93,10 @@ namespace ito
 
     #define apiLoadXML2QLIST \
         (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[18])
+	
+	#define apiCreateFromDataObject \
+		(* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
+
 
 #if defined(ITOM_IMPORT_API)
 static int importItomApi(void** apiArray)
