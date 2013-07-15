@@ -290,10 +290,10 @@ namespace ito
                 }
                 else
                 {
-                    int val = value.getVal<int>();
-                    for (int num = 0; num < param.getLen(); num++)
+                    int *val = value.getVal<int *>();
+                    for (int num = 0; num < param.getLen() > value.getLen() ? value.getLen() : param.getLen(); num++)
                     {
-                        ((int*)dPtr)[num] = val;
+                        ((int*)dPtr)[num] = val[num];
                     }
                 }
             break;
@@ -307,7 +307,7 @@ namespace ito
                 else
                 {
                     double *val = value.getVal<double *>();
-                    for (int num = 0; num < param.getLen(); num++)
+                    for (int num = 0; num < param.getLen() > value.getLen() ? value.getLen() : param.getLen(); num++)
                     {
                         ((double*)dPtr)[num] = val[num];
                     }
