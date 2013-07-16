@@ -944,7 +944,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/dialogVariableDetail.ui"/>
         <source>Variable Detail</source>
-        <translation>Variablendatail</translation>
+        <translation>Variablendetail</translation>
     </message>
     <message>
         <location/>
@@ -1526,7 +1526,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+11"/>
-        <location line="+125"/>
+        <location line="+127"/>
         <location line="+193"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
@@ -1799,7 +1799,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+138"/>
+        <location filename="../api/apiFunctions.cpp" line="+139"/>
         <location filename="../python/pythonCommon.cpp" line="+214"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
@@ -5880,22 +5880,22 @@ Katesisch</translation>
     <message>
         <location filename="../widgets/workspaceDockWidget.cpp" line="+132"/>
         <source>delete item(s)</source>
-        <translation type="unfinished">Objekt(e) löschen</translation>
+        <translation>Objekt(e) löschen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>export item(s)</source>
-        <translation type="unfinished">Objekt(e) exportieren</translation>
+        <translation>Objekt(e) exportieren</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>import item(s)</source>
-        <translation type="unfinished">Objekt(e) importieren</translation>
+        <translation>Objekt(e) importieren</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>rename item</source>
-        <translation type="unfinished">Objekt umbenennen</translation>
+        <translation>Objekt umbenennen</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5905,40 +5905,52 @@ Katesisch</translation>
     <message>
         <location line="+11"/>
         <source>script editor</source>
-        <translation type="unfinished">Skript-Editor</translation>
+        <translation>Skript-Editor</translation>
     </message>
     <message>
         <location line="+44"/>
         <source>Do you really want to delete the selected variables?</source>
-        <translation type="unfinished">Sollen die markierten Variablen wirklich gelöscht werden?</translation>
+        <translation>Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
         <location line="+57"/>
         <source>Export data</source>
-        <translation type="unfinished">Datenexport</translation>
+        <translation>Datenexport</translation>
     </message>
     <message>
         <location line="+0"/>
-        <location line="+21"/>
-        <source>Error while importing variables: 
+        <source>Error while exporting variables:
 %1</source>
-        <translation type="unfinished">Fehler beim importieren der Variablen:
+        <translation>Fehler beim exportieren der Variablen:
 %1</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <source>Error while importing variables: 
+%1</source>
+        <translation type="obsolete">Fehler beim importieren der Variablen:
+%1</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Import data</source>
-        <translation type="unfinished">Daten importieren</translation>
+        <translation>Datenimport</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Error while importing variables:
+%1</source>
+        <translation>Fehler beim importieren der Variablen:
+%1</translation>
     </message>
     <message>
         <location line="+91"/>
         <source>renaming variable</source>
-        <translation type="unfinished">Variable umbenennen</translation>
+        <translation>Variable umbenennen</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>timeout while renaming variables</source>
-        <translation type="unfinished">Zeitüberschreitung beim umbenennen der Variablen</translation>
+        <translation>Zeitüberschreitung beim umbenennen der Variablen</translation>
     </message>
 </context>
 <context>
@@ -5946,27 +5958,27 @@ Katesisch</translation>
     <message>
         <location filename="../widgets/uiDebugViewer.ui"/>
         <source>Debug-Viewer</source>
-        <translation type="unfinished">Debug-Übersicht</translation>
+        <translation>Debug-Übersicht</translation>
     </message>
     <message>
         <location/>
         <source>global</source>
-        <translation type="unfinished">Global</translation>
+        <translation>Global</translation>
     </message>
     <message>
         <location/>
         <source>global workspace variables</source>
-        <translation type="unfinished">Variablen im globalen Arbeitsbereich</translation>
+        <translation>Variablen im globalen Arbeitsbereich</translation>
     </message>
     <message>
         <location/>
         <source>local</source>
-        <translation type="unfinished">Lokal</translation>
+        <translation>Lokal</translation>
     </message>
     <message>
         <location/>
         <source>PushButton</source>
-        <translation type="unfinished">Ok</translation>
+        <translation>Ok</translation>
     </message>
 </context>
 <context>
