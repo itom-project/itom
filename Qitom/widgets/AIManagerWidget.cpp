@@ -33,6 +33,7 @@
 #include <qaction.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
+#include <qabstractitemmodel.h>
 #include "../models/PlugInModel.h"
 
 namespace ito {
@@ -170,7 +171,20 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     setContentWidget(m_pAIManagerView);
 
     updateActions();
-    return;
+
+//    m_pMainToolbar->restoreGeometry(settings->value("stateToolBar", "").toByteArray());
+//m_pMainToolbar->setOrientation(Qt::Vertical);
+
+//m_pMainToolbar->setGeometry(0,0,39,734);
+//m_pMainToolbar->resize(39,734);
+//m_pMainToolbar->restoreGeometry(
+/*QRect posi = m_pMainToolbar->geometry();
+int x0 = posi.x();
+int y0 = posi.y();
+int x1 = posi.width();
+int y1 = posi.height();
+int z = x0+x1+y0+y1;
+m_pMainToolbar->setOrientation(Qt::Vertical);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -182,6 +196,9 @@ AIManagerWidget::~AIManagerWidget()
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
     settings->beginGroup("AIManagerWidget");
+
+//    QByteArray state = m_pMainToolbar->saveGeometry();
+//    settings->setValue("stateToolBar", state);
     
     settings->beginWriteArray("ColWidth");
     
@@ -410,21 +427,18 @@ void AIManagerWidget::selectionChanged(const QItemSelection& newSelection, const
 }*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool AIManagerWidget::CloseInstance(const QModelIndex index)
+void AIManagerWidget::CloseInstance(const QModelIndex index)
 {
-    bool notCloseable = false;
     ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
     if (ais)
     {
         if (ais->createdByGUI() == 0)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance %1 cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
-            notCloseable = true;
+            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
         }
         else if (ais->getRefCount() > 1)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance %1 can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
-            notCloseable = true;
+            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
         }
         else
         {
@@ -434,8 +448,7 @@ bool AIManagerWidget::CloseInstance(const QModelIndex index)
 
             if (ais->getRefCount() > 0)
             {
-                QMessageBox::information(this, tr("final closing not possible"), tr("The instance %1 can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
-                notCloseable = true;
+                QMessageBox::information(this, tr("final closing not possible"), tr("The instance '%1' can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
             }
 
             ito::AddInManager *aim = ito::AddInManager::getInstance();
@@ -446,18 +459,15 @@ bool AIManagerWidget::CloseInstance(const QModelIndex index)
                 char* msg = retValue.errorMessage();
                 QString message = tr("warning while closing instance. Message: %1").arg(msg);
                 QMessageBox::warning(this, tr("Warning while closing instance"), message);
-                notCloseable = true;
             }
             else if (retValue.containsError())
             {
                 char* msg = retValue.errorMessage();
                 QString message = tr("error while closing instance. Message: %1").arg(msg);
                 QMessageBox::critical(this, tr("Error while closing instance"), message);
-                notCloseable = true;
             }
         }
     }
-    return notCloseable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -721,45 +731,6 @@ void AIManagerWidget::mnuCloseInstance()
     if (index.isValid())
     {
         CloseInstance(index);
-/*        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-        if (ais)
-        {
-            if (ais->createdByGUI() == 0)
-            {
-                QMessageBox::warning(this, tr("closing not possible"), tr("this instance cannot be closed by GUI since it has been created by Python"));
-            }
-            else if (ais->getRefCount() > 1)
-            {
-                QMessageBox::warning(this, tr("closing not possible"), tr("this instance can temporarily not be closed since it is still in use by another element."));
-            }
-            else
-            {
-                //it may be that an instance has been created by gui and then a reference has been created in python. If we now close the instance
-                //in the GUI, python still holds it, therefore the createdByGUI-flag must be false after that the instance is closed by the GUI-side
-                ais->setCreatedByGUI(false);
-
-                if (ais->getRefCount() > 0)
-                {
-                    QMessageBox::information(this, tr("final closing not possible"), tr("This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables."));
-                }
-
-                ito::AddInManager *aim = ito::AddInManager::getInstance();
-                ito::RetVal retValue = aim->closeAddIn(&ais,NULL);
-
-                if (retValue.containsWarning())
-                {
-                    char* msg = retValue.errorMessage();
-                    QString message = tr("warning while closing instance. Message: %1").arg(msg);
-                    QMessageBox::warning(this, tr("Warning while closing instance"), message);
-                }
-                else if (retValue.containsError())
-                {
-                    char* msg = retValue.errorMessage();
-                    QString message = tr("error while closing instance. Message: %1").arg(msg);
-                    QMessageBox::critical(this, tr("Error while closing instance"), message);
-                }
-            }
-        }*/
     }
     updateActions();
 }
@@ -775,15 +746,11 @@ void AIManagerWidget::mnuCloseAllInstances()
 
     if (index.isValid())
     {
-        int childCount = 0;
-        QModelIndex indexChild = index.child(childCount, 0);
-        while (indexChild.isValid())
+        const QAbstractItemModel *model = index.model();
+
+        for (int i = model->rowCount(index) - 1; i > -1; --i)
         {
-            if (CloseInstance(indexChild))
-            {
-                ++childCount;
-            }
-            indexChild = index.child(childCount, 0);
+            CloseInstance(model->index(i, 0, index));
         }
     }
     updateActions();

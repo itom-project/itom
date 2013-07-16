@@ -68,22 +68,22 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, bool globalNotLoc
 {
     m_pWorkspaceWidget = new WorkspaceWidget(m_globalNotLocal, this);
     m_pWorkspaceWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    m_pWorkspaceWidget->setContextMenuPolicy( Qt::CustomContextMenu);
+    m_pWorkspaceWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     AbstractDockWidget::init();
 
     setContentWidget(m_pWorkspaceWidget);
 
     connect(m_pWorkspaceWidget, SIGNAL(itemSelectionChanged()), this, SLOT(treeWidgetItemSelectionChanged()));
-    connect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*,int)));
+    connect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*, int)));
     connect(m_pWorkspaceWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
 
     ito::PyWorkspaceContainer *cont = m_pWorkspaceWidget->getWorkspaceContainer();
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     
-    if(eng && cont)
+    if (eng && cont)
     {
-        QMetaObject::invokeMethod(eng, "registerWorkspaceContainer", Q_ARG(PyWorkspaceContainer*,cont), Q_ARG(bool,true), Q_ARG(bool,m_globalNotLocal));
+        QMetaObject::invokeMethod(eng, "registerWorkspaceContainer", Q_ARG(PyWorkspaceContainer*, cont), Q_ARG(bool, true), Q_ARG(bool, m_globalNotLocal));
     }
 
     setAcceptDrops(true);
@@ -101,14 +101,14 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, bool globalNotLoc
 WorkspaceDockWidget::~WorkspaceDockWidget()
 {
     disconnect(m_pWorkspaceWidget, SIGNAL(itemSelectionChanged()), this, SLOT(treeWidgetItemSelectionChanged()));
-    disconnect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*,int)));
+    disconnect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*, int)));
 
     ito::PyWorkspaceContainer *cont = m_pWorkspaceWidget->getWorkspaceContainer();
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     
-    if(eng && cont)
+    if (eng && cont)
     {
-        QMetaObject::invokeMethod(eng, "registerWorkspaceContainer",  Qt::BlockingQueuedConnection, Q_ARG(PyWorkspaceContainer*,cont), Q_ARG(bool,false), Q_ARG(bool,m_globalNotLocal));
+        QMetaObject::invokeMethod(eng, "registerWorkspaceContainer",  Qt::BlockingQueuedConnection, Q_ARG(PyWorkspaceContainer*, cont), Q_ARG(bool,false), Q_ARG(bool, m_globalNotLocal));
     }
 
     m_pWorkspaceWidget->deleteLater(); //important, since the above invokation still needs the container
@@ -146,27 +146,27 @@ void WorkspaceDockWidget::createActions()
 */
 void WorkspaceDockWidget::createToolBars()
 {
-    m_pMainToolBar = new QToolBar(tr("script editor"),this);
+    m_pMainToolBar = new QToolBar(tr("script editor"), this);
     m_pMainToolBar->setFloatable(false);
-    m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    addToolBar(m_pMainToolBar,"mainToolBar");
+//    m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    addToolBar(m_pMainToolBar, "mainToolBar");
     //addAndRegisterToolBar(m_pMainToolBar, "mainToolBar");
 
-    m_pMainToolBar->addAction( m_actImport->action() );
-    m_pMainToolBar->addAction( m_actExport->action() );
-    m_pMainToolBar->addAction( m_actDelete->action() );
-    m_pMainToolBar->addAction( m_actRename->action() );
+    m_pMainToolBar->addAction(m_actImport->action());
+    m_pMainToolBar->addAction(m_actExport->action());
+    m_pMainToolBar->addAction(m_actDelete->action());
+    m_pMainToolBar->addAction(m_actRename->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction( m_actDelete->action() );
-    m_pContextMenu->addAction( m_actRename->action() );
+    m_pContextMenu->addAction(m_actDelete->action());
+    m_pContextMenu->addAction(m_actRename->action());
     m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction( m_actExport->action() );
-    m_pContextMenu->addAction( m_actImport->action() );
+    m_pContextMenu->addAction(m_actExport->action());
+    m_pContextMenu->addAction(m_actImport->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ void WorkspaceDockWidget::treeViewContextMenuRequested(const QPoint & /*pos*/)
 */
 void WorkspaceDockWidget::mnuDeleteItem()
 {
-    if(m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
     {
          QMessageBox msgBox;
          msgBox.setText(tr("Do you really want to delete the selected variables?"));
@@ -197,20 +197,20 @@ void WorkspaceDockWidget::mnuDeleteItem()
 
          PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-         if(ret == QMessageBox::Yes && eng != NULL)
+         if (ret == QMessageBox::Yes && eng != NULL)
          {
              QList<QTreeWidgetItem*> itemList = m_pWorkspaceWidget->selectedItems();
              QStringList keyList;
 
-             for(int i = 0; i < itemList.size(); i++)
+             for (int i = 0; i < itemList.size(); i++)
              {
-                 if(itemList.at(i)->parent() == NULL)
+                 if (itemList.at(i)->parent() == NULL)
                  {
                     keyList.append(itemList.at(i)->data(0,Qt::DisplayRole).toString());
                  }
              }
 
-             QMetaObject::invokeMethod(eng, "deleteVariable", Q_ARG(bool,m_globalNotLocal), Q_ARG(QStringList,keyList), Q_ARG(ItomSharedSemaphore*, NULL));
+             QMetaObject::invokeMethod(eng, "deleteVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QStringList, keyList), Q_ARG(ItomSharedSemaphore*, NULL));
          }
     }
 }
@@ -225,29 +225,30 @@ void WorkspaceDockWidget::mnuDeleteItem()
 */
 void WorkspaceDockWidget::mnuExportItem()
 {
-    if(m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
     {
         QList<QTreeWidgetItem*> itemList = m_pWorkspaceWidget->selectedItems();
         QStringList keyList;
         QVector<int> compatibleParamBaseTypes; //Type of ParamBase, which is compatible to this value, or 0 if not compatible
         QTreeWidgetItem * item;
-        foreach(item, itemList)
+        foreach (item, itemList)
         {
-            if(item->parent() == NULL)
+            if (item->parent() == NULL)
             {
-                keyList.append(item->data(0,Qt::DisplayRole).toString());
+                keyList.append(item->data(0, Qt::DisplayRole).toString());
                 compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());;
             }
         }
 
         RetVal retValue = IOHelper::uiExportPyWorkspaceVars(m_globalNotLocal, keyList, compatibleParamBaseTypes, QString::Null(), this);
-        if(retValue.containsError())
+        if (retValue.containsError())
         {
             char *errorMsg = retValue.errorMessage();
             QString message = QString();
-            if(errorMsg) message =errorMsg;
+            if (errorMsg) message =errorMsg;
             //std::cerr << "error while exporting variables. reason: " << message.toAscii().data() << "\n" << std::endl;
             QMessageBox::critical(this, tr("Export data"), tr("Error while exporting variables: \n%1").arg( message ));
+            QMessageBox::critical(this, tr("Export data"), tr("Error while importing variables: \n%1").arg(message));
         }
     }
 }
@@ -263,12 +264,12 @@ void WorkspaceDockWidget::mnuExportItem()
 void WorkspaceDockWidget::mnuImportItem()
 {
     RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll), QString::Null(), this);
-    if(retValue.containsError())
+    if (retValue.containsError())
     {
         char *errorMsg = retValue.errorMessage();
         QString message = QString();
-        if(errorMsg) message = errorMsg;
-        QMessageBox::critical(this, tr("Import data"), tr("Error while importing variables: \n%1").arg( message ));
+        if (errorMsg) message = errorMsg;
+        QMessageBox::critical(this, tr("Import data"), tr("Error while importing variables: \n%1").arg(message));
         //std::cerr << "error while importing variables. reason: " << message.toAscii().data() << "\n" << std::endl;
     }
 }
@@ -280,10 +281,10 @@ void WorkspaceDockWidget::mnuImportItem()
 */
 void WorkspaceDockWidget::mnuRenameItem()
 {
-    if(m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() == 1 && m_firstCurrentItem != NULL)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() == 1 && m_firstCurrentItem != NULL)
     {
         m_firstCurrentItemKey = m_firstCurrentItem->data(0, Qt::DisplayRole).toString();
-        m_pWorkspaceWidget->editItem(m_firstCurrentItem,0);
+        m_pWorkspaceWidget->editItem(m_firstCurrentItem, 0);
     }
     else
     {
@@ -301,12 +302,12 @@ void WorkspaceDockWidget::mnuRenameItem()
 */
 void WorkspaceDockWidget::updateActions()
 {
-    if(m_pWorkspaceWidget != NULL)
+    if (m_pWorkspaceWidget != NULL)
     {
         int num = m_pWorkspaceWidget->numberOfSelectedMainItems();
         int i=0;
 
-        if(num > 0)
+        if (num > 0)
         {
             m_firstCurrentItem = NULL;
             while(m_firstCurrentItem == NULL && i < m_pWorkspaceWidget->selectedItems().count())
@@ -319,7 +320,7 @@ void WorkspaceDockWidget::updateActions()
             m_firstCurrentItem = NULL;
         }
 
-        if(m_globalNotLocal)
+        if (m_globalNotLocal)
         {
             bool pythonFree = (pythonBusy() == false || pythonInWaitingMode());
             m_actDelete->setEnabled(num > 0 && pythonFree);
@@ -333,7 +334,7 @@ void WorkspaceDockWidget::updateActions()
             m_actExport->setEnabled(num > 0 && pythonInWaitingMode());
             m_actImport->setEnabled(pythonInWaitingMode());
             m_actRename->setEnabled(num == 1 && pythonInWaitingMode());
-            m_pWorkspaceWidget->setEnabled( pythonInWaitingMode() );
+            m_pWorkspaceWidget->setEnabled(pythonInWaitingMode());
         }
     }
 }
@@ -350,7 +351,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 {
     QString newKey = item->data(0, Qt::DisplayRole).toString();
 
-    if(newKey != m_firstCurrentItemKey && m_firstCurrentItemKey != "" && newKey != "")
+    if (newKey != m_firstCurrentItemKey && m_firstCurrentItemKey != "" && newKey != "")
     {
         
         PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -359,15 +360,15 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-        emit setStatusInformation(tr("renaming variable"),0);
+        emit setStatusInformation(tr("renaming variable"), 0);
 
-        QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool,m_globalNotLocal), Q_ARG(QString,m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         m_firstCurrentItemKey = QString::Null();
 
-        if(locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
+        if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
         {
-            emit setStatusInformation("",0);
+            emit setStatusInformation("", 0);
         }
         else
         {
@@ -379,47 +380,47 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 
 void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_globalNotLocal == false && !pythonInWaitingMode())
+    if (m_globalNotLocal == false && !pythonInWaitingMode())
     {
         //local workspace is only active if python is in waiting mode
         return;
     }
 
-    if( event->mimeData()->hasFormat("text/uri-list") ) //or hasUrls() should be the same result
+    if (event->mimeData()->hasFormat("text/uri-list")) //or hasUrls() should be the same result
     {
         QList<QUrl> urls = event->mimeData()->urls();
 
         QStringList allPatterns;
-        IOHelper::getFileFilters( IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll) , &allPatterns);
+        IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll), &allPatterns);
         QRegExp reg;
         bool ok = false;
-        reg.setPatternSyntax( QRegExp::Wildcard );
+        reg.setPatternSyntax(QRegExp::Wildcard);
 
         //check files
-        foreach(const QUrl &url, urls)
+        foreach (const QUrl &url, urls)
         {
             qDebug() << url.toLocalFile();
 #if QT_VERSION >= 0x040800
             if (url.isLocalFile() == false) //this method has been introduced in Qt 4.8
             {
 #else
-            if (url.scheme().compare( QLatin1String("file"), Qt::CaseInsensitive ) != 0)
+            if (url.scheme().compare(QLatin1String("file"), Qt::CaseInsensitive) != 0)
             {
 #endif
                 return;
             }
 
-            foreach(const QString &pat, allPatterns)
+            foreach (const QString &pat, allPatterns)
             {
                 reg.setPattern(pat);
-                if(reg.exactMatch( url.toLocalFile() ))
+                if (reg.exactMatch(url.toLocalFile()))
                 {
                     ok = true;
                     break;
                 }
             }
 
-            if(!ok) return;
+            if (!ok) return;
         }
 
 
@@ -434,7 +435,7 @@ void WorkspaceDockWidget::dropEvent(QDropEvent *event)
     QFileInfo finfo;
 
     //check files
-    foreach(const QUrl &url, urls)
+    foreach (const QUrl &url, urls)
     {
         IOHelper::openGeneralFile(url.toLocalFile(), false, true, this, 0, m_globalNotLocal);
     }

@@ -521,6 +521,7 @@ void MainWindow::createActions()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! creates toolbar
 void MainWindow::createToolBars()
 {
@@ -532,6 +533,7 @@ void MainWindow::createToolBars()
         m_appToolBar->addAction(m_appFileNew);
     }
     m_appToolBar->addAction(m_appFileOpen);
+    m_appToolBar->setFloatable(false);
 
     m_toolToolBar = addToolBar(tr("Tools"));
     m_toolToolBar->setObjectName("toolbarTools");
@@ -539,10 +541,11 @@ void MainWindow::createToolBars()
     {
         m_toolToolBar->addAction(m_actions["open_designer"]);
     }
+    m_toolToolBar->setFloatable(false);
 
     m_aboutToolBar = addToolBar(tr("About"));
     m_aboutToolBar->setObjectName("toolbarAbout");
-
+    m_aboutToolBar->setFloatable(false);
     m_aboutToolBar->addAction(m_actions["open_assistant"]);
 
     if (uOrg->hasFeature(featDeveloper))
@@ -550,6 +553,7 @@ void MainWindow::createToolBars()
         m_pythonToolBar = addToolBar(tr("Python"));
         m_pythonToolBar->setObjectName("toolbarPython");
         m_pythonToolBar->addAction(m_actions["python_global_runmode"]);
+        m_pythonToolBar->setFloatable(false);
     }
 }
 

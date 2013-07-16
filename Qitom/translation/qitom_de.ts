@@ -1799,7 +1799,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+135"/>
+        <location filename="../api/apiFunctions.cpp" line="+138"/>
         <location filename="../python/pythonCommon.cpp" line="+214"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
@@ -3172,27 +3172,19 @@ Type conflict for %1</source>
 <context>
     <name>ito::AIManagerWidget</name>
     <message>
-        <location filename="../widgets/AIManagerWidget.cpp" line="+76"/>
+        <location filename="../widgets/AIManagerWidget.cpp" line="+77"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+263"/>
+        <location line="+279"/>
         <source>Show Plugin Toolbox</source>
         <translation>Plugin-Toolbox anzeigen</translation>
     </message>
     <message>
-        <source>New Instance</source>
-        <translation type="obsolete">Neue Instanz</translation>
-    </message>
-    <message>
-        <location line="-251"/>
+        <location line="-267"/>
         <source>Close Instance</source>
         <translation>Instanz schließen</translation>
-    </message>
-    <message>
-        <source>Send to Python</source>
-        <translation type="obsolete">An Python senden</translation>
     </message>
     <message>
         <location line="-16"/>
@@ -3230,11 +3222,7 @@ Type conflict for %1</source>
         <translation>Fenster öffnen...</translation>
     </message>
     <message>
-        <source>Live Image</source>
-        <translation type="obsolete">Livebild</translation>
-    </message>
-    <message>
-        <location line="+126"/>
+        <location line="+142"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
@@ -3254,32 +3242,32 @@ Type conflict for %1</source>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+165"/>
-        <source>The instance %1 cannot be closed by GUI since it has been created by Python</source>
-        <translation>Die Instanz %1 kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>The instance %1 can temporarily not be closed since it is still in use by another element.</source>
-        <translation>Die Instanz %1 kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>The instance %1 can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
-        <translation>Die Instanz %1 kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
-    </message>
-    <message>
-        <location line="-103"/>
+        <location line="+78"/>
         <source>Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location line="-249"/>
+        <location line="-265"/>
         <source>Show/Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ein-/ausblenden</translation>
     </message>
     <message>
-        <location line="+536"/>
+        <location line="+351"/>
+        <source>The instance &apos;%1&apos; cannot be closed by GUI since it has been created by Python</source>
+        <translation>Die Instanz &apos;%1&apos; kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The instance &apos;%1&apos; can temporarily not be closed since it is still in use by another element.</source>
+        <translation>Die Instanz &apos;%1&apos; kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The instance &apos;%1&apos; can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
+        <translation>Die Instanz &apos;%1&apos; kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
+    </message>
+    <message>
+        <location line="+180"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
@@ -3308,77 +3296,65 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+142"/>
+        <location line="+99"/>
         <source>Timeout</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location line="-142"/>
-        <location line="+142"/>
+        <location line="-99"/>
+        <location line="+99"/>
         <source>Python did not response to the request within a certain timeout.</source>
         <translation>Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+142"/>
+        <location line="-91"/>
+        <location line="+99"/>
         <source>warning while sending instance to python. Message: %1</source>
         <translation>Warnung beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
-        <location line="-141"/>
-        <location line="+142"/>
+        <location line="-98"/>
+        <location line="+99"/>
         <source>Warning while sending instance to python</source>
         <translation>Warnung beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location line="-137"/>
-        <location line="+142"/>
+        <location line="-94"/>
+        <location line="+99"/>
         <source>error while sending instance to python. Message: %1</source>
         <translation>Fehler beim Senden der Instanz an Python. Meldung: %1</translation>
     </message>
     <message>
-        <location line="-141"/>
-        <location line="+142"/>
+        <location line="-98"/>
+        <location line="+99"/>
         <source>Error while sending instance to python</source>
         <translation>Fehler beim Senden der Instanz an Python</translation>
     </message>
     <message>
-        <location line="-137"/>
-        <location line="+143"/>
+        <location line="-94"/>
+        <location line="+100"/>
         <source>Python not available</source>
         <translation>Python nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-143"/>
-        <location line="+143"/>
+        <location line="-100"/>
+        <location line="+100"/>
         <source>The Python engine is not available</source>
         <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-420"/>
-        <location line="+5"/>
+        <location line="-371"/>
+        <location line="+4"/>
         <source>closing not possible</source>
         <translation>Schließen nicht möglich</translation>
     </message>
     <message>
-        <source>this instance cannot be closed by GUI since it has been created by Python</source>
-        <translation type="obsolete">Diese Instanz kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
-    </message>
-    <message>
-        <source>this instance can temporarily not be closed since it is still in use by another element.</source>
-        <translation type="obsolete">Diese Instanz kann im Moment nicht geschlossen werden, da diese noch von anderen Elementen benutzt wird.</translation>
-    </message>
-    <message>
-        <location line="+11"/>
+        <location line="+10"/>
         <source>final closing not possible</source>
         <translation>Endgültiges Schließen nicht möglich</translation>
     </message>
     <message>
-        <source>This instance can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
-        <translation type="obsolete">Diese Instanz kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
-    </message>
-    <message>
-        <location line="+10"/>
+        <location line="+9"/>
         <source>warning while closing instance. Message: %1</source>
         <translation>Warnung beim Schließen der Instanz. Meldung: %1</translation>
     </message>
@@ -3388,7 +3364,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Warnung beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>error while closing instance. Message: %1</source>
         <translation>Fehler beim Schließen der Instanz. Meldung: %1</translation>
     </message>
@@ -3398,7 +3374,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+355"/>
+        <location line="+310"/>
         <source>Python variable name</source>
         <translation>Variablenname in Python</translation>
     </message>
@@ -4834,17 +4810,17 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Geladene Module...</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Application</source>
         <translation type="unfinished">Anwendung</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Tools</source>
         <translation type="unfinished">Tools</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>About</source>
         <translation type="unfinished">Über</translation>
     </message>
@@ -4854,7 +4830,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Python</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>File</source>
         <translation type="unfinished">Datei</translation>
     </message>
@@ -5939,14 +5915,15 @@ Katesisch</translation>
     <message>
         <location line="+57"/>
         <source>Export data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datenexport</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+21"/>
         <source>Error while importing variables: 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim importieren der Variablen:
+%1</translation>
     </message>
     <message>
         <location line="+0"/>

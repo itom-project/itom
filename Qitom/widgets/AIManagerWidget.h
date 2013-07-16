@@ -75,7 +75,7 @@ namespace ito
             void createStatusBar(){}
             void updateActions();
             void updatePythonActions(){ updateActions(); }
-            bool CloseInstance(const QModelIndex index);
+            void CloseInstance(const QModelIndex index);
 
         private:
             QTreeView *m_pAIManagerView;
