@@ -17,8 +17,8 @@ The different parts can be found at the following resources:
 Project            Website                                          Git-Repository (https)                              Git-Repository (ssh)
 ================== ================================================ =================================================== ================================================
 |itom| (core)      https://bitbucket.org/itom/itom                  https://bitbucket.org/itom/itom.git                 git@bitbucket.org:itom/itom.git
-plugins            [not yet available]                              [not yet available]                                 [not yet available]
-designerPlugins    https://bitbucket.org/itom/ito_designerPlugins   https://bitbucket.org/itom/ito_designerplugins.git  git@bitbucket.org:itom/ito_designerplugins.git
+plugins            https://bitbucket.org/itom/plugins               https://bitbucket.org/itom/plugins.git              git@bitbucket.org:itom/plugins.git
+designerPlugins    https://bitbucket.org/itom/designerPlugins       https://bitbucket.org/itom/designerplugins.git      git@bitbucket.org:itom/designerplugins.git
 ================== ================================================ =================================================== ================================================
 
 In order to get the sources you want, clone the specific repository to a source-folder on your computer. If you want to receive data by *ssh*, you need your own

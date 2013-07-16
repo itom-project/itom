@@ -247,7 +247,7 @@ void WorkspaceDockWidget::mnuExportItem()
             QString message = QString();
             if(errorMsg) message =errorMsg;
             //std::cerr << "error while exporting variables. reason: " << message.toAscii().data() << "\n" << std::endl;
-            QMessageBox::critical(this, tr("Export data"), tr("Error while importing variables: \n%1").arg( message ));
+            QMessageBox::critical(this, tr("Export data"), tr("Error while exporting variables: \n%1").arg( message ));
         }
     }
 }
