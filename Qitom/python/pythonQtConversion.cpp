@@ -750,6 +750,21 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     return NULL;
 }
 
+/*static*/ QSharedPointer<ito::DataObject> PythonQtConversion::PyObjGetSharedDataObject(PyObject *val, bool &ok) //is always strict, only dataobjects are allowed
+{
+    if(Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
+    {
+        ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
+        if (dObj->dataObject)
+        {
+            ok = true;
+            return ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(dObj->dataObject, val);
+        }
+    }
+    ok = false;
+    return QSharedPointer<ito::DataObject>();
+}
+
 #if ITOM_POINTCLOUDLIBRARY > 0
 /*static*/ ito::PCLPointCloud* PythonQtConversion::PyObjGetPointCloudNewPtr(PyObject *val, bool /*strict*/, bool &ok)
 {

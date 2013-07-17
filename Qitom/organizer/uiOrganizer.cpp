@@ -29,13 +29,13 @@
 #include "common/helperCommon.h"
 #include "common/addInInterface.h"
 #include "../AppManagement.h"
-//#include "../../common/apiFunctionsGraphInc.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
 #include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
 
 #include "widgetWrapper.h"
+#include "userInteractionWatcher.h"
 
 #include "qmainwindow.h"
 #include "widgets/mainWindow.h"
@@ -2840,6 +2840,45 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore)
+{
+    QObject *obj = getWeakObjectReference(objectID);
+    QWidget *widget = qobject_cast<QWidget*>(obj);
+    RetVal retval;
+    if(widget)
+    {
+        const QMetaObject* metaObject = widget->metaObject();
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        {
+            retval += RetVal(retError,0,tr("The desired widget has no signals/slots defined that enable the pick points interaction").toAscii().data());
+        }
+        else
+        {
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, maxNrPoints, coords, semaphore, this);
+            connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
+            QThread *watcherThread = new QThread();
+            watcher->moveToThread(watcherThread);
+            watcherThread->start();
+
+            m_watcherThreads[watcher] = watcherThread;
+        }
+    }
+   else
+    {
+        retval += RetVal(retError,0,tr("the objectID cannot be cast to a widget").toAscii().data() );
+    }
+
+    if(semaphore && retval.containsError()) //else the semaphore is released by the userInteractionWatcher-instance, executed in a separate thread and monitoring the widget
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+        semaphore = NULL;
+    }
+    return retval;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)
@@ -2856,5 +2895,22 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void UiOrganizer::watcherThreadFinished()
+{
+    QObject *sender = QObject::sender();
+    if (sender)
+    {
+        if (m_watcherThreads.contains(sender))
+        {
+            sender->deleteLater();
+
+            QThread *thread = m_watcherThreads[sender];
+            thread->quit();
+            thread->wait();
+            DELETE_AND_SET_NULL(thread);
+            m_watcherThreads.remove(sender);
+        }
+    }
+}
 
 } //end namespace ito

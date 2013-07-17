@@ -143,10 +143,67 @@ PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
     return PyUnicode_FromFormat("PlotItem(%U)", PythonUi::PyUiItemType.tp_repr((PyObject*)self) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+\n\
+This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
+\n\
+Parameters \n\
+----------- \n\
+handle : {dataIO-Instance} \n\
+    any figure handle (>0) or 'all' in order to close all opened figures \n\
+\n\
+Notes \n\
+------- \n\
+If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too.");
+/*static*/ PyObject* PythonPlotItem::PyPlotItem_pickPoints(PyPlotItem *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"dataObject", "maxNrPoints", NULL};
+    ito::RetVal retval;
+    PyObject *dataObject = NULL;
+    int maxNrPoints = -1;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"O!|i",const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &dataObject, &maxNrPoints))
+    {
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    
+    bool ok;
+    QSharedPointer<ito::DataObject> coords = PythonQtConversion::PyObjGetSharedDataObject(dataObject, ok);
+
+    if (!ok)
+    {
+        retval += ito::RetVal(ito::retError,0,"data object cannot be converted to a shared data object");
+    }
+    else
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(unsigned int, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        locker.getSemaphore()->wait(-1);
+        retval += locker.getSemaphore()->returnValue;
+    }
+
+    if(!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlotItem::PyPlotItem_methods[] = {
-    //{"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
+    {"pickPoints", (PyCFunction)PyPlotItem_pickPoints, METH_KEYWORDS | METH_VARARGS, pyPlotItem_pickPoints_doc},
     {NULL}  /* Sentinel */
 };
 

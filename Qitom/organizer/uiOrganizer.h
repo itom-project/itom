@@ -49,6 +49,7 @@
 #include <qfiledialog.h>
 #include <qmainwindow.h>
 #include <QtUiTools/quiloader.h>
+#include <qthread.h>
 
 namespace ito
 {
@@ -282,8 +283,7 @@ private:
     QHash<unsigned int, UiContainerItem> m_dialogList; /*!< Hash-Table mapping a handle to an user interface to its corresponding instance of UiDialogSet */
     QHash<unsigned int, QWeakPointer<QObject> > m_objectList;  /*!< Hash-Table containing weak references to child-objects of any user interface which have recently been accessed. This hash-table helps for faster access to these objects */
     int m_garbageCollectorTimer;					/*!< ID of the garbage collection timer. This timer regularly calls timerEvent in order to check m_dialogList and m_objectList for objects, which already have been destroyed. */
-    /*QHash<QString, ito::plotFigureType> m_designerPluginTypeList;
-    QHash<QString, ito::plotFeatureType> m_designerPluginFeatureList;*/
+    QMap<QObject*, QThread*> m_watcherThreads;   /*!< map with opened watcher threads and their containing objects (e.g. UserInteractionWatcher) */
 
     static unsigned int autoIncUiDialogCounter;		/*!< auto incrementing counter for elements in m_dialogList */
     static unsigned int autoIncObjectCounter;		/*!< auto incrementing counter for elements in m_objectList */
@@ -359,6 +359,7 @@ public slots:
     
     RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
 
     void figureDestroyed(QObject *obj)
     {
@@ -366,7 +367,7 @@ public slots:
     }
 
 private slots:
-
+    void watcherThreadFinished();
 
 };
 

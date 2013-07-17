@@ -116,6 +116,8 @@ public:
 
 	static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok);
 
+    static QSharedPointer<ito::DataObject> PyObjGetSharedDataObject(PyObject *val, bool &ok); //is always strict, only dataobjects are allowed
+
     //! create a string list from python sequence
     static QStringList PyObjToStringList(PyObject* val, bool strict, bool& ok);
 

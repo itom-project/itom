@@ -120,6 +120,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -272,6 +273,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp

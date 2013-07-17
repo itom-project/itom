@@ -377,6 +377,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
 {
     if (m_globalNotLocal == false && !pythonInWaitingMode())
@@ -427,6 +428,7 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::dropEvent(QDropEvent *event)
 {
     QList<QUrl> urls = event->mimeData()->urls();
