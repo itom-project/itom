@@ -241,6 +241,7 @@ namespace ito
         int errorLine = 0;
         int errorColumn = 0;
         Param param;
+        int idFound = 0;
 
         if(!paramList)
         {
@@ -345,12 +346,20 @@ namespace ito
                 }
 
                 ret = retOk;
+                idFound = 1;
+                break;
             }
             child = child.nextSiblingElement("instance");
         }
 
         paramFile.close();
 
+        if (!idFound)
+        {
+            QString idStr;
+            idStr.sprintf("Id: %s not found in xml file", id.toAscii().data());
+            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(idStr.toAscii().data()).toAscii().data());
+        }
         return ret;
     }
     //----------------------------------------------------------------------------------------------------------------------------------
