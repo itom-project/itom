@@ -78,7 +78,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     QAction *act = NULL;
     QString actCheckedStr = "";
     QString actDir = "";
-    QIcon actIcon = NULL;
+    QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
 
     m_newDirSelectedMapper = new QSignalMapper(this);
     connect(m_newDirSelectedMapper, SIGNAL(mapped(const QString &)), this, SLOT(newDirSelected(const QString &)));
