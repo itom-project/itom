@@ -267,7 +267,7 @@ namespace ito
                 //    .arg(errorColumn)
                 //    .arg(errorStr));
                 QString errStr;
-                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr);
+                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toAscii().data());
                 return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toAscii().data()).toAscii().data());
         }
 
