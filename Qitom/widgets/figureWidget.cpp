@@ -275,6 +275,14 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             if (destWidget->inherits("ito::AbstractDObjFigure"))
             {
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
+
+                //check if dObjFigure has property "yAxisFlipped" and flip it, if so.
+                QVariant yAxisFlipped = dObjFigure->property("yAxisFlipped");
+                if (yAxisFlipped.isValid())
+                {
+                    dObjFigure->setProperty("yAxisFlipped", true);
+                }
+
                 dObjFigure->setCamera(cam);
                 *canvasWidget = destWidget;
             }

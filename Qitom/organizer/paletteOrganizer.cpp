@@ -124,26 +124,34 @@ ItomPalette PaletteOrganizer::getNextColorBar(const int curindex, const int type
         return m_colorBars[curindex];
     }
     else
+    {
         return m_colorBars[nextIndex];
+    }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-ItomPalette PaletteOrganizer::getColorBar(const QString name) const
+ItomPalette PaletteOrganizer::getColorBar(const QString name, bool *found /*= NULL*/) const
 {
     for(int i = 0; i < m_colorBars.length(); i++)
     {
         if(!m_colorBars[i].getName().compare(name, Qt::CaseSensitive))
         {
+            if (found) *found = true;
             return m_colorBars[i]; 
         }
     }
+    if (found) *found = false;
     return noPalette;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-int PaletteOrganizer::getColorBarIndex(const QString name) const
+int PaletteOrganizer::getColorBarIndex(const QString name, bool *found /*= NULL*/) const
 {
     if(m_colorBarLookUp.contains(name))
+    {
+        if (found) *found = true;
         return m_colorBarLookUp[name];
-    return 0;
+    }
+    if (found) *found = false;
+    return -1;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<QString> PaletteOrganizer::getColorBarList(const int type) const

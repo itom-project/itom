@@ -54,8 +54,8 @@ class PaletteOrganizer : public QObject
     public slots:
         ItomPalette getColorBar(const int index) const;
         ItomPalette getNextColorBar(const int curindex, const int type = ItomPalette::NoType) const;
-        int getColorBarIndex(const QString name) const;
-        ItomPalette getColorBar(const QString name) const;
+        int getColorBarIndex(const QString name, bool *found = NULL) const;
+        ItomPalette getColorBar(const QString name, bool *found = NULL) const;
         QList<QString> getColorBarList(const int type = ItomPalette::NoType) const;
         int numberOfColorBars() const {return m_colorBars.length();};
 

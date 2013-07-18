@@ -78,9 +78,21 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
 {
     ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
     if (!paletteOrganizer)
+    {
         return ito::retError;
-    palette = paletteOrganizer->getColorBar(name);
-    return ito::retOk;
+    }
+
+    bool found;
+    palette = paletteOrganizer->getColorBar(name, &found);
+
+    if (found)
+    {
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toAscii().data());
+    }
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -91,6 +103,29 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdx(const int number, ito::ItomPalett
         return ito::retError;
     palette = paletteOrganizer->getColorBar(number);
     return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito::int32 & index)
+{
+    ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+    if (!paletteOrganizer)
+    {
+        index = 0;
+        return ito::retError;
+    }
+
+    bool found;
+    index = paletteOrganizer->getColorBarIndex(name, &found);
+
+    if (found)
+    {
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toAscii().data());
+    }
 }
 
 ////------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -286,19 +321,7 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
     return retval;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------
 
-ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito::int32 & index)
-{
-    ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
-    if (!paletteOrganizer)
-    {
-        index = 0;
-        return ito::retError;
-    }
-    index = paletteOrganizer->getColorBarIndex(name);
-    return ito::retOk;
-}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue /*= QVariant()*/, ito::RetVal *retval/* = NULL*/)
