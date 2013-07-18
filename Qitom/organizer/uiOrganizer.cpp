@@ -1524,6 +1524,10 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 }
                 else
                 {
+					//check whether types need to be casted
+					//e.g. QVariantList can sometimes be casted to QPointF... //TODO
+
+
                     if(prop.write(newObj, i.value()) == false)
                     {
                         retValue += RetVal(retError, errorObjPropWrite, tr("at least one property could not be written").toAscii().data());
@@ -2107,103 +2111,119 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
     if(obj)
     {
+		QStringList classInfo;
+		QStringList properties;
+		QStringList signal;
+		QStringList slot;
+		QString className;
+
         const QMetaObject *mo = obj->metaObject();
+		className = mo->className();
 
-        std::cout << "WIDGET '" << mo->className() << "'\n--------------------------\n\n" << std::endl;
+		while (mo != NULL)
+		{
+			if ( QString(mo->className()).startsWith("Q") && (type & infoShowAllInheritance) != infoShowAllInheritance )
+			{
+				break;
+			}
 
-        if(mo->classInfoCount() > 0 && ((type & infoShowInherited) || (mo->classInfoOffset() < mo->classInfoCount()) ))
-        {
-            std::cout << "Class Info\n---------------\n";
-
-            for(int i = mo->classInfoCount() - 1; i >= 0; i--)
+			for(int i = mo->classInfoCount() - 1; i >= 0; i--)
             {
                 QMetaClassInfo ci = mo->classInfo(i);
-                if(i < mo->classInfoOffset())
+                if(i >= mo->classInfoOffset())
                 {
-                    if(type & infoShowInherited)
-                        std::cout << " " << ci.name() << " (inherited): " << ci.value() << "\n";
-                }
-                else
-                {
-                    std::cout << " " << ci.name() << " : " << ci.value() << "\n";
+                    classInfo.append( QString("%1 : %2").arg( ci.name() ).arg( ci.value() ) );
                 }
             }
 
-            std::cout << "\n" << std::endl;
-        }
-
-        if(mo->propertyCount() > 0 && ((type & infoShowInherited) || (mo->propertyOffset() < mo->propertyCount())))
-        {
-            std::cout << "Properties\n---------------\n";
-
-            for(int i = mo->propertyCount() - 1; i >= 0; i--)
+			for(int i = mo->propertyCount() - 1; i >= 0; i--)
             {
                 QMetaProperty prop = mo->property(i);
-                if(i < mo->propertyOffset())
-                {
-                    if(type & infoShowInherited)
-                        std::cout << " " << prop.name() << " (inherited): " << prop.typeName() << "\n";
-                }
-                else
-                {
-                    std::cout << " " << prop.name() << ": " << prop.typeName() << "\n";
+                if(i >= mo->propertyOffset())
+				{
+					properties.append( QString("%1 : %2").arg( prop.name() ).arg( prop.typeName() ) );
                 }
             }
 
-            std::cout << "\n" << std::endl;
-        }
-
-        if(mo->methodCount() > 0 && ((type & infoShowInherited) || (mo->methodOffset() < mo->methodCount())))
-        {
-            //search for signals
-            std::cout << "Signals\n---------------\n";
-
-            for(int i = mo->methodCount() - 1; i >= 0; i--)
+			for(int i = mo->methodCount() - 1; i >= 0; i--)
             {
                 QMetaMethod meth = mo->method(i);
 
                 if(meth.methodType() == QMetaMethod::Signal)
                 {
-                    if(i < mo->methodOffset())
+                    if(i >= mo->methodOffset())
                     {
-                        if(type & infoShowInherited)
-                            std::cout << " " << meth.signature() << " (inherited)\n";
-                    }
-                    else
-                    {
-                        std::cout << " " << meth.signature() << "\n";
-                    }
+                        signal.append( meth.signature() );
+					}
                 }
-            }
-
-            std::cout << "\n" << std::endl;
-
-            //search for slots
-            std::cout << "Slots\n---------------\n";
-
-            for(int i = mo->methodCount() - 1; i >= 0; i--)
-            {
-                QMetaMethod meth = mo->method(i);
-
-                if(meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
-                {
-                    if(i < mo->methodOffset())
+				else if(meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
+				{
+					if(i >= mo->methodOffset())
                     {
-                        if(type & infoShowInherited)
-                            std::cout << " " << meth.signature() << " (inherited)\n";
-                    }
-                    else
-                    {
-                        std::cout << " " << meth.signature() << "\n";
-                    }
-                }
+                        slot.append( meth.signature() );
+					}
+				}
             }
+			
+
+			if (type & infoShowItomInheritance)
+			{
+				mo = mo->superClass();
+			}
+			else
+			{
+				mo = NULL;
+			}
+		}
+
+        std::cout << "WIDGET '" << className.toAscii().data() << "'\n--------------------------\n\n" << std::endl;
+
+        if(classInfo.size() > 0)
+        {
+            std::cout << "Class Info\n---------------\n";
+
+			foreach(const QString &i, classInfo)
+			{
+				std::cout << " " << i.toAscii().data() << "\n";
+			}
 
             std::cout << "\n" << std::endl;
         }
 
+        if(properties.size() > 0)
+        {
+            std::cout << "Properties\n---------------\n";
 
-        
+			foreach(const QString &i, properties)
+			{
+				std::cout << " " << i.toAscii().data() << "\n";
+			}
+
+            std::cout << "\n" << std::endl;
+        }
+
+        if(signal.size() > 0)
+        {
+            std::cout << "Signals\n---------------\n";
+
+			foreach(const QString &i, signal)
+			{
+				std::cout << " " << i.toAscii().data() << "\n";
+			}
+
+            std::cout << "\n" << std::endl;
+        }
+		if(slot.size() > 0)
+        {
+            std::cout << "Slots\n---------------\n";
+
+			foreach(const QString &i, slot)
+			{
+				std::cout << " " << i.toAscii().data() << "\n";
+			}
+
+            std::cout << "\n" << std::endl;
+        }
 
     }
     else

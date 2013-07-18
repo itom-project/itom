@@ -1271,7 +1271,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     ito::RetVal retValue = retOk;
     QSharedPointer< QVariantMap > value(new QVariantMap );
 
-    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, self->objectID), Q_ARG(int,0), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(5000))
     {

@@ -231,7 +231,9 @@ public:
 
     enum tObjectInfo
     {
-        infoShowInherited = 0x0001
+		infoShowNoInheritance = 0x0001,
+		infoShowItomInheritance = 0x0002,
+		infoShowAllInheritance =0x0004 | infoShowItomInheritance,
     };
 
     UiOrganizer();
