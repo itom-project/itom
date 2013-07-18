@@ -1285,13 +1285,13 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
 //------------------------------------------------------------------------------------------------------------------
 bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError)
 {
-    QString baseMsg, msg;
+    QByteArray msg;
     if (retVal.containsWarningOrError())
     {
         char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            msg = QObject::tr("- unknown message -");
+            msg = QObject::tr("- unknown message -").toAscii();
         }
         else
         {
@@ -1300,12 +1300,12 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
 
         if (retVal.containsError())
         {
-            PyErr_Format(exceptionIfError, msg.toAscii().data());
+            PyErr_Format(exceptionIfError, msg.data());
             return false;
         }
         else
         {
-            std::cout << "Warning: " << msg.toAscii().data() << std::endl;
+            std::cout << "Warning: " << msg.data() << std::endl;
         }
     }
 
