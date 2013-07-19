@@ -150,7 +150,7 @@ MainWindow::MainWindow() :
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
 
         // helpDock
-/*        m_helpDock = new HelpDockWidget(tr("Help"), this, true, true, AbstractDockWidget::floatingStandard);
+        /*m_helpDock = new HelpDockWidget(tr("Help"), this, true, true, AbstractDockWidget::floatingStandard);
 	    m_helpDock->setObjectName("itomHelpDockWidget");
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);*/

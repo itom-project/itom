@@ -43,6 +43,7 @@ ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 SET (QT_USE_QTOPENGL TRUE)
 SET (QT_USE_QTXML TRUE)
 SET (QT_USE_QTSVG TRUE)
+SET (QT_USE_QTSQL TRUE)
 SET (QT_USE_QTNETWORK TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
@@ -107,6 +108,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
 	${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
@@ -161,6 +163,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
@@ -212,6 +215,7 @@ set(qitom_ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
@@ -261,6 +265,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp	
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
@@ -312,6 +317,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
@@ -460,7 +466,7 @@ IF(MSVC)
 	ENDIF(CMAKE_CL_64)
 ENDIF(MSVC)
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
 
 BUILD_PARALLEL_LINUX(${target_name})
 

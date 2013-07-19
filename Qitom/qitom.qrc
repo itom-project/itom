@@ -1,7 +1,9 @@
 <RCC>
-    <qresource prefix="/dockWidget">
-        <file>icons/undockButtonGlyph.png</file>
-        <file>icons/dockButtonGlyph.png</file>
+    <qresource prefix="/helpTreeDockWidget">
+        <file alias="Package">icons/App-package-icon.png</file>
+        <file alias="Modul">icons/book-open-icon.png</file>
+        <file alias="Function">icons/HP-Control-icon.png</file>
+        <file alias="help_style">styles/help/help_style.css</file>
     </qresource>
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
@@ -199,5 +201,9 @@
         <file>about.html</file>
         <file>contributors.html</file>
         <file>COPYING.txt</file>
+    </qresource>
+    <qresource prefix="/dockWidget">
+        <file>icons/undockButtonGlyph.png</file>
+        <file>icons/dockButtonGlyph.png</file>
     </qresource>
 </RCC>

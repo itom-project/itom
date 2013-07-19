@@ -27,9 +27,12 @@
 
 #include <qwidget.h>
 #include <qaction.h>
+#include <qwidgetaction.h>
 #include <qtoolbar.h>
 
 #include <qtreewidget.h>
+
+class HelpTreeDockWidget;
 
 namespace ito
 {
@@ -51,6 +54,16 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
+			QAction *m_pActBackward;
+			QAction *m_pActForward;
+			QAction *m_pActExpand;
+			QAction *m_pActCollapse;
+			QWidgetAction *m_pActChanged;
+			QToolBar *m_pMainToolbar;
+			QLineEdit *m_pFilterEdit;
+			
+
+			HelpTreeDockWidget *m_pHelpWidget;
 
         signals:
 

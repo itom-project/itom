@@ -1,0 +1,19 @@
+#FunctionName, h1 {
+  font-size: x-large;
+  color: #0c3762;
+  font-weight: bold;
+  background-color: #efefef;
+}
+
+
+#Sections, h2 { 
+  background-color: #eeeeee; 
+  font-size: large;
+  color: #dc3c01;
+}
+
+
+#HiLink {
+  text-decoration:underline;
+  color: #dc3c01;
+}
