@@ -157,7 +157,7 @@ TYPED_TEST(at_func_test2, at_Test5)
 	}
 
 	/*!
-	Assigning limits in ranges1[] for at() function to be applied on 4 dimensional data object dObj5.
+	Assigning limits in ranges1[] for at() function to be applied on 5 dimensional data object dObj4.
 	*/
 	ito::DataObject dObj4_test1;
 	ito::Range ranges1[5];
@@ -220,7 +220,6 @@ TYPED_TEST(at_func_test2, at_Test6)
 	int dim4 = dObj4.getSize(3);
 	int dim5 = dObj4.getSize(4);	
 	size_t dataIdx = 0;
-	int temp=0;
 	for(int i=0; i<dim1; i++)
 	{
 		for(int j=0; j<dim2;j++)
