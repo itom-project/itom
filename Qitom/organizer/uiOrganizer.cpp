@@ -36,6 +36,7 @@
 
 #include "widgetWrapper.h"
 #include "userInteractionWatcher.h"
+#include "../python/pythonQtConversion.h"
 
 #include "qmainwindow.h"
 #include "widgets/mainWindow.h"
@@ -1525,10 +1526,11 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 else
                 {
 					//check whether types need to be casted
-					//e.g. QVariantList can sometimes be casted to QPointF... //TODO
+					//e.g. QVariantList can sometimes be casted to QPointF...
+					bool ok;
+					QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), ok);
 
-
-                    if(prop.write(newObj, i.value()) == false)
+                    if(prop.write(newObj, item) == false)
                     {
                         retValue += RetVal(retError, errorObjPropWrite, tr("at least one property could not be written").toAscii().data());
                     }
@@ -1537,7 +1539,13 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
             else
             {
                 prop = mo->property(index);
-                if(prop.write(obj, i.value()) == false)
+
+				//check whether types need to be casted
+				//e.g. QVariantList can sometimes be casted to QPointF...
+				bool ok;
+				QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), ok);
+
+                if(prop.write(obj, item) == false)
                 {
                     retValue += RetVal(retError, errorObjPropWrite, tr("at least one property could not be written").toAscii().data());
                 }

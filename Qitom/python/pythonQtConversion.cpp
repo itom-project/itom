@@ -1158,6 +1158,46 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     return v;
 }
 
+
+/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, bool &ok)
+{
+	if (item.type() == destType)
+	{
+		ok = true;
+		return item;
+	}
+
+	ok = false;
+	QVariant result;
+
+	if (destType == QVariant::PointF && item.type() == QVariant::List)
+	{
+		const QVariantList list = item.toList();
+		if (list.size() == 2)
+		{
+			bool ok2;
+			result = QPointF(list[0].toFloat(&ok), list[1].toFloat(&ok2));
+			ok &= ok2;
+		}
+	}
+	else if (destType == QVariant::Point && item.type() == QVariant::List)
+	{
+		const QVariantList list = item.toList();
+		if (list.size() == 2)
+		{
+			bool ok2;
+			result = QPoint(list[0].toInt(&ok), list[1].toInt(&ok2));
+			ok &= ok2;
+		}
+	}
+
+	if (ok)
+	{
+		return result;
+	}
+	return item;
+}
+
 //! tries to convert PyObject* to known data type and returns deep-copy of the value, given as void*
 /*!
     methods tries to convert PyObject* to QVariant. Type indicates the desired type of QVariant, given by the type-number of QMetaType.
@@ -1872,6 +1912,22 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             PyList_SetItem(temp,3,PyLong_FromLong(temp2->height()));
             return temp;
         }
+	case QMetaType::QPointF:
+		{
+			PyObject *temp = PyList_New(2);
+            QPointF *temp2 = (QPointF*)data;
+            PyList_SetItem(temp,0,PyFloat_FromDouble(temp2->x()));
+            PyList_SetItem(temp,1,PyFloat_FromDouble(temp2->y()));
+            return temp;
+		}
+	case QMetaType::QPoint:
+		{
+			PyObject *temp = PyList_New(2);
+            QPoint *temp2 = (QPoint*)data;
+            PyList_SetItem(temp,0,PyLong_FromLong(temp2->x()));
+            PyList_SetItem(temp,1,PyLong_FromLong(temp2->y()));
+            return temp;
+		}
     case QMetaType::QRegion:
         {
             return ito::PythonRegion::createPyRegion( *( (QRegion*)data ) );
