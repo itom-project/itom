@@ -45,7 +45,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
 	m_pMainModel->clear();
     ui.treeView->reset();
     //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
-    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", ReadSQL(""));
+    QList<QString> sqlList = ReadSQL("");
+    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", sqlList);
     m_pMainFilterModel->setSourceModel(m_pMainModel);
     ui.treeView->setModel(m_pMainFilterModel);
 }

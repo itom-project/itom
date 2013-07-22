@@ -1,4 +1,4 @@
-#include "leaffilterproxymodel.h"
+#include "leafFilterProxyModel.h"
 #include <QtDebug>
  
 LeafFilterProxyModel::LeafFilterProxyModel(QObject *parent) :
