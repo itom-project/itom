@@ -38,6 +38,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class AbstractDockWidget
     \brief abstract dock widget class which inherits QDockWidget. The content of QDockWidget consists of an instance of QMainWindow. The real widget is then placed
@@ -107,7 +108,8 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));
 }
 
-//! destructor
+//----------------------------------------------------------------------------------------------------------------------------------
+//! destructor7
 AbstractDockWidget::~AbstractDockWidget()
 {
     if (m_pWindow)
@@ -120,6 +122,7 @@ AbstractDockWidget::~AbstractDockWidget()
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! init method, called by constructor
 /*!
     \sa AbstractDockWidget::AbstractDockWidget
@@ -152,7 +155,6 @@ void AbstractDockWidget::init()
 
     setFeatures(features);
 
-
     m_dockToolbar = new QToolBar(tr("docking toolbar"), this);
 
     QWidget *spacerWidget = new QWidget();
@@ -160,9 +162,9 @@ void AbstractDockWidget::init()
     spacerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
     spacerWidget->setLayout(spacerLayout);
 
-    m_actDock = new QAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), "dock widget", this);
+    m_actDock = new QAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("dock widget"), this);
     connect(m_actDock, SIGNAL(triggered()), this, SLOT(dockWidget()));
-    m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), "undock widget", this);
+    m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("undock widget"), this);
     connect(m_actUndock, SIGNAL(triggered()), this, SLOT(undockWidget()));
 
     m_dockToolbar->addWidget(spacerWidget);
@@ -196,6 +198,7 @@ void AbstractDockWidget::init()
     updateActions();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setVisible(bool visible)
 {
     if (m_docked)
@@ -219,6 +222,7 @@ void AbstractDockWidget::setVisible(bool visible)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! resizes this widget to the given size
 /*!
     \param width
@@ -230,7 +234,7 @@ void AbstractDockWidget::resizeDockWidget(int width, int height)
     m_pWindow->resize(width, height);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //! sets any given QWidget as central widget of QMainWindow and inversely sets this QWidget's parent to the instance of QMainWindget
 /*!
     \param widget instance of QWidget, which should be the central widget of this dock widget
@@ -248,6 +252,7 @@ void AbstractDockWidget::setContentWidget(QWidget *widget)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! changes the title of widget
 /*!
     If widget is docked or m_floatingStyle is not equal to floatingWindow, this widget always gets the title m_basicTitle. Otherwise its title is set to m_completeTitle.
@@ -284,8 +289,7 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
     return RetVal(retOk);
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ////! ands given toolbar and register it with given key-string in toolbar-map (m_toolBars)
 ///*!
 //    long description
@@ -337,17 +341,18 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
 //    }
 //}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
 {
     QList<Toolbar>::iterator i;
     int highestSection = 1;
 
     //check if key already available and quit if so
-    for (i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
+    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
     {
         if (i->key == key)
         {
-            return RetVal(retError,0,tr("toolbar '%1' is already available").arg(key).toAscii().data());
+            return RetVal(retError, 0, tr("toolbar '%1' is already available").arg(key).toAscii().data());
         }
 
         if (i->area == area && i->section > highestSection)
@@ -358,11 +363,11 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
 
     if (!m_docked && m_floatingStyle == floatingWindow)
     {
-        tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+        tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
     }
     else
     {
-        tb->setIconSize(QSize(16,16));
+        tb->setIconSize(QSize(16, 16));
     }
 
     if (area == Qt::TopToolBarArea)
@@ -394,8 +399,6 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
         }
     }
 
-
-
     Toolbar t;
     t.area = area;
     t.key = key;
@@ -406,6 +409,7 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     return retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractDockWidget::removeToolBar(const QString &key)
 {
     //key is unique
@@ -416,7 +420,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
     QToolBar *tb = NULL;
     int idx = 0;
 
-    for (i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
+    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
     {
         if (i->key == key)
         {
@@ -435,7 +439,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
         //do this only if section > 1, since this is in order to remove breaks, which are not available before 1 section
         if (section > 1)
         {
-            for (i = m_toolbars.begin() ; i != m_toolbars.end() ; ++i)
+            for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
             {
                 if (i->section == section && i->area == area)
                 {
@@ -460,6 +464,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
     return RetVal(retError, 0, tr("toolbar '%1' not found").arg(key).toAscii().data());
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! returns reference to toolbar with given key-value
 /*!
     \param key String with key value for desired toolbar
@@ -479,6 +484,7 @@ QToolBar* AbstractDockWidget::getToolBar(QString key) const
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! closeEvent invoked if this AbstractDockWidget should be closed
 /*!
     In this abstract class, the event is always accepted.
@@ -492,6 +498,7 @@ void AbstractDockWidget::closeEvent (QCloseEvent * event)
     event->accept();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if python state changed. Sets the specific member variables according to the python transition.
 /*!
     \param pyTransition pythonTransition (type tPythonTransitions) defining the transition to the destination python state
@@ -501,30 +508,30 @@ void AbstractDockWidget::pythonStateChanged(tPythonTransitions pyTransition)
     switch(pyTransition)
     {
     case pyTransBeginRun:
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         m_pythonDebugMode = false;
         m_pythonBusy = true;
         break;
     case pyTransBeginDebug:
     case pyTransDebugExecCmdBegin:
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
         break;
     case pyTransDebugContinue:
         m_pythonBusy = true;
         m_pythonDebugMode = true;
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         break;
     case pyTransEndRun:
     case pyTransEndDebug:
         m_pythonDebugMode = false;
         m_pythonBusy = false;
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         break;
     case pyTransDebugWaiting:
     case pyTransDebugExecCmdEnd:
-        m_pythonInWaitingMode=true;
+        m_pythonInWaitingMode = true;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
         break;
@@ -533,6 +540,7 @@ void AbstractDockWidget::pythonStateChanged(tPythonTransitions pyTransition)
     updatePythonActions();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! docks this dockWidget.
 /*!
     Transforms this widget into a docking widget (e.g. from a single window) and docks it into the main window.
@@ -571,24 +579,26 @@ void AbstractDockWidget::dockWidget()
     m_dockToolbar->setIconSize(QSize(20,15));
 
     QList<Toolbar>::iterator it;
-    for (it = m_toolbars.begin() ; it != m_toolbars.end() ; ++it)
+    for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
     {
-        it->tb->setIconSize(QSize(16,16));
+        it->tb->setIconSize(QSize(16, 16));
     }
 
     //QMap<QString,QToolBar*>::iterator it;
     ////qDebug() << "AbstractDockWidget::dockWidget 2";
-    //for (it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
+    //for (it = m_toolBars.begin(); it != m_toolBars.end(); ++it)
     //{
-    //    (*it)->setIconSize(QSize(16,16));
+    //    (*it)->setIconSize(QSize(16, 16));
     //}
     //qDebug() << "AbstractDockWidget::dockWidget 3";
     setAdvancedWindowTitle();
 
     toggleViewAction()->setVisible(true);
     //qDebug() << "AbstractDockWidget::dockWidget end";
+    m_dockToolbar->setMinimumWidth(49);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! undocks this dockWidget.
 /*!
     If m_floatingStyle is equal to floatingWindow, then this widget is transformed into a single window
@@ -609,9 +619,8 @@ void AbstractDockWidget::undockWidget()
 
         //setWindowFlags(Qt::Window);
         //setFloating(true);
-        
 
-        m_dockToolbar->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+        m_dockToolbar->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
 
         m_pWindow->setWindowFlags(Qt::Window);
 
@@ -643,22 +652,21 @@ void AbstractDockWidget::undockWidget()
         setWindowFlags(Qt::Widget);
         setFloating(true);
 
-        m_dockToolbar->setIconSize(QSize(20,15));
+        m_dockToolbar->setIconSize(QSize(20, 15));
     }
 
     QList<Toolbar>::iterator it;
-    for (it = m_toolbars.begin() ; it != m_toolbars.end() ; ++it)
+    for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
     {
         if (m_floatingStyle == floatingWindow)
         {
-            it->tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+            it->tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
         }
         else
         {
-            it->tb->setIconSize(QSize(16,16));
+            it->tb->setIconSize(QSize(16, 16));
         }
     }
-
 
     /*QMap<QString,QToolBar*>::iterator it;
 
@@ -674,9 +682,12 @@ void AbstractDockWidget::undockWidget()
         }
     }*/
 
+    m_dockToolbar->setMinimumWidth(55);
+
     setAdvancedWindowTitle();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel)
 {
     //only feasible if undocked and floatingStyle == floatingWindow
@@ -706,8 +717,6 @@ RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel)
             break;
         }
         m_pWindow->show();
-
-
     }
 
     m_recentTopLevelStyle = topLevel;
@@ -715,6 +724,7 @@ RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel)
     return ito::retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::mnuStayOnTop(bool checked)
 {
     if (checked)
@@ -727,6 +737,7 @@ void AbstractDockWidget::mnuStayOnTop(bool checked)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::mnuStayOnTopOfApp(bool checked)
 {
     if (checked)
@@ -739,6 +750,7 @@ void AbstractDockWidget::mnuStayOnTopOfApp(bool checked)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! activates this dock widget or window and raises it on top of all opened windows
 /*!
     Depending on the docking-state of this widget and its style (docking-widget or single-window),
@@ -768,17 +780,18 @@ void AbstractDockWidget::raiseAndActivate()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //hack from: http://qt-project.org/faq/answer/how_can_i_resize_a_qdockwidget_programatically
 void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
 {
 	if (m_docked)
 	{
-		m_oldMaxSize= maximumSize();
-		m_oldMinSize= minimumSize();
+		m_oldMaxSize = maximumSize();
+		m_oldMinSize = minimumSize();
  
-		if (newWidth>=0)
+		if (newWidth >= 0)
 		{
-			if (width()<newWidth)
+			if (width() < newWidth)
 			{
 				setMinimumWidth(newWidth);
 			}
@@ -787,9 +800,9 @@ void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
 				setMaximumWidth(newWidth);
 			}
 		}
-		if (newHeight>=0)
+		if (newHeight >= 0)
 		{
-			if (height()<newHeight)
+			if (height() < newHeight)
 			{
 				setMinimumHeight(newHeight);
 			}
@@ -818,6 +831,7 @@ void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::returnToOldMinMaxSizes()
 {
 	if (m_docked)

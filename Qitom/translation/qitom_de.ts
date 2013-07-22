@@ -3430,7 +3430,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="+102"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+103"/>
         <source>stay on top</source>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
@@ -3440,17 +3440,27 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+52"/>
         <source>docking toolbar</source>
         <translation>Symbolleiste Fenster andocken</translation>
     </message>
     <message>
-        <location line="+194"/>
+        <location line="+7"/>
+        <source>dock widget</source>
+        <translation type="unfinished">Fenster eindocken</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>undock widget</source>
+        <translation type="unfinished">Fenster ausdocken</translation>
+    </message>
+    <message>
+        <location line="+188"/>
         <source>toolbar &apos;%1&apos; is already available</source>
         <translation>Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+109"/>
         <source>toolbar &apos;%1&apos; not found</source>
         <translation>Toolbar &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -5382,22 +5392,22 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Symbolleiste Datei</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>edit toolbar</source>
         <translation>Symbolleiste Bearbeiten</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>script toolbar</source>
         <translation>Symbolleiste Skript</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>bookmark toolbar</source>
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+623"/>
+        <location line="+624"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
@@ -5413,7 +5423,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-834"/>
+        <location line="-838"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>

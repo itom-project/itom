@@ -1051,6 +1051,7 @@ void ScriptDockWidget::createToolBars()
     m_fileToolBar->addAction(m_saveScriptAction->action());
     m_fileToolBar->addAction(m_saveScriptAsAction->action());
     m_fileToolBar->addAction(m_saveAllScriptsAction->action());
+    m_fileToolBar->setFloatable(false);
 
     m_editToolBar = new QToolBar(tr("edit toolbar"), this);
     addToolBar(m_editToolBar, "editToolBar");
@@ -1061,6 +1062,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_redoAction->action());
     m_editToolBar->addAction(m_findTextExprAction->action());
     m_editToolBar->addAction(m_replaceTextExprAction->action());
+    m_editToolBar->setFloatable(false);
 
     m_scriptToolBar = new QToolBar(tr("script toolbar"), this);
     addToolBar(m_scriptToolBar, "scriptToolBar");
@@ -1072,6 +1074,7 @@ void ScriptDockWidget::createToolBars()
     m_scriptToolBar->addAction(m_scriptStepAction->action());
     m_scriptToolBar->addAction(m_scriptStepOverAction->action());
     m_scriptToolBar->addAction(m_scriptStepOutAction->action());
+    m_scriptToolBar->setFloatable(false);
 
     m_bookmarkToolBar = new QToolBar(tr("bookmark toolbar"), this);
     addToolBar(m_bookmarkToolBar, "bookmarkToolBar");
@@ -1079,6 +1082,7 @@ void ScriptDockWidget::createToolBars()
     m_bookmarkToolBar->addAction(m_bookmarkNext->action());
     m_bookmarkToolBar->addAction(m_bookmarkPrevious->action());
     m_bookmarkToolBar->addAction(m_bookmarkClearAll->action());
+    m_bookmarkToolBar->setFloatable(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
