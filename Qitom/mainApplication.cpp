@@ -76,14 +76,14 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
 
-    //qDebug() << QLibraryInfo::location( QLibraryInfo::BinariesPath );
+    //qDebug() << QLibraryInfo::location(QLibraryInfo::BinariesPath);
 
     AppManagement::setMainApplication(qobject_cast<QObject*>(this));
 
     //global settings: the settings file will be stored in itomSettings/{organization}/{applicationName}.ini
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
-    QCoreApplication::setApplicationVersion( ITOM_VERSION_STR );
+    QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ void MainApplication::setupApplication()
 #endif
 
 #if USING_GIT == 1
-    text.append( QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV) );
+    text.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));
 #endif
     QPainter p;
     p.begin(&pixmap);
@@ -141,7 +141,7 @@ void MainApplication::setupApplication()
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
-    QByteArray codec =  settings->value("codec", "UTF-8" ).toByteArray();
+    QByteArray codec =  settings->value("codec", "UTF-8").toByteArray();
     settings->endGroup();
     settings->sync();
 
@@ -149,7 +149,7 @@ void MainApplication::setupApplication()
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
     //load translation files
-    m_splashScreen->showMessage( tr("load translations...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load translations...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
@@ -172,8 +172,8 @@ void MainApplication::setupApplication()
         textCodec = QTextCodec::codecForName("UTF-8");
     }
 
-    QTextCodec::setCodecForCStrings( textCodec );
-    QTextCodec::setCodecForLocale( textCodec );
+    QTextCodec::setCodecForCStrings(textCodec);
+    QTextCodec::setCodecForLocale(textCodec);
 
     settings->beginGroup("CurrentStatus");
     QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
@@ -182,7 +182,7 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage( tr("load style...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load style...") , Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         //set styles (if available)
@@ -213,7 +213,7 @@ void MainApplication::setupApplication()
     }
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
-    m_splashScreen->showMessage( tr("load process organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load process organizer...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_processOrganizer = new ito::ProcessOrganizer();
@@ -222,7 +222,7 @@ void MainApplication::setupApplication()
     qDebug("MainApplication::setupApplication");
 
    // starting AddInManager
-    m_splashScreen->showMessage( tr("scan and load plugins...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("scan and load plugins...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
@@ -231,7 +231,7 @@ void MainApplication::setupApplication()
 
     qDebug("..plugins loaded");
 
-    m_splashScreen->showMessage( tr("start python...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("start python...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_pyEngine = new PythonEngine();
@@ -248,7 +248,7 @@ void MainApplication::setupApplication()
     qDebug("..python engine moved to new thread");
 
 	retValue += pyRetValue;
-	if(pyRetValue.containsError())
+	if (pyRetValue.containsError())
 	{
 		DELETE_AND_SET_NULL(m_pyEngine);
 		AppManagement::setPythonEngine(NULL);
@@ -256,19 +256,19 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage( tr("load main window...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load main window...") , Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_mainWin = new MainWindow();
         AppManagement::setMainWindow(qobject_cast<QObject*>(m_mainWin));
 
-        m_splashScreen->showMessage( tr("load ui organizer...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load ui organizer...") , Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer();
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
-        m_splashScreen->showMessage( tr("scan and load designer widgets...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("scan and load designer widgets...") , Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
@@ -286,7 +286,7 @@ void MainApplication::setupApplication()
 
     qDebug("..palette organizer started");
 
-    m_splashScreen->showMessage( tr("load script editor organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load script editor organizer...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != NULL);
@@ -304,7 +304,7 @@ void MainApplication::setupApplication()
     qDebug("..starting load settings");
 
     //try to execute startup-python scripts
-    m_splashScreen->showMessage( tr("execute startup scripts...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("execute startup scripts...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     settings->beginGroup("Python");
@@ -330,11 +330,11 @@ void MainApplication::setupApplication()
     settings->endGroup();
     delete settings;
 
-    m_splashScreen->showMessage( tr("scan and run scripts in autostart folder...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("scan and run scripts in autostart folder...") , Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     //force python to scan and run files in autostart folder in itom-packages folder
-    QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir) );
+    QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir));
 
     ////since autostart-files could have changed current directory, re-change it to the value of the settings-file
     //settings.beginGroup("CurrentStatus");
@@ -371,7 +371,7 @@ void MainApplication::setupApplication()
 //    std::cout << "THIS ITOM-COPY IS A PREPUPLISHED ALPHA VERSION\nGIVEN TO ZEISS MICROSCOPY FOR INTERNAL USE WITHIN\nZEISS-ITO-COOPERATION.\nDO NOT DISTRIBUTE TO THIRD PARTY.\n !!! CONFIDENTIAL !!! \n\n";
     std::cout << "\tPlease report bugs under:\n\t\thttps://bitbucket.org/itom/itom/issues\n\tCheers your itom team\n" << std::endl;
 
-    if(m_mainWin)
+    if (m_mainWin)
     {
         m_splashScreen->finish(m_mainWin);
     }
@@ -408,7 +408,7 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_mainWin);
     AppManagement::setMainWindow(NULL);
 
-	if(m_pyEngine)
+	if (m_pyEngine)
 	{
 		ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 		QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
@@ -462,7 +462,7 @@ void MainApplication::mainWindowCloseRequest()
     if (settings->value("askBeforeClose", false).toBool())
     {
         QMessageBox msgBox;
-            msgBox.setText("Do you really want to exit the application?");
+            msgBox.setText(tr("Do you really want to exit the application?"));
             msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.setIcon(QMessageBox::Question);

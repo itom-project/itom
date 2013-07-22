@@ -963,6 +963,24 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>HelpTreeDockWidget</name>
+    <message>
+        <location filename="../ui/helpTreeDockWidget.ui"/>
+        <source>Form</source>
+        <translation type="unfinished">Fenster</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Parser: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Plaintext</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainApplication</name>
     <message>
         <location filename="../mainApplication.cpp" line="+120"/>
@@ -1037,7 +1055,12 @@ p, li { white-space: pre-wrap; }
         <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+132"/>
+        <source>Do you really want to exit the application?</source>
+        <translation>Soll itom wirklich beendet werden?</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
         <translation>Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
@@ -1307,30 +1330,30 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+78"/>
-        <location line="+123"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-116"/>
-        <location line="+123"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-99"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
         <location line="+125"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
+        <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
+        <source>the parameter name &apos;%1&apos; in invald</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <source>array index of parameter out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+127"/>
+        <source>given index of parameter name ignored since parameter is no array type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <location line="+127"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1520,13 +1543,13 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+127"/>
+        <location line="+135"/>
         <location line="+193"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
@@ -2168,7 +2191,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Kanal ist bereits aktualisiert</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+225"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+260"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
@@ -3075,7 +3098,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>show message before closing the application</source>
-        <translation type="unfinished">Nachricht vor dem Schließen anzeigen</translation>
+        <translation type="unfinished">Vor dem Schließen von itom fragen</translation>
     </message>
 </context>
 <context>
@@ -4176,7 +4199,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+225"/>
         <source>subplot %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4355,6 +4378,34 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+0"/>
         <source>Failed to create a new script</source>
         <translation>Fehler beim Erstellen einer neuen Python-Datei</translation>
+    </message>
+</context>
+<context>
+    <name>ito::HelpDockWidget</name>
+    <message>
+        <location filename="../widgets/helpDockWidget.cpp" line="+69"/>
+        <source>backwards</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>forwards</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>expandTree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>collapseTree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>navigation</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5483,7 +5534,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+303"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+304"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5576,7 +5627,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+181"/>
         <location line="+86"/>
-        <location line="+58"/>
+        <location line="+69"/>
         <location line="+151"/>
         <location line="+59"/>
         <location line="+52"/>
@@ -5589,7 +5640,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-610"/>
+        <location line="-621"/>
         <location line="+7"/>
         <source>at least one property could not be read</source>
         <translation type="unfinished"></translation>
@@ -5600,8 +5651,8 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+9"/>
+        <location line="+11"/>
+        <location line="+15"/>
         <source>at least one property could not be written</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5616,11 +5667,12 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+32"/>
         <location line="+26"/>
         <location line="+25"/>
+        <location line="+1222"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="-1160"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5673,13 +5725,18 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+213"/>
         <source>There exists no object with the given id.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+525"/>
         <source>subplot at indexed position %i is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+118"/>
+        <source>The desired widget has no signals/slots defined that enable the pick points interaction</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
