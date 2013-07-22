@@ -3418,13 +3418,8 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
                 }
                 else
                 {
-                    PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value);
+                    PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value); //existing is automatically decremented
                     Py_XDECREF(value);
-
-                    if (existingItem)
-                    {
-                        Py_DECREF(existingItem);
-                    }
                 }
             }
 

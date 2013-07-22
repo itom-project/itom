@@ -2191,8 +2191,9 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyCheckSignals(PyObject* /*pSelf*/)
 {
-    PyErr_CheckSignals();
-    Py_RETURN_NONE;
+    int result = PyErr_CheckSignals();
+    return Py_BuildValue("i", result);
+    //Py_RETURN_NONE;
 }
 
 /*static */PyObject* PythonItom::PyProcessEvents(PyObject* /*pSelf*/)
