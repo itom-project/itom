@@ -83,7 +83,6 @@ WindowsError.filename
 WindowsError.strerror
 WindowsError.winerror
 ZeroDivisionError(??) [doc: Second argument to a division or modulo operation was zero.]
-_
 abs(number) -> number
 all(iterable) -> bool
 and
@@ -197,7 +196,6 @@ builtins.ValueError(??) [doc: Inappropriate argument value (of correct type).]
 builtins.Warning(??) [doc: Base class for warning categories.]
 builtins.WindowsError(??) [doc: MS-Windows OS system call failed.]
 builtins.ZeroDivisionError(??) [doc: Second argument to a division or modulo operation was zero.]
-builtins._
 builtins.abs(number) -> number
 builtins.all(iterable) -> bool
 builtins.any(iterable) -> bool

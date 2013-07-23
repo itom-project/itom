@@ -142,6 +142,7 @@ itom.numeric:: [module]
 itom.openScript(filename) -> opens the given script in current script window.
 itom.plot(data, [className]) -> plots a dataObject in a newly created figure
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
+itom.plotItem.pickPoints(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.
 itom.pluginLoaded(pluginname) -> checks if a certain plugin was loaded.
 itom.point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.
