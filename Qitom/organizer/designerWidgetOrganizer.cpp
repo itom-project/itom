@@ -339,7 +339,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
     {
         foreach(const FigurePlugin &plugin, figurePlugins)
         {
-            if(plugin.classname == defaultClassName)
+            if( QString::compare(plugin.classname, defaultClassName, Qt::CaseInsensitive) == 0 )
             {
                 return defaultClassName; //the given class name fits to the figureCategory and exists
             }
@@ -353,7 +353,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 
     foreach(const FigurePlugin &plugin, figurePlugins)
     {
-        if(plugin.classname == settingsClassName)
+        if( QString::compare(plugin.classname, settingsClassName, Qt::CaseInsensitive) == 0 )
         {
             return settingsClassName; //the given class name fits to the figureCategory and exists
         }

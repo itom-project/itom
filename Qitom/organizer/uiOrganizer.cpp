@@ -780,7 +780,17 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 
     QStringList availableWidgets = m_uiLoader.availableWidgets();
 
-    if(availableWidgets.contains(className))
+    bool found = false;
+    foreach( const QString &name, availableWidgets )
+    {
+        if (QString::compare(name, className, Qt::CaseInsensitive) == 0)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (found)
     {
         /*QStringList l = loader.availableLayouts();
         QStringList p = loader.pluginPaths();*/
