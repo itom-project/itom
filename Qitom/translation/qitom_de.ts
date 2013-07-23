@@ -1200,12 +1200,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+71"/>
         <source>it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-105"/>
+        <location line="-100"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1215,7 +1215,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+59"/>
         <source>The number of names and types must be equal</source>
         <translation type="unfinished"></translation>
     </message>

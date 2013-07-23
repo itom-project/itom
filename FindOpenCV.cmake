@@ -50,6 +50,7 @@
 find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV")
 
 set(CVLIB_LIBSUFFIX "/lib")
+#set(OpenCV_LIB_VERSION "0815" CACHE PATH "version of OpenCV")
 
 IF(OpenCV_FIND_COMPONENTS)
     message(STATUS "OpenCV components: ${OpenCV_FIND_COMPONENTS}")
@@ -68,6 +69,9 @@ if(EXISTS "${OpenCV_DIR}")
 
 		## Search for a specific version
 		set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+		
+		set(OpenCV_BIN_DIR "${OpenCV_LIB_PATH}/../bin" CACHE PATH "OpenCV bin dir")
+		set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
 	
 	elseif(EXISTS "${OpenCV_DIR}/include" AND EXISTS "${OpenCV_DIR}/x86" AND EXISTS "${OpenCV_DIR}/x64")
 		#the OpenCV_DIR seems to point to a build version of OpenCV 2.3 on a windows pc
@@ -95,6 +99,7 @@ if(EXISTS "${OpenCV_DIR}")
 		set(OpenCV_VERSION ${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR}.${OpenCV_VERSION_PATCH} CACHE STRING "" FORCE)
 		set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
 		set(CVLIB_LIBSUFFIX "/x86/vc10/lib")
+		set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
 		
 		if(MSVC10)
 			if(CMAKE_CL_64)
@@ -109,6 +114,8 @@ if(EXISTS "${OpenCV_DIR}")
 				set(CVLIB_LIBSUFFIX "/x86/vc9/lib")
 			endif(CMAKE_CL_64)
 		endif(MSVC10)
+		
+		set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
 		
 	#Otherwise it try to guess it.
 	else(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
@@ -133,6 +140,7 @@ if(EXISTS "${OpenCV_DIR}")
 		string(REGEX REPLACE ".*#define CV_SUBMINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_PATCH ${OpenCV_VERSIONS_TMP})
 		set(OpenCV_VERSION ${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR}.${OpenCV_VERSION_PATCH} CACHE STRING "" FORCE)
 		set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+		set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
 
 	endif(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
 
@@ -141,8 +149,6 @@ if(EXISTS "${OpenCV_DIR}")
 	## Initiate the variable before the loop
 	set(GLOBAL OpenCV_LIBS "")
 	set(OpenCV_FOUND_TMP true)
-
-	set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
 	
     #IF(EXISTS "${OpenCV_BIN_DIR}/release/" AND "${OpenCV_BIN_DIR}/debug/"}
     #    set(OpenCV_BIN_RELEASE_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")

@@ -94,7 +94,7 @@ Source: "{#SourceDirQT}\QtWebKit4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
-Source: "{#SourceDirOpenCV}\opencv_core230.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qgif4.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
@@ -185,11 +185,11 @@ Source: "{#SourceDirItomBuild}\plugins\SerialIO\SerialIO.dll"; DestDir: "{app}\p
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\translation\*.qm"; DestDir: "{app}\plugins\SerialIO\translation"; Flags: promptifolder
 
 ; Libs
-Source: "{#SourceDirOpenCV}\opencv_calib3d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirOpenCV}\opencv_highgui230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirOpenCV}\opencv_imgproc230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirOpenCV}\opencv_features2d230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirOpenCV}\opencv_flann230.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
