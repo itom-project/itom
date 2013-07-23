@@ -164,7 +164,7 @@ Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc
 Source: "{#SourceDirItomBuild}\designer\matplotlibFigure.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\itom1DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\itom2DGVFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\designer\itom2DQwtFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 
 ; Plugins
 Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\demoAlgorithms.dll"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder
