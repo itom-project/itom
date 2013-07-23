@@ -200,7 +200,7 @@ Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x86) wird nun installiert!"; Components: CREDPACK;
+Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x86)..."; Components: CREDPACK;
 Filename: "{tmp}\1. python-3.3.0.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3..."; Components: PYTHON
 Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
 Filename: "{tmp}\3. scipy-0.12.0b1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
