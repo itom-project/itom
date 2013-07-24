@@ -313,7 +313,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
                     dObjFigure->setProperty("yAxisFlipped", true);
                 }
 
-                if(setDepth && sizey->getVal<int>() == 1)
+                if(setDepth)
                 {
                     if(isLine) dObjFigure->setYAxisInterval(bitRange);
                     else dObjFigure->setZAxisInterval(bitRange);
