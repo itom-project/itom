@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="itom2DQwtFigure" name="plot"/>
+     <widget class="Itom2dQwtPlot" name="plot"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
@@ -136,9 +136,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>itom2DQwtFigure</class>
+   <class>Itom2dQwtPlot</class>
    <extends>QMainWindow</extends>
-   <header>itom2DQwtFigure.h</header>
+   <header>itom2dqwtplot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
