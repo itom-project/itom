@@ -251,6 +251,34 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
     }
     else
     {
+        //get grabDepth
+        bool setDepth = false;
+        QPointF bitRange (0.0, 1.0);
+        QSharedPointer<ito::Param> bpp = getParamByInvoke(cam.data(), "bpp", retval);
+        
+        if(!retval.containsError())
+        {
+            if(bpp->getVal<int>() == 8)
+            {
+                setDepth = true;
+                bitRange.setY(255.0);
+            }
+            else if(bpp->getVal<int>() < 17) 
+            {
+                setDepth = true;
+                bitRange.setY((float)((1 << bpp->getVal<int>())-1));
+            }
+            else if(bpp->getVal<int>() == 32)
+            {
+                // ToDo define float32 and int32 behavior!
+            }
+            else if(bpp->getVal<int>() == 64 )
+            {
+                // ToDo define float64 behavior!
+            }
+
+        }
+
         //get size of camera image
         QSharedPointer<ito::Param> sizex = getParamByInvoke(cam.data(), "sizex", retval);
         QSharedPointer<ito::Param> sizey = getParamByInvoke(cam.data(), "sizey", retval);
@@ -281,6 +309,11 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
                 if (yAxisFlipped.isValid())
                 {
                     dObjFigure->setProperty("yAxisFlipped", true);
+                }
+
+                if(setDepth)
+                {
+                    dObjFigure->setZAxisInterval(bitRange);
                 }
 
                 dObjFigure->setCamera(cam);
