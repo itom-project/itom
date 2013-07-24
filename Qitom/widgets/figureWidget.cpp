@@ -253,6 +253,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
     {
         //get grabDepth
         bool setDepth = false;
+        bool isLine = false;
         QPointF bitRange (0.0, 1.0);
         QSharedPointer<ito::Param> bpp = getParamByInvoke(cam.data(), "bpp", retval);
         
@@ -288,6 +289,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             if(sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
             {
                 plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
+                isLine = true;
             }
             else
             {
@@ -311,9 +313,10 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
                     dObjFigure->setProperty("yAxisFlipped", true);
                 }
 
-                if(setDepth)
+                if(setDepth && sizey->getVal<int>() == 1)
                 {
-                    dObjFigure->setZAxisInterval(bitRange);
+                    if(isLine) dObjFigure->setYAxisInterval(bitRange);
+                    else dObjFigure->setZAxisInterval(bitRange);
                 }
 
                 dObjFigure->setCamera(cam);

@@ -121,7 +121,8 @@ class camToolbar():
                 exec(script.format(camname))
             
                 if rows == 1:
-                    script = "liveLine({})\n"
+                    #script = "liveLine({})\n" # command was removed by Marc Gronle in 2013
+                    script = "liveImage({})\n"
                 else:
                     script = "liveImage({})\n"
                     # Evaluate String with {} changed to varname
