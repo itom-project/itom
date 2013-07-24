@@ -225,7 +225,7 @@ bool DesignerWidgetOrganizer::figureClassExists( const QString &className )
 {
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if(plugin.classname == className)
+        if(QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
         {
             return true;
         }
