@@ -33,13 +33,15 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
-
-
-using namespace ito;
+#include <qprinter.h>
+#include <qsciprinter.h>
 
 QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
+
+namespace ito
+{
 
 class ScriptEditorWidget : public AbstractPyScintillaWidget
 {
@@ -205,6 +207,17 @@ private slots:
     RetVal preShowContextMenuEditor();
 
     void fileSysWatcherFileChanged ( const QString & path );
+    void printPreviewRequested(QPrinter *printer);
 };
+
+
+class ItomQsciPrinter : public QsciPrinter
+{
+public:
+    ItomQsciPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
+    virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
+};
+
+} //end namespace ito
 
 #endif

@@ -32,6 +32,9 @@
 
 #include <qsciprinter.h>
 
+namespace ito 
+{
+
 //!< constants
 const QString ScriptEditorWidget::lineBreak = QString("\n");
 
@@ -1346,15 +1349,66 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::print()
 {
-	QsciPrinter printer;
-	printer.setWrapMode(WrapWord);
-    QPrintDialog printDialog(&printer);
-//    QPrintPreviewDialog printDialog(&printer);
-    if (printDialog.exec())
+    if (lines() == 0 || text() == "")
     {
-        printer.printRange(this);
+        QMessageBox::warning(this, tr("Print"), tr("There is nothing to print"));
+    }
+    else
+    {
+	    ItomQsciPrinter printer(QPrinter::HighResolution);
+	    printer.setWrapMode(WrapWord);
+
+        if (hasNoFilename() == false)
+        {
+            printer.setDocName( getFilename() );
+        }
+        else
+        {
+            printer.setDocName( tr("unnamed") );
+        }
+
+        printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);
+        printer.setMagnification(-1); //size one point smaller than the one displayed in itom.
+        QPrintPreviewDialog printPreviewDialog(&printer);
+        printPreviewDialog.setWindowFlags(Qt::Window);
+        connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreviewRequested(QPrinter*)));
+        printPreviewDialog.exec();
+
+    //    QPrintDialog printDialog(&printer);
+    ////    QPrintPreviewDialog printDialog(&printer);
+    //    if (printDialog.exec())
+    //    {
+    //        printer.
+    //        printer.printRange(this);
+    //    }
     }
 }
+
+void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
+{
+    ItomQsciPrinter *p = static_cast<ItomQsciPrinter*>(printer);
+    if (p)
+    {
+        p->printRange(this);
+    }
+}
+
+    //def printPreviewFile(self):
+    //    """
+    //    Public slot to show a print preview of the text.
+    //    """
+    //    from PyQt4.QtGui import QPrintPreviewDialog
+    //    
+    //    printer = Printer(mode=QPrinter.HighResolution)
+    //    fn = self.getFileName()
+    //    if fn is not None:
+    //        printer.setDocName(os.path.basename(fn))
+    //    else:
+    //        printer.setDocName(self.noName)
+    //    preview = QPrintPreviewDialog(printer, self)
+    //    preview.paintRequested.connect(self.__printPreview)
+    //    preview.exec_()
+    //
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::changeFilename(QString newFilename)
@@ -1582,3 +1636,29 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this 
 //    }
 //
 //}
+
+void ItomQsciPrinter::formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr )
+{
+    QString filename = this->docName();
+    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString page = QString::number(pagenr);
+    int width = area.width();
+    int dateWidth = painter.fontMetrics().width(date);
+    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
+        
+    painter.save();
+    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
+    painter.setPen(QColor(Qt::black)); 
+    if (drawing)
+    {
+        //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
+        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
+        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
+        painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
+    }
+    area.setTop(area.top() + painter.fontMetrics().height() + 30);
+    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
+    painter.restore();
+}
+
+} // end namespace ito
