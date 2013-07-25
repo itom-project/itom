@@ -44,10 +44,18 @@ class AbstractDObjFigure : public AbstractFigure
     Q_PROPERTY(QSharedPointer<ito::DataObject> displayed READ getDisplayed DESIGNABLE false)
     Q_PROPERTY(QPointer<ito::AddInDataIO> camera READ getCamera WRITE setCamera DESIGNABLE false)
 
-    Q_PROPERTY(QPointF XAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QPointF YAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QPointF ZAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QString ColorPalette READ getColorPalette WRITE setColorPalette DESIGNABLE true)
+    Q_PROPERTY(QPointF xAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true)
+    Q_PROPERTY(QPointF yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true)
+    Q_PROPERTY(QPointF zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true)
+    Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true)
+
+    Q_CLASSINFO("info://source", "Sets the input data object for this plot.")
+    Q_CLASSINFO("info://displayed", "This returns the currently displayed data object [read only].")
+    Q_CLASSINFO("info://camera", "Use this property to set a camera/grabber to this plot (live image).")
+    Q_CLASSINFO("info://xAxisInterval", "Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("info://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("info://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("info://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
     
 
 public:
@@ -83,8 +91,8 @@ public:
     virtual inline QPointF getZAxisInterval(void) { return QPointF(); }
     virtual inline void setZAxisInterval(QPointF) { return; }
         
-    virtual inline QString getColorPalette(void) { return QString(); }
-    virtual inline void setColorPalette(QString) { return; }
+    virtual inline QString getColorMap(void) { return QString(); }
+    virtual inline void setColorMap(QString) { return; }
 
 protected:
     QHash<QString, QSharedPointer<ito::DataObject> > m_dataPointer;

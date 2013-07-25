@@ -47,8 +47,11 @@ class AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
     Q_ENUMS(WindowMode)
-    Q_PROPERTY(bool toolbarVisible READ toolbarVisible WRITE setToolbarVisible DESIGNABLE true)
-    Q_PROPERTY(bool showContextMenu READ showContextMenu WRITE setShowContextMenu DESIGNABLE true)
+    Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true)
+    Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
+
+    Q_CLASSINFO("info://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
+    Q_CLASSINFO("info://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
 
     public:
         enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
@@ -79,9 +82,9 @@ class AbstractFigure : public QMainWindow, public AbstractNode
 
         //properties
         virtual void setToolbarVisible(bool visible);
-        virtual bool toolbarVisible() const;
-        virtual void setShowContextMenu(bool show) = 0; 
-        virtual bool showContextMenu() const = 0;
+        virtual bool getToolbarVisible() const;
+        virtual void setContextMenuEnabled(bool show) = 0; 
+        virtual bool getContextMenuEnabled() const = 0;
 
         
 

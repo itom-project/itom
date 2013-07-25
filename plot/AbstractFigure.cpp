@@ -45,6 +45,53 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent)
+    : QMainWindow(parent),
+    AbstractNode(),
+    m_contextMenu(NULL),
+    m_itomSettingsFile(itomSettingsFile),
+    m_apiFunctionsGraphBasePtr(NULL),
+    m_apiFunctionsBasePtr(NULL),
+    m_mainParent(parent),
+	m_toolbarsVisible(true),
+    m_windowMode(windowMode)
+{
+    //itom_PLOTAPI = NULL;
+    //importItomPlotApi(NULL);
+    initialize();
+    //ito::ITOM_API_FUNCS_GRAPH = NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractFigure::~AbstractFigure()
+{
+    Channel *delChan;
+    foreach(delChan, m_pChannels)
+    {
+        // connection is removed in the destructor of Connection so the following line is not necessary
+//            (delConn->getPartner())->disconnect(delConn->getKey());
+        removeChannel(delChan);
+    }
+    m_pChannels.clear();
+
+    //clear toolbars and menus
+    foreach(QMenu *m, m_menus)
+    {
+        m->deleteLater();
+    }
+    m_menus.clear();
+
+    foreach(ToolBarItem t, m_toolbars)
+    {
+        if(t.toolbar)
+        {
+            t.toolbar->deleteLater();
+        }
+    }
+    m_toolbars.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect)
 {
     ito::RetVal retVal;
@@ -174,60 +221,6 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
     return ito::retOk;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//void initialize(ito::AbstractFigure *fig)
-//{
-//    
-//
-//}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent)
-    : QMainWindow(parent),
-    AbstractNode(),
-    m_contextMenu(NULL),
-    m_itomSettingsFile(itomSettingsFile),
-    m_apiFunctionsGraphBasePtr(NULL),
-    m_apiFunctionsBasePtr(NULL),
-    m_mainParent(parent),
-	m_toolbarsVisible(true),
-    m_windowMode(windowMode)
-{
-    //itom_PLOTAPI = NULL;
-    //importItomPlotApi(NULL);
-    initialize();
-    //ito::ITOM_API_FUNCS_GRAPH = NULL;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::~AbstractFigure()
-{
-    Channel *delChan;
-    foreach(delChan, m_pChannels)
-    {
-        // connection is removed in the destructor of Connection so the following line is not necessary
-//            (delConn->getPartner())->disconnect(delConn->getKey());
-        removeChannel(delChan);
-    }
-    m_pChannels.clear();
-
-    //clear toolbars and menus
-    foreach(QMenu *m, m_menus)
-    {
-        m->deleteLater();
-    }
-    m_menus.clear();
-
-    foreach(ToolBarItem t, m_toolbars)
-    {
-        if(t.toolbar)
-        {
-            t.toolbar->deleteLater();
-        }
-    }
-    m_toolbars.clear();
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::initialize()
 {
@@ -264,9 +257,6 @@ RetVal AbstractFigure::initialize()
 
     return ito::retOk;
 }
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addMenu(QMenu *menu)
@@ -443,7 +433,7 @@ void AbstractFigure::setToolbarVisible(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool AbstractFigure::toolbarVisible() const 
+bool AbstractFigure::getToolbarVisible() const 
 { 
     return m_toolbarsVisible;
 }
