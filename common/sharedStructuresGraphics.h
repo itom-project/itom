@@ -81,79 +81,38 @@ namespace ito
     Q_DECLARE_FLAGS(PlotFeatures, PlotFeature)
     
 
-class PluginInfo 
-{
-    public:
-        PluginInfo(void) : m_plotFeatures(Static) {}
-        PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures) : m_plotDataTypes(plotDataTypes), m_plotDataFormats(plotDataFormats), m_plotFeatures(plotFeatures) {}
+    class PluginInfo 
+    {
+        public:
+            PluginInfo(void) : m_plotFeatures(Static) {}
+            PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures) : m_plotDataTypes(plotDataTypes), m_plotDataFormats(plotDataFormats), m_plotFeatures(plotFeatures) {}
 
-        PlotDataTypes m_plotDataTypes;
-        PlotDataFormats m_plotDataFormats;
-        PlotFeatures m_plotFeatures;
-};
+            PlotDataTypes m_plotDataTypes;
+            PlotDataFormats m_plotDataFormats;
+            PlotFeatures m_plotFeatures;
+    };
 
-class ItomPalette
-{
-    public:
 
-        ItomPalette():m_name(""), m_type(0){colorStops.clear();};
-        ItomPalette(const QString name, const char type): m_name(name), m_type(type) {colorStops.clear();};
-        ItomPalette(const QString name, const char type, QColor start, QColor stop): m_name(name), m_type(type) 
-        {
-            colorStops.clear();
-            colorStops.append(QPair<double, QColor>(0.0, start));
-            colorStops.append(QPair<double, QColor>(1.0, stop));
-        };
+    enum tPalette
+    {
+        tPaletteNoType      = 0x00,
+        tPaletteGray        = 0x01,
+        tPaletteRGB         = 0x02,
+        tPaletteFC          = 0x04,
+        tPaletteIndexed     = 0x08,
+        tPaletteLinear      = 0x10,
+        tPaletteReadOnly    = 0x20,
+    };    
 
-        ItomPalette(const ItomPalette & scr);
-        ~ItomPalette() {colorStops.clear();};
-
-        enum tPalette{
-            NoType      = 0x00,
-            GrayPalette = 0x01,
-            RGBPalette  = 0x02,
-            FCPalette  = 0x04,
-            indexPalette = 0x08,
-            LinearPalette = 0x10,
-            ReadOnlyPalette = 0x20,
-        };
-
-        QString getName() const {return m_name;};
-        inline int getSize() const {return colorStops.size();};
-        inline int getType() const {return m_type;};
-
-        double getPosFirst() const {return colorStops[0].first;};
-        double getPosLast() const {return colorStops[colorStops.size()-1].first;};
-        double getPos(unsigned int color) const;
-        
-        QColor getColorFirst() const {return colorStops[0].second;};
-        QColor getColorLast() const {return colorStops[colorStops.size()-1].second;};
-        QColor getColor(unsigned int color) const;
-
-        inline void setWriteProtection() { m_type = m_type | ReadOnlyPalette; return;};
-        void insertColorStop( double pos, const QColor color );
-        //QColor getColor(double pos) const;
-
-        QVector<ito::uint32> get256Colors() const;
-
-    protected:
-        inline void removeWriteProtection() { m_type = m_type & !ReadOnlyPalette; return;};
-
-    private:
-        QString m_name;
-        char m_type; 
-        
+    struct ItomPalette
+    {
+        int type;
+        QString name;
         QVector<QPair<double, QColor> > colorStops;
-
-        int findUpper( double pos ) const;
-
-    public slots:
-
-    private slots:
-
-    signals:
-
-};
+        QVector<ito::uint32> colorVector256;
+        QColor inverseColorOne;
+        QColor inverseColorTwo;
+    };
 
 }
 
