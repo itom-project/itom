@@ -255,7 +255,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "gray"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("gray");
-    m_colorBarLookUp.insert("gray", 0);
+    m_colorBarLookUp.insert("gray", m_colorBars.size() - 1);
     //------------
 
     //declare "grayMarked"
@@ -268,7 +268,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "grayMarked"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("grayMarked");
-    m_colorBarLookUp.insert("grayMarked", 1);
+    m_colorBarLookUp.insert("grayMarked", m_colorBars.size() - 1);
     //------------
 
     //declare "falseColor"
@@ -284,7 +284,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "falseColor"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColor");
-    m_colorBarLookUp.insert("falseColor", 2);
+    m_colorBarLookUp.insert("falseColor", m_colorBars.size() - 1);
     //------------
 
     //declare "falseColorIR"
@@ -300,7 +300,20 @@ PaletteOrganizer::PaletteOrganizer()
     //set "falseColorIR"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColorIR");
-    m_colorBarLookUp.insert("falseColorIR", 3);
+    m_colorBarLookUp.insert("falseColorIR", m_colorBars.size() - 1);
+    //------------
+
+    //declare "hotIron"
+    newPalette = ItomPaletteBase("hotIron", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, Qt::black, Qt::white);
+    newPalette.insertColorStop(0.33, Qt::red);
+    newPalette.insertColorStop(0.67, QColor::fromRgb(255, 129, 0));
+    newPalette.setInversColorOne(Qt::green);
+    newPalette.setInversColorTwo(Qt::gray);
+    newPalette.setWriteProtection();
+    //set "hotIron"
+    m_colorBars.append(newPalette);
+    restrictedKeyWords.append("hotIron");
+    m_colorBarLookUp.insert("hotIron", m_colorBars.size() - 1);
     //------------
 
     //declare "red"
@@ -311,7 +324,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "red"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("red");
-    m_colorBarLookUp.insert("red", 4);
+    m_colorBarLookUp.insert("red", m_colorBars.size() - 1);
     //------------
 
     //declare "blue"
@@ -322,7 +335,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "blue"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("blue");
-    m_colorBarLookUp.insert("blue", 5);
+    m_colorBarLookUp.insert("blue", m_colorBars.size() - 1);
     //------------
 
     //declare "green"
@@ -333,7 +346,7 @@ PaletteOrganizer::PaletteOrganizer()
     //set "green"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("green");
-    m_colorBarLookUp.insert("green", 6);    
+    m_colorBarLookUp.insert("green", m_colorBars.size() - 1);    
     //------------
 
  //   m_colorBars.append(ItomPaletteBase("RGB", ItomPalette::RGBPalette | ItomPalette::ReadOnlyPalette, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 255, 255)));
