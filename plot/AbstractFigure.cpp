@@ -39,8 +39,6 @@
 #include "../common/addInInterface.h"
 #include "../common/apiFunctionsInc.h"
 
-using namespace ito;
-
 namespace ito 
 {
 

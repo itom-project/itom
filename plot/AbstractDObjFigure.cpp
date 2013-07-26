@@ -61,7 +61,7 @@ ito::RetVal AbstractDObjFigure::update(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) 
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
 {
     ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
     if(dObj)
@@ -119,7 +119,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void)
+QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 {
     if(m_pInput.contains("liveSource") && m_cameraConnected)
     {

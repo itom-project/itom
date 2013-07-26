@@ -49,13 +49,13 @@ class AbstractDObjFigure : public AbstractFigure
     Q_PROPERTY(QPointF zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true)
     Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true)
 
-    Q_CLASSINFO("info://source", "Sets the input data object for this plot.")
-    Q_CLASSINFO("info://displayed", "This returns the currently displayed data object [read only].")
-    Q_CLASSINFO("info://camera", "Use this property to set a camera/grabber to this plot (live image).")
-    Q_CLASSINFO("info://xAxisInterval", "Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
-    Q_CLASSINFO("info://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
-    Q_CLASSINFO("info://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
-    Q_CLASSINFO("info://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
+    Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
+    Q_CLASSINFO("prop://displayed", "This returns the currently displayed data object [read only].")
+    Q_CLASSINFO("prop://camera", "Use this property to set a camera/grabber to this plot (live image).")
+    Q_CLASSINFO("prop://xAxisInterval", "Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("prop://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
+    Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
     
 
 public:
@@ -74,24 +74,24 @@ public:
 
     ito::RetVal update(void);
 
-    virtual QSharedPointer<ito::DataObject> getSource(void);
-    void setSource(QSharedPointer<ito::DataObject> source);
+    virtual QSharedPointer<ito::DataObject> getSource(void) const;
+    virtual void setSource(QSharedPointer<ito::DataObject> source);
 
     virtual QSharedPointer<ito::DataObject> getDisplayed(void); // { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
 
-    QPointer<ito::AddInDataIO> getCamera(void);
-    void setCamera( QPointer<ito::AddInDataIO> camera );
+    virtual QPointer<ito::AddInDataIO> getCamera(void) const;
+    virtual void setCamera( QPointer<ito::AddInDataIO> camera );
 
-    virtual inline QPointF getXAxisInterval(void) { return QPointF(); }
+    virtual inline QPointF getXAxisInterval(void) const { return QPointF(); }
     virtual inline void setXAxisInterval(QPointF) { return; }
         
-    virtual inline QPointF getYAxisInterval(void) { return QPointF(); }
+    virtual inline QPointF getYAxisInterval(void) const { return QPointF(); }
     virtual inline void setYAxisInterval(QPointF) { return; }
         
-    virtual inline QPointF getZAxisInterval(void) { return QPointF(); }
+    virtual inline QPointF getZAxisInterval(void) const { return QPointF(); }
     virtual inline void setZAxisInterval(QPointF) { return; }
         
-    virtual inline QString getColorMap(void) { return QString(); }
+    virtual inline QString getColorMap(void) const { return QString(); }
     virtual inline void setColorMap(QString) { return; }
 
 protected:
