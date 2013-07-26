@@ -34,56 +34,75 @@
 namespace ito
 {
 
-#if defined(ITOM_IMPORT_PLOTAPI) && !defined(ITOM_CORE)
-    void **ITOM_API_FUNCS_GRAPH;
-#else
-    extern void **ITOM_API_FUNCS_GRAPH;
-#endif
+	#if defined(ITOM_IMPORT_PLOTAPI) && !defined(ITOM_CORE)
+		void **ITOM_API_FUNCS_GRAPH;
+	#else
+		extern void **ITOM_API_FUNCS_GRAPH;
+	#endif
+
+	/**
+	* \defgroup ITOM_API_GRAPH itom figure and plot API
+	*
+	* \brief The itom plot and figure API contains a bunch of functions that can be called by the core application itom as 
+	* well as by every designer plugin.
+	*
+	* Every function is given by a certain preprocessor definition that describes
+	* the return value, parameters and function name of the method to call. Each preprocessor definition is redirected
+	* to a function pointer that becomes valid at runtime. The initialization of these function pointers in any plugins
+	* is an automatic process by itom, called when loading the plugin.
+	*
+	* How to read the following definitions?
+	*
+	* Basically the first word after the #define word is the method to call. After the first star the return value
+	* follows (the star into brackets is not part of the return value). Then there is a list of different parameters
+	* for this method.
+	*
+	* \{
+	*/
+
+	#define apiPaletteGetNumberOfColorBars \
+		(*(ito::RetVal (*)(int &)) ito::ITOM_API_FUNCS_GRAPH[0])
+
+	#define apiPaletteGetColorBarName \
+		(*(ito::RetVal (*)(const QString &, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[1])
+
+	#define apiPaletteGetColorBarIdx \
+		(*(ito::RetVal (*)(const int, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[2])
+
+	#define apiGetFigure \
+		(*(ito::RetVal (*)(const QString &, const QString &, ito::uint32 &, QWidget **, QWidget *parent)) ito::ITOM_API_FUNCS_GRAPH[3])
 
 
-#define apiPaletteGetNumberOfColorBars \
-	(*(ito::RetVal (*)(int &)) ito::ITOM_API_FUNCS_GRAPH[0])
+	#define apiGetPluginList \
+		(*(ito::RetVal (*)(const ito::pluginInfo, QHash<QString, ito::pluginInfo> &, const QString)) ito::ITOM_API_FUNCS_GRAPH[4])
 
-#define apiPaletteGetColorBarName \
-	(*(ito::RetVal (*)(const QString &, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[1])
+	#define apiStartLiveData \
+		(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[5])
 
-#define apiPaletteGetColorBarIdx \
-	(*(ito::RetVal (*)(const int, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[2])
+	#define apiStopLiveData \
+		(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[6])
 
-#define apiGetFigure \
-    (*(ito::RetVal (*)(const QString &, const QString &, ito::uint32 &, QWidget **, QWidget *parent)) ito::ITOM_API_FUNCS_GRAPH[3])
+	#define apiConnectLiveData \
+		(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[7])
 
-	//(*(ito::RetVal (*)(ito::uint32 &, const QString, QWidget **)) ito::ITOM_API_FUNCS_GRAPH[3])
+	#define apiDisconnectLiveData \
+		(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[8])
 
-#define apiGetPluginList \
-	(*(ito::RetVal (*)(const ito::pluginInfo, QHash<QString, ito::pluginInfo> &, const QString)) ito::ITOM_API_FUNCS_GRAPH[4])
+	#define apiPaletteGetColorBarIdxFromName \
+		(*(ito::RetVal (*)(const QString &, ito::int32 &)) ito::ITOM_API_FUNCS_GRAPH[9])
 
-#define apiStartLiveData \
-	(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[5])
+	#define apiGetFigureSetting \
+		(*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
 
-#define apiStopLiveData \
-	(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[6])
+	/** \} */
 
-#define apiConnectLiveData \
-	(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[7])
-
-#define apiDisconnectLiveData \
-	(*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[8])
-
-#define apiPaletteGetColorBarIdxFromName \
-	(*(ito::RetVal (*)(const QString &, ito::int32 &)) ito::ITOM_API_FUNCS_GRAPH[9])
-
-#define apiGetFigureSetting \
-    (*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
-
-
-#if defined(ITOM_IMPORT_PLOTAPI)
-static int importItomPlotApi(void** apiArray)
-{
-    ito::ITOM_API_FUNCS_GRAPH = apiArray;
-    return 0;
-}
-#endif
+	#if defined(ITOM_IMPORT_PLOTAPI)
+	static int importItomPlotApi(void** apiArray)
+	{
+		ito::ITOM_API_FUNCS_GRAPH = apiArray;
+		return 0;
+	}
+	#endif
 
 } //end namespace ito
 
