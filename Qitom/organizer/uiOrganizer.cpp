@@ -538,9 +538,9 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
     if(filename.indexOf("itom://") == 0)
     {
         filename = filename.mid(7); //cut "itom://"
-        if(filename == "matplotlib" || filename == "MatplotlibFigure")
+        if(filename == "matplotlib" || filename == "MatplotlibFigure" || filename == "MatplotlibPlot")
         {
-            pluginClassName = "MatplotlibFigure";
+            pluginClassName = "MatplotlibPlot";
             win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,AbstractFigure::ModeStandaloneWindow, NULL));
             if(win)
             {
@@ -773,6 +773,7 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
 //----------------------------------------------------------------------------------------------------------------------------------
 QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent)
 {
+    QString tempClassName = className;
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
 
 //    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correctly initialized!
@@ -783,30 +784,58 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
     bool found = false;
     foreach( const QString &name, availableWidgets )
     {
-        if (QString::compare(name, className, Qt::CaseInsensitive) == 0)
+        if (QString::compare(name, tempClassName, Qt::CaseInsensitive) == 0)
         {
             found = true;
             break;
         }
     }
 
+    if (!found)
+    {
+        //check for obsolete plot names
+        if (QString::compare(className, "matplotlibfigure", Qt::CaseInsensitive) == 0)
+        {
+            tempClassName = "matplotlibplot";
+        }
+        else if (QString::compare(className, "itom1dqwtfigure", Qt::CaseInsensitive) == 0)
+        {
+            tempClassName = "itom1dqwtplot";
+        }
+        else if (QString::compare(className, "itom2dqwtfigure", Qt::CaseInsensitive) == 0)
+        {
+            tempClassName = "itom2dqwtplot";
+        }
+        else
+        {
+            tempClassName = "";
+        }
+
+        if (tempClassName != "")
+        {
+            foreach( const QString &name, availableWidgets )
+            {
+                if (QString::compare(name, tempClassName, Qt::CaseInsensitive) == 0)
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
     if (found)
     {
-        /*QStringList l = loader.availableLayouts();
-        QStringList p = loader.pluginPaths();*/
-        widget = dwo->createWidget(className,parent,QString(),winMode); //loader.createWidget(className, parent);
-        /*QDir path = QCoreApplication::applicationDirPath();
-        path.cd("designer");
-        QString path2 = QDir::cleanPath( path.absolutePath() );*/
+        widget = dwo->createWidget(tempClassName,parent,QString(),winMode); //loader.createWidget(className, parent);
 
         if(widget == NULL)
         {
-            widget = m_uiLoader.createWidget(className, parent);
+            widget = m_uiLoader.createWidget(tempClassName, parent);
         }
 
         if(widget == NULL)
         {
-            retValue += RetVal(retError,0,tr("designer plugin widget ('%1') could not be created").arg(className).toAscii().data());
+            retValue += RetVal(retError,0,tr("designer plugin widget ('%1') could not be created").arg(tempClassName).toAscii().data());
         }
         else
         {

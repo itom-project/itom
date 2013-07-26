@@ -344,6 +344,32 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
                 return defaultClassName; //the given class name fits to the figureCategory and exists
             }
         }
+
+        //check for obsolete class names
+        QString replaceClassName;
+        if (QString::compare(defaultClassName, "matplotlibfigure", Qt::CaseInsensitive) == 0)
+        {
+            replaceClassName = "matplotlibplot";
+        }
+        else if (QString::compare(defaultClassName, "itom1dqwtfigure", Qt::CaseInsensitive) == 0)
+        {
+            replaceClassName = "itom1dqwtplot";
+        }
+        else if (QString::compare(defaultClassName, "itom2dqwtfigure", Qt::CaseInsensitive) == 0)
+        {
+            replaceClassName = "itom2dqwtplot";
+        }
+
+        if (replaceClassName != "")
+        {
+            foreach(const FigurePlugin &plugin, figurePlugins)
+            {
+                if( QString::compare(plugin.classname, replaceClassName, Qt::CaseInsensitive) == 0 )
+                {
+                    return defaultClassName; //the given class name fits to the figureCategory and exists
+                }
+            }
+        }
     }
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -351,11 +377,36 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
     QString settingsClassName = settings.value(figureCategory, figureCat.m_defaultClassName ).toString();
     settings.endGroup();
 
-    foreach(const FigurePlugin &plugin, figurePlugins)
+    bool repeat = true;
+
+    while(repeat)
     {
-        if( QString::compare(plugin.classname, settingsClassName, Qt::CaseInsensitive) == 0 )
+
+        foreach(const FigurePlugin &plugin, figurePlugins)
         {
-            return settingsClassName; //the given class name fits to the figureCategory and exists
+            if( QString::compare(plugin.classname, settingsClassName, Qt::CaseInsensitive) == 0 )
+            {
+                return settingsClassName; //the given class name fits to the figureCategory and exists
+            }
+        }
+
+        repeat = false;
+
+        //There are some obsolete figures. If they cannot be found, try to find their equivalent successor
+        if (QString::compare(settingsClassName, "itom2dqwtfigure", Qt::CaseInsensitive ) == 0)
+        {
+            settingsClassName = "itom2dqwtplot";
+            repeat = true;
+        }
+        else if (QString::compare(settingsClassName, "matplotlibfigure", Qt::CaseInsensitive ) == 0)
+        {
+            settingsClassName = "matplotlibplot";
+            repeat = true;
+        }
+        else if (QString::compare(settingsClassName, "itom1dqwtfigure", Qt::CaseInsensitive ) == 0)
+        {
+            settingsClassName = "itom1dqwtplot";
+            repeat = true;
         }
     }
 
