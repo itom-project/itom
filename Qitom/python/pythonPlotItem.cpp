@@ -144,21 +144,19 @@ PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this) \n\
 \n\
-This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
+This method lets the user select one or multiple points (up to maxNrPoints) at the current plot (if the plot supports this).\n\
 \n\
-Parameters \n\
------------ \n\
-handle : {dataIO-Instance} \n\
-    any figure handle (>0) or 'all' in order to close all opened figures \n\
-\n\
-Notes \n\
-------- \n\
-If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too.");
+Parameters\n\
+-----------\n\
+points : {DataObject} \n\
+    resulting data object containing the 2D positions of the selected points [2 x nrOfSelectedPoints].\n\
+maxNrPoints: {int}, optional \n\
+    let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc.");
 /*static*/ PyObject* PythonPlotItem::PyPlotItem_pickPoints(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"dataObject", "maxNrPoints", NULL};
+    const char *kwlist[] = {"points", "maxNrPoints", NULL};
     ito::RetVal retval;
     PyObject *dataObject = NULL;
     int maxNrPoints = -1;
