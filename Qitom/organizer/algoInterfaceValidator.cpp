@@ -270,7 +270,19 @@ namespace ito
 	*/
     bool AlgoInterfaceValidator::isValidFilter(const ito::AddInAlgo::FilterDef &filter, ito::RetVal &ret, QStringList &tags) const
     {
-        return isValid(filter.m_interface, filter.m_paramFunc, ret) & getTags(filter.m_interface, filter.m_interfaceMeta, tags);
+        bool valid = isValid(filter.m_interface, filter.m_paramFunc, ret);
+        if (!valid && !ret.containsError())
+        {
+            ret += ito::RetVal(ito::retError,0,"The parameters of the filter does not fit to the requirements given by the specified filter interface.");
+        }
+
+        bool valid2 = getTags(filter.m_interface, filter.m_interfaceMeta, tags);
+        if (!valid2 && !ret.containsError())
+        {
+            ret += ito::RetVal(ito::retError,0,"The filter does not have the required tags defined.");
+        }
+
+        return valid && valid2;
     }
 
 	//! verifies a given algo-widget with respect to its indicated interface
@@ -288,7 +300,19 @@ namespace ito
 	*/
     bool AlgoInterfaceValidator::isValidWidget(const ito::AddInAlgo::AlgoWidgetDef &widget, ito::RetVal &ret, QStringList &tags) const
     {
-        return isValid(widget.m_interface, widget.m_paramFunc, ret) & getTags(widget.m_interface, widget.m_interfaceMeta, tags);
+        bool valid = isValid(widget.m_interface, widget.m_paramFunc, ret);
+        if (!valid && !ret.containsError())
+        {
+            ret += ito::RetVal(ito::retError,0,"The parameters of the widget does not fit to the requirements given by the specified widget interface.");
+        }
+
+        bool valid2 = getTags(widget.m_interface, widget.m_interfaceMeta, tags);
+        if (!valid2 && !ret.containsError())
+        {
+            ret += ito::RetVal(ito::retError,0,"The widget does not have the required tags defined.");
+        }
+
+        return valid && valid2;
     }
 
     bool AlgoInterfaceValidator::isValid(const ito::AddInAlgo::tAlgoInterface iface, const ito::AddInAlgo::t_filterParam filterParamFunc, ito::RetVal &ret) const
