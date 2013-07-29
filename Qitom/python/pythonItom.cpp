@@ -142,7 +142,7 @@ Open an existing itom script from the harddrive into the latest opened editor wi
 PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 {
     const char* filename;
-    if ( PyArg_ParseTuple(pArgs, "s", &filename) == false)
+    if (PyArg_ParseTuple(pArgs, "s", &filename) == false)
     {
         return PyErr_Format(PyExc_RuntimeError, "no valid filename string available");
     }
@@ -192,13 +192,13 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     char* className = NULL;
     bool ok = true;
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|s", const_cast<char**>(kwlist), &data, &className) )
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|s", const_cast<char**>(kwlist), &data, &className))
     {
         return NULL;
     }
 
-    QSharedPointer<ito::DataObject> newDataObj( PythonQtConversion::PyObjGetDataObjectNewPtr( data, false, ok) );
-    if(!ok)
+    QSharedPointer<ito::DataObject> newDataObj(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+    if (!ok)
     {
         return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
     }
@@ -211,7 +211,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
-    if(className) defaultPlotClassName = className;
+    if (className) defaultPlotClassName = className;
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
@@ -221,7 +221,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
     }
 
-    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
     {
         return NULL;
     }
@@ -236,7 +236,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     Py_DECREF(args2);
     Py_DECREF(kwds2);
 
-    if(pyPlotItem == NULL)
+    if (pyPlotItem == NULL)
     {
         PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
         return NULL;
@@ -332,7 +332,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     char* className = NULL;
     bool ok = true;
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!|s", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &className) )
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!|s", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &className))
     {
         return NULL;
     }
@@ -345,7 +345,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
-    if(className) defaultPlotClassName = className;
+    if (className) defaultPlotClassName = className;
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
@@ -355,7 +355,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image of camera");
     }
 
-    if(!PythonCommon::transformRetValToPyException( locker.getSemaphore()->returnValue ))
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
     {
         return NULL;
     }
@@ -370,7 +370,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     Py_DECREF(args2);
     Py_DECREF(kwds2);
 
-    if(pyPlotItem == NULL)
+    if (pyPlotItem == NULL)
     {
         PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
         return NULL;
@@ -409,7 +409,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //    PythonPlugins::PyDataIOPlugin* elem = (PythonPlugins::PyDataIOPlugin*)grabber;
 //    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 //    QString plotClassName2;
-//    if(plotClassName)
+//    if (plotClassName)
 //    {
 //        plotClassName2 = QString(plotClassName);
 //    }
@@ -525,7 +525,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //        PyObject* tempArg = NULL;
 //        PyObject* retValue = NULL;
 //        QVariantList list;
-//        for ( Py_ssize_t i = 0 ; i < PyList_Size(argument) ; i++)
+//        for (Py_ssize_t i = 0; i < PyList_Size(argument); i++)
 //        {
 //            tempArg = PyList_GetItem(argument, i);
 //            list.append(QVariant());
@@ -547,7 +547,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //    char* textArg;
 //    if (PyLong_Check(argument))
 //    {
-//        qVarArg = (int)PyLong_AsLong(argument) ;
+//        qVarArg = (int)PyLong_AsLong(argument);
 //    }
 //    else if (PyFloat_Check(argument))
 //    {
@@ -674,7 +674,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //    case QVariant::List:
 //        QVariantList list = value.value<QVariantList>();
 //        PyObject* retObject = PyList_New(list.length());
-//        for (int i=0 ; i<list.length() ; i++)
+//        for (int i = 0; i < list.length(); i++)
 //        {
 //            PyList_SetItem(retObject,i,convertQVariantToPyObject(list[i]));
 //        }
@@ -695,7 +695,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //   // QSharedPointer<blub> h;
 //   // int64 time = cv::getTickCount();
 //
-//   // /*for (int i=0; i<10000;i++)
+//   // /*for (int i = 0; i < 10000; i++)
 //   // {
 //   //     j=2;
 //   //     QMetaObject::invokeMethod(figureOrganizer, "test1", Qt::BlockingQueuedConnection, Q_ARG(int,j));
@@ -703,7 +703,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //   //
 //   // int64 time2 = cv::getTickCount();
 //
-//   // /*for (int i=0; i<10000;i++)
+//   // /*for (int i = 0; i < 10000; i++)
 //   // {
 //   //     j=2;
 //   //     figureOrganizer->test1(j);
@@ -711,7 +711,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //
 //   // int64 time3 = cv::getTickCount();
 //
-//   ///* for (int i=0; i<10000;i++)
+//   ///* for (int i = 0; i < 10000; i++)
 //   // {*/
 //   //     h = QSharedPointer<blub>(new blub());
 //   //     QMetaObject::invokeMethod(figureOrganizer, "test2", Qt::BlockingQueuedConnection, Q_ARG(QSharedPointer<blub>, h));
@@ -743,9 +743,9 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //
 //	double *value;
 //
-//	for (int i=0;i<nx;i++)
+//	for (int i = 0; i < nx; i++)
 //	{
-//		for (int j=0;j<ny;j++)
+//		for (int j = 0; j < ny; j++)
 //		{
 //			value = (double *) PyArray_GETPTR2(input,i,j);
 //			*value = i*j;
@@ -769,7 +769,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //	}else{
 //	//version 2:
 //		double* dataPtr = new double[x*y];
-//		for (int i=0;i<x*y;i++) dataPtr[i]=0.0;
+//		for (int i = 0; i < x * y; i++) dataPtr[i]=0.0;
 //
 //        //if (1)
 //        //{
@@ -781,7 +781,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //            //!< owndata-flag not set
 //		    a = (PyArrayObject*) (PyArray_SimpleNewFromData(2,a_dims,NPY_DOUBLE,(void *) dataPtr));
 //
-//            //PythonItom::getInstance()->attachPyArrayToGarbageCollector( *a, pyGarbageDeleteIfUnused);
+//            //PythonItom::getInstance()->attachPyArrayToGarbageCollector(*a, pyGarbageDeleteIfUnused);
 //
 //
 //
@@ -852,7 +852,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
         break;
     }
 
-    if (namefilter.contains("*") && ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0 )))
+    if (namefilter.contains("*") && ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0)))
     {
         // This is executed if the '*' ist either the first or the last sign of the string
         listonly = 1;
@@ -892,7 +892,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
     QString contextName;
     QStringList keyList;
 
-    if(getWidgetHelp)
+    if (getWidgetHelp)
     {
 
         keyList = widglist->keys();
@@ -931,7 +931,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
                 PyDict_SetItemString(resulttemp, "name", item);
                 Py_DECREF(item);
 
-                if(getWidgetHelp)
+                if (getWidgetHelp)
                 {
                     ito::AddInAlgo::AlgoWidgetDef* wFunc = widglist->find(filteredKey).value();  
                     filterParams = AIM->getHashedFilterParams(wFunc->m_paramFunc);
@@ -954,7 +954,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
                     Py_DECREF(item);
                 }
 
-                if(filterParams)
+                if (filterParams)
                 {
 
                     std::cout << "PARAMETERS:\n";
@@ -1030,7 +1030,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
             
         }
         longest_name = (longest_name + 3) > 50 ? 50 : longest_name + 3;
-        if(keyList.size())
+        if (keyList.size())
         {
             keyList.sort();
             
@@ -1060,7 +1060,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
                 PyDict_SetItemString(resulttemp, "name", item);
                 Py_DECREF(item);
 
-                if(getWidgetHelp)
+                if (getWidgetHelp)
                 {
                     ito::AddInAlgo::AlgoWidgetDef* wFunc = widglist->find(filteredKey).value();  
                     filterParams = AIM->getHashedFilterParams(wFunc->m_paramFunc);
@@ -1101,7 +1101,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
                 if (userwithinfos)
                 {
                     std::cout << "PARAMETERS:\n";
-                    if(filterParams)
+                    if (filterParams)
                     {
                         if (filterParams->paramsMand.size())
                         {
@@ -1227,7 +1227,7 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
     const char* pluginName = NULL;
     ito::RetVal retval = ito::retOk;
 	
-	if(!PyArg_ParseTuple(pArgs, "s", &pluginName))
+	if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
 	{
 		return NULL;
 	}
@@ -1287,14 +1287,14 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 #if PY_VERSION_HEX < 0x03030000
 	unsigned char output = 0;
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &output) )
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &output))
     {
         return NULL;
     }
-#else //only python 3.3 or higher has the 'p' (bool) type string
-	bool output = false;
+#else //only python 3.3 or higher has the 'p' (bool, int) type string
+	int output = 0; //this must be int, not bool!!! (else crash)
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &output) )
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &output))
     {
         return NULL;
     }
@@ -1336,7 +1336,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         if (pDetailDescription)
             free(pDetailDescription);
 
-        if(retval.errorMessage())
+        if (retval.errorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName, retval.errorMessage());
         }
@@ -1399,6 +1399,8 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         }
     }
 
+    
+
     PyObject *noneText = PyUnicode_FromString("None");
 
     switch(plugtype)
@@ -1412,7 +1414,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
             {
                 Py_DECREF(result);
 
-                if(retval.errorMessage())
+                if (retval.errorMessage())
                 {
                     return PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName, retval.errorMessage());
                 }
@@ -1475,7 +1477,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 QHash<QString, ito::AddInAlgo::FilterDef *> funcList;
                 algoInst->getFilterList(funcList);
 
-                if(funcList.size() > 0)
+                if (funcList.size() > 0)
                 {
                     std::cout << "\nThis is the container for following filters:\n";
                     QStringList keyList = funcList.keys();
@@ -1485,7 +1487,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                     for (int algos = 0; algos < keyList.size(); algos++)
                     {
                         item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toAscii());
-                        PyDict_SetItemString(algorithmlist, keyList.value(algos).toAscii().data() , item);
+                        PyDict_SetItemString(algorithmlist, keyList.value(algos).toAscii().data(), item);
                         Py_DECREF(item);
                         std::cout << "> " << algos << "  " << keyList.value(algos).toAscii().data() << "\n";
                     }
@@ -1501,7 +1503,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
                 algoInst->getAlgoWidgetList(widgetList);
 
-                if(widgetList.size() > 0)
+                if (widgetList.size() > 0)
                 {
                     std::cout << "\nThis is the container for following widgets:\n";
                     QStringList keyList = widgetList.keys();
@@ -1511,7 +1513,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                     for (int widgets = 0; widgets < keyList.size(); widgets++)
                     {
                         item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toAscii());
-                        PyDict_SetItemString(widgetlist, keyList.value(widgets).toAscii().data() , item);
+                        PyDict_SetItemString(widgetlist, keyList.value(widgets).toAscii().data(), item);
                         Py_DECREF(item);
                         std::cout << "> " << widgets << "  " << keyList.value(widgets).toAscii().data() << "\n";
                     }
@@ -1535,7 +1537,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 
     Py_DECREF(noneText);
 
-    if (output)
+    if (output > 0)
     {
         return result;
     }
@@ -1546,11 +1548,11 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) -> retrive complete informations about itom version numbers\n\
+PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers\n\
 \n\
 Parameters \n\
 ----------- \n\
-toggle-output : {bool} , optional\n\
+toggle-output : {bool}, optional\n\
     default = false\n\
     if true, output will be written to a dictionary else to console.\n\
 dictionary : {bool}, optional \n\
@@ -1616,7 +1618,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
     /*QList<QPair<QString, QString> > versionList = ito::retrieveITOMVERSIONMAP();
 
-    for( int i = 0; i < versionList.size(); i++)
+    for (int i = 0; i < versionList.size(); i++)
     {
         key = PythonQtConversion::QStringToPyObject(versionList[i].first);
         value = PythonQtConversion::QStringToPyObject(versionList[i].second);
@@ -1629,21 +1631,21 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     ret = PyDict_SetItemString(myDic, "itom", myTempDic);
     Py_XDECREF(myTempDic);
 
-    if(addPlugIns)
+    if (addPlugIns)
     {
         PyObject* myTempDic = PyDict_New();
         char buf[7] = {0};
         ito::AddInManager *aim = ito::AddInManager::getInstance();
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
-        if(aim != NULL)
+        if (aim != NULL)
         {
             PyObject* info = NULL;
             PyObject* license = NULL;
-            for(int i = 0; i < aim->getNumTotItems(); i++)
+            for (int i = 0; i < aim->getNumTotItems(); i++)
             {
                 
                 curAddInInterface = reinterpret_cast<ito::AddInInterfaceBase*>(aim->getAddInPtr(i));
-                if(curAddInInterface)
+                if (curAddInInterface)
                 {
                     info = PyDict_New();
 
@@ -1688,14 +1690,14 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         Py_ssize_t size = PyList_Size(myKeys);
         bool check = true;
 
-        for(Py_ssize_t i = 0; i < size; i++)
+        for (Py_ssize_t i = 0; i < size; i++)
         {
             std::cout << "\n ----------------------------------------------------------------------------------------------------------------------------------------\n";
             PyObject* currentKey = PyList_GET_ITEM(myKeys, i);
             QString key("");
             key = PythonQtConversion::PyObjGetString(currentKey, true, check);
 
-            if(!check)
+            if (!check)
             {
                 continue;
             }
@@ -1709,7 +1711,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
             int longest = 0;
             int compensatorMax = 30; 
 
-            for(Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
+            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
             {      
                 PyObject* currentSubKey = PyList_GET_ITEM(mySubKeys, m);
                 int temp = PyUnicode_GET_SIZE(currentSubKey);
@@ -1718,12 +1720,12 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
             longest += 3;
             longest = longest > compensatorMax ? compensatorMax : longest;
 
-            for(Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
+            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
             {
                 QString subKey("");
                 PyObject* currentSubKey = PyList_GET_ITEM(mySubKeys, m);
                 subKey = PythonQtConversion::PyObjGetString(currentSubKey, true, check);
-                if(!check)
+                if (!check)
                 {
                     continue;
                 }
@@ -1734,11 +1736,11 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                 QString subVal("");
                 PyObject* currentSubVal = PyDict_GetItem(currentDict, currentSubKey);
 
-                if(PyDict_Check(currentSubVal))
+                if (PyDict_Check(currentSubVal))
                 {
                     PyObject* curVal = PyDict_GetItemString(currentSubVal, "version");
 
-                    if(PyLong_Check(curVal))
+                    if (PyLong_Check(curVal))
                     {
                         subVal = QString("%1").arg(PythonQtConversion::PyObjGetInt(curVal, true,check));
                     }
@@ -1752,7 +1754,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
                     curVal = PyDict_GetItemString(currentSubVal, "license");
                     
-                    if(PyLong_Check(curVal))
+                    if (PyLong_Check(curVal))
                     {
                         subVal.append(QString("%1").arg(PythonQtConversion::PyObjGetInt(curVal, true,check)));
                     }
@@ -1763,7 +1765,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
                     subVal.append(")");
                 }
-                else if(PyLong_Check(currentSubVal))
+                else if (PyLong_Check(currentSubVal))
                 {
                     subVal = QString("%1").arg(PythonQtConversion::PyObjGetInt(currentSubVal, true,check));
                 }
@@ -1772,7 +1774,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     subVal = PythonQtConversion::PyObjGetString(currentSubVal, true, check);
                 }
 
-                if(!check)
+                if (!check)
                 {
                     continue;
                 }
@@ -1838,18 +1840,18 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     bool ok = false;
     RetVal retValue(retOk);
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyTuple_Type, &argtuple))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
         PyErr_Clear();
 
-        if( !PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyList_Type, &argtuple))
+        if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyList_Type, &argtuple))
         {
             return NULL;
         }
         //return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
     }
 
-    if(code)
+    if (code)
     {
         qcode = PythonQtConversion::PyObjGetString(code,true,ok);
     }
@@ -1859,24 +1861,24 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     qname = QString(name);
     qicon = QString(icon);
 
-    if(qkey == "")
+    if (qkey == "")
     {
         retValue += RetVal(retError,0,QObject::tr("Button must have a valid name.").toAscii().data());
     }
     else
     {
-        if(!code)
+        if (!code)
         {
             retValue += RetVal(retError,0,QObject::tr("Any type of code (String or callable method or function) must be indicated.").toAscii().data());
         }
-        else if(!ok) //check whether code is a method or function
+        else if (!ok) //check whether code is a method or function
         {
-            if(PyMethod_Check(code) || PyFunction_Check(code))
+            if (PyMethod_Check(code) || PyFunction_Check(code))
             {
                 //create hash-string
                 qkey2 = qkey + "_" +  QString::number(pyEngine->m_pyFuncWeakRefHashesAutoInc++);
                 qcode = ":::itomfcthash:::" + qkey2;
-                if(pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
+                if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
                 {
                     retValue += RetVal(retError,0,QObject::tr("The given button name is already associated to a python method or function. The button can not be created.").toAscii().data());
                 }
@@ -1885,14 +1887,14 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
                     PyObject *arguments = PyTuple_New(1);
                     Py_INCREF(code);
                     PyTuple_SetItem(arguments,0,code); //steals ref
-                    PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType , arguments); //new ref
+                    PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
                     Py_DECREF(arguments);
                         
-                    if(proxy)
+                    if (proxy)
                     {
-                        if(argtuple)
+                        if (argtuple)
                         {
-                            if(PyTuple_Check(argtuple))
+                            if (PyTuple_Check(argtuple))
                             {
                                 Py_INCREF(argtuple);
                             }
@@ -1916,13 +1918,13 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        emit pyEngine->pythonAddToolbarButton( toolbarName, qname, qicon, qcode ); //queued
+        emit pyEngine->pythonAddToolbarButton(toolbarName, qname, qicon, qcode); //queued
         //emit pyEngine->pythonAddMenuElement(type, qkey, qname, qcode, qicon); //queued
     }
 
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
     Py_RETURN_NONE;
 }
 
@@ -1946,7 +1948,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
     const char* toolbarName;
     const char* buttonName;
 
-    if (! PyArg_ParseTuple(pArgs, "ss", &toolbarName, &buttonName) )
+    if (! PyArg_ParseTuple(pArgs, "ss", &toolbarName, &buttonName))
     {
         return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(removeButton) for more information.");
     }
@@ -2007,17 +2009,17 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     bool ok = false;
     RetVal retValue(retOk);
 
-    if( !PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyTuple_Type, &argtuple))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
         PyErr_Clear();
-        if( !PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyList_Type, &argtuple))
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyList_Type, &argtuple))
         {
             return NULL;
         }
         //return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
     }
 
-    if(code)
+    if (code)
     {
         qcode = PythonQtConversion::PyObjGetString(code,true,ok);
     }
@@ -2028,12 +2030,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     qicon = QString(icon);
 
     QStringList sl = qkey.split("/");
-    if(qname == "" && sl.size() > 0)
+    if (qname == "" && sl.size() > 0)
     {
         qname = sl[ sl.size() - 1];
     }
 
-    if(qkey == "")
+    if (qkey == "")
     {
         retValue += RetVal(retError,0,QObject::tr("Menu element must have a valid key.").toAscii().data());
     }
@@ -2045,18 +2047,18 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         {
         case 0: //BUTTON
             {
-            if(!code)
+            if (!code)
             {
                 retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toAscii().data());
             }
-            else if(!ok) //check whether code is a method or function
+            else if (!ok) //check whether code is a method or function
             {
-                if(PyMethod_Check(code) || PyFunction_Check(code))
+                if (PyMethod_Check(code) || PyFunction_Check(code))
                 {
                     //create hash-string
                     qkey2 = qkey + "_" +  QString::number(pyEngine->m_pyFuncWeakRefHashesAutoInc++);
                     qcode = ":::itomfcthash:::" + qkey2;
-                    if(pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
+                    if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
                     {
                         retValue += RetVal(retError,0,QObject::tr("The given key is already associated to a python method or function. The menu element can not be created.").toAscii().data());
                     }
@@ -2065,14 +2067,14 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
                         PyObject *arguments = PyTuple_New(1);
                         Py_INCREF(code);
                         PyTuple_SetItem(arguments,0,code); //steals ref
-                        PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType , arguments); //new ref
+                        PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
                         Py_DECREF(arguments);
                         
-                        if(proxy)
+                        if (proxy)
                         {
-                            if(argtuple)
+                            if (argtuple)
                             {
-                                if(PyTuple_Check(argtuple))
+                                if (PyTuple_Check(argtuple))
                                 {
                                     Py_INCREF(argtuple);
                                 }
@@ -2098,12 +2100,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             }
         case 1: //SEPARATOR
             {
-            if(ok && qcode != "")
+            if (ok && qcode != "")
             {
                 retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute some code. Code argument is ignored.").toAscii().data());
                 qcode = "";
             }
-            else if(!ok && code != NULL && code != Py_None)
+            else if (!ok && code != NULL && code != Py_None)
             {
                 retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute any function or method. Code argument is ignored.").toAscii().data());
             }
@@ -2111,12 +2113,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             }
         case 2: //MENU
             {
-            if(ok && qcode != "")
+            if (ok && qcode != "")
             {
                 retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute some code. Code argument is ignored.").toAscii().data());
                 qcode = "";
             }
-            else if(!ok && code != NULL && code != Py_None)
+            else if (!ok && code != NULL && code != Py_None)
             {
                 retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute any function or method. Code argument is ignored.").toAscii().data());
             }
@@ -2125,12 +2127,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit pyEngine->pythonAddMenuElement(type, qkey, qname, qcode, qicon); //queued
     }
 
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
     Py_RETURN_NONE;
 }
 
@@ -2156,13 +2158,13 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     QString qkey;
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
 
-    if( !PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &keyName))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &keyName))
     {
         return PyErr_Format(PyExc_TypeError, "wrong length or type of arguments. Type help(removeMenu) for more information.");
     }
 
     qkey = QString(keyName);
-    if(qkey == "")
+    if (qkey == "")
     {
         return PyErr_Format(PyExc_KeyError, "The given key name must not be empty.");
     }
@@ -2171,7 +2173,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     QHash<QString,QPair<PyObject*,PyObject*> >::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
     while(it != pyEngine->m_pyFuncWeakRefHashes.end())
     {
-        if(it.key().startsWith(qkey)) //hashValue.startsWith(it.key()))
+        if (it.key().startsWith(qkey)) //hashValue.startsWith(it.key()))
         {
             Py_XDECREF(it->first);
             Py_XDECREF(it->second);
@@ -2226,29 +2228,29 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     PyObject *obj_list = NULL;
     PyObject *t = NULL;
     bool ok;
-    if(gc)
+    if (gc)
     {
         gc_collect = PyObject_CallMethod(gc, "collect","");
         Py_XDECREF(gc_collect);
         obj_list = PyObject_CallMethod(gc, "get_objects", "");
-        if(!obj_list)
+        if (!obj_list)
         {
             PyErr_SetString(PyExc_RuntimeError, "call to gc.get_objects() failed");
             return NULL;
         }
 
         m_gcTrackerList.clear();
-        for(Py_ssize_t i=0;i<PyList_Size(obj_list);i++)
+        for (Py_ssize_t i = 0; i < PyList_Size(obj_list); i++)
         {
             t = PyList_GET_ITEM(obj_list,i); //borrowed
-            m_gcTrackerList[ (size_t)t] = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t,false,ok)); //t->ob_type->tp_name;
+            m_gcTrackerList[ (size_t)t] = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok)); //t->ob_type->tp_name;
         }
         Py_DECREF(obj_list);
         std::cout << m_gcTrackerList.count() << " elements tracked" << std::endl;
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError,"module gc could not be imported");
+        PyErr_SetString(PyExc_RuntimeError, "module gc could not be imported");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2263,30 +2265,30 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     QString temp;
     bool ok;
     int n;
-    if(m_gcTrackerList.count() == 0)
+    if (m_gcTrackerList.count() == 0)
     {
         PyErr_SetString(PyExc_RuntimeError,"tracker has not been started. Call gcStartTracking() first.");
         return NULL;
     }
 
-    if(gc)
+    if (gc)
     {
         gc_collect = PyObject_CallMethod(gc, "collect","");
         Py_XDECREF(gc_collect);
         obj_list = PyObject_CallMethod(gc, "get_objects", "");
-        if(!obj_list)
+        if (!obj_list)
         {
             PyErr_SetString(PyExc_RuntimeError, "call to gc.get_objects() failed");
             return NULL;
         }
 
-        for(Py_ssize_t i=0;i<PyList_Size(obj_list);i++)
+        for (Py_ssize_t i = 0; i < PyList_Size(obj_list); i++)
         {
             t = PyList_GET_ITEM(obj_list,i); //borrowed
-            n = m_gcTrackerList.remove( (size_t)t );
-            if(n == 0)
+            n = m_gcTrackerList.remove((size_t)t);
+            if (n == 0)
             {
-                temp = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t,false,ok));
+                temp = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok));
                 std::cout << "New Element. Addr:" << (size_t)t << " Type: " << temp.toAscii().data() << "\n" << std::endl;
             }
         }
@@ -2343,7 +2345,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
         PyObject* subgeom = NULL;
         PyObject* item = NULL;
         QRect rec;
-        for(int i=0;i<nScreens;i++)
+        for (int i = 0; i < nScreens; i++)
         {
             subgeom = PyDict_New();
             rec = pyEngine->m_pDesktopWidget->screenGeometry(i);
@@ -2479,7 +2481,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 }
                 else
                 {
-                    for (Py_ssize_t i = 0 ; i < PySequence_Size(matrixNames) ; i++)
+                    for (Py_ssize_t i = 0; i < PySequence_Size(matrixNames); i++)
                     {
                         matrixNamesItem = PySequence_GetItem(matrixNames,i); //new reference
                         if (!PyUnicode_Check(matrixNamesItem) && !PyBytes_Check(matrixNamesItem))
@@ -2497,9 +2499,9 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             int sizeIter = 32; //max buffer length for number in key "matrix%i" with i being number
             
 
-            for (Py_ssize_t i = 0 ; i < PySequence_Size(element) ; i++)
+            for (Py_ssize_t i = 0; i < PySequence_Size(element); i++)
             {
-                tempItem = PySequence_GetItem(element,i); //new reference
+                tempItem = PySequence_GetItem(element, i); //new reference
 
                 if (tempName == matrixName)
                 {
@@ -2512,7 +2514,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 }
                 else
                 {
-                    matrixNamesItem = PySequence_GetItem(matrixNames,i); //new reference
+                    matrixNamesItem = PySequence_GetItem(matrixNames, i); //new reference
                     matrixNamesTuple  = PyTuple_Pack(1, matrixNamesItem);
                     PyArg_ParseTuple(matrixNamesTuple, "s", &tempName);
                     matlabData = PyMatlabMatDataObjectConverter(tempItem);
@@ -2671,7 +2673,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 if (PyArray_Check(value))
                 {
-                    if (PyArray_SIZE( (PyArrayObject*)value ) == 1) //this is either a single value or a matlab-struct
+                    if (PyArray_SIZE((PyArrayObject*)value) == 1) //this is either a single value or a matlab-struct
                     {
                         PyObject *item = PyArray_ToList((PyArrayObject*)value); //new ref
 
@@ -2679,10 +2681,10 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                         {
                             PyDict_SetItem(resultLoadMat, key, item);
                         }
-                        else if (value && PyArray_HASFIELDS( (PyArrayObject*)value ))
+                        else if (value && PyArray_HASFIELDS((PyArrayObject*)value))
                         {
                             //it may be that this is a struct which has been generated earlier from a npDataObject or dataObject
-                            PyArray_Descr * descr = PyArray_DESCR( (PyArrayObject*)value );
+                            PyArray_Descr * descr = PyArray_DESCR((PyArrayObject*)value);
 
                             if (descr->fields != NULL) //fields is a dictionary with "fieldname" => type-description for this field
                             {
@@ -2781,7 +2783,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase, paramsOutBase;
 
     const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);
-    if(filterParams == NULL)
+    if (filterParams == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "parameters of filter could not be found.");
         return NULL;
@@ -2790,11 +2792,11 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs));
 
     //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
-    ret += parseInitParams( &(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase);
+    ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase);
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
-    ret += copyParamVector( &(filterParams->paramsOut), paramsOutBase);
+    ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
 
-    if(ret.containsError())
+    if (ret.containsError())
     {
         PyErr_Format(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
@@ -2809,13 +2811,13 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     else
     {
-        if(paramsOutBase.size() == 0)
+        if (paramsOutBase.size() == 0)
         {
             Py_RETURN_NONE;
         }
-        else if(paramsOutBase.size() == 1)
+        else if (paramsOutBase.size() == 1)
         {
-            PyObject* out = PythonParamConversion::ParamBaseToPyObject( paramsOutBase[0] ); //new ref
+            PyObject* out = PythonParamConversion::ParamBaseToPyObject(paramsOutBase[0]); //new ref
             if (!PythonCommon::transformRetValToPyException(ret))
             {
                 return NULL;
@@ -2828,14 +2830,14 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         else
         {
             //parse output vector to PyObject-Tuple
-            PyObject* out = PyTuple_New( paramsOutBase.size() );
+            PyObject* out = PyTuple_New(paramsOutBase.size());
             PyObject* temp;
             Py_ssize_t i = 0;
 
             foreach(const ito::ParamBase &p, paramsOutBase)
             {
                 temp = PythonParamConversion::ParamBaseToPyObject(p); //new ref
-                if(temp)
+                if (temp)
                 {
                     PyTuple_SetItem(out,i,temp); //steals ref
                     i++;
@@ -2915,23 +2917,23 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
 
     PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
 
-    if(pyBool == NULL)
+    if (pyBool == NULL)
     {
-        if(pyBool == Py_True)   // do not change the filename
+        if (pyBool == Py_True)   // do not change the filename
         {
             asBin = true;
         }
         Py_XDECREF(pyBool);
     }
 
-    ret += ito::saveDOBJ2XML( elem->dataObject, folderfilename, false, asBin);
+    ret += ito::saveDOBJ2XML(elem->dataObject, folderfilename, false, asBin);
 
 
     Py_XDECREF(pyDataObject);
 
     if (ret.containsError())
     {
-        if(ret.errorMessage())
+        if (ret.errorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not save dataObject: error message: \n%s\n", ret.errorMessage());
         }
@@ -3000,23 +3002,23 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
 
     PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
 
-    if(pyBool == NULL)
+    if (pyBool == NULL)
     {
-        if(pyBool == Py_False)   // do not change the filename
+        if (pyBool == Py_False)   // do not change the filename
         {
             appendEnding = false;
         }
         Py_XDECREF(pyBool);
     }
 
-    ret += ito::loadXML2DOBJ( elem->dataObject, folderfilename, false, appendEnding);
+    ret += ito::loadXML2DOBJ(elem->dataObject, folderfilename, false, appendEnding);
 
     Py_XDECREF(pyDataObject);
 
 
     if (ret.containsError())
     {
-        if(ret.errorMessage())
+        if (ret.errorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not load dataObject: error message: \n%s\n", ret.errorMessage());
         }
@@ -3217,19 +3219,19 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
         return NULL;
     }
 
-    if(i > Qt::LastCursor)
+    if (i > Qt::LastCursor)
     {
         return PyErr_Format(PyExc_RuntimeError, "Cursor number must be in range [-1,%i]", Qt::LastCursor);
     }
 
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if(i >= 0 && pyEngine)
+    if (i >= 0 && pyEngine)
     {
         Qt::CursorShape shape = (Qt::CursorShape)i;
-        emit pyEngine->pythonSetCursor( shape );
+        emit pyEngine->pythonSetCursor(shape);
     }
-    else if(pyEngine)
+    else if (pyEngine)
     {
         emit pyEngine->pythonResetCursor();
     }
@@ -3239,10 +3241,10 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 ///*static*/ PyObject* PythonItom::PyGetGlobalDict(PyObject* /*pSelf*/)
 //{
 //	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-//	if(pyEngine)
+//	if (pyEngine)
 //	{
 //		PyObject *dict = pyEngine->getMainDictionary();
-//		if(dict)
+//		if (dict)
 //		{
 //			Py_INCREF(dict);
 //			return dict;
@@ -3295,7 +3297,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     const char *kwlist[] = {"filename", NULL};
     char* filename = NULL;
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s", const_cast<char**>(kwlist), &filename) )
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s", const_cast<char**>(kwlist), &filename))
     {
         return NULL;
     }
@@ -3357,14 +3359,14 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 #if PY_VERSION_HEX < 0x03030000
 	unsigned char overwriteIfExists = 1;
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|b", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists) ) //all borrowed
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|b", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
     {
         return NULL;
     }
-#else //only python 3.3 or higher has the 'p' (bool) type string
-	bool overwriteIfExists = true;
+#else //only python 3.3 or higher has the 'p' (bool, int) type string
+	int overwriteIfExists = 1; //this must be int, not bool!!! (else crash)
 
-    if( !PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|p", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists) ) //all borrowed
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|p", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
     {
         return NULL;
     }
@@ -3376,7 +3378,7 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     {
         QFileInfo info(filename);
 
-        if (!info.exists() || (info.exists() && overwriteIfExists) )
+        if (!info.exists() || (info.exists() && (overwriteIfExists > 0)))
         {
             PyObject *dict = PyDict_New();
             RetVal retval = pyEngine->pickleDictionary(dict, filename);
@@ -3466,18 +3468,18 @@ PyModuleDef PythonItom::PythonModuleItom = {
 PyObject* PythonItom::PyInitItom(void)
 {
     PyObject *m = PyModule_Create(&PythonModuleItom);
-    if(m != NULL)
+    if (m != NULL)
     {
         PyModule_AddObject(m, "numeric", PyModule_Create(&PythonNumeric::PythonModuleItomNumeric));
 
         //constants for addMenu
-        PyModule_AddObject(m, "BUTTON",     PyLong_FromLong(0) ); //steals reference to value
-        PyModule_AddObject(m, "SEPARATOR",  PyLong_FromLong(1) ); //steals reference to value
-        PyModule_AddObject(m, "MENU",       PyLong_FromLong(2) ); //steals reference to value
+        PyModule_AddObject(m, "BUTTON",     PyLong_FromLong(0)); //steals reference to value
+        PyModule_AddObject(m, "SEPARATOR",  PyLong_FromLong(1)); //steals reference to value
+        PyModule_AddObject(m, "MENU",       PyLong_FromLong(2)); //steals reference to value
 
         //equivalent:
-        //PyObject_SetAttrString(m, "TEST", PyLong_FromLong(0) );
-        //PyObject_GenericSetAttr(m, PyUnicode_FromString("TEST2"), PyLong_FromLong(-1) );
+        //PyObject_SetAttrString(m, "TEST", PyLong_FromLong(0));
+        //PyObject_GenericSetAttr(m, PyUnicode_FromString("TEST2"), PyLong_FromLong(-1));
 
     }
     return m;

@@ -2058,7 +2058,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2038"/>
+        <location filename="../python/pythonItom.cpp" line="+2040"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -2140,7 +2140,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="+59"/>
+        <location filename="../../plot/AbstractFigure.cpp" line="+104"/>
         <location line="+44"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
@@ -2196,7 +2196,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+58"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+66"/>
         <source>Source data for plot</source>
         <translation type="unfinished">Quelldaten für Plot</translation>
     </message>
@@ -2379,185 +2379,144 @@ Type conflict for %1</source>
 <context>
     <name>ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+62"/>
         <source>Untitled%1</source>
-        <translation>Unbenannt%1</translation>
+        <translation type="obsolete">Unbenannt%1</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+220"/>
         <source>&amp;toggle bookmark</source>
-        <translation>Lesezeichen ein-/aus&amp;schalten</translation>
+        <translation type="obsolete">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>next bookmark</source>
-        <translation>Nächstes Lesezeichen</translation>
+        <translation type="obsolete">Nächstes Lesezeichen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>previous bookmark</source>
-        <translation>Vorheriges Lesezeichen</translation>
+        <translation type="obsolete">Vorheriges Lesezeichen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>clear all bookmarks</source>
-        <translation>Alle Lesezeichen löschen</translation>
+        <translation type="obsolete">Alle Lesezeichen löschen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>&amp;toggle breakpoint</source>
-        <translation>Haltepunkt ein-/aus&amp;schalten</translation>
+        <translation type="obsolete">Haltepunkt ein-/aus&amp;schalten</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+136"/>
         <source>&amp;disable breakpoint</source>
-        <translation>Haltepunkt &amp;deaktivieren</translation>
+        <translation type="obsolete">Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-135"/>
         <source>&amp;edit condition</source>
-        <translation>Bedingungen &amp;bearbeiten</translation>
+        <translation type="obsolete">Bedingungen &amp;bearbeiten</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;next breakpoint</source>
-        <translation>&amp;Nächste Haltepunkt</translation>
+        <translation type="obsolete">&amp;Nächste Haltepunkt</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;previous breakpoint</source>
-        <translation>&amp;Vorheriger Haltepunkt</translation>
+        <translation type="obsolete">&amp;Vorheriger Haltepunkt</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;clear all breakpoint</source>
-        <translation>Alle Haltepunkte &amp;löschen</translation>
+        <translation type="obsolete">Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>&amp;cut</source>
-        <translation>&amp;Ausschneiden</translation>
+        <translation type="obsolete">&amp;Ausschneiden</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>cop&amp;y</source>
-        <translation>&amp;Kopieren</translation>
+        <translation type="obsolete">&amp;Kopieren</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;paste</source>
-        <translation>&amp;Einfügen</translation>
+        <translation type="obsolete">&amp;Einfügen</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>&amp;indent</source>
-        <translation>Zeileneinzug ver&amp;größern</translation>
+        <translation type="obsolete">Zeileneinzug ver&amp;größern</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;unindent</source>
-        <translation>Zeileneinzug ver&amp;kleinern</translation>
+        <translation type="obsolete">Zeileneinzug ver&amp;kleinern</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>&amp;comment</source>
-        <translation>&amp;Kommentieren</translation>
+        <translation type="obsolete">&amp;Kommentieren</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>unc&amp;omment</source>
-        <translation>Kommentierung &amp;aufheben</translation>
+        <translation type="obsolete">Kommentierung &amp;aufheben</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>&amp;run script</source>
-        <translation>Skript &amp;starten</translation>
+        <translation type="obsolete">Skript &amp;starten</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>&amp;debug script</source>
-        <translation>Skript im &amp;Debug-Modus starten</translation>
+        <translation type="obsolete">Skript im &amp;Debug-Modus starten</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>sto&amp;p script</source>
-        <translation>Skript sto&amp;ppen</translation>
+        <translation type="obsolete">Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location line="+115"/>
         <source>&amp;enable breakpoint</source>
-        <translation>Haltepunkte d&amp;eaktivieren</translation>
+        <translation type="obsolete">Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+448"/>
-        <location line="+71"/>
-        <location line="+37"/>
         <source>unsaved changes</source>
-        <translation>Ungespeicherte Änderungen</translation>
+        <translation type="obsolete">Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-108"/>
-        <location line="+108"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
-        <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
+        <translation type="obsolete">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-37"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
-        <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
+        <translation type="obsolete">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-54"/>
         <source>error while opening file</source>
-        <translation>Fehler beim Öffnen der Datei</translation>
+        <translation type="obsolete">Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location line="-582"/>
         <source>run &amp;selection</source>
-        <translation>Auswahl &amp;starten</translation>
+        <translation type="obsolete">Auswahl &amp;starten</translation>
     </message>
     <message>
-        <location line="+582"/>
         <source>file %1 could not be loaded</source>
-        <translation>Datei %1 konnte nicht geladen werden</translation>
+        <translation type="obsolete">Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location line="+70"/>
-        <location line="+48"/>
         <source>error while accessing file</source>
-        <translation>Fehler beim Zugriff auf die Datei</translation>
+        <translation type="obsolete">Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location line="-48"/>
-        <location line="+48"/>
         <source>file %1 could not be accessed</source>
-        <translation>Auf die Datei %1 konnte nicht zugegriffen werden</translation>
+        <translation type="obsolete">Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
     <message>
-        <location line="-13"/>
         <source>save as...</source>
-        <translation>Speichern unter...</translation>
+        <translation type="obsolete">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+573"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
-        <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Keep this file in editor?</source>
-        <translation>Diese Datei im Editor belassen?</translation>
+        <translation type="obsolete">Diese Datei im Editor belassen?</translation>
     </message>
     <message>
-        <location line="+17"/>
         <source>The file &apos;%1&apos; has been modified by another programm.</source>
-        <translation>Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Do you want to reload it?</source>
-        <translation>Soll diese neu geladen werden?</translation>
+        <translation type="obsolete">Soll diese neu geladen werden?</translation>
     </message>
 </context>
 <context>
@@ -3676,7 +3635,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Polygon [ein]</translation>
     </message>
     <message>
-        <location line="+165"/>
+        <location line="+189"/>
         <source>Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3840,7 +3799,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+54"/>
-        <location line="+57"/>
+        <location line="+108"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
@@ -4199,7 +4158,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+225"/>
+        <location line="+261"/>
         <source>subplot %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5532,6 +5491,205 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
+    <name>ito::ScriptEditorWidget</name>
+    <message>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+223"/>
+        <source>&amp;toggle bookmark</source>
+        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>next bookmark</source>
+        <translation type="unfinished">Nächstes Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>previous bookmark</source>
+        <translation type="unfinished">Vorheriges Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>clear all bookmarks</source>
+        <translation type="unfinished">Alle Lesezeichen löschen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&amp;toggle breakpoint</source>
+        <translation type="unfinished">Haltepunkt ein-/aus&amp;schalten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+136"/>
+        <source>&amp;disable breakpoint</source>
+        <translation type="unfinished">Haltepunkt &amp;deaktivieren</translation>
+    </message>
+    <message>
+        <location line="-135"/>
+        <source>&amp;edit condition</source>
+        <translation type="unfinished">Bedingungen &amp;bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;next breakpoint</source>
+        <translation type="unfinished">&amp;Nächste Haltepunkt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;previous breakpoint</source>
+        <translation type="unfinished">&amp;Vorheriger Haltepunkt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;clear all breakpoint</source>
+        <translation type="unfinished">Alle Haltepunkte &amp;löschen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&amp;cut</source>
+        <translation type="unfinished">&amp;Ausschneiden</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>cop&amp;y</source>
+        <translation type="unfinished">&amp;Kopieren</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;paste</source>
+        <translation type="unfinished">&amp;Einfügen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;indent</source>
+        <translation type="unfinished">Zeileneinzug ver&amp;größern</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;unindent</source>
+        <translation type="unfinished">Zeileneinzug ver&amp;kleinern</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;comment</source>
+        <translation type="unfinished">&amp;Kommentieren</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>unc&amp;omment</source>
+        <translation type="unfinished">Kommentierung &amp;aufheben</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>&amp;run script</source>
+        <translation type="unfinished">Skript &amp;starten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>run &amp;selection</source>
+        <translation type="unfinished">Auswahl &amp;starten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;debug script</source>
+        <translation type="unfinished">Skript im &amp;Debug-Modus starten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>sto&amp;p script</source>
+        <translation type="unfinished">Skript sto&amp;ppen</translation>
+    </message>
+    <message>
+        <location line="+115"/>
+        <source>&amp;enable breakpoint</source>
+        <translation type="unfinished">Haltepunkte d&amp;eaktivieren</translation>
+    </message>
+    <message>
+        <location line="+448"/>
+        <location line="+71"/>
+        <location line="+37"/>
+        <source>unsaved changes</source>
+        <translation type="unfinished">Ungespeicherte Änderungen</translation>
+    </message>
+    <message>
+        <location line="-108"/>
+        <location line="+108"/>
+        <source>there are unsaved changes in the current document. Do you want to save it first?</source>
+        <translation type="unfinished">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
+    </message>
+    <message>
+        <location line="-91"/>
+        <source>error while opening file</source>
+        <translation type="unfinished">Fehler beim Öffnen der Datei</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>file %1 could not be loaded</source>
+        <translation type="unfinished">Datei %1 konnte nicht geladen werden</translation>
+    </message>
+    <message>
+        <location line="+54"/>
+        <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
+        <translation type="unfinished">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+48"/>
+        <source>error while accessing file</source>
+        <translation type="unfinished">Fehler beim Zugriff auf die Datei</translation>
+    </message>
+    <message>
+        <location line="-48"/>
+        <location line="+48"/>
+        <source>file %1 could not be accessed</source>
+        <translation type="unfinished">Auf die Datei %1 konnte nicht zugegriffen werden</translation>
+    </message>
+    <message>
+        <location line="-13"/>
+        <source>save as...</source>
+        <translation type="unfinished">Speichern unter...</translation>
+    </message>
+    <message>
+        <location line="+412"/>
+        <source>Print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>There is nothing to print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>unnamed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+199"/>
+        <source>The file &apos;%1&apos; does not exist any more.</source>
+        <translation type="unfinished">Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Keep this file in editor?</source>
+        <translation type="unfinished">Diese Datei im Editor belassen?</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>The file &apos;%1&apos; has been modified by another programm.</source>
+        <translation type="unfinished">Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Do you want to reload it?</source>
+        <translation type="unfinished">Soll diese neu geladen werden?</translation>
+    </message>
+    <message>
+        <location filename="../widgets/scriptEditorWidget.h" line="+64"/>
+        <source>Untitled%1</source>
+        <translation type="unfinished">Unbenannt%1</translation>
+    </message>
+</context>
+<context>
     <name>ito::UiOrganizer</name>
     <message>
         <location filename="../organizer/uiOrganizer.cpp" line="+304"/>
@@ -5579,7 +5737,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+112"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
