@@ -56,15 +56,15 @@ BEGIN
             VALUE   "CompanyName",      PLUGIN_COMPANY "\0"
 #ifdef _WIN64
     #ifdef _DEBUG
-                VALUE   "FileDescription", "plugin library for itom (x64, debug)\0"
+                VALUE   "FileDescription", "designer library for itom (x64, debug)\0"
     #else
-                VALUE   "FileDescription", "plugin library for itom (x64, release)\0"
+                VALUE   "FileDescription", "designer library for itom (x64, release)\0"
     #endif
 #else
     #ifdef _DEBUG
-                VALUE   "FileDescription", "plugin library for itom (x86, debug)\0"
+                VALUE   "FileDescription", "designer library for itom (x86, debug)\0"
     #else
-                VALUE   "FileDescription", "plugin library for itom (x86, release)\0"
+                VALUE   "FileDescription", "designer library for itom (x86, release)\0"
     #endif
 #endif
             VALUE   "FileVersion",      PLUGIN_VERSION_STRING "\0"
