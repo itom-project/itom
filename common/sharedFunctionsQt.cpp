@@ -379,30 +379,39 @@ namespace ito
                             }
                             else if(instParam.attribute("ptrtype") == "uint8")
                             {
-                                ito::uint8 *cArray = (ito::uint8 *)calloc(ptrlength, sizeof(ito::uint8));
+                                char *cArray = (char *)calloc(ptrlength, sizeof(char));
                                 for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
                                 {
-                                    cArray[vCnt] = cv::saturate_cast<uint8>(tokes[vCnt].toDouble());
+                                    cArray[vCnt] = cv::saturate_cast<char>(tokes[vCnt].toDouble());
                                 }
+                                 param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
+                                 param.setVal<char*>(cvalDecoded.data(), ptrlength);
+                                 paramList->insert(param.getName(),param);
                                 free(cArray);
 
                             }
                             else if(instParam.attribute("ptrtype") == "int32")
                             {
-                                ito::int32 *iArray = (ito::int32 *)calloc(ptrlength, sizeof(ito::int32));
+                                int *iArray = (int *)calloc(ptrlength, sizeof(int));
                                 for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
                                 {
-                                    iArray[vCnt] = cv::saturate_cast<ito::int32>(tokes[vCnt].toDouble());
+                                    iArray[vCnt] = cv::saturate_cast<int>(tokes[vCnt].toDouble());
                                 }
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
+                                param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
+                                paramList->insert(param.getName(),param);
                                 free(iArray);
                             }
                             else if(instParam.attribute("ptrtype") == "float64")
                             {
-                                ito::float64 *dArray = (ito::float64 *)calloc(ptrlength, sizeof(ito::float64));
+                                double *dArray = (double *)calloc(ptrlength, sizeof(double));
                                 for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
                                 {
-                                    dArray[vCnt] = cv::saturate_cast<ito::float64>(tokes[vCnt].toDouble());
+                                    dArray[vCnt] = cv::saturate_cast<double>(tokes[vCnt].toDouble());
                                 }
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
+                                param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
+                                paramList->insert(param.getName(),param);
                                 free(dArray);
                             }
                         
