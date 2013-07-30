@@ -311,35 +311,108 @@ namespace ito
                     }
                     else if (instParam.attribute("type") == "numericVector")
                     {
+                        // okay first try to decode the vector from a binary coding
                         QByteArray cvalDecoded = QByteArray::fromBase64(instParam.text().toAscii());
                         unsigned int ptrlength = instParam.attribute("ptrlength").toInt();
+                        bool isBinary = true;
+                        bool asciiFailed = false;
 
                         if(instParam.attribute("ptrtype") == "uint8")
                         {
+                            // check is the binary length is equal to the number of elements
                             if(ptrlength == (unsigned int)cvalDecoded.length())
                             {
                                  param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
                                  param.setVal<char*>(cvalDecoded.data(), ptrlength);
                                  paramList->insert(param.getName(),param);
+                                 isBinary = true;
+                            }
+                            else
+                            {
+                                // length is not equal
+                                isBinary = false;
                             }
                         }
                         else if(instParam.attribute("ptrtype") == "int32")
                         {
+                            // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(int)) == (unsigned int)cvalDecoded.length())
                             {
                                 param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
                                 param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
+                                isBinary = true;
+                            }
+                            else
+                            {
+                                // length is not equal
+                                isBinary = false;
                             }
                         }
                         else if(instParam.attribute("ptrtype") == "float64")
                         {
+                            // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(double)) == (unsigned int)cvalDecoded.length())
                             {
                                 param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
                                 param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
+                                isBinary = true;
                             }
+                            else
+                            {
+                                // length is not equal
+                                isBinary = false;
+                            }
+                        }
+
+                        // if decoding from binary failed, try ascii-coded ([value0;value1;valueN...])
+                        if(isBinary == false)
+                        {
+                            asciiFailed = false;
+                            cvalDecoded = instParam.text().toAscii();
+                            QList<QByteArray> tokes = cvalDecoded.split(';');
+
+                            if(ptrlength != tokes.length())
+                            {
+                                asciiFailed = true;
+                            }
+                            else if(instParam.attribute("ptrtype") == "uint8")
+                            {
+                                ito::uint8 *cArray = (ito::uint8 *)calloc(ptrlength, sizeof(ito::uint8));
+                                for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
+                                {
+                                    cArray[vCnt] = cv::saturate_cast<uint8>(tokes[vCnt].toDouble());
+                                }
+                                free(cArray);
+
+                            }
+                            else if(instParam.attribute("ptrtype") == "int32")
+                            {
+                                ito::int32 *iArray = (ito::int32 *)calloc(ptrlength, sizeof(ito::int32));
+                                for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
+                                {
+                                    iArray[vCnt] = cv::saturate_cast<ito::int32>(tokes[vCnt].toDouble());
+                                }
+                                free(iArray);
+                            }
+                            else if(instParam.attribute("ptrtype") == "float64")
+                            {
+                                ito::float64 *dArray = (ito::float64 *)calloc(ptrlength, sizeof(ito::float64));
+                                for(unsigned int vCnt = 0; vCnt < ptrlength; vCnt++)
+                                {
+                                    dArray[vCnt] = cv::saturate_cast<ito::float64>(tokes[vCnt].toDouble());
+                                }
+                                free(dArray);
+                            }
+                        
+                        }
+
+                        if(asciiFailed == true)
+                        {
+                            QString errStr;
+                            errStr.sprintf("Decoding Error: %s could not be decoded from numericVector", instParam.nodeName().toAscii().data());
+                            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(errStr.toAscii().data()).toAscii().data());
                         }
                     }
                     instParam = instParam.nextSiblingElement();
