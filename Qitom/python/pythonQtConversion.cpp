@@ -95,7 +95,7 @@ QString PythonQtConversion::PyObjGetRepresentation(PyObject* val)
     PyObject* str =  PyObject_Repr(val);
     if (str) 
     {
-        bool ok = true;
+        bool ok;
         r = PyObjGetString(val, false, ok);
         Py_DECREF(str);
     }
@@ -440,6 +440,7 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
 //! get double-array from py object
 QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool strict, bool &ok)
 {
+    ok = true;
     QVector<double> v;
     if(PySequence_Check(val) == false)
     {
@@ -525,6 +526,7 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
 {
     QVector<int> v;
     int overflow;
+    ok = true;
 
     if(PySequence_Check(val) == false)
     {
