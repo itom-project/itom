@@ -322,10 +322,11 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if(ptrlength == (unsigned int)cvalDecoded.length())
                             {
-                                 param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
-                                 param.setVal<char*>(cvalDecoded.data(), ptrlength);
-                                 paramList->insert(param.getName(),param);
-                                 isBinary = true;
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
+                                //param.setVal<char*>(cvalDecoded.data(), ptrlength);
+                                paramList->insert(param.getName(),param);
+                                isBinary = true;
                             }
                             else
                             {
@@ -338,8 +339,9 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(int)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
-                                param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
+                                //param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
                                 isBinary = true;
                             }
@@ -354,8 +356,9 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(double)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
-                                param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, ptrlength, (double*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
+                                //param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
                                 isBinary = true;
                             }
@@ -384,9 +387,10 @@ namespace ito
                                 {
                                     cArray[vCnt] = cv::saturate_cast<char>(tokes[vCnt].toDouble());
                                 }
-                                 param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
-                                 param.setVal<char*>(cvalDecoded.data(), ptrlength);
-                                 paramList->insert(param.getName(),param);
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, ptrlength, cArray, NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
+                                //param.setVal<char*>(cArray, ptrlength);
+                                paramList->insert(param.getName(),param);
                                 free(cArray);
 
                             }
@@ -397,8 +401,9 @@ namespace ito
                                 {
                                     iArray[vCnt] = cv::saturate_cast<int>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
-                                param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, ptrlength, iArray, NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
+                                //param.setVal<int*>(iArray, ptrlength);
                                 paramList->insert(param.getName(),param);
                                 free(iArray);
                             }
@@ -409,8 +414,9 @@ namespace ito
                                 {
                                     dArray[vCnt] = cv::saturate_cast<double>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
-                                param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
+                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, ptrlength, dArray, NULL);
+                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray,  0, NULL, NULL);
+                                //param.setVal<double*>(dArray, ptrlength);
                                 paramList->insert(param.getName(),param);
                                 free(dArray);
                             }
