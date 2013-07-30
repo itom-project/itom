@@ -2737,12 +2737,12 @@ Parameters \n\
 name : {str} \n\
     The name of the filter\n\
 furtherParameters : {variant} \n\
-    Further parameters depend on the filter-methods itself.\n\
+    Further parameters depend on the filter-methods itself (give the mandatory and then optional parameters in their defined order).\n\
 \n\
 Returns \n\
 ------- \n\
-Variable return values.\n\
-The return values depend on the filter-method itself.\n\
+output parameters : {variant} \n\
+    The returned values depend on the definition of each filter. In general it is a tuple of all output parameters that are defined by the filter function.\n\
 \n\
 Notes \n\
 ----- \n\

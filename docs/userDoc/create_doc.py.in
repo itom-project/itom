@@ -34,7 +34,7 @@ aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"    #based
 
 __main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
 
-buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex"]
+buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
 
 for buildername in buildernames:
     outdir = basedir + "\\build\\" + buildername

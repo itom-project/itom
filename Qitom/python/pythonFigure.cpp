@@ -74,9 +74,26 @@ PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureInit_doc,"figure([handle, [rows, cols]]) -> plot figure\n\
+PyDoc_STRVAR(pyFigureInit_doc,"figure([handle, [rows = 1, cols = 1]]) -> creates figure window.\n\
 \n\
-doc");
+The class itom.figure represents a standalone figure window, that can have various subplots. If an instance of this class \n\
+is created without further parameters a new figure is created and opened having one subplot area (currently empty) and the numeric \n\
+handle to this figure is returned:: \n\
+    \n\
+    h = figure() \n\
+\n\
+Subplots are arranged in a regular grid whose size is defined by the optional parameters 'rows' and 'cols'. If you create a figure \n\
+instance with a given handle, the instance is either a reference to an existing figure that has got this handle or if it does not exist, \n\
+a new figure with the desired handle is opened and the handle is returned, too. \n\
+\n\
+Parameters \n\
+------------- \n\
+handle : {int} \n\
+    numeric handle of the desired figure. \n\
+rows : {int, default: 1} \n\
+    number of rows this figure should have (defines the size of the subplot-grid) \n\
+cols : {int, default: 1} \n\
+    number of columns this figure should have (defines the size of the subplot-grid)");
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());

@@ -858,7 +858,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             {
                 free(optPParsed);
             }
-            return ito::retError;
+            return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)",argsLen + kwdsLen, numMandParams, numOptParams);
     }
 
     len = argsLen > numMandParams ? numMandParams : argsLen;
@@ -965,7 +965,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             {
                 free(optPParsed);
             }
-            return ito::retError;
+            return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)", argsLen + kwdsLen, numMandParams, numOptParams);
         }
     }
 

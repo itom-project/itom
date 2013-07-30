@@ -5,4 +5,5 @@ figure
 
 .. autoclass:: itom.figure
     :show-inheritance:
-	:members:
+    :member-order: groupwise
+    :members:

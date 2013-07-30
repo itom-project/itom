@@ -5,4 +5,5 @@ plotItem
 
 .. autoclass:: itom.plotItem
     :show-inheritance:
-	:members:
+    :member-order: groupwise
+    :members:
