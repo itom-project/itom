@@ -38,7 +38,11 @@ buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex"]
 
 for buildername in buildernames:
     outdir = basedir + "\\build\\" + buildername
-    doctreedir = basedir + "\\build\\doctrees"	
+    doctreedir = basedir + "\\build\\doctrees"
+    
+    # for html-builder use another config-file
+    if (buildername == "html"):
+        confdir = confdir + "/config_html"
     
     try:
         os.mkdir(outdir)
