@@ -328,7 +328,7 @@ PaletteOrganizer::PaletteOrganizer()
     //------------
 
     //declare "blue"
-    newPalette = ItomPaletteBase(ItomPaletteBase("blue", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 255, 0)));
+    newPalette = ItomPaletteBase(ItomPaletteBase("blue", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 0, 255)));
     newPalette.setInversColorOne(Qt::white);
     newPalette.setInversColorTwo(Qt::green);
     newPalette.setWriteProtection();
@@ -339,7 +339,7 @@ PaletteOrganizer::PaletteOrganizer()
     //------------
 
     //declare "green"
-    newPalette = ItomPaletteBase(ItomPaletteBase("green", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 0, 255)));
+    newPalette = ItomPaletteBase(ItomPaletteBase("green", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 255, 0)));
     newPalette.setInversColorOne(Qt::white);
     newPalette.setInversColorTwo(Qt::red);
     newPalette.setWriteProtection();
