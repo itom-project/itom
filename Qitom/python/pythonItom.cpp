@@ -173,6 +173,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className]) -> plots a dataObject in a newly created figure \n\
+\n\
 Plot an existing dataObject in not dockable, not blocking window. \n\
 The style of the plot will depend on the object dimensions.\n\
 If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
@@ -316,8 +317,10 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> shows a camera live image in a newly created figure\n\
+\n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
+\n\
 Parameters \n\
 ----------- \n\
 cam : {dataIO-Instance} \n\
