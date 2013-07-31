@@ -85,6 +85,7 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
             editor = new QDoubleSpinBox(parent);
             editor->setProperty("minimum", -INT_MAX);
             editor->setProperty("maximum", INT_MAX);
+			editor->setProperty("decimals", 10);
             ((QAbstractSpinBox*)editor)->setKeyboardTracking(false);
             connect(editor, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
             break;
