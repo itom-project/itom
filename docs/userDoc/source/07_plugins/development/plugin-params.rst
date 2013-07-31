@@ -269,16 +269,17 @@ parameter, that corresponds to the original data type, which is covered by the p
 	p5_val = p5.getVal<int*>(length);
 	//now length is equal to 5.
 	
-	//pointer-parameters will be get as void* and must then be casted to
-	//the right type.
-	ito::DataObject *dObj = (ito::DataObject*)p6.getVal<void*>();
+	//pointer-parameters are obtained by using the right template
+    //parameter of the getVal method. The internal pointer of the
+    //parameter is then casted to the template type.
+	ito::DataObject *dObj = p6.getVal<ito::DataObject*>();
 	
-	ito::AddInActuator *aia = (ito::AddInActuator*)p7.getVal<void*>();
+	ito::AddInActuator *aia = p7.getVal<ito::AddInActuator*>();
 	
 	//If you are sure that the parameter contains at least any plugin, however you have no idea
 	//whether it is an acutator or an instance of dataIO, you could at first get the
 	//base instance to ito::AddInBase and then try to safely cast it to your requested type:
-	ito::AddInBase *aib = (ito::AddInBase*)p7.getVal<void*>();
+	ito::AddInBase *aib = p7.getVal<ito::AddInBase*>();
 	ito::AddInActutator *aia = qobject_cast<ito::AddInActuator*>(aib);
 	//aia is NULL, if the cast failed.
 
@@ -548,7 +549,9 @@ In the following, examples about how to create parameters and meta information o
         ito::HWMeta *meta = new ito::HWMeta("SerialIO"); //restriction to plugins with name "SerialIO"
         param.setMeta(meta, true); //takes ownership of meta-pointer. Do not delete meta from that point on.
         
-        ito::AddInBase* value = (ito::AddInBase*)param.getVal<void*>();    //returns the hardware pointer and casts it to ito::AddInBase*
+        //returns the hardware pointer casted to ito::AddInBase*
+        ito::AddInBase* value = param.getVal<ito::AddInBase*>();   
+        
         ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
@@ -567,7 +570,8 @@ In the following, examples about how to create parameters and meta information o
         ito::DObjMeta *meta = new ito::DObjMeta(ito::tUInt8 | ito::tInt8, 2, 2);
         param.setMeta(meta,true);
         
-        ito::DataObject* value = (ito::DataObject*)param.getVal<void*>();    //returns the pointer and casts it to DataObject*
+        //returns the pointer casted to DataObject*
+        ito::DataObject* value = param.getVal<ito::DataObject*>();    
         ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
@@ -584,7 +588,8 @@ In the following, examples about how to create parameters and meta information o
         
         ito::Param param("pcl", ito::ParamBase::PointCloudPtr, NULL, "description");
         
-        ito::pclPointCloud* value = (ito::pclPointCloud*)param.getVal<void*>();    //returns the pointer and casts it to pclPointCloud*
+        //returns the pointer casted to pclPointCloud*
+        ito::pclPointCloud* value = param.getVal<ito::pclPointCloud*>();    
         ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
@@ -597,7 +602,8 @@ In the following, examples about how to create parameters and meta information o
         
         ito::Param param("point", ito::ParamBase::PointPtr, NULL, "description");
         
-        ito::pclPoint* value = (ito::pclPoint*)param.getVal<void*>();    //returns the pointer and casts it to pclPoint*
+        //returns the pointer casted to pclPoint*
+        ito::pclPoint* value = param.getVal<ito::pclPoint*>();    
         ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
@@ -610,7 +616,8 @@ In the following, examples about how to create parameters and meta information o
         
         ito::Param param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, "description");
         
-        ito::pclPolygonMesh* value = (ito::pclPolygonMesh*)param.getVal<void*>();    //returns the pointer and casts it to pclPolygonMesh*
+        //returns the pointer casted to pclPolygonMesh*
+        ito::pclPolygonMesh* value = param.getVal<ito::pclPolygonMesh*>();    
         ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
