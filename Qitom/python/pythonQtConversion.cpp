@@ -1592,24 +1592,25 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         //now check if qvariant is true, then retPtr and retType needs to be retransformed to QVariant
         if(qvariant && *retPtr)
         {
-            QVariant var(type, *retPtr);
-            if(var.isValid())
+            void *ptrToOriginalValue = *retPtr;
+
+            QVariant *variantValue = new QVariant(type, *retPtr);
+            if (variantValue->isValid())
             {
-                void *oldPtr = *retPtr;
-                *retPtr = QMetaType::construct( QMetaType::QVariant, reinterpret_cast<void*>(&var) );
-                QMetaType::destroy(*retType, oldPtr);
                 *retType = QMetaType::QVariant;
+                *retPtr = (void*)variantValue; //here no QMetaType::construct is used since construct does not more than a copy constructor of QVariant casted to void*
             }
             else
             {
-                QMetaType::destroy(*retType, *retPtr);
                 *retType = -1;
                 *retPtr = NULL;
+                delete variantValue;
+                variantValue = NULL;
             }
+
+            QMetaType::destroy(type, ptrToOriginalValue); //type is type-number of original value
         }
-
-
-        if(*retPtr)
+        else if (*retPtr)
         {
             *retType = type;
         }
