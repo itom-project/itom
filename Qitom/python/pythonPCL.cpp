@@ -3847,7 +3847,7 @@ polygons : {array-like, MxN} \n\
 }
 
 //------------------------------------------------------------------------------------------------------
-/*static*/ PyObject* PythonPCL::PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void */*closure*/)
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void * /*closure*/)
 {
     ito::PCLPolygonMesh *pm = self->polygonMesh;
 
