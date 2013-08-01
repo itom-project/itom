@@ -4908,7 +4908,7 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
    cv::Mat_<_Tp> * srcMat = NULL;
-   cv::Mat_<_Tp> * dstMat = NULL;
+   cv::Mat_<_T2> * dstMat = NULL;
 
    if(alpha == 1.0 && beta == 0.0)
    {
@@ -4918,7 +4918,7 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
           srcTmat = dObj->seekMat(nmat, numMats);
           //TODO: check if non iterator version is working
           srcMat = ((cv::Mat_<_Tp> *)((dObj->get_mdata())[srcTmat]));
-          dstMat = ((cv::Mat_<_Tp> *)((resObj->get_mdata())[resTmat]));
+          dstMat = ((cv::Mat_<_T2> *)((resObj->get_mdata())[resTmat]));
           for (int y = 0; y < sizey; y++)
           {
               _T2* dstPtr = (_T2*)dstMat->ptr(y);
@@ -4928,14 +4928,6 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
                   dstPtr[x] = cv::saturate_cast<_T2>(srcPtr[x]);
               }
           }
-
-//          cv::MatIterator_<_T2> itRes = ((cv::Mat_<_T2> *)((resObj->get_mdata())[resTmat]))->begin();
-//          cv::MatConstIterator_<_Tp> itSrc_end = ((cv::Mat_<_Tp> *)(dObj->get_mdata()[srcTmat]))->end();
-//          cv::MatConstIterator_<_Tp> itSrc = ((cv::Mat_<_Tp> *)(dObj->get_mdata()[srcTmat]))->begin();
-//          for ( ; itSrc != itSrc_end; ++itSrc, ++itRes)
-//          {
-//             *itRes = cv::saturate_cast<_T2>(*itSrc);
-//          }
        }
    }
    else
@@ -4948,7 +4940,7 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
           srcTmat = dObj->seekMat(nmat, numMats);
           //TODO: check if non iterator version is working
           srcMat = ((cv::Mat_<_Tp> *)((dObj->get_mdata())[srcTmat]));
-          dstMat = ((cv::Mat_<_Tp> *)((resObj->get_mdata())[resTmat]));
+          dstMat = ((cv::Mat_<_T2> *)((resObj->get_mdata())[resTmat]));
           for (int y = 0; y < sizey; y++)
           {
               _T2* dstPtr = (_T2*)dstMat->ptr(y);
@@ -4958,14 +4950,6 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
                   dstPtr[x] = cv::saturate_cast<_T2>(srcPtr[x] * alpha2 + beta2);
               }
           }
-
-//          cv::MatIterator_<_T2> itRes = ((cv::Mat_<_T2> *)((resObj->get_mdata())[resTmat]))->begin();
-//          cv::MatConstIterator_<_Tp> itSrc_end = ((cv::Mat_<_Tp> *)(dObj->get_mdata()[srcTmat]))->end();
-//          cv::MatConstIterator_<_Tp> itSrc = ((cv::Mat_<_Tp> *)(dObj->get_mdata()[srcTmat]))->begin();
-//          for ( ; itSrc != itSrc_end; ++itSrc, ++itRes)
-//          {
-//             *itRes = cv::saturate_cast<_T2>(*itSrc * alpha2 + beta2);
-//          }
        }
    }
 
