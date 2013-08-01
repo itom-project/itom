@@ -49,6 +49,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
     CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", sqlList);
     m_pMainFilterModel->setSourceModel(m_pMainModel);
     ui.treeView->setModel(m_pMainFilterModel);
+	m_pDB.close();
 }
 
 
@@ -89,18 +90,7 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
         {
             items.takeFirst();
             QStandardItem *node = new QStandardItem(name);
-            if (splitt[0] == "module") 
-            {
-                node->setIcon(QIcon(":/helpTreeDockWidget/Modul"));
-            }
-            else if (splitt[0] == "package") 
-            {
-                node->setIcon(QIcon(":/helpTreeDockWidget/Package"));
-            }
-            else
-            {
-                node->setIcon(QIcon(":/helpTreeDockWidget/Function"));
-            }
+			node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
 			node->setEditable(false);
             node->setData(splitt[1],MyR+1);
             node->setToolTip(splitt[1]);
@@ -112,14 +102,7 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
             items.takeFirst();
             int li = path.lastIndexOf(".");
             QStandardItem *node = new QStandardItem(path.mid(li+1));
-            if (splitt[0] == "module") 
-            {
-                node->setIcon(QIcon(":/helpTreeDockWidget/Modul"));
-            }
-            else
-            {
-                node->setIcon(QIcon(":/helpTreeDockWidget/Package"));
-            }
+            node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
 			node->setEditable(false);
             node->setData(path,MyR+1);                
             CreateItemRek(model, *node, path, items);  
@@ -136,19 +119,39 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
 // Get Data from SQL File and store it in a table
 QList<QString> HelpTreeDockWidget::ReadSQL(const QString &filter)
 {
-    QList<QString> items;
-	bool ok = m_pDB.open();
-	if(ok)
+	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
+    m_pDB.setDatabaseName(c_DBPath);   
+ 
+	QList<QString> items;
+
+	QFile file( c_DBPath );
+  
+	if( file.exists() )
 	{
-		QSqlQuery query("SELECT type, prefix, name FROM itomCTL ORDER BY prefix");
-		query.exec();
-		while (query.next())
+		bool ok = m_pDB.open();
+		if(ok)
 		{
-			items.append(query.value(0).toString() + QString(":") + query.value(1).toString());
+			QSqlQuery query("SELECT type, prefix, prefixL, name FROM itomCTL ORDER BY prefix");
+			query.exec();
+			while (query.next())
+			{
+				items.append(query.value(0).toString() + QString(":") + query.value(1).toString());
+			}
 		}
+		m_pDB.close();	
 	}
+	else
+	{
+		ui.treeView->setDisabled(1);
+		QMessageBox msgBox;
+		msgBox.setText("Help-Database not found");
+		msgBox.setInformativeText("Help-Tree will be disabled until itom is restarted!");
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		msgBox.exec();
+	}	
 	m_pDB.close();
-    return items;
+	return items;
 }
 
 
@@ -160,7 +163,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
     int Errorcode = ErrorS.toInt();
 	QStringList ErrorList;
 
-
+	Errorcode = 0;
 
     /*********************************/
     // Allgemeine HTML sachen anfügen /
@@ -231,6 +234,8 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
         QString linkpath;
         for (int j = 0; j<=i; j++)
             linkpath.append(splittedLink.mid(0,i+1)[j]+".");
+		if (linkpath.right(1) == ".")
+			linkpath = linkpath.left(linkpath.length()-1);
         rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkpath+"\">"+splittedLink[i]+"</a>");
     }
 
@@ -318,19 +323,20 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 // Display the Help-Text
 void HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpage)
 {
-	qDebug() << "DisplayHelpPfad: " << path;
+	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
+    m_pDB.setDatabaseName(c_DBPath);   
 	ui.textBrowser->clear();
 	bool ok = m_pDB.open();
-	QSqlQuery query("SELECT type, prefix, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefix IS '"+path.toUtf8()+"'");
+	QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'");
 	query.exec();
 	query.next();
 	if (ok)
 	{
 		if (ui.checkBox->checkState() == false)
-			ui.textBrowser->setDocument(HighlightContent(query.value(5).toString(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), query.value(6).toString()));
+			ui.textBrowser->setDocument(HighlightContent(query.value(6).toString(), query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
 		else
 		{
-			QString output = QString(HighlightContent(query.value(5).toString(), query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), query.value(6).toString())->toHtml());
+			QString output = QString(HighlightContent(query.value(6).toString(), query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(6).toString())->toHtml());
 			output.replace("<br/>","<br/>\n");
 			ui.textBrowser->document()->setPlainText(output);             
 		}
@@ -368,9 +374,7 @@ QModelIndex HelpTreeDockWidget::FindIndexByName(const QString Modelname)
 		path.takeFirst();
 	}
 	QString Test2 = current->data().toString().split(".").last();
-	
 	return current->index();
-	//alternativ kann man auch current->index() zurück geben lassen! Sollte schneller sein!
 }
 
 
@@ -429,12 +433,12 @@ void HelpTreeDockWidget::collapseTree()
 // Link inside Textbrowser is clicked
 void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
 {
-    QStringList parts = SeparateLink(QString(link.toEncoded()));
+    QStringList parts = SeparateLink(link.toString());
     if (parts[0] == "itom")
     {
-		qDebug() << "OnTreeClickedPfad: " << parts[1].left(parts[1].length()-1);
-		DisplayHelp( parts[1].left(parts[1].length()-1), 1);
-		ui.treeView->setCurrentIndex(FindIndexByName(parts[1].left(parts[1].length()-1)));
+		qDebug() << "OnTreeClickedPfad: " << parts[1];
+		DisplayHelp( parts[1], 1);
+		ui.treeView->setCurrentIndex(FindIndexByName(parts[1]));
     }
     else if (parts[0] == "http")
     {
@@ -497,4 +501,22 @@ void HelpTreeDockWidget::navigateForwards()
 		// Highlight the entry in the tree
 		ui.treeView->setCurrentIndex(FindIndexByName(m_pHistory->at(m_pHistoryIndex)));
     }
+}
+
+void HelpTreeDockWidget::reloadDB()
+{
+	m_pDB.close();
+
+	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
+    m_pDB.setDatabaseName(c_DBPath);    
+
+	//Create and Display Mainmodel
+	m_pMainModel->clear();
+    ui.treeView->reset();
+    //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
+    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", ReadSQL(""));
+    m_pMainFilterModel->setSourceModel(m_pMainModel);
+    ui.treeView->setModel(m_pMainFilterModel);
+
+	m_pDB.close();
 }

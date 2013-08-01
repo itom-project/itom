@@ -21,6 +21,7 @@ public slots:
 	void navigateForwards();
 	void expandTree();
 	void collapseTree();
+	void reloadDB();
     void liveFilter(const QString &filtertext);
 
 private slots:

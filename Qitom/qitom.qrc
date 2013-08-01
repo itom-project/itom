@@ -1,9 +1,12 @@
 <RCC>
     <qresource prefix="/helpTreeDockWidget">
-        <file alias="Package">icons/App-package-icon.png</file>
-        <file alias="Modul">icons/book-open-icon.png</file>
-        <file alias="Function">icons/HP-Control-icon.png</file>
+        <file alias="package">icons/App-package-icon.png</file>
+        <file alias="module">icons/book-open-icon.png</file>
+        <file alias="routine">icons/HP-Control-icon.png</file>
         <file alias="help_style">styles/help/help_style.css</file>
+        <file alias="const">icons/constant.png</file>
+        <file alias="class">icons/class_icon.png</file>
+        <file>icons/unknown.png</file>
     </qresource>
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
