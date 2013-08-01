@@ -1,6 +1,7 @@
 #ifndef HELPTREEDOCKWIDGET_H
 #define HELPTREEDOCKWIDGET_H
 
+#include <QtSql>
 #include <qwidget.h>
 #include <qstandarditemmodel.h>
 
@@ -43,6 +44,9 @@ private:
     QStandardItemModel *m_pMainModel;
     LeafFilterProxyModel *m_pMainFilterModel;
     QStringList *m_pHistory;
+	int m_pHistoryIndex;
+	QString m_dbPath;
+	QSqlDatabase m_pDB;
 
 
 };

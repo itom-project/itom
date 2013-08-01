@@ -9,7 +9,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <stdio.h>
-#include <QtSql>
+
 #include <qfile.h>
 #include <qsortfilterproxymodel.h>
 #include <qdesktopservices.h>
@@ -21,14 +21,19 @@
 #include <qdebug.h>
 
 // Global variables and const
-const char* c_DBPath = "F:\\itom-git\\build\\itom\\PythonHelp.db";
-int m_pHistoryIndex = -1;
-QSqlDatabase m_pDB;
+
+
+
 
 
 // GUI-on_start
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
-    : QWidget(parent, flags)
+    : QWidget(parent, flags),
+	m_pHistoryIndex(-1),
+	m_pMainModel(NULL),
+    m_pMainFilterModel(NULL),
+    m_pHistory(NULL),
+	m_dbPath("F:\\itom-git\\build\\itom\\PythonHelp.db")
 {
     ui.setupUi(this);
 
@@ -39,7 +44,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
     m_pMainFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
 	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(c_DBPath);    
+    m_pDB.setDatabaseName(m_dbPath);    
 
 	//Create and Display Mainmodel
 	m_pMainModel->clear();
@@ -120,11 +125,11 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
 QList<QString> HelpTreeDockWidget::ReadSQL(const QString &filter)
 {
 	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(c_DBPath);   
+    m_pDB.setDatabaseName(m_dbPath);   
  
 	QList<QString> items;
 
-	QFile file( c_DBPath );
+	QFile file( m_dbPath );
   
 	if( file.exists() )
 	{
@@ -324,7 +329,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 void HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpage)
 {
 	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(c_DBPath);   
+    m_pDB.setDatabaseName(m_dbPath);   
 	ui.textBrowser->clear();
 	bool ok = m_pDB.open();
 	QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'");
@@ -508,7 +513,7 @@ void HelpTreeDockWidget::reloadDB()
 	m_pDB.close();
 
 	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(c_DBPath);    
+    m_pDB.setDatabaseName(m_dbPath);    
 
 	//Create and Display Mainmodel
 	m_pMainModel->clear();
