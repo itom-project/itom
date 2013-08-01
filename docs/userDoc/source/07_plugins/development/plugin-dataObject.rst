@@ -103,15 +103,15 @@ The following code creates such 2 dimensional data object of dimensions Y=2, X=5
 	**getType()** method returns the type of d1.
 	**getTotal()** method returns total number of elements in d1.
 	
-Addressing the elements of a data object
-==========================================
+Addressing the elements of a data object 
+===========================================================
 
-Now, we know how to create a data object, so lets have a look how can one address the elements of a data object. 
+Now, we know how to create a data object, so lets have a look at how can one address the elements of a data object. 
 Sometimes it is necessary to read or set single values in one matrix, sometimes one want to access all elements
 in the matrix or a certain subregion. Therefore, the addressing can be done in one of the following ways:
 
-Direct access of one single value
---------------------------------------------------	
+Direct access of one single element of a Data Object using **at()** method
+-----------------------------------------------------------------------------------------	
 
 .. code-block:: c++
 	:linenos:
@@ -120,20 +120,36 @@ Direct access of one single value
 	d1.at<ito::float32>(0,1) = 5.2;
 	std::cout << "d1(0,1) = " << d1.at<ito::float32>(0,1) << "\n" << std::endl;
 	
-Here, the addressing is done by the method **at** of the data object, which is pretty similar to the same method
-of the **OpenCV** class **cv::Mat**. The **at** method can either be used to get the value at a certain position or
-to set this value. There are special implementations of **at** for addressing values in a two- or three-dimensional
+Here, the addressing is done by the method **at()** under the class ito::DataObject, which is pretty similar to the same method
+under the **OpenCV** class **cv::Mat**. The **at()** method can either be used to get the value at a certain position or
+to set value at that position in a data object. There are special implementations of **at()** for addressing values in a two- or three-dimensional
 data object, where the first argument always is the **z-index** (3D), followed by the **y-index** and the **x-index**.
-All indices are zero-based, hence the first element in this dimension is **0**.
+All indices are zero-based, hence the first element can be referred by addressing **0th position** in every dimension.
 
 .. note::
     
-    The **at** method is templated where the template parameter must correspond to the type of the corresponding
+    The **at()** method is templated where the template parameter must correspond to the type of the corresponding
     data object.
 
+Let's try to summerize some pros and cons of this method.
+	
+Advantages
++++++++++++++++++
+
+* This method gives flexibility to a developer to access any element of a data object directly.
+* A developer can also access a part of a data object as well using **at()** method as described in `Direct Access to the underlying cv::Mat`_.
+
+Drawbacks
++++++++++++++++++
+
+* Developer has to implement the code under the nest of **if...else** conditions if one needs to access the whole data object.
+* It is a slower method to execute performance wise if compared to the other methods of accessing the data object.
     
-Get line pointer for each line in matrix and work with line pointer to address elements of a data object
------------------------------------------------------------------------------------------------------------------------------
+Addressing elements of a data object using row pointer
+----------------------------------------------------------------------------------
+
+When one needs to iterate through certain region of a data object, then the previous method of accessing a data object using **at** method seems quite insufficient.
+In such case, one can define a row pointer for each row in matrix and work with row pointer to address elements of a data object in a following way.
 
 .. code-block:: c++
 	:linenos:
@@ -149,13 +165,13 @@ Get line pointer for each line in matrix and work with line pointer to address e
 		std::cout << "Row " << m << ":";
 		for(size_t n=0 ; n < width; n++)
 		{
-			rowPtr[n] = m; 				//accessing each element of data object with line pointer
+			rowPtr[n] = m; 				//accessing each element of data object with row pointer
 		}
 	}
 	std::cout << d1 << std::endl;
   
-Here, **seekMat()** method gets the internal plane number of the 1st plane. 
-In line #2, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
+Here, **seekMat()** method gets the internal plane number of the 1st plane in line #2. 
+In line #3, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
 Now accessing each element of row pointer will access each element of the data object in that row. 
 
 To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
@@ -193,9 +209,26 @@ To use this row pointer method for data objects more than 2 dimensions, followin
 .. note::
 
     Here **dataIdx** represents the number of the plane in the matrix.
-    The formula in line #15 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
+    The formula in line #14 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
 
-One can assign a single value to all elements of the data object using assignment operator "=" in the following way. 
+Some advantages and disadvantages of using this method are given in the section below.
+	
+Advantages
++++++++++++++++++
+
+* This method is the most efficient way to access the data object.
+* This method gives flexibility to access some rows or the full data object at once.
+
+Drawbacks
++++++++++++++++++
+
+* Complex implementation. One needs deep understanding of pointers to implement this method to access data object. 
+* This is not an advisable method if one needs to access a few elements of the data object which are not in sequence.
+
+Assigning a single value to all elements of a Data Object
+--------------------------------------------------------------------
+
+One can assign a single value to all elements of a data object using assignment operator "=" in the following way. 
 Here we will also have a look on how to declare a 5 dimensional data object and assign a single floating point value to each element of the data object.
 
 .. code-block:: c++
@@ -215,9 +248,11 @@ Here we will also have a look on how to declare a 5 dimensional data object and 
 Here line #7 uses implementation #4 for declaring 5 dimensional data object d1.
 
 Direct Access to the underlying cv::Mat
----------------------------------------
+-----------------------------------------------
 
-Following example shows one of the methods to access underlying planes in multidimensional matrices. 
+In some cases, one needs to assign values of elements of a data objects based on some portion of another data object. 
+This can be done by using this method of accessing the underlying matrix (cv::Mat) of a data object directly.
+Following example shows the method to access underlying planes in multidimensional matrices. 
 
 .. code-block:: c++
 	:linenos:
@@ -239,17 +274,14 @@ Following example shows one of the methods to access underlying planes in multid
 	ito::DataObject  d5 = d4.at(ranges);
 	d5 = 7;
 	
-Let's try to analyse the code above. As we can see in line #6, we used **seekMat()** method to retrieve the plane id of 3th plane in 3 dimensional matrix d4. 
+Let's try to analyse the code above. As we can see in line #6, we used **seekMat()** method to retrieve the plane id of 3rd plane in 3 dimensional matrix d4. 
 
-line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. line #11 declares a row pointer to point a perticular row in plane 3 of data object d4.
+line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. Line #11 declares a row pointer to point a perticular row 
+in plane 3 of data object d4 as a revision to the previous method of accessing elements of a data object using row pointer.
 
-line #14 defines the exemplary ranges to create a new data object d5 from a part of data object d4.
+line #14 defines the exemplary ranges to create a new data object d5 from a part of data object d4, which is done in line #15 with the use of **at()** method.
 
 The other way to perform the same operation of line #14 is shown below.
-
-.. note::
-	
-	**get_mdata()** is a function declared under *DataObject* class. It returns pointer to vector of *cv::_Mat-matrices*.
 	
 .. code-block:: c++
 	:linenos:
@@ -260,6 +292,48 @@ The other way to perform the same operation of line #14 is shown below.
 	ranges[2] = ito::Range::all();
 	
 This code shows the way to modify ranges individually, which can be very useful if one needs to modify this range later in this code to work on other data objects perhaps.
+
+.. note::
+	
+	**get_mdata()** is a function declared under *DataObject* class. It returns pointer to vector of *cv::_Mat-matrices*.
+	
+Accessing all elements of a Data Object using iterators
+--------------------------------------------------------------------
+
+There are two classes defined, called **DObjIterator** and **DObjConstIterator** respectively, under the namespace **ITOM**, which support the developer with an easy way to iterate through 
+the whole data object.
+This method can be used only if one needs to iterate through all elements of a data object at once. 
+Following code snippet shows the example of this method.
+	
+.. code-block:: c++
+	:linenos:
+	
+	int temp = 0;		// Temporary variable for indexing some arrays used in this test.
+	ito::DataObject d6(21,13,ito::tInt16);   // Declaring a 21 x 13 data object with data type int16.
+	ito::DObjIterator it;	// Declaration of DObjIterator
+	for(it=d6.begin();it!=d6.end();++it)
+	{
+		*((ito::int16*)(*it_2d)) = cv::saturate_cast<TypeParam>(temp++); 	// Assigning a unique value to each element of a data object using iterator.
+	}
+
+As can be seen in the code above, line #2 declares a 21x31 data object d6 of type int16. Line #3 declares an iterator object **it** of class **DObjIterator**.
+DataObject class contains **being()** and **end()** methods to work with iterators. A brief description to this methods can be found under :ref:`plugin-DataObject-Ref` document. 
+These methods contains pointers to the first and last elements of any data objects respectively.
+Line #4 makes a meaningful use of these methods in for loop to iterate through the data object **d6**. We first initiate the iterator **it** with the pointer returned by
+**d6.begin()**, iterate through the whole data object increasing the iterator value by one in each iteration till the pointer value in iterator **it** reaches the pointer value of the 
+last element of the data object checking the condition **it!=d6.end()**.
+
+Advantages
++++++++++++++++++
+
+* This method is a compromise between its useability with ease and performance on execution level. Integration of this method in code is fast and easy.
+* Developer does not think about **if...else** conditions to decide the boundaries of Region of Interest to access any data object.
+
+Drawbacks
++++++++++++++++++
+
+* Performance degrades against the method `Addressing elements of a data object using row pointer`_.
+* It is not advisable to use this method if one needs to access some part or a single element of a data object.
 
 Working with Data Objects
 =============================== 
@@ -374,7 +448,7 @@ The following example code shows the way to adjust ROI with adjustROI() method a
 		std::cout << roiLocate[i] << std::endl;
 	}
 	
-Here, line #4 shows the use of adjustROI() function where negative parameters indicate that the ROI is shrinking in perticular dimension. More detailed description of adjustROI() and locateROI() methods can be seen at `Document </Description document for adjustROI and locateROI methods>`_ .
+Here, line #4 shows the use of adjustROI() function where negative parameters indicate that the ROI is shrinking in perticular dimension. More detailed description of adjustROI() and locateROI() methods can be seen under :ref:`plugin-DataObject-Ref` document.
 
 One can also pass an array as a parameter to this adjustROI() function describing the offset details as shown in the following code.
 

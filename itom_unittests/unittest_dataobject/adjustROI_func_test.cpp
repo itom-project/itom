@@ -99,11 +99,11 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 			EXPECT_EQ(dObj2.at<TypeParam>(i,j), test_res[temp++]); //!< Testing if the elements within the ROI contains same original value after adjustROI method.
 		}
 	}
-	
+	std::cout << dObj3 << std::endl;
 	dObj2.adjustROI(2,1,1,2);	//!< Adjusting back the ROI back to normal position.
 	dObj2.adjustROI(2,matLimits2d);	//!< adjusting ROI of dObj2 with general 2 parameter adjustROI method to desired position
 	dObj3.adjustROI(3,matLimits3d);	//!< adjusting ROI of dObj3 with general 2 parameter adjustROI method to desired position
-
+	std::cout << dObj3 << std::endl;
 	//!< Checking values of 2 dimensional data object dObj2 after applying adjustROI().
 	temp=0;
 	for(int i = 0; i < 2; i++)
@@ -126,7 +126,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 			}
 		}
 	}
-	
+
 	//!< test for checking values of  5 dimensional data object dObj5 after applying adjustROI().
 	TypeParam *rowPtr1= NULL; 
 	size_t dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose

@@ -77,7 +77,8 @@ set(unittest_dataobject_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/seekMat_calcNumMats_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_dataobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/makeContinuousFuncTest.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/Iterator_func_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Iterator_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ConstIterator_test.cpp
 )
 
 # #add filters to visual studio

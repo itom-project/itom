@@ -15,8 +15,8 @@
 int main(int argc, char* argv[])
 {
 	
-	::testing::FLAGS_gtest_filter = "at_func_test2/*.at_Test6"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
-	//::testing::FLAGS_gtest_filter = "iterator_test/*.*";
+	::testing::FLAGS_gtest_filter = "iterator_test/*.iterator_test_2d"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
+	//::testing::FLAGS_gtest_filter = "const_iterator_test/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
     
 
