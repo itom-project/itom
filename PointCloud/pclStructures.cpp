@@ -772,25 +772,51 @@ void PCLPointCloud::set_dense(bool dense)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc)
-{
-   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
-   if(temp)
-   {
-       return temp->header;
-   }
-   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
-}
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc)
+	{
+	   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+	   if(temp)
+	   {
+		   return temp->header;
+	   }
+	   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+	}
 
-typedef std_msgs::Header (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
-PCLMAKEFUNCLIST(GetHeaderFunc)
+	typedef pcl::PCLHeader (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
 
-std_msgs::Header PCLPointCloud::header() const
-{
-    int idx = getFuncListIndex();
-    if(idx >= 0)    return fListGetHeaderFunc[idx](this);
-    throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
-}
+	PCLMAKEFUNCLIST(GetHeaderFunc)
+
+	pcl::PCLHeader PCLPointCloud::header() const
+	{
+		int idx = getFuncListIndex();
+		if(idx >= 0)    return fListGetHeaderFunc[idx](this);
+		throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+	}
+#else
+    template<typename _Tp> std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc)
+	{
+	   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+	   if(temp)
+	   {
+		   return temp->header;
+	   }
+	   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+	}
+
+	typedef std_msgs::Header (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
+
+	PCLMAKEFUNCLIST(GetHeaderFunc)
+
+	std_msgs::Header PCLPointCloud::header() const
+	{
+		int idx = getFuncListIndex();
+		if(idx >= 0)    return fListGetHeaderFunc[idx](this);
+		throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+	}
+#endif
+
+
 
 
 
@@ -1420,7 +1446,11 @@ PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl
     m_polygonMesh = pcl::PolygonMesh::Ptr(new pcl::PolygonMesh());
     m_polygonMesh->header = cloud.header();
     m_polygonMesh->polygons = polygons;
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	pcl::PCLPointCloud2 msg;
+#else
     sensor_msgs::PointCloud2 msg;
+#endif
     ito::pclHelper::pclPointCloudToPointCloud2(cloud, msg);
     m_polygonMesh->cloud = msg;
 }
@@ -1465,8 +1495,11 @@ std::string PCLPolygonMesh::getFieldsList() const
     {
         return "";
     }
-    
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	std::vector< pcl::PCLPointField> fields = mesh->cloud.fields;
+#else
     std::vector< ::sensor_msgs::PointField> fields = mesh->cloud.fields;
+#endif
     std::string output;
     for(size_t i=0;i<fields.size()-1;i++)
     {
@@ -1488,9 +1521,13 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
     {
         /*out << "header: " << std::endl;
         out << mesh->header;*/
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+		pcl::PCLPointCloud2 *c = &(mesh->cloud);
+        pcl::PCLPointField *f;
+#else
         sensor_msgs::PointCloud2 *c = &(mesh->cloud);
         sensor_msgs::PointField *f;
+#endif
         out << "points:\n------------\n" << std::endl;
         out << " size: [" << c->height << " x " << c->width << "]\n" << std::endl;
         if(c->is_bigendian)

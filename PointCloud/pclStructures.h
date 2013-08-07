@@ -262,7 +262,11 @@ public:
     void set_width(uint32_t width);
     void set_height(uint32_t height);
     void set_dense(bool dense);
-    std_msgs::Header header() const;
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	pcl::PCLHeader header() const;
+#else
+	std_msgs::Header header() const;
+#endif
 
     std::string getFieldsList() const;
 
@@ -310,13 +314,19 @@ private:
 
     template<typename _Tp> friend pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc);
     template<typename _Tp> friend const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc);
+
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(ito::PCLPointCloud &pc);
+	template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc);
+#else
     template<typename _Tp> friend std_msgs::Header GetHeaderFunc(ito::PCLPointCloud &pc);
+	template<typename _Tp> friend std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc);
+#endif
     template<typename _Tp> friend uint32_t GetWidthFunc(const ito::PCLPointCloud *pc);
     template<typename _Tp> friend uint32_t GetHeightFunc(const ito::PCLPointCloud *pc);
     template<typename _Tp> friend void SetHeightFunc(ito::PCLPointCloud *pc, uint32_t height);
     template<typename _Tp> friend bool GetDenseFunc(const ito::PCLPointCloud *pc);
     template<typename _Tp> friend void SetDenseFunc(ito::PCLPointCloud *pc, bool dense);
-    template<typename _Tp> friend std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc);
     template<typename _Tp> friend void SetWidthFunc(ito::PCLPointCloud *pc, uint32_t width);
     template<typename _Tp> friend void PcAddFunc(ito::PCLPointCloud *pc1, const ito::PCLPointCloud *pc2, ito::PCLPointCloud *pcRes);
     template<typename _Tp> friend void SetItemFunc(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point);

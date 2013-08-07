@@ -32,7 +32,12 @@
 #include "../DataObject/dataObjectFuncs.h"
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/ros/conversions.h>
+
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+	#include <pcl/conversions.h>
+#else
+	#include <pcl/ros/conversions.h>
+#endif
 
 namespace ito 
 {
@@ -82,6 +87,52 @@ void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl:
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+ito::RetVal pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointCloud *pc)
+{
+    RetVal retval = retOk;
+    if(!pc)
+    {
+        return RetVal(retError,0,"PCLPointCloud is NULL");
+    }
+
+    ito::tPCLPointType pointType = pc->getType();
+    pcl::MsgFieldMap field_map;
+
+    switch(pointType)
+    {
+    case ito::pclXYZ:
+        pcl::createMapping<pcl::PointXYZ>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZ()), field_map);
+        break;
+    case ito::pclXYZI:
+        pcl::createMapping<pcl::PointXYZI>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZI()), field_map);
+        break;
+    case ito::pclXYZRGBA:
+        pcl::createMapping<pcl::PointXYZRGBA>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZRGBA()), field_map);
+        break;
+    case ito::pclXYZNormal:
+        pcl::createMapping<pcl::PointNormal>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZNormal()), field_map);
+        break;
+    case ito::pclXYZINormal:
+        pcl::createMapping<pcl::PointXYZINormal>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZINormal()), field_map);
+        break;
+    case ito::pclXYZRGBNormal:
+        pcl::createMapping<pcl::PointXYZRGBNormal>( msg.fields, field_map );
+        pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZRGBNormal()), field_map);
+        break;
+    default:
+        retval += RetVal(retError,0,"given point cloud cannot be converted into desired type");
+        break;
+    }
+
+    return retval;
+}
+#else
 ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc)
 {
     RetVal retval = retOk;
@@ -126,7 +177,51 @@ ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLP
 
     return retval;
 }
+#endif
 
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointCloud2 &msg)
+{
+    RetVal retval = retOk;
+    
+    ito::tPCLPointType pointType = pc.getType();
+    pcl::MsgFieldMap field_map;
+
+    switch(pointType)
+    {
+    case ito::pclXYZ:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZ()), msg);
+        break;
+    case ito::pclXYZI:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZI()), msg);
+        break;
+    case ito::pclXYZRGBA:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZRGBA()), msg);
+        break;
+    case ito::pclXYZNormal:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZNormal()), msg);
+        break;
+    case ito::pclXYZINormal:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZINormal()), msg);
+        break;
+    case ito::pclXYZRGBNormal:
+        pcl::toPCLPointCloud2(*(pc.toPointXYZRGBNormal()), msg);
+        break;
+    case ito::pclInvalid:
+        msg = pcl::PCLPointCloud2();
+        break;
+    default:
+        retval += RetVal(retError,0,"given point cloud cannot be converted into sensor_msgs::PointCloud2");
+        break;
+    }
+
+    return retval;
+}
+#else
 ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::PointCloud2 &msg)
 {
     RetVal retval = retOk;
@@ -164,9 +259,15 @@ ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::Poi
 
     return retval;
 }
+#endif
+
 
 //------------------------------------------------------------------------------------------------------------------------------
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+ito::tPCLPointType guessPointType(const pcl::PCLPointCloud2 &msg)
+#else
 ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
+#endif
 {
     if( pcl::getFieldIndex(msg,"x") >= 0 && pcl::getFieldIndex(msg,"y") >= 0 && pcl::getFieldIndex(msg,"z") >= 0)
     {
