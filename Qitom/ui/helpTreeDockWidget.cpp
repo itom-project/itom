@@ -519,7 +519,9 @@ void HelpTreeDockWidget::reloadDB()
 	m_pMainModel->clear();
     ui.treeView->reset();
     //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
-    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", ReadSQL(""));
+    // gcc does NOT accept a reference on a function return value, so we MUST use a temporary variable here
+    QList<QString> tmpStr = ReadSQL("");
+    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", tmpStr);
     m_pMainFilterModel->setSourceModel(m_pMainModel);
     ui.treeView->setModel(m_pMainFilterModel);
 
