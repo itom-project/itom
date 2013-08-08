@@ -205,9 +205,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         {
             dictUnicode = PyUnicode_FromString("__dict__");
 
-            PyImport_AppendInittab("itom",&PythonItom::PyInitItom);				//!< add all static, known function calls to python-module itom
+            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);				//!< add all static, known function calls to python-module itom
 
-            PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
+            PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
             Py_Initialize();													    //!< must be called after any PyImport_AppendInittab-call
 //            PyEval_InitThreads();                                                   //!< prepare Python multithreading
@@ -257,7 +257,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             static wchar_t *wargv = L"";
             PySys_SetArgv(1, &wargv);
 
-			PythonDataObject::PyDataObjectType.tp_base =0;
+			PythonDataObject::PyDataObjectType.tp_base = 0;
 			PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
 			PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
 			if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
@@ -4003,7 +4003,7 @@ RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, It
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += RetVal(retError,0,"it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
+        retVal += RetVal(retError, 0, "it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
     }
     else
     {
@@ -4027,7 +4027,7 @@ RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, It
 
         if (destinationDict == NULL)
         {
-            retVal += RetVal(retError,0,"variables can not be unpickled since dictionary is not available");
+            retVal += RetVal(retError, 0, "variables can not be unpickled since dictionary is not available");
         }
         else
         {
@@ -4098,7 +4098,7 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toAscii().data(),"rb\0"); //new reference
+    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toAscii().data(), "rb\0"); //new reference
 
     if (fileHandle == NULL)
     {
@@ -4114,7 +4114,7 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
         }
         else if (!PyDict_Check(unpickledItem))
         {
-            retval += RetVal(retError,0,"unpickling error. This file contains no dictionary as base element.");
+            retval += RetVal(retError, 0, "unpickling error. This file contains no dictionary as base element.");
         }
         else
         {

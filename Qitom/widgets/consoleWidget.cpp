@@ -863,43 +863,50 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
 
     switch (type)
     {
-    case msgReturnError:
-        //!> insert msg after last line
-        //append(consoleWidget::lineBreak);
-        fromLine = lines()-1;
-        append(totalMsg);
-        toLine = lines()-1;
-        if (lineLength(toLine)==0) toLine--;
-        for (int i=fromLine; i<=toLine; i++)
-        {
-            markerAdd(i, markErrorLine);
-        }
-        moveCursorToEnd();
-        startLineBeginCmd = -1;
-        if (!pythonBusy)
-        {
-            this->startNewCommand(false);
-        }
-        break;
-    case msgReturnInfo: case msgReturnWarning:
-        //!> insert msg after last line
-        //append(consoleWidget::lineBreak);
-        append(totalMsg);
-        moveCursorToEnd();
-        startLineBeginCmd = -1;
+        case msgReturnError:
+            //!> insert msg after last line
+            //append(consoleWidget::lineBreak);
+//setLexer(0);
+            fromLine = lines() - 1;
+            append(totalMsg);
+            toLine = lines() - 1;
+            if (lineLength(toLine) == 0)
+            {
+                toLine--;
+            }
+            for (int i = fromLine; i <= toLine; i++)
+            {
+                markerAdd(i, markErrorLine);
+            }
+            moveCursorToEnd();
+            startLineBeginCmd = -1;
+            if (!pythonBusy)
+            {
+                this->startNewCommand(false);
+            }
+            break;
+        case msgReturnInfo:
+        case msgReturnWarning:
+            //!> insert msg after last line
+            //append(consoleWidget::lineBreak);
+            append(totalMsg);
+            moveCursorToEnd();
+            startLineBeginCmd = -1;
 
-        if (!pythonBusy)
-        {
-            this->startNewCommand(false);
-        }
-        break;
-    case msgTextInfo: case msgTextWarning: case msgTextError:
-        //!> insert msg before last line containing ">>" (startLineBeginCmd)
-        //totalMsg = totalMsg.append(consoleWidget::lineBreak);
-        insertAt(totalMsg, startLineBeginCmd, 0);
-        startLineBeginCmd += msg.length();
-        moveCursorToEnd();
-        break;
+            if (!pythonBusy)
+            {
+                this->startNewCommand(false);
+            }
+            break;
+        case msgTextInfo:
+        case msgTextWarning:
+        case msgTextError:
+            //!> insert msg before last line containing ">>" (startLineBeginCmd)
+            //totalMsg = totalMsg.append(consoleWidget::lineBreak);
+            insertAt(totalMsg, startLineBeginCmd, 0);
+            startLineBeginCmd += msg.length();
+            moveCursorToEnd();
+            break;
     }
     return RetVal(retOk);
 }
@@ -907,7 +914,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::printMessage(QString msg, tMsgType type)
 {
-    if (msg!="")
+    if (msg != "")
     {
         return printMessage(QStringList(msg), type);
     }
@@ -920,8 +927,8 @@ RetVal ConsoleWidget::printMessage(QString msg, tMsgType type)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::moveCursorToEnd()
 {
-    int lastLine = lines()-1;
-    setCursorPosition(lastLine,lineLength(lastLine));
+    int lastLine = lines() - 1;
+    setCursorPosition(lastLine, lineLength(lastLine));
     return RetVal(retOk);
 }
 
