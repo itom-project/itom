@@ -1752,6 +1752,9 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
              cv::error(cv::Exception(CV_StsAssert, "not defined cast", "", __FILE__, __LINE__));
           break;
        }
+
+        lhs.copyTagMapTo(rhs);   //Deepcopy the tagspace
+        lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
    }
 
    return 0;
