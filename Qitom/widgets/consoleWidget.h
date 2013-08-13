@@ -70,6 +70,7 @@ public:
 
 protected:
     virtual void loadSettings();
+    void autoAdaptLineNumberColumnWidth();
 
 public slots:
     virtual void copy();

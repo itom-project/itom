@@ -140,7 +140,7 @@ RetVal ConsoleWidget::initEditor()
     setPaper(QColor(1,81,107));
 
     setFolding(QsciScintilla::NoFoldStyle);
-    setMarginWidth(1,25);
+    autoAdaptLineNumberColumnWidth(); //setMarginWidth(1,25);
     setMarginSensitivity(1,false);
     setMarginLineNumbers(1,true);
 
@@ -293,6 +293,36 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
         startLineBeginCmd = lines()-1;
     }
     return RetVal(retOk);
+}
+
+void ConsoleWidget::autoAdaptLineNumberColumnWidth()
+{
+    int l = lines();
+    QString s; //make the width always a little bit bigger than necessary
+    if (l < 10)
+    {
+        s = QString::number(10);
+        
+    }
+    else if (l < 100)
+    {
+        s = QString::number(100);
+        
+    }
+    else if ( l < 1000)
+    {
+        s = QString::number(1000);
+    }
+    else if ( l < 10000)
+    {
+        s = QString::number(10000);
+    }
+    else
+    {
+        s = QString::number(100000);
+    }
+
+    setMarginWidth(1, s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -722,6 +752,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             clear();
             startLineBeginCmd = -1;
+            autoAdaptLineNumberColumnWidth();
             cmdList->add(value.singleLine);
             executeCmdQueue();
             emit sendToLastCommand(value.singleLine);
@@ -908,6 +939,9 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
             moveCursorToEnd();
             break;
     }
+
+    autoAdaptLineNumberColumnWidth();
+
     return RetVal(retOk);
 }
 

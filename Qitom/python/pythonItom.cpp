@@ -1086,7 +1086,13 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
 
                 if (descriptionString.length() > 0)
                 {
-                    QString desString = descriptionString.replace('\n', ' ').replace('\r', ' ');
+                    QString desString = descriptionString.trimmed();
+                    //split desString until first \n
+                    int linebreakIdx = desString.indexOf('\n');
+                    if (linebreakIdx > 0)
+                    {
+                        desString = desString.left(linebreakIdx);
+                    }
 
                     std::cout << "\t'" << desString.toAscii().data() << "'\n";
                     item = PythonQtConversion::QByteArrayToPyUnicodeSecure(descriptionString.toAscii());
