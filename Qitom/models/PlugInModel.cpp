@@ -972,7 +972,17 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
             }
             case 7: //description
             {
-                return *description;
+				int firstLineBreak = description->indexOf('\n');
+				QString shortDesc;
+				if (firstLineBreak > 0)
+				{
+					shortDesc = description->left(firstLineBreak);
+				}
+				else
+				{
+					shortDesc = *description;
+				}
+                return shortDesc;
             }
             default:
             {
@@ -1000,12 +1010,46 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
         switch(index.column())
         {
             case 0: //name
-            {
-                return *name;
-            }
             case 7: //description
             {
-                return *description;
+				QString text = *name;
+				if (description->size() > 0)
+				{
+					QString lb;
+					lb.fill('-', text.length() * 1.5);
+
+					QStringList desc = description->split('\n');
+					text += "\n" + lb;
+
+					foreach(const QString &s, desc)
+					{
+						if (s.size() < 200)
+						{
+							text += "\n" + s;
+						}
+						else
+						{
+							QStringList words = s.split(" ");
+							int curLen = 0;
+							text += "\n";
+							foreach (const QString &w, words)
+							{
+								curLen += w.size();
+								if (curLen < 200)
+								{
+									text += w + " ";
+									curLen++;
+								}
+								else
+								{
+									curLen = w.size()+1;
+									text += "\n" + w + " ";
+								}
+							}
+						}
+					}
+				}
+                return text;
             }
             default:
             {
