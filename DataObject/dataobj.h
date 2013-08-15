@@ -1453,14 +1453,22 @@ class DataObject
 
 
         DataObject & operator += (const DataObject &rhs);
-        DataObject operator + (const DataObject &rhs);
-        DataObject & operator -= (const DataObject &rhs);
-        DataObject operator - (const DataObject &rhs);
-        DataObject & operator *= (const DataObject &rhs);
-        DataObject operator * (const DataObject &rhs);
+        DataObject & operator += (const float64 value);
 
-        DataObject & operator *= (const double factor);
-        DataObject operator * (const double factor);
+        DataObject operator + (const DataObject &rhs);
+        DataObject operator + (const float64 value);
+
+        DataObject & operator -= (const DataObject &rhs);
+        DataObject & operator -= (const float64 value);
+
+        DataObject operator - (const DataObject &rhs);
+        DataObject operator - (const float64 value);
+
+        DataObject & operator *= (const DataObject &rhs);
+        DataObject & operator *= (const float64 factor);
+
+        DataObject operator * (const DataObject &rhs);
+        DataObject operator * (const float64 factor);
 
         // Comparison Operators
         DataObject operator < (DataObject &rhs);

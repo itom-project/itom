@@ -2825,7 +2825,6 @@ DataObject & DataObject::operator = (const complex128 value)
 */
 template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t nmat = 0;
    size_t srcTmat1 = 0;
    size_t srcTmat2 = 0;
    size_t dstTmat = 0;
@@ -2834,7 +2833,7 @@ template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject 
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
 
-    for (nmat = 0; nmat < numMats; nmat++)
+    for (size_t nmat = 0; nmat < numMats; nmat++)
     {
 		dstTmat = dObjRes->seekMat(nmat, numMats);
 		srcTmat1 = dObj1->seekMat(nmat, numMats);
@@ -2851,6 +2850,30 @@ template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject 
 typedef RetVal (*tAddFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
 MAKEFUNCLIST(AddFunc);
 
+template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
+{
+   size_t srcTmat = 0;
+   size_t dstTmat = 0;
+   size_t numMats = dObjIn->calcNumMats();
+   cv::Mat_<_Tp> *cvSrc = NULL;
+   cv::Mat_<_Tp> *cvDest = NULL;
+   cv::Scalar s = scalar;
+
+    for (size_t nmat = 0; nmat < numMats; ++nmat)
+    {
+		dstTmat = dObjOut->seekMat(nmat, numMats);
+		srcTmat = dObjIn->seekMat(nmat, numMats);
+		cvSrc  = (cv::Mat_<_Tp> *) dObjIn->get_mdata()[srcTmat];
+		cvDest = (cv::Mat_<_Tp> *) dObjOut->get_mdata()[dstTmat];
+		*cvDest = *cvSrc + s;
+    }
+
+   return RetVal(retOk);
+}
+
+typedef RetVal (*tAddScalarFunc)(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut);
+MAKEFUNCLIST(AddScalarFunc);
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise addition of values of given data object to this data object
 /*!
@@ -2861,14 +2884,20 @@ MAKEFUNCLIST(AddFunc);
 */
 DataObject & DataObject::operator += (const DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   (fListAddFunc[m_type])(this, &rhs, this);
-   return *this;
+    (fListAddFunc[m_type])(this, &rhs, this);
+    return *this;
+}
+
+DataObject & DataObject::operator += (const float64 value)
+{
+    (fListAddScalarFunc[m_type])(this, value, this);
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2889,11 +2918,21 @@ DataObject DataObject::operator + (const DataObject &rhs)
 
    DataObject result;
    result.m_continuous = rhs.m_continuous;
-   this->copyTo(result, 1);
+   copyTo(result, 1);
 
    (fListAddFunc[m_type])(this, &rhs, &result);
 
    return result;
+}
+
+DataObject DataObject::operator + (const float64 value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddScalarFunc[m_type])(this, value, &result);
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2958,6 +2997,12 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
    return *this;
 };
 
+DataObject & DataObject::operator -= (const float64 value)
+{
+    (fListAddScalarFunc[m_type])(this, -value, this);
+    return *this;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise subtraction of values of given data object from values of this data object
 /*!
@@ -2968,20 +3013,30 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
 */
 DataObject DataObject::operator - (const DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject result;
-   result.m_continuous = rhs.m_continuous;
-   this->copyTo(result, 1);
+    DataObject result;
+    result.m_continuous = rhs.m_continuous;
+    this->copyTo(result, 1);
 
-   (fListSubFunc[m_type])(this, &rhs, &result);
+    (fListSubFunc[m_type])(this, &rhs, &result);
 
-   return result;
+    return result;
 };
+
+DataObject DataObject::operator - (const float64 value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddScalarFunc[m_type])(this, -value, &result);
+    return result;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! brief description

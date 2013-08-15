@@ -193,33 +193,38 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // number protocol
+        //
+        // python note: Binary and ternary functions must check the type of all their operands, and implement 
+        //    the necessary conversions (at least one of the operands is an instance of the defined type). 
+        //    If the operation is not defined for the given operands, binary and ternary functions must return 
+        //    Py_NotImplemented, if another error occurred they must return NULL and set an exception.
         //------------------------------------------------------------------------------------------------- 
-        static PyObject* PyDataObj_nbAdd(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbSubtract(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbMultiply(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbRemainder(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbDivmod(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbPower(PyDataObject* o1, PyDataObject* o2, PyDataObject* o3);
-        static PyObject* PyDataObj_nbNegative(PyDataObject* o1);
-        static PyObject* PyDataObj_nbPositive(PyDataObject* o1);
-        static PyObject* PyDataObj_nbAbsolute(PyDataObject* o1);
-        static PyObject* PyDataObj_nbInvert(PyDataObject* o1);
-        static PyObject* PyDataObj_nbLshift(PyDataObject* o1, PyObject* o2);
-        static PyObject* PyDataObj_nbRshift(PyDataObject* o1, PyObject* o2);
-        static PyObject* PyDataObj_nbAnd(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbXor(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbOr(PyDataObject* o1, PyDataObject* o2);
+        static PyObject* PyDataObj_nbAdd(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbSubtract(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbMultiply(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbRemainder(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbDivmod(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObject* o3);
+        static PyObject* PyDataObj_nbNegative(PyObject* o1);
+        static PyObject* PyDataObj_nbPositive(PyObject* o1);
+        static PyObject* PyDataObj_nbAbsolute(PyObject* o1);
+        static PyObject* PyDataObj_nbInvert(PyObject* o1);
+        static PyObject* PyDataObj_nbLshift(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbRshift(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbAnd(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbXor(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbOr(PyObject* o1, PyObject* o2);
 
-        static PyObject* PyDataObj_nbInplaceAdd(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplaceSubtract(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplaceMultiply(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplaceRemainder(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplacePower(PyDataObject* o1, PyDataObject* o2, PyDataObject* o3);
-        static PyObject* PyDataObj_nbInplaceLshift(PyDataObject* o1, PyObject* o2);
-        static PyObject* PyDataObj_nbInplaceRshift(PyDataObject* o1, PyObject* o2);
-        static PyObject* PyDataObj_nbInplaceAnd(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplaceXor(PyDataObject* o1, PyDataObject* o2);
-        static PyObject* PyDataObj_nbInplaceOr(PyDataObject* o1, PyDataObject* o2);
+        static PyObject* PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceRemainder(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplacePower(PyObject* o1, PyObject* o2, PyObject* o3);
+        static PyObject* PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2);
 
         //-------------------------------------------------------------------------------------------------
         // iterator protocol
@@ -256,7 +261,7 @@ class PythonDataObject
 
         static PyDataObject* createEmptyPyDataObject();
 
-        static bool checkPyDataObject(int number, PyDataObject* o1 = NULL, PyDataObject* o2 = NULL, PyDataObject* o3 = NULL);
+        static bool checkPyDataObject(int number, PyObject* o1 = NULL, PyObject* o2 = NULL, PyObject* o3 = NULL);
 
         static RetVal parseTypeNumber(int typeno, char &typekind, int &itemsize);
         static int parseTypeNumberInverse(char typekind, int itemsize);

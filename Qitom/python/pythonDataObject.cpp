@@ -2520,128 +2520,224 @@ PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
     }
 }
 
-bool PythonDataObject::checkPyDataObject(int number, PyDataObject* o1, PyDataObject* o2, PyDataObject* o3)
+bool PythonDataObject::checkPyDataObject(int number, PyObject* o1 /*= NULL*/, PyObject* o2 /*= NULL*/, PyObject* o3 /*= NULL*/)
 {
-    if(number > 0 && (o1 == NULL || o1->dataObject == NULL))
+    PyObject *temp;
+    for (int i = 0; i < number; ++i)
     {
-        PyErr_SetString(PyExc_TypeError, "first data object is empty.");
-        return false;
-    }
-    if(number > 1 && (o2 == NULL || o2->dataObject == NULL))
-    {
-        PyErr_SetString(PyExc_TypeError, "second data object is empty.");
-        return false;
-    }
-    if(number > 2 && (o3 == NULL || o3->dataObject == NULL))
-    {
-        PyErr_SetString(PyExc_TypeError, "third data object is empty.");
-        return false;
+        switch(i)
+        {
+        case 0:
+            temp = o1;
+            break;
+        case 1:
+            temp = o2;
+            break;
+        case 2:
+            temp = o3;
+            break;
+        default:
+            continue;
+        }
+
+        if (temp == NULL)
+        {
+            PyErr_Format(PyExc_TypeError, "%i. operand is NULL", i);
+            return false;
+        }
+        else if(!PyDataObject_Check(temp) || ((PyDataObject*)(temp))->dataObject == NULL)
+        {
+            PyErr_Format(PyExc_TypeError, "%i. operand must be a valid data object", i);
+            return false;
+        }
     }
     return true;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbAdd(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 {
-    if(!checkPyDataObject(2,o1,o2)) return NULL;
+    PyDataObject *dobj1 = NULL;
+    PyDataObject *dobj2 = NULL;
+    double scalar = 0;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
+    if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
+        dobj1 = (PyDataObject*)o1;
+        dobj2 = (PyDataObject*)o2;
+    }
+    else if(PyDataObject_Check(o1))
+    {
+        dobj1 = (PyDataObject*)o1;
+        if (PyFloat_Check(o2) || PyLong_Check(o2))
+        {
+            scalar = PyFloat_AsDouble(o2);
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+        }
+    }
+    else if(PyDataObject_Check(o2))
+    {
+        dobj1 = (PyDataObject*)o2; //dobj1 is always a dataobject!!! (difference to nbSub)
+        if (PyFloat_Check(o1) || PyLong_Check(o1))
+        {
+            scalar = PyFloat_AsDouble(o1);
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+        }
+    }
+    else
+    {
+        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    if (dobj1) dobj1->dataObject->lockRead();
+    if (dobj2) dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) + *(o2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        if (dobj2)
+        {
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + *(dobj2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
+        else
+        {
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + scalar );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        if (dobj1) dobj1->dataObject->unlock();
+        if (dobj2) dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    if (dobj1) dobj1->dataObject->unlock();
+    if (dobj2) dobj2->dataObject->unlock();
 
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbSubtract(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 {
-    if(!checkPyDataObject(2,o1,o2)) return NULL;
+    PyDataObject *dobj1 = NULL;
+    PyDataObject *dobj2 = NULL;
+    double scalar = 0;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
+    if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
+        dobj1 = (PyDataObject*)o1;
+        dobj2 = (PyDataObject*)o2;
+    }
+    else if(PyDataObject_Check(o1))
+    {
+        dobj1 = (PyDataObject*)o1;
+        if (PyFloat_Check(o2) || PyLong_Check(o2))
+        {
+            scalar = PyFloat_AsDouble(o2);
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+        }
+    }
+    else if(PyDataObject_Check(o2))
+    {
+        dobj2 = (PyDataObject*)o2;
+        if (PyFloat_Check(o1) || PyLong_Check(o1))
+        {
+            scalar = PyFloat_AsDouble(o1);
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+        }
+    }
+    else
+    {
+        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    if (dobj1) dobj1->dataObject->lockRead();
+    if (dobj2) dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) - *(o2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        if (dobj1 && dobj2)
+        {
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - *(dobj2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
+        else if (dobj1)
+        {
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
+        else
+        {
+            retObj->dataObject = new ito::DataObject( (*(dobj2->dataObject)*(-1.0)) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        if (dobj1) dobj1->dataObject->unlock();
+        if (dobj2) dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    if (dobj1) dobj1->dataObject->unlock();
+    if (dobj2) dobj2->dataObject->unlock();
+
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbMultiply(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 {
     if(o1 == NULL || o2 == NULL) return NULL;
 
     if(Py_TYPE(o1) == &PyDataObjectType && Py_TYPE(o2) == &PyDataObjectType)
     {
+        PyDataObject *dobj1 = (PyDataObject*)(o1);
+        PyDataObject *dobj2 = (PyDataObject*)(o2);
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        o1->dataObject->lockRead();
-        o2->dataObject->lockRead();
+        dobj1->dataObject->lockRead();
+        dobj2->dataObject->lockRead();
 
         try
         {
-            retObj->dataObject = new ito::DataObject(*(o1->dataObject) * *(o2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
         catch(cv::Exception exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            o1->dataObject->unlock();
-            o2->dataObject->unlock();
+            dobj1->dataObject->unlock();
+            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
 
         return (PyObject*)retObj;
     }
     else if(Py_TYPE(o1) == &PyDataObjectType)
     {
         double factor = PyFloat_AsDouble((PyObject*)o2);
+        PyDataObject *dobj1 = (PyDataObject*)(o1);
 
         if(PyErr_Occurred())
         {
@@ -2650,27 +2746,28 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyDataObject* o1, PyDataObject*
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        o1->dataObject->lockRead();
+        dobj1->dataObject->lockRead();
 
         try
         {
-            retObj->dataObject = new ito::DataObject(*(o1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
         catch(cv::Exception exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            o1->dataObject->unlock();
+            dobj1->dataObject->unlock();
             return NULL;
         }
 
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
 
         return (PyObject*)retObj;
     }
     else if(Py_TYPE(o2) == &PyDataObjectType)
     {
         double factor = PyFloat_AsDouble((PyObject*)o1);
+        PyDataObject *dobj2 = (PyDataObject*)(o2);
 
         if(PyErr_Occurred())
         {
@@ -2679,42 +2776,45 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyDataObject* o1, PyDataObject*
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        o2->dataObject->lockRead();
+        dobj2->dataObject->lockRead();
 
         try
         {
-            retObj->dataObject = new ito::DataObject(*(o2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
         catch(cv::Exception exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            o2->dataObject->unlock();
+            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        o2->dataObject->unlock();
+        dobj2->dataObject->unlock();
 
         return (PyObject*)retObj;
     }
     return NULL;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbRemainder(PyDataObject* /*o1*/, PyDataObject* /*o2*/)
+PyObject* PythonDataObject::PyDataObj_nbRemainder(PyObject* /*o1*/, PyObject* /*o2*/)
 {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbDivmod(PyDataObject* /*o1*/, PyDataObject* /*o2*/)
+PyObject* PythonDataObject::PyDataObj_nbDivmod(PyObject* /*o1*/, PyObject* /*o2*/)
 {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbPower(PyDataObject* o1, PyDataObject* o2, PyDataObject* o3)
+PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObject* o3)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
     if((PyObject*)o3 != Py_None)
     {
@@ -2723,85 +2823,71 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyDataObject* o1, PyDataObject* o2
         return Py_NotImplemented;
     }
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
-
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) ^ *(o2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject) );  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbNegative(PyDataObject* o1)
+PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
 
     try
     {
 
-        retObj->dataObject = new ito::DataObject((*(o1->dataObject) * -1.0));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject((*(dobj1->dataObject) * -1.0));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
+    dobj1->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbPositive(PyDataObject* o1)
+PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject));
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject));
 
         if(!retObj->dataObject->getOwnData())
         {
@@ -2812,61 +2898,53 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyDataObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
+    dobj1->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyDataObject* o1)
+PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(ito::abs(*(o1->dataObject) ));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(ito::abs(*(dobj1->dataObject) ));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
+    dobj1->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInvert(PyDataObject* /*o1*/)
+PyObject* PythonDataObject::PyDataObj_nbInvert(PyObject* /*o1*/)
 {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbLshift(PyDataObject* o1, PyObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     int shift = PyLong_AsLong(o2);
 
@@ -2879,34 +2957,30 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyDataObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) << static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) << static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
+    dobj1->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbRshift(PyDataObject* o1, PyObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     int shift = PyLong_AsLong(o2);
 
@@ -2919,221 +2993,259 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyDataObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) >> static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) >> static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
+    dobj1->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbAnd(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) & *(o2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) & *(dobj2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbXor(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) ^ *(o2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbOr(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    o1->dataObject->lockRead();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockRead();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        retObj->dataObject = new ito::DataObject(*(o1->dataObject) | *(o2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) | *(dobj2->dataObject) ); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
 {
-    if(!checkPyDataObject(2,o1,o2)) return NULL;
+    if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+    if( PyDataObject_Check(o2) )
     {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+        PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    o1->dataObject->lockWrite();
-    o2->dataObject->lockRead();
-
-    try
-    {
-        *(o1->dataObject) += *(o2->dataObject);
-    }
-    catch(cv::Exception exc)
-    {
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
-        return NULL;
-    }
-
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
-
-    Py_INCREF(o1);
-    return (PyObject*)o1;
-}
-
-PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyDataObject* o1, PyDataObject* o2)
-{
-    if(!checkPyDataObject(2,o1,o2)) return NULL;
-
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
-
-    o1->dataObject->lockWrite();
-    o2->dataObject->lockRead();
-
-    try
-    {
-        *(o1->dataObject) -= *(o2->dataObject);
-    }
-    catch(cv::Exception exc)
-    {
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
-        return NULL;
-    }
-
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
-
-    Py_INCREF(o1);
-    return (PyObject*)o1;
-}
-
-PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyDataObject* o1, PyDataObject* o2)
-{
-    if(o1 == NULL || o2 == NULL) return NULL;
-
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "value must be of type dataObject");
-        return NULL;
-    }
-
-    if(Py_TYPE(o2) == &PyDataObjectType)
-    {
-
-        o1->dataObject->lockWrite();
-        o2->dataObject->lockRead();
+        dobj1->dataObject->lockWrite();
+        dobj2->dataObject->lockRead();
 
         try
         {
-            *(o1->dataObject) *= *(o2->dataObject);
+            *(dobj1->dataObject) += *(dobj2->dataObject);
         }
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            o1->dataObject->unlock();
-            o2->dataObject->unlock();
+            dobj1->dataObject->unlock();
+            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
+    }
+    else if (PyFloat_Check(o2) || PyLong_Check(o2))
+    {
+        double val = PyFloat_AsDouble(o2);
+
+        dobj1->dataObject->lockWrite();
+
+        try
+        {
+            *(dobj1->dataObject) += val;
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            dobj1->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+    }
+    else
+    {
+        return PyErr_Format(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+    }
+
+    Py_INCREF(o1);
+    return (PyObject*)o1;
+}
+
+PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* o2)
+{
+    if(!checkPyDataObject(1,o1)) return NULL;
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+    if( PyDataObject_Check(o2) )
+    {
+        PyDataObject *dobj2 = (PyDataObject*)(o2);
+
+        dobj1->dataObject->lockWrite();
+        dobj2->dataObject->lockRead();
+
+        try
+        {
+            *(dobj1->dataObject) -= *(dobj2->dataObject);
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            dobj1->dataObject->unlock();
+            dobj2->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
+    }
+    else if (PyFloat_Check(o2) || PyLong_Check(o2))
+    {
+        double val = PyFloat_AsDouble(o2);
+
+        dobj1->dataObject->lockWrite();
+
+        try
+        {
+            *(dobj1->dataObject) -= val;
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            dobj1->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+    }
+    else
+    {
+        return PyErr_Format(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+    }
+
+    Py_INCREF(o1);
+    return (PyObject*)o1;
+}
+
+PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* o2)
+{
+    if(o1 == NULL || o2 == NULL) return NULL;
+
+    if(!checkPyDataObject(1,o1)) return NULL;
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+    if(Py_TYPE(o2) == &PyDataObjectType)
+    {
+        PyDataObject *dobj2 = (PyDataObject*)(o2);
+
+        dobj1->dataObject->lockWrite();
+        dobj2->dataObject->lockRead();
+
+        try
+        {
+            *(dobj1->dataObject) *= *(dobj2->dataObject);
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            dobj1->dataObject->unlock();
+            dobj2->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
     }
     else
     {
@@ -3144,19 +3256,19 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyDataObject* o1, PyData
             return NULL;
         }
 
-        o1->dataObject->lockWrite();
+        dobj1->dataObject->lockWrite();
         try
         {
-            *(o1->dataObject) *= factor;
+            *(dobj1->dataObject) *= factor;
         }
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            o1->dataObject->unlock();
+            dobj1->dataObject->unlock();
             return NULL;
         }
 
-        o1->dataObject->unlock();
+        dobj1->dataObject->unlock();
     }
 
 
@@ -3164,27 +3276,23 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyDataObject* o1, PyData
     return (PyObject*)o1;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceRemainder(PyDataObject* /*o1*/, PyDataObject* /*o2*/)
+PyObject* PythonDataObject::PyDataObj_nbInplaceRemainder(PyObject* /*o1*/, PyObject* /*o2*/)
 {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplacePower(PyDataObject* /*o1*/, PyDataObject* /*o2*/, PyDataObject* /*o3*/)
+PyObject* PythonDataObject::PyDataObj_nbInplacePower(PyObject* /*o1*/, PyObject* /*o2*/, PyObject* /*o3*/)
 {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyDataObject* o1, PyObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     int shift = PyLong_AsLong(o2);
 
@@ -3197,22 +3305,18 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyDataObject* o1, PyObject
 
     Py_INCREF(o1);
 
-    o1->dataObject->lockWrite();
-    *(o1->dataObject) <<= static_cast<unsigned int>(shift);
-    o1->dataObject->unlock();
+    dobj1->dataObject->lockWrite();
+    *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
+    dobj1->dataObject->unlock();
 
     return (PyObject*)o1;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyDataObject* o1, PyObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(1,o1)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
 
     int shift = PyLong_AsLong(o2);
 
@@ -3224,104 +3328,95 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyDataObject* o1, PyObject
     }
 
     Py_INCREF(o1);
-    o1->dataObject->lockWrite();
-    *(o1->dataObject) >>= static_cast<unsigned int>(shift);
-    o1->dataObject->unlock();
+    dobj1->dataObject->lockWrite();
+    *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
+    dobj1->dataObject->unlock();
 
     return (PyObject*)o1;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    o1->dataObject->lockWrite();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockWrite();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        *(o1->dataObject) &= *(o2->dataObject);
+        *(dobj1->dataObject) &= *(dobj2->dataObject);
     }
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    o1->dataObject->lockWrite();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockWrite();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        *(o1->dataObject) ^= *(o2->dataObject);
+        *(dobj1->dataObject) ^= *(dobj2->dataObject);
     }
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
 
-PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyDataObject* o1, PyDataObject* o2)
+PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
 {
     if(!checkPyDataObject(2,o1,o2)) return NULL;
 
-    if(Py_TYPE(o1) != &PyDataObjectType || Py_TYPE(o2) != &PyDataObjectType)
-    {
-        PyErr_SetString(PyExc_ImportError, "values must be of type dataObject");
-        return NULL;
-    }
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    o1->dataObject->lockWrite();
-    o2->dataObject->lockRead();
+    dobj1->dataObject->lockWrite();
+    dobj2->dataObject->lockRead();
 
     try
     {
-        *(o1->dataObject) |= *(o2->dataObject);
+        *(dobj1->dataObject) |= *(dobj2->dataObject);
     }
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        o1->dataObject->unlock();
-        o2->dataObject->unlock();
+        dobj1->dataObject->unlock();
+        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    o1->dataObject->unlock();
-    o2->dataObject->unlock();
+    dobj1->dataObject->unlock();
+    dobj2->dataObject->unlock();
 
     Py_INCREF(o1);
     return (PyObject*)o1;

@@ -1016,30 +1016,31 @@ namespace ito
 // but a sophisticated error message is shown.
 
 static const char* ito_AddInInterface_OldVersions[] = {
-    "ito.AddIn.InterfaceBase/1.0",  //version from start of development until 2012-10-11
-    "ito.AddIn.InterfaceBase/1.1",  //version from 2012-10-11 - 2012-10-15 (outdated due to changes in dataObject)
-	"ito.AddIn.InterfaceBase/1.1.1",//version from 2012-10-15 - 2012-10-21 (outdated due to small changes in addInInterface)
-    "ito.AddIn.InterfaceBase/1.1.2",//version from 2012-10-21 - 2012-10-30 (outdated due to small changes in addInInterface)
-    "ito.AddIn.InterfaceBase/1.1.3",//version from 2012-10-21 - 2012-11-09 (outdated due to changes in the checkData()-function in addInGrabber)
-    "ito.AddIn.InterfaceBase/1.1.4",//version from 2012-11-09 - 2012-11-12 (outdated due to changes in the DataObject)
-    "ito.AddIn.InterfaceBase/1.1.5",//version from 2012-11-12 - 2012-11-18 (changes in the API structure)
-    "ito.AddIn.InterfaceBase/1.1.6",//version from 2012-12-20 - 2012-12-20 (added paramBase metatype)
-    "ito.AddIn.InterfaceBase/1.1.7",//version from 2012-12-20 - 2013-01-17 (last version for itom version 1.0.5)
-    "ito.AddIn.InterfaceBase/1.1.8",//version from 2013-01-17 - 2013-01-23 (changes in auto-grabbing of cameras, first interface for itom version 1.0.6)
-    "ito.AddIn.InterfaceBase/1.1.9",//version from 2013-01-23 - 2013-03-04 (changes in dataObjectHelper)
-    "ito.AddIn.InterfaceBase/1.1.10",//version from 2013-03-04 - 2013-03-12 (Added license and about string to the plugin)
-    "ito.AddIn.InterfaceBase/1.1.11",//version from 2013-03-12 - 2013-03-22 (bugfix in ito::ParamBase)
-    "ito.AddIn.InterfaceBase/1.1.12",//version from 2013-03-22 - 2013-03-25 (changes in api)
-    "ito.AddIn.InterfaceBase/1.1.13",//version from 2013-03-25 - 2013-04-08 (removed transpose flag in dataObject)
-    "ito.AddIn.InterfaceBase/1.1.14",//version from 2013-04-08 - 2013-04-17 (uniqueID and identifier inserted/changed)
-    "ito.AddIn.InterfaceBase/1.1.15",//version from 2013-04-17 - 2013-04-23 (made some tag-space related methods non-inline (due to linker errors in MSVC))
-    "ito.AddIn.InterfaceBase/1.1.16",//version from 2013-04-23 - 2013-06-07 (added qpluginloader to the interface for cleaner unloading of plugins)
-    "ito.AddIn.InterfaceBase/1.1.17",//version from 2013-06-07 - 2013-06-11 (apis extended, changes in param-class)
-    "ito.AddIn.InterfaceBase/1.1.18",//version from 2013-06-11 - 2013-06-18 (iterator and constIterator introduced for dataObject)
+    "ito.AddIn.InterfaceBase/1.0",   //version from start of development until 2012-10-11
+    "ito.AddIn.InterfaceBase/1.1",   //version until 2012-10-15 (outdated due to changes in dataObject)
+	"ito.AddIn.InterfaceBase/1.1.1", //version until 2012-10-21 (outdated due to small changes in addInInterface)
+    "ito.AddIn.InterfaceBase/1.1.2", //version until 2012-10-30 (outdated due to small changes in addInInterface)
+    "ito.AddIn.InterfaceBase/1.1.3", //version until 2012-11-09 (outdated due to changes in the checkData()-function in addInGrabber)
+    "ito.AddIn.InterfaceBase/1.1.4", //version until 2012-11-12 (outdated due to changes in the DataObject)
+    "ito.AddIn.InterfaceBase/1.1.5", //version until 2012-11-18 (outdated: changes in the API structure)
+    "ito.AddIn.InterfaceBase/1.1.6", //version until 2012-12-20 (outdated: added paramBase metatype)
+    "ito.AddIn.InterfaceBase/1.1.7", //version until 2013-01-17 (outdated: last version for itom version 1.0.5)
+    "ito.AddIn.InterfaceBase/1.1.8", //version until 2013-01-23 (outdated: changes in auto-grabbing of cameras, first interface for itom version 1.0.6)
+    "ito.AddIn.InterfaceBase/1.1.9", //version until 2013-03-04 (outdated: changes in dataObjectHelper)
+    "ito.AddIn.InterfaceBase/1.1.10",//version until 2013-03-12 (outdated: Added license and about string to the plugin)
+    "ito.AddIn.InterfaceBase/1.1.11",//version until 2013-03-22 (outdated: bugfix in ito::ParamBase)
+    "ito.AddIn.InterfaceBase/1.1.12",//version until 2013-03-25 (outdated: changes in api)
+    "ito.AddIn.InterfaceBase/1.1.13",//version until 2013-04-08 (outdated: removed transpose flag in dataObject)
+    "ito.AddIn.InterfaceBase/1.1.14",//version until 2013-04-17 (outdated: uniqueID and identifier inserted/changed)
+    "ito.AddIn.InterfaceBase/1.1.15",//version until 2013-04-23 (outdated: made some tag-space related methods non-inline (due to linker errors in MSVC))
+    "ito.AddIn.InterfaceBase/1.1.16",//version until 2013-06-07 (outdated: added qpluginloader to the interface for cleaner unloading of plugins)
+    "ito.AddIn.InterfaceBase/1.1.17",//version until 2013-06-11 (outdated: apis extended, changes in param-class)
+    "ito.AddIn.InterfaceBase/1.1.18",//version until 2013-06-18 (outdated: iterator and constIterator introduced for dataObject)
+    "ito.AddIn.InterfaceBase/1.1.19",//version until 2013-08-15 (outdated: operators +, +=, -, -= introduced for scalar operands)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.19";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.20";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)
