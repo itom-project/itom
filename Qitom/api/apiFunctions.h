@@ -44,6 +44,8 @@ namespace ito
 
 			static ito::DataObject* mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits = NULL, ito::RetVal *retval = NULL);
 
+            static ito::RetVal mcheckParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
         private:
             int m_loadFPointer;
     };

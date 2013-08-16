@@ -54,6 +54,7 @@ namespace ito
         (void*)&saveQLIST2XML,                          /* [17] */
         (void*)&loadXML2QLIST,                          /* [18] */
 		(void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
+        (void*)&singleApiFunctions.mcheckParamVectors,  /* [20] */
 		NULL
 	};
 
@@ -463,6 +464,27 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 
 	if (retval) *retval = ret;
 	return output;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctions::mcheckParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    if(paramsMand == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("mandatory parameter vector is not initialized").toAscii().data());
+    }
+    if(paramsOpt == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("optional parameter vector is not initialized").toAscii().data());
+    }
+    if(paramsOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("output parameter vector is not initialized").toAscii().data());
+    }
+    paramsMand->clear();
+    paramsOpt->clear();
+    paramsOut->clear();
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

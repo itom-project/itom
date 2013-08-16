@@ -223,6 +223,19 @@ namespace ito
 	*/
 	#define apiCreateFromDataObject \
 		(* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
+    
+    //! verifies that the three given parameter vectors are not NULL and clears their content.
+	/*!
+		This method can be used at the beginning of all methods that define the mandatory, optional and output parameters e.g. of filters.
+        It verifies that no given vector-pointer is NULL and clears all vectors.
+
+		\param paramsMand vector of mandatory parameters
+		\param paramsOpt vector of optional parameters
+		\param paramsOut vector of output parameters
+		\return ito::retOk if everything is OK, else ito::retError with dedicated error message.
+	*/
+    #define apiCheckParamVectors \
+        (* (ito::RetVal (*)(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)) ito::ITOM_API_FUNCS[20])
 
 	/** \} */
 
