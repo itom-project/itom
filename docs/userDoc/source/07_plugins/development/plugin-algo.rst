@@ -102,16 +102,18 @@ These default-parameter methods have the following implementation:
     
     ito::RetVal MyAlgoPlugin::filter1Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
     {
-        ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-        if(!retval.containsError())
-        {
-            ito::Param  param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toAscii().data());
-            paramsMand->append(param);
-            param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toAscii().data());
-            paramsMand->append(param);
-            param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toAscii().data());
-            paramsOpt->append(param);
-        }
+        ito::Param param;
+		ito::RetVal retval = ito::retOk;
+		retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+		if(retval.containsError()) return retval;
+
+		param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toAscii().data());
+		paramsMand->append(param);
+		param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toAscii().data());
+		paramsMand->append(param);
+		param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toAscii().data());
+		paramsOpt->append(param);
+
         return retval;
     }
 
@@ -163,7 +165,7 @@ itsself. The implementation might follow this scheme:
         //  The order and type is important.
         
         //possibility 1 (index-based access):
-        ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+        ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
         const char *filename = (*paramsMand)[1].getVal<char*>(); //don't delete this pointer (borrowed)
         double opt1 = (*paramsOpt)[0].getVal<double>();
         

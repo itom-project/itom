@@ -15,9 +15,9 @@ Software packages
 
 - IDE, Compiler (e.g. Visual Studio 2010 Professional, QtCreator...)
 - CMake (recommended 2.8.9 or higher)
-- Qt-framework (4.7 or higher)
+- Qt-framework (4.7 or higher, 4.8 recommended, no 5.x)
 - QScintilla2
-- OpenCV 2.3 or higher
+- OpenCV 2.3 or higher (2.4 recommended)
 - PointCloudLibrary 1.6 or higher
 - Python 3.2 or higher
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository

@@ -25,7 +25,7 @@ find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
 find_package(LATEX QUIET)
-   
+    
    
 ADD_DEFINITIONS(${QT_DEFINITIONS})  
  
