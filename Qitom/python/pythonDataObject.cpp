@@ -2542,7 +2542,7 @@ bool PythonDataObject::checkPyDataObject(int number, PyObject* o1 /*= NULL*/, Py
 
         if (temp == NULL)
         {
-            PyErr_Format(PyExc_TypeError, "%i. operand is NULL", i);
+            PyErr_Format(PyExc_TypeError, "%i. operand is NULL", i+1);
             return false;
         }
         else if(!PyDataObject_Check(temp) || ((PyDataObject*)(temp))->dataObject == NULL)
