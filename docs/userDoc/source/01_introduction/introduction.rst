@@ -117,7 +117,7 @@ A standard distribution of |itom| links to the following third-party library (sh
 
 - `OpenCV <http://opencv.willowgarage.com/wiki/>`_ by Willow Garage under BSD-license
 
-- `Point Cload Library <http://www.pointclouds.org/>`_ by Willow Garage under BSD-license
+- `Point Cloud Library <http://www.pointclouds.org/>`_ by Willow Garage under BSD-license
 
 - `QT-Framework <http://qt.nokia.com/>`_ by Nokia under LGPL.
 
