@@ -2574,7 +2574,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
         }
     }
     else if(PyDataObject_Check(o2))
@@ -2586,12 +2587,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
         }
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
+//        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
+        return PyErr_Format(PyExc_RuntimeError, "at least one operand must be a dataObject");
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
@@ -2646,7 +2649,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
         }
     }
     else if(PyDataObject_Check(o2))
@@ -2658,12 +2662,14 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
+            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
         }
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
+//        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
+        return PyErr_Format(PyExc_RuntimeError, "at least one operand must be a dataObject");
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
