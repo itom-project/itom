@@ -4435,7 +4435,7 @@ PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
 PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, PyDataIOPlugin_getParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, PyDataIOPlugin_getParamListInfo_doc},
-   {"getExecFuncInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
+   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, PyDataIOPlugin_name_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParam, METH_VARARGS, PyDataIOPlugin_getParam_doc},
    {"setParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_setParam, METH_VARARGS, PyDataIOPlugin_setParam_doc},
@@ -4860,7 +4860,7 @@ PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
 PyMethodDef PythonPlugins::PyAlgoPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamList, METH_NOARGS, PyAlgoPlugin_getParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamListInfo, METH_VARARGS, PyAlgoPlugin_getParamListInfo_doc},
-   {"getExecFuncInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
+   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyAlgoPlugin_name, METH_NOARGS, "name() -> returns name of algorithm plugin"},
    {"getParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParam, METH_VARARGS, "getParam(name) -> returns value of given parameter"},
    {"setParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_setParam, METH_VARARGS, "setParam(name,value) -> sets value of given parameter"},
