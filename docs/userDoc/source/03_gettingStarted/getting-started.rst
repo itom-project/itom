@@ -231,7 +231,7 @@ Apply a median-filter to a snap shot
 -----------------------------------------
 
 In the next step, we want to explain how to use filters provided as itom-plugins on the dataObject using the example of a median filter. 
-Instead of executing single python commands from the console, we will now utilize the iTOM script editor for the first time.
+Instead of executing single python commands from the console, we will now utilize the itom script editor for the first time.
 
 For this exampe, you will need the **OpenCV-filters-Plugin** and the **DummyGrabber-Plugin**.
 
@@ -264,7 +264,7 @@ We insert the following code into the editor window. You will recognize the pyth
 Step 3: Retrieve the call for the median filter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-What we need in the next step is the correct call for the median-filter which is defined within the **m++Filter-PlugIn**. Each plug-in provides information concerning its usage that is accessible from python.which is defined within the **m++Filter-PlugIn**. |itom| provides 
+What we need in the next step is the correct call for the median-filter, which is defined within the **m++Filter-PlugIn**. Each plug-in provides information concerning its usage that is accessible from python.
 Therefore we switch to the itom-console and type in
 
 .. code-block:: python
@@ -272,7 +272,7 @@ Therefore we switch to the itom-console and type in
 	
     filterHelp("cvMedianBlur")
 
-You can see a detailed description of the filter "medianFilter".
+You can see a detailed description of the filter "cvMedianBlur".
 
 Step 4: Insert the filter-call into the script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 

@@ -134,7 +134,7 @@ Lists are Python's workhorse datatype. Variables can be named anything, and Pyth
 Defining Lists
 """"""""""""""""""""""""""""""""""""""""""""""
 
-A list is an ordered set of elements enclosed in square brackets. It can can be used like a zero-based array.
+A list is an ordered set of elements enclosed in square brackets. It can be used like a zero-based array.
 
 .. code-block:: python
     :linenos:
