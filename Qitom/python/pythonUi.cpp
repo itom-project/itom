@@ -2085,10 +2085,10 @@ A tuple where the first value contains the current active or typed string value.
 \n\
 See Also \n\
 --------- \n\
-getInt, getDouble, getItem");
+getInt, getDouble, getText");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "stringList", "currentIndex=0", "editable=false", NULL};
+    const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable", NULL};
     const char *title = 0;
     const char *label = 0;
     PyObject *stringList = NULL;
@@ -2099,7 +2099,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "ssO|ib", const_cast<char**>(kwlist), &title, &label, &stringList, &currentIndex, &editable))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), string list (list, tuple), currentIndex (int), editable (bool)");
+        //PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), string list (list, tuple), currentIndex (int), editable (bool)");
         return NULL;
     }
 
