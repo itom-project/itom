@@ -330,7 +330,7 @@ The python script language has a lot of methods and classes and |itom| expands t
 	
 	help(dataIO)
 
-gives a complete help for the class **itom.dataIO** which is the python-represention for various data communication plugIns (e.g. the dummyGrabber).
+gives a complete help for the class **itom.dataIO**, which is the python-represention for various data communication plugIns (e.g. the dummyGrabber).
 
 By typing 
     
