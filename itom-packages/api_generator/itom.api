@@ -22,7 +22,7 @@ itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar.
 itom.algo(??) [doc: algo plugins]
-itom.algo.getExecFuncInfo
+itom.algo.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description to the specified execFunc.
 itom.algo.getParam(name) -> returns value of given parameter
 itom.algo.getParamList() -> returns list of available parameters.
 itom.algo.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
@@ -39,7 +39,7 @@ itom.dataIO.disableAutoGrabbing() -> Disables auto grabbing for the grabber (cam
 itom.dataIO.enableAutoGrabbing() -> enables auto grabbing for the grabber (camera...),
 itom.dataIO.exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an dataIO-plugin.
 itom.dataIO.getAutoGrabbing() -> returns the status of the auto grabbing flag.
-itom.dataIO.getExecFuncInfo
+itom.dataIO.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description to the specified execFunc.
 itom.dataIO.getParam(name) -> returns the value of the given parameter.
 itom.dataIO.getParamList() -> returns list of possible parameters.
 itom.dataIO.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
@@ -103,7 +103,7 @@ itom.dataObject.valueScale
 itom.dataObject.valueUnit
 itom.dataObject.xyRotationalMatrix
 itom.dataObject.zeros([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with zeros.
-itom.figure([handle, [rows, cols]]) -> plot figure
+itom.figure([handle, [rows = 1, cols = 1]]) -> creates figure window.
 itom.figure.close(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.figure.docked
 itom.figure.handle
@@ -142,7 +142,7 @@ itom.numeric:: [module]
 itom.openScript(filename) -> opens the given script in current script window.
 itom.plot(data, [className]) -> plots a dataObject in a newly created figure
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
-itom.plotItem.pickPoints(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)
+itom.plotItem.pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this)
 itom.pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.
 itom.pluginLoaded(pluginname) -> checks if a certain plugin was loaded.
 itom.point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.
@@ -279,5 +279,5 @@ itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signa
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
 itom.uiItem.setWindowFlags(flags) -> sets window flags of corresponding widget.
-itom.version([toggle-output [, include-plugins]])) -> retrive complete informations about itom version numbers
+itom.version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).
