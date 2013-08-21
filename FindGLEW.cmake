@@ -14,10 +14,18 @@ FIND_PATH( GLEW_DIR include/GL/glew.h  )
 
 IF(WIN32)
 
+    if(MSVC)
+	if(CMAKE_CL_64)
+	    set(GLEWLIB_SUFFIX "/Release/x64")
+	else(CMAKE_CL_64)
+	    set(GLEWLIB_SUFFIX "/Release/Win32")
+	endif(CMAKE_CL_64)
+    endif(MSVC)
+
     FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h PATHS ${GLEW_DIR} PATH_SUFFIXES include DOC "The directory where GL/glew.h resides")
                     
-    FIND_LIBRARY( GLEW_LIBRARY glew32 PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES lib DOC "The GLEW shared library" )
-    FIND_FILE( GLEW_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin )
+    FIND_LIBRARY( GLEW_LIBRARY glew32 PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES lib lib${GLEWLIB_SUFFIX} DOC "The GLEW shared library" )
+    FIND_FILE( GLEW_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin bin${GLEWLIB_SUFFIX} )
     
 ELSE (WIN32)
     FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h /usr/include /usr/local/include /sw/include /opt/local/include DOC "The directory where GL/glew.h resides")
