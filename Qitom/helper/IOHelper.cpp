@@ -251,12 +251,12 @@ namespace ito {
                 retVal += uiSaveFileWithFilter((*values)[0], filename,parent);
             }
 
-            if (retVal.containsError())
+            /*if (retVal.containsError())
             {
                 QString text = tr("An error occurred while saving to file.");
                 if (retVal.errorMessage()) text.append("\n").append(retVal.errorMessage());
                 QMessageBox::critical(parent, tr("Error while saving file"), text);
-            }
+            }*/
 
             return retVal;
         }

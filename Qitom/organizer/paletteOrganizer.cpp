@@ -195,40 +195,47 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors() const
     int curIdx = 0;
     float pos = 0.0;
 
-    float offsetR = m_colorStops[curIdx].second.red();
-    float offsetG = m_colorStops[curIdx].second.green();
-    float offsetB = m_colorStops[curIdx].second.blue();
-
-    unsigned char rVal = 0.0;
-    unsigned char gVal = 0.0;
-    unsigned char bVal = 0.0;
-
-    colors[0] = ((unsigned int)m_colorStops[curIdx].second.blue());
-    colors[0] += ((unsigned int)m_colorStops[curIdx].second.green()) << 8;
-    colors[0] += ((unsigned int)m_colorStops[curIdx].second.red()) <<16;
-
-    colors[255] = ((unsigned int)m_colorStops[m_colorStops.size()-1].second.blue());
-    colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.green()) << 8;
-    colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) <<16;
-
-    for(int i = 1; i < 255; i++)
+    if (m_colorStops.size() > 0) //check if at least one color stop is defined
     {
-        pos = i / 255.0;
-        if((curIdx < m_colorStops.size()-2) && (pos > m_colorStops[curIdx+1].first))
+        float offsetR = m_colorStops[curIdx].second.red();
+        float offsetG = m_colorStops[curIdx].second.green();
+        float offsetB = m_colorStops[curIdx].second.blue();
+
+        unsigned char rVal = 0.0;
+        unsigned char gVal = 0.0;
+        unsigned char bVal = 0.0;
+
+        colors[0] = ((unsigned int)m_colorStops[curIdx].second.blue());
+        colors[0] += ((unsigned int)m_colorStops[curIdx].second.green()) << 8;
+        colors[0] += ((unsigned int)m_colorStops[curIdx].second.red()) <<16;
+
+        colors[255] = ((unsigned int)m_colorStops[m_colorStops.size()-1].second.blue());
+        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.green()) << 8;
+        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) <<16;
+
+        for(int i = 1; i < 255; i++)
         {
-            curIdx++;
-            offsetR = m_colorStops[curIdx].second.red();
-            offsetG = m_colorStops[curIdx].second.green();
-            offsetB = m_colorStops[curIdx].second.blue();
+            pos = i / 255.0;
+            if((curIdx < m_colorStops.size()-2) && (pos > m_colorStops[curIdx+1].first))
+            {
+                curIdx++;
+                offsetR = m_colorStops[curIdx].second.red();
+                offsetG = m_colorStops[curIdx].second.green();
+                offsetB = m_colorStops[curIdx].second.blue();
+            }
+
+            bVal = saturate_cast(((float)m_colorStops[curIdx+1].second.blue() - (float)m_colorStops[curIdx].second.blue())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetB);
+            gVal = saturate_cast(((float)m_colorStops[curIdx+1].second.green() - (float)m_colorStops[curIdx].second.green())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetG);
+            rVal = saturate_cast(((float)m_colorStops[curIdx+1].second.red() - (float)m_colorStops[curIdx].second.red())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetR);
+
+            colors[i] = ((unsigned int)bVal);
+            colors[i] += ((unsigned int)gVal) << 8;
+            colors[i] += ((unsigned int)rVal) <<16;
         }
-
-        bVal = saturate_cast(((float)m_colorStops[curIdx+1].second.blue() - (float)m_colorStops[curIdx].second.blue())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetB);
-        gVal = saturate_cast(((float)m_colorStops[curIdx+1].second.green() - (float)m_colorStops[curIdx].second.green())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetG);
-        rVal = saturate_cast(((float)m_colorStops[curIdx+1].second.red() - (float)m_colorStops[curIdx].second.red())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetR);
-
-        colors[i] = ((unsigned int)bVal);
-        colors[i] += ((unsigned int)gVal) << 8;
-        colors[i] += ((unsigned int)rVal) <<16;
+    }
+    else
+    {
+        colors.fill(0);
     }
 
     return colors;
