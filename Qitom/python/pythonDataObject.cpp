@@ -5633,7 +5633,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
                 if(parsePyObject2StdString(seqItem, tempString) == 0)
                 {
-                    self->dataObject->setAxisDescription(i, tempString);
+                    self->dataObject->setAxisUnit(i, tempString);
                 }
                 Py_XDECREF(seqItem);
             }
