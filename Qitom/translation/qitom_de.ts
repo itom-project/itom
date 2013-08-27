@@ -2237,13 +2237,13 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+170"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+166"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
         <location line="+12"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+12"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+11"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
@@ -3770,12 +3770,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-49"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-48"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+94"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -3789,7 +3789,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+22"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
     </message>
@@ -3811,12 +3811,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+54"/>
-        <location line="+108"/>
+        <location line="+107"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-9"/>
         <source>no plot figure plugin could be found that fits to the given category.</source>
         <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie übereinstimmt.</translation>
     </message>

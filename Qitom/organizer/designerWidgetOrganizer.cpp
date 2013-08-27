@@ -39,12 +39,10 @@
 
 #include <qpen.h>
 
-
 /*!
     \class DesignerWidgetOrganizer
     \brief 
 */
-
 
 namespace ito
 {
@@ -93,8 +91,6 @@ DesignerWidgetOrganizer::~DesignerWidgetOrganizer()
     m_figurePlugins.clear();
     m_figureCategories.clear();
 }
-
-
 
 //------------------------------------------------------------------------------------------------------------------
 RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
@@ -178,7 +174,6 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 }
                 else
                 {
-    //                message = QObject::tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
                     message = QObject::tr("Unable to find translation file.");
                     qDebug() << message;
                     status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
@@ -239,7 +234,6 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 }
                 else
                 {
-
 
 #if QT_VERSION >= 0x040800 
                     /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here, 
@@ -464,7 +458,6 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
 
     retVal += ito::RetVal(ito::retError, 0, tr("no plot figure plugin could be found that fits to the given category.").toAscii().data());
     return "";
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -474,7 +467,6 @@ RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCateg
     {
         return ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toAscii().data(), figureCategory.data());
     }
-
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlotWidgets");
