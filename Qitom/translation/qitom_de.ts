@@ -54,7 +54,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+740"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+771"/>
         <source>script execution</source>
         <translation>Skript wird ausgeführt</translation>
     </message>
@@ -1170,7 +1170,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+1954"/>
+        <location line="+1960"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1549,7 +1549,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+11"/>
-        <location line="+135"/>
+        <location line="+223"/>
         <location line="+193"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
@@ -1883,6 +1883,16 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+60"/>
+        <source>The given data object must have %i dimensions (%i given)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The size of the %i. dimension exeeds the given boundaries [%i, %i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../python/pythonCommon.cpp" line="+977"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
@@ -2058,7 +2068,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2040"/>
+        <location filename="../python/pythonItom.cpp" line="+2049"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -2227,11 +2237,13 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+28"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+170"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
         <location line="+12"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+12"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
@@ -3758,12 +3770,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+131"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-49"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+95"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -4342,7 +4354,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::HelpDockWidget</name>
     <message>
-        <location filename="../widgets/helpDockWidget.cpp" line="+69"/>
+        <location filename="../widgets/helpDockWidget.cpp" line="+70"/>
         <source>backwards</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4362,7 +4374,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+3"/>
+        <source>Reload Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>navigation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4439,17 +4456,15 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Die Anzahl der zurückgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>An error occurred while saving to file.</source>
-        <translation type="unfinished">Beim Speichern ist ein Fehler aufgetreten.</translation>
+        <translation type="obsolete">Beim Speichern ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Error while saving file</source>
-        <translation type="unfinished">Fehler beim Speichern</translation>
+        <translation type="obsolete">Fehler beim Speichern</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+30"/>
         <location line="+114"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
@@ -5063,36 +5078,36 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Motor</translation>
     </message>
     <message>
-        <location line="+368"/>
+        <location line="+412"/>
         <source>Motor</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-364"/>
-        <location line="+372"/>
+        <location line="-408"/>
+        <location line="+416"/>
         <source>Grabber</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-368"/>
-        <location line="+372"/>
+        <location line="-412"/>
+        <location line="+416"/>
         <source>ADDA</source>
         <translation type="unfinished">ADDA Wandler</translation>
     </message>
     <message>
-        <location line="-368"/>
-        <location line="+372"/>
+        <location line="-412"/>
+        <location line="+416"/>
         <source>Raw IO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-368"/>
-        <location line="+356"/>
+        <location line="-412"/>
+        <location line="+400"/>
         <source>Algorithm</source>
         <translation type="unfinished">Algorithmus</translation>
     </message>
     <message>
-        <location line="-113"/>
+        <location line="-157"/>
         <source>Filter</source>
         <translation type="unfinished">Filter</translation>
     </message>
@@ -5102,7 +5117,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+147"/>
         <source>DataIO</source>
         <translation type="unfinished"></translation>
     </message>

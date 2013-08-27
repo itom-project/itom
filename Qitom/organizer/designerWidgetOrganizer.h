@@ -30,6 +30,7 @@
 
 #include <qobject.h>
 #include <qlist.h>
+#include <qtranslator.h>
 
 class QPluginLoader; //forward declaration
 
@@ -116,6 +117,7 @@ private:
     QList<FigurePlugin> m_figurePlugins;
     QList<PluginLoadStatus> m_pluginLoadStatus;
     QMap<QString, FigureCategory> m_figureCategories;
+    QVector<QTranslator*> m_Translator;
 
 signals:
 

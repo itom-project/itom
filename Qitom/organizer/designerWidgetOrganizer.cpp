@@ -34,6 +34,8 @@
 #include <qsettings.h>
 #include <qcoreapplication.h>
 #include <qdir.h>
+#include <QDirIterator>
+#include <qapplication.h>
 
 #include <qpen.h>
 
@@ -57,10 +59,10 @@ DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlugins");
     settings.beginGroup("ito::AbstractDObjFigure");
-    settings.setValue("zoomRubberBandPen", QPen(QBrush(Qt::red),2,Qt::DashLine) );
-    settings.setValue("trackerPen", QPen(QBrush(Qt::red),2) );
-    settings.setValue("trackerFont", QFont("Verdana",10));
-    settings.setValue("trackerBackground", QBrush(QColor(255,255,255,155), Qt::SolidPattern) );
+    settings.setValue("zoomRubberBandPen", QPen(QBrush(Qt::red), 2, Qt::DashLine));
+    settings.setValue("trackerPen", QPen(QBrush(Qt::red), 2));
+    settings.setValue("trackerFont", QFont("Verdana", 10));
+    settings.setValue("trackerBackground", QBrush(QColor(255, 255, 255, 155), Qt::SolidPattern));
     settings.endGroup();
     settings.endGroup();
 
@@ -111,12 +113,12 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     //get version of the required AbstractItomDesignerPlugin
     AbstractItomDesignerPlugin *dummyPlugin = new DummyItomDesignerPlugin(NULL);
-    if(dummyPlugin)
+    if (dummyPlugin)
     {
         metaObj = dummyPlugin->metaObject();
-        for(int i = 0; i < metaObj->classInfoCount() ; i++)
+        for (int i = 0; i < metaObj->classInfoCount() ; i++)
         {
-            if( qstrcmp(metaObj->classInfo(i).name(),"ito.AbstractItomDesignerPlugin") == 0 )
+            if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
             {
                 requiredInterface = metaObj->classInfo(i).value();
                 break;
@@ -126,9 +128,9 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     DELETE_AND_SET_NULL(dummyPlugin);
 
-    if(requiredInterface == "0.0.0")
+    if (requiredInterface == "0.0.0")
     {
-        return RetVal(retError,0,tr("could not read interface 'ito.AbstractItomDesignerPlugin'").toAscii().data());
+        return RetVal(retError, 0, tr("could not read interface 'ito.AbstractItomDesignerPlugin'").toAscii().data());
     }
 
     foreach(const QString &plugin, candidates)
@@ -138,6 +140,51 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
         status.messages.clear();
         if (QLibrary::isLibrary(absolutePluginPath))
         {
+            //load translation file
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+            QStringList startupScripts;
+
+            settings.beginGroup("Language");
+            QString language = settings.value("language", "en").toString();
+            QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
+            settings.endGroup();
+
+            QFileInfo fileInfo(absolutePluginPath);
+            QDir fileInfoDir = fileInfo.dir();
+            fileInfoDir.cdUp();
+            if (language != "en_US" && fileInfoDir.absolutePath() == qApp->applicationDirPath())
+            {
+                QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+                QString translationPath = fileInfo.path() + "/translation";
+                QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
+                QString baseFileName = fileInfo.baseName();
+                baseFileName.replace("d", "*");
+                QDirIterator it(translationPath, QStringList(baseFileName + "_" + languageStr + ".qm"), QDir::Files);
+                if (it.hasNext())
+                {
+                    QString translationLocal = it.next();
+                    m_Translator.append(new QTranslator);
+                    m_Translator.last()->load(translationLocal, translationPath);
+                    if (m_Translator.last()->isEmpty())
+                    {
+                        message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
+                        qDebug() << message;
+                        status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                    }
+                    else
+                    {
+                        QCoreApplication::instance()->installTranslator(m_Translator.last());
+                    }
+                }
+                else
+                {
+    //                message = QObject::tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
+                    message = QObject::tr("Unable to find translation file.");
+                    qDebug() << message;
+                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
+                }
+            }
+
             loader = new QPluginLoader(absolutePluginPath);
 
             QDesignerCustomWidgetInterface *iface = NULL;
@@ -146,17 +193,17 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
             // try with a normal plugin, we do not support collections
             if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
             {
-                if(instance->inherits("ito::AbstractItomDesignerPlugin"))
+                if (instance->inherits("ito::AbstractItomDesignerPlugin"))
                 {
                     allowedInterface = false;
 
                     //check interface
                     metaObj = ((ito::AbstractItomDesignerPlugin*)instance)->metaObject();
-                    for(int i = 0; i < metaObj->classInfoCount() ; i++)
+                    for (int i = 0; i < metaObj->classInfoCount() ; i++)
                     {
-                        if( qstrcmp(metaObj->classInfo(i).name(),"ito.AbstractItomDesignerPlugin") == 0 )
+                        if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
                         {
-                            if(requiredInterface == metaObj->classInfo(i).value())
+                            if (requiredInterface == metaObj->classInfo(i).value())
                             {
                                 allowedInterface = true;
                             }
@@ -164,7 +211,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         }
                     }
 
-                    if(allowedInterface)
+                    if (allowedInterface)
                     {
                         ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
                         infoStruct.filename = absolutePluginPath;
@@ -186,7 +233,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 //                        delete instance;
                         loader->unload();
                         message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
-                        status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                        status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
                         DELETE_AND_SET_NULL(loader);
                     }
                 }
@@ -209,7 +256,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
             {
                 loader->unload();
                 message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
-                status.messages.append( QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
                 DELETE_AND_SET_NULL(loader);
             }
 
@@ -221,11 +268,11 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool DesignerWidgetOrganizer::figureClassExists( const QString &className )
+bool DesignerWidgetOrganizer::figureClassExists(const QString &className)
 {
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if(QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
+        if (QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
         {
             return true;
         }
@@ -234,25 +281,25 @@ bool DesignerWidgetOrganizer::figureClassExists( const QString &className )
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck( const QString &className, int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask, bool *ok )
+ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QString &className, int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask, bool *ok)
 {
     ito::RetVal retVal;
     bool success = false;
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if(className == plugin.classname)
+        if (className == plugin.classname)
         {
-            if( (plugin.plotDataTypes & plotDataTypesMask) != plotDataTypesMask )
+            if ((plugin.plotDataTypes & plotDataTypesMask) != plotDataTypesMask)
             {
                 retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
                 break;
             }
-            if( (plugin.plotDataFormats & plotDataFormatsMask) != plotDataFormatsMask )
+            if ((plugin.plotDataFormats & plotDataFormatsMask) != plotDataFormatsMask)
             {
                 retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
                 break;
             }
-            if( (plugin.plotFeatures & plotFeaturesMask) != plotFeaturesMask )
+            if ((plugin.plotFeatures & plotFeaturesMask) != plotFeaturesMask)
             {
                 retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
                 break;
@@ -261,34 +308,34 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck( const Q
         }
     }
 
-    if(retVal == ito::retOk && success == false)
+    if (retVal == ito::retOk && success == false)
     {
         retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' not found").toAscii().data(), className.toAscii().data());
     }
     
-    if(ok) *ok = success;
+    if (ok) *ok = success;
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask )
+QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask)
 {
     QList<FigurePlugin> figurePlugins;
 
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if( (plugin.plotDataTypes & plotDataTypesMask) == plotDataTypesMask &&
+        if ((plugin.plotDataTypes & plotDataTypesMask) == plotDataTypesMask &&
             (plugin.plotDataFormats & plotDataFormatsMask) == plotDataFormatsMask &&
-            (plugin.plotFeatures & plotFeaturesMask) == plotFeaturesMask )
+            (plugin.plotFeatures & plotFeaturesMask) == plotFeaturesMask)
         {
-            figurePlugins.append( plugin );
+            figurePlugins.append(plugin);
         }
     }
     return figurePlugins;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( const FigureCategory &figureCat )
+QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(const FigureCategory &figureCat)
 {
     QList<FigurePlugin> figurePlugins;
 
@@ -301,10 +348,10 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( const Fig
 
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if( (plugin.plotDataTypes & figureCat.m_allowedPlotDataTypes) &&
+        if ((plugin.plotDataTypes & figureCat.m_allowedPlotDataTypes) &&
             (plugin.plotDataFormats & figureCat.m_allowedPlotDataFormats) &&
             (plugin.plotFeatures & figureCat.m_excludedPlotFeatures) == 0 &&
-            ((plugin.plotFeatures & figureCat.m_requiredPlotFeatures) == figureCat.m_requiredPlotFeatures) )
+            ((plugin.plotFeatures & figureCat.m_requiredPlotFeatures) == figureCat.m_requiredPlotFeatures))
         {
             figurePlugins.append(plugin);
         }
@@ -313,9 +360,9 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses( const Fig
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal )
+QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal)
 {
-    if(!m_figureCategories.contains(figureCategory))
+    if (!m_figureCategories.contains(figureCategory))
     {
         retVal += ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toAscii().data(), figureCategory.data());
         return "";
@@ -326,20 +373,20 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if( (plugin.plotDataTypes & figureCat.m_allowedPlotDataTypes) &&
+        if ((plugin.plotDataTypes & figureCat.m_allowedPlotDataTypes) &&
             (plugin.plotDataFormats & figureCat.m_allowedPlotDataFormats) &&
             (plugin.plotFeatures & figureCat.m_excludedPlotFeatures) == 0 &&
-            ((plugin.plotFeatures & figureCat.m_requiredPlotFeatures) == figureCat.m_requiredPlotFeatures) )
+            ((plugin.plotFeatures & figureCat.m_requiredPlotFeatures) == figureCat.m_requiredPlotFeatures))
         {
             figurePlugins.append(plugin);
         }
     }
 
-    if(defaultClassName != "")
+    if (defaultClassName != "")
     {
         foreach(const FigurePlugin &plugin, figurePlugins)
         {
-            if( QString::compare(plugin.classname, defaultClassName, Qt::CaseInsensitive) == 0 )
+            if (QString::compare(plugin.classname, defaultClassName, Qt::CaseInsensitive) == 0)
             {
                 return defaultClassName; //the given class name fits to the figureCategory and exists
             }
@@ -364,7 +411,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
         {
             foreach(const FigurePlugin &plugin, figurePlugins)
             {
-                if( QString::compare(plugin.classname, replaceClassName, Qt::CaseInsensitive) == 0 )
+                if (QString::compare(plugin.classname, replaceClassName, Qt::CaseInsensitive) == 0)
                 {
                     return defaultClassName; //the given class name fits to the figureCategory and exists
                 }
@@ -374,7 +421,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlotWidgets");
-    QString settingsClassName = settings.value(figureCategory, figureCat.m_defaultClassName ).toString();
+    QString settingsClassName = settings.value(figureCategory, figureCat.m_defaultClassName).toString();
     settings.endGroup();
 
     bool repeat = true;
@@ -384,7 +431,7 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 
         foreach(const FigurePlugin &plugin, figurePlugins)
         {
-            if( QString::compare(plugin.classname, settingsClassName, Qt::CaseInsensitive) == 0 )
+            if (QString::compare(plugin.classname, settingsClassName, Qt::CaseInsensitive) == 0)
             {
                 return settingsClassName; //the given class name fits to the figureCategory and exists
             }
@@ -393,24 +440,24 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
         repeat = false;
 
         //There are some obsolete figures. If they cannot be found, try to find their equivalent successor
-        if (QString::compare(settingsClassName, "itom2dqwtfigure", Qt::CaseInsensitive ) == 0)
+        if (QString::compare(settingsClassName, "itom2dqwtfigure", Qt::CaseInsensitive) == 0)
         {
             settingsClassName = "itom2dqwtplot";
             repeat = true;
         }
-        else if (QString::compare(settingsClassName, "matplotlibfigure", Qt::CaseInsensitive ) == 0)
+        else if (QString::compare(settingsClassName, "matplotlibfigure", Qt::CaseInsensitive) == 0)
         {
             settingsClassName = "matplotlibplot";
             repeat = true;
         }
-        else if (QString::compare(settingsClassName, "itom1dqwtfigure", Qt::CaseInsensitive ) == 0)
+        else if (QString::compare(settingsClassName, "itom1dqwtfigure", Qt::CaseInsensitive) == 0)
         {
             settingsClassName = "itom1dqwtplot";
             repeat = true;
         }
     }
 
-    if(figurePlugins.count() > 0)
+    if (figurePlugins.count() > 0)
     {
         return figurePlugins[0].classname;
     }
@@ -421,9 +468,9 @@ QString DesignerWidgetOrganizer::getFigureClass( const QString &figureCategory, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal DesignerWidgetOrganizer::setFigureDefaultClass( const QString &figureCategory, const QString &defaultClassName)
+RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCategory, const QString &defaultClassName)
 {
-    if(!m_figureCategories.contains(figureCategory))
+    if (!m_figureCategories.contains(figureCategory))
     {
         return ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toAscii().data(), figureCategory.data());
     }
@@ -442,17 +489,17 @@ QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget
     QPluginLoader *factory = NULL;
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
-        if(QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
+        if (QString::compare(plugin.classname, className, Qt::CaseInsensitive) == 0)
         {
             factory = plugin.factory;
             break;
         }
     }
 
-    if(factory)
+    if (factory)
     {
         //qDebug() << "create instance\n";
-        ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)( factory->instance() );
+        ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)(factory->instance());
         return fac->createWidgetWithMode(winMode, parentWidget);
     }
     return NULL;
