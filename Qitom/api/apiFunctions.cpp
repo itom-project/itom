@@ -427,16 +427,16 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 	{
 		if (dObj->getDims() != nrDims)
 		{
-			ret += ito::RetVal::format(ito::retError,0,"The given data object must have %i dimensions (%i given)", nrDims, dObj->getDims());
+			ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toAscii().data(), nrDims, dObj->getDims());
 		}
 		else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
 		{
 			for (int i = 0; i < nrDims; ++i)
 			{
 				size_t s = dObj->getSize(i);
-				if (s < sizeLimits[i*2] || s > sizeLimits[i*2+1])
+				if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
 				{
-					ret += ito::RetVal::format(ito::retError, 0, "The size of the %i. dimension exeeds the given boundaries [%i,%i]", sizeLimits[i*2], sizeLimits[i*2+1]);
+					ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
 					break;
 				}
 			}
