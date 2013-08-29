@@ -1,0 +1,7 @@
+/* write all commit messages from one specific tag until the HEAD to a file */
+git log --pretty=short tagname..HEAD > changes.txt
+
+e.g. git log --pretty=short v1.0.13..HEAD > changes.txt
+
+/* If you want to add tags... at commits, where this has been set, add: */
+git log --pretty=medium --decorate=full tagname..HEAD > changes.txt
