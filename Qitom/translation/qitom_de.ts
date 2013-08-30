@@ -2237,7 +2237,7 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+166"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+172"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>

@@ -90,6 +90,12 @@ DesignerWidgetOrganizer::~DesignerWidgetOrganizer()
     }
     m_figurePlugins.clear();
     m_figureCategories.clear();
+
+    foreach (QTranslator *Translator, m_Translator)
+    {
+        delete Translator;
+    }
+    m_Translator.clear();
 }
 
 //------------------------------------------------------------------------------------------------------------------
