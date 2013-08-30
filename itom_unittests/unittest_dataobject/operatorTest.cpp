@@ -312,7 +312,8 @@ TYPED_TEST(operatorTest, MulDotTest)
    This test checks functionality of "div" (elementwise division) for 1, 2 and 3 dimensional matrices
 */
 TYPED_TEST(operatorTest, divTest)
-{		 mat1_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(20.0);
+{		 
+        mat1_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(20.0);
         mat2_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(2.0);
 
 		mat1_2d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(2.0);
@@ -331,7 +332,7 @@ TYPED_TEST(operatorTest, divTest)
 	div_mat3_2d = mat1_2d.div(mat2_2d);
 	div_mat3_3d = mat1_3d.div(mat2_3d);
 
-	EXPECT_EQ ( this->div_mat3_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(6.0/2.0));
+	EXPECT_EQ ( this->div_mat3_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(20.0/2.0));
     EXPECT_EQ ( this->div_mat3_2d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(2.0/1.0));
 	EXPECT_EQ ( this->div_mat3_2d.at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(3.0/1.0));
 	EXPECT_EQ ( this->div_mat3_2d.at<TypeParam>(1,0) , cv::saturate_cast<TypeParam>(4.0/2.0));
