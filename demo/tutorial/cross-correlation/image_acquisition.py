@@ -19,3 +19,6 @@ cam.copyVal(image2)
 #close camera
 cam.stopDevice()
 del cam
+
+#save first image to harddrive
+filter("saveJPG",image1,"image1.jpg","gray")
