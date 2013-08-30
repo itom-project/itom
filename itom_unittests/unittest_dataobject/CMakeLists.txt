@@ -19,6 +19,10 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
 
+IF(WIN32 AND NOT ${gtest_force_shared_crt})
+    message("Please set gtest_force_shared_crt to ON.")
+ENDIF(WIN32 AND NOT ${gtest_force_shared_crt})
+
 # IF (BUILD_UNICODE)
 	# ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 # ENDIF (BUILD_UNICODE)
