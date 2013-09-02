@@ -176,6 +176,22 @@ namespace ito
         else
         {
             settingsFile = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
+
+            QFileInfo settingsFileInfo(settingsFile);
+
+            if (settingsFileInfo.exists() == false)
+            {
+                //try to create itom.ini as a copy from itomDefault.ini
+                QFile defaultIni(QDir::cleanPath(appDir.absoluteFilePath("itomDefault.ini")));
+                if (defaultIni.exists())
+                {
+                    if (!defaultIni.copy(appDir.absoluteFilePath("itom.ini")))
+                    {
+                        qDebug() << "error creating itom.ini from itomDefault.ini";
+                    }
+                }
+            }
+
             qDebug() << "settingsFile path: " << settingsFile;
             setSettingsFile(settingsFile);
             setUserRole("developer");
