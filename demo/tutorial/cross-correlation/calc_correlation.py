@@ -12,7 +12,7 @@ def evaluate(image1, image2):
     npImg1FFT = fft.fft2(npImg1)
     npImg2FFT = fft.fft2(npImg2)
     ccr = fft.ifft2( npImg1FFT * npImg2FFT.conj() )
-    ccr_abs = np.ascontiguousarray(np.abs(ccr))
+    ccr_abs = np.abs(ccr) #np.ascontiguousarray(np.abs(ccr))
     
     [m,n] = ccr_abs.shape
     max_pos = np.argmax(ccr_abs)
