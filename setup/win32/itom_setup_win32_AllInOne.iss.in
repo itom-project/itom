@@ -181,6 +181,8 @@ Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\DummyGrabber.dll"; DestDir: 
 Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\translation\*.qm"; DestDir: "{app}\plugins\DummyGrabber\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\DummyMotor.dll"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\translation\*.qm"; DestDir: "{app}\plugins\DummyMotor\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FileGrabber\FileGrabber.dll"; DestDir: "{app}\plugins\FileGrabber"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FileGrabber\translation\*.qm"; DestDir: "{app}\plugins\FileGrabber\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\FittingFilters.dll"; DestDir: "{app}\plugins\FittingFilters"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\translation\*.qm"; DestDir: "{app}\plugins\FittingFilters\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder
