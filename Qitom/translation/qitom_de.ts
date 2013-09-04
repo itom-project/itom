@@ -253,7 +253,7 @@ p, li { white-space: pre-wrap; }
         <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.cpp" line="+34"/>
+        <location filename="../ui/dialogAbout.cpp" line="+35"/>
         <location line="+67"/>
         <location line="+14"/>
         <source>Could not load file %1. Reason: %2.</source>
@@ -263,6 +263,11 @@ p, li { white-space: pre-wrap; }
         <location line="+17"/>
         <source>The version string has been copied to the clipboard</source>
         <translation>Die Versionsinformationen wurde in die Zwischenablage kopiert</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>copy</source>
+        <translation>Kopieren</translation>
     </message>
     <message>
         <location filename="../ui/dialogAbout.ui"/>
