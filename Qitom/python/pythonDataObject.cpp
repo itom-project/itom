@@ -503,6 +503,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     case ito::tUInt16:      npTypenum = NPY_USHORT; break;
                                     case ito::tInt32:       npTypenum = NPY_INT; break;
                                     case ito::tUInt32:      npTypenum = NPY_UINT; break;
+                                    case ito::tRGBA32:      npTypenum = NPY_UINT; break;
                                     case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
                                     case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
                                     case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
@@ -606,6 +607,20 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                                         for(n = 0; n < mat->cols; n++)
                                                         {
                                                             rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case ito::tRGBA32:
+                                                {
+                                                    cv::Vec4b *rowPtr;
+                                                    for(m = 0; m < mat->rows; m++)
+                                                    {
+                                                        rowPtr = mat->ptr<cv::Vec4b>(m);
+                                                        for(n = 0; n < mat->cols; n++)
+                                                        {
+                                                            memcpy(&(rowPtr[n]), &((reinterpret_cast<uint32*>(data))[c++]), sizeof(uint32));
+                                                            //rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
                                                         }
                                                     }
                                                 }
@@ -1745,6 +1760,12 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
                 PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::int32*)(*it)) )));
             }
             break;
+        case ito::tRGBA32:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::uint32*)(*it)) )));
+            }
+            break;
         case ito::tFloat32:
             for(; it < itEnd; ++it)
             {
@@ -1819,6 +1840,9 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
     case ito::tUInt32:
         typenum = NPY_UINT32;
         break;
+    case ito::tRGBA32:
+        typenum = NPY_UINT32;
+        break;
     case ito::tFloat32:
         typenum = NPY_FLOAT32;
         break;
@@ -1886,6 +1910,12 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
             for(; it < itEnd; ++it)
             {
                 *((ito::int32*)(*it)) = *( (ito::int32*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tRGBA32:
+            for(; it < itEnd; ++it)
+            {
+                memcpy((cv::Vec4b*)(*it), (ito::uint32*)(PyArray_GETPTR1(arr, cnt++)), sizeof(ito::uint32));
             }
             break;
         case ito::tFloat32:
@@ -4640,6 +4670,9 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 case ito::tInt32:
                     self->dataObject->at<int32>(idx) = ito::numberConversion<int32>(fromType, valuePtr);
                     break;
+                case ito::tRGBA32:
+                    self->dataObject->at<cv::Vec4b>(idx) = ito::numberConversion<cv::Vec4b>(fromType, valuePtr);
+                    break;
                 case ito::tFloat32:
                     self->dataObject->at<float32>(idx) = ito::numberConversion<float32>(fromType, valuePtr);
                     break;
@@ -4696,6 +4729,10 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char &typekind, int &itemsi
         itemsize = sizeof(int16);
         break;
     case ito::tUInt32:
+        typekind = 'u';
+        itemsize = sizeof(uint32);
+        break;
+    case ito::tRGBA32:
         typekind = 'u';
         itemsize = sizeof(uint32);
         break;
@@ -5768,6 +5805,8 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
         return PyLong_FromUnsignedLong(dataObj->at<uint32>(idx));
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
+    case ito::tRGBA32:
+        return PyLong_FromLong(cv::saturated_cast<uint32>(dataObj->at<rgba32>(idx)));
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -5827,6 +5866,8 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
         return PyLong_FromUnsignedLong( m->at<uint32>(row,col) );
     case ito::tInt32:
         return PyLong_FromLong( m->at<int32>(row,col) );
+    case ito::tRGBA32:
+        return PyLong_FromLong( cv::saturated_cast<uint32>(m->at<rgba32>(row,col)) );
     case ito::tFloat32:
         return PyFloat_FromDouble( m->at<float32>(row,col) );
     case ito::tFloat64:
@@ -6420,6 +6461,9 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             break;
         case ito::tInt32:
             output = PyLong_FromLong((long)( *((ito::int32*)(*(self->it))) ));
+            break;
+        case ito::tRGBA32:
+            output = PyLong_FromLong((long)( cv::saturated_cast<uint32>(*((rgba32*)(*(self->it)))) ));
             break;
         case ito::tFloat32:
             output = PyFloat_FromDouble((double)( *((ito::float32*)(*(self->it))) ));

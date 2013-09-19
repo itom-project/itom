@@ -31,13 +31,15 @@
 #include <stdint.h>
 #include <complex>
 
+    
+#include "opencv/cv.h"
+//#include "opencv2/core/core.hpp"
+
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
 
 namespace ito
 {
     #define PLUGINWAIT 5000
-
-    
 
     /**
     * LogLevel enumeration
@@ -122,16 +124,17 @@ namespace ito
     */
     enum tDataType
     {
-        tInt8 = 0,      /*!< integer, 8bit */ 
-        tUInt8 = 1,     /*!< unsigned integer, 8bit */ 
-        tInt16 = 2,     /*!< integer, 16bit */ 
-        tUInt16 = 3,    /*!< unsigned integer, 16bit */ 
-        tInt32 = 4,     /*!< integer, 32bit */ 
-        tUInt32 = 5,    /*!< unsigned integer, 32bit (not fully supported) */ 
-        tFloat32 = 6,   /*!< float, 32bit */ 
-        tFloat64 = 7,   /*!< double (64bit) */ 
-        tComplex64 = 8, /*!< complex value with real and imaginary part of type float32 */ 
-        tComplex128 = 9 /*!< complex value with real and imaginary part of type float64 */ 
+        tInt8 = 0,       /*!< integer, 8bit */ 
+        tUInt8 = 1,      /*!< unsigned integer, 8bit */ 
+        tInt16 = 2,      /*!< integer, 16bit */ 
+        tUInt16 = 3,     /*!< unsigned integer, 16bit */ 
+        tInt32 = 4,      /*!< integer, 32bit */ 
+        tUInt32 = 5,     /*!< unsigned integer, 32bit (not fully supported) */ 
+        tFloat32 = 6,    /*!< float, 32bit */ 
+        tFloat64 = 7,    /*!< double (64bit) */ 
+        tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */ 
+        tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */ 
+        tRGBA32 = 10       /*!< a uint32 / vec4u value coded as 0xAARRGGBB */ 
     };
 
     /**
@@ -180,6 +183,20 @@ namespace ito
     typedef std::complex<ito::float32> complex64;
     typedef std::complex<ito::float64> complex128;
 
+    // define special color variable
+    /*union rgba32
+    {
+        struct
+        {
+            uint8_t a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+        };
+        uint32_t color;
+    };*/
+
+    typedef cv::Vec4b rgba32;
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 

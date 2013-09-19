@@ -71,6 +71,10 @@ namespace cv {
 
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+   
+   template<typename _Tp> static inline _Tp saturate_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+   template<typename _Tp> static inline ito::rgba32 saturated_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+   template<typename _Tp> static inline _Tp saturated_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
 
    template<> inline ito::complex64 saturate_cast(ito::uint8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
    template<> inline ito::complex64 saturate_cast(ito::int8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
@@ -93,9 +97,65 @@ namespace cv {
    template<> inline ito::complex128 saturate_cast(ito::float64 v){ return ito::complex128(v,0.0); }
    template<> inline ito::complex128 saturate_cast(ito::complex64 v){ return ito::complex128(saturate_cast<ito::float64>(v.real()),saturate_cast<ito::float64>(v.imag())); }
    template<> inline ito::complex128 saturate_cast(ito::complex128 v){ return v; }
+   
+   template<> inline ito::rgba32 saturated_cast(ito::uint8 v)
+   {
+       ito::rgba32 val;
+       val[0] = 0xFF;
+       memset(&(val[1]), v, 3);
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::uint16 v)
+   {
+       ito::rgba32 val;
+       val[0] = 0xFF;
+       memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::int16 v)
+   {
+       ito::rgba32 val;
+       val[0] = 0xFF;
+       memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::uint32 v)
+   {
+       ito::rgba32 val;
+       memcpy(&val, &v, sizeof(ito::uint32));
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::int32 v)
+   {
+       ito::rgba32 val;
+       memcpy(&(val[1]), &(((char*)(&v))[1]), 3);
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::float32 v)
+   {
+       ito::rgba32 val;
+       val[0] = 0xFF;
+       memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
+       return val;
+   }
+   template<> inline ito::rgba32 saturated_cast(ito::float64 v)
+   {
+       ito::rgba32 val;
+       val[0] = 0xFF;
+       memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
+       return val;
+   }
+   
+   template<> inline ito::uint8 saturated_cast(ito::rgba32 v){return saturate_cast<ito::uint8>((0.299 * v[1]) + (0.587 * v[2]) + (0.114 * v[3]) + 0.5);};
+   template<> inline ito::uint16 saturated_cast(ito::rgba32 v){return cv::saturate_cast<ito::uint16>((0.299 * v[1]) + (0.587 * v[2]) + (0.114 * v[3]) + 0.5);};
+   template<> inline ito::uint32 saturated_cast(ito::rgba32 v){return *((ito::uint32*)(&v[0]));};
+   template<> inline ito::int32 saturated_cast(ito::rgba32 v){return (ito::int32)(*((ito::uint32*)(&v[0])) & 0x00FFFFFF);};
+   template<> inline ito::float32 saturated_cast(ito::rgba32 v){return (ito::float32)(0.299 * v[1] + 0.587 * v[2] + 0.114 * v[3]);};
+   template<> inline ito::float64 saturated_cast(ito::rgba32 v){return (ito::float64)(0.299 * v[1] + 0.587 * v[2] + 0.114 * v[3]);};
+   
+
 
 } // namespace cv
-
 
 namespace ito {
 
@@ -1861,6 +1921,9 @@ template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scala
     case ito::tComplex128:
         retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::complex128*>(scalar)));
         break;
+    case ito::tRGBA32:
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::rgba32*>(scalar)));
+        break;
     default:
         cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
         retValue = 0;
@@ -1940,6 +2003,7 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
         case ito::tUInt32:
         case ito::tFloat32:
         case ito::tFloat64:
+        case ito::tRGBA32:
             return cmplxType;
         case ito::tComplex64:
             return ito::tFloat32;
@@ -1976,6 +2040,7 @@ template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return
 template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
 template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
 template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
+template<> inline ito::tDataType getDataType(const rgba32* /*src*/) { return ito::tRGBA32; }
 
 
 //! method which returns the value of enumeration ito::tDataType, which corresponds to the template parameter (must be a pointer).
@@ -2004,7 +2069,7 @@ template<> inline ito::tDataType getDataType2<float32*>()    { return ito::tFloa
 template<> inline ito::tDataType getDataType2<float64*>()    { return ito::tFloat64; }
 template<> inline ito::tDataType getDataType2<complex64*>()  { return ito::tComplex64; }
 template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComplex128; }
-
+template<> inline ito::tDataType getDataType2<rgba32*>() { return ito::tRGBA32; }
 
 //! method returns whether a given variable is equal to zero.
 /*!
@@ -2020,6 +2085,10 @@ template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComp
 template<typename _Tp> static inline bool isZeroValue(_Tp v, _Tp /*epsilon*/)
 {
     return v == 0;
+}
+template<> inline bool isZeroValue(rgba32 v, rgba32 /*epsilon*/)
+{
+    return v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 0;
 }
 template<> inline bool isZeroValue(float32 v, float32 epsilon)
 {

@@ -612,10 +612,11 @@ DObjIterator DObjIterator::operator ++(int)
    FuncName<uint16>,                                                    \
    FuncName<int32>,                                                     \
    FuncName<uint32>,                                                    \
-   FuncName<ito::float32>,                                                   \
-   FuncName<ito::float64>,                                                   \
-   FuncName<ito::complex64>,                                                 \
-   FuncName<ito::complex128>                                                 \
+   FuncName<ito::float32>,                                              \
+   FuncName<ito::float64>,                                              \
+   FuncName<ito::complex64>,                                            \
+   FuncName<ito::complex128>,                                           \
+   FuncName<ito::rgba32>                                                \
 };
 
 //! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
@@ -1178,6 +1179,7 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
     case ito::tUInt32:
     case ito::tInt32:
     case ito::tFloat32:
+    case ito::tRGBA32:
         requiredElemSize = 4;
         break;
     case ito::tFloat64:
@@ -3274,6 +3276,16 @@ template<> RetVal CmpFunc<ito::complex128>(const DataObject * /*src1*/, const Da
    return 0;
 }
 
+//! template specialisation for compare function of type rgba32
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+template<> RetVal CmpFunc<ito::rgba32>(const DataObject * /*src1*/, const DataObject * /*src2*/, DataObject * /*dst*/, int /*cmpOp*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tCmpFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst, int cmpOp);
 MAKEFUNCLIST(CmpFunc);
 
@@ -3473,6 +3485,16 @@ template<> RetVal ShiftLFunc<ito::complex128>(DataObject * /*src*/, const unsign
    return 0;
 }
 
+//! template specialisation for shift function of type rgba32
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template<> RetVal ShiftLFunc<ito::rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tShiftLFunc)(DataObject *src, const unsigned char shiftbit);
 MAKEFUNCLIST(ShiftLFunc);
 
@@ -3600,6 +3622,16 @@ template<> RetVal ShiftRFunc<ito::complex128>(DataObject * /*src*/, const unsign
    return 0;
 }
 
+//! template specialisation for shift function of type rgba32
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template<> RetVal ShiftRFunc<ito::rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tShiftRFunc)(DataObject *src, const unsigned char shiftbit);
 MAKEFUNCLIST(ShiftRFunc)
 
@@ -3707,6 +3739,16 @@ template<> RetVal BitAndFunc<ito::complex64>(const DataObject * /*dObj1*/, const
     \throws cv::Exception since this operation is not defined for that input type
 */
 template<> RetVal BitAndFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//! template specialisation for bitwise and function of type rgba32
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitAndFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
@@ -3838,6 +3880,16 @@ template<> RetVal BitOrFunc<ito::complex128>(const DataObject * /*dObj1*/, const
    return 0;
 }
 
+//! template specialisation for bitwise or function of type rgba32
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitOrFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tBitOrFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
 MAKEFUNCLIST(BitOrFunc)
 
@@ -3956,6 +4008,16 @@ template<> RetVal BitXorFunc<ito::complex64>(const DataObject * /*dObj1*/, const
     \throws cv::Exception since this operation is not defined for that input type
 */
 template<> RetVal BitXorFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//! template specialisation for bitwise xor function of type complex128
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitXorFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
@@ -4459,6 +4521,12 @@ template<> RetVal ConjFunc<ito::float64>(DataObject * /*dObj*/)
    return 0;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data type is not complex.
+template<> RetVal ConjFunc<ito::rgba32>(DataObject * /*dObj*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+//! template specialization for data object of type int64. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<int64>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -4757,6 +4825,13 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
    return 0;
 }
 
+//! template specialization for data object of type rgba32. throws cv::Exception, since the data type is not complex.
+template<> RetVal DivFunc<ito::rgba32>(const DataObject * /*src1*/, const DataObject */*src2*/, DataObject */*res*/, const double /*scale*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tDivFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
 MAKEFUNCLIST(DivFunc)
 
@@ -4785,7 +4860,7 @@ DataObject DataObject::div(const DataObject &mat2, const double scale)
 
    return result;
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::squeeze() const
 {
     if(m_dims <= 0)
@@ -5522,9 +5597,6 @@ DataObject makeContinuous(const DataObject &dObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function to set the offset of the specified axis, return 1 if axis does not exist
 int DataObject::setAxisOffset(const unsigned int axisNum, const double offset)
 {
@@ -5876,6 +5948,7 @@ template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const s
 template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<ito::rgba32>(const rgba32*, const size_t, const size_t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template RetVal DataObject::copyFromData2D<int8>(const int8*, const size_t, const size_t, const int, const int, const size_t, const size_t);
@@ -5888,6 +5961,7 @@ template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const s
 template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t, const int, const int, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<ito::rgba32>(const rgba32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 }// namespace ito
