@@ -55,7 +55,7 @@ This PlugIn has requires no parameters, so we press OK. More complex plug-ins wi
 If no error message occurs during initialisation we will see a '+' before the **DummyMotor** in the **Plugins-Browser**. This indicates that an instance of the plug-in has been created and is ready for use. We expand the entry **DummyMotor**.
 We can see the index of the initialised plugin (first time == ID: 1). 
 
-If we right-click again on  **DummyMotor ID 1**, a contrex menu opens with the entries:
+If we right-click again on  **DummyMotor ID 1**, a context menu opens with the entries:
 
 .. figure:: images/openDummyMotor4.png
     :scale: 70%
@@ -63,7 +63,7 @@ If we right-click again on  **DummyMotor ID 1**, a contrex menu opens with the e
 * Configuration dialog
 * Show plugIn Toolbox
 * Close instance
-* Sent to python
+* Send to python
 
 By left-clicking **Configuration dialog**, a window with basic parameter setup functions for this special plugin opens. 
 
