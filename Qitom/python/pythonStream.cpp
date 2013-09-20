@@ -159,7 +159,38 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
 
     if(text != NULL)
     {
-        PyObject *v = PyUnicode_AsUTF8String(text);
+        PyObject *v = NULL;
+        if (PyUnicode_Check(text))
+        {
+            v = PyUnicode_AsUTF8String(text);
+            if (v == NULL)
+            {
+                v = PyBytes_FromString("Display error: error parsing the data stream");
+            }
+        }
+        else if(PyBytes_Check(text))
+        {
+            v = text;
+            Py_INCREF(v);
+        }
+        else
+        {
+            v =  PyObject_Str(text);
+            if (v == NULL)
+            {
+                v = PyBytes_FromString("Display error: error parsing the data stream");
+            }
+            else
+            {
+                PyObject *temp = v;
+                v = PyUnicode_AsUTF8String(temp);
+                Py_DECREF(temp);
+                if (v == NULL)
+                {
+                    v = PyBytes_FromString("Display error: error parsing the data stream");
+                }
+            }
+        }
         
         if(self->type == 1)
         {
