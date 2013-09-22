@@ -32,6 +32,7 @@
 #include "pythonNpDataObject.h"
 
 #include "pythonQtConversion.h"
+#include "dataObjectFuncs.h"
 
 //PyDataObject
 using namespace ito;
@@ -4012,21 +4013,30 @@ PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *a
     return NULL;
 }
 
-PyDoc_STRVAR(pyDataObjectAstype_doc,"astype() -> todo\n\
+PyDoc_STRVAR(pyDataObjectAstype_doc,"astype(typestring) -> converts this data object to another type\n\
 \n\
+Converts this data object to a new data object with another type, given by the string newTypestring (e.g. 'uint8'). \n\
+\n\
+Parameters \n\
+----------- \n\
+typestring : {String} \n\
+	Type string indicating the new type ('uint8',...'float32',..,'complex64') \n\
 Returns \n\
 -------- \n\
+Converted data object \n\
 \n\
 Notes \n\
 ----- \n\
-doctodo \n\
+This method mainly uses the method convertTo of OpenCV. \n\
 ");
-PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* args)
+PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* args, PyObject* kwds)
 {
     const char* type;
     int typeno = 0;
 
-    if(!PyArg_ParseTuple(args, "s", &type))
+	const char *kwlist[] = {"typestring", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"s",const_cast<char**>(kwlist), &type))
     {
         return NULL;
     }
@@ -4035,7 +4045,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
 
     if(typeno == -1)
     {
-        PyErr_Format(PyExc_TypeError,"The given type string is unknown");
+        PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
         return NULL;
     }
 
@@ -4065,6 +4075,87 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
 
     return (PyObject*)retObj;
 
+}
+
+PyDoc_STRVAR(pyDataObjectNormalize_doc,"normalize([minValue=0.0, maxValue=1.0, typestring='']) -> returns the normalization of this dataObject\n\
+\n\
+Returns the normalized version of this data object, where the values lie in the range [minValue,maxValue]. Additionally it is also \n\
+possible to convert the resulting data object to another type (given by the parameter typestring). As default no type conversion is executed.\n\
+\n\
+Parameters \n\
+----------- \n\
+minValue : {double} \n\
+	minimum value of the normalized range \n\
+maxValue : {double} \n\
+	maximum value of the normalized range \n\
+typestring : {String} \n\
+	Type string indicating the new type ('uint8',...'float32',..,'complex64'), default: '' (no type conversion) \n\
+Returns \n\
+-------- \n\
+Converted data object");
+PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject* args, PyObject* kwds)
+{
+	const char* type = NULL;
+	double minVal = 0.0;
+	double maxVal = 1.0;
+    int typeno = 0;
+
+	const char *kwlist[] = {"minValue", "maxValue", "typestring", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"|dds",const_cast<char**>(kwlist), &minVal, &maxVal, &type))
+    {
+        return NULL;
+    }
+
+	if (type != NULL)
+	{
+		typeno = typeNameToNumber(type);
+
+		if(typeno == -1)
+		{
+			PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
+			return NULL;
+		}
+	}
+	else
+	{
+		typeno = self->dataObject->getType();
+	}
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    ito::DataObject dataObj;
+
+    self->dataObject->lockRead();
+	double smin, smax;
+	ito::uint32 loc1[] = {0,0,0};
+	ito::uint32 loc2[] = {0,0,0};
+	ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
+
+	double dmin = std::min(minVal, maxVal);
+	double dmax = std::max(minVal, maxVal);
+	double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./smax-smin) : 0.0);
+	double shift = dmin-smin*scale;
+    try
+    {
+        self->dataObject->convertTo(dataObj, typeno, scale, shift);
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    self->dataObject->unlock();
+
+    retObj->dataObject = new ito::DataObject(dataObj);
+
+    if(!retObj->dataObject->getOwnData())
+    {
+        PyDataObject_SetBase( retObj, (PyObject*)self );
+    }
+
+    return (PyObject*)retObj;
 }
 
 PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> todo\n\
@@ -6191,7 +6282,8 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
 		
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
-        {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS, pyDataObjectAstype_doc},
+        {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},
+		{"normalize", (PyCFunction)PythonDataObject::PyDataObject_normalize, METH_VARARGS | METH_KEYWORDS, pyDataObjectNormalize_doc},
         {"locateROI", (PyCFunction)PythonDataObject::PyDataObject_locateROI, METH_NOARGS, pyDataObjectLocateROI_doc},
         {"adjustROI", (PyCFunction)PythonDataObject::PyDataObject_adjustROI, METH_VARARGS, pyDataObjectAdjustROI_doc},
         {"squeeze", (PyCFunction)PythonDataObject::PyDataObject_squeeze, METH_NOARGS, pyDataObjectSqueeze_doc},
