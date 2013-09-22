@@ -1693,7 +1693,7 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    //_Tp is source type
    
 
-   if(type == lhs.getType())
+   if(type == lhs.getType() && alpha == 1.0 && beta == 0.0)
    {
        rhs = lhs;
    }

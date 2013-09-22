@@ -300,7 +300,7 @@ namespace dObjHelper
         \param[out]     minValue            lowest value in this object
         \param[in|out]  firstMinLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
         \param[out]     maxValue            highest value in this object
-        \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymax, xmax]
         \param[in]      ignoreInf           Ignore Inf-Values
         \param[in]      cmplxSel            Toggle complex handling (not used) 
 
