@@ -27,6 +27,7 @@
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/addInManager.h"
+#include <qcoreapplication.h>
 
 #include "pythonQtConversion.h"
 #include "pythonFigure.h"
@@ -1969,11 +1970,35 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(-1))
+    //workaround for special notebook ;)
+    //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
+    //therefore we implemented this special while-wait-combination. The simple
+    //call of hasPendingEvents was sufficient to avoid the deadlock.
+    //counter is incremented in both cases in order to avoid that this case
+    //is deleted in optimized release compilation
+    int timeout = -1; //set the real timeout here (ms)
+    int counter = 0; 
+    int c=0;
+    while(!locker.getSemaphore()->wait(100))
+    {
+        counter++;
+        if (QCoreApplication::hasPendingEvents())
+        {
+            c++; //dummy action
+            //QCoreApplication::processEvents(); //it is not necessary to call this here
+        }
+
+        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        {
+            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            return NULL;
+        }
+    }
+    /*if(!locker.getSemaphore()->wait(-1))
     {
         PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
-    }
+    }*/
     
     if(*retOk == true)
     {
@@ -2045,11 +2070,35 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(-1))
+    //workaround for special notebook ;)
+    //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
+    //therefore we implemented this special while-wait-combination. The simple
+    //call of hasPendingEvents was sufficient to avoid the deadlock.
+    //counter is incremented in both cases in order to avoid that this case
+    //is deleted in optimized release compilation
+    int timeout = -1; //set the real timeout here (ms)
+    int counter = 0; 
+    int c=0;
+    while(!locker.getSemaphore()->wait(100))
+    {
+        counter++;
+        if (QCoreApplication::hasPendingEvents())
+        {
+            c++; //dummy action
+            //QCoreApplication::processEvents(); //it is not necessary to call this here
+        }
+
+        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        {
+            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            return NULL;
+        }
+    }
+    /*if(!locker.getSemaphore()->wait(-1))
     {
         PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
-    }
+    }*/
     
     if(*retOk == true)
     {
@@ -2148,11 +2197,35 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(-1))
+    //workaround for special notebook ;)
+    //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
+    //therefore we implemented this special while-wait-combination. The simple
+    //call of hasPendingEvents was sufficient to avoid the deadlock.
+    //counter is incremented in both cases in order to avoid that this case
+    //is deleted in optimized release compilation
+    int timeout = -1; //set the real timeout here (ms)
+    int counter = 0; 
+    int c=0;
+    while(!locker.getSemaphore()->wait(100))
+    {
+        counter++;
+        if (QCoreApplication::hasPendingEvents())
+        {
+            c++; //dummy action
+            //QCoreApplication::processEvents(); //it is not necessary to call this here
+        }
+
+        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        {
+            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            return NULL;
+        }
+    }
+    /*if(!locker.getSemaphore()->wait(-1))
     {
         PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
-    }
+    }*/
     
     if(*retOk == true)
     {
@@ -2214,11 +2287,35 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(QString, QString(defaultString)), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(-1))
+    //workaround for special notebook ;)
+    //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
+    //therefore we implemented this special while-wait-combination. The simple
+    //call of hasPendingEvents was sufficient to avoid the deadlock.
+    //counter is incremented in both cases in order to avoid that this case
+    //is deleted in optimized release compilation
+    int timeout = -1; //set the real timeout here (ms)
+    int counter = 0; 
+    int c=0;
+    while(!locker.getSemaphore()->wait(100))
+    {
+        counter++;
+        if (QCoreApplication::hasPendingEvents())
+        {
+            c++; //dummy action
+            //QCoreApplication::processEvents(); //it is not necessary to call this here
+        }
+
+        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        {
+            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            return NULL;
+        }
+    }
+    /*if(!locker.getSemaphore()->wait(-1))
     {
         PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
-    }
+    }*/
     
     if(*retOk == true)
     {
@@ -2382,11 +2479,35 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(unsigned int, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, QString(title)), Q_ARG(QString, QString(text)), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(-1))
+    //workaround for special notebook ;)
+    //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
+    //therefore we implemented this special while-wait-combination. The simple
+    //call of hasPendingEvents was sufficient to avoid the deadlock.
+    //counter is incremented in both cases in order to avoid that this case
+    //is deleted in optimized release compilation
+    int timeout = -1; //set the real timeout here (ms)
+    int counter = 0; 
+    int c=0;
+    while(!locker.getSemaphore()->wait(100))
+    {
+        counter++;
+        if (QCoreApplication::hasPendingEvents())
+        {
+            c++; //dummy action
+            //QCoreApplication::processEvents(); //it is not necessary to call this here
+        }
+
+        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        {
+            PyErr_Format(PyExc_RuntimeError, "timeout while showing message box");
+            return NULL;
+        }
+    }
+    /*if(!locker.getSemaphore()->wait(-1))
     {
         PyErr_Format(PyExc_RuntimeError, "timeout while showing message box");
         return NULL;
-    }
+    }*/
 
     retValue = locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
