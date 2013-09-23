@@ -32,7 +32,7 @@
 #include <complex>
 
     
-#include "opencv/cv.h"
+//#include "opencv/cv.h"
 //#include "opencv2/core/core.hpp"
 
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
@@ -184,19 +184,41 @@ namespace ito
     typedef std::complex<ito::float64> complex128;
 
     // define special color variable
-    /*union rgba32
+    class Rgba32
     {
-        struct
+    public:
+        Rgba32()
         {
-            uint8_t a;
-            uint8_t r;
-            uint8_t g;
-            uint8_t b;
+            memset(m_value, 0, 4*sizeof(ito::uint8));
         };
-        uint32_t color;
-    };*/
 
-    typedef cv::Vec4b rgba32;
+        Rgba32(const uint32 val)
+        {
+            memcpy(m_value, &val, 4*sizeof(ito::uint8));
+        };
+        Rgba32(const uint8 a, const uint8 r, const uint8 g, const uint8 b)
+        {
+            m_value[0] = a;
+            m_value[1] = r;
+            m_value[2] = g;
+            m_value[3] = b;
+        };
+
+        Rgba32& Rgba32::operator +=(const Color& Other)
+        {
+            r = static_cast<Uint8>(std::min(r + Other.r, 255));
+            g = static_cast<Uint8>(std::min(g + Other.g, 255));
+            b = static_cast<Uint8>(std::min(b + Other.b, 255));
+            a = static_cast<Uint8>(std::min(a + Other.a, 255));
+
+            return *this;
+        }
+
+    private:
+        uint8 m_value[4];
+    };
+
+    //typedef cv::Vec4b rgba32;
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 

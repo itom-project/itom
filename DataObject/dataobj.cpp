@@ -3180,6 +3180,16 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
    return 0;
 }
 
+//! template specialisation for compare function of type complex128
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+template<> RetVal OpScalarMulFunc<ito::rgba32>(const DataObject *src, const double factor)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tOpScalarMulFunc)(const DataObject *src, const double factor);
 MAKEFUNCLIST(OpScalarMulFunc);
 
@@ -4719,6 +4729,12 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
    return 0;
 }
 
+template<> RetVal MulFunc<ito::rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
 MAKEFUNCLIST(MulFunc)
 
@@ -5088,6 +5104,78 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
 
    return 0;
 }
+
+template<> RetVal CastFunc<ito::rgba32, ito::rgba32>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::uint8>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::uint16>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::uint32>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::int8>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::int16>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::int32>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::float32>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::float64>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::complex64>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+template<> RetVal CastFunc<ito::rgba32, ito::complex128>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//template<typename _T1> RetVal CastFunc<_T1, ito::rgba32>(const DataObject * /*dObj*/, DataObject */*resObj*/, double /*alpha*/, double /*beta*/)
+//{
+//   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+//   return 0;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! cast operator for data object
