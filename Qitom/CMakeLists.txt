@@ -168,6 +168,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.h
@@ -218,6 +219,7 @@ set(qitom_ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.ui
@@ -230,7 +232,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui	
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
 )
 
 QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
@@ -320,6 +322,7 @@ set(qitom_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.cpp

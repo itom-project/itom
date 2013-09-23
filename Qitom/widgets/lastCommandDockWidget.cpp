@@ -38,40 +38,54 @@ namespace ito {
 LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
     m_lastCommandTreeWidget(NULL),
-    m_pActClearList(NULL)
+    m_pActClearList(NULL),
+    m_lastTreeWidgetParent(NULL)
 {
     AbstractDockWidget::init();
 
     m_lastCommandTreeWidget = new QTreeWidget(this);
     setContentWidget(m_lastCommandTreeWidget);
     m_lastCommandTreeWidget->header()->hide();
+    m_lastCommandTreeWidget->setDragDropMode(QAbstractItemView::DragOnly);
+    m_lastCommandTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(m_lastCommandTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
+    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("lastCommandDockWidget");
-    int size = settings.beginReadArray("lastUsedCommands");
-    QTreeWidgetItem *parentItem = NULL;
-    QTreeWidgetItem *childItem = NULL;
-    QString date = "";
-    QString tmpDate = "";
-    for (int i = 0; i < size; ++i) 
-    {
-        settings.setArrayIndex(i);
-        QString cmd = settings.value("cmd", QString()).toString();
-        tmpDate = cmd.mid(0,10);
-        if (QString::compare(tmpDate, date) != 0)
-        {
-            date = tmpDate;
-            parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
-            parentItem->setText(0, date);
-            parentItem->setTextColor(0, QColor("green"));
-            m_lastCommandTreeWidget->addTopLevelItem(parentItem);
-        }
+    m_enabled = settings.value("lastCommandEnabled", "true").toBool();
+    m_dateColor = settings.value("lastCommandDateColor", "green").toString();
+    m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();
+    m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
 
-        childItem = new QTreeWidgetItem(parentItem);
-        childItem->setText(0, cmd.mid(11));
-        childItem->setTextColor(0, QColor("black"));
-        parentItem->addChild(childItem);
+    QTreeWidgetItem *childItem = NULL;
+    if (m_enabled)
+    {
+        int size = settings.beginReadArray("lastUsedCommands");
+        QTreeWidgetItem *parentItem = NULL;
+        QString date = "";
+        QString tmpDate = "";
+        for (int i = 0; i < size; ++i)
+        {
+            settings.setArrayIndex(i);
+            QString cmd = settings.value("cmd", QString()).toString();
+            tmpDate = cmd.mid(0, 10);
+            if (QString::compare(tmpDate, date) != 0)
+            {
+                date = tmpDate;
+                parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
+                parentItem->setText(0, date);
+                parentItem->setTextColor(0, QColor(m_dateColor));
+                parentItem->setFlags(Qt::ItemIsEnabled);
+                m_lastCommandTreeWidget->addTopLevelItem(parentItem);
+                m_lastTreeWidgetParent = parentItem;
+            }
+
+            childItem = new QTreeWidgetItem(parentItem);
+            childItem->setText(0, cmd.mid(11));
+//            childItem->setTextColor(0, QColor(0x80000008));  // Color of text in windows
+            parentItem->addChild(childItem);
+        }
     }
     settings.endArray();
     settings.endGroup();
@@ -91,37 +105,40 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *pare
 //----------------------------------------------------------------------------------------------------------------------------------
 LastCommandDockWidget::~LastCommandDockWidget()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("lastCommandDockWidget");
+    int commandNumbers = settings.value("lastCommandCommandNumbers", "100").toInt();
+
     QString date = "";
     QStringList cmdList;
     cmdList.clear();
-    for (int x = 0 ; x < m_lastCommandTreeWidget->topLevelItemCount() ; ++x)
+    for (int x = 0; x < m_lastCommandTreeWidget->topLevelItemCount(); ++x)
     {
         date = m_lastCommandTreeWidget->topLevelItem(x)->text(0);
-        for (int y = 0 ; y < m_lastCommandTreeWidget->topLevelItem(x)->childCount() ; ++y)
+        for (int y = 0; y < m_lastCommandTreeWidget->topLevelItem(x)->childCount(); ++y)
         {
             cmdList.append(date + " " + m_lastCommandTreeWidget->topLevelItem(x)->child(y)->text(0));
         }
     }
 
     int firstListIndex = 0;
-    if (cmdList.count() > 99)
+    if (cmdList.count() > commandNumbers)
     {
-        firstListIndex = cmdList.count() - 99;
+        firstListIndex = cmdList.count() - commandNumbers;
     }
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    QStringList files;
-    settings.beginGroup("lastCommandDockWidget");
+    settings.remove("lastUsedCommands");
     settings.beginWriteArray("lastUsedCommands");
-    for (int i = firstListIndex ; i < cmdList.count() ; ++i)
+    for (int i = firstListIndex; i < cmdList.count(); ++i)
     {
-        settings.setArrayIndex(i);
+        settings.setArrayIndex(i - firstListIndex);
         settings.setValue("cmd", cmdList[i]);
     }
     settings.endArray();
     settings.endGroup();
 
     disconnect(m_lastCommandTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
+    disconnect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
     
     DELETE_AND_SET_NULL(m_lastCommandTreeWidget);
 }
@@ -153,28 +170,80 @@ void LastCommandDockWidget::updateActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void LastCommandDockWidget::addLastCommand(const QString cmd)
 {
-    QDate date(QDate::currentDate());
-    QString strDate = date.toString(Qt::ISODate);
-    QTreeWidgetItem *parentItem;
-    QList<QTreeWidgetItem *> itemList = m_lastCommandTreeWidget->findItems(strDate, Qt::MatchExactly);
-    if (itemList.empty())
+    if (m_enabled)
     {
-        parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
-        parentItem->setText(0, strDate);
-        parentItem->setTextColor(0, QColor("green"));
-        m_lastCommandTreeWidget->addTopLevelItem(parentItem);
+        QTreeWidgetItem *lastDateItem = NULL;
+        QString lastSavedCommand;
+        if (m_lastCommandTreeWidget->topLevelItemCount() > 0)
+        {
+            lastDateItem = m_lastCommandTreeWidget->topLevelItem(m_lastCommandTreeWidget->topLevelItemCount() - 1);
+            QTreeWidgetItem *lastCommand = NULL;
+            if (lastDateItem->childCount() > 0)
+            {
+                lastSavedCommand = lastDateItem->child(lastDateItem->childCount() - 1)->text(0);
+                if (m_timeStamp)
+                {
+                    lastSavedCommand = lastSavedCommand.mid(9);
+                }
+            }
+        }
+
+        if (!m_doubleCommand || QString::compare(lastSavedCommand, cmd, Qt::CaseInsensitive) != 0)
+        {
+            QDate date(QDate::currentDate());
+            QString strDate = date.toString(Qt::ISODate);
+            if (!m_lastTreeWidgetParent || m_lastTreeWidgetParent->text(0) != strDate)
+            {
+                QTreeWidgetItem *parentItem;
+                parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
+                parentItem->setText(0, strDate);
+                parentItem->setTextColor(0, QColor(m_dateColor));
+                parentItem->setFlags(Qt::ItemIsEnabled);
+                m_lastCommandTreeWidget->addTopLevelItem(parentItem);
+                m_lastTreeWidgetParent = parentItem;
+            }
+
+            QTreeWidgetItem *childItem = new QTreeWidgetItem(m_lastTreeWidgetParent);
+            QString addCmd;
+            if (m_timeStamp)
+            {
+                QTime time(QTime::currentTime());
+                addCmd = time.toString("hh:mm:ss") + " " + cmd;
+            }
+            else
+            {
+                addCmd = cmd;
+            }
+            childItem->setText(0, addCmd);
+            m_lastTreeWidgetParent->addChild(childItem);
+            m_lastTreeWidgetParent->setExpanded(true);
+            m_lastCommandTreeWidget->scrollToItem(childItem);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void LastCommandDockWidget::propertiesChanged()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("lastCommandDockWidget");
+    m_enabled = settings.value("lastCommandEnabled", "true").toBool();
+    m_dateColor = settings.value("lastCommandDateColor", "green").toString();
+    m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();
+    m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
+    settings.endGroup();
+
+    if (m_enabled)
+    {
+        for (int x = 0; x < m_lastCommandTreeWidget->topLevelItemCount(); ++x)
+        {
+            m_lastCommandTreeWidget->topLevelItem(x)->setTextColor(0, QColor(m_dateColor));
+        }
     }
     else
     {
-        parentItem = itemList[0];
+        m_lastCommandTreeWidget->clear();
     }
-
-    QTreeWidgetItem *childItem = new QTreeWidgetItem(parentItem);
-    childItem->setText(0, cmd);
-    childItem->setTextColor(0, QColor("black"));
-    parentItem->addChild(childItem);
-    parentItem->setExpanded(true);
-    m_lastCommandTreeWidget->scrollToItem(childItem);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -190,6 +259,7 @@ void LastCommandDockWidget::itemDoubleClicked(QTreeWidgetItem *item, int column)
 void LastCommandDockWidget::mnuClearList()
 {
     m_lastCommandTreeWidget->clear();
+    m_lastTreeWidgetParent = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

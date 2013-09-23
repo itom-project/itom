@@ -33,8 +33,7 @@
 #include <qlocale.h>
 #include <qregexp.h>
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
@@ -51,11 +50,11 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
 
     //add default language
     loc = QLocale(QLocale::English, QLocale::UnitedStates); //English/United States
-    lang1 = QLocale::languageToString( loc.language() );
-    lang2 = QLocale::countryToString( loc.country() );
+    lang1 = QLocale::languageToString(loc.language());
+    lang2 = QLocale::countryToString(loc.country());
     lang = QString("%1 - %2 (%3) [Default]").arg(lang1).arg(lang2).arg(loc.name());
-    lwi = new QListWidgetItem( lang, ui.listWidget );
-    lwi->setData(Qt::UserRole + 1, loc.name() );
+    lwi = new QListWidgetItem(lang, ui.listWidget);
+    lwi->setData(Qt::UserRole + 1, loc.name());
 
     QDir languageDir;
     languageDir.cd(QCoreApplication::applicationDirPath() + "/translation");
@@ -66,19 +65,20 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
         finfo = QFileInfo(fileName);
         langID = finfo.baseName().mid(6); //split "qitom_"
         loc = QLocale(langID); //is for example de_DE or de...
-        lang1 = QLocale::languageToString( loc.language() );
-        lang2 = QLocale::countryToString( loc.country() );
+        lang1 = QLocale::languageToString(loc.language());
+        lang2 = QLocale::countryToString(loc.country());
         lang = QString("%1 - %2 (%3)").arg(lang1).arg(lang2).arg(loc.name());
-        lwi = new QListWidgetItem( lang, ui.listWidget );
-        lwi->setData(Qt::UserRole + 1, loc.name() );
+        lwi = new QListWidgetItem(lang, ui.listWidget);
+        lwi->setData(Qt::UserRole + 1, loc.name());
     }
-    
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropGeneralLanguage::~WidgetPropGeneralLanguage()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropGeneralLanguage::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -117,6 +117,7 @@ void WidgetPropGeneralLanguage::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropGeneralLanguage::writeSettings()
 {
     if (ui.listWidget->currentItem())

@@ -86,7 +86,6 @@ class MainApplication : public QObject
     signals:
         void propertiesChanged();
 
-
     private slots:
 
     public slots:

@@ -56,13 +56,11 @@ public:
     ~DialogProperties();
 
 protected:
-
     void initPages();
 
     void addPage(PropertyPage page, QTreeWidgetItem *parent, QStringList remainingPathes);
 
 private:
-
     QStackedWidget *m_pStackedWidget;
     QSplitter *m_pSplitter;
     QTreeWidget *m_pCategories;

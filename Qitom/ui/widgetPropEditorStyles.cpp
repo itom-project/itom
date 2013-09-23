@@ -28,6 +28,7 @@
 #include <qfontdialog.h>
 #include <qpalette.h>
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
@@ -40,9 +41,9 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
 
     int noOfStyles = qSciLex->styleBitsNeeded();
 
-    for(int i=0 ; i<(2 << noOfStyles) ; i++)
+    for (int i = 0; i < (2 << noOfStyles); i++)
     {
-        if(!qSciLex->description(i).isEmpty())
+        if (!qSciLex->description(i).isEmpty())
         {
             StyleNode entry;
             entry.m_index = i;
@@ -60,22 +61,24 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::~WidgetPropEditorStyles()
 {
     DELETE_AND_SET_NULL(qSciLex);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    for(int i = 0 ; i<m_styles.size() ; i++)
+    for (int i = 0; i<m_styles.size(); i++)
     {
         settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(m_styles[i].m_index));
         m_styles[i].m_backgroundColor = QColor(settings.value("backgroundColor", m_styles[i].m_backgroundColor.name()).toString());
-        m_styles[i].m_backgroundColor.setAlpha( settings.value("backgroundColorAlpha", m_styles[i].m_backgroundColor.alpha()).toInt());
+        m_styles[i].m_backgroundColor.setAlpha(settings.value("backgroundColorAlpha", m_styles[i].m_backgroundColor.alpha()).toInt());
         m_styles[i].m_foregroundColor = QColor(settings.value("foregroundColor", m_styles[i].m_foregroundColor.name()).toString());
-        m_styles[i].m_backgroundColor.setAlpha( settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
+        m_styles[i].m_backgroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
         m_styles[i].m_fillToEOL = settings.value("fillToEOL", m_styles[i].m_fillToEOL).toBool();
         m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
         settings.endGroup();
@@ -83,12 +86,13 @@ void WidgetPropEditorStyles::readSettings()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     StyleNode entry;
-    foreach(entry , m_styles)
+    foreach(entry, m_styles)
     {
         settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(entry.m_index));
         settings.setValue("backgroundColor", entry.m_backgroundColor.name());
@@ -105,13 +109,14 @@ void WidgetPropEditorStyles::writeSettings()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem * /* previous */)
 {
-    if(current)
+    if (current)
     {
         int index = ui.listWidget->currentIndex().row();
 
-        ui.checkFillEOL->setChecked( m_styles[index].m_fillToEOL);
+        ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
         ui.lblSampleText->setFont(m_styles[index].m_font);
         QPalette pl = ui.lblSampleText->palette();
         pl.setColor(ui.lblSampleText->foregroundRole(), m_styles[index].m_foregroundColor);
@@ -121,15 +126,16 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_btnBackgroundColor_clicked()
 {
     int index = ui.listWidget->currentIndex().row();
-    if(index >= 0)
+    if (index >= 0)
     {
         QColor color = m_styles[index].m_backgroundColor;
         color = QColorDialog::getColor(color, this, tr("choose background color"), QColorDialog::ShowAlphaChannel);
 
-        if(color.isValid())
+        if (color.isValid())
         {
             m_styles[index].m_backgroundColor = color;
             on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
@@ -137,16 +143,17 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_clicked()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_btnFont_clicked()
 {
     int index = ui.listWidget->currentIndex().row();
-    if(index >= 0)
+    if (index >= 0)
     {
         QFont font = m_styles[index].m_font;
         bool ok;
         font = QFontDialog::getFont(&ok, font, this);
 
-        if(ok)
+        if (ok)
         {
             m_styles[index].m_font = font;
             on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
@@ -154,15 +161,16 @@ void WidgetPropEditorStyles::on_btnFont_clicked()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_btnForegroundColor_clicked()
 {
     int index = ui.listWidget->currentIndex().row();
-    if(index >= 0)
+    if (index >= 0)
     {
         QColor color = m_styles[index].m_foregroundColor;
         color = QColorDialog::getColor(color, this, tr("choose foreground color"), QColorDialog::ShowAlphaChannel);
 
-        if(color.isValid())
+        if (color.isValid())
         {
             m_styles[index].m_foregroundColor = color;
             on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
@@ -170,10 +178,11 @@ void WidgetPropEditorStyles::on_btnForegroundColor_clicked()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_checkFillEOL_stateChanged(int state)
 {
     int index = ui.listWidget->currentIndex().row();
-    if(index >= 0)
+    if (index >= 0)
     {
         m_styles[index].m_fillToEOL = (state != Qt::Unchecked);
     }

@@ -33,6 +33,7 @@
 #include "widgetPropGeneralLanguage.h"
 #include "widgetPropPythonStartup.h"
 #include "widgetPropConsoleWrap.h"
+#include "widgetPropConsoleLastCommand.h"
 #include "widgetPropFigurePlugins.h"
 #include "widgetPropGeneralApplication.h"
 
@@ -58,7 +59,7 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
 
     m_pCategories->setMinimumWidth(200);
 
-    connect(m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(categoryChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+    connect(m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
     connect(m_pButtonBox, SIGNAL(accepted()), this, SLOT(accepted()));
@@ -137,6 +138,7 @@ void DialogProperties::initPages()
     m_pages["04_editor/styles"] = PropertyPage(tr("Styles"), tr("Editor - styles"), "04_editor/styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - please choose subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/startup"] = PropertyPage(tr("Startup"), tr("Python - startups"), "03_python/startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
     m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/curAppIcon.png"));
@@ -144,7 +146,6 @@ void DialogProperties::initPages()
     m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
     m_pages["05_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "05_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["05_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "05_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
-
     PropertyPage page;
     QStringList pathes;
 
@@ -187,7 +188,7 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
     }
     else if (remainingPathes.length() > 0)
     {
-        for (int i = 0 ; i < parent->childCount() ; i++)
+        for (int i = 0; i < parent->childCount(); i++)
         {
             if (parent->child(i)->data(1, Qt::DisplayRole).toString() == remainingPathes[0])
             {

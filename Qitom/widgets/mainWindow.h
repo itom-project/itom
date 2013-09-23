@@ -69,7 +69,6 @@ protected:
     inline bool pythonInWaitingMode() const { return m_pythonInWaitingMode; }  /*!<  returns if python is in waiting mode (true) \sa m_pythonInWaitingMode */
 
 private:
-
 	void createActions();
     void createMenus();
     void createToolBars();
@@ -152,7 +151,6 @@ public slots:
     void showInfoMessageLine( QString text, QString winKey = "" );
 
 private slots:
-
     void mnuAboutQitom();
     void mnuExitApplication();
 
@@ -171,7 +169,6 @@ private slots:
     void mnuScriptStepOut();
     void mnuPyReloadModules();
     void mnuShowLoadedPlugins();
-
 
     /*void mnuTest()
     {

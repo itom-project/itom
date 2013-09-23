@@ -2654,6 +2654,39 @@ Type conflict for %1</source>
     </message>
 </context>
 <context>
+    <name>WidgetPropConsoleLastCommand</name>
+    <message>
+        <location filename="../ui/widgetPropConsoleLastCommand.ui"/>
+        <source>Form</source>
+        <translation type="unfinished">Fenster</translation>
+    </message>
+    <message>
+        <location/>
+        <source>command history enabled (set disable to clear the history!)</source>
+        <translation type="unfinished">Befehlsliste aktivieren (Deaktivieren löscht die Liste!)</translation>
+    </message>
+    <message>
+        <location/>
+        <source>number of saving commands</source>
+        <translation type="unfinished">Anzahl speichernde Befehle</translation>
+    </message>
+    <message>
+        <location/>
+        <source>show time stamp</source>
+        <translation type="unfinished">Uhrzeit anzeigen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>do not add if the new command is equal to the last one</source>
+        <translation type="unfinished">Nicht hinzufügen wenn der letzte Befehl in der Liste identisch ist</translation>
+    </message>
+    <message>
+        <location/>
+        <source>date color</source>
+        <translation type="unfinished">Farbe der Datumsanzeige</translation>
+    </message>
+</context>
+<context>
     <name>WidgetPropConsoleWrap</name>
     <message>
         <location filename="../ui/widgetPropConsoleWrap.ui"/>
@@ -3026,12 +3059,12 @@ Type conflict for %1</source>
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.cpp" line="+130"/>
+        <location filename="../ui/widgetPropEditorStyles.cpp" line="+136"/>
         <source>choose background color</source>
         <translation>Hintergrundfarbe auswählen</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+35"/>
         <source>choose foreground color</source>
         <translation type="unfinished">Vordergrundsfarbe auswählen</translation>
     </message>
@@ -3100,7 +3133,7 @@ Type conflict for %1</source>
     </message>
     <message>
         <location filename="../ui/widgetPropGeneralLanguage.cpp" line="+112"/>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Current Language: </source>
         <translation>Aktuelle Sprache: </translation>
     </message>
@@ -3920,7 +3953,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="+48"/>
+        <location filename="../ui/dialogProperties.cpp" line="+49"/>
         <source>Properties</source>
         <translation type="unfinished">Optionen</translation>
     </message>
@@ -3936,12 +3969,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>General</source>
         <translation type="unfinished">Allgemein</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-10"/>
         <source>Editor - General</source>
         <translation type="unfinished">Editor - Allgemein</translation>
     </message>
@@ -4004,6 +4037,16 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+0"/>
         <source>Console - Line Wrap</source>
         <translation type="unfinished">Konsole - Zeilenumbruch</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Command History</source>
+        <translation type="unfinished">Befehlsliste</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Console - Command History</source>
+        <translation type="unfinished">Konsole - Befehlsliste</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4649,7 +4692,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::LastCommandDockWidget</name>
     <message>
-        <location filename="../widgets/lastCommandDockWidget.cpp" line="+132"/>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+149"/>
         <source>clear list</source>
         <translation>Liste löschen</translation>
     </message>

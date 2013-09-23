@@ -42,7 +42,6 @@ namespace ito
             ~LastCommandDockWidget();
 
         protected:
-
             void createActions();
             void createMenus();
             void createToolBars();
@@ -54,6 +53,11 @@ namespace ito
 			QTreeWidget *m_lastCommandTreeWidget;
             QMenu* m_pContextMenu;
             ShortcutAction* m_pActClearList;
+            QTreeWidgetItem *m_lastTreeWidgetParent;
+            bool m_enabled;
+            QString m_dateColor;
+            bool m_timeStamp;
+            bool m_doubleCommand;
 
         signals:
             void runPythonCommand(const QString cmd);
@@ -65,6 +69,7 @@ namespace ito
 
         public slots:
             void addLastCommand(const QString cmd);
+            void propertiesChanged();
     };
 
 } //end namespace ito
