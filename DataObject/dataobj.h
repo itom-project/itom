@@ -92,9 +92,8 @@ namespace cv {
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
    
    template<typename _Tp> static inline _Tp saturate_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-
    template<typename _Tp> static inline ito::rgba32 saturated_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-   template<typename _Tp> static inline _Tp saturated_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+   //template<typename _Tp> static inline _Tp saturated_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
 
    template<> inline ito::complex64 saturate_cast(ito::uint8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
    template<> inline ito::complex64 saturate_cast(ito::int8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
@@ -118,77 +117,22 @@ namespace cv {
    template<> inline ito::complex128 saturate_cast(ito::complex64 v){ return ito::complex128(saturate_cast<ito::float64>(v.real()),saturate_cast<ito::float64>(v.imag())); }
    template<> inline ito::complex128 saturate_cast(ito::complex128 v){ return v; }
    
-   template<> inline ito::rgba32 saturated_cast(ito::uint8 v)
-   {
-       ito::rgba32 val;
-       //val[0] = 0xFF;
-       //memset(&(val[1]), v, 3);
+   template<> inline ito::rgba32 saturated_cast<ito::uint8>(ito::uint8 v) {return v;}
+   template<> inline ito::rgba32 saturated_cast<ito::uint16>(ito::uint16 v){return saturate_cast<ito::uint8>(v);}
+   template<> inline ito::rgba32 saturated_cast(ito::int16 v){return saturate_cast<ito::uint8>(v);}
+   template<> inline ito::rgba32 saturated_cast(ito::uint32 v){return v;}
+   template<> inline ito::rgba32 saturated_cast(ito::int32 v){return v;}
+   template<> inline ito::rgba32 saturated_cast(ito::float32 v){return saturate_cast<ito::uint8>(v);}
+   template<> inline ito::rgba32 saturated_cast(ito::float64 v){return saturate_cast<ito::uint8>(v);}
 
-       val.a = 0xFF;
-       memset(&(val.r), v, 3);
-
-       return val;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::uint16 v)
-   {
-       ito::rgba32 val;
-       //val[0] = 0xFF;
-       //memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
-
-       val.a = 0xFF;
-       memset(&(val.r), saturate_cast<ito::uint8>(v), 3);
-
-       return val;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::int16 v)
-   {
-       ito::rgba32 val;
-       //val[0] = 0xFF;
-       //memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
-
-       val.a = 0xFF;
-       memset(&(val.r), saturate_cast<ito::uint8>(v), 3);
-
-       return val;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::uint32 v)
-   {
-       return v;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::int32 v)
-   {
-       return v;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::float32 v)
-   {
-       ito::rgba32 val;
-       //val[0] = 0xFF;
-       //memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
-
-       val.a = 0xFF;
-       memset(&(val.r), saturate_cast<ito::uint8>(v), 3);
-
-       return val;
-   }
-   template<> inline ito::rgba32 saturated_cast(ito::float64 v)
-   {
-       ito::rgba32 val;
-       //val[0] = 0xFF;
-       //memset(&(val[1]), saturate_cast<ito::uint8>(v), 3);
-
-       val.a = 0xFF;
-       memset(&(val.r), saturate_cast<ito::uint8>(v), 3);
-
-       return val;
-   }
-   
-   template<> inline ito::uint8 saturated_cast(ito::rgba32 v){return saturate_cast<ito::uint8>((0.299 * v.r) + (0.587 * v.g) + (0.114 * v.b) + 0.5);};
-   template<> inline ito::uint16 saturated_cast(ito::rgba32 v){return cv::saturate_cast<ito::uint16>((0.299 * v.r) + (0.587 * v.g) + (0.114 * v.b) + 0.5);};
-   template<> inline ito::uint32 saturated_cast(ito::rgba32 v){return v.rgba;};
-   template<> inline ito::int32 saturated_cast(ito::rgba32 v){return (ito::int32)(v.rgba & 0x00FFFFFF);};
-   template<> inline ito::float32 saturated_cast(ito::rgba32 v){return (ito::float32)(0.299 * v.r + 0.587 * v.g + 0.114 * v.b);};
-   template<> inline ito::float64 saturated_cast(ito::rgba32 v){return (ito::float64)(0.299 * v.r + 0.587 * v.g + 0.114 * v.b);};
-   
+/*
+   template<> inline ito::uint8 saturated_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
+   template<> inline ito::uint16 saturated_cast(ito::rgba32 v){return saturate_cast<ito::uint16>(v.gray());};
+   template<> inline ito::uint32 saturated_cast(ito::rgba32 v){return v.argb();};
+   template<> inline ito::int32 saturated_cast(ito::rgba32 v){return (ito::int32)(v.argb() & 0x00FFFFFF);};
+   template<> inline ito::float32 saturated_cast(ito::rgba32 v){return (ito::float32)v.gray();};
+   template<> inline ito::float64 saturated_cast(ito::rgba32 v){return (ito::float64)v.gray();};
+*/
 
 
 } // namespace cv
@@ -2124,7 +2068,7 @@ template<typename _Tp> static inline bool isZeroValue(_Tp v, _Tp /*epsilon*/)
 }
 template<> inline bool isZeroValue(rgba32 v, rgba32 /*epsilon*/)
 {
-    return v.r == 0 && v.b == 0 && v.g == 0;
+    return (v == 0);
 }
 template<> inline bool isZeroValue(float32 v, float32 epsilon)
 {

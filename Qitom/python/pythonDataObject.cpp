@@ -5806,7 +5806,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
     case ito::tRGBA32:
-        return PyLong_FromLong(cv::saturated_cast<uint32>(dataObj->at<rgba32>(idx)));
+        return PyLong_FromLong(dataObj->at<rgba32>(idx).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -5867,7 +5867,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
     case ito::tInt32:
         return PyLong_FromLong( m->at<int32>(row,col) );
     case ito::tRGBA32:
-        return PyLong_FromLong( cv::saturated_cast<uint32>(m->at<rgba32>(row,col)) );
+        return PyLong_FromLong(m->at<rgba32>(row,col).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble( m->at<float32>(row,col) );
     case ito::tFloat64:
@@ -6463,7 +6463,7 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             output = PyLong_FromLong((long)( *((ito::int32*)(*(self->it))) ));
             break;
         case ito::tRGBA32:
-            output = PyLong_FromLong((long)( cv::saturated_cast<uint32>(*((rgba32*)(*(self->it)))) ));
+            output = PyLong_FromLong((long)( ((rgba32*)(*(self->it))))->argb());
             break;
         case ito::tFloat32:
             output = PyFloat_FromDouble((double)( *((ito::float32*)(*(self->it))) ));
