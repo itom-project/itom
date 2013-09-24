@@ -118,7 +118,7 @@ MainWindow::MainWindow() :
         m_contentLayout->addWidget(m_console);
     }
 
-    m_contentLayout->setContentsMargins(0,0,0,0);
+    m_contentLayout->setContentsMargins(0, 0, 0, 0);
     m_contentLayout->setSpacing(1);
 
     QWidget *centralWidget = new QWidget(this);
@@ -171,14 +171,14 @@ MainWindow::MainWindow() :
 	    m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
         m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
-        connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+        connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
         // local workspace widget (Python)
         m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), false, this, true, true, AbstractDockWidget::floatingStandard);
 	    m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
         m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
-        connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+        connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString, int)), this, SLOT(setStatusText(QString, int)));
 
         // tabify global and local workspace
         tabifyDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock);
@@ -206,7 +206,7 @@ MainWindow::MainWindow() :
         connect(pyEngine, SIGNAL(pythonAddToolbarButton(QString, QString, QString, QString)), this, SLOT(pythonAddToolbarButton(QString, QString, QString, QString)));
         connect(pyEngine, SIGNAL(pythonRemoveToolbarButton(QString, QString)), this, SLOT(pythonRemoveToolbarButton(QString, QString)));
 
-        connect(pyEngine, SIGNAL(pythonAddMenuElement(int,QString,QString,QString,QString)), this, SLOT(pythonAddMenuElement(int,QString,QString,QString,QString)));
+        connect(pyEngine, SIGNAL(pythonAddMenuElement(int,QString,QString,QString,QString)), this, SLOT(pythonAddMenuElement(int, QString, QString, QString, QString)));
         connect(pyEngine, SIGNAL(pythonRemoveMenuElement(QString)), this, SLOT(pythonRemoveMenuElement(QString)));
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
@@ -310,8 +310,8 @@ MainWindow::~MainWindow()
         disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
 
-    if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
-    if (m_localWorkspaceDock)  disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString,int)));
+    if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
+    if (m_localWorkspaceDock)  disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
 	disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
 	disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
@@ -322,7 +322,7 @@ MainWindow::~MainWindow()
 
     //delete remaining user-defined toolbars and actions
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
-    while(it != m_userDefinedToolBars.end())
+    while (it != m_userDefinedToolBars.end())
     {
         removeToolBar(*it);
         delete *it;
@@ -332,7 +332,7 @@ MainWindow::~MainWindow()
 
     //delete remaining user-defined menu elements
     QMap<QString, QMenu* >::iterator it2 = m_userDefinedRootMenus.begin();
-    while(it2 != m_userDefinedRootMenus.end())
+    while (it2 != m_userDefinedRootMenus.end())
     {
         (*it2)->deleteLater();
         it2++;
@@ -734,7 +734,7 @@ void MainWindow::mnuNewScript()
 
     if (sew != NULL)
     {
-        QMetaObject::invokeMethod(sew,"newScript");
+        QMetaObject::invokeMethod(sew, "newScript");
     }
 }
 
@@ -800,7 +800,7 @@ void MainWindow::mnuShowAssistant()
             args << QLatin1String(collectionFile.toAscii().data());
             args << QLatin1String("-enableRemoteControl");
 
-            QString app = ProcessOrganizer::getAbsQtToolPath( "assistant" );
+            QString app = ProcessOrganizer::getAbsQtToolPath("assistant");
 
             process->start(app, args);
 
@@ -829,7 +829,7 @@ void MainWindow::mnuAboutQitom()
 void MainWindow::helpAssistantError (QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
-    msgBox.setText("The help assistant could not be started.");
+    msgBox.setText(tr("The help assistant could not be started."));
     msgBox.exec();
 }
 
@@ -911,7 +911,7 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
 
     if (buttonIconFilename != "" && icon.isNull())
     {
-        while(!iconFound && i < 1000)
+        while (!iconFound && i < 1000)
         {
             switch(i)
             {
@@ -983,7 +983,7 @@ void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonNa
     else
     {
         QMessageBox msgBox;
-        msgBox.setText("The toolbar '" + toolbarName + "' could not be found");
+        msgBox.setText(tr("The toolbar '") + toolbarName + tr("' could not be found"));
         msgBox.exec();
     }
 }
@@ -1008,7 +1008,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
 
     if (buttonIconFilename != "" && icon.isNull())
     {
-        while(!iconFound && i < 1000)
+        while (!iconFound && i < 1000)
         {
             switch(i)
             {
@@ -1052,7 +1052,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
         {
             if (typeID != 2)
             {
-                retValue += ito::RetVal(ito::retError,0,tr("one single menu element must be of type MENU [2]").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toAscii().data());
             }
         }
 
@@ -1080,11 +1080,11 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
     }
     else
     {
-        retValue += ito::RetVal(ito::retError,0,tr("no menu element is indicated").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("no menu element is indicated").toAscii().data());
     }
 
     //check further elements
-    while(keys.size() > 0 && !retValue.containsError())
+    while (keys.size() > 0 && !retValue.containsError())
     {
         actionList = parentMnu->actions();
         tempKey = keys[0];
@@ -1107,7 +1107,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
             {
                 if (act->menu() == NULL) //item is no menu, but has to be a menu
                 {
-                    retValue += RetVal::format(retError,0,tr("The menu item '%s' does already exist but is no menu type").toAscii().data(), act->iconText().toAscii().data());
+                    retValue += RetVal::format(retError, 0, tr("The menu item '%s' does already exist but is no menu type").toAscii().data(), act->iconText().toAscii().data());
                 }
                 else
                 {
@@ -1116,7 +1116,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
             }
             else
             {
-                retValue += RetVal(retError,0,tr("menu item already exists.").toAscii().data());
+                retValue += RetVal(retError, 0, tr("menu item already exists.").toAscii().data());
             }
         }
         else //element has to be created
@@ -1155,7 +1155,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
                     parentMnu = act->menu();*/
                     break;
                 default:
-                    retValue += RetVal(retError,0,tr("Invalid typeID.").toAscii().data());
+                    retValue += RetVal(retError, 0, tr("Invalid typeID.").toAscii().data());
                     break;
                 }
             }
@@ -1170,7 +1170,6 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
     {
         QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
     }
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1204,7 +1203,7 @@ void MainWindow::pythonRemoveMenuElement(QString key)
             parentMenu = *it;
         }
 
-        while(keys.size() > 0 && parentMenu)
+        while (keys.size() > 0 && parentMenu)
         {
             tempKey = keys[0];
             keys.pop_front();
@@ -1275,13 +1274,13 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     if (pyEngine == NULL)
     {
         QMessageBox msgBox;
-        msgBox.setText("Python is not available. This action cannot be executed.");
+        msgBox.setText(tr("Python is not available. This action cannot be executed."));
         msgBox.exec();
     }
     else if (pythonCode == "")
     {
         QMessageBox msgBox;
-        msgBox.setText("there is no python code associated to this action.");
+        msgBox.setText(tr("there is no python code associated to this action."));
         msgBox.exec();
     }
     else
@@ -1326,7 +1325,7 @@ void MainWindow::mnuShowDesigner()
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
-            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            QString app = ProcessOrganizer::getAbsQtToolPath("designer");
             process->start(app, QStringList());
         }
     }
@@ -1336,7 +1335,7 @@ void MainWindow::mnuShowDesigner()
 void MainWindow::designerError (QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
-    msgBox.setText("The UI designer (Qt designer) could not be started.");
+    msgBox.setText(tr("The UI designer (Qt designer) could not be started."));
     msgBox.exec();
 }
 
