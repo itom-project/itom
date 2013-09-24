@@ -70,7 +70,73 @@ namespace cv {
         };
     };
 
+    template<> class cv::DataType<ito::redChannel>
+    {
+        public:
+        typedef ito::redChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
 
+    template<> class cv::DataType<ito::greenChannel>
+    {
+        public:
+        typedef ito::greenChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::blueChannel>
+    {
+        public:
+        typedef ito::blueChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::alphaChannel>
+    {
+        public:
+        typedef ito::alphaChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
 
    template<> inline ito::float32 saturate_cast<ito::float32>( ito::float64 v)
    {

@@ -2213,6 +2213,26 @@ template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t siz
    return 0;
 }
 
+//! template specialisation for low-level, templated method for creation of random-valued matrix-plane of type rgba32
+/*!
+    \return retOk
+    \sa  RandFunc, zeros, ones
+*/
+template<> RetVal RandFunc<ito::rgba32>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+{
+    (*((cv::Mat_<ito::rgba32> *)(*dstMat))) = cv::Mat_<ito::rgba32>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    cv::Mat_<ito::uint8> tempMat(sizeY, sizeX * 4, ((cv::Mat*)(*dstMat))->ptr<ito::uint8>());
+    if(randMode)
+    {
+        cv::randn(tempMat, value1, value2);
+    }
+    else
+    {
+        cv::randu(tempMat, value1, value2);
+    }
+   return 0;
+}
+
 typedef RetVal (*tRandFunc)(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat);
 MAKEFUNCLIST(RandFunc);
 
@@ -2243,6 +2263,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     {
         switch(type)
         {
+            case ito::tRGBA32:
             case ito::tUInt8:
                 val1 = ((double)std::numeric_limits<uint8>::max() + (double)std::numeric_limits<uint8>::min())/2.0;
                 val2 = ((double)std::numeric_limits<uint8>::max() - (double)std::numeric_limits<uint8>::min())/6.0;
@@ -2277,6 +2298,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     {
         switch(type)
         {
+            case ito::tRGBA32:
             case ito::tUInt8:
                 val1 = (double)std::numeric_limits<uint8>::min();
                 val2 = (double)std::numeric_limits<uint8>::max() + 1;
@@ -2402,6 +2424,7 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
     case CV_64FC1: dataObjType = ito::tFloat64; break;
     case CV_32FC2: dataObjType = ito::tComplex64; break;
     case CV_64FC2: dataObjType = ito::tComplex128; break;
+    case CV_8UC4: dataObjType = ito::tRGBA32; break;
     default: dataObjType = -1;
     }
 
@@ -3180,16 +3203,6 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
    return 0;
 }
 
-//! template specialisation for compare function of type complex128
-/*!
-    \throws cv::Exception since comparison is not defined for complex input types
-*/
-template<> RetVal OpScalarMulFunc<ito::rgba32>(const DataObject *src, const double factor)
-{
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
-}
-
 typedef RetVal (*tOpScalarMulFunc)(const DataObject *src, const double factor);
 MAKEFUNCLIST(OpScalarMulFunc);
 
@@ -3281,16 +3294,6 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * /*src1*/, const Dat
     \throws cv::Exception since comparison is not defined for complex input types
 */
 template<> RetVal CmpFunc<ito::complex128>(const DataObject * /*src1*/, const DataObject * /*src2*/, DataObject * /*dst*/, int /*cmpOp*/)
-{
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
-}
-
-//! template specialisation for compare function of type rgba32
-/*!
-    \throws cv::Exception since comparison is not defined for complex input types
-*/
-template<> RetVal CmpFunc<ito::rgba32>(const DataObject * /*src1*/, const DataObject * /*src2*/, DataObject * /*dst*/, int /*cmpOp*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
@@ -4729,12 +4732,6 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
    return 0;
 }
 
-template<> RetVal MulFunc<ito::rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
-{
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
-}
-
 typedef RetVal (*tMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
 MAKEFUNCLIST(MulFunc)
 
@@ -4838,13 +4835,6 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
         }
    }
 
-   return 0;
-}
-
-//! template specialization for data object of type rgba32. throws cv::Exception, since the data type is not complex.
-template<> RetVal DivFunc<ito::rgba32>(const DataObject * /*src1*/, const DataObject */*src2*/, DataObject */*res*/, const double /*scale*/)
-{
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
 }
 
@@ -5798,6 +5788,8 @@ size_t DataObject::elemSize() const
         return 2;
     case tInt32:
     case tUInt32:
+        return 4;
+    case tRGBA32:
         return 4;
     case tFloat32:
         return 4;

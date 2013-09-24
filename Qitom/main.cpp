@@ -288,6 +288,13 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
+    int mySize = sizeof(ito::rgba32);
+    ito::rgba32 bla(255, 5, 23, 128);
+    mySize = sizeof(ito::redChannel);
+
+    ito::redChannel* test = (ito::redChannel*)(&bla);
+    ito::uint8 val = test->value();
+
     //QString t = "qitom_de_DE.qm";
     //QRegExp r("^qitom_(.*).qm$");
     ////r.setPatternSyntax(QRegExp::Wildcard);

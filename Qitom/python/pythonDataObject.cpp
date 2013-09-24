@@ -508,7 +508,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
                                     case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
                                     case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
+                                    default: npTypenum = -1;
                                     }
+
                                     PyObject *npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
 
                                     if(npArray == NULL)
@@ -613,14 +615,13 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                                 break;
                                             case ito::tRGBA32:
                                                 {
-                                                    cv::Vec4b *rowPtr;
+                                                    ito::rgba32 *rowPtr;
                                                     for(m = 0; m < mat->rows; m++)
                                                     {
-                                                        rowPtr = mat->ptr<cv::Vec4b>(m);
+                                                        rowPtr = mat->ptr<ito::rgba32>(m);
                                                         for(n = 0; n < mat->cols; n++)
                                                         {
-                                                            memcpy(&(rowPtr[n]), &((reinterpret_cast<uint32*>(data))[c++]), sizeof(uint32));
-                                                            //rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
+                                                            rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
                                                         }
                                                     }
                                                 }
@@ -969,7 +970,8 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"float32", tFloat32},
     {"float64", tFloat64},
     {"complex64", tComplex64},
-    {"complex128", tComplex128}
+    {"complex128", tComplex128},
+    {"rgba32", tRGBA32}
 };
 
 int PythonDataObject::typeNameToNumber(const char *name)
@@ -1763,7 +1765,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         case ito::tRGBA32:
             for(; it < itEnd; ++it)
             {
-                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::uint32*)(*it)) )));
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromUnsignedLong((long)( *((ito::uint32*)(*it)) )));
             }
             break;
         case ito::tFloat32:
@@ -1915,7 +1917,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         case ito::tRGBA32:
             for(; it < itEnd; ++it)
             {
-                memcpy((cv::Vec4b*)(*it), (ito::uint32*)(PyArray_GETPTR1(arr, cnt++)), sizeof(ito::uint32));
+                memcpy((ito::rgba32*)(*it), (ito::uint32*)(PyArray_GETPTR1(arr, cnt++)), sizeof(ito::uint32));
             }
             break;
         case ito::tFloat32:
@@ -4671,7 +4673,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     self->dataObject->at<int32>(idx) = ito::numberConversion<int32>(fromType, valuePtr);
                     break;
                 case ito::tRGBA32:
-                    self->dataObject->at<cv::Vec4b>(idx) = ito::numberConversion<cv::Vec4b>(fromType, valuePtr);
+                    self->dataObject->at<ito::rgba32>(idx) = ito::numberConversion<ito::rgba32>(fromType, valuePtr);
                     break;
                 case ito::tFloat32:
                     self->dataObject->at<float32>(idx) = ito::numberConversion<float32>(fromType, valuePtr);
@@ -4729,10 +4731,6 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char &typekind, int &itemsi
         itemsize = sizeof(int16);
         break;
     case ito::tUInt32:
-        typekind = 'u';
-        itemsize = sizeof(uint32);
-        break;
-    case ito::tRGBA32:
         typekind = 'u';
         itemsize = sizeof(uint32);
         break;
@@ -5806,7 +5804,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
     case ito::tRGBA32:
-        return PyLong_FromLong(dataObj->at<rgba32>(idx).argb());
+        return PyLong_FromUnsignedLong(dataObj->at<rgba32>(idx).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -5867,7 +5865,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
     case ito::tInt32:
         return PyLong_FromLong( m->at<int32>(row,col) );
     case ito::tRGBA32:
-        return PyLong_FromLong(m->at<rgba32>(row,col).argb());
+        return PyLong_FromUnsignedLong(m->at<rgba32>(row,col).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble( m->at<float32>(row,col) );
     case ito::tFloat64:
@@ -6463,7 +6461,7 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             output = PyLong_FromLong((long)( *((ito::int32*)(*(self->it))) ));
             break;
         case ito::tRGBA32:
-            output = PyLong_FromLong((long)( ((rgba32*)(*(self->it))))->argb());
+            output = PyLong_FromUnsignedLong((long)( ((rgba32*)(*(self->it))))->argb());
             break;
         case ito::tFloat32:
             output = PyFloat_FromDouble((double)( *((ito::float32*)(*(self->it))) ));
