@@ -183,6 +183,8 @@ namespace ito
     typedef std::complex<ito::float32> complex64;
     typedef std::complex<ito::float64> complex128;
 
+
+////////////////////////////////////////////////////////// DO NOT ADD ANY MEMBER VARIABLES TO RGBA_T / CHANNEL_T ///////////////////////////////////////////////////////////////////////
 /** \class  Rgba32_t
 *   \brief  This class implements basic functionality for color handling in itom.
 *   \detail This class implements ARGB32 into itom. In openCV-mat this will be represented by an 4channel uint8-plane.
@@ -196,6 +198,16 @@ namespace ito
     {
     public:
 
+        enum RGBSelectionFlags
+        {
+            RGBA_B    = 0,
+            RGBA_G    = 1,
+            RGBA_R    = 2,
+            RGBA_A    = 3,
+            RGBA_Y    = 4,
+            RGBA_RGB  = 5
+        };
+
         Rgba32_t()  /*! < Constructor for basic values */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
@@ -204,7 +216,7 @@ namespace ito
         Rgba32_t(const int32 &val) /*! < Constructor for RGA, alpha will be 255 */
         {
             memcpy(m_value, &val, 4*sizeof(ito::uint8));
-            m_value[0] = 0xFF; 
+            m_value[3] = 0xFF; 
         }
 
         Rgba32_t(const uint32 &val) /*! < Constructor for ARGA */
@@ -214,50 +226,50 @@ namespace ito
 
         Rgba32_t(const uint8 &a, const uint8 &r, const uint8 &g, const uint8 &b) /*! < Constructor for ARGA by 4 channels*/
         {
-            m_value[0] = a;
-            m_value[1] = r;
-            m_value[2] = g;
-            m_value[3] = b;
+            m_value[RGBA_B] = b;
+            m_value[RGBA_G] = g;
+            m_value[RGBA_R] = r;
+            m_value[RGBA_A] = a;
         }
 
         Rgba32_t(const int8 &gray) /*! < Constructor which will set color channels to gray 0:128 and alpha to 255 */
         {
-            m_value[0] = 0xFF;
-            memset(&(m_value[1]), gray < 0 ? 0 : gray, 3*sizeof(uint8));
+            m_value[RGBA_A] = 0xFF;
+            memset(m_value, gray < 0 ? 0 : gray, 3*sizeof(uint8));
         }
 
         Rgba32_t(const uint8 &gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
-            m_value[0] = 0xFF;
-            memset(&(m_value[1]), gray, 3*sizeof(uint8));
+            m_value[RGBA_A] = 0xFF;
+            memset(m_value, gray, 3*sizeof(uint8));
         }
 
         Rgba32_t(const uint16 gray) /*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
         {
-            m_value[0] = 0xFF;
+            m_value[RGBA_A] = 0xFF;
             uint8 val = (uint8) (gray > 255 ? 255 : gray);
-            memset(&m_value[1], val, 3 * sizeof(uint8));
+            memset(m_value, val, 3 * sizeof(uint8));
         }
 
         Rgba32_t(const int16 gray) /*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
         {
-            m_value[0] = 0xFF;
+            m_value[RGBA_A] = 0xFF;
             uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray ))));
-            memset(&m_value[1], val, 3 * sizeof(uint8));
+            memset(m_value, val, 3 * sizeof(uint8));
         }
 
         Rgba32_t(const float32 gray)/*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
         {
-            m_value[0] = 0xFF;
+            m_value[RGBA_A] = 0xFF;
             uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray + 0.5))));
-            memset(&m_value[1], val, 3 * sizeof(uint8));
+            memset(m_value, val, 3 * sizeof(uint8));
         }
 
         Rgba32_t(const float64 gray)/*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
         {
-            m_value[0] = 0xFF;
+            m_value[RGBA_A] = 0xFF;
             uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray + 0.5))));
-            memset(&m_value[1], val, 3 * sizeof(uint8));
+            memset(m_value, val, 3 * sizeof(uint8));
         };
 
         Rgba32_t(const Rgba32_t *rhs)/*! < Copy-Constructor for pointer */
@@ -272,19 +284,19 @@ namespace ito
 
         Rgba32_t& operator +=(const Rgba32_t &rhs)/*! < Implementation of += operator with overflow handling */
         {
-            m_value[0] = static_cast<uint8>(std::min<int16>(m_value[0] + rhs.m_value[0], 255));
-            m_value[1] = static_cast<uint8>(std::min<int16>(m_value[1] + rhs.m_value[1], 255));
-            m_value[2] = static_cast<uint8>(std::min<int16>(m_value[2] + rhs.m_value[2], 255));
-            m_value[3] = static_cast<uint8>(std::min<int16>(m_value[4] + rhs.m_value[3], 255));
+            m_value[RGBA_B] = static_cast<uint8>(std::min<int16>(m_value[RGBA_B] + rhs.m_value[RGBA_B], 255));
+            m_value[RGBA_G] = static_cast<uint8>(std::min<int16>(m_value[RGBA_G] + rhs.m_value[RGBA_G], 255));
+            m_value[RGBA_R] = static_cast<uint8>(std::min<int16>(m_value[RGBA_R] + rhs.m_value[RGBA_R], 255));
+            m_value[RGBA_A] = static_cast<uint8>(std::min<int16>(m_value[RGBA_A] + rhs.m_value[RGBA_A], 255));
             return *this;
         }
 
         Rgba32_t& operator =(const Rgba32_t &rhs)/*! < Implementation of = operator */
         {
-            m_value[0] = rhs.m_value[0];
-            m_value[1] = rhs.m_value[1];
-            m_value[2] = rhs.m_value[2];
-            m_value[3] = rhs.m_value[3];
+            m_value[RGBA_B] = rhs.m_value[RGBA_B];
+            m_value[RGBA_G] = rhs.m_value[RGBA_G];
+            m_value[RGBA_R] = rhs.m_value[RGBA_R];
+            m_value[RGBA_A] = rhs.m_value[RGBA_A];
             return *this;
         }
 
@@ -296,10 +308,10 @@ namespace ito
 
         Rgba32_t& operator -=(const Rgba32_t &rhs)/*! < Implementation of -= operator with overflow handling */
         {
-            m_value[0] = static_cast<uint8>(std::max<int16>(m_value[0] - rhs.m_value[0], 0));
-            m_value[1] = static_cast<uint8>(std::max<int16>(m_value[1] - rhs.m_value[1], 0));
-            m_value[2] = static_cast<uint8>(std::max<int16>(m_value[2] - rhs.m_value[2], 0));
-            m_value[3] = static_cast<uint8>(std::max<int16>(m_value[4] - rhs.m_value[3], 0));
+            m_value[RGBA_B] = static_cast<uint8>(std::max<int16>(m_value[RGBA_B] - rhs.m_value[RGBA_B], 0));
+            m_value[RGBA_G] = static_cast<uint8>(std::max<int16>(m_value[RGBA_G] - rhs.m_value[RGBA_G], 0));
+            m_value[RGBA_R] = static_cast<uint8>(std::max<int16>(m_value[RGBA_R] - rhs.m_value[RGBA_R], 0));
+            m_value[RGBA_A] = static_cast<uint8>(std::max<int16>(m_value[RGBA_A] - rhs.m_value[RGBA_A], 0));
             return *this;
         }
 
@@ -314,10 +326,10 @@ namespace ito
 
         Rgba32_t& operator /=(const Rgba32_t &rhs)/*! < Implementation of /= operator with overflow handling and normalisation */
         {
-            m_value[0] = static_cast<uint8>(std::min<int16>(m_value[0] / rhs.m_value[0] * 255, 255));
-            m_value[1] = static_cast<uint8>(std::min<int16>(m_value[1] / rhs.m_value[1] * 255, 255));
-            m_value[2] = static_cast<uint8>(std::min<int16>(m_value[2] / rhs.m_value[2] * 255, 255));
-            m_value[3] = static_cast<uint8>(std::min<int16>(m_value[4] / rhs.m_value[3] * 255, 255));
+            m_value[RGBA_B] = static_cast<uint8>(std::min<int16>(m_value[RGBA_B] / rhs.m_value[RGBA_B] * 255, 255));
+            m_value[RGBA_G] = static_cast<uint8>(std::min<int16>(m_value[RGBA_G] / rhs.m_value[RGBA_G] * 255, 255));
+            m_value[RGBA_R] = static_cast<uint8>(std::min<int16>(m_value[RGBA_R] / rhs.m_value[RGBA_R] * 255, 255));
+            m_value[RGBA_A] = static_cast<uint8>(std::min<int16>(m_value[RGBA_A] / rhs.m_value[RGBA_A] * 255, 255));
             return *this;
         }
 
@@ -351,31 +363,25 @@ namespace ito
 
         bool operator ==(const Rgba32_t &rhs) const /*! < Implementation of == operator comparing each element including alpha channel, true if all are equal */
         {
-            return (m_value[0] == rhs.m_value[0]) && (m_value[1] == rhs.m_value[1]) && (m_value[2] == rhs.m_value[2] && (m_value[3] == rhs.m_value[3]));
+            return (m_value[RGBA_B] == rhs.m_value[RGBA_B]) && (m_value[RGBA_G] == rhs.m_value[RGBA_G]) && (m_value[RGBA_R] == rhs.m_value[RGBA_R] && (m_value[RGBA_A] == rhs.m_value[RGBA_A]));
         }
 
         bool operator !=(const Rgba32_t &rhs) const /*! < Implementation of != operator comparing each element including alpha channel, true if one is different */
         {
-            return (m_value[0] != rhs.m_value[0]) || (m_value[1] != rhs.m_value[1]) || (m_value[2] != rhs.m_value[2] || (m_value[3] != rhs.m_value[3]));
+            return (m_value[RGBA_B] != rhs.m_value[RGBA_B]) || (m_value[RGBA_G] != rhs.m_value[RGBA_G]) || (m_value[RGBA_R] != rhs.m_value[RGBA_R] || (m_value[RGBA_A] != rhs.m_value[RGBA_A]));
         }
-/*
-        template<typename _Type> _Type gray() const
-        {
-            return static_cast<_Type>(0.299 * v.r + 0.587 * v.g + 0.114 * v.b);
-        }
-*/
-        inline float32 gray() const {return static_cast<float32>(0.299 * m_value[1] + 0.587 * m_value[2] + 0.114 * m_value[3]);} /*! < Return the gray-value of the current RGB-Value*/
-        inline float32 grayAlpha() const {return static_cast<float32>((0.299 * m_value[1] + 0.587 * m_value[2] + 0.114 * m_value[3]) * m_value[0]);} /*! < Return the gray-value of the current ARGB-Value*/
 
-        uint8& alpha() {return m_value[0];}; /*! < Access to alpha-Channel*/
-        uint8& red()   {return m_value[1];}; /*! < Access to red-Channel*/
-        uint8& green() {return m_value[2];}; /*! < Access to green-Channel*/
-        uint8& blue()  {return m_value[3];}; /*! < Access to blue-Channel*/
+        inline float32 gray() const {return static_cast<float32>(0.299 * m_value[RGBA_R] + 0.587 * m_value[RGBA_G] + 0.114 * m_value[RGBA_B]);} /*! < Return the gray-value of the current RGB-Value*/
 
-        uint8 alpha() const {return m_value[0];}; /*! < Read out alpha-Channel*/
-        uint8 red()   const {return m_value[1];}; /*! < Read out red-Channel*/
-        uint8 green() const {return m_value[2];}; /*! < Read out green-Channel*/
-        uint8 blue()  const {return m_value[3];}; /*! < Read out blue-Channel*/
+        uint8& alpha() {return m_value[3];}; /*! < Access to alpha-Channel*/
+        uint8& red()   {return m_value[2];}; /*! < Access to red-Channel*/
+        uint8& green() {return m_value[1];}; /*! < Access to green-Channel*/
+        uint8& blue()  {return m_value[0];}; /*! < Access to blue-Channel*/
+
+        uint8 alpha() const {return m_value[3];}; /*! < Read out alpha-Channel*/
+        uint8 red()   const {return m_value[2];}; /*! < Read out red-Channel*/
+        uint8 green() const {return m_value[1];}; /*! < Read out green-Channel*/
+        uint8 blue()  const {return m_value[0];}; /*! < Read out blue-Channel*/
 
         uint32& argb() {return *((uint32*)m_value);}; /*! < Access to argb-Channel*/
         uint32 argb() const {return reinterpret_cast<uint32>(m_value);}; /*! < Read out argb-Channel*/
@@ -398,21 +404,21 @@ namespace ito
         RGBChannel_t(const uint8 &c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[0] = 0xFF;
+            m_value[3] = 0xFF;
             m_value[_COLOR] = c;
         }
 
         RGBChannel_t(const RGBChannel_t *rhs)/*! < Copy-Constructor for pointer */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[0] = 0xFF;
+            m_value[3] = 0xFF;
             m_value[_COLOR] = rhs->m_value[_COLOR];
         }
 
         RGBChannel_t(const RGBChannel_t &rhs)/*! < Copy-Constructor for lvalues */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[0] = 0xFF;
+            m_value[3] = 0xFF;
             m_value[_COLOR] = rhs->m_value[_COLOR];
         }
 
@@ -487,19 +493,31 @@ namespace ito
 
         bool operator !=(const RGBChannel_t &rhs) const /*! < Implementation of != operator comparing each element including alpha channel, true if one is different */
         {
-            return m_value[chan] != rhs.m_value[3];
+            return m_value[_COLOR] != rhs.m_value[_COLOR];
         }
 
-        uint8& value() {return m_value[_COLOR];}; /*! < Access to red-Channel*/
-        uint8 value() const {return m_value[_COLOR];}; /*! < Read out red-Channel*/
+        bool operator <(const RGBChannel_t &rhs) const /*! < Implementation of != operator comparing each element including alpha channel, true if one is different */
+        {
+            return (m_value[_COLOR] < rhs.m_value[_COLOR]);
+        }
+
+        bool operator >(const RGBChannel_t &rhs) const /*! < Implementation of != operator comparing each element including alpha channel, true if one is different */
+        {
+            return (m_value[_COLOR] < rhs.m_value[_COLOR]);
+        }
+
+        inline float32 gray() const {return static_cast<float32> (m_value[_COLOR]);}; /*! < Read out single channel and return as gray value*/
+
+        uint8& value() {return m_value[_COLOR];}; /*! < Access to single-Channel*/
+        uint8 value() const {return m_value[_COLOR];}; /*! < Read out single-Channel*/
     };
 
     typedef Rgba32_t rgba32;
-    typedef RGBChannel_t<0> alphaChannel;
-    typedef RGBChannel_t<1> redChannel;
-    typedef RGBChannel_t<2> greenChannel;
-    typedef RGBChannel_t<3> blueChannel;
-    //typedef cv::Vec4b rgba32;
+    typedef RGBChannel_t<3> alphaChannel;
+    typedef RGBChannel_t<2> redChannel;
+    typedef RGBChannel_t<1> greenChannel;
+    typedef RGBChannel_t<0> blueChannel;
+////////////////////////////////////////////////////////// DO NOT ADD ANY MEMBER VARIABLES TO RGBA_T / CHANNEL_T ///////////////////////////////////////////////////////////////////////
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 
