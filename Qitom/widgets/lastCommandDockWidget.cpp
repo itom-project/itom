@@ -243,6 +243,7 @@ void LastCommandDockWidget::propertiesChanged()
     else
     {
         m_lastCommandTreeWidget->clear();
+        m_lastTreeWidgetParent = NULL;
     }
 }
 
