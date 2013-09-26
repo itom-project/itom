@@ -100,11 +100,23 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     initPages();
 
     resize(700, 450);
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("DialogProperties");
+    QString key = settings.value("PropertyTreeNode", "00_general").toString();
+    settings.endGroup();
+
+    selectTabByKey(key);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogProperties::~DialogProperties()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("DialogProperties");
+    settings.setValue("PropertyTreeNode", m_CurrentPropertyKey);
+    settings.endGroup();
+
     PropertyPage page;
     foreach(page, m_pages)
     {
@@ -212,17 +224,75 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogProperties::setPageTitle()
+{
+    bool found = false;
+
+    QMap<QString, PropertyPage>::iterator it = m_pages.find(m_CurrentPropertyKey);
+
+    if (it != m_pages.end())
+    {
+        m_pPageTitle->setText(it->m_title);
+
+        if (it->m_widget)
+        {
+            it->m_visited = true;
+            m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(it->m_widget));
+            found = true;
+        }
+    }
+
+    if (!found)
+    {
+        m_pStackedWidget->setCurrentWidget(m_pEmptyPage);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= NULL*/)
+{
+    bool found = false;
+
+    if (parent == NULL)
+    {
+        parent = m_pCategories->invisibleRootItem();
+    }
+    else
+    {
+        QString currentKey = parent->data(1, Qt::DisplayRole).toString();
+        if (QString::compare(key, currentKey, Qt::CaseInsensitive) == 0)
+        {
+            found = true;
+            m_pCategories->setCurrentItem(parent);
+        }
+    }
+
+    if (!found) //search all childs...
+    {
+        for(int i = 0; i < parent->childCount(); ++i)
+        {
+            found = selectTabByKey(key, parent->child(i));
+            if (found) 
+            {
+                break;
+            }
+        }
+    }
+
+    return found;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
 {
     bool found = false;
 
     if (current)
     {
-        QString key = current->data(1, Qt::DisplayRole).toString();
+        m_CurrentPropertyKey = current->data(1, Qt::DisplayRole).toString();
+        QMap<QString, PropertyPage>::iterator it = m_pages.find(m_CurrentPropertyKey);
 
-        QMap<QString, PropertyPage>::iterator it = m_pages.find(key);
-
-        if ( it != m_pages.end() )
+        if (it != m_pages.end())
         {
             m_pPageTitle->setText(it->m_title);
 

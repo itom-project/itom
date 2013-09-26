@@ -55,6 +55,8 @@ public:
     DialogProperties(QWidget * parent = 0, Qt::WindowFlags f = 0);
     ~DialogProperties();
 
+    bool selectTabByKey(QString &key, QTreeWidgetItem *parent = NULL);
+
 protected:
     void initPages();
 
@@ -71,8 +73,9 @@ private:
 
     QLabel *m_pPageTitle;
     QFrame *m_pLine;
-
     QWidget *m_pEmptyPage;
+
+    QString m_CurrentPropertyKey;
 
     QMap<QString, PropertyPage> m_pages;
 
@@ -82,6 +85,7 @@ signals:
 public slots:
 
 private slots:
+    void setPageTitle();
     void categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void accepted();
     void rejected();
