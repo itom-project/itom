@@ -50,16 +50,12 @@ namespace ito {
 /*static */RetVal IOHelper::openGeneralFile(QString generalFileName, bool openUnknownsWithExternalApp, bool showMessages, QWidget* parent, const char* errorSlotMemberOfParent, bool globalNotLocalWorkspace /*= true*/)
 {
     QFile file(generalFileName);
+    ito::RetVal retval(ito::retOk);
 
     if (!file.exists())
     {
-        if (showMessages)
-        {
-            QMessageBox msgBox(parent);
-            msgBox.setText(tr("File '%1' does not exist").arg(generalFileName));
-            msgBox.exec();
-        }
-        return RetVal(retError, 1001, tr("file does not exist").toAscii().data());
+        retval += RetVal(retError, 1001, tr("file %1 does not exist").arg(generalFileName).toAscii().data());
+        goto end;
     }
     else
     {
@@ -68,19 +64,23 @@ namespace ito {
 
         if (suffix == "py")
         {
-            return openPythonScript(generalFileName);
+            retval += openPythonScript(generalFileName);
+            goto end;
         }
         else if (suffix == "idc") //itom data collection
         {
-            return importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            goto end;
         }
         else if (suffix == "mat") //matlab file
         {
-            return importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            goto end;
         }
         else if (suffix == "ui") //UI file
         {
-            return openUIFile(generalFileName, parent, errorSlotMemberOfParent);
+            retval += openUIFile(generalFileName, parent, errorSlotMemberOfParent);
+            goto end;
         }
         else //check whether there is a plugin which can open this file
         {
@@ -117,7 +117,8 @@ namespace ito {
 
                 if (filter)
                 {
-                    return uiOpenFileWithFilter(filter, generalFileName, parent, globalNotLocalWorkspace);
+                    retval += uiOpenFileWithFilter(filter, generalFileName, parent, globalNotLocalWorkspace);
+                    goto end;
                 }
             }
         }
@@ -131,26 +132,35 @@ namespace ito {
             }
             else
             {
-                if (showMessages)
-                {
-                    QMessageBox msgBox(parent);
-                    msgBox.setText(tr("File '%1' could not be opened with registered external application").arg(generalFileName));
-                    msgBox.exec();
-                }
-                return RetVal(retError, 1002, tr("file could not be opened with external application").toAscii().data());
+                retval += RetVal(retError, 1002, tr("File '%1' could not be opened with registered external application").arg(generalFileName).toAscii().data());
+                goto end;
             }
         }
         else
         {
-            if (showMessages)
-            {
-                QMessageBox msgBox(parent);
-                msgBox.setText(tr("File '%1' can not be opened with this application").arg(generalFileName));
-                msgBox.exec();
-            }
-            return RetVal(retError, 1002, tr("file can not be opened with this application").toAscii().data());
+            retval += RetVal(retError, 1002, tr("file %1 can not be opened with this application").arg(generalFileName).toAscii().data());
+            goto end;
         }
     }
+
+end:
+    if (retval.containsWarningOrError())
+    {
+        if (showMessages)
+        {
+            QMessageBox msgBox(parent);
+            if (retval.errorMessage() != NULL)
+            {
+                QString errStr = retval.errorMessage();
+                msgBox.setText(errStr);
+            }
+            else
+                msgBox.setText("unknown error opening file");
+            msgBox.exec();
+        }
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

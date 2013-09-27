@@ -186,6 +186,10 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
                 r = PyObjGetBytes(repr2, strict, ok);
                 Py_DECREF(repr2);
             }
+            else
+            {
+                ok = false;
+            }
         } 
         else 
         {
