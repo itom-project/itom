@@ -1069,9 +1069,10 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 
 
 PyDoc_STRVAR(dataObjectAttDims_doc,"number of dimensions of this data object\n\
+\n\
 Notes \n\
 ----- \n\
-{int} : ReadOnly \n\
+read-only property \n\
 ");
 PyObject* PythonDataObject::PyDataObj_GetDims(PyDataObject *self, void * /*closure*/)
 {
@@ -3509,16 +3510,8 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
 
 PyDoc_STRVAR(pyDataObjectConj_doc,"conj() -> complex-conjugates all elements of this dataObject (inline). \n\
 \n\
-Returns \n\
-------- \n\
-doctodo \n\
-\n\
-Notes \n\
------ \n\
-Every value of this dataObject is replaced by its complex-conjugate value. If the data type of this dataObject \n\
-is no complex data type, a TypeError is raised. \n\
-\n\
-");
+Every value of this dataObject is replaced by its complex-conjugate value. If the data type of this dataObject \
+is no complex data type, a TypeError is raised.");
 PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3550,9 +3543,7 @@ copy of this dataObject \n\
 \n\
 Notes \n\
 ----- \n\
-If the data type of this dataObject is no complex data type, a TypeError is raised.\n\
-\n\
-");
+If the data type of this dataObject is no complex data type, a TypeError is raised.");
 PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3589,11 +3580,8 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
 
 PyDoc_STRVAR(pyDataObjectAdj_doc, "adj() -> Adjugate all elements (inline)\n\
 \n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+Every value of this dataObject is replaced by its adjugate value. If the data type of this dataObject \
+is no complex data type, a TypeError is raised.");
 PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3621,13 +3609,15 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(pyDataObjectAdjugate_doc, "adjugate() -> Return the adjugate, element-wise\n\
+PyDoc_STRVAR(pyDataObjectAdjugate_doc, "adjugate() -> returns a copy of this dataObject where every element is its adjugate. \n\
+\n\
+Returns \n\
+------- \n\
+copy of this dataObject \n\
 \n\
 Notes \n\
 ----- \n\
-doctodo\n\
-\n\
-");
+If the data type of this dataObject is no complex data type, a TypeError is raised.");
 PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3661,17 +3651,11 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     return (PyObject*)retObj;
 }
 
-PyDoc_STRVAR(pyDataObjectTrans_doc, "trans() -> returns transposed matrix\n\
+PyDoc_STRVAR(pyDataObjectTrans_doc, "trans() -> returns a plane-wise transposed dataObject\n\
 \n\
 Returns \n\
 -------- \n\
-doctodo\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+A copy of this dataObject is returned where every plane is its transposed plane.");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3731,17 +3715,22 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     //return (PyObject*)retObj;
 }
 
-PyDoc_STRVAR(pyDataObjectMakeContinuous_doc, "makeContinuous() -> return continuous representation of dataObject (if not continuous yet, else returns shallow copy of original data object\n\
+PyDoc_STRVAR(pyDataObjectMakeContinuous_doc, "makeContinuous() -> return continuous representation of dataObject\n\
+\n\
+Per default a dataObject with more than two dimensions allocates separated chunks of memory for every plane, where \
+a plane is always the matrix given by the last two dimensions. This separated storage usually allows allocating more \
+memory for huge for instance three dimensional matrices. However, in order to generate a dataObject that is directly \
+compatible to Numpy or other C-style matrix structures, the entire allocated memory must be in one block, that is called \
+continuous. If you create a Numpy array from a dataObject that is not continuous, this function is implicitely called \
+in order to firstly make the dataObject continuous before passing to Numpy. \n\
 \n\
 Returns \n\
 -------- \n\
-doctodo\n\
+continuous dataObject\n\
 \n\
 Notes \n\
 ----- \n\
-doctodo\n\
-\n\
-");
+if this dataObject already is continuous, a simple shallow copy is returned");
 PyObject* PythonDataObject::PyDataObject_makeContinuous(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -3768,16 +3757,12 @@ PyDoc_STRVAR(pyDataObjectSize_doc,"size([index]) -> returns the size of this dat
 \n\
 Parameters  \n\
 ------------\n\
-index : {PyDataObject}, optional\n\
+index : {int}, optional\n\
+	If index is given, only the size of the indicated dimension is returned as single number (0 <= index < number of dimensions) \n\
 \n\
 Returns \n\
 -------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+A tuple containing the sizes of all dimensions or one single size value if 'index' is indicated.");
 PyObject* PythonDataObject::PyDataObject_size(PyDataObject *self, PyObject* args)
 {
     if(self->dataObject == NULL)
@@ -3829,20 +3814,17 @@ PyObject* PythonDataObject::PyDataObject_size(PyDataObject *self, PyObject* args
     return retList;
 }
 
-PyDoc_STRVAR(pyDataObjectCopy_doc,"copy(region_only=0) -> todo\n\
+PyDoc_STRVAR(pyDataObjectCopy_doc,"copy(regionOnly=0) -> returns a deep copy of this dataObject\n\
 \n\
 Parameters \n\
 ----------- \n\
-regionOnly : {}, optional \n\
+regionOnly : {bool}, optional \n\
+	If regionOnly is 1, only the current region of interest of this dataObject is copied, else the entire dataObject \
+	including the current settings concerning the region of interest are deeply copied [default].\n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+Deep copy of this dataObject");
 PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args)
 {
     if(self->dataObject == NULL) return 0;
@@ -3897,20 +3879,16 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
 
 }
 
-PyDoc_STRVAR(pyDataObjectMul_doc, "mul() -> a.mul(b) returns element wise multiplication of a*b and returns result\n\
+PyDoc_STRVAR(pyDataObjectMul_doc, "mul(obj) -> a.mul(b) returns element wise multiplication of a*b\n\
 \n\
 Parameters  \n\
 ------------\n\
-doctodo\n\
+obj : {dataObject} \n\
+	dataObject whose values are element-wisely multiplied with the values in this dataObject. \n\
 \n\
 Returns \n\
 -------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+Resulting multiplied data object.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
     if(self->dataObject == NULL) return 0;
@@ -3946,21 +3924,16 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     return (PyObject*)retObj;
 }
 
-PyDoc_STRVAR(pyDataObjectDiv_doc, "div() -> a.div(b) returns element wise division of a./b and returns result\n\
+PyDoc_STRVAR(pyDataObjectDiv_doc, "div(obj) -> a.div(b) returns element wise division of a./b and returns result\n\
 \n\
 Parameters  \n\
 ------------\n\
-doctodo \n\
+obj : {dataObject} \n\
+	Every value in this data object is divided by the corresponding value in obj. \n\
 \n\
 Returns \n\
 -------- \n\
-doctodo \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+Resulting divided data object.");
 PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 {
     if(self->dataObject == NULL) return 0;
@@ -3997,10 +3970,6 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 }
 
 PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newSizes) -> Returns reshaped shallow copy of data object  \n\
-\n\
-Returns \n\
-------- \n\
-reshaped shallow copy of data object\n\
 \n\
 Notes \n\
 ----- \n\
@@ -4158,15 +4127,13 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     return (PyObject*)retObj;
 }
 
-PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> todo\n\
+PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> returns information about the current region of interest of this data object\n\
 \n\
-Returns \n\
-------- \n\
+This method returns a tuple with two elements: The first is a list with the original sizes of this data object, \
+the second is a list with the offsets from the original data object to the first value in the current region of interest \n\
 \n\
-Notes \n\
------ \n\
-locateROI returns a tuple with two elements. The first is a list with the original sizes of this matrix, the second is a list with the offset for each axe in order to get from the original first element to the first element in the given ROI \n\
-");
+If no region of interest is set (hence: full region of interest), the first list corresponds to the one returned by size(), \
+the second list is a zero-vector.");
 PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 {
     if(self->dataObject == NULL)
@@ -4201,16 +4168,26 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
     return result;
 }
 
-PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI() -> \n\
+PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsetList) -> adjusts the size and position of the region of interest of this data object\n\
 \n\
-Returns \n\
--------- \n\
+For every data object, it is possible to define a region of interest such that following commands only refer to this subpart. \n\
+Use this command to adjust the current size and position of this region of interest by passing an offset list, that contains \
+integer numbers with twice the size than the number of dimensions. \n\
 \n\
-Notes \n\
------ \n\
-doctodo\n\
+Example:: \n\
+	d = dataObject([5,4]) \n\
+	droi = d \n\
+	droi.adjustROI( [-2,0,-1,-1] ) \n\
+	\n\
+Now droi is a region of interest of the original data object whose first value is equal to d[2,1] and its size is (3,2) \n\
 \n\
-");
+Parameters \n\
+----------- \n\
+offsetList : {list of integers} \n\
+	This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
+	current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
+	second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
+	shrink towards the center.");
 PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args)
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.
@@ -4299,17 +4276,16 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 
 PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> returns a squeezed shallow copy (if possible) of this data object. \n\
 \n\
+This method removes every dimension with size equal to 1. Take care, that \n\
+none of the last two dimensions is considered by this squeeze-command. \n\
+\n\
 Returns \n\
 -------- \n\
-ShallowCopy : {dataObject}\n\
-    At least 2D or more object with all dimensions bigger than 1 expept the x/y-Dimension.\n\
+The squeezed data object where all kept planes are shallow copies of the original plane. \n\
 \n\
 Notes \n\
 ----- \n\
-\n\
-This method removes every dimension with size equal to 1. Take care, that \n\
-none of the last two dimensions is considered by this squeeze-command. \n\
-The squeezed return value is a shallow copy of the original dataObject and hence changes in its values\n\
+The returned squeezed data object is a shallow copy of the original data object and hence changes in its values\n\
 will also change the original data set.\n\
 (This command is equal to numpy.squeeze)");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
@@ -5760,14 +5736,12 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
 PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> returns nested list of content of data object\n\
 \n\
+This method returns a nested list with all values of this data object. The recursion level of this nested list \
+corresponds to the number of dimensions. The outer list corresponds to the first dimension. \n\
+\n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");
+Nested list with values of data object (int, float or complex depending on type of data object)");
 PyObject* PythonDataObject::PyDataObj_ToList(PyDataObject *self)
 {
     if(self->dataObject == NULL)
