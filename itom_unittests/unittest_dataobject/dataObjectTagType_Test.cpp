@@ -71,7 +71,7 @@ public:
 	ito::DataObjectTagType AsgnObj4;
 };
 
-TYPED_TEST_CASE(dataObjectTagType_Test,ItomDataTypes);
+TYPED_TEST_CASE(dataObjectTagType_Test,ItomDataStandardTypes);
 
 //setTag_Test
 /*!

@@ -12,7 +12,7 @@
 
 
 /*! \class AddressTest
-	\brief Address test for all data types declared as "ItomDataTypes"
+	\brief Address test for all data types declared as "ItomDataAllTypes"
 
 	This is a basic test class for any matrix of any data type. This test class confirms if the different parameters of already declared matrices are alright.
 */
@@ -58,7 +58,7 @@ public:
 /*!
 	This test class declares and defines different possible multi dimensional matrices and tests if the values of different elements in matrices are unchanged.
 */
-TYPED_TEST_CASE(AddressTest, ItomDataTypes);
+TYPED_TEST_CASE(AddressTest, ItomDataAllTypes);
 
 TYPED_TEST(AddressTest, checkValues)
 {

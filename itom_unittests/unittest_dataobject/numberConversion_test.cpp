@@ -15,7 +15,7 @@
 template <typename _Tp> class Real_ComplexTest : public ::testing::Test { };
 
 
-TYPED_TEST_CASE(Real_ComplexTest, ItomDataTypes);
+TYPED_TEST_CASE(Real_ComplexTest, ItomDataStandardTypes);
 
 //!< Test for numberConversion<type>() function.
 TYPED_TEST(Real_ComplexTest, numberConversionIntToFloat_Test)

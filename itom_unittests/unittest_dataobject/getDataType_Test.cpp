@@ -17,7 +17,7 @@
 */
 template <typename _Tp> class getDataTypeTest : public ::testing::Test { };
 
-TYPED_TEST_CASE(getDataTypeTest, ItomDataTypes);
+TYPED_TEST_CASE(getDataTypeTest, ItomDataStandardTypes);
 
 //! getDataType_Test
 /*!

@@ -131,7 +131,7 @@ public:
 	  typedef _Tp valueType;	
 	};
 
-TYPED_TEST_CASE(dataTest, ItomDataTypes);
+TYPED_TEST_CASE(dataTest, ItomDataStandardTypes);
 
 //checkZeros
 /*!

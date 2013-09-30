@@ -18,7 +18,7 @@
 */
 template <typename _Tp> class complexToReal_Test : public ::testing::Test { };
 
-TYPED_TEST_CASE(complexToReal_Test, ItomDataTypes);
+TYPED_TEST_CASE(complexToReal_Test, ItomDataStandardTypes);
 
 //! Test for convertCmplxTypeToRealType() function with different variables of different Datatypes.
 TYPED_TEST(complexToReal_Test, convertCmplxTypeToRealType_Test)
