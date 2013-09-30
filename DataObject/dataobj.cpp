@@ -1660,11 +1660,12 @@ RetVal DataObject::deepCopyPartial(DataObject &rhs)
 
     ito::RetVal ret = fListDeepCopyPartialFunc[m_type](*this, rhs);
 
-    if(!ret.containsError())
-    {
-        this->copyTagMapTo(rhs);   //Deepcopy the tagspace
-        this->copyAxisTagsTo(rhs); //Deepcopy the tagspace
-    }
+    //in copypartial, no tags or axis (offsets, scales...) should be copy to core object!
+    //if(!ret.containsError())
+    //{
+    //    this->copyTagMapTo(rhs);   //Deepcopy the tagspace
+    //    this->copyAxisTagsTo(rhs); //Deepcopy the tagspace
+    //}
     return ret;
 }
 
