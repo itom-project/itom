@@ -9,19 +9,19 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <stdio.h>
-
+#include <qdiriterator.h>
 #include <qfile.h>
+#include <qtimer.h>
 #include <qsortfilterproxymodel.h>
 #include <qdesktopservices.h>
 #include <qstringlistmodel.h>
-
+#include "../widgets/helpDockWidget.h"
 #include "../models/leafFilterProxyModel.h"
+#include <qpainter.h>
+
 
 // Debug includes
 #include <qdebug.h>
-
-// Global variables and const
-
 
 
 
@@ -33,35 +33,69 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
 	m_pMainModel(NULL),
     m_pMainFilterModel(NULL),
     m_pHistory(NULL),
-	m_dbPath("F:\\itom-git\\build\\itom\\PythonHelp.db")
+	m_dbPath(qApp->applicationDirPath()+"\\help")
 {
     ui.setupUi(this);
+	//connect(ui.commandLinkButton, SIGNAL(moveOver()), this, SLOT(showTreeview()));
 
 	// Initialize Variables
+	TreeCloseTimer = new QTimer(this);
+	connect(TreeCloseTimer, SIGNAL(timeout()), this, SLOT(unshowTreeview()));
+	TreeCloseTimer->setSingleShot(true);
+	TreeCloseTimer->setInterval(5000);
+
     m_pMainFilterModel = new LeafFilterProxyModel(this);
     m_pMainModel = new QStandardItemModel(this);
     m_pHistory = new QStringList();
     m_pMainFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(m_dbPath);    
+	reloadDB();
 
-	//Create and Display Mainmodel
-	m_pMainModel->clear();
-    ui.treeView->reset();
-    //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
-    QList<QString> sqlList = ReadSQL("");
-    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", sqlList);
-    m_pMainFilterModel->setSourceModel(m_pMainModel);
-    ui.treeView->setModel(m_pMainFilterModel);
-	m_pDB.close();
+	//Install Eventfilter
+	ui.commandLinkButton->installEventFilter(this);
+	ui.treeView->installEventFilter(this);
+	ui.textBrowser->installEventFilter(this);
 }
+
+
+// Event when the cursor leaves the widget
+void HelpTreeDockWidget::leaveEvent( QEvent * event )
+{
+	TreeCloseTimer->start();
+} 
+
+// Event when the cursor enters/reenters the widget
+void HelpTreeDockWidget::enterEvent( QEvent * event )
+{
+	TreeCloseTimer->stop();
+}
+
+
+// Filter the events for showing and hiding the treeview
+bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	if (obj == ui.commandLinkButton && event->type() == QEvent::Enter)
+	{
+		showTreeview();
+		return true;
+	}
+	else if (obj == ui.textBrowser && event->type() == QEvent::Enter)
+	{
+		unshowTreeview();
+	}
+	return QObject::eventFilter(obj, event);
+ }
 
 
 // GUI-on_close
 HelpTreeDockWidget::~HelpTreeDockWidget()
 {
-	m_pDB.close();
+	while(m_DBList.length() > 0)
+	{
+		m_DBList.first().close();
+		m_DBList.first().removeDatabase(m_DBList.first().databaseName());
+		m_DBList.removeFirst();
+	}
 }
 
 
@@ -95,7 +129,16 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
         {
             items.takeFirst();
             QStandardItem *node = new QStandardItem(name);
-			node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
+			if (splitt[0][0] != 'l')
+			{
+				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
+			}
+			else
+			{
+				// Wenn man in der nächsten Zeile vor die letzte Klammer eine -1 setzt, kann man das L am ANfang für Link wegschneiden
+				//name = splitt[0].right(splitt[0].length());
+				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
+			}
 			node->setEditable(false);
             node->setData(splitt[1],MyR+1);
             node->setToolTip(splitt[1]);
@@ -107,7 +150,16 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
             items.takeFirst();
             int li = path.lastIndexOf(".");
             QStandardItem *node = new QStandardItem(path.mid(li+1));
-            node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
+			if (splitt[0][0] != 'l')
+			{
+				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]+'.png'));
+			}
+			else
+			{
+				// Wenn man in der nächsten Zeile vor die letzte Klammer eine -1 setzt, kann man das L am ANfang für Link wegschneiden
+				//name = splitt[0].right(splitt[0].length());
+				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
+			}
 			node->setEditable(false);
             node->setData(path,MyR+1);                
             CreateItemRek(model, *node, path, items);  
@@ -122,41 +174,41 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
 
 
 // Get Data from SQL File and store it in a table
-QList<QString> HelpTreeDockWidget::ReadSQL(const QString &filter)
+ito::RetVal HelpTreeDockWidget::readSQL(const QString &filter, const QString &file, QList<QString> &items)
 {
-	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(m_dbPath);   
- 
-	QList<QString> items;
+	ito::RetVal retval = ito::retOk;
+	QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",file);
+	database.setDatabaseName(file);
 
-	QFile file( m_dbPath );
+	//QList<QString> items;
+	QFile f( file );
   
-	if( file.exists() )
+	if( f.exists() )
 	{
-		bool ok = m_pDB.open();
+		bool ok = database.open();
 		if(ok)
 		{
-			QSqlQuery query("SELECT type, prefix, prefixL, name FROM itomCTL ORDER BY prefix");
+			QSqlQuery query("SELECT type, prefix, prefixL, name FROM itomCTL ORDER BY prefix", database);
 			query.exec();
 			while (query.next())
 			{
 				items.append(query.value(0).toString() + QString(":") + query.value(1).toString());
 			}
+
+			m_DBList.append(database);
 		}
-		m_pDB.close();	
+		else
+		{
+			retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be opened", file.toAscii().data());
+		}
+		database.close();
 	}
 	else
 	{
-		ui.treeView->setDisabled(1);
-		QMessageBox msgBox;
-		msgBox.setText("Help-Database not found");
-		msgBox.setInformativeText("Help-Tree will be disabled until itom is restarted!");
-		msgBox.setStandardButtons(QMessageBox::Ok);
-		msgBox.setDefaultButton(QMessageBox::Ok);
-		msgBox.exec();
+		retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be found", file.toAscii().data());
 	}	
-	m_pDB.close();
-	return items;
+	QSqlDatabase::removeDatabase(file);
+	return retval;
 }
 
 
@@ -168,7 +220,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
     int Errorcode = ErrorS.toInt();
 	QStringList ErrorList;
 
-	Errorcode = 0;
+	
 
     /*********************************/
     // Allgemeine HTML sachen anfügen /
@@ -190,7 +242,6 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 		ErrorList = docError.capturedTexts();
         QStringListModel *listM = new QStringListModel();
         listM->setStringList(ErrorList);
-		ui.listView->setModel(listM);
 		//Helptext.replace(docError, "");
 		// ...
 	}
@@ -215,8 +266,9 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
         rawContent.replace('\n',"<br/>");
         // Shortdescription einfügen
         // -------------------------------------
-        if (ShortDesc != "-")
-            rawContent.insert(0,ShortDesc+""); // ShortDescription mit ID versehen: id=\"sDesc\" um getrennt zu highlighten
+        //if (ShortDesc != "-")
+			
+            //rawContent.insert(0,ShortDesc+""); // ShortDescription mit ID versehen: id=\"sDesc\" um getrennt zu highlighten
         // Parameter formatieren
         // -------------------------------------
 	}
@@ -326,36 +378,60 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 
 
 // Display the Help-Text
-void HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpage)
-{
-	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(m_dbPath);   
+ito::RetVal HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpage)
+{ 
+	ito::RetVal retval = ito::retOk;
+
 	ui.textBrowser->clear();
-	bool ok = m_pDB.open();
-	QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'");
-	query.exec();
-	query.next();
-	if (ok)
-	{
-		if (ui.checkBox->checkState() == false)
-			ui.textBrowser->setDocument(HighlightContent(query.value(6).toString(), query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
-		else
-		{
-			QString output = QString(HighlightContent(query.value(6).toString(), query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(6).toString())->toHtml());
-			output.replace("<br/>","<br/>\n");
-			ui.textBrowser->document()->setPlainText(output);             
-		}
-		if (newpage == 1)
-		{
-			m_pHistoryIndex++;
-			m_pHistory->insert(m_pHistoryIndex, path.toUtf8());
-			for (int i = m_pHistory->length(); i > m_pHistoryIndex; i--)
+	bool ok = false;
+
+	QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+
+    while(it.hasNext())
+    {
+		QString temp = it.next();
+		QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",temp);
+		if (!retval.containsWarningOrError())
+		{// display the help: Run through all the files in the directory
+			database.setDatabaseName(temp);
+			ok = database.open();
+			QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'", database);
+			query.exec();
+			bool found = query.next();
+			if (ok && found)
 			{
-				m_pHistory->removeAt(i);
+				QByteArray docCompressed = query.value(6).toByteArray();
+				QString doc;
+				if (docCompressed.size() > 0)
+				{
+					doc = qUncompress(docCompressed);
+				}
+
+				if (ui.checkBox->checkState() == false)
+					ui.textBrowser->setDocument(HighlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
+				else
+				{
+					QString output = QString(HighlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString())->toHtml());
+					output.replace("<br/>","<br/>\n");
+					ui.textBrowser->document()->setPlainText(output);             
+				}
+				if (newpage == 1)
+				{
+					m_pHistoryIndex++;
+					m_pHistory->insert(m_pHistoryIndex, path.toUtf8());
+					for (int i = m_pHistory->length(); i > m_pHistoryIndex; i--)
+					{
+						m_pHistory->removeAt(i);
+					}
+				}
+				QSqlDatabase::removeDatabase(temp);
+				break;
 			}
-		} 
-	}
-	m_pDB.close();
+			QSqlDatabase::removeDatabase(temp);
+		}
+    }
+
+	return retval;
 }
 
 
@@ -382,10 +458,10 @@ QModelIndex HelpTreeDockWidget::FindIndexByName(const QString Modelname)
 	return current->index();
 }
 
-
 // Filter the mainmodel
 void HelpTreeDockWidget::liveFilter(const QString &filtertext)
 {
+	showTreeview();
     m_pMainFilterModel->setFilterRegExp(filtertext);
 }
 
@@ -508,22 +584,42 @@ void HelpTreeDockWidget::navigateForwards()
     }
 }
 
+// Reload Database and clear search-edit
 void HelpTreeDockWidget::reloadDB()
 {
-	m_pDB.close();
-
-	m_pDB = QSqlDatabase::addDatabase("QSQLITE");
-    m_pDB.setDatabaseName(m_dbPath);    
+	ito::RetVal retval;
+	QList<QString> sqlList;
 
 	//Create and Display Mainmodel
 	m_pMainModel->clear();
     ui.treeView->reset();
     //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
-    // gcc does NOT accept a reference on a function return value, so we MUST use a temporary variable here
-    QList<QString> tmpStr = ReadSQL("");
-    CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", tmpStr);
-    m_pMainFilterModel->setSourceModel(m_pMainModel);
-    ui.treeView->setModel(m_pMainFilterModel);
+	QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    while(it.hasNext())
+    {
+		sqlList.clear();
+		QString temp = it.next();
+        retval += readSQL("", temp, sqlList);
 
-	m_pDB.close();
+		if (!retval.containsWarningOrError())
+		{
+			CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", sqlList);
+		}
+    }
+	m_pMainFilterModel->setSourceModel(m_pMainModel);
+    ui.treeView->setModel(m_pMainFilterModel);
+}
+
+// Tree einblenden
+void HelpTreeDockWidget::showTreeview()
+{
+	ui.horizontalLayout_3->setStretch(1,60);
+	ui.horizontalLayout_3->setStretch(2,37);
+}
+
+// Tree ausblenden
+void HelpTreeDockWidget::unshowTreeview()
+{
+	ui.horizontalLayout_3->setStretch(1,1);
+	ui.horizontalLayout_3->setStretch(2,1000);
 }

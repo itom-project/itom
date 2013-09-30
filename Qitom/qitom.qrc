@@ -1,12 +1,18 @@
 <RCC>
     <qresource prefix="/helpTreeDockWidget">
-        <file alias="package">icons/App-package-icon.png</file>
-        <file alias="module">icons/book-open-icon.png</file>
-        <file alias="routine">icons/HP-Control-icon.png</file>
         <file alias="help_style">styles/help/help_style.css</file>
-        <file alias="const">icons/constant.png</file>
-        <file alias="class">icons/class_icon.png</file>
-        <file>icons/unknown.png</file>
+        <file alias="class">icons/HelpTreeDocWidget/class.png</file>
+        <file alias="const">icons/HelpTreeDocWidget/constant.png</file>
+        <file alias="routine">icons/HelpTreeDocWidget/function.png</file>
+        <file alias="module">icons/HelpTreeDocWidget/module.png</file>
+        <file alias="package">icons/HelpTreeDocWidget/package.png</file>
+        <file alias="unknown">icons/HelpTreeDocWidget/unknown.png</file>
+        <file alias="link_unknown">icons/HelpTreeDocWidget/link_unknown.png</file>
+        <file alias="link_class">icons/HelpTreeDocWidget/link_class.png</file>
+        <file alias="link_const">icons/HelpTreeDocWidget/link_constant.png</file>
+        <file alias="link_module">icons/HelpTreeDocWidget/link_module.png</file>
+        <file alias="link_package">icons/HelpTreeDocWidget/link_package.png</file>
+        <file alias="link_routine">icons/HelpTreeDocWidget/link_routine.png</file>
     </qresource>
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
