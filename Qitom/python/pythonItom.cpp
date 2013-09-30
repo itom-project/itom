@@ -3220,6 +3220,43 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonItom::compressData(PyObject* pSelf, PyObject* pArgs)
+{
+	int level = -1;
+	const char *data = NULL;
+	int dataLength = 0;
+
+	if (!PyArg_ParseTuple(pArgs, "s#|i", &data, &dataLength, &level))
+	{
+		return NULL;
+	}
+
+	if ( level < -1 || level > 9)
+	{
+		return PyErr_Format(PyExc_RuntimeError, "compression level must be -1 (default: level 6) or between 0 and 9");
+	}
+
+	QByteArray uncompressed(data, dataLength);
+	QByteArray compressed = qCompress(uncompressed, level);
+	return PyBytes_FromStringAndSize(compressed.data(), compressed.size());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonItom::uncompressData(PyObject* pSelf, PyObject* pArgs)
+{
+	PyObject *byteObj = NULL;
+
+	if (!PyArg_ParseTuple(pArgs, "O!", &PyBytes_Type, &byteObj))
+	{
+		return NULL;
+	}
+
+	QByteArray compressed(PyBytes_AsString(byteObj), PyBytes_Size(byteObj));
+	QByteArray uncompressed = qUncompress(compressed);
+	return PyBytes_FromStringAndSize(uncompressed.data(), uncompressed.size());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 {
     int i = -1;
@@ -3465,6 +3502,8 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, NULL},
     {"loadIDC", (PyCFunction)PythonItom::PyLoadIDC, METH_VARARGS | METH_KEYWORDS, pyLoadIDC_doc},
     {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
+	{"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compresses the given string using the method qCompress"},
+	{"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompresses the given string using the method qUncompress"},
     {NULL, NULL, 0, NULL}
 };
 

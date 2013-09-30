@@ -120,6 +120,9 @@ public:
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
+	static PyObject* compressData(PyObject* pSelf, PyObject* pArgs);
+	static PyObject* uncompressData(PyObject* pSelf, PyObject* pArgs);
+
     static PyObject* setApplicationCursor(PyObject* pSelf, PyObject* pArgs);
 
 
