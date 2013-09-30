@@ -1379,7 +1379,11 @@ class DataObject
         */
         size_t getSize(int index) const
         {
-            if(index < 0 || index >= m_dims) return -1;            
+            if(index < 0 || index >= m_dims)
+            {
+                cv::error(cv::Exception(CV_StsAssert, "Requested dimension missmatch with object dimensions or maybe negative", "", __FILE__, __LINE__));
+                return 0;
+            }
             else
             {
 
