@@ -48,7 +48,7 @@ Both have the optional keyword parameter *areaIndex*, such that you define in wh
 the *areaIndex* parameter, the first area (top, left) is assumed (this is also the default in case that you don't use subplots). The *areaIndex* value is a fixed-point number
 beginning with 0 for the top-left area of the figure. Then, the index iterates row-wise through the entire grid of sub-plots.
 
-In the following example, a 2x1 grid is created where the left plot shows a 1D data object and the right plot contains the live stream of the dummy grabber camera instance:
+In the following example, a 1x2 grid is created where the left plot shows a 1D data object and the right plot contains the live stream of the dummy grabber camera instance:
 
 .. code-block:: python
     
