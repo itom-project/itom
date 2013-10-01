@@ -2056,6 +2056,23 @@ template<typename _Tp> RetVal OnesFunc(const size_t sizeY, const size_t sizeX, i
    return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, overloaded template method for creation of one-valued matrix-plane of RGBA32
+/*!
+
+    \param sizeY are the number of rows
+    \param sizeX are the number of columns
+    \param **dstMat is the pointer to the already allocated cv::Mat_<type>-matrix-plane
+    \return retOk
+    \sa zeros
+*/
+template<> RetVal OnesFunc<ito::rgba32>(const size_t sizeY, const size_t sizeX, int **dstMat)
+{
+   (*((cv::Mat_<ito::rgba32> *)(*dstMat))) = cv::Mat_<ito::rgba32>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+   memset( (*((cv::Mat*)(*dstMat))).ptr<ito::uint8>(), 255, static_cast<int>(sizeY) * static_cast<int>(sizeX) * sizeof(ito::rgba32));
+   return 0;
+}
+
 typedef RetVal (*tOnesFunc)(const size_t sizeY, const size_t sizeX, int **dstMat);
 MAKEFUNCLIST(OnesFunc);
 
@@ -4831,6 +4848,63 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
                     if(src2RowPtr[j] == zero) cv::error(cv::Exception(CV_StsAssert,"Division by zero not allowed for fixed point arithmetic and complex values","", __FILE__, __LINE__));
                     resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
                 }
+            }
+        }
+   }
+
+   return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which does a element-wise division of elements in first source matrix by elements in second source matrix.
+/*!
+    The result is stored in a result matrix, optionally the division can be scaled by a scaling factor, which is set to one by default.
+    For fixed point numbers or complex values, a division by zero will throw an error. For floating-point values the following (matlab-like)
+    implementation is used:
+
+    1.0/0.0 = Inf, 0.0/0.0 = Nan
+
+    \param *src1 is the first source matrix
+    \param *src2 is the second source matrix
+    \param *res is the result matrix, which must have the same size than the source matrices
+    \param double scale is the scaling factor (default: 1.0)
+    \return retOk
+*/
+template<> RetVal DivFunc<rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
+{
+    //the transpose flag of this matrix already is evaluated if src2 is not transposed
+   size_t numMats = src1->calcNumMats();
+
+   size_t lhsMatNum = 0;
+   size_t rhsMatNum = 0;
+   size_t resMatNum = 0;
+
+   const rgba32* src1RowPtr;
+   const rgba32* src2RowPtr;
+   ito::rgba32* resRowPtr;
+   cv::Mat_<rgba32>* srcMat1 = NULL;
+   cv::Mat_<rgba32>* dstMat = NULL;
+   cv::Mat_<rgba32>* srcMat2 = NULL;
+
+   for (size_t nmat = 0; nmat < numMats; nmat++)
+   {
+        cv::Mat_<rgba32> tempMat;
+        lhsMatNum = src1->seekMat(nmat, numMats);
+        rhsMatNum = src2->seekMat(nmat, numMats);
+        resMatNum = res->seekMat(nmat, numMats);
+        srcMat1 = (cv::Mat_<rgba32> *)(src1->get_mdata()[lhsMatNum]);        
+        srcMat2 = (cv::Mat_<rgba32> *)(src2->get_mdata()[rhsMatNum]);     
+        dstMat = (cv::Mat_<rgba32> *)(res->get_mdata()[resMatNum]);
+
+        for(int i = 0; i < srcMat1->rows; i++)
+        {
+            src1RowPtr = (rgba32*)srcMat1->ptr(i);
+            src2RowPtr = (rgba32*)srcMat2->ptr(i);
+            resRowPtr = (rgba32*)dstMat->ptr(i);
+
+            for(int j = 0; j < srcMat1->cols; j++)
+            {
+                resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
             }
         }
    }

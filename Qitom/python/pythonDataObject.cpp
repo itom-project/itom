@@ -81,7 +81,7 @@ Parameters \n\
 dims : {List of Integer}, optional \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {str}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 data : {str}, optional \n\
@@ -104,6 +104,8 @@ Recently the following types are supported:\n\
 * Floating-type (float32, float64 (=> double)),\n\
 \n\
 * Complex-type  (complex64 (2x float32), complex128 (2x float64)).\n\
+\n\
+* Color-type  (rgba32 (uint32 or uint[4] containing [B, G, R, I])).\n\
 \n\
 \n\
 Warning 'uint32' is not fully openCV-compatible and hence causes instability!\n\
@@ -5959,7 +5961,7 @@ Parameters \n\
 dims : {List of Integer} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {str}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -5970,7 +5972,10 @@ The dataObject : {dataObject}\n\
 Notes \n\
 ----- \n\
 \n\
-Creates a new itom-dataObject filled with ones.");
+For standard-types (integer, floating-point and complex) this function \n\
+creates a new itom-dataObject filled with ones. \n\
+\n\
+For color-types (rgba32) the object will be white [255 255 255 255].");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = 0;
