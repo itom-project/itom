@@ -2946,6 +2946,37 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
+{
+    QObject *obj = getWeakObjectReference(objectID);
+    QWidget *widget = qobject_cast<QWidget*>(obj);
+    RetVal retval;
+    if(widget)
+    {
+        const QMetaObject* metaObject = widget->metaObject();
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1)
+        {
+            retval += RetVal(retError,0,tr("The desired widget has no signals/slots defined that enable the pick points interaction").toAscii().data());
+        }
+        else
+        {
+            QMetaObject::invokeMethod(obj, "userInteractionStart", Q_ARG(int,1), Q_ARG(bool,false), Q_ARG(int,0));
+            /*int type = 1;
+            bool aborted = true;
+            QPolygonF points;
+            void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&type)), const_cast<void*>(reinterpret_cast<const void*>(&aborted)), const_cast<void*>(reinterpret_cast<const void*>(&points)) };
+            QMetaObject::activate(obj, obj->metaObject(), metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") - metaObject->methodOffset(), _a);*/
+        }
+    }
+   else
+    {
+        retval += RetVal(retError,0,tr("the objectID cannot be cast to a widget").toAscii().data() );
+    }
+
+    return retval;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)

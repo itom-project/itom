@@ -54,6 +54,9 @@ private slots:
     void plotWidgetDestroyed(QObject *obj);
     void userInteractionDone(int type, bool aborted, QPolygonF points);
 
+    public slots:
+
+
 signals:
     void finished();
     void userInteractionStart(int type, bool start, int maxNrOfPoints);

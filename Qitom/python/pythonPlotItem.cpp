@@ -186,8 +186,25 @@ maxNrPoints: {int}, optional \n\
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(unsigned int, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        locker.getSemaphore()->wait(-1);
-        retval += locker.getSemaphore()->returnValue;
+        bool finished = false;
+
+        while(!finished)
+        {
+            if (PyErr_CheckSignals())
+            {
+                retval += ito::RetVal(ito::retError,0,"pick points operation interrupted by user");
+                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(unsigned int, self->uiItem.objectID));
+            }
+            else
+            {
+                finished = locker.getSemaphore()->wait(200);
+            }
+        }
+
+        if (finished)
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
     }
 
     if(!PythonCommon::transformRetValToPyException(retval))
