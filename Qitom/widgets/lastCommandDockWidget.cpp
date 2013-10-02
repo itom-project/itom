@@ -35,6 +35,42 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QStringList LastCommandTreeWidget::mimeTypes() const
+{
+    QStringList types = QTreeWidget::mimeTypes();
+
+    if (types.contains("text/plain") == false)
+    {
+        types.append("text/plain");
+    }
+
+    return types;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QMimeData * LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem *> items) const
+{
+    QMimeData *mimeData = QTreeWidget::mimeData(items);
+    QStringList texts;
+
+    //data from a itom-internal model (e.g. last command history)
+    QByteArray encoded = mimeData->data("application/x-qabstractitemmodeldatalist");
+    QDataStream stream(&encoded, QIODevice::ReadOnly);
+
+    //check if it is really data from the command history (needs to only have strings and one column)
+    while (!stream.atEnd())
+    {
+        int row, col;
+        QMap<int,  QVariant> roleDataMap;
+        stream >> row >> col >> roleDataMap;
+        texts.append( roleDataMap[0].toString() );
+    }
+
+    mimeData->setData("text/plain", texts.join("\n").toAscii() );
+    return mimeData;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
     m_lastCommandTreeWidget(NULL),
@@ -43,10 +79,11 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, QWidget *pare
 {
     AbstractDockWidget::init();
 
-    m_lastCommandTreeWidget = new QTreeWidget(this);
+    m_lastCommandTreeWidget = new LastCommandTreeWidget(this);
+    m_lastCommandTreeWidget->installEventFilter(this);
     setContentWidget(m_lastCommandTreeWidget);
     m_lastCommandTreeWidget->header()->hide();
-    m_lastCommandTreeWidget->setDragDropMode(QAbstractItemView::DragOnly);
+    m_lastCommandTreeWidget->setDragDropMode( QAbstractItemView::DragOnly );
     m_lastCommandTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(m_lastCommandTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
     connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));

@@ -28,11 +28,25 @@
 #include <qwidget.h>
 #include <qaction.h>
 #include <qtoolbar.h>
+#include <qpoint.h>
 
 #include <qtreewidget.h>
 
 namespace ito
 {
+    class LastCommandTreeWidget : public QTreeWidget
+    {
+        Q_OBJECT
+
+    public:
+        LastCommandTreeWidget(QWidget * parent = 0) : QTreeWidget(parent) {};
+        virtual ~LastCommandTreeWidget() {};
+    
+    protected:
+        QStringList mimeTypes() const;
+        QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;
+    };
+
     class LastCommandDockWidget : public AbstractDockWidget
     {
         Q_OBJECT
@@ -50,7 +64,7 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-			QTreeWidget *m_lastCommandTreeWidget;
+			LastCommandTreeWidget *m_lastCommandTreeWidget;
             QMenu* m_pContextMenu;
             ShortcutAction* m_pActClearList;
             QTreeWidgetItem *m_lastTreeWidgetParent;
