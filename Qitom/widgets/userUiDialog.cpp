@@ -102,26 +102,6 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
             retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toAscii().data());
         }
 
-		if( contentWidget->windowTitle() != "" )
-		{
-			setWindowTitle( contentWidget->windowTitle() );
-		}
-		else
-		{
-			setWindowTitle( tr("itom") );
-		}
-		
-
-        QObject *child = NULL;
-        foreach(child, contentWidget->children())
-        {
-            if (child->inherits("ito::AbstractFigure"))
-            {
-                ((ito::AbstractFigure*)child)->setApiFunctionBasePtr(ITOM_API_FUNCS);
-                ((ito::AbstractFigure*)child)->setApiFunctionGraphBasePtr(ITOM_API_FUNCS_GRAPH);
-            }
-        }
-
 		retValue += init(contentWidget, buttonBarType, dialogButtons);
     }
 
@@ -131,6 +111,25 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
 RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons)
 {
     RetVal retValue(retOk);
+
+    if( contentWidget->windowTitle() != "" )
+	{
+		setWindowTitle( contentWidget->windowTitle() );
+	}
+	else
+	{
+		setWindowTitle( tr("itom") );
+	}
+
+    QObject *child = NULL;
+    foreach(child, contentWidget->children())
+    {
+        if (child->inherits("ito::AbstractFigure"))
+        {
+            ((ito::AbstractFigure*)child)->setApiFunctionBasePtr(ITOM_API_FUNCS);
+            ((ito::AbstractFigure*)child)->setApiFunctionGraphBasePtr(ITOM_API_FUNCS_GRAPH);
+        }
+    }
 
     contentWidget->setWindowFlags( Qt::Widget );
     m_uiWidget = contentWidget;

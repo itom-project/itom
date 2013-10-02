@@ -529,11 +529,11 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
     bool deleteOnClose = false;
     QString pluginClassName;
 
-    QMainWindow *mainWin = qobject_cast<QMainWindow*>( AppManagement::getMainWindow() );
-
     int type, buttonBarType;
     bool childOfMainWindow;
     UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose);
+
+    QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>( AppManagement::getMainWindow() ) : NULL;
 
     if(filename.indexOf("itom://") == 0)
     {
@@ -593,89 +593,34 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
     }
     else
     {
-        //int type, int buttonBarType, StringMap dialogButtons, bool childOfMainWindow
-        if(type == ito::UiOrganizer::typeDialog)
+        QFile file(QDir::cleanPath(filename));
+        if (file.exists())
         {
-            UserUiDialog::tButtonBarType bbBarType = UserUiDialog::bbTypeNo;
-            if(buttonBarType == UserUiDialog::bbTypeHorizontal) bbBarType = UserUiDialog::bbTypeHorizontal;
-            if(buttonBarType == UserUiDialog::bbTypeVertical) bbBarType = UserUiDialog::bbTypeVertical;
+            //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
+            file.open(QFile::ReadOnly);
+		    QFileInfo fileinfo(filename);
+		    QDir workingDirectory = fileinfo.absoluteDir();
+            m_uiLoader.setWorkingDirectory(workingDirectory);
+            wid = m_uiLoader.load(&file, mainWin);
+            file.close();
 
-            UserUiDialog *dialog = NULL;
-            if(childOfMainWindow)
+            if (wid == NULL)
             {
-                dialog = new UserUiDialog(filename, bbBarType, dialogButtons, retValue, mainWin);
-            }
-            else
-            {
-                dialog = new UserUiDialog(filename, bbBarType, dialogButtons, retValue, NULL);
-            }
-
-            if(dialog == NULL)
-            {
-                retValue += RetVal(retError, 1020, tr("dialog could not be created").toAscii().data());
-            }
-            else if(!retValue.containsError())
-            {
-                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-                setApiPointersToWidgetAndChildren(dialog);
-
-                if(m_garbageCollectorTimer == 0)
-                {
-                    m_garbageCollectorTimer = startTimer(5000);
-                }
-
-                if(deleteOnClose)
-                {
-                    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
-                }
-
-                set = new UiContainer(dialog);
-                *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                containerItem.container = set;
-                m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = dialog->metaObject()->methodOffset();
-                *objectID = addObjectToList(dialog);
-                *className = dialog->metaObject()->className();
-            }
-            else
-            {
-                DELETE_AND_SET_NULL(dialog);
+                retValue += RetVal(retError, 1007, tr("ui-file '%1' could not be correctly parsed.").arg(filename).toAscii().data());
             }
         }
-        else if(type == ito::UiOrganizer::typeMainWindow)
+        else
         {
-//            QUiLoader loader;
-            QFile file(QDir::cleanPath(filename));
-            if (!file.exists())
-            {
-                wid = NULL;
-                retValue += RetVal(retError, 1006, tr("filename does not exist").toAscii().data());
-            }
-            else
-            {
-		        //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
-                file.open(QFile::ReadOnly);
-		        QFileInfo fileinfo(filename);
-		        QDir workingDirectory = fileinfo.absoluteDir();
-                m_uiLoader.setWorkingDirectory(workingDirectory);
-                
-                if(childOfMainWindow)
-                {
-                    wid = m_uiLoader.load(&file, mainWin);
-                }
-                else
-                {
-                    wid = m_uiLoader.load(&file, NULL);
-                }
+            wid = NULL;
+            retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toAscii().data());
+        }
 
-                
-
-                file.close();
-                if (wid == NULL)
-                {
-                    retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toAscii().data());
-                }
-                else
+        if (!retValue.containsError())
+        {
+            if(type == ito::UiOrganizer::typeDialog)
+            {
+                //load the file and check whether it is inherited from qdialog. If so, directly load it, else stack it into a UserUiDialog
+                if (wid->inherits("QDialog"))
                 {
                     //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
                     setApiPointersToWidgetAndChildren(wid);
@@ -685,45 +630,109 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                         m_garbageCollectorTimer = startTimer(5000);
                     }
 
-                    win = qobject_cast<QMainWindow*>(wid);
-                    if(win)
+                    if(deleteOnClose)
                     {
-                        if(deleteOnClose)
+                        wid->setAttribute(Qt::WA_DeleteOnClose, true);
+                    }
+
+                    set = new UiContainer(qobject_cast<QDialog*>(wid));
+                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                    containerItem.container = set;
+                    m_dialogList[*dialogHandle] = containerItem;
+                    *initSlotCount = wid->metaObject()->methodOffset();
+                    *objectID = addObjectToList(wid);
+                    *className = wid->metaObject()->className();
+                }
+                else
+                {
+                    //int type, int buttonBarType, StringMap dialogButtons, bool childOfMainWindow
+                    UserUiDialog::tButtonBarType bbBarType = UserUiDialog::bbTypeNo;
+                    if(buttonBarType == UserUiDialog::bbTypeHorizontal) bbBarType = UserUiDialog::bbTypeHorizontal;
+                    if(buttonBarType == UserUiDialog::bbTypeVertical) bbBarType = UserUiDialog::bbTypeVertical;
+
+                    UserUiDialog *dialog = new UserUiDialog(wid, bbBarType, dialogButtons, retValue, mainWin);
+
+                    if(dialog == NULL)
+                    {
+                        retValue += RetVal(retError, 1020, tr("dialog could not be created").toAscii().data());
+                    }
+                    else if(!retValue.containsError())
+                    {
+                        //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+                        setApiPointersToWidgetAndChildren(dialog);
+
+                        if(m_garbageCollectorTimer == 0)
                         {
-                            win->setAttribute(Qt::WA_DeleteOnClose, true);
+                            m_garbageCollectorTimer = startTimer(5000);
                         }
 
-                        set = new UiContainer(win);
+                        if(deleteOnClose)
+                        {
+                            dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+                        }
+
+                        set = new UiContainer(dialog);
                         *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                         containerItem.container = set;
                         m_dialogList[*dialogHandle] = containerItem;
-                        *initSlotCount = win->metaObject()->methodOffset();
-                        *objectID = addObjectToList(win);
-                        *className = win->metaObject()->className();
+                        *initSlotCount = dialog->metaObject()->methodOffset();
+                        *objectID = addObjectToList(dialog);
+                        *className = dialog->metaObject()->className();
                     }
                     else
                     {
-                        wid->setWindowFlags(Qt::Window);
-
-                        if(deleteOnClose)
-                        {
-                            wid->setAttribute(Qt::WA_DeleteOnClose, true);
-                        }
-
-                        set = new UiContainer(wid,UiContainer::uiTypeQMainWindow);
-                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                        containerItem.container = set;
-                        m_dialogList[*dialogHandle] = containerItem;
-                        *initSlotCount = wid->metaObject()->methodOffset();
-                        *objectID = addObjectToList(wid);
-                        *className = wid->metaObject()->className();
+                        DELETE_AND_SET_NULL(dialog);
                     }
                 }
             }
-        }
-        else //dock widget
-        {
-            retValue += RetVal(retError, 0, tr("dock widget not implemented yet").toAscii().data());
+            else if(type == ito::UiOrganizer::typeMainWindow)
+            {
+                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+                setApiPointersToWidgetAndChildren(wid);
+
+                if(m_garbageCollectorTimer == 0)
+                {
+                    m_garbageCollectorTimer = startTimer(5000);
+                }
+
+                win = qobject_cast<QMainWindow*>(wid);
+                if(win)
+                {
+                    if(deleteOnClose)
+                    {
+                        win->setAttribute(Qt::WA_DeleteOnClose, true);
+                    }
+
+                    set = new UiContainer(win);
+                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                    containerItem.container = set;
+                    m_dialogList[*dialogHandle] = containerItem;
+                    *initSlotCount = win->metaObject()->methodOffset();
+                    *objectID = addObjectToList(win);
+                    *className = win->metaObject()->className();
+                }
+                else
+                {
+                    wid->setWindowFlags(Qt::Window);
+
+                    if(deleteOnClose)
+                    {
+                        wid->setAttribute(Qt::WA_DeleteOnClose, true);
+                    }
+
+                    set = new UiContainer(wid,UiContainer::uiTypeQMainWindow);
+                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                    containerItem.container = set;
+                    m_dialogList[*dialogHandle] = containerItem;
+                    *initSlotCount = wid->metaObject()->methodOffset();
+                    *objectID = addObjectToList(wid);
+                    *className = wid->metaObject()->className();
+                }
+            }
+            else //dock widget
+            {
+                retValue += RetVal(retError, 0, tr("dock widget not implemented yet").toAscii().data());
+            }
         }
 
         
