@@ -41,6 +41,7 @@
 #include "pythonPlotItem.h"
 #include "pythontParamConversion.h"
 #include "pythonRegion.h"
+#include "pythonRgba.h"
 
 #include "../organizer/addInManager.h"
 
@@ -362,6 +363,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonRegion::PyRegionType);
                 PythonRegion::PyRegion_addTpDict(PythonRegion::PyRegionType.tp_dict);
                 PyModule_AddObject(itomModule, "region", (PyObject *)&PythonRegion::PyRegionType);
+            }
+
+			if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
+            {
+                Py_INCREF(&PythonRgba::PyRgbaType);
+                //PythonRgba::PyRegion_addTpDict(PythonRegion::PyRgbaType.tp_dict);
+                PyModule_AddObject(itomModule, "rgba", (PyObject *)&PythonRgba::PyRgbaType);
             }
 
             /*if (PyType_Ready(&PyUiDialogMetaObject::PyMetaObjectType) >= 0)
