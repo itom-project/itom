@@ -19,6 +19,8 @@ typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::
 typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::uint32,*/ ito::int32, ito::float32, ito::float64, ito::complex64, ito::complex128, ito::rgba32> ItomDataAllTypes;
 
 typedef ::testing::Types<ito::rgba32> ItomColorTypes;
+typedef ::testing::Types<ito::alphaChannel, ito::redChannel, ito::greenChannel, ito::blueChannel> ItomColorChannelTypes;
+typedef ::testing::Types<ito::rgba32, ito::alphaChannel, ito::redChannel, ito::greenChannel, ito::blueChannel> ItomColorAllTypes;
 typedef ::testing::Types<ito::uint8, ito::uint16, ito::uint32, ito::int32, ito::float32, ito::float64> ItomColorCompatibleTypes;
 typedef ::testing::Types<ito::int8, ito::int16, ito::complex64, ito::complex128> ItomColorNotCompTypes;
 

@@ -213,16 +213,16 @@ namespace ito
             memset(m_value, 0, 4*sizeof(ito::uint8));
         }
 
-        Rgba32_t(const int32 &val) /*! < Constructor for ARGB, value will be interpreted as unsigned long with 0xAARRGGBB */
-        {
-            memcpy(m_value, &val, 4*sizeof(ito::uint8));
+        //Rgba32_t(const int32 val) /*! < Constructor for ARGB, value will be interpreted as unsigned long with 0xAARRGGBB */
+        //{
+        //    memcpy(m_value, &val, 4*sizeof(ito::uint8));
             //m_value[3] = 0xFF; 
-        }
+        //}
 
-        Rgba32_t(const uint32 val) /*! < Constructor for ARGB */
-        {
-            memcpy(m_value, &val, 4*sizeof(ito::uint8));
-        }
+//        Rgba32_t(const uint32 val) /*! < Constructor for ARGB */
+//        {
+//            memcpy(m_value, &val, 4*sizeof(ito::uint8));
+//        }
 
         Rgba32_t(const uint8 &a, const uint8 &r, const uint8 &g, const uint8 &b) /*! < Constructor for ARGB by 4 channels*/
         {
@@ -238,7 +238,7 @@ namespace ito
 //            memset(m_value, gray < 0 ? 0 : gray, 3*sizeof(uint8));
 //        }
 
-        Rgba32_t(const uint8 &gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+        Rgba32_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
             m_value[RGBA_A] = 0xFF;
             memset(m_value, gray, 3*sizeof(uint8));
@@ -406,25 +406,39 @@ namespace ito
             memset(m_value, 0, 4*sizeof(ito::uint8));
         };
 
-        RGBChannel_t(const uint8 &c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+        RGBChannel_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
-            memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[3] = 0xFF;
+            memset(m_value, 0, 3*sizeof(ito::uint8));
+            m_value[RGBA_A] = 0xFF;
             m_value[_COLOR] = c;
         }
+
+//        RGBChannel_t(const uint32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+//        {
+//            memset(m_value, 0, 4*sizeof(ito::uint8));
+//            m_value[RGBA_A] = 0xFF;
+//            m_value[_COLOR] = (uint8)c;
+//        }
+
+        //RGBChannel_t(const int32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+        //{
+        //    memset(m_value, 0, 4*sizeof(ito::uint8));
+        //    m_value[3] = 0xFF;
+        //    m_value[_COLOR] = (uint8)c;
+        //}
 
         RGBChannel_t(const RGBChannel_t *rhs)/*! < Copy-Constructor for pointer */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[3] = 0xFF;
+            m_value[RGBA_A] = 0xFF;
             m_value[_COLOR] = rhs->m_value[_COLOR];
         }
 
         RGBChannel_t(const RGBChannel_t &rhs)/*! < Copy-Constructor for lvalues */
         {
             memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[3] = 0xFF;
-            m_value[_COLOR] = rhs->m_value[_COLOR];
+            m_value[RGBA_A] = 0xFF;
+            m_value[_COLOR] = rhs.m_value[_COLOR];
         }
 
         RGBChannel_t& operator +=(const RGBChannel_t &rhs)/*! < Implementation of += operator with overflow handling */
@@ -470,28 +484,28 @@ namespace ito
 
         RGBChannel_t operator +(const RGBChannel_t &second) const /*! < Implementation of + operator using += operator */
         {
-            Rgba32_t first(this);
+            RGBChannel_t<_COLOR> first(this);
             first += second;
             return first;
         }
 
         RGBChannel_t operator -(const RGBChannel_t &second) const /*! < Implementation of - operator using -= operator */
         {
-            Rgba32_t first(this);
+            RGBChannel_t<_COLOR> first(this);
             first -= second;
             return first;
         }
 
         RGBChannel_t operator *(const RGBChannel_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            Rgba32_t first(this);
+            RGBChannel_t<_COLOR> first(this);
             first *= second;
             return first;
         }
 
         RGBChannel_t operator /(const RGBChannel_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            Rgba32_t first(this);
+            RGBChannel_t<_COLOR> first(this);
             first /= second;
             return first;
         }
@@ -523,10 +537,10 @@ namespace ito
     };
 
     typedef Rgba32_t rgba32;
-    typedef RGBChannel_t<3> alphaChannel;
-    typedef RGBChannel_t<2> redChannel;
-    typedef RGBChannel_t<1> greenChannel;
-    typedef RGBChannel_t<0> blueChannel;
+    typedef RGBChannel_t<rgba32::RGBA_A> alphaChannel;
+    typedef RGBChannel_t<rgba32::RGBA_R> redChannel;
+    typedef RGBChannel_t<rgba32::RGBA_G> greenChannel;
+    typedef RGBChannel_t<rgba32::RGBA_B> blueChannel;
 ////////////////////////////////////////////////////////// DO NOT ADD ANY MEMBER VARIABLES TO RGBA_T / CHANNEL_T ///////////////////////////////////////////////////////////////////////
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
