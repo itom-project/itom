@@ -210,7 +210,45 @@ namespace ito
 
         Rgba32_t()  /*! < Constructor for basic values */
         {
-            memset(m_value, 0, 4*sizeof(ito::uint8));
+            //memset(m_value, 0, 4*sizeof(ito::uint8));
+        }
+
+        static Rgba32_t ZEROS()
+        {
+            Rgba32_t temp;
+            memset(temp.u8ptr(), 0, 4*sizeof(ito::uint8));
+            return temp;
+        }
+
+        static Rgba32_t BLACK()
+        {
+            Rgba32_t temp(255, 0,0,0);
+            return temp;
+        }
+
+        static Rgba32_t RED()
+        {
+            Rgba32_t temp(255, 255, 0, 0);
+            return temp;
+        }
+
+        static Rgba32_t GREEN()
+        {
+            Rgba32_t temp(255, 0, 255, 0);
+            return temp;
+        }
+
+        static Rgba32_t BLUE()
+        {
+            Rgba32_t temp(255, 0, 0, 255);
+            return temp;
+        }
+
+        static Rgba32_t fromUnsignedLong(uint32 &val)
+        {
+            Rgba32_t temp;
+            memcpy(temp.u8ptr(), &val, 4*sizeof(ito::uint8));
+            return temp;
         }
 
         //Rgba32_t(const int32 val) /*! < Constructor for ARGB, value will be interpreted as unsigned long with 0xAARRGGBB */
@@ -271,11 +309,11 @@ namespace ito
 //            uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray + 0.5))));
 //            memset(m_value, val, 3 * sizeof(uint8));
 //        };
-
-        Rgba32_t(const Rgba32_t *rhs)/*! < Copy-Constructor for pointer */
-        {
-            memcpy(m_value, rhs->m_value, 4*sizeof(ito::uint8));
-        };
+//
+//        Rgba32_t(const Rgba32_t *rhs)/*! < Copy-Constructor for pointer */
+//        {
+//            memcpy(m_value, rhs->m_value, 4*sizeof(ito::uint8));
+//        };
 
         Rgba32_t(const Rgba32_t &rhs)/*! < Copy-Constructor for lvalues */
         {
@@ -340,28 +378,28 @@ namespace ito
 
         Rgba32_t operator +(const Rgba32_t &second) const /*! < Implementation of + operator using += operator */
         {
-            Rgba32_t first(this);
+            Rgba32_t first(*this);
             first += second;
             return first;
         }
 
         Rgba32_t operator -(const Rgba32_t &second) const /*! < Implementation of - operator using -= operator */
         {
-            Rgba32_t first(this);
+            Rgba32_t first(*this);
             first -= second;
             return first;
         }
 
         Rgba32_t operator *(const Rgba32_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            Rgba32_t first(this);
+            Rgba32_t first(*this);
             first *= second;
             return first;
         }
 
         Rgba32_t operator /(const Rgba32_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            Rgba32_t first(this);
+            Rgba32_t first(*this);
             first /= second;
             return first;
         }
@@ -410,7 +448,7 @@ namespace ito
         {
             memset(m_value, 0, 3*sizeof(ito::uint8));
             m_value[RGBA_A] = 0xFF;
-            m_value[_COLOR] = c;
+            m_value[_COLOR] = gray;
         }
 
 //        RGBChannel_t(const uint32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
@@ -427,12 +465,12 @@ namespace ito
         //    m_value[_COLOR] = (uint8)c;
         //}
 
-        RGBChannel_t(const RGBChannel_t *rhs)/*! < Copy-Constructor for pointer */
-        {
-            memset(m_value, 0, 4*sizeof(ito::uint8));
-            m_value[RGBA_A] = 0xFF;
-            m_value[_COLOR] = rhs->m_value[_COLOR];
-        }
+        //RGBChannel_t(const RGBChannel_t *rhs)/*! < Copy-Constructor for pointer */
+        //{
+        //    memset(m_value, 0, 4*sizeof(ito::uint8));
+        //    m_value[RGBA_A] = 0xFF;
+        //    m_value[_COLOR] = rhs->m_value[_COLOR];
+        //}
 
         RGBChannel_t(const RGBChannel_t &rhs)/*! < Copy-Constructor for lvalues */
         {
@@ -484,28 +522,28 @@ namespace ito
 
         RGBChannel_t operator +(const RGBChannel_t &second) const /*! < Implementation of + operator using += operator */
         {
-            RGBChannel_t<_COLOR> first(this);
+            RGBChannel_t<_COLOR> first(*this);
             first += second;
             return first;
         }
 
         RGBChannel_t operator -(const RGBChannel_t &second) const /*! < Implementation of - operator using -= operator */
         {
-            RGBChannel_t<_COLOR> first(this);
+            RGBChannel_t<_COLOR> first(*this);
             first -= second;
             return first;
         }
 
         RGBChannel_t operator *(const RGBChannel_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            RGBChannel_t<_COLOR> first(this);
+            RGBChannel_t<_COLOR> first(*this);
             first *= second;
             return first;
         }
 
         RGBChannel_t operator /(const RGBChannel_t &second) const /*! < Implementation of * operator using *= operator */
         {
-            RGBChannel_t<_COLOR> first(this);
+            RGBChannel_t<_COLOR> first(*this);
             first /= second;
             return first;
         }

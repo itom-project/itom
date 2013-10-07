@@ -73,7 +73,7 @@ namespace cv
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
    
    template<typename _Tp> static inline _Tp saturate_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-   template<typename _Tp> static inline ito::rgba32 saturate_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+//   template<typename _Tp> static inline ito::rgba32 saturate_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
  
    template<> inline ito::complex64 saturate_cast(ito::uint8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
    template<> inline ito::complex64 saturate_cast(ito::int8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
@@ -116,7 +116,8 @@ namespace cv
    template<> inline ito::rgba32 saturate_cast(ito::float32 v){return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::float64 v){return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
-
+   template<> static inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
 
    template<> inline ito::uint8 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
    template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
@@ -125,6 +126,7 @@ namespace cv
    template<> inline ito::int32 saturate_cast(ito::rgba32 v){return (ito::int32)(v.argb());};
    template<> inline ito::float32 saturate_cast(ito::rgba32 v){return (ito::float32)v.gray();};
    template<> inline ito::float64 saturate_cast(ito::rgba32 v){return (ito::float64)v.gray();};
+
 
 
     template<> class cv::DataType<ito::rgba32>
@@ -1949,7 +1951,8 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
 */
 template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scalar)
 {
-    _Tp retValue = 0;
+    //_Tp retValue = 0;
+    _Tp retValue;
 
     switch(fromType)
     {
