@@ -97,10 +97,10 @@ namespace cv
    template<> inline ito::complex128 saturate_cast(ito::complex64 v){ return ito::complex128(saturate_cast<ito::float64>(v.real()),saturate_cast<ito::float64>(v.imag())); }
    template<> inline ito::complex128 saturate_cast(ito::complex128 v){ return v; }
    
-   template<> inline ito::rgba32 saturate_cast(ito::int8 v) {return saturate_cast<ito::uint8>(v);}
+// template<> inline ito::rgba32 saturate_cast(ito::int8 v) {return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::uint8 v) {return v;}
    template<> inline ito::rgba32 saturate_cast(ito::uint16 v){return saturate_cast<ito::uint8>(v);}
-   template<> inline ito::rgba32 saturate_cast(ito::int16 v){return saturate_cast<ito::uint8>(v);}
+// template<> inline ito::rgba32 saturate_cast(ito::int16 v){return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::uint32 v)
    {
        ito::rgba32 temp;
@@ -116,11 +116,14 @@ namespace cv
    template<> inline ito::rgba32 saturate_cast(ito::float32 v){return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::float64 v){return saturate_cast<ito::uint8>(v);}
    template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
-   template<> static inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
-   template<> static inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+
+   template<> static inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
 
    template<> inline ito::uint8 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
-   template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
+   //template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
    template<> inline ito::uint16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint16>(v.gray());};
    template<> inline ito::uint32 saturate_cast(ito::rgba32 v){return v.argb();};
    template<> inline ito::int32 saturate_cast(ito::rgba32 v){return (ito::int32)(v.argb());};
@@ -2198,7 +2201,7 @@ template<typename _Tp> static inline bool isZeroValue(_Tp v, _Tp /*epsilon*/)
 }
 template<> inline bool isZeroValue(rgba32 v, rgba32 /*epsilon*/)
 {
-    return v == rgba32();
+    return v == rgba32::ZEROS();
 }
 template<> inline bool isZeroValue(float32 v, float32 epsilon)
 {

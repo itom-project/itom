@@ -109,23 +109,27 @@ TYPED_TEST_CASE(IsZeroValueRGBATest, ItomColorTypes);
 TYPED_TEST(IsZeroValueRGBATest, checkZeroValueRGBA_Test)
 {
 	//!< Declaration for complex32 type variables.
-	ito::rgba32 zeroVal1 = ito::rgba32();
+	ito::rgba32 zeroVal1 = ito::rgba32::ZEROS();
     ito::rgba32 zeroVal2 = ito::rgba32(0, 0, 0, 0); 
-    ito::rgba32 zeroVal3 = ito::rgba32((ito::uint32)0); 
-    ito::rgba32 zeroVal4 = ito::rgba32((ito::int32)0); 
+    ito::rgba32 zeroVal3; 
+    zeroVal3 = (ito::uint32)0; 
+    ito::rgba32 zeroVal4;
+    zeroVal4= (ito::int32)0; 
 
-    ito::rgba32 nonZeroVal1 = ito::rgba32((ito::uint8)0); 
-	ito::rgba32 nonZeroVal2 = ito::rgba32(1, 0, 0, 0); 
-    ito::rgba32 nonZeroVal3 = ito::rgba32(0, 1, 0, 0); 
-    ito::rgba32 nonZeroVal4 = ito::rgba32(0, 0, 1, 0);  
-    ito::rgba32 nonZeroVal5 = ito::rgba32(0, 0, 0, 1);
+    ito::rgba32 nonZeroVal1 = ito::rgba32((ito::uint8)0);
+    ito::rgba32 nonZeroVal2 = (ito::uint32)0; 
+	ito::rgba32 nonZeroVal3 = ito::rgba32(1, 0, 0, 0); 
+    ito::rgba32 nonZeroVal4 = ito::rgba32(0, 1, 0, 0); 
+    ito::rgba32 nonZeroVal5 = ito::rgba32(0, 0, 1, 0);  
+    ito::rgba32 nonZeroVal6 = ito::rgba32(0, 0, 0, 1);
+    
 
-    ito::rgba32 nonZeroVal6 = ito::rgba32((ito::int32)std::numeric_limits<ito::uint32>::max()); 
-    ito::rgba32 nonZeroVal7 = ito::rgba32((ito::uint32)std::numeric_limits<ito::uint32>::max()); 
+    ito::rgba32 nonZeroVal7 = ito::rgba32((ito::int32)std::numeric_limits<ito::uint32>::max()); 
+    ito::rgba32 nonZeroVal8 = ito::rgba32((ito::uint32)std::numeric_limits<ito::uint32>::max()); 
 
 
 	//!< Declaration for zero value variables. 
-	ito::rgba32 epsilon1 = ito::rgba32();
+	ito::rgba32 epsilon1 = ito::rgba32::ZEROS();
     if(std::numeric_limits<TypeParam>::is_exact)
     {
 
@@ -144,6 +148,7 @@ TYPED_TEST(IsZeroValueRGBATest, checkZeroValueRGBA_Test)
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal5, epsilon1) );			/*!< Test of isZeroValue() function  */
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal6, epsilon1 ) );		/*!< Test of isZeroValue() function  */
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal7, epsilon1 ) );		/*!< Test of isZeroValue() function  */
+        EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal8, epsilon1 ) );		/*!< Test of isZeroValue() function  */
 
     }
 }

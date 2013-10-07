@@ -355,10 +355,10 @@ namespace ito
 
         Rgba32_t& operator *=(const Rgba32_t &rhs)/*! < Implementation of *= operator with overflow handling and normalisation */
         {
-            m_value[0] = static_cast<uint8>(m_value[0] * rhs.m_value[0] / 255);
-            m_value[1] = static_cast<uint8>(m_value[1] * rhs.m_value[1] / 255);
-            m_value[2] = static_cast<uint8>(m_value[2] * rhs.m_value[2] / 255);
-            m_value[3] = static_cast<uint8>(m_value[4] * rhs.m_value[3] / 255);
+            m_value[0] = static_cast<uint8>(m_value[RGBA_B] * rhs.m_value[RGBA_B] / 255);
+            m_value[1] = static_cast<uint8>(m_value[RGBA_G] * rhs.m_value[RGBA_G] / 255);
+            m_value[2] = static_cast<uint8>(m_value[RGBA_R] * rhs.m_value[RGBA_R] / 255);
+            m_value[3] = static_cast<uint8>(m_value[RGBA_A] * rhs.m_value[RGBA_A] / 255);
             return *this;
         }
 
@@ -416,15 +416,15 @@ namespace ito
 
         inline float32 gray() const {return static_cast<float32>(0.299 * m_value[RGBA_R] + 0.587 * m_value[RGBA_G] + 0.114 * m_value[RGBA_B]);} /*! < Return the gray-value of the current RGB-Value*/
 
-        uint8& alpha() {return m_value[3];}; /*! < Access to alpha-Channel*/
-        uint8& red()   {return m_value[2];}; /*! < Access to red-Channel*/
-        uint8& green() {return m_value[1];}; /*! < Access to green-Channel*/
-        uint8& blue()  {return m_value[0];}; /*! < Access to blue-Channel*/
+        uint8& alpha() {return m_value[RGBA_A];}; /*! < Access to alpha-Channel*/
+        uint8& red()   {return m_value[RGBA_R];}; /*! < Access to red-Channel*/
+        uint8& green() {return m_value[RGBA_G];}; /*! < Access to green-Channel*/
+        uint8& blue()  {return m_value[RGBA_B];}; /*! < Access to blue-Channel*/
 
-        uint8 alpha() const {return m_value[3];}; /*! < Read out alpha-Channel*/
-        uint8 red()   const {return m_value[2];}; /*! < Read out red-Channel*/
-        uint8 green() const {return m_value[1];}; /*! < Read out green-Channel*/
-        uint8 blue()  const {return m_value[0];}; /*! < Read out blue-Channel*/
+        uint8 alpha() const {return m_value[RGBA_A];}; /*! < Read out alpha-Channel*/
+        uint8 red()   const {return m_value[RGBA_R];}; /*! < Read out red-Channel*/
+        uint8 green() const {return m_value[RGBA_G];}; /*! < Read out green-Channel*/
+        uint8 blue()  const {return m_value[RGBA_B];}; /*! < Read out blue-Channel*/
 
         uint32& argb() {return *((uint32*)m_value);}; /*! < Access to argb-Channel*/
         uint32 argb() const {return reinterpret_cast<uint32>(m_value);}; /*! < Read out argb-Channel*/
@@ -441,7 +441,7 @@ namespace ito
     public:
         RGBChannel_t()  /*! < Constructor for basic values */
         {
-            memset(m_value, 0, 4*sizeof(ito::uint8));
+            //memset(m_value, 0, 4*sizeof(ito::uint8));
         };
 
         RGBChannel_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
@@ -449,6 +449,21 @@ namespace ito
             memset(m_value, 0, 3*sizeof(ito::uint8));
             m_value[RGBA_A] = 0xFF;
             m_value[_COLOR] = gray;
+        }
+
+        static RGBChannel_t<_COLOR> ZEROS()
+        {
+            RGBChannel_t<_COLOR> temp;
+            memset(temp.u8ptr(), 0, 4*sizeof(ito::uint8));
+            return temp;
+        }
+
+        static RGBChannel_t<_COLOR> BLACK()
+        {
+            RGBChannel_t<_COLOR> temp;
+            memset(temp.u8ptr(), 0, 4*sizeof(ito::uint8));
+            m_value[RGBA_A] = 0xFF;
+            return temp;
         }
 
 //        RGBChannel_t(const uint32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
@@ -474,7 +489,7 @@ namespace ito
 
         RGBChannel_t(const RGBChannel_t &rhs)/*! < Copy-Constructor for lvalues */
         {
-            memset(m_value, 0, 4*sizeof(ito::uint8));
+            memset(m_value, 0, 3*sizeof(ito::uint8));
             m_value[RGBA_A] = 0xFF;
             m_value[_COLOR] = rhs.m_value[_COLOR];
         }

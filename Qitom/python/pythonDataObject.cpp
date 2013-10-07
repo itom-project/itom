@@ -623,7 +623,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                                         rowPtr = mat->ptr<ito::rgba32>(m);
                                                         for(n = 0; n < mat->cols; n++)
                                                         {
-                                                            rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
+                                                            rowPtr[n].fromUnsignedLong((reinterpret_cast<uint32*>(data))[c++]);
                                                         }
                                                     }
                                                 }
