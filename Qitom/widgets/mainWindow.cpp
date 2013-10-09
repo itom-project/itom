@@ -356,10 +356,12 @@ MainWindow::~MainWindow()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be added to main window's dock widgets
 /*!
+	This method is also called to dock any figure to the main window.
+
     \param dockWidget ScriptDockWidget to add to any docking area
     \param area docking area, where dockWidget should be shown
 */
-void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area)
+void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area /*= Qt::TopDockWidgetArea*/)
 {
     if (dockWidget)
     {

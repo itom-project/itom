@@ -72,6 +72,14 @@ UiContainer::~UiContainer()
                 mainWin->removeAbstractDock( qobject_cast<ito::AbstractDockWidget*>(m_weakDialog.data()) );
             }
         }
+		else if(m_type == UiContainer::uiTypeQDockWidget)
+		{
+			MainWindow *mainWin = qobject_cast<MainWindow*>( AppManagement::getMainWindow() );
+            if(mainWin)
+            {
+                mainWin->removeDockWidget( qobject_cast<QDockWidget*>(m_weakDialog.data()) );
+            }
+		}
 
         m_weakDialog.data()->deleteLater();
         m_weakDialog.clear();
@@ -655,6 +663,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                     if(dialog == NULL)
                     {
                         retValue += RetVal(retError, 1020, tr("dialog could not be created").toAscii().data());
+						wid->deleteLater();
                     }
                     else if(!retValue.containsError())
                     {
@@ -731,7 +740,37 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
             }
             else //dock widget
             {
-                retValue += RetVal(retError, 0, tr("dock widget not implemented yet").toAscii().data());
+				if (wid->inherits("QDialog"))
+				{
+					retValue += RetVal(retError, 0, "A widget inherited from QDialog cannot be docked into the main window");
+					wid->deleteLater();
+					wid = NULL;
+				}
+				else
+				{
+					QMainWindow *mainWin = qobject_cast<QMainWindow*>( AppManagement::getMainWindow() );
+					if (!mainWin)
+					{
+						retValue += RetVal(retError, 0, "Main window not available for docking the user interface.");
+						wid->deleteLater();
+						wid = NULL;
+					}
+					else
+					{
+						QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
+						dockWidget->setWidget(wid);
+						mainWin->addDockWidget(Qt::TopDockWidgetArea, dockWidget);
+
+						set = new UiContainer(dockWidget);
+						*dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+						containerItem.container = set;
+						m_dialogList[*dialogHandle] = containerItem;
+						*initSlotCount = wid->metaObject()->methodOffset();
+						*objectID = addObjectToList(wid);
+						*className = wid->metaObject()->className();
+					}
+
+				}
             }
         }
 
@@ -950,6 +989,15 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
                 }
             }
             break;
+			case UiContainer::uiTypeQDockWidget:
+			{
+				QWidget *dockWidget = ptr->getUiWidget();
+				if (dockWidget)
+				{
+					dockWidget->show();
+				}
+			}
+			break;
 
         }
     }
@@ -1010,6 +1058,11 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
             AbstractDockWidget *adw = (AbstractDockWidget*)widget;
             *docked = adw->docked();
         }
+		else if(widget->inherits("QDockWidget"))
+		{
+			QDockWidget *dw = (QDockWidget*)widget;
+			*docked = !dw->isFloating();
+		}
         else
         {
             retValue += RetVal(retError, 0, tr("dialog cannot be docked").toAscii().data());
@@ -1053,6 +1106,11 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
                 adw->undockWidget();
             }
         }
+		else if(widget->inherits("QDockWidget"))
+		{
+			QDockWidget *dw = (QDockWidget*)widget;
+			dw->setFloating(!docked);
+		}
         else
         {
             retValue += RetVal(retError, 0, tr("dialog cannot be docked or undocked").toAscii().data());
