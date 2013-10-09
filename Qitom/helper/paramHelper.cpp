@@ -723,7 +723,7 @@ namespace ito {
 
         if(index < 0 || index >= len)
         {
-            return ito::RetVal(ito::retError,0, QObject::tr("index is ouf of range").toAscii().data());
+            return ito::RetVal::format(ito::retError,0, QObject::tr("index is ouf of range [0,%i]").toAscii().data(), len-1);
         }
 
         QString newName = QString("%1[%2]").arg( arrayParam.getName() ).arg( index );

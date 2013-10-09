@@ -76,7 +76,7 @@ class PythonRgba
         PyRgba;
 
 
-        #define PyRgba_Check(op) PyObject_TypeCheck(op, &PythonRgba::PyRgbaType)
+        #define PyRgba_Check(op) PyObject_TypeCheck(op, &ito::PythonRgba::PyRgbaType)
 
         
         //-------------------------------------------------------------------------------------------------
