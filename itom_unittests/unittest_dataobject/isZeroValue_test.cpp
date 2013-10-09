@@ -114,18 +114,18 @@ TYPED_TEST(IsZeroValueRGBATest, checkZeroValueRGBA_Test)
     ito::rgba32 zeroVal3; 
     zeroVal3 = (ito::uint32)0; 
     ito::rgba32 zeroVal4;
-    zeroVal4= (ito::int32)0; 
+    zeroVal4= (ito::int32)0;
+    ito::rgba32 zeroVal5 = ito::rgba32::fromUnsignedLong(0);
 
     ito::rgba32 nonZeroVal1 = ito::rgba32((ito::uint8)0);
-    ito::rgba32 nonZeroVal2 = (ito::uint32)0; 
-	ito::rgba32 nonZeroVal3 = ito::rgba32(1, 0, 0, 0); 
-    ito::rgba32 nonZeroVal4 = ito::rgba32(0, 1, 0, 0); 
-    ito::rgba32 nonZeroVal5 = ito::rgba32(0, 0, 1, 0);  
-    ito::rgba32 nonZeroVal6 = ito::rgba32(0, 0, 0, 1);
+	ito::rgba32 nonZeroVal2 = ito::rgba32(1, 0, 0, 0); 
+    ito::rgba32 nonZeroVal3 = ito::rgba32(0, 1, 0, 0); 
+    ito::rgba32 nonZeroVal4 = ito::rgba32(0, 0, 1, 0);  
+    ito::rgba32 nonZeroVal5 = ito::rgba32(0, 0, 0, 1);
     
 
-    ito::rgba32 nonZeroVal7 = ito::rgba32((ito::int32)std::numeric_limits<ito::uint32>::max()); 
-    ito::rgba32 nonZeroVal8 = ito::rgba32((ito::uint32)std::numeric_limits<ito::uint32>::max()); 
+    ito::rgba32 nonZeroVal6 = ito::rgba32((ito::int32)std::numeric_limits<ito::uint32>::max()); 
+    ito::rgba32 nonZeroVal7 = ito::rgba32((ito::uint32)std::numeric_limits<ito::uint32>::max()); 
 
 
 	//!< Declaration for zero value variables. 
@@ -140,7 +140,9 @@ TYPED_TEST(IsZeroValueRGBATest, checkZeroValueRGBA_Test)
         EXPECT_TRUE( ito::isZeroValue<ito::rgba32>(zeroVal2, epsilon1 ) );			/*!< Test of isZeroValue() function for rgba constructor of rgba.  */
 	    EXPECT_TRUE( ito::isZeroValue<ito::rgba32>(zeroVal3, epsilon1 ) );			/*!< Test of isZeroValue() function for uint32 constructor of rgba.  */
         EXPECT_TRUE( ito::isZeroValue<ito::rgba32>(zeroVal4, epsilon1 ) );			/*!< Test of isZeroValue() function for int32 constructor of rgba.  */
-	
+	    EXPECT_TRUE( ito::isZeroValue<ito::rgba32>(zeroVal5, epsilon1 ) );		    /*!< Test of isZeroValue() function for int32 constructor of rgba.  */
+
+
         EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal1, epsilon1 ) );		/*!< Test of isZeroValue() function for */	
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal2, epsilon1) );			/*!< Test of isZeroValue() function for */
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal3, epsilon1 ) );		/*!< Test of isZeroValue() function  */
@@ -148,7 +150,7 @@ TYPED_TEST(IsZeroValueRGBATest, checkZeroValueRGBA_Test)
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal5, epsilon1) );			/*!< Test of isZeroValue() function  */
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal6, epsilon1 ) );		/*!< Test of isZeroValue() function  */
 		EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal7, epsilon1 ) );		/*!< Test of isZeroValue() function  */
-        EXPECT_FALSE( ito::isZeroValue<ito::rgba32>(nonZeroVal8, epsilon1 ) );		/*!< Test of isZeroValue() function  */
+        
 
     }
 }

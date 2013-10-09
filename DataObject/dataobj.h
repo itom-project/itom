@@ -97,24 +97,24 @@ namespace cv
    template<> inline ito::complex128 saturate_cast(ito::complex64 v){ return ito::complex128(saturate_cast<ito::float64>(v.real()),saturate_cast<ito::float64>(v.imag())); }
    template<> inline ito::complex128 saturate_cast(ito::complex128 v){ return v; }
    
-// template<> inline ito::rgba32 saturate_cast(ito::int8 v) {return saturate_cast<ito::uint8>(v);}
-   template<> inline ito::rgba32 saturate_cast(ito::uint8 v) {return v;}
-   template<> inline ito::rgba32 saturate_cast(ito::uint16 v){return saturate_cast<ito::uint8>(v);}
-// template<> inline ito::rgba32 saturate_cast(ito::int16 v){return saturate_cast<ito::uint8>(v);}
+// template<> inline ito::rgba32 saturate_cast(ito::int8 v) {return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::uint8 v) {return ito::rgba32(v);}
+   template<> inline ito::rgba32 saturate_cast(ito::uint16 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+// template<> inline ito::rgba32 saturate_cast(ito::int16 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
    template<> inline ito::rgba32 saturate_cast(ito::uint32 v)
    {
        ito::rgba32 temp;
-       temp = v;
+       memcpy(temp.u8ptr(), &v, sizeof(ito::uint32));
        return temp;
    }
    template<> inline ito::rgba32 saturate_cast(ito::int32 v)
    {
        ito::rgba32 temp;
-       temp = (ito::uint32)v;
+       memcpy(temp.u8ptr(), &v, sizeof(ito::uint32));
        return temp;
    }
-   template<> inline ito::rgba32 saturate_cast(ito::float32 v){return saturate_cast<ito::uint8>(v);}
-   template<> inline ito::rgba32 saturate_cast(ito::float64 v){return saturate_cast<ito::uint8>(v);}
+   template<> inline ito::rgba32 saturate_cast(ito::float32 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::float64 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
    template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
 
    template<> static inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }

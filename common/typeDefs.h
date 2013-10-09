@@ -191,7 +191,7 @@ namespace ito
 *           The functions of this class are inspired by http://virjo.googlecode.com/svn/trunk/SFML_Windows/src/SFML/Graphics/Color.cpp, written by Laurent Gomila (laurent.gom@gmail.com)
 *            
 *   \author lyda
-*   \date   2011
+*   \date   2013
 *   \sa     ito::rgba32
 */
     class Rgba32_t
@@ -244,23 +244,12 @@ namespace ito
             return temp;
         }
 
-        static Rgba32_t fromUnsignedLong(uint32 &val)
+        static Rgba32_t fromUnsignedLong(const uint32 val)
         {
             Rgba32_t temp;
             memcpy(temp.u8ptr(), &val, 4*sizeof(ito::uint8));
             return temp;
         }
-
-        //Rgba32_t(const int32 val) /*! < Constructor for ARGB, value will be interpreted as unsigned long with 0xAARRGGBB */
-        //{
-        //    memcpy(m_value, &val, 4*sizeof(ito::uint8));
-            //m_value[3] = 0xFF; 
-        //}
-
-//        Rgba32_t(const uint32 val) /*! < Constructor for ARGB */
-//        {
-//            memcpy(m_value, &val, 4*sizeof(ito::uint8));
-//        }
 
         Rgba32_t(const uint8 &a, const uint8 &r, const uint8 &g, const uint8 &b) /*! < Constructor for ARGB by 4 channels*/
         {
@@ -270,50 +259,11 @@ namespace ito
             m_value[RGBA_A] = a;
         }
 
-//        Rgba32_t(const int8 &gray) /*! < Constructor which will set color channels to gray 0:128 and alpha to 255 */
-//        {
-//            m_value[RGBA_A] = 0xFF;
-//            memset(m_value, gray < 0 ? 0 : gray, 3*sizeof(uint8));
-//        }
-
-        Rgba32_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+        explicit Rgba32_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
             m_value[RGBA_A] = 0xFF;
             memset(m_value, gray, 3*sizeof(uint8));
         }
-
-//        Rgba32_t(const uint16 gray) /*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
-//        {
-//            m_value[RGBA_A] = 0xFF;
-//            uint8 val = (uint8) (gray > 255 ? 255 : gray);
-//            memset(m_value, val, 3 * sizeof(uint8));
-//        }
-
-//        Rgba32_t(const int16 gray) /*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
-//        {
-//            m_value[RGBA_A] = 0xFF;
-//            uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray ))));
-//            memset(m_value, val, 3 * sizeof(uint8));
-//        }
-
-//        Rgba32_t(const float32 gray)/*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
-//        {
-//            m_value[RGBA_A] = 0xFF;
-//            uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray + 0.5))));
-//            memset(m_value, val, 3 * sizeof(uint8));
-//        }
-
-//        Rgba32_t(const float64 gray)/*! < Constructor which will set color channels to gray [0:255] and alpha to 255 */
-//        {
-//            m_value[RGBA_A] = 0xFF;
-//            uint8 val = (uint8) (gray > 255 ? 255 : (gray < 0 ? 0 : ((uint8)(gray + 0.5))));
-//            memset(m_value, val, 3 * sizeof(uint8));
-//        };
-//
-//        Rgba32_t(const Rgba32_t *rhs)/*! < Copy-Constructor for pointer */
-//        {
-//            memcpy(m_value, rhs->m_value, 4*sizeof(ito::uint8));
-//        };
 
         Rgba32_t(const Rgba32_t &rhs)/*! < Copy-Constructor for lvalues */
         {
@@ -337,7 +287,7 @@ namespace ito
             m_value[RGBA_A] = rhs.m_value[RGBA_A];
             return *this;
         }
-
+        
         Rgba32_t& operator =(const uint32 &rhs)/*! < Implementation of = for uint32 by direct copy*/
         {
             memcpy(m_value, &rhs, 4*sizeof(uint8));
@@ -367,12 +317,11 @@ namespace ito
             if(rhs.m_value[RGBA_B] == 0 || rhs.m_value[RGBA_G] == 0 || rhs.m_value[RGBA_R] == 0 || rhs.m_value[RGBA_A] == 0)
             {
                 throw std::runtime_error("Division by zero not allowed for rgba32-values");
-                return *this;
             }
-            m_value[RGBA_B] = static_cast<uint8>(std::min<int16>(m_value[RGBA_B] / rhs.m_value[RGBA_B] * 255, 255));
-            m_value[RGBA_G] = static_cast<uint8>(std::min<int16>(m_value[RGBA_G] / rhs.m_value[RGBA_G] * 255, 255));
-            m_value[RGBA_R] = static_cast<uint8>(std::min<int16>(m_value[RGBA_R] / rhs.m_value[RGBA_R] * 255, 255));
-            m_value[RGBA_A] = static_cast<uint8>(std::min<int16>(m_value[RGBA_A] / rhs.m_value[RGBA_A] * 255, 255));
+            m_value[RGBA_B] = static_cast<uint8>(std::min<int16>((m_value[RGBA_B] * (ito::int16)255) / rhs.m_value[RGBA_B], 255));
+            m_value[RGBA_G] = static_cast<uint8>(std::min<int16>((m_value[RGBA_G] * (ito::int16)255) / rhs.m_value[RGBA_G], 255));
+            m_value[RGBA_R] = static_cast<uint8>(std::min<int16>((m_value[RGBA_R] * (ito::int16)255) / rhs.m_value[RGBA_R], 255));
+            m_value[RGBA_A] = static_cast<uint8>(std::min<int16>((m_value[RGBA_A] * (ito::int16)255) / rhs.m_value[RGBA_A], 255));
             return *this;
         }
 
@@ -444,10 +393,10 @@ namespace ito
             //memset(m_value, 0, 4*sizeof(ito::uint8));
         };
 
-        RGBChannel_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+        explicit RGBChannel_t(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
         {
             memset(m_value, 0, 3*sizeof(ito::uint8));
-            m_value[RGBA_A] = 0xFF;
+            m_value[ito::Rgba32_t::RGBA_A] = 0xFF;
             m_value[_COLOR] = gray;
         }
 
@@ -462,35 +411,14 @@ namespace ito
         {
             RGBChannel_t<_COLOR> temp;
             memset(temp.u8ptr(), 0, 4*sizeof(ito::uint8));
-            m_value[RGBA_A] = 0xFF;
+            temp.alpha() = 0xFF;
             return temp;
         }
 
-//        RGBChannel_t(const uint32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
-//        {
-//            memset(m_value, 0, 4*sizeof(ito::uint8));
-//            m_value[RGBA_A] = 0xFF;
-//            m_value[_COLOR] = (uint8)c;
-//        }
-
-        //RGBChannel_t(const int32 c) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
-        //{
-        //    memset(m_value, 0, 4*sizeof(ito::uint8));
-        //    m_value[3] = 0xFF;
-        //    m_value[_COLOR] = (uint8)c;
-        //}
-
-        //RGBChannel_t(const RGBChannel_t *rhs)/*! < Copy-Constructor for pointer */
-        //{
-        //    memset(m_value, 0, 4*sizeof(ito::uint8));
-        //    m_value[RGBA_A] = 0xFF;
-        //    m_value[_COLOR] = rhs->m_value[_COLOR];
-        //}
-
         RGBChannel_t(const RGBChannel_t &rhs)/*! < Copy-Constructor for lvalues */
         {
-            memset(m_value, 0, 3*sizeof(ito::uint8));
-            m_value[RGBA_A] = 0xFF;
+            memset(m_value, 0, 4*sizeof(ito::uint8));
+            m_value[ito::Rgba32_t::RGBA_A] = 0xFF;
             m_value[_COLOR] = rhs.m_value[_COLOR];
         }
 
@@ -529,9 +457,8 @@ namespace ito
             if(rhs.m_value[_COLOR] == 0)
             {
                 throw std::runtime_error("Division by zero not allowed for rgba32-values");
-                return *this;
             }
-            m_value[_COLOR] = static_cast<uint8>(std::min<int16>(m_value[_COLOR] / rhs.m_value[_COLOR] * 255, 255));
+            m_value[_COLOR] = static_cast<uint8>(std::min<int16>((m_value[_COLOR] * (ito::int16)255)/ rhs.m_value[_COLOR], 255));
             return *this;
         }
 
