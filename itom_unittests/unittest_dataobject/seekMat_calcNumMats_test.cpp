@@ -45,7 +45,7 @@ public:
 	ito::DataObject dObj6;
 	};
 	
-TYPED_TEST_CASE(seekMat_calcNumMats_test, ItomRealDataTypes);
+TYPED_TEST_CASE(seekMat_calcNumMats_test, ItomDataAllTypes /*ItomRealDataTypes*/);
 
 //seekMat_calNumMats_Test
 /*!

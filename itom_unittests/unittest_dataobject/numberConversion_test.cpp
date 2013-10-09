@@ -12,7 +12,12 @@
 //#include "test_global.h"
 #include "commonChannel.h"
 
-template <typename _Tp> class Real_ComplexTest : public ::testing::Test { };
+template <typename _Tp> class Real_ComplexTest : public ::testing::Test 
+{ 
+    public:
+    typedef _Tp valueType;
+
+};
 
 
 TYPED_TEST_CASE(Real_ComplexTest, ItomDataStandardTypes);
@@ -187,6 +192,41 @@ TYPED_TEST(Real_ComplexTest, numberConversionIntToFloat_Test)
 	EXPECT_EQ( cv::saturate_cast<ito::int32>(5.0), int32_var1 );						//!< testing if int32_var1 contains the desired original value after conversion.
 	EXPECT_EQ( cv::saturate_cast<ito::int32>(4.9), int32_var2 );						//!< testing if int32_var2 contains the desired original value after conversion.
 	EXPECT_EQ( cv::saturate_cast<ito::int32>(4.1), int32_var3 );						//!< testing if int32_var3 contains the desired original value after conversion.
+}
+
+//!< Test for numberConversion<type>() function for floating point variables.
+TYPED_TEST(Real_ComplexTest, numberConversionRGBAToVALUE_Test)
+{
+	ito::rgba32 rgba_var1= ito::rgba32::ZEROS();
+	ito::rgba32 rgba_var2= ito::rgba32::BLACK();
+	ito::rgba32 rgba_var3= ito::rgba32::GREEN();
+
+    if(typeid(valueType) == typeid(ito::uint32) || typeid(valueType) == typeid(ito::int32))
+    {
+	    valueType var1 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1);		//!< Converting float64 type value into int32 type using numberConversion() method.
+	    valueType var2 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2);		//!< Converting float64 type value into int32 type using numberConversion() method.
+	    valueType var3 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3);		//!< Converting float64 type value into int32 type using numberConversion() method.
+
+	    EXPECT_EQ( (valueType)0x00000000, var1 );						//!< testing if int32_var1 contains the desired original value after conversion.
+	    EXPECT_EQ( (valueType)0xFF000000, var2 );						//!< testing if int32_var2 contains the desired original value after conversion.
+	    EXPECT_EQ( (valueType)0xFF00FF00, var3 );						//!< testing if int32_var3 contains the desired original value after conversion.
+    }
+    else if(typeid(valueType) == typeid(ito::uint8) || typeid(valueType) == typeid(ito::uint16) || typeid(valueType) == typeid(ito::float32)  || typeid(valueType) == typeid(ito::float64))
+    {
+	    valueType var1 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1);		//!< Converting float64 type value into int32 type using numberConversion() method.
+	    valueType var2 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2);		//!< Converting float64 type value into int32 type using numberConversion() method.
+	    valueType var3 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3);		//!< Converting float64 type value into int32 type using numberConversion() method.
+
+	    EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var1.gray()), var1 );						//!< testing if int32_var1 contains the desired original value after conversion.
+	    EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var2.gray()), var2 );						//!< testing if int32_var2 contains the desired original value after conversion.
+	    EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var3.gray()), var3 );						//!< testing if int32_var3 contains the desired original value after conversion.    
+    }
+    else
+    {
+        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1));
+        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2));
+        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3));
+    }
 }
 
 //!< Test for numberConversion<type>() function for floating point variables.

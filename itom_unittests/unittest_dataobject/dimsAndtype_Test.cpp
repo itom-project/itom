@@ -49,7 +49,7 @@ public:
 	ito::DataObject dObj5;
 	};
 	
-TYPED_TEST_CASE(DimAndTypeTest, ItomRealDataTypes);
+TYPED_TEST_CASE(DimAndTypeTest, ItomDataAllTypes);
 
 //getDims_Test
 /*!

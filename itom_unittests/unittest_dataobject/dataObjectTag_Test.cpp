@@ -53,7 +53,7 @@ public:
 	ito::DataObject matEmptyTest;
 };
 
-TYPED_TEST_CASE(dataObjectTag_Test,ItomDataStandardTypes);
+TYPED_TEST_CASE(dataObjectTag_Test,ItomDataAllTypes);
 //setTag_Test
 /*!
 	This test checks functionality of "setTag" and "getTag" functions of DataObject for 1 dimensional matrices

@@ -33,6 +33,7 @@ TYPED_TEST(complexToReal_Test, convertCmplxTypeToRealType_Test)
 	ito::tDataType cmplxType7 = ito::tFloat64;
 	ito::tDataType cmplxType8 = ito::tComplex64;
 	ito::tDataType cmplxType9 = ito::tComplex128;
+    ito::tDataType cmplxType10 = ito::tRGBA32;
 
 	
 	//!	 Test Details.
