@@ -220,6 +220,17 @@ TYPED_TEST(dataTest, checkOnes)
 {
 	MatrixContainer2 *temp2;
 	ito::DataObject tempDObj2;
+
+    TypeParam tarValue;
+
+    if(typeid(valueType) == typeid(ito::rgba32))
+    {
+        tarValue = (ito::uint32)0xFFFFFFFF;
+    }
+    else
+    {
+        tarValue = cv::saturate_cast<TypeParam>(1);
+    }
 	
 	for(size_t i=0 ; i< this->matrices2.size() ; i++)
 	{
@@ -230,11 +241,13 @@ TYPED_TEST(dataTest, checkOnes)
 		switch(temp2->m_nrOfDimensions)
 		{
 		case 2:
+            
+            
 			for(int r=0; r<temp2->m_dim1; r++)
 			{
 				for(int s=0; s<temp2->m_dim2;s++)
 				{
-				EXPECT_EQ ( tempDObj2.at<TypeParam>(r,s) , cv::saturate_cast<TypeParam>(1));
+				EXPECT_EQ ( tempDObj2.at<TypeParam>(r,s) , tarValue);
 				}
 			}
 			//std::cout << tempDObj2 << std::endl;
@@ -246,7 +259,7 @@ TYPED_TEST(dataTest, checkOnes)
 				{
 					for(int t=0; t<temp2->m_dim3;t++)
 					{
-					EXPECT_EQ ( tempDObj2.at<TypeParam>(r,s,t) , cv::saturate_cast<TypeParam>(1));
+					EXPECT_EQ ( tempDObj2.at<TypeParam>(r,s,t) , tarValue);
 					}
 				}	
 			}
