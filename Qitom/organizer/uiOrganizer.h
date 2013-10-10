@@ -120,6 +120,18 @@ public:
     {
         m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(figureWidget));
     }
+
+	//! creates new UiContainer from instance of QDockWidget
+	/*!
+		The weak reference to dockWidget together with the type uiTypeQDockWidget is saved as member variable in UiDialogSet.
+
+		\param dockWidget is the dockWidget-instance which should be guarded by the instance of UiDialogSet
+	*/
+    UiContainer(QDockWidget *dockWidget) : 
+        m_type(uiTypeQDockWidget) 
+    {
+        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(dockWidget));
+    }
 	
 	//! general constructor to create an instance of UiContainer from given QWidget*-pointer and type
 	/*!

@@ -24,6 +24,7 @@
 
 #include "pythonUi.h"
 #include "pythonCommon.h"
+#include "pythonRgba.h"
 
 #include <qstringlist.h>
 #include <qurl.h>
@@ -1284,6 +1285,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             type = QMetaType::QRegion;
         }
+        else if(PyRgba_Check(val))
+        {
+            type = QMetaType::QColor;
+        }
     }
 
     if(QMetaType::isRegistered(type))
@@ -1501,6 +1506,17 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             {
                 QRegion r = *(reg->r);
                 *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&r) );
+            }
+            break;
+        }
+
+        case QMetaType::QColor:
+        {
+            ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
+            if (rgba)
+            {
+                QColor c(rgba->r, rgba->g, rgba->b, rgba->a);
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
             }
             break;
         }
@@ -1938,6 +1954,19 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case QMetaType::QRegion:
         {
             return ito::PythonRegion::createPyRegion( *( (QRegion*)data ) );
+        }
+    case QMetaType::QColor:
+        {
+            ito::PythonRgba::PyRgba *rgba = ito::PythonRgba::createEmptyPyRgba();
+            QColor* color = (QColor*)data;
+            if (rgba)
+            {
+                rgba->r = color->red();
+                rgba->b = color->blue();
+                rgba->g = color->green();
+                rgba->a = color->alpha();
+            }
+            return (PyObject*)rgba;
         }
     case QMetaType::QVariant:
         {
