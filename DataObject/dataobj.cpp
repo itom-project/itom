@@ -612,10 +612,11 @@ DObjIterator DObjIterator::operator ++(int)
    FuncName<uint16>,                                                    \
    FuncName<int32>,                                                     \
    FuncName<uint32>,                                                    \
-   FuncName<ito::float32>,                                                   \
-   FuncName<ito::float64>,                                                   \
-   FuncName<ito::complex64>,                                                 \
-   FuncName<ito::complex128>                                                 \
+   FuncName<ito::float32>,                                              \
+   FuncName<ito::float64>,                                              \
+   FuncName<ito::complex64>,                                            \
+   FuncName<ito::complex128>,                                           \
+   FuncName<ito::rgba32>                                                \
 };
 
 //! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
@@ -1178,6 +1179,7 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
     case ito::tUInt32:
     case ito::tInt32:
     case ito::tFloat32:
+    case ito::tRGBA32:
         requiredElemSize = 4;
         break;
     case ito::tFloat64:
@@ -2055,6 +2057,23 @@ template<typename _Tp> RetVal OnesFunc(const size_t sizeY, const size_t sizeX, i
    return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, overloaded template method for creation of one-valued matrix-plane of RGBA32
+/*!
+
+    \param sizeY are the number of rows
+    \param sizeX are the number of columns
+    \param **dstMat is the pointer to the already allocated cv::Mat_<type>-matrix-plane
+    \return retOk
+    \sa zeros
+*/
+template<> RetVal OnesFunc<ito::rgba32>(const size_t sizeY, const size_t sizeX, int **dstMat)
+{
+   (*((cv::Mat_<ito::rgba32> *)(*dstMat))) = cv::Mat_<ito::rgba32>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+   memset( (*((cv::Mat*)(*dstMat))).ptr<ito::uint8>(), 255, static_cast<int>(sizeY) * static_cast<int>(sizeX) * sizeof(ito::rgba32));
+   return 0;
+}
+
 typedef RetVal (*tOnesFunc)(const size_t sizeY, const size_t sizeX, int **dstMat);
 MAKEFUNCLIST(OnesFunc);
 
@@ -2212,6 +2231,26 @@ template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t siz
    return 0;
 }
 
+//! template specialisation for low-level, templated method for creation of random-valued matrix-plane of type rgba32
+/*!
+    \return retOk
+    \sa  RandFunc, zeros, ones
+*/
+template<> RetVal RandFunc<ito::rgba32>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+{
+    (*((cv::Mat_<ito::rgba32> *)(*dstMat))) = cv::Mat_<ito::rgba32>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    cv::Mat_<ito::uint8> tempMat(sizeY, sizeX * 4, ((cv::Mat*)(*dstMat))->ptr<ito::uint8>());
+    if(randMode)
+    {
+        cv::randn(tempMat, value1, value2);
+    }
+    else
+    {
+        cv::randu(tempMat, value1, value2);
+    }
+   return 0;
+}
+
 typedef RetVal (*tRandFunc)(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat);
 MAKEFUNCLIST(RandFunc);
 
@@ -2242,6 +2281,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     {
         switch(type)
         {
+            case ito::tRGBA32:
             case ito::tUInt8:
                 val1 = ((double)std::numeric_limits<uint8>::max() + (double)std::numeric_limits<uint8>::min())/2.0;
                 val2 = ((double)std::numeric_limits<uint8>::max() - (double)std::numeric_limits<uint8>::min())/6.0;
@@ -2276,6 +2316,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     {
         switch(type)
         {
+            case ito::tRGBA32:
             case ito::tUInt8:
                 val1 = (double)std::numeric_limits<uint8>::min();
                 val2 = (double)std::numeric_limits<uint8>::max() + 1;
@@ -2401,6 +2442,7 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
     case CV_64FC1: dataObjType = ito::tFloat64; break;
     case CV_32FC2: dataObjType = ito::tComplex64; break;
     case CV_64FC2: dataObjType = ito::tComplex128; break;
+    case CV_8UC4: dataObjType = ito::tRGBA32; break;
     default: dataObjType = -1;
     }
 
@@ -3474,6 +3516,16 @@ template<> RetVal ShiftLFunc<ito::complex128>(DataObject * /*src*/, const unsign
    return 0;
 }
 
+//! template specialisation for shift function of type rgba32
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template<> RetVal ShiftLFunc<ito::rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tShiftLFunc)(DataObject *src, const unsigned char shiftbit);
 MAKEFUNCLIST(ShiftLFunc);
 
@@ -3601,6 +3653,16 @@ template<> RetVal ShiftRFunc<ito::complex128>(DataObject * /*src*/, const unsign
    return 0;
 }
 
+//! template specialisation for shift function of type rgba32
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template<> RetVal ShiftRFunc<ito::rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tShiftRFunc)(DataObject *src, const unsigned char shiftbit);
 MAKEFUNCLIST(ShiftRFunc)
 
@@ -3708,6 +3770,16 @@ template<> RetVal BitAndFunc<ito::complex64>(const DataObject * /*dObj1*/, const
     \throws cv::Exception since this operation is not defined for that input type
 */
 template<> RetVal BitAndFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//! template specialisation for bitwise and function of type rgba32
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitAndFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
@@ -3839,6 +3911,16 @@ template<> RetVal BitOrFunc<ito::complex128>(const DataObject * /*dObj1*/, const
    return 0;
 }
 
+//! template specialisation for bitwise or function of type rgba32
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitOrFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
 typedef RetVal (*tBitOrFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
 MAKEFUNCLIST(BitOrFunc)
 
@@ -3957,6 +4039,16 @@ template<> RetVal BitXorFunc<ito::complex64>(const DataObject * /*dObj1*/, const
     \throws cv::Exception since this operation is not defined for that input type
 */
 template<> RetVal BitXorFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//! template specialisation for bitwise xor function of type complex128
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template<> RetVal BitXorFunc<ito::rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
    return 0;
@@ -4460,6 +4552,12 @@ template<> RetVal ConjFunc<ito::float64>(DataObject * /*dObj*/)
    return 0;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data type is not complex.
+template<> RetVal ConjFunc<ito::rgba32>(DataObject * /*dObj*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+//! template specialization for data object of type int64. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<int64>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -4758,6 +4856,63 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
    return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which does a element-wise division of elements in first source matrix by elements in second source matrix.
+/*!
+    The result is stored in a result matrix, optionally the division can be scaled by a scaling factor, which is set to one by default.
+    For fixed point numbers or complex values, a division by zero will throw an error. For floating-point values the following (matlab-like)
+    implementation is used:
+
+    1.0/0.0 = Inf, 0.0/0.0 = Nan
+
+    \param *src1 is the first source matrix
+    \param *src2 is the second source matrix
+    \param *res is the result matrix, which must have the same size than the source matrices
+    \param double scale is the scaling factor (default: 1.0)
+    \return retOk
+*/
+template<> RetVal DivFunc<rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
+{
+    //the transpose flag of this matrix already is evaluated if src2 is not transposed
+   size_t numMats = src1->calcNumMats();
+
+   size_t lhsMatNum = 0;
+   size_t rhsMatNum = 0;
+   size_t resMatNum = 0;
+
+   const rgba32* src1RowPtr;
+   const rgba32* src2RowPtr;
+   ito::rgba32* resRowPtr;
+   cv::Mat_<rgba32>* srcMat1 = NULL;
+   cv::Mat_<rgba32>* dstMat = NULL;
+   cv::Mat_<rgba32>* srcMat2 = NULL;
+
+   for (size_t nmat = 0; nmat < numMats; nmat++)
+   {
+        cv::Mat_<rgba32> tempMat;
+        lhsMatNum = src1->seekMat(nmat, numMats);
+        rhsMatNum = src2->seekMat(nmat, numMats);
+        resMatNum = res->seekMat(nmat, numMats);
+        srcMat1 = (cv::Mat_<rgba32> *)(src1->get_mdata()[lhsMatNum]);        
+        srcMat2 = (cv::Mat_<rgba32> *)(src2->get_mdata()[rhsMatNum]);     
+        dstMat = (cv::Mat_<rgba32> *)(res->get_mdata()[resMatNum]);
+
+        for(int i = 0; i < srcMat1->rows; i++)
+        {
+            src1RowPtr = (rgba32*)srcMat1->ptr(i);
+            src2RowPtr = (rgba32*)srcMat2->ptr(i);
+            resRowPtr = (rgba32*)dstMat->ptr(i);
+
+            for(int j = 0; j < srcMat1->cols; j++)
+            {
+                resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
+            }
+        }
+   }
+
+   return 0;
+}
+
 typedef RetVal (*tDivFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
 MAKEFUNCLIST(DivFunc)
 
@@ -4786,7 +4941,7 @@ DataObject DataObject::div(const DataObject &mat2, const double scale)
 
    return result;
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::squeeze() const
 {
     if(m_dims <= 0)
@@ -5523,9 +5678,6 @@ DataObject makeContinuous(const DataObject &dObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function to set the offset of the specified axis, return 1 if axis does not exist
 int DataObject::setAxisOffset(const unsigned int axisNum, const double offset)
 {
@@ -5712,6 +5864,8 @@ size_t DataObject::elemSize() const
     case tInt32:
     case tUInt32:
         return 4;
+    case tRGBA32:
+        return 4;
     case tFloat32:
         return 4;
     case tFloat64:
@@ -5877,6 +6031,7 @@ template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const s
 template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<ito::rgba32>(const rgba32*, const size_t, const size_t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template RetVal DataObject::copyFromData2D<int8>(const int8*, const size_t, const size_t, const int, const int, const size_t, const size_t);
@@ -5889,6 +6044,7 @@ template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const s
 template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t, const int, const int, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<ito::rgba32>(const rgba32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 }// namespace ito

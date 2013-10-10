@@ -17,7 +17,7 @@
 */
 template <typename _Tp> class getDataTypeTest : public ::testing::Test { };
 
-TYPED_TEST_CASE(getDataTypeTest, ItomDataTypes);
+TYPED_TEST_CASE(getDataTypeTest, ItomDataAllTypes);
 
 //! getDataType_Test
 /*!
@@ -34,6 +34,7 @@ TYPED_TEST(getDataTypeTest, getDataType_Test)
 	ito::tDataType testType_var7 = ito::tFloat64;
 	ito::tDataType testType_var8 = ito::tComplex64;
 	ito::tDataType testType_var9 = ito::tComplex128;
+    ito::tDataType testType_var10 = ito::tRGBA32;
 
 	//!< the following tests check if the getDataType() method returns the correct expected data types	
 	EXPECT_EQ( testType_var1, ito::getDataType( (const ito::int8 *) NULL )	);
@@ -45,6 +46,7 @@ TYPED_TEST(getDataTypeTest, getDataType_Test)
 	EXPECT_EQ( testType_var7, ito::getDataType( (const ito::float64 *) NULL ) );
 	EXPECT_EQ( testType_var8, ito::getDataType( (const ito::complex64 *) NULL )	);
 	EXPECT_EQ( testType_var9, ito::getDataType( (const ito::complex128 *) NULL ) );
+    EXPECT_EQ( testType_var10, ito::getDataType( (const ito::rgba32 *) NULL ) );
 }
 
 //! getDataType2
@@ -62,6 +64,7 @@ TYPED_TEST(getDataTypeTest, getDataType2_Test)
 	ito::tDataType testType_var7 = ito::tFloat64;
 	ito::tDataType testType_var8 = ito::tComplex64;
 	ito::tDataType testType_var9 = ito::tComplex128;
+    ito::tDataType testType_var10 = ito::tRGBA32;
 
 	//!< the following tests check if the getDataType2() method returns the correct expected data types		
 	EXPECT_EQ( testType_var4, ito::getDataType2<ito::uint8*>() );				
@@ -73,4 +76,5 @@ TYPED_TEST(getDataTypeTest, getDataType2_Test)
 	EXPECT_EQ( testType_var7, ito::getDataType2<ito::float64 *>() );
 	EXPECT_EQ( testType_var8, ito::getDataType2<ito::complex64 *>() );
 	EXPECT_EQ( testType_var9, ito::getDataType2<ito::complex128 *>() );
+    EXPECT_EQ( testType_var10, ito::getDataType2<ito::rgba32 *>() );
 }

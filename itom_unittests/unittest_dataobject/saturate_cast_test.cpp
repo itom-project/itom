@@ -33,6 +33,26 @@ TYPED_TEST(SaturateTestInt, saturate_cast_Test)
 	EXPECT_EQ(cv::saturate_cast<TypeParam>(int_var3) , int_var3);		//!< checking if saturate_cast<type>(...) function returns the same value for conversion into the same fixed point signed data type as original.
 }
 
+//! SaturateTestRGBA
+/*!
+	This test checks if the saturate_cast<rgba32>(...) function returns the same value for the same signed fixed point data type.
+*/
+template <typename _Tp> class SaturateTestRGBA : public ::testing::Test { };
+
+TYPED_TEST_CASE(SaturateTestRGBA, ItomColorTypes);
+
+TYPED_TEST(SaturateTestRGBA, saturate_cast_Test)
+{
+	//!< declaring variables of signed fixed point types.
+    TypeParam int_var1 = ito::rgba32(5, 5, 1, 255);
+    TypeParam int_var2 = ito::rgba32(11, 5, 11, 1);
+	TypeParam int_var3 = ito::rgba32(0, 0, 0, 0);
+   
+	EXPECT_EQ(cv::saturate_cast<TypeParam>(int_var1) , int_var1);		//!< checking if saturate_cast<type>(...) function returns the same value for conversion into the same fixed point signed data type as original.
+	EXPECT_EQ(cv::saturate_cast<TypeParam>(int_var2) , int_var2);		//!< checking if saturate_cast<type>(...) function returns the same value for conversion into the same fixed point signed data type as original.
+	EXPECT_EQ(cv::saturate_cast<TypeParam>(int_var3) , int_var3);		//!< checking if saturate_cast<type>(...) function returns the same value for conversion into the same fixed point signed data type as original.
+}
+
 //! SaturateTestUInt
 /*!
 	This test checks if the saturate_cast<type>(...) function returns the same value for the same unsigned fixed point data type.
@@ -159,6 +179,102 @@ TYPED_TEST(SaturateTestFloat_Int, saturate_cast_Test)
 	TypeParam Param_test3 = cv::saturate_cast<TypeParam>(float32_qNan);
 	TypeParam Param_max3 = std::numeric_limits<TypeParam>::min();
 	EXPECT_EQ(Param_max3, Param_test3 );									//Testing if saturate_cast() is returning max value of that datatype 
+}
+
+//! SaturateTestRGBA_compatible_cast
+/*!
+	This test checks the functionality of saturate_cast<type>(...) method while converting from rgba32-values to compatible data types and vice versa.
+*/
+template <typename _Tp> class SaturateTestRGBA_compatible_cast : public ::testing::Test { };
+
+TYPED_TEST_CASE(SaturateTestRGBA_compatible_cast, ItomColorCompatibleTypes);
+
+TYPED_TEST(SaturateTestRGBA_compatible_cast, saturate_cast_Test)
+{
+    // first check rgba32 to current type!
+    ito::rgba32 rgba_val1 = ito::rgba32(255, 128, 128, 128);
+
+    ito::rgba32 rgba_val2 = ito::rgba32(0, 0, 0, 0);
+    ito::rgba32 rgba_val3 = ito::rgba32(0, 64, 128, 255);
+    ito::rgba32 rgba_val4 = ito::rgba32(0, 255, 255, 255);
+
+    if(std::numeric_limits<TypeParam>::is_exact && (sizeof(TypeParam) == 4))
+    {
+        
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1) , (TypeParam)rgba_val1.argb());
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1) , (TypeParam)((255 << 24) + (128 << 16) + (128 << 8) + 128));
+        
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val2) , (TypeParam)0);
+
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , (TypeParam)((64 << 16) + (128 << 8) + 255));
+    }
+    else
+    {
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1) , (TypeParam)rgba_val1.gray());
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val2) , (TypeParam)rgba_val2.gray());
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , (TypeParam)rgba_val3.gray());
+
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , cv::saturate_cast<TypeParam>(rgba_val3.gray()));
+         
+        EXPECT_TRUE( ito::isZeroValue<TypeParam>(cv::saturate_cast<TypeParam>(rgba_val1) - 128.0,std::numeric_limits<TypeParam>::epsilon()*2) );
+        EXPECT_TRUE( ito::isZeroValue<TypeParam>(cv::saturate_cast<TypeParam>(rgba_val2),std::numeric_limits<TypeParam>::epsilon()*2) );
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , (TypeParam)rgba_val3.gray());
+        EXPECT_TRUE( ito::isZeroValue<TypeParam>(cv::saturate_cast<TypeParam>(rgba_val4) - 255.0,std::numeric_limits<TypeParam>::epsilon()*2) );
+    }
+
+    // second check current type to rgba32
+
+    if(std::numeric_limits<TypeParam>::is_exact && (sizeof(TypeParam) == 4))
+    {
+        TypeParam typeVal1 = (255 << 24) + (128 << 16) + (128 << 8) + 128;
+        TypeParam typeVal2 = 0;
+
+        TypeParam typeVal3 = (64 << 16) + (128 << 8) + 255;
+        TypeParam typeVal4 = (255 << 16) + (255 << 8) + 255;
+        
+        EXPECT_EQ(cv::saturate_cast<ito::rgba32>(typeVal1) , rgba_val1);
+        EXPECT_EQ(cv::saturate_cast<ito::rgba32>(typeVal2) , rgba_val2);
+        EXPECT_EQ(cv::saturate_cast<ito::rgba32>(typeVal3) , rgba_val3);
+        EXPECT_EQ(cv::saturate_cast<ito::rgba32>(typeVal4) , rgba_val4);
+    }
+    else
+    {
+        TypeParam typeVal1 = 128;
+        EXPECT_EQ(cv::saturate_cast<ito::rgba32>(typeVal1) , rgba_val1);
+
+        TypeParam typeVal2 = 0;
+        TypeParam typeVal4 = 255;
+
+        ito::rgba32 tempVal = cv::saturate_cast<ito::rgba32>(typeVal2);
+        EXPECT_NE(tempVal, rgba_val2);
+        tempVal.alpha() = 0;
+        EXPECT_EQ(tempVal, rgba_val2);
+
+        tempVal = cv::saturate_cast<ito::rgba32>(typeVal4);
+        EXPECT_NE(tempVal, rgba_val4);
+        tempVal.alpha() = 0;
+        EXPECT_EQ(tempVal, rgba_val4);
+
+    }
+
+}
+
+//! SaturateTestRGBA_not_compatible_cast
+/*!
+	This test checks the functionality of saturate_cast<type>(...) method throws an exception for incompatible types and vice versa.
+*/
+template <typename _Tp> class SaturateTestRGBA_not_compatible_cast : public ::testing::Test { };
+
+TYPED_TEST_CASE(SaturateTestRGBA_not_compatible_cast, ItomColorNotCompTypes);
+
+TYPED_TEST(SaturateTestRGBA_not_compatible_cast, saturate_cast_Test)
+{
+    ito::rgba32 rgba_val1 = ito::rgba32(255, 128, 128, 128); 
+    EXPECT_ANY_THROW(cv::saturate_cast<TypeParam>(rgba_val1));
+
+    TypeParam typeVal = 5;
+
+    EXPECT_ANY_THROW(cv::saturate_cast<ito::rgba32>(typeVal));
 }
 
 //! SaturateTestFloat_UInt

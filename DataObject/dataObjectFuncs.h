@@ -42,7 +42,8 @@
    FuncName<ito::float32>,                                                   \
    FuncName<ito::float64>,                                                   \
    FuncName<ito::complex64>,                                                 \
-   FuncName<ito::complex128>                                                 \
+   FuncName<ito::complex128>,                                                 \
+   FuncName<ito::rgba32>                                                 \
 };
 
 //! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
@@ -56,6 +57,14 @@ namespace ito
 {
 namespace dObjHelper
 {
+    enum CmplxSelectionFlags
+    {
+        CMPLX_ABS_VALUE         = 0,
+        CMPLX_IMAGINARY_VALUE   = 1,
+        CMPLX_REAL_VALUE        = 2,
+        CMPLX_ARGUMENT_VALUE    = 3
+    };
+
     // Invert the unitString
     inline std::string invertUnit(const std::string oldUnit)
     {
@@ -495,10 +504,10 @@ namespace dObjHelper
     RetVal maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
         
     //! <templated version> Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
-    template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int cmplxSel = 0);
+    template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
     
     //! Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
-    RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int cmplxSel = 0);
+    RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
 
     template<typename _Tp, typename _BufTp> RetVal meanValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
     RetVal meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);

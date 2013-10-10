@@ -51,8 +51,8 @@
 #include <map>
 #include <string>
 
-namespace cv {
-
+namespace cv 
+{
    template<> inline ito::float32 saturate_cast<ito::float32>( ito::float64 v)
    {
        //return (float32)v;
@@ -71,7 +71,10 @@ namespace cv {
 
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-
+   
+   template<typename _Tp> static inline _Tp saturate_cast(ito::rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+//   template<typename _Tp> static inline ito::rgba32 saturate_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+ 
    template<> inline ito::complex64 saturate_cast(ito::uint8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
    template<> inline ito::complex64 saturate_cast(ito::int8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
    template<> inline ito::complex64 saturate_cast(ito::uint16 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
@@ -93,9 +96,129 @@ namespace cv {
    template<> inline ito::complex128 saturate_cast(ito::float64 v){ return ito::complex128(v,0.0); }
    template<> inline ito::complex128 saturate_cast(ito::complex64 v){ return ito::complex128(saturate_cast<ito::float64>(v.real()),saturate_cast<ito::float64>(v.imag())); }
    template<> inline ito::complex128 saturate_cast(ito::complex128 v){ return v; }
+   
+// template<> inline ito::rgba32 saturate_cast(ito::int8 v) {return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::uint8 v) {return ito::rgba32(v);}
+   template<> inline ito::rgba32 saturate_cast(ito::uint16 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+// template<> inline ito::rgba32 saturate_cast(ito::int16 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::uint32 v)
+   {
+       ito::rgba32 temp;
+       memcpy(temp.u8ptr(), &v, sizeof(ito::uint32));
+       return temp;
+   }
+   template<> inline ito::rgba32 saturate_cast(ito::int32 v)
+   {
+       ito::rgba32 temp;
+       memcpy(temp.u8ptr(), &v, sizeof(ito::uint32));
+       return temp;
+   }
+   template<> inline ito::rgba32 saturate_cast(ito::float32 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::float64 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
+   template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
+
+   template<> static inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> static inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+
+   template<> inline ito::uint8 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
+   //template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
+   template<> inline ito::uint16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint16>(v.gray());};
+   template<> inline ito::uint32 saturate_cast(ito::rgba32 v){return v.argb();};
+   template<> inline ito::int32 saturate_cast(ito::rgba32 v){return (ito::int32)(v.argb());};
+   template<> inline ito::float32 saturate_cast(ito::rgba32 v){return (ito::float32)v.gray();};
+   template<> inline ito::float64 saturate_cast(ito::rgba32 v){return (ito::float64)v.gray();};
+
+
+
+    template<> class cv::DataType<ito::rgba32>
+    {
+        public:
+        typedef ito::rgba32 value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::redChannel>
+    {
+        public:
+        typedef ito::redChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::greenChannel>
+    {
+        public:
+        typedef ito::greenChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::blueChannel>
+    {
+        public:
+        typedef ito::blueChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class cv::DataType<ito::alphaChannel>
+    {
+        public:
+        typedef ito::alphaChannel value_type;
+        typedef ito::uint32 work_type;
+        typedef ito::uint8 channel_type;
+        typedef value_type vec_type;
+        enum 
+        {
+            generic_type = 0, 
+            depth = cv::DataDepth<channel_type>::value, 
+            channels = 4,
+            fmt = ((channels-1)<<8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
 
 } // namespace cv
-
 
 namespace ito {
 
@@ -1273,7 +1396,11 @@ class DataObject
         */
         size_t getSize(int index) const
         {
-            if(index < 0 || index >= m_dims) return -1;            
+            if(index < 0 || index >= m_dims)
+            {
+                cv::error(cv::Exception(CV_StsAssert, "Requested dimension missmatch with object dimensions or maybe negative", "", __FILE__, __LINE__));
+                return 0;
+            }
             else
             {
 
@@ -1827,7 +1954,8 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
 */
 template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scalar)
 {
-    _Tp retValue = 0;
+    //_Tp retValue = 0;
+    _Tp retValue;
 
     switch(fromType)
     {
@@ -1861,6 +1989,9 @@ template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scala
     case ito::tComplex128:
         retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::complex128*>(scalar)));
         break;
+    case ito::tRGBA32:
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::rgba32*>(scalar)));
+        break;
     default:
         cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
         retValue = 0;
@@ -1869,7 +2000,52 @@ template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scala
     return retValue;
 };
 
-
+//template<> ito::rgba32 numberConversion<ito::rgba32>(ito::tDataType fromType, void *scalar)
+//{
+//    _Tp retValue = 0;
+//
+//    switch(fromType)
+//    {
+//    case ito::tUInt8:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<uint8*>(scalar)));
+//        break;
+//    case ito::tInt8:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<int8*>(scalar)));
+//        break;
+//    case ito::tUInt16:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<uint16*>(scalar)));
+//        break;
+//    case ito::tInt16:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<int16*>(scalar)));
+//        break;
+//    case ito::tUInt32:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<uint32*>(scalar)));
+//        break;
+//    case ito::tInt32:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<int32*>(scalar)));
+//        break;
+//    case ito::tFloat32:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<ito::float32*>(scalar)));
+//        break;
+//    case ito::tFloat64:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<ito::float64*>(scalar)));
+//        break;
+//    case ito::tComplex64:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<ito::complex64*>(scalar)));
+//        break;
+//    case ito::tComplex128:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<ito::complex128*>(scalar)));
+//        break;
+//    case ito::tRGBA32:
+//        retValue = cv::saturate_cast<ito::rgba32>(*(static_cast<ito::rgba32*>(scalar)));
+//        break;
+//    default:
+//        cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+//        retValue = 0;
+//    }
+//
+//    return retValue;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // cout
@@ -1940,6 +2116,7 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
         case ito::tUInt32:
         case ito::tFloat32:
         case ito::tFloat64:
+        case ito::tRGBA32:
             return cmplxType;
         case ito::tComplex64:
             return ito::tFloat32;
@@ -1976,6 +2153,7 @@ template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return
 template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
 template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
 template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
+template<> inline ito::tDataType getDataType(const rgba32* /*src*/) { return ito::tRGBA32; }
 
 
 //! method which returns the value of enumeration ito::tDataType, which corresponds to the template parameter (must be a pointer).
@@ -2004,7 +2182,7 @@ template<> inline ito::tDataType getDataType2<float32*>()    { return ito::tFloa
 template<> inline ito::tDataType getDataType2<float64*>()    { return ito::tFloat64; }
 template<> inline ito::tDataType getDataType2<complex64*>()  { return ito::tComplex64; }
 template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComplex128; }
-
+template<> inline ito::tDataType getDataType2<rgba32*>() { return ito::tRGBA32; }
 
 //! method returns whether a given variable is equal to zero.
 /*!
@@ -2020,6 +2198,10 @@ template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComp
 template<typename _Tp> static inline bool isZeroValue(_Tp v, _Tp /*epsilon*/)
 {
     return v == 0;
+}
+template<> inline bool isZeroValue(rgba32 v, rgba32 /*epsilon*/)
+{
+    return v == rgba32::ZEROS();
 }
 template<> inline bool isZeroValue(float32 v, float32 epsilon)
 {

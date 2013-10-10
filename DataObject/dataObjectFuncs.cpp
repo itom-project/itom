@@ -120,6 +120,12 @@ namespace dObjHelper
         return retError;
     }
 
+    template<> RetVal minValueFunc<rgba32>(const DataObject * /*dObj*/, float64 & /*minValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "minValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     typedef RetVal (*tminValueFunc)(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf);
     MAKEHELPERFUNCLIST(minValueFunc)
@@ -253,6 +259,13 @@ namespace dObjHelper
         cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
         return retError;
     }
+
+    template<> RetVal maxValueFunc<rgba32>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     typedef RetVal (*tmaxValueFunc)(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf);
     MAKEHELPERFUNCLIST(maxValueFunc)
@@ -293,20 +306,20 @@ namespace dObjHelper
     /*!
     \detail This function searches for min and max-value of the <_Type> data object and saves its first detects positions in firstMinLocation (must be uint32[3]-Array) and firstMaxLocation (must be  uint32[3]-Array).
             NaN-Values will be ignored by this method and Inf-Value handling depends on inf-flag. If ignoreInf == true, inf is ignored else inf is not ignored. 
-            The cmplxSel for complex handling selection is unused in the FP and INT-versions of the function.
+            The specialDataTypeFlags for complex / rgba32 handling selection is unused in the FP and INT-versions of the function.
             Warning, does not check if dObj && firstMinLocation && firstMaxLocation are valid!
 
-        \param[in]      dObj                handle to the dataObject
-        \param[out]     minValue            lowest value in this object
-        \param[in|out]  firstMinLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
-        \param[out]     maxValue            highest value in this object
-        \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymax, xmax]
-        \param[in]      ignoreInf           Ignore Inf-Values
-        \param[in]      cmplxSel            Toggle complex handling (not used) 
+        \param[in]      dObj                    handle to the dataObject
+        \param[out]     minValue                lowest value in this object
+        \param[in|out]  firstMinLocation        Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[out]     maxValue                highest value in this object
+        \param[in|out]  firstMaxLocation        Allocated uint32[3]-array. Will be filled with [mat-Number, ymax, xmax]
+        \param[in]      ignoreInf               Ignore Inf-Values
+        \param[in]      specialDataTypeFlags                Toggle complex handling (not used) 
 
         \return retOk
     */
-    template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int /*cmplxSel*/)
+    template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int /*specialDataTypeFlags*/)
     {
         size_t numMats = dObj->calcNumMats();
         size_t matIndex = 0;
@@ -406,17 +419,17 @@ namespace dObjHelper
             NaN-Values will be ignored by this method and Inf-Value handling depends on inf-flag. If ignoreInf == true, inf is ignored else inf is not ignored.
             Warning, does not check if dObj && firstMinLocation && firstMaxLocation are valid!
 
-        \param[in]      dObj                handle to the dataObject
-        \param[out]     minValue            lowest value in this object
-        \param[in|out]  firstMinLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
-        \param[out]     maxValue            highest value in this object
-        \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
-        \param[in]      ignoreInf           Ignore Inf-Values
-        \param[in]      cmplxSel            Toggle complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value
+        \param[in]      dObj                    handle to the dataObject
+        \param[out]     minValue                lowest value in this object
+        \param[in|out]  firstMinLocation        Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[out]     maxValue                highest value in this object
+        \param[in|out]  firstMaxLocation        Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[in]      ignoreInf               Ignore Inf-Values
+        \param[in]      specialDataTypeFlags    Toggle complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value, see ito::dObjHelper::CmplxSelectionFlags
 
         \return retOk
     */
-    template<> RetVal minMaxValueFunc<ito::complex64>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int cmplxSel)
+    template<> RetVal minMaxValueFunc<ito::complex64>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
         size_t numMats = dObj->calcNumMats();
         size_t matIndex = 0;
@@ -442,10 +455,10 @@ namespace dObjHelper
                 cols = (uint32)mat->cols;
                 rows = (uint32)mat->rows;
 			
-			    switch (cmplxSel)
+			    switch (specialDataTypeFlags)
 			    {
 				    default:	
-				    case 0:
+				    case CMPLX_ABS_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -472,7 +485,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 1:
+				    case CMPLX_IMAGINARY_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -498,7 +511,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 2:
+				    case CMPLX_REAL_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -524,7 +537,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 3:
+				    case CMPLX_ARGUMENT_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -562,10 +575,10 @@ namespace dObjHelper
                 cols = (uint32)mat->cols;
                 rows = (uint32)mat->rows;
 
-			    switch (cmplxSel)
+			    switch (specialDataTypeFlags)
 			    {
 				    default:	
-				    case 0:
+				    case CMPLX_ABS_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -590,7 +603,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 1:
+				    case CMPLX_IMAGINARY_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -615,7 +628,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 2:
+				    case CMPLX_REAL_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -640,7 +653,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 3:
+				    case CMPLX_ARGUMENT_VALUE:
 					    for(m = 0; m < rows; m++)
 					    {
 						    rowPtr = (ito::complex64*)mat->ptr(m);
@@ -688,12 +701,12 @@ namespace dObjHelper
         \param[out]     maxValue            highest value in this object
         \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
         \param[in]      ignoreInf           Ignore Inf-Values
-        \param[in]      cmplxSel            Toggle complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value
+        \param[in]      specialDataTypeFlags            Toggle complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value
 
         \return retOk
     */
 
-    template<> RetVal minMaxValueFunc<ito::complex128>(const DataObject *dObj, float64 &minValue, uint32 * /*firstMinLocation*/, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int cmplxSel)
+    template<> RetVal minMaxValueFunc<ito::complex128>(const DataObject *dObj, float64 &minValue, uint32 * /*firstMinLocation*/, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
         size_t numMats = dObj->calcNumMats();
         size_t matIndex = 0;
@@ -716,10 +729,10 @@ namespace dObjHelper
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
 			
-			    switch (cmplxSel)
+			    switch (specialDataTypeFlags)
 			    {
 				    default:	
-				    case 0:
+				    case CMPLX_ABS_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -743,7 +756,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 1:
+				    case CMPLX_IMAGINARY_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -766,7 +779,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 2:
+				    case CMPLX_REAL_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -790,7 +803,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 3:
+				    case CMPLX_ARGUMENT_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -823,10 +836,10 @@ namespace dObjHelper
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
 
-			    switch (cmplxSel)
+			    switch (specialDataTypeFlags)
 			    {
 				    default:	
-				    case 0:
+				    case CMPLX_ABS_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -848,7 +861,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 1:
+				    case CMPLX_IMAGINARY_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -870,7 +883,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 2:
+				    case CMPLX_REAL_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -892,7 +905,7 @@ namespace dObjHelper
 					    }
 				    break;
 
-				    case 3:
+				    case CMPLX_ARGUMENT_VALUE:
 					    for(m = 0; m < mat->rows; m++)
 					    {
 						    rowPtr = (ito::complex128*)mat->ptr(m);
@@ -924,7 +937,223 @@ namespace dObjHelper
         return ito::retOk;
     }
 
-    typedef RetVal (*tminMaxValueFunc)(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int cmplxSel);
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*!
+    \detail This function searches for min and max-value of the <_Type> data object and saves its first detects positions in firstMinLocation (must be uint32[3]-Array) and firstMaxLocation (must be  uint32[3]-Array).
+            The specialDataTypeFlags for complex handling / rgba32 selection is used to toogle between the different channels.
+            If specialDataTypeFlags == RGBA_B the maximal & minimal value for the blue channel is returned.
+            If specialDataTypeFlags == RGBA_G the maximal & minimal value for the green channel is returned
+            If specialDataTypeFlags == RGBA_R the maximal & minimal value for the red channel is returned
+            If specialDataTypeFlags == RGBA_A the maximal & minimal value for the alpha channel is returned
+            If specialDataTypeFlags == RGBA_Y for each pixel a gray-value transformation in YUV-space is done and the maximal & minimal value for the Y is returned
+            If specialDataTypeFlags == RGBA_RGB the maximal and minimal value over all channels will be returned.
+            Warning, does not check if dObj && firstMinLocation && firstMaxLocation are valid!
+
+        \param[in]      dObj                handle to the dataObject
+        \param[out]     minValue            lowest value in this object
+        \param[in|out]  firstMinLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[out]     maxValue            highest value in this object
+        \param[in|out]  firstMaxLocation    Allocated uint32[3]-array. Will be filled with [mat-Number, ymin, xmin]
+        \param[in]      ignoreInf           Ignore Inf-Values
+        \param[in]      specialDataTypeFlags            Toggle rgba-channel handling, see ito::Rgba32_t::RGBSelectionFlags
+
+        \return retOk
+    */
+    template<> RetVal minMaxValueFunc<rgba32>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool /*ignoreInf*/, const int specialDataTypeFlags)
+    {
+        size_t numMats = dObj->calcNumMats();
+        size_t matIndex = 0;
+
+        int m,n;
+
+        const rgba32* rowPtr;
+        cv::Mat_<rgba32> *mat = NULL;
+
+//        rgba32 tempResultMin;
+//        rgba32 tempResultMax;
+//        tempResultMin = std::numeric_limits<ito::uint32>::max();
+//        tempResultMax = std::numeric_limits<ito::uint32>::min(); //integer numbers
+
+        uint8 tmpMin = 255;
+        uint8 tmpMax = 0;
+        float32 tmpMinFloat = std::numeric_limits<float32>::max();
+        float32 tmpMaxFloat = -std::numeric_limits<float32>::max();
+
+        for (size_t nmat = 0; nmat < numMats; nmat++)
+        {
+            matIndex = dObj->seekMat(nmat, numMats);
+            mat = (cv::Mat_<rgba32> *)(dObj->get_mdata())[matIndex];
+
+            switch(specialDataTypeFlags)
+            {
+                case Rgba32_t::RGBA_B:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].blue() < tmpMin) 
+                            {
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                                tmpMin = rowPtr[n].blue();
+                            }
+                            if(rowPtr[n].blue() > tmpMax) 
+                            {
+                                firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                                tmpMax = rowPtr[n].blue();
+                            }
+                        }
+                    }
+                }
+                break;
+                case Rgba32_t::RGBA_G:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].green() < tmpMin) 
+                            {
+                                tmpMin = rowPtr[n].green();
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                            }
+                            if(rowPtr[n].green() > tmpMin) 
+                            {
+                                tmpMax = rowPtr[n].green();
+                                firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                            }
+                        }
+                    }
+                }
+                break;
+                case Rgba32_t::RGBA_R:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].red() < tmpMin) 
+                            {
+                                tmpMin = rowPtr[n].red();
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                            }
+                            if(rowPtr[n].red() > tmpMax) 
+                            {
+                                tmpMax = rowPtr[n].red();
+                                firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                            }
+                        }
+                    }
+                }
+                break;
+                case Rgba32_t::RGBA_A:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].alpha() < tmpMin) 
+                            {
+                                tmpMin = rowPtr[n].alpha(); //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                            }
+                            if(rowPtr[n].alpha() > tmpMax) 
+                            {
+                                tmpMax = rowPtr[n].alpha(); //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                            }
+                        }
+                    }
+                }
+                break;
+                case Rgba32_t::RGBA_Y:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].gray() < tmpMinFloat) 
+                            {
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                                tmpMinFloat = rowPtr[n].gray();
+                            }
+                            if(rowPtr[n].alpha() > tmpMaxFloat) 
+                            {
+                                firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                                tmpMaxFloat = rowPtr[n].gray();
+                            }
+                        }
+                    }
+                }
+                break;
+                default:
+                case Rgba32_t::RGBA_RGB:
+                {
+                    for(m = 0; m < mat->rows; m++)
+                    {
+                        rowPtr = (rgba32*)mat->ptr(m);
+                        for(n = 0; n < mat->cols; n++)
+                        {
+                            if(rowPtr[n].red() < tmpMin || rowPtr[n].blue() < tmpMin || rowPtr[n].green() < tmpMin ) 
+                            {
+                                firstMinLocation[0] = nmat;
+                                firstMinLocation[1] = m;
+                                firstMinLocation[2] = n;
+                                tmpMin = rowPtr[n].red() < rowPtr[n].blue() ? rowPtr[n].red() : (rowPtr[n].green() < rowPtr[n].blue() ? rowPtr[n].green() : rowPtr[n].blue());
+                            }
+                            if(rowPtr[n].red() > tmpMax || rowPtr[n].blue() > tmpMax || rowPtr[n].green() > tmpMax) 
+                            {
+                               firstMaxLocation[0] = nmat;
+                                firstMaxLocation[1] = m;
+                                firstMaxLocation[2] = n;
+                                tmpMax = rowPtr[n].red() > rowPtr[n].blue() ? rowPtr[n].red() : (rowPtr[n].green() > rowPtr[n].blue() ? rowPtr[n].green() : rowPtr[n].blue());
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        if(specialDataTypeFlags == Rgba32_t::RGBA_Y)
+        {
+            minValue = static_cast<float64>(tmpMinFloat);
+            maxValue = static_cast<float64>(tmpMaxFloat);
+        }
+        else
+        {
+            minValue = static_cast<float64>(tmpMin);
+            maxValue = static_cast<float64>(tmpMax);
+        }
+        return ito::retOk;
+    }
+
+    typedef RetVal (*tminMaxValueFunc)(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags);
     MAKEHELPERFUNCLIST(minMaxValueFunc);
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -941,7 +1170,7 @@ namespace dObjHelper
 
         \return retOK or in case dObj == NULL || firstMinLocation == NULL || firstMinLocation == NULL it returns retError 
     */
-    RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int cmplxSel)
+    RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
         minValue = std::numeric_limits<float64>::max();
         maxValue = -std::numeric_limits<float64>::max();
@@ -955,7 +1184,7 @@ namespace dObjHelper
         if(dObj == NULL || dObj->getDims() == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
-        return fListminMaxValueFunc[dObj->getType()](dObj, minValue, firstMinLocation, maxValue, firstMaxLocation, ignoreInf, cmplxSel);
+        return fListminMaxValueFunc[dObj->getType()](dObj, minValue, firstMinLocation, maxValue, firstMaxLocation, ignoreInf, specialDataTypeFlags);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1046,6 +1275,17 @@ namespace dObjHelper
     template<> RetVal meanValueFunc<complex128, complex128>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
+    template<> RetVal meanValueFunc<rgba32, uint32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+        return retError;
+    }
+    template<> RetVal meanValueFunc<rgba32, rgba32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
     }
 
@@ -1277,6 +1517,17 @@ namespace dObjHelper
     template<> RetVal devValueFunc<complex128, complex128>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
+    template<> RetVal devValueFunc<rgba32, uint32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+        return retError;
+    }
+    template<> RetVal devValueFunc<rgba32, rgba32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
     }
 

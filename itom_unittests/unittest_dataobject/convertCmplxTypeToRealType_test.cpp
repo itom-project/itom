@@ -18,7 +18,7 @@
 */
 template <typename _Tp> class complexToReal_Test : public ::testing::Test { };
 
-TYPED_TEST_CASE(complexToReal_Test, ItomDataTypes);
+TYPED_TEST_CASE(complexToReal_Test, ItomDataStandardTypes);
 
 //! Test for convertCmplxTypeToRealType() function with different variables of different Datatypes.
 TYPED_TEST(complexToReal_Test, convertCmplxTypeToRealType_Test)
@@ -33,6 +33,7 @@ TYPED_TEST(complexToReal_Test, convertCmplxTypeToRealType_Test)
 	ito::tDataType cmplxType7 = ito::tFloat64;
 	ito::tDataType cmplxType8 = ito::tComplex64;
 	ito::tDataType cmplxType9 = ito::tComplex128;
+    ito::tDataType cmplxType10 = ito::tRGBA32;
 
 	
 	//!	 Test Details.

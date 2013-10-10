@@ -128,7 +128,7 @@
 //    typedef _Tp valueType;
 //};
 //
-//TYPED_TEST_CASE(AddressTest, ItomDataTypes);
+//TYPED_TEST_CASE(AddressTest, ItomDataStandardTypes);
 //
 //TYPED_TEST(AddressTest, checkValues)
 //{

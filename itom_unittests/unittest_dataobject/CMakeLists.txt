@@ -83,6 +83,7 @@ set(unittest_dataobject_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/makeContinuousFuncTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Iterator_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ConstIterator_test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/colorTypesTest.cpp
 )
 
 # #add filters to visual studio

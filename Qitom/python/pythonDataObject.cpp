@@ -82,7 +82,7 @@ Parameters \n\
 dims : {List of Integer}, optional \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {str}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 data : {str}, optional \n\
@@ -105,6 +105,8 @@ Recently the following types are supported:\n\
 * Floating-type (float32, float64 (=> double)),\n\
 \n\
 * Complex-type  (complex64 (2x float32), complex128 (2x float64)).\n\
+\n\
+* Color-type  (rgba32 (uint32 or uint[4] containing [B, G, R, I])).\n\
 \n\
 \n\
 Warning 'uint32' is not fully openCV-compatible and hence causes instability!\n\
@@ -504,11 +506,14 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     case ito::tUInt16:      npTypenum = NPY_USHORT; break;
                                     case ito::tInt32:       npTypenum = NPY_INT; break;
                                     case ito::tUInt32:      npTypenum = NPY_UINT; break;
+                                    case ito::tRGBA32:      npTypenum = NPY_UINT; break;
                                     case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
                                     case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
                                     case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
                                     case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
+                                    default: npTypenum = -1;
                                     }
+
                                     PyObject *npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
 
                                     if(npArray == NULL)
@@ -607,6 +612,19 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                                         for(n = 0; n < mat->cols; n++)
                                                         {
                                                             rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case ito::tRGBA32:
+                                                {
+                                                    ito::rgba32 *rowPtr;
+                                                    for(m = 0; m < mat->rows; m++)
+                                                    {
+                                                        rowPtr = mat->ptr<ito::rgba32>(m);
+                                                        for(n = 0; n < mat->cols; n++)
+                                                        {
+                                                            rowPtr[n].fromUnsignedLong((reinterpret_cast<uint32*>(data))[c++]);
                                                         }
                                                     }
                                                 }
@@ -955,7 +973,8 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"float32", tFloat32},
     {"float64", tFloat64},
     {"complex64", tComplex64},
-    {"complex128", tComplex128}
+    {"complex128", tComplex128},
+    {"rgba32", tRGBA32}
 };
 
 int PythonDataObject::typeNameToNumber(const char *name)
@@ -1747,6 +1766,12 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
                 PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)( *((ito::int32*)(*it)) )));
             }
             break;
+        case ito::tRGBA32:
+            for(; it < itEnd; ++it)
+            {
+                PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromUnsignedLong((long)( *((ito::uint32*)(*it)) )));
+            }
+            break;
         case ito::tFloat32:
             for(; it < itEnd; ++it)
             {
@@ -1821,6 +1846,9 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
     case ito::tUInt32:
         typenum = NPY_UINT32;
         break;
+    case ito::tRGBA32:
+        typenum = NPY_UINT32;
+        break;
     case ito::tFloat32:
         typenum = NPY_FLOAT32;
         break;
@@ -1888,6 +1916,12 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
             for(; it < itEnd; ++it)
             {
                 *((ito::int32*)(*it)) = *( (ito::int32*)(PyArray_GETPTR1(arr, cnt++)) );
+            }
+            break;
+        case ito::tRGBA32:
+            for(; it < itEnd; ++it)
+            {
+                memcpy((ito::rgba32*)(*it), (ito::uint32*)(PyArray_GETPTR1(arr, cnt++)), sizeof(ito::uint32));
             }
             break;
         case ito::tFloat32:
@@ -4707,6 +4741,9 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 case ito::tInt32:
                     self->dataObject->at<int32>(idx) = ito::numberConversion<int32>(fromType, valuePtr);
                     break;
+                case ito::tRGBA32:
+                    self->dataObject->at<ito::rgba32>(idx) = ito::numberConversion<ito::rgba32>(fromType, valuePtr);
+                    break;
                 case ito::tFloat32:
                     self->dataObject->at<float32>(idx) = ito::numberConversion<float32>(fromType, valuePtr);
                     break;
@@ -5833,6 +5870,8 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
         return PyLong_FromUnsignedLong(dataObj->at<uint32>(idx));
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
+    case ito::tRGBA32:
+        return PyLong_FromUnsignedLong(dataObj->at<rgba32>(idx).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -5892,6 +5931,8 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
         return PyLong_FromUnsignedLong( m->at<uint32>(row,col) );
     case ito::tInt32:
         return PyLong_FromLong( m->at<int32>(row,col) );
+    case ito::tRGBA32:
+        return PyLong_FromUnsignedLong(m->at<rgba32>(row,col).argb());
     case ito::tFloat32:
         return PyFloat_FromDouble( m->at<float32>(row,col) );
     case ito::tFloat64:
@@ -5985,7 +6026,7 @@ Parameters \n\
 dims : {List of Integer} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {str}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -5996,7 +6037,10 @@ The dataObject : {dataObject}\n\
 Notes \n\
 ----- \n\
 \n\
-Creates a new itom-dataObject filled with ones.");
+For standard-types (integer, floating-point and complex) this function \n\
+creates a new itom-dataObject filled with ones. \n\
+\n\
+For color-types (rgba32) the object will be white [255 255 255 255].");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = 0;
@@ -6486,6 +6530,9 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             break;
         case ito::tInt32:
             output = PyLong_FromLong((long)( *((ito::int32*)(*(self->it))) ));
+            break;
+        case ito::tRGBA32:
+            output = PyLong_FromUnsignedLong((long)( ((rgba32*)(*(self->it))))->argb());
             break;
         case ito::tFloat32:
             output = PyFloat_FromDouble((double)( *((ito::float32*)(*(self->it))) ));
