@@ -1515,7 +1515,8 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
             if (rgba)
             {
-                QColor c(rgba->r, rgba->g, rgba->b, rgba->a);
+                //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
+                QColor c(rgba->rgba.argb());
                 *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
             }
             break;
@@ -1961,10 +1962,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             QColor* color = (QColor*)data;
             if (rgba)
             {
-                rgba->r = color->red();
-                rgba->b = color->blue();
-                rgba->g = color->green();
-                rgba->a = color->alpha();
+                rgba->rgba.argb() = (ito::uint32)color->value();
+                //rgba->b = color->blue();
+                //rgba->g = color->green();
+                //rgba->a = color->alpha();
             }
             return (PyObject*)rgba;
         }

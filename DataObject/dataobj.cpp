@@ -2914,6 +2914,33 @@ template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float
    return RetVal(retOk);
 }
 
+template<> RetVal AddScalarFunc<ito::rgba32>(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
+{
+   size_t srcTmat = 0;
+   size_t dstTmat = 0;
+   size_t numMats = dObjIn->calcNumMats();
+   cv::Mat_<ito::rgba32> *cvSrc = NULL;
+   cv::Mat_<ito::rgba32> *cvDest = NULL;
+   cv::Scalar s;
+   ito::int32 sign = scalar < 0 ? -1.0 : 1.0;
+   ito::uint32 val = fabs(scalar) > 4294967295 ? 0xFFFFFFFF : (ito::uint32)fabs(scalar);
+   s[0] = ((ito::uint8*)&val)[0] * sign;
+   s[1] = ((ito::uint8*)&val)[1] * sign;
+   s[2] = ((ito::uint8*)&val)[2] * sign;
+   s[3] = ((ito::uint8*)&val)[3] * sign;
+
+    for (size_t nmat = 0; nmat < numMats; ++nmat)
+    {
+		dstTmat = dObjOut->seekMat(nmat, numMats);
+		srcTmat = dObjIn->seekMat(nmat, numMats);
+		cvSrc  = (cv::Mat_<ito::rgba32> *) dObjIn->get_mdata()[srcTmat];
+		cvDest = (cv::Mat_<ito::rgba32> *) dObjOut->get_mdata()[dstTmat];
+		*cvDest = *cvSrc + s;
+    }
+
+   return RetVal(retOk);
+}
+
 typedef RetVal (*tAddScalarFunc)(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut);
 MAKEFUNCLIST(AddScalarFunc);
 
@@ -3216,6 +3243,35 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
 //      {
 //         (*lhsIt) *= factor2;
 //      }
+   }
+
+   return 0;
+}
+
+template<> RetVal OpScalarMulFunc<ito::rgba32>(const DataObject *src, const double factor)
+{
+   size_t numMats = src->calcNumMats();
+   size_t MatNum = 0;
+
+   ito::rgba32 factor2;
+   factor2 = (factor < 0.0 ? (ito::uint32)0 : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
+
+   cv::Mat_<ito::rgba32> * tempMat = NULL;
+   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
+   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+   for (size_t nmat = 0; nmat < numMats; nmat++)
+   {
+       MatNum = src->seekMat(nmat, numMats);
+       tempMat = ((cv::Mat_<ito::rgba32> *)((src->get_mdata())[MatNum]));
+
+       for (int y = 0; y < sizey; y++)
+       {
+           ito::rgba32* dstPtr = (ito::rgba32*)tempMat->ptr(y);
+           for (int x = 0; x < sizex; x++)
+           {
+               dstPtr[x] *= (ito::rgba32)factor2;
+           }
+       }
    }
 
    return 0;

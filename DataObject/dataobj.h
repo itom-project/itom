@@ -136,8 +136,8 @@ namespace cv
     {
         public:
         typedef ito::rgba32 value_type;
-        typedef ito::uint32 work_type;
         typedef ito::uint8 channel_type;
+        typedef Vec<channel_type, 4> work_type; 
         typedef value_type vec_type;
         enum 
         {
@@ -153,8 +153,8 @@ namespace cv
     {
         public:
         typedef ito::redChannel value_type;
-        typedef ito::uint32 work_type;
         typedef ito::uint8 channel_type;
+        typedef Vec<channel_type, 4> work_type; 
         typedef value_type vec_type;
         enum 
         {
@@ -170,8 +170,8 @@ namespace cv
     {
         public:
         typedef ito::greenChannel value_type;
-        typedef ito::uint32 work_type;
         typedef ito::uint8 channel_type;
+        typedef Vec<channel_type, 4> work_type; 
         typedef value_type vec_type;
         enum 
         {
@@ -187,8 +187,8 @@ namespace cv
     {
         public:
         typedef ito::blueChannel value_type;
-        typedef ito::uint32 work_type;
         typedef ito::uint8 channel_type;
+        typedef Vec<channel_type, 4> work_type; 
         typedef value_type vec_type;
         enum 
         {
@@ -204,8 +204,8 @@ namespace cv
     {
         public:
         typedef ito::alphaChannel value_type;
-        typedef ito::uint32 work_type;
         typedef ito::uint8 channel_type;
+        typedef Vec<channel_type, 4> work_type; 
         typedef value_type vec_type;
         enum 
         {

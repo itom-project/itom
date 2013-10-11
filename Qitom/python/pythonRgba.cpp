@@ -43,7 +43,7 @@ PyObject* PythonRgba::PyRgba_new(PyTypeObject *type, PyObject * /*args*/, PyObje
     PyRgba* self = (PyRgba *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->rgba = 0x000000ff; //alpha 255, rest: 0
+        self->rgba = 0xFF000000; //alpha 255, rest: 0
     }
 
     return (PyObject *)self;
@@ -71,14 +71,14 @@ For a gray value set all colors to the same value.");
 int PythonRgba::PyRgba_init(PyRgba *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"r", "g", "b", "alpha", NULL};
-	self->a = 255;
+	self->rgba.alpha() = 255;
 
 	if (args == NULL && kwds == NULL)
 	{
 		return 0; //call from createEmptyPyRgba
 	}
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "BBB|B", const_cast<char**>(kwlist), &(self->r), &(self->g), &(self->b), &(self->a)))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "BBB|B", const_cast<char**>(kwlist), &(self->rgba.red()), &(self->rgba.green()), &(self->rgba.blue()), &(self->rgba.alpha())))
     {
         return -1;
     }
@@ -245,7 +245,7 @@ PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
     }
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-	retRgba->rgba = rgba1->rgba << shift;
+	// not implemented yet !!  retRgba->rgba = rgba1->rgba << shift;
 
     return (PyObject*)retRgba;
 }
@@ -267,7 +267,7 @@ PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
     }
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-	retRgba->rgba = rgba1->rgba >> shift;
+	// not implemented yet !!  retRgba->rgba = rgba1->rgba >> shift;
 
     return (PyObject*)retRgba;
 }
@@ -281,7 +281,7 @@ PyObject* PythonRgba::PyRgba_nbAnd(PyObject* o1, PyObject* o2)
     PyRgba *rgba2 = (PyRgba*)(o2);
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-	retRgba->rgba = rgba1->rgba & rgba2->rgba;
+	// not implemented yet !!  retRgba->rgba = rgba1->rgba & rgba2->rgba;
 
     return (PyObject*)retRgba;
 }
@@ -295,7 +295,7 @@ PyObject* PythonRgba::PyRgba_nbXor(PyObject* o1, PyObject* o2)
     PyRgba *rgba2 = (PyRgba*)(o2);
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-	retRgba->rgba = rgba1->rgba ^ rgba2->rgba;
+	// not implemented yet !!  retRgba->rgba = rgba1->rgba ^ rgba2->rgba;
 
     return (PyObject*)retRgba;
 }
@@ -309,7 +309,7 @@ PyObject* PythonRgba::PyRgba_nbOr(PyObject* o1, PyObject* o2)
     PyRgba *rgba2 = (PyRgba*)(o2);
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-	retRgba->rgba = rgba1->rgba | rgba2->rgba;
+	// not implemented yet !!  retRgba->rgba = rgba1->rgba | rgba2->rgba;
 
     return (PyObject*)retRgba;
 }
@@ -374,7 +374,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
 
     Py_INCREF(o1);
 
-    rgba1->rgba <<= shift;
+    // not implemented yet !!  rgba1->rgba <<= shift;
 
     return (PyObject*)o1;
 }
@@ -397,7 +397,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceRshift(PyObject* o1, PyObject* o2)
 
     Py_INCREF(o1);
 
-    rgba1->rgba >>= shift;
+    // not implemented yet !!  rgba1->rgba >>= shift;
 
     return (PyObject*)o1;
 }
@@ -408,7 +408,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceAnd(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
     PyRgba *rgba2 = (PyRgba*)(o2);
-	rgba1->rgba &= rgba2->rgba;
+	// not implemented yet !!  rgba1->rgba &= rgba2->rgba;
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -420,7 +420,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceXor(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
     PyRgba *rgba2 = (PyRgba*)(o2);
-	rgba1->rgba ^= rgba2->rgba;
+	// not implemented yet !!  rgba1->rgba ^= rgba2->rgba;
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -432,7 +432,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
     PyRgba *rgba2 = (PyRgba*)(o2);
-	rgba1->rgba |= rgba2->rgba;
+	// not implemented yet !!  rgba1->rgba |= rgba2->rgba;
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -448,7 +448,7 @@ PyObject* PythonRgba::PyRgba_name(PyRgba* /*self*/)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_repr(PyRgba *self)
 {
-    PyObject *result = PyUnicode_FromFormat("Rgba(%i,%i,%i alpha:%i)", self->r, self->g, self->b, self->a);
+    PyObject *result = PyUnicode_FromFormat("Rgba(%i,%i,%i alpha:%i)", self->rgba.red(), self->rgba.green(), self->rgba.blue(), self->rgba.alpha());
     return result;
 };
 
@@ -457,7 +457,7 @@ PyObject* PythonRgba::PyRgba_Reduce(PyRgba *self, PyObject * /*args*/)
 {
     PyObject *stateTuple = PyTuple_New(0);
 
-    PyObject *tempOut = Py_BuildValue("(O(BBBB)O)", Py_TYPE(self), self->r, self->g, self->b, self->a, stateTuple);
+    PyObject *tempOut = Py_BuildValue("(O(BBBB)O)", Py_TYPE(self), self->rgba.red(), self->rgba.green(), self->rgba.blue(), self->rgba.alpha(), stateTuple);
     Py_DECREF(stateTuple);
 
     return tempOut;
@@ -487,12 +487,12 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
     {
         switch (cmp_op)
         {
-        case Py_LT: resultRgba->rgba = self->rgba < otherRgba->rgba; break;
-        case Py_LE: resultRgba->rgba = self->rgba <= otherRgba->rgba; break;
+        //case Py_LT: resultRgba->rgba = self->rgba < otherRgba->rgba; break;
+        //case Py_LE: resultRgba->rgba = self->rgba <= otherRgba->rgba; break;
         case Py_EQ: resultRgba->rgba = self->rgba == otherRgba->rgba; break;
         case Py_NE: resultRgba->rgba = self->rgba != otherRgba->rgba; break;
-        case Py_GT: resultRgba->rgba = self->rgba > otherRgba->rgba; break;
-        case Py_GE: resultRgba->rgba = self->rgba >= otherRgba->rgba; break;
+        //case Py_GT: resultRgba->rgba = self->rgba > otherRgba->rgba; break;
+        //case Py_GE: resultRgba->rgba = self->rgba >= otherRgba->rgba; break;
         }
         return (PyObject*)resultRgba;
 
@@ -515,10 +515,10 @@ PyMethodDef PythonRgba::PyRgba_methods[] = {
     };
 
 PyMemberDef PythonRgba::PyRgba_members[] = {
-        {"r", T_UBYTE, offsetof(PyRgba, r), 0, "red"}, 
-		{"g", T_UBYTE, offsetof(PyRgba, g), 0, "green"}, 
-		{"b", T_UBYTE, offsetof(PyRgba, b), 0, "blue"}, 
-		{"alpha", T_UBYTE, offsetof(PyRgba, a), 0, "alpha"}, 
+        {"r", T_UBYTE, offsetof(PyRgba, rgba.red()), 0, "red"}, 
+		{"g", T_UBYTE, offsetof(PyRgba, rgba.green()), 0, "green"}, 
+		{"b", T_UBYTE, offsetof(PyRgba, rgba.blue()), 0, "blue"}, 
+		{"alpha", T_UBYTE, offsetof(PyRgba, rgba.alpha()), 0, "alpha"}, 
         {NULL}  /* Sentinel */
     };
 
@@ -589,11 +589,16 @@ PyNumberMethods PythonRgba::PyRgba_numberProtocol = {
     (unaryfunc)PyRgba_nbAbsolute,           /* nb_absolute */
     (inquiry)0,								/* nb_bool */
     (unaryfunc)0,                           /* nb_invert */
-    (binaryfunc)PyRgba_nbLshift,            /* nb_lshift */
-    (binaryfunc)PyRgba_nbRshift,            /* nb_rshift */
-    (binaryfunc)PyRgba_nbAnd,               /* nb_and */
-    (binaryfunc)PyRgba_nbXor,               /* nb_xor */
-    (binaryfunc)PyRgba_nbOr,                /* nb_or */
+//    (binaryfunc)PyRgba_nbLshift,            /* nb_lshift */
+//    (binaryfunc)PyRgba_nbRshift,            /* nb_rshift */
+//    (binaryfunc)PyRgba_nbAnd,               /* nb_and */
+//    (binaryfunc)PyRgba_nbXor,               /* nb_xor */
+//    (binaryfunc)PyRgba_nbOr,                /* nb_or */
+    (binaryfunc)0,            /* nb_lshift */
+    (binaryfunc)0,            /* nb_rshift */
+    (binaryfunc)0,               /* nb_and */
+    (binaryfunc)0,               /* nb_xor */
+    (binaryfunc)0,                /* nb_or */
     0,										/* nb_int */
     0,                                      /* nb_reserved */
     0,										/* nb_float */
@@ -602,11 +607,16 @@ PyNumberMethods PythonRgba::PyRgba_numberProtocol = {
     (binaryfunc)PyRgba_nbInplaceMultiply,   /* nb_inplace_multiply*/
     (binaryfunc)0,                          /* nb_inplace_remainder */
     (ternaryfunc)0,                         /* nb_inplace_power */
-    (binaryfunc)PyRgba_nbInplaceLshift,     /* nb_inplace_lshift */
-    (binaryfunc)PyRgba_nbInplaceRshift,     /* nb_inplace_rshift */
-    (binaryfunc)PyRgba_nbInplaceAnd,        /* nb_inplace_and */
-    (binaryfunc)PyRgba_nbInplaceXor,		/* nb_inplace_xor */
-    (binaryfunc)PyRgba_nbInplaceOr,			/* nb_inplace_or */
+//    (binaryfunc)PyRgba_nbInplaceLshift,   /* nb_inplace_lshift */
+//    (binaryfunc)PyRgba_nbInplaceRshift,   /* nb_inplace_rshift */
+//    (binaryfunc)PyRgba_nbInplaceAnd,      /* nb_inplace_and */
+//    (binaryfunc)PyRgba_nbInplaceXor,		/* nb_inplace_xor */
+//    (binaryfunc)PyRgba_nbInplaceOr,		/* nb_inplace_or */
+    (binaryfunc)0,                          /* nb_inplace_lshift */
+    (binaryfunc)0,                          /* nb_inplace_rshift */
+    (binaryfunc)0,                          /* nb_inplace_and */
+    (binaryfunc)0,                          /* nb_inplace_xor */
+    (binaryfunc)0,                          /* nb_inplace_or */
     (binaryfunc)0,                /* nb_floor_divide */
     (binaryfunc)0,                /* nb_true_divide */
     0,                            /* nb_inplace_floor_divide */

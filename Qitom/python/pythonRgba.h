@@ -57,21 +57,7 @@ class PythonRgba
         typedef struct
         {
             PyObject_HEAD
-			union
-			{
-				union
-				{
-					struct
-					{
-					ito::uint8 b;
-					ito::uint8 g;
-					ito::uint8 r;
-					ito::uint8 a;
-					};
-					float rgb;
-				};
-				ito::uint32 rgba;
-			};
+    		ito::rgba32 rgba;
         }
         PyRgba;
 
