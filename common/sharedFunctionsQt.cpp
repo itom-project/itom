@@ -905,6 +905,10 @@ namespace ito
             elementsize = 16;
             type = "tComplex128";
             break;
+        case tRGBA32:
+            elementsize = 4;
+            type = "tRGBA32";
+            break;
         default:
             return RetVal(retError, 0, QObject::tr("Save object failed: type not supported").toAscii().data());
         }
@@ -1516,6 +1520,11 @@ namespace ito
             {
                 elementsize = 16;
                 objType = tComplex128;
+            }
+            else if(type.compare("tRGBA32") == 0)
+            {
+                elementsize = 4;
+                objType = tRGBA32;
             }
             else
             {
