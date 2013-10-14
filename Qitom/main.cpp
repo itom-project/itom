@@ -37,199 +37,13 @@
 
 #include <qmap.h>
 #include <qhash.h>
-
 #include <qtextstream.h>
 #include <qfile.h>
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qmutex.h>
-#include <qregexp.h>
 
-void benchmarkTest1()
-{
-    int64 start, ende;
-    double freq = cv::getTickFrequency();
-
-    //1
-    int size = 1000000;
-    int temp;
-
-    start = cv::getTickCount();
-    std::vector<int> a1;
-    a1.resize(size);
-    for(int i=0;i<size;i++)
-    {
-        a1[i]=2;
-        temp=a1[i];
-    }
-    a1.clear();
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    int* a2 = new int[size];
-    for(int i=0;i<size;i++)
-    {
-        a2[i]=2;
-        temp=a2[i];
-    }
-    delete[] a2;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-}
-
-void benchmarkTest2()
-{
-    qDebug("benchmarkTest2");
-    int64 start, ende;
-    double freq = cv::getTickFrequency();
-
-
-    //2
-    int *test = (int*)(new cv::Mat());
-    int size = 1000000;
-    cv::Mat* ptr = NULL;
-
-    start = cv::getTickCount();
-    for(int i=0;i<size;i++)
-    {
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    for(int i=0;i<size;i++)
-    {
-        ptr = (cv::Mat*)test;
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    for(int i=0;i<size;i++)
-    {
-        ptr = reinterpret_cast<cv::Mat*>(test);
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-
-}
-
-void benchmarkTest3()
-{
-    ito::DataObject *do1 = NULL; //new ito::DataObject(10000,100,100,ito::tFloat32);
-    ito::DataObject *do2 = NULL;//new ito::DataObject(*do1);
-
-    qDebug("benchmarkTest3");
-    int64 start, ende;
-    double freq = cv::getTickFrequency();
-
-    start = cv::getTickCount();
-    do1 = new ito::DataObject(10000,100,100,ito::tFloat32);
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    do2 = new ito::DataObject(*do1);
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    delete do2;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    start = cv::getTickCount();
-    delete do1;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    //int i=1;
-};
-
-void benchmarkTest4()
-{
-    int64 start, ende;
-    double freq = cv::getTickFrequency();
-    QString str1 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
-    QString str2 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
-    QByteArray ba1 = str1.toAscii();
-    QByteArray ba2 = str2.toAscii();
-    char *c1 = ba1.data();
-    char *c2 = ba2.data();
-    int num = 10000000;
-    int c = -num;
-    size_t size = sizeof(char) * std::min( strlen(c1),strlen(c2));
-
-    qDebug() << "benchmarkTest4: " << num;
-    c = 0;
-    start = cv::getTickCount();
-    for(int i = 0; i< num;i++)
-    {
-        if(str1 == str2) {c++;}else{c--;}
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
-    c = 0;
-    start = cv::getTickCount();
-    for(int i = 0; i< num;i++)
-    {
-        if(ba1 == ba2) {c++;}else{c--;}
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
-    c = 0;
-    start = cv::getTickCount();
-    for(int i = 0; i< num;i++)
-    {
-        if(strcmp(c1,c2)) {c++;}else{c--;}
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
-    c = 0;
-    start = cv::getTickCount();
-    for(int i = 0; i< num;i++)
-    {
-        if(memcmp(c1,c2,size)) {c++;}else{c--;}
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
-
-    //int i=1;
-};
-
-void benchmarkTest5()
-{
-    ito::DataObject *do1 = NULL; //new ito::DataObject(10000,100,100,ito::tFloat32);
-    ito::DataObject *do2 = NULL;//new ito::DataObject(*do1);
-
-    qDebug("benchmarkTest5");
-    int64 start, ende;
-    double freq = cv::getTickFrequency();
-    size_t j = 0;
-
-    start = cv::getTickCount();
-    for (size_t i = 0 ; i < 1000000; i++)
-    {
-        j += i;
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-
-    j = 0;
-    start = cv::getTickCount();
-    for (size_t i = 0 ; i < 1000000; ++i)
-    {
-        j += i;
-    }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
-};
-
-
-//#include "memoryCheck/setDebugNew.h"
-//#include "memoryCheck/reportingHook.h"
+//#include "benchmarks.h"
 
 QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
@@ -242,19 +56,15 @@ void myMessageOutput(QtMsgType type, const char *msg)
     switch (type) {
     case QtDebugMsg:
         (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "\r\n";
-        /*fprintf(std, "Debug: %s\n", msg);*/
         break;
     case QtWarningMsg:
         (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "\r\n";
-        //fprintf(stderr, "Warning: %s\n", msg);
         break;
     case QtCriticalMsg:
         (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "\r\n";
-        //fprintf(stderr, "Critical: %s\n", msg);
         break;
     case QtFatalMsg:
         (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "\r\n";
-        //fprintf(stderr, "Fatal: %s\n", msg);
         abort();
     }
 
@@ -288,49 +98,12 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-/*
-    int mySize = sizeof(ito::rgba32);
-    ito::rgba32 bla(255, 5, 23, 128);
-    mySize = sizeof(ito::redChannel);
-
-    ito::redChannel* test = (ito::redChannel*)(&bla);
-    ito::uint8 val = test->value();
-
-    QColor colorVal(Qt::red);
-    ito::uint32 col = colorVal.rgba();
-    bla = col;
-
-    colorVal = QColor(Qt::blue);
-    col = colorVal.rgba();
-    bla = col;
-
-    colorVal = QColor(Qt::green);
-    col = colorVal.rgba();
-    bla = col;
-
-    colorVal = QColor(Qt::black);
-    col = colorVal.rgba();
-    bla = col;
-    */
-
-
-    //QString t = "qitom_de_DE.qm";
-    //QRegExp r("^qitom_(.*).qm$");
-    ////r.setPatternSyntax(QRegExp::Wildcard);
-    //int pos = r.indexIn(t);
-    //QStringList x = r.capturedTexts();
-    //QString v = r.cap(1);
+    //startBenchmarks();
 
     QFile logfile("itomlog.txt");
     logfile.open(QIODevice::WriteOnly);
     messageStream = new QTextStream(&logfile);
     //qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
-
-    //benchmarkTest1();
-    //benchmarkTest2();
-    //benchmarkTest3();
-    //benchmarkTest4();
-    //benchmarkTest5();
 
     //QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
     QApplication a(argc, argv);
@@ -358,17 +131,8 @@ int main(int argc, char *argv[])
     strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
     strcat(newpath, ";");
     strcat(newpath, oldpath);
-    //strcat(newpath, ";D:\\itom\\trunk\\iTOM\\lib"); //;./lib;../lib");
     _putenv(newpath);
     free(newpath);
-//    QString appDir = QApplication::applicationDirPath();
-//    char *dllPath = new wchar_t[appDir.length() + 100];
-////    appDir.truncate(appDir.length() - 2);
-//    appDir.append("D:/NewITOM/svn/m12/trunk/iTOM/lib");
-//    appDir.append(0);
-//    appDir.toWCharArray(dllPath);
-//    int nn = SetDllDirectory(dllPath);
-//    delete dllPath;
 #endif
 
     QString defUserName;
@@ -417,11 +181,3 @@ end:
 
     return ret;
 }
-
-
-
-
-
-
-
-

@@ -84,6 +84,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
