@@ -27,7 +27,7 @@
 namespace ito
 {
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*
     Our own proxy object which enables weak references to bound and unbound
     methods and arbitrary callables. Pulls information about the function,
@@ -40,11 +40,11 @@ namespace ito
 
     Idea from http://mindtrove.info/python-weak-references/ and the Linux Screen Reader project.
 */
-
 void PythonProxy::PyProxy_addTpDict(PyObject * /*tp_dict*/)
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonProxy::PyProxy_dealloc(PyProxy* self)
 {
     Py_XDECREF(self->klass);
@@ -54,6 +54,7 @@ void PythonProxy::PyProxy_dealloc(PyProxy* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonProxy::PyProxy_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyProxy* self = (PyProxy *)type->tp_alloc(type, 0);
@@ -68,23 +69,23 @@ PyObject* PythonProxy::PyProxy_new(PyTypeObject *type, PyObject* /*args*/, PyObj
     return (PyObject *)self;
 };
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/)
 {
     PyObject *method = NULL;
-    if(!PyArg_ParseTuple(args, "O", &method))
+    if (!PyArg_ParseTuple(args, "O", &method))
     {
         PyErr_SetString(PyExc_RuntimeError, "argument must be a bounded or unbounded method or function");
         return -1;
     }
 
-    if(PyMethod_Check(method) == false && PyFunction_Check(method) == false)
+    if (PyMethod_Check(method) == false && PyFunction_Check(method) == false)
     {
         PyErr_SetString(PyExc_RuntimeError, "argument must be a bounded or unbounded method or function");
         return -1;
     }
 
-    if(PyObject_HasAttrString(method, "__self__"))
+    if (PyObject_HasAttrString(method, "__self__"))
     {
         PyObject *temp = PyObject_GetAttrString(method, "__self__"); //new reference
         self->inst = PyWeakref_NewRef(temp, NULL); //new ref
@@ -99,7 +100,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
     Py_INCREF(Py_None);
     self->klass = Py_None;
 
-    if(PyObject_HasAttrString(method, "__func__"))
+    if (PyObject_HasAttrString(method, "__func__"))
     {
         self->func = PyObject_GetAttrString(method, "__func__"); //new reference
     }
@@ -112,6 +113,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
     return 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*
 Compare the held function and instance with that held by another proxy.
 
@@ -123,33 +125,33 @@ proxy object or not
 */
 PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
 {
-    if(op == Py_EQ || op == Py_NE)
+    if (op == Py_EQ || op == Py_NE)
     {
         PyProxy *v2 = (PyProxy*)v;
         PyProxy *w2 = (PyProxy*)w;
 
         bool res = false;
 
-        if(v2 == NULL || w2 == NULL)
+        if (v2 == NULL || w2 == NULL)
         {
             PyErr_SetString(PyExc_RuntimeError, "both elements of the comparison must be of type PyProxy.");
             return NULL;
         }
 
-        if(v2->func == w2->func)
+        if (v2->func == w2->func)
         {
-            if(v2->inst == NULL && w2->inst == NULL) res = true;
-            else if(PyWeakref_GetObject(v2->inst) == PyWeakref_GetObject(w2->inst)) res = true;
+            if (v2->inst == NULL && w2->inst == NULL) res = true;
+            else if (PyWeakref_GetObject(v2->inst) == PyWeakref_GetObject(w2->inst)) res = true;
         }
 
-        if(op == Py_EQ)
+        if (op == Py_EQ)
         {
-            if(res) Py_RETURN_TRUE;
+            if (res) Py_RETURN_TRUE;
             Py_RETURN_FALSE;
         }
         else
         {
-            if(res) Py_RETURN_FALSE;
+            if (res) Py_RETURN_FALSE;
             Py_RETURN_TRUE;
         }
     }
@@ -158,9 +160,9 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
         PyErr_SetString(PyExc_RuntimeError, "For the proxy-object, only the comparison operators == and != are allowed.");
         return NULL;
     }
-    
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*
 Proxy for a call to the weak referenced object. Take arbitrary params to
 pass to the callable.
@@ -173,10 +175,10 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
     PyObject *res = NULL;
     PyObject *wr = NULL;
 
-    if(self->inst != NULL)
+    if (self->inst != NULL)
     {
         wr = PyWeakref_GetObject(self->inst); //borrowed reference
-        if(wr == Py_None)
+        if (wr == Py_None)
         {
             PyErr_SetString(PyExc_ReferenceError, "The reference to the instance of the proxy object is dead");
             return NULL;
@@ -198,23 +200,23 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
     return res;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //PyGetSetDef PythonProxy::PyPointCloud_getseters[] = {
 //    {NULL}  /* Sentinel */
 //};
 //
-//
+//----------------------------------------------------------------------------------------------------------------------------------
 //PyMethodDef PythonProxy::PyPointCloud_methods[] = {
 //    {NULL}  /* Sentinel */
 //};
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 PyModuleDef PythonProxy::PyProxyModule = {
     PyModuleDef_HEAD_INIT, "Proxy", "Weak reference proxy object for (un)bounded method calls", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyTypeObject PythonProxy::PyProxyType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
     "itom.Proxy",             /* tp_name */
@@ -255,7 +257,5 @@ PyTypeObject PythonProxy::PyProxyType = {
     0,                         /* tp_alloc */ /*will be filled later before calling PyType_Ready */
     PythonProxy::PyProxy_new         /* tp_new */
 };
-
-
 
 } //end namespace ito
