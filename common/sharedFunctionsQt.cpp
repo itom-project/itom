@@ -685,7 +685,8 @@ namespace ito
             if (child.isNull())     //!< passed all elements without success, so add new one
             {
                 QDomElement newID = paramDomDoc.createElement("instance");
-                newID.setAttribute("id", QString::number(id.toInt()));
+//                newID.setAttribute("id", QString::number(id.toInt()));
+                newID.setAttribute("id", id);
                 root.appendChild(newID);
                 child = newID;
                 created++;
