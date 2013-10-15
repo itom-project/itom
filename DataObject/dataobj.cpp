@@ -2922,7 +2922,7 @@ template<> RetVal AddScalarFunc<ito::rgba32>(const DataObject *dObjIn, ito::floa
    cv::Mat_<ito::rgba32> *cvSrc = NULL;
    cv::Mat_<ito::rgba32> *cvDest = NULL;
    cv::Scalar s;
-   ito::int32 sign = scalar < 0 ? -1.0 : 1.0;
+   ito::int32 sign = scalar < 0.0 ? -1 : 1;
    ito::uint32 val = fabs(scalar) > 4294967295 ? 0xFFFFFFFF : (ito::uint32)fabs(scalar);
    s[0] = ((ito::uint8*)&val)[0] * sign;
    s[1] = ((ito::uint8*)&val)[1] * sign;
