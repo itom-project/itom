@@ -130,9 +130,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 #endif
 
-    ito::DataObject dobj2;
-    dobj2.getSize(10);
-
     //parse lib path:
     QDir appLibPath = QDir(a.applicationDirPath());
     if(appLibPath.exists("lib"))
