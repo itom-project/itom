@@ -202,6 +202,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.h
 )
 
+
 QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
 
 set(qitom_ui

@@ -201,7 +201,7 @@ namespace ito
 
         if(externalDataObject == NULL)
         {
-            if( m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            if(m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(futureHeight,futureWidth,futureType);
             }
