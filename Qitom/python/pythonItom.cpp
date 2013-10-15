@@ -2812,7 +2812,30 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     Py_DECREF(params);
 
-    ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
+	//try
+    //{
+        ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
+    /*}
+    catch (cv::Exception exc)
+    {
+		ret += ito::RetVal::format(ito::retError,0,"The OpenCV exception '%s' has been thrown", (exc.err).c_str()); 
+    }
+    catch(std::exception exc)
+    {
+        if (exc.what())
+		{
+			ret += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown", exc.what()); 
+		}
+		else
+		{
+			ret += ito::RetVal::format(ito::retError,0,"The exception '<unknown>' has been thrown", exc.what()); 
+		}
+    }
+    catch (...)
+    {
+		ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");           
+    }*/
+    
 
     if (!PythonCommon::transformRetValToPyException(ret))
     {

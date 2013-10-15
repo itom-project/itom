@@ -122,9 +122,10 @@ int main(int argc, char *argv[])
     messageStream = new QTextStream(&logfile);
     //qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
 
-    cv::redirectError(itomCvError);
+    
 
 #if defined _DEBUG
+	cv::redirectError(itomCvError);
     QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
 #else
     QApplication a(argc, argv);
