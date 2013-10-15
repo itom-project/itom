@@ -1394,12 +1394,11 @@ class DataObject
             \param index is the specific zero-based dimension-index whose size is requested           
             \return size or -1 if index is out of boundaries
         */
-        size_t getSize(int index) const
+        int getSize(int index) const
         {
             if(index < 0 || index >= m_dims)
             {
-                cv::error(cv::Exception(CV_StsAssert, "Requested dimension missmatch with object dimensions or maybe negative", "", __FILE__, __LINE__));
-                return 0;
+                return -1;
             }
             else
             {
@@ -1413,9 +1412,12 @@ class DataObject
             \param index is the specific zero-based dimension-index whose size is requested           
             \return size or -1 if index is out of boundaries
         */
-        size_t getOriginalSize(int index) const
+        int getOriginalSize(int index) const
         {
-            if(index < 0 || index >= m_dims) return -1;           
+            if(index < 0 || index >= m_dims)
+            {
+                return -1;           
+            }
             else
             {
 

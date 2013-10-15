@@ -25,7 +25,7 @@ endif (BUILD_TARGET64)
 ADD_SUBDIRECTORY(DataObject) 
 ADD_SUBDIRECTORY(PointCloud)
 ADD_SUBDIRECTORY(QPropertyEditor)
-ADD_SUBDIRECTORY(Qitom)
+ADD_SUBDIRECTORY(Qitom)  
 
 IF(BUILD_UNITTEST)
 	#put this as last, since gtest is globally changing many compiler flags

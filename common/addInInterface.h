@@ -1038,10 +1038,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.18",//version until 2013-06-18 (outdated: iterator and constIterator introduced for dataObject)
     "ito.AddIn.InterfaceBase/1.1.19",//version until 2013-08-15 (outdated: operators +, +=, -, -= introduced for scalar operands)
     "ito.AddIn.InterfaceBase/1.1.20",//version until 2013-10-10 (outdated: RGBA-type introduced into dataObjectTypes)
+    "ito.AddIn.InterfaceBase/1.1.21",//version until 2013-10-15 (outdated: getSize(..) and getTotalSize(..) return int now and -1 if error. Consistency to documented behaviour)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.21";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.22";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)
