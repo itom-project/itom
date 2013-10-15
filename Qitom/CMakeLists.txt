@@ -200,6 +200,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.h
+	
 )
 
 
