@@ -31,7 +31,7 @@ IF(BUILD_UNITTEST)
 	#put this as last, since gtest is globally changing many compiler flags
 	ADD_SUBDIRECTORY(gtest-1.6.0)
 	ADD_SUBDIRECTORY(itom_unittests)
-ENDIF(BUILD_UNITTEST)
+ENDIF(BUILD_UNITTEST)  
 
 #find current itom version from qitom/global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
@@ -41,6 +41,7 @@ message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in gl
 message(STATUS "")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "")
+
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
