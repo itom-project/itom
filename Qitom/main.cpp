@@ -83,6 +83,22 @@ void myMessageOutput(QtMsgType type, const char *msg)
     \sa (see also) keywords (comma-separated)
 */
 
+int itomCvError( int status, const char* func_name,
+            const char* err_msg, const char* file_name,
+            int line, void* userdata )
+{
+    char buf[1 << 16];
+
+    sprintf( buf, "OpenCV Error: %s (%i) in %s, file %s, line %d",
+        err_msg, status, func_name > 0 ?
+        func_name : "unknown function", file_name, line );
+    qWarning("Itom-Application has caught a cv::exception");
+    qWarning() << buf;
+    qFatal("Exiting due to exception caught");
+
+    return 0; //Return value is not used
+}
+
 //! starts application
 /*!
     Starts Application by instantiating MainApplication with a desired GuiType
@@ -99,14 +115,20 @@ int main(int argc, char *argv[])
 #endif
 
     //startBenchmarks();
+    
 
     QFile logfile("itomlog.txt");
     logfile.open(QIODevice::WriteOnly);
     messageStream = new QTextStream(&logfile);
     //qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
 
-    //QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
+    cv::redirectError(itomCvError);
+
+#if defined _DEBUG
+    QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
+#else
     QApplication a(argc, argv);
+#endif
 
     //parse lib path:
     QDir appLibPath = QDir(a.applicationDirPath());
