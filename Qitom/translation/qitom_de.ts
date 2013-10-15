@@ -984,6 +984,11 @@ p, li { white-space: pre-wrap; }
         <source>Plaintext</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location/>
+        <source>CommandLinkButton</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainApplication</name>
@@ -1073,7 +1078,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+248"/>
+        <location filename="../python/pythonEngine.cpp" line="+249"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -1097,7 +1102,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1175,7 +1180,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+1960"/>
+        <location line="+1964"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1524,7 +1529,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+70"/>
-        <source>index is ouf of range</source>
+        <source>index is ouf of range [0,%i]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1620,7 +1625,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+77"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1671,7 +1676,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+75"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1993,7 +1998,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2645"/>
+        <location filename="../python/pythonUi.cpp" line="+2766"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2557,12 +2562,12 @@ Type conflict for %1</source>
         <translation>UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+19"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+19"/>
         <source>content-widget is empty.</source>
         <translation>Element ist leer.</translation>
     </message>
@@ -3955,28 +3960,28 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../ui/dialogProperties.cpp" line="+49"/>
         <source>Properties</source>
-        <translation type="unfinished">Optionen</translation>
+        <translation>Optionen</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+96"/>
         <source>Editor</source>
-        <translation type="unfinished">Editor</translation>
+        <translation>Editor</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Editor - please choose subpage</source>
-        <translation type="unfinished">Editor - Bitte Unterrubrik auswählen</translation>
+        <translation>Editor - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+10"/>
         <source>General</source>
-        <translation type="unfinished">Allgemein</translation>
+        <translation>Allgemein</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Editor - General</source>
-        <translation type="unfinished">Editor - Allgemein</translation>
+        <translation>Editor - Allgemein</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3986,7 +3991,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>Editor - API files</source>
-        <translation type="unfinished">Editor - API-Dateien</translation>
+        <translation>Editor - API-Dateien</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4021,22 +4026,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Console</source>
-        <translation type="unfinished">Konsole</translation>
+        <translation>Konsole</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Console - please choose subpage</source>
-        <translation type="unfinished">Konsole - Bitte Unterrubrik auswählen</translation>
+        <translation>Konsole - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Line Wrap</source>
-        <translation type="unfinished">Zeilenumbruch</translation>
+        <translation>Zeilenumbruch</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Console - Line Wrap</source>
-        <translation type="unfinished">Konsole - Zeilenumbruch</translation>
+        <translation>Konsole - Zeilenumbruch</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4051,37 +4056,37 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Python</source>
-        <translation type="unfinished">Python</translation>
+        <translation>Python</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Python - please choose subpage</source>
-        <translation type="unfinished">Python - Bitte Unterrubrik auswählen</translation>
+        <translation>Python - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Startup</source>
-        <translation type="unfinished">Autostart</translation>
+        <translation>Autostart</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Python - startups</source>
-        <translation type="unfinished">Python-Autostart</translation>
+        <translation>Python - Autostart</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>General - please choose subpage</source>
-        <translation type="unfinished">Allgemein - Bitte Unterrubrik auswählen</translation>
+        <translation>Allgemein - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Language</source>
-        <translation type="unfinished">Sprache</translation>
+        <translation>Sprache</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>General - language</source>
-        <translation type="unfinished">Allgemein - Sprache</translation>
+        <translation>Allgemein - Sprache</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4435,48 +4440,43 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::IOHelper</name>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="+59"/>
         <source>File &apos;%1&apos; does not exist</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; existiert nicht</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>file does not exist</source>
-        <translation type="unfinished">Datei existiert nicht</translation>
+        <translation type="obsolete">Datei existiert nicht</translation>
     </message>
     <message>
-        <location line="+45"/>
-        <location line="+679"/>
+        <location filename="../helper/IOHelper.cpp" line="+107"/>
+        <location line="+689"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-679"/>
+        <location line="-689"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+28"/>
         <source>File &apos;%1&apos; could not be opened with registered external application</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknüpften externen Anwendung geöffnet werden</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>file could not be opened with external application</source>
-        <translation type="unfinished">Datei konnte nicht mit der externen Anwendung geöffnet werden</translation>
+        <translation type="obsolete">Datei konnte nicht mit der externen Anwendung geöffnet werden</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>File &apos;%1&apos; can not be opened with this application</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>file can not be opened with this application</source>
-        <translation type="unfinished">Datei kan mit dieser Anwendung nicht geöffnet werden</translation>
+        <translation type="obsolete">Datei kan mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+71"/>
         <source>Save selected variables as...</source>
         <translation type="unfinished">Speichern der markierten Variablen als...</translation>
     </message>
@@ -4604,7 +4604,17 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-669"/>
+        <source>file %1 does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+84"/>
+        <source>file %1 can not be opened with this application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+590"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4692,7 +4702,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::LastCommandDockWidget</name>
     <message>
-        <location filename="../widgets/lastCommandDockWidget.cpp" line="+149"/>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+186"/>
         <source>clear list</source>
         <translation>Liste löschen</translation>
     </message>
@@ -4753,7 +4763,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location line="+235"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4813,12 +4823,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-325"/>
+        <location line="-327"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+330"/>
+        <location line="+332"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4955,7 +4965,22 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+77"/>
+        <source>The help assistant could not be started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+154"/>
+        <source>The toolbar &apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>&apos; could not be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+69"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
@@ -4986,7 +5011,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+59"/>
         <source>Remove menu element</source>
         <translation type="unfinished">Menüelement löschen</translation>
     </message>
@@ -4999,6 +5024,21 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+18"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Python is not available. This action cannot be executed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>there is no python code associated to this action.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+55"/>
+        <source>The UI designer (Qt designer) could not be started.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5755,7 +5795,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+304"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+312"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5780,27 +5820,30 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+53"/>
+        <source>ui-file &apos;%1&apos; could not be correctly parsed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>filename &apos;%1&apos; does not exist</source>
+        <translation type="unfinished">Dateiname &apos;%1&apos; existiert nicht</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <source>dialog could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
         <source>filename does not exist</source>
-        <translation type="unfinished">Dateiname existiert nicht</translation>
+        <translation type="obsolete">Dateiname existiert nicht</translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>ui-file could not be correctly parsed.</source>
-        <translation type="unfinished">UI-Datei konnte nicht korrekt geparst werden.</translation>
+        <translation type="obsolete">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+50"/>
-        <source>dock widget not implemented yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+112"/>
+        <location line="+221"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5811,22 +5854,22 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+18"/>
-        <location line="+84"/>
+        <location line="+93"/>
         <location line="+26"/>
-        <location line="+36"/>
-        <location line="+43"/>
+        <location line="+41"/>
+        <location line="+48"/>
         <location line="+26"/>
         <location line="+26"/>
         <source>dialog handle does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-100"/>
+        <location line="-105"/>
         <source>dialog cannot be docked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+48"/>
         <source>dialog cannot be docked or undocked</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5889,11 +5932,12 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+26"/>
         <location line="+25"/>
         <location line="+1222"/>
+        <location line="+38"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1160"/>
+        <location line="-1198"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5957,6 +6001,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+118"/>
+        <location line="+39"/>
         <source>The desired widget has no signals/slots defined that enable the pick points interaction</source>
         <translation type="unfinished"></translation>
     </message>
