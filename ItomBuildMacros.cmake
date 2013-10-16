@@ -47,7 +47,8 @@ if(MSVC)
 	#	- GL whole program optimization
 	# 	- GT fibre safe optimization
 	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
-	set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" )
+	SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp" )
+    SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 endif (MSVC)
 
 MACRO (BUILD_PARALLEL_LINUX targetName)
