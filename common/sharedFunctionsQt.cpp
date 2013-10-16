@@ -295,17 +295,22 @@ namespace ito
                 QDomElement instParam = child.firstChildElement();
                 while (!instParam.isNull())
                 {
+                    QString paramName;
+                    if (instParam.attribute("namepref") != "")
+                        paramName = QString(instParam.attribute("namepref") + ":" + instParam.nodeName());
+                    else
+                        paramName = instParam.nodeName();
 
                     if (instParam.attribute("type") == "number")
                     {
-                        param = Param(instParam.nodeName().toAscii().data(), ParamBase::Double, instParam.text().toDouble(), NULL, NULL);
+                        param = Param(paramName.toAscii().data(), ParamBase::Double, instParam.text().toDouble(), NULL, NULL);
                         //param.setVal<double>(instParam.text().toDouble());
                         paramList->insert(param.getName(),param);
                     }
                     else if (instParam.attribute("type") == "string")
                     {
                         QByteArray cvalDecoded = QByteArray::fromPercentEncoding(instParam.text().toAscii());
-                        param = Param(instParam.nodeName().toAscii().data(), ParamBase::String, cvalDecoded.data(), NULL);
+                        param = Param(paramName.toAscii().data(), ParamBase::String, cvalDecoded.data(), NULL);
                         //param.setVal<char*>(cvalDecoded.data());
                         paramList->insert(param.getName(),param);
                     }
@@ -322,7 +327,7 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if(ptrlength == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::CharArray, ptrlength, (int*)cvalDecoded.data(), NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
                                 //param.setVal<char*>(cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -339,7 +344,7 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(int)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::IntArray, ptrlength, (int*)cvalDecoded.data(), NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
                                 //param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -356,7 +361,7 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if((ptrlength * sizeof(double)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, ptrlength, (double*)cvalDecoded.data(), NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::DoubleArray, ptrlength, (double*)cvalDecoded.data(), NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
                                 //param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -387,7 +392,7 @@ namespace ito
                                 {
                                     cArray[vCnt] = cv::saturate_cast<char>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, ptrlength, cArray, NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::CharArray, ptrlength, cArray, NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
                                 //param.setVal<char*>(cArray, ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -401,7 +406,7 @@ namespace ito
                                 {
                                     iArray[vCnt] = cv::saturate_cast<int>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, ptrlength, iArray, NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::IntArray, ptrlength, iArray, NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
                                 //param.setVal<int*>(iArray, ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -414,7 +419,7 @@ namespace ito
                                 {
                                     dArray[vCnt] = cv::saturate_cast<double>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, ptrlength, dArray, NULL);
+                                param = Param(paramName.toAscii().data(), ParamBase::DoubleArray, ptrlength, dArray, NULL);
                                 //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray,  0, NULL, NULL);
                                 //param.setVal<double*>(dArray, ptrlength);
                                 paramList->insert(param.getName(),param);
@@ -518,7 +523,13 @@ namespace ito
                 QDomElement instParam = child.firstChildElement();
                 while (!instParam.isNull())
                 {
-                    QMap<QString, Param>::Iterator it = paramList->find(instParam.nodeName().toAscii());
+                    QString paramName;
+                    if (instParam.attribute("namepref") != "")
+                        paramName =  instParam.attribute("namepref") + ":" + instParam.nodeName();
+                    else
+                        paramName = instParam.nodeName();
+
+                    QMap<QString, Param>::Iterator it = paramList->find(paramName);
 
                     if ((it != paramList->end()) && (it.value().getAutosave()))
                     {
@@ -598,7 +609,18 @@ namespace ito
                 {
                     if (it.value().getAutosave())
                     {
-                        QDomElement newParam = paramDomDoc.createElement(it.value().getName());
+                        ito::Param tmpParam = it.value();
+                        QString paramName = it.value().getName();
+                        QString namepref;
+                        if (paramName.contains(":"))
+                        {
+                            QStringList parts = paramName.split(":");
+                            namepref = parts[0];
+                            paramName = parts[1];
+                        }
+                        QDomElement newParam = paramDomDoc.createElement(paramName);
+                        if (namepref != "")
+                            newParam.setAttribute("namepref", namepref);
                         QDomText tvalue;
                         QVariant qvar;
                         if(it.value().isNumeric())
