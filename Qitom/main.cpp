@@ -83,6 +83,12 @@ void myMessageOutput(QtMsgType type, const char *msg)
     \sa (see also) keywords (comma-separated)
 */
 
+//! OpenCV error handler
+/*!
+    In case of a call of cv::error in any OpenCV method or the dataObject,
+    this method is called. Afterwards the error is thrown. In this method, the
+    error message is print to the output window.
+*/
 int itomCvError( int status, const char* func_name,
             const char* err_msg, const char* file_name,
             int line, void* userdata )
@@ -90,11 +96,10 @@ int itomCvError( int status, const char* func_name,
     char buf[1 << 16];
 
     sprintf( buf, "OpenCV Error: %s (%i) in %s, file %s, line %d",
-        err_msg, status, func_name > 0 ?
+        err_msg, status, (func_name > 0 && strlen(func_name) > 0) ?
         func_name : "unknown function", file_name, line );
     qWarning("Itom-Application has caught a cv::exception");
     qWarning() << buf;
-    qFatal("Exiting due to exception caught");
 
     return 0; //Return value is not used
 }

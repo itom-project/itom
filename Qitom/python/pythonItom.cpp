@@ -2812,13 +2812,24 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     Py_DECREF(params);
 
-	//try
-    //{
+	try
+    {
         ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
-    /*}
+    }
     catch (cv::Exception exc)
     {
-		ret += ito::RetVal::format(ito::retError,0,"The OpenCV exception '%s' has been thrown", (exc.err).c_str()); 
+        const char* errorStr = cvErrorStr(exc.code);
+
+		ret += ito::RetVal::format(ito::retError,0,"OpenCV Error: %s (%s) in %s, file %s, line %d",
+            errorStr, exc.err.c_str(), exc.func.size() > 0 ?
+            exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line );
+        //see also cv::setBreakOnError(true) -> then cv::error(...) forces an access to 0x0000 (throws access error, the debugger stops and you can debug it)
+
+        //use this to raise an access error that forces the IDE to break in this line (replaces cv::setBreakOnError(true)).
+#if defined _DEBUG
+        static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
+        *p = 0;
+#endif
     }
     catch(std::exception exc)
     {
@@ -2830,11 +2841,19 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 		{
 			ret += ito::RetVal::format(ito::retError,0,"The exception '<unknown>' has been thrown", exc.what()); 
 		}
+#if defined _DEBUG
+        static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
+        *p = 0;
+#endif
     }
     catch (...)
     {
-		ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");           
-    }*/
+		ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");  
+#if defined _DEBUG
+        static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
+        *p = 0;
+#endif
+    }
     
 
     if (!PythonCommon::transformRetValToPyException(ret))
