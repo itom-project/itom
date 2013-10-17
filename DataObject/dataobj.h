@@ -117,10 +117,10 @@ namespace cv
    template<> inline ito::rgba32 saturate_cast(ito::float64 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
    template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
 
-   template<> inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); }
-   template<> inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); }
-   template<> inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); }
-   template<> inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); }
+   template<> inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
 
    template<> inline ito::uint8 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
    //template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
