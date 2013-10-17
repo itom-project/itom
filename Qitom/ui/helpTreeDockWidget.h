@@ -4,7 +4,7 @@
 #include <QtSql>
 #include <qwidget.h>
 #include <qstandarditemmodel.h>
-#include "common\sharedStructures.h"
+#include "../../common/sharedStructures.h"
 #include "ui_helpTreeDockWidget.h"
 #include <qtimer.h>
 

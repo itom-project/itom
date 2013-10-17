@@ -31,6 +31,8 @@
 #include <stdint.h>
 #include <complex>
 #include <exception>      // std::exception
+#include <string.h>
+#include <stdexcept>
     
 //#include "opencv/cv.h"
 //#include "opencv2/core/core.hpp"
@@ -217,6 +219,7 @@ namespace ito
         {
             Rgba32_t temp;
             memset(temp.u8ptr(), 0, 4*sizeof(ito::uint8));
+
             return temp;
         }
 
@@ -376,7 +379,7 @@ namespace ito
         uint8 blue()  const {return m_value[RGBA_B];}; /*! < Read out blue-Channel*/
 
         uint32& argb() {return *((uint32*)m_value);}; /*! < Access to argb-Channel*/
-        uint32 argb() const {return reinterpret_cast<uint32>(m_value);}; /*! < Read out argb-Channel*/
+        uint32 argb() const {return *((const uint32*)(m_value));}; /*! < Read out argb-Channel*/
 
         uint32* u32ptr() {return ((uint32*)m_value);}
         uint8* u8ptr() {return m_value;}
