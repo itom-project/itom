@@ -727,14 +727,14 @@ namespace ito
                 if(m_len > 0)
                 {
                     m_val = (char**) calloc(m_len, sizeof(char*));
-                    for(size_t i=0;i<m_len;i++) m_val[i] = _strdup(cpy.m_val[i]);
+                    for(size_t i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
                 }
             }
 
             //! destructor
             ~StringMeta()
             {
-                for(size_t i=0;i<m_len;i++) free(m_val[i]);
+                for(size_t i=0;i<m_len;++i) free(m_val[i]);
                 free(m_val);
             }
 
@@ -749,7 +749,7 @@ namespace ito
                 }
                 else
                 {
-                    m_val = (char**) calloc(1, sizeof(char*));
+                    m_val = (char**) calloc(++m_len, sizeof(char*));
                 }
                 m_val[m_len-1] = _strdup(val);
             }
