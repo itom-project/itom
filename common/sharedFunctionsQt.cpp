@@ -600,7 +600,7 @@ namespace ito
                             }
                         }
                     }
-                    paramList->remove(instParam.nodeName().toAscii());
+                    paramList->remove(paramName.toAscii());
                     instParam = instParam.nextSiblingElement();
                 }
 
