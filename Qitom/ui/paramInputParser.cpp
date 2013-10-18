@@ -378,7 +378,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
             {
                 QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::Wildcard);
                 txt->setValidator( new QRegExpValidator(reg, txt) );
-                QString toolTip = QString("%1 [Wildcard]").arg(reg.pattern());
+                QString toolTip = tr("%1 [Wildcard]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }
         }
@@ -388,7 +388,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
             {
                 QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::RegExp);
                 txt->setValidator( new QRegExpValidator(reg, txt) );
-                QString toolTip = QString("%1 [Regular Expression]").arg(reg.pattern());
+                QString toolTip = tr("%1 [Regular Expression]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }
         }
@@ -404,7 +404,7 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
     QHBoxLayout *layout = new QHBoxLayout();
     QLineEdit *txt = new QLineEdit(container);
     txt->setObjectName( QString("HWRef_%1").arg(virtualIndex));
-    txt->setText( "[None]" );
+    txt->setText( tr("[None]") );
     txt->setEnabled(false);
 
     QToolButton *tool = new QToolButton(container);

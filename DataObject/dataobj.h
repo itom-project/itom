@@ -117,10 +117,10 @@ namespace cv
    template<> inline ito::rgba32 saturate_cast(ito::float64 v){return ito::rgba32(saturate_cast<ito::uint8>(v));}
    template<> inline ito::rgba32 saturate_cast(ito::rgba32 v){return v;}
 
-   template<> static inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
-   template<> static inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
-   template<> static inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
-   template<> static inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32::ZEROS(); }
+   template<> inline ito::rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
+   template<> inline ito::rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::rgba32", "", __FILE__, __LINE__)); return ito::rgba32(); }
 
    template<> inline ito::uint8 saturate_cast(ito::rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
    //template<> inline ito::int16 saturate_cast(ito::rgba32 v){return saturate_cast<ito::int16>(v.gray());};
@@ -132,7 +132,7 @@ namespace cv
 
 
 
-    template<> class cv::DataType<ito::rgba32>
+    template<> class DataType<ito::rgba32>
     {
         public:
         typedef ito::rgba32 value_type;
@@ -149,7 +149,7 @@ namespace cv
         };
     };
 
-    template<> class cv::DataType<ito::redChannel>
+    template<> class DataType<ito::redChannel>
     {
         public:
         typedef ito::redChannel value_type;
@@ -166,7 +166,7 @@ namespace cv
         };
     };
 
-    template<> class cv::DataType<ito::greenChannel>
+    template<> class DataType<ito::greenChannel>
     {
         public:
         typedef ito::greenChannel value_type;
@@ -183,7 +183,7 @@ namespace cv
         };
     };
 
-    template<> class cv::DataType<ito::blueChannel>
+    template<> class DataType<ito::blueChannel>
     {
         public:
         typedef ito::blueChannel value_type;
@@ -200,7 +200,7 @@ namespace cv
         };
     };
 
-    template<> class cv::DataType<ito::alphaChannel>
+    template<> class DataType<ito::alphaChannel>
     {
         public:
         typedef ito::alphaChannel value_type;

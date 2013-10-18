@@ -23,7 +23,7 @@
 #ifndef PYTHONRGBA
 #define PYTHONRGBA
 
-#include "Common/typedefs.h"
+#include "../../common/typeDefs.h"
 
 /* includes */
 #ifndef Q_MOC_RUN

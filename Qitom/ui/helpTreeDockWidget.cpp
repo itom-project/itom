@@ -152,7 +152,7 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
             QStandardItem *node = new QStandardItem(path.mid(li+1));
 			if (splitt[0][0] != 'l')
 			{
-				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]+'.png'));
+                node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]+".png"));
 			}
 			else
 			{

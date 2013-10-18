@@ -218,7 +218,7 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             //copy text from startLineBeginCmd on to temporaryRemovedCommands
             QStringList temp;
 
-            for (int i=startLineBeginCmd ; i<=lines()-1 ; i++)
+            for (int i=startLineBeginCmd; i<=lines()-1; i++)
             {
                 temp.push_back(text(i));
             }
@@ -295,25 +295,25 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     return RetVal(retOk);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::autoAdaptLineNumberColumnWidth()
 {
     int l = lines();
     QString s; //make the width always a little bit bigger than necessary
+
     if (l < 10)
     {
         s = QString::number(10);
-        
     }
     else if (l < 100)
     {
         s = QString::number(100);
-        
     }
-    else if ( l < 1000)
+    else if (l < 1000)
     {
         s = QString::number(1000);
     }
-    else if ( l < 10000)
+    else if (l < 10000)
     {
         s = QString::number(10000);
     }
@@ -738,7 +738,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         cmdQueue.pop();
 
         markerDeleteAll(markCurrentLine);
-        for (int i = 0 ; i < value.m_nrOfLines; i++)
+        for (int i = 0; i < value.m_nrOfLines; i++)
         {
             markerAdd(value.m_lineBegin + i,markCurrentLine);
         }
@@ -752,7 +752,6 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             clear();
             startLineBeginCmd = -1;
-            autoAdaptLineNumberColumnWidth();
             cmdList->add(value.singleLine);
             executeCmdQueue();
             emit sendToLastCommand(value.singleLine);
@@ -768,7 +767,7 @@ RetVal ConsoleWidget::executeCmdQueue()
 			}
 			else
 			{
-				QMessageBox::critical(this,tr("script execution"), tr("Python is not available"));
+				QMessageBox::critical(this, tr("script execution"), tr("Python is not available"));
 			}
 
             //connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
@@ -779,7 +778,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             emit sendToLastCommand(value.singleLine);
         }
 
-
+        autoAdaptLineNumberColumnWidth();
     }
 
     return RetVal(retOk);
@@ -843,7 +842,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         else
         {
             lines.append(buffer.length() + 1); //append last index
-            for (int i = 0 ; i < lines.length() - 1 ; i++)
+            for (int i = 0; i < lines.length() - 1; i++)
             {
                 temp = buffer.mid(lines[i] - 1 , lines[i+1] - lines[i]);
                 singleLine = temp.join("\n");
