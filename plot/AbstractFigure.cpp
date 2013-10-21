@@ -43,8 +43,8 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent)
-    : QMainWindow(parent),
+AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
+    QMainWindow(parent),
     AbstractNode(),
     m_contextMenu(NULL),
     m_itomSettingsFile(itomSettingsFile),
@@ -79,9 +79,9 @@ AbstractFigure::~AbstractFigure()
     }
     m_menus.clear();
 
-    foreach(ToolBarItem t, m_toolbars)
+    foreach (ToolBarItem t, m_toolbars)
     {
-        if(t.toolbar)
+        if (t.toolbar)
         {
             t.toolbar->deleteLater();
         }
@@ -135,7 +135,9 @@ RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, 
 RetVal AbstractFigure::addChannel(Channel *newChannel)
 {
     if (newChannel->getChild() != this)
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("invalid child pointer, in addChannel").toAscii().data());
+    }
 
     uint channelHash1 = ito::calculateChannelHash(this, newChannel->getChildParam(), newChannel->getParent(), newChannel->getParentParam());
     uint channelHash2 = ito::calculateChannelHash(newChannel->getParent(), newChannel->getParentParam(), this, newChannel->getChildParam());
@@ -160,7 +162,9 @@ RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
     int delBehaviour = m_pChannels[uniqueID]->getDeleteBehaviour((AbstractNode*)this);
 
     if (!m_pChannels.contains(uniqueID))
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toAscii().data());
+    }
 
     m_pChannels.remove(uniqueID);
 
@@ -185,7 +189,9 @@ RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
 RetVal AbstractFigure::removeChannel(Channel *delChannel)
 {
     if (!m_pChannels.contains(delChannel->getUniqueID()))
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toAscii().data());
+    }
 
     unsigned int uniqueID = delChannel->getUniqueID();
     int delBehaviour = delChannel->getDeleteBehaviour((AbstractNode*)this);
@@ -223,7 +229,7 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
 RetVal AbstractFigure::initialize()
 {
     //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
-    switch(m_windowMode)
+    switch (m_windowMode)
     {
     case AbstractFigure::ModeInItomFigure:
     case AbstractFigure::ModeStandaloneInUi:
@@ -238,11 +244,11 @@ RetVal AbstractFigure::initialize()
         break;
     }
 
-    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         foreach(const ToolBarItem &item, m_toolbars)
         {
-            if(item.toolbar)
+            if (item.toolbar)
             {
                 QMainWindow::addToolBar(item.area, item.toolbar);
             }
@@ -266,7 +272,7 @@ void AbstractFigure::addMenu(QMenu *menu)
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<QMenu*> AbstractFigure::getMenus() const
 {
-    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         //in standalone mode, this plugin handles its own menus and toolbars
         return QList<QMenu*>();
@@ -280,7 +286,7 @@ QList<QMenu*> AbstractFigure::getMenus() const
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
 {
-    if(m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         //in standalone mode, this plugin handles its own menus and toolbars
         return QList<AbstractFigure::ToolBarItem>();
@@ -304,9 +310,9 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
     int maxSection = 1;
 
     //get highest section for same area
-    foreach(const ToolBarItem &titem, m_toolbars)
+    foreach (const ToolBarItem &titem, m_toolbars)
     {
-        if(titem.area == area)
+        if (titem.area == area)
         {
             maxSection = std::max(maxSection, titem.section);
         }
@@ -314,9 +320,9 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
 
     m_toolbars.append(item);
 
-    if(m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow )
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
     {
-        if(maxSection < section)
+        if (maxSection < section)
         {
             QMainWindow::addToolBarBreak(area);
         }
@@ -336,9 +342,9 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
     item.section = 1;
 
     //get highest section for same area
-    foreach(const ToolBarItem &titem, m_toolbars)
+    foreach (const ToolBarItem &titem, m_toolbars)
     {
-        if(titem.area == area)
+        if (titem.area == area)
         {
             item.section = std::max(item.section, titem.section);
         }
@@ -346,7 +352,7 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
 
     m_toolbars.append(item);
 
-    if(m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow )
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
     {
         QMainWindow::addToolBarBreak(area);
     }
@@ -357,12 +363,12 @@ void AbstractFigure::showToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
 	
-    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-        if(i->key == key)
+        if (i->key == key)
         {
             i->visible = true;
-            i->toolbar->setVisible( true && m_toolbarsVisible );
+            i->toolbar->setVisible(true && m_toolbarsVisible);
         }
 	}
 }
@@ -371,12 +377,12 @@ void AbstractFigure::hideToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
 	
-    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-        if(i->key == key)
+        if (i->key == key)
         {
             i->visible = false;
-            i->toolbar->setVisible( false /*&& m_toolbarsVisible*/ ); //always false
+            i->toolbar->setVisible(false /*&& m_toolbarsVisible*/); //always false
         }
 	}
 }
@@ -404,7 +410,7 @@ bool AbstractFigure::event(QEvent *e)
     //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
     //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
     //also is necessary if any methods of the plugin are directly called from itom).
-    if(e->type() == (QEvent::User+123))
+    if (e->type() == (QEvent::User+123))
     {
         importItomApi(m_apiFunctionsBasePtr);
         importItomPlotApi(m_apiFunctionsGraphBasePtr);
@@ -419,11 +425,11 @@ void AbstractFigure::setToolbarVisible(bool visible)
 
 	QList<AbstractFigure::ToolBarItem>::iterator i;
 	
-    for(i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
 	{
-        if(i->toolbar)
+        if (i->toolbar)
         {
-            i->toolbar->setVisible( visible && (*i).visible );
+            i->toolbar->setVisible(visible && (*i).visible);
         }
 	}
 

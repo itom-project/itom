@@ -36,6 +36,7 @@
 #include <qdir.h>
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
 UserUiDialog::UserUiDialog(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
@@ -45,6 +46,7 @@ UserUiDialog::UserUiDialog(QString filename, tButtonBarType buttonBarType, QMap<
     retValue = init(filename, buttonBarType, dialogButtons);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 UserUiDialog::UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
@@ -54,6 +56,7 @@ UserUiDialog::UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType,
     retValue = init(contentWidget, buttonBarType, dialogButtons);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 UserUiDialog::~UserUiDialog()
 {
     if (m_uiWidget)
@@ -72,6 +75,7 @@ UserUiDialog::~UserUiDialog()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons)
 {
     RetVal retValue(retOk);
@@ -83,7 +87,7 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
     if (!file.exists())
     {
         m_uiWidget = NULL;
-        retValue += RetVal::format(retError, 1006, tr("filename '%s' does not exist").toAscii().data(), filename.toAscii().data() );
+        retValue += RetVal::format(retError, 1006, tr("filename '%s' does not exist").toAscii().data(), filename.toAscii().data());
     }
     else
     {
@@ -108,17 +112,18 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons)
 {
     RetVal retValue(retOk);
 
-    if( contentWidget->windowTitle() != "" )
+    if(contentWidget->windowTitle() != "")
 	{
-		setWindowTitle( contentWidget->windowTitle() );
+		setWindowTitle(contentWidget->windowTitle());
 	}
 	else
 	{
-		setWindowTitle( tr("itom") );
+		setWindowTitle(tr("itom"));
 	}
 
     QObject *child = NULL;
@@ -131,7 +136,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
         }
     }
 
-    contentWidget->setWindowFlags( Qt::Widget );
+    contentWidget->setWindowFlags(Qt::Widget);
     m_uiWidget = contentWidget;
     
 
@@ -185,6 +190,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QDialogButtonBox::ButtonRole UserUiDialog::getButtonRole(QString role)
 {
     if (QString::compare(role, "AcceptRole", Qt::CaseInsensitive) == 0)
@@ -213,7 +219,8 @@ QDialogButtonBox::ButtonRole UserUiDialog::getButtonRole(QString role)
     }
 }
 
-void UserUiDialog::dialogButtonClicked ( QAbstractButton * button )
+//----------------------------------------------------------------------------------------------------------------------------------
+void UserUiDialog::dialogButtonClicked (QAbstractButton * button)
 {
     QDialogButtonBox::ButtonRole role = m_dialogBtnBox->buttonRole(button);
 
@@ -228,6 +235,7 @@ void UserUiDialog::dialogButtonClicked ( QAbstractButton * button )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 const QMetaObject* UserUiDialog::getMetaObjectByWidgetName(QString name) const
 {
     QWidget *widget = findChild<QWidget*>(name);
