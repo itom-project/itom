@@ -22,7 +22,6 @@
 
 #include "AIManagerWidget.h"
 
-
 #include "../organizer/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
 
@@ -51,6 +50,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     m_pActSendToPython(NULL),
     m_pActLiveImage(NULL),
     m_pActSnapDialog(NULL),
+    m_pActAutoGrabbing(NULL),
     m_pActInfo(NULL),
     m_pActOpenWidget(NULL),
     m_pAIManagerView(NULL),
@@ -101,8 +101,13 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     m_pContextMenu->addAction(m_pActLiveImage);
 
     m_pActSnapDialog = new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Snap Dialog..."), this);
-//    connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+//    connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSnapDialog()));
     m_pContextMenu->addAction(m_pActSnapDialog);
+
+    m_pActAutoGrabbing = new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Auto Grabbing"), this);
+    m_pActAutoGrabbing->setCheckable(true);
+    connect(m_pActAutoGrabbing, SIGNAL(triggered()), this, SLOT(mnuToggleAutoGrabbing()));
+    m_pContextMenu->addAction(m_pActAutoGrabbing);
 
     m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/window.png"), tr("Open Widget..."), this);
     connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
@@ -202,7 +207,7 @@ AIManagerWidget::~AIManagerWidget()
     
     settings->beginWriteArray("ColWidth");
     
-    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
+    for (int i = 0; i < plugInModel->columnCount(); i++)
     {
         settings->setArrayIndex(i);
         settings->setValue("width", m_pAIManagerView->columnWidth(i));
@@ -211,7 +216,7 @@ AIManagerWidget::~AIManagerWidget()
     settings->sync();
 
     settings->beginWriteArray("StandardColWidth");
-    for (int i = 0 ; i < plugInModel->columnCount() ; i++)
+    for (int i = 0; i < plugInModel->columnCount(); i++)
     {
         settings->setArrayIndex(i);
         settings->setValue("width", m_pColumnWidth[i]);
@@ -237,6 +242,7 @@ AIManagerWidget::~AIManagerWidget()
     DELETE_AND_SET_NULL(m_pActSendToPython);
     DELETE_AND_SET_NULL(m_pActLiveImage);
     DELETE_AND_SET_NULL(m_pActSnapDialog);
+    DELETE_AND_SET_NULL(m_pActAutoGrabbing);
     DELETE_AND_SET_NULL(m_pActInfo);
     DELETE_AND_SET_NULL(m_pActOpenWidget);
     DELETE_AND_SET_NULL(m_pAIManagerViewSettingMenu);
@@ -288,7 +294,7 @@ void AIManagerWidget::createToolBars()
     m_pMainToolbar->addAction(m_pActSendToPython);
     m_pMainToolbar->addWidget(spacerWidget);
     m_pMainToolbar->addAction(m_pAIManagerViewSettingMenu->menuAction());
-    connect(m_pAIManagerViewSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+    connect(m_pAIManagerViewSettingMenu->menuAction(), SIGNAL(triggered()), this, SLOT(mnuToggleView()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -325,6 +331,7 @@ void AIManagerWidget::updateActions()
                 m_pActDockWidgetToolbar->setVisible(isInstanceNode);
                 m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
                 m_pActLiveImage->setVisible(isPlugInGrabberNode);
+                m_pActAutoGrabbing->setVisible(isPlugInGrabberNode);
                 m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
                 m_pActOpenWidget->setVisible(isWidgetNode);
                 m_pActSendToPython->setVisible(isInstanceNode);
@@ -357,6 +364,15 @@ void AIManagerWidget::updateActions()
                             m_pActDockWidget->setChecked(false);
                         }
                     }
+
+                    if (m_pActAutoGrabbing->isVisible())
+                    {
+                        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+                        if (ais)
+                        {
+                            m_pActAutoGrabbing->setChecked(((ito::AddInDataIO*)ais)->getAutoGrabbing());
+                        }
+                    }
                 }
                 else if (m_pActCloseAllInstances->isVisible())
                 {
@@ -365,7 +381,6 @@ void AIManagerWidget::updateActions()
                 }
 
                 //m_pActCloseAllInstances->setEnabled(false);  // TODO
-                //m_pActLiveImage->setEnabled(false);  // TODO
                 m_pActSnapDialog->setEnabled(false);  // TODO
                 m_pActInfo->setEnabled(false);  // TODO
             }
@@ -379,6 +394,7 @@ void AIManagerWidget::updateActions()
         m_pActDockWidgetToolbar->setVisible(false);
         m_pActInfo->setVisible(false);
         m_pActLiveImage->setVisible(false);
+        m_pActAutoGrabbing->setVisible(false);
         m_pActNewInstance->setVisible(false);
         m_pActOpenWidget->setVisible(false);
         m_pActSendToPython->setVisible(false);
@@ -386,7 +402,7 @@ void AIManagerWidget::updateActions()
         m_pShowConfDialog->setVisible(false);
     }
 
-    m_pMainToolbarSeparator1->setVisible(m_pActLiveImage->isVisible() || m_pActSnapDialog->isVisible());
+    m_pMainToolbarSeparator1->setVisible(m_pActLiveImage->isVisible() || m_pActSnapDialog->isVisible() || m_pActAutoGrabbing->isVisible());
     m_pMainToolbarSeparator2->setVisible((m_pActInfo->isVisible() || m_pActSendToPython->isVisible()) && 
         (m_pMainToolbarSeparator1->isVisible() || m_pActCloseAllInstances->isVisible() || m_pActNewInstance->isVisible() || m_pShowConfDialog->isVisible() ||
         m_pActDockWidget->isVisible() || m_pActDockWidgetToolbar->isVisible() || m_pActCloseInstance->isVisible() || m_pActOpenWidget->isVisible()));
@@ -475,84 +491,6 @@ void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
 {
     updateActions();
     m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
-/*    QModelIndex index = m_pAIManagerView->currentIndex();
-    if (m_pSortFilterProxyModel)
-    {
-        index = m_pSortFilterProxyModel->mapToSource(index);
-    }
-
-    if (index.isValid())
-    {
-        PlugInModel::tItemType itemType;
-        size_t itemInternalData;
-        PlugInModel *plugInModel = (PlugInModel*)(index.model());
-
-        if (plugInModel->flags(index) & Qt::ItemIsEnabled)
-        {
-    //        int itemType = plugInModel->data(index, Qt::UserRole + 3).toInt();
-            if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
-            {
-    //            bool isFixedNode = itemType & PlugInModel::itemCatAll; // == PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo || itemType == PlugInModel::itemCatDataIO || itemType == PlugInModel::itemSubCategoryDataIO_Grabber;
-                bool isPlugInNode     =    (itemType == PlugInModel::itemPlugin);
-                bool isPlugInAlgoNode =    plugInModel->getIsAlgoPlugIn(itemType, itemInternalData);
-                bool isInstanceNode   =    (itemType == PlugInModel::itemInstance);
-                bool isPlugInGrabberNode = plugInModel->getIsGrabberInstance(itemType, itemInternalData);
-                bool isFilterNode     =    (itemType == PlugInModel::itemFilter);
-                bool isWidgetNode     =    (itemType == PlugInModel::itemWidget);
-
-                m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
-                m_pActCloseInstance->setVisible(isInstanceNode);
-                m_pActDockWidget->setVisible(isInstanceNode);
-                m_pActInfo->setVisible(isPlugInNode || isFilterNode || isWidgetNode);
-                m_pActLiveImage->setVisible(isPlugInGrabberNode);
-                m_pActNewInstance->setVisible(isPlugInNode && !isPlugInAlgoNode);
-                m_pActOpenWidget->setVisible(isWidgetNode);
-                m_pActSendToPython->setVisible(isInstanceNode);
-                m_pActSnapDialog->setVisible(isPlugInGrabberNode);
-                m_pShowConfDialog->setVisible(isInstanceNode);
-
-                if (isInstanceNode)
-                {
-                    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-
-                    m_pActCloseInstance->setEnabled(ais->createdByGUI() > 0);
-
-                    QObject *engine = AppManagement::getPythonEngine();
-                    m_pActSendToPython->setEnabled(engine);
-
-                    m_pShowConfDialog->setEnabled(ais->hasConfDialog());
-                    m_pActDockWidget->setEnabled(ais->hasDockWidget());
-
-                    if (m_pActDockWidget->isEnabled())
-                    {
-                        if (ais->getDockWidget() && ais->getDockWidget()->toggleViewAction()->isChecked())
-                        {
-                            m_pActDockWidget->setText(tr("Hide Plugin Toolbox"));
-                            m_pActDockWidget->setChecked(true);
-                        }
-                        else
-                        {
-                            m_pActDockWidget->setText(tr("Show Plugin Toolbox"));
-                            m_pActDockWidget->setChecked(false);
-                        }
-                    }
-                }
-                else if (m_pActCloseAllInstances->isVisible())
-                {
-                    QModelIndex indexChild = index.child(0, 0);
-                    m_pActCloseAllInstances->setEnabled(indexChild.isValid());
-                }
-
-                m_pActInfo->setEnabled(false);  // TODO
-                //m_pActCloseAllInstances->setEnabled(false);  // TODO
-                //m_pActLiveImage->setEnabled(false);  // TODO
-                m_pActSnapDialog->setEnabled(false);  // TODO
-                m_pActInfo->setEnabled(false);  // TODO
-
-                m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
-            }
-        }
-    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -639,7 +577,7 @@ void AIManagerWidget::mnuCreateNewInstance()
                 return;
             }
 
-            QApplication::setOverrideCursor ( QCursor(Qt::WaitCursor) );
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
             if (aib->getType() & ito::typeDataIO)
             {
@@ -832,8 +770,8 @@ void AIManagerWidget::mnuOpenWidget()
 //        QList<QAction*> actions = getAlgoWidgetActions(aib);
 //        if (actions.size() > 0)
 //        {
-////            QAction *selectedAction = QMenu::exec( actions, pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
-//            QAction *selectedAction = QMenu::exec( actions, m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
+////            QAction *selectedAction = QMenu::exec(actions, pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
+//            QAction *selectedAction = QMenu::exec(actions, m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()),actions[0], this);
 //            if (selectedAction)
 //            {
 //                QString key = awd->m_name; //selectedAction->data().toString();
@@ -917,9 +855,9 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         msgBox.setText(tr("Error while opening user interface from plugin."));
         if (retValue.errorMessage())
         {
-            msgBox.setDetailedText( retValue.errorMessage() );
+            msgBox.setDetailedText(retValue.errorMessage());
         }
-        msgBox.setIcon( QMessageBox::Critical );
+        msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
     }
     else if (retValue.containsWarning())
@@ -927,9 +865,9 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         msgBox.setText(tr("Warning while opening user interface from plugin."));
         if (retValue.errorMessage())
         {
-            msgBox.setDetailedText( retValue.errorMessage() );
+            msgBox.setDetailedText(retValue.errorMessage());
         }
-        msgBox.setIcon( QMessageBox::Warning );
+        msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
 }
@@ -946,7 +884,7 @@ void AIManagerWidget::mnuShowLiveImage()
     if (index.isValid())
     {
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-        if (ais && ais->inherits("ito::AddInGrabber") )
+        if (ais && ais->inherits("ito::AddInGrabber"))
         {
             UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
             QString defaultPlotClassName;
@@ -960,8 +898,38 @@ void AIManagerWidget::mnuShowLiveImage()
         {
             QMessageBox msgBox;
             msgBox.setText(tr("This instance is no grabber. Therefore no live image is available."));
-            msgBox.setIcon( QMessageBox::Warning );
+            msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuToggleAutoGrabbing()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais)
+        {
+            ItomSharedSemaphore *waitCond = NULL;
+            waitCond = new ItomSharedSemaphore();
+            if (m_pActAutoGrabbing->isChecked())
+            {
+                QMetaObject::invokeMethod(ais, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+            }
+            else
+            {
+                QMetaObject::invokeMethod(ais, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+            }
+             waitCond->deleteSemaphore();
+             waitCond = NULL;
         }
     }
 }
@@ -1001,7 +969,7 @@ void AIManagerWidget::showList()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::mnuToggleView()
 {
-    if(m_pAIManagerView->isColumnHidden(1))
+    if (m_pAIManagerView->isColumnHidden(1))
     {
         showDetails();
     }

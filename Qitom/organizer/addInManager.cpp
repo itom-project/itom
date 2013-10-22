@@ -500,7 +500,6 @@ namespace ito
             pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
-        
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -517,7 +516,6 @@ namespace ito
             pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
-        return retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

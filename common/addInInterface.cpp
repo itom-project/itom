@@ -90,7 +90,7 @@ namespace ito
         //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
         //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
         //also is necessary if any methods of the plugin are directly called from itom).
-        if(e->type() == (QEvent::User+123))
+        if (e->type() == (QEvent::User+123))
         {
             importItomApi(m_apiFunctionsBasePtr);
             importItomPlotApi(m_apiFunctionsGraphBasePtr);
@@ -133,7 +133,7 @@ namespace ito
     */
 	AddInBase::~AddInBase() //will be called from main thread
 	{
-		if(m_dockWidget)
+		if (m_dockWidget)
 		{
 			//the dock widget has not been destroyed yet (by deconstructor of mainWindow, where it is attached)
 			m_dockWidget->deleteLater();
@@ -143,7 +143,7 @@ namespace ito
 		m_params.clear();
 
         //delete own thread if not already happened
-        if(m_pThread != NULL)
+        if (m_pThread != NULL)
         {
             m_pThread->quit();
             m_pThread->wait(5000);
@@ -174,7 +174,7 @@ namespace ito
             setAlive();
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -202,9 +202,9 @@ namespace ito
     {
         ItomSharedSemaphoreLocker locker(waitCond);
 
-        ito::RetVal retValue = ito::RetVal(ito::retError,0,tr("function execution unused in this plugin").toAscii().data());
+        ito::RetVal retValue = ito::RetVal(ito::retError, 0, tr("function execution unused in this plugin").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -229,7 +229,7 @@ namespace ito
 	*/
 	void AddInBase::createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas, QWidget *content)
 	{
-		if(m_dockWidget == NULL)
+		if (m_dockWidget == NULL)
 		{
 			m_dockWidget = new QDockWidget(title + " - " + tr("Toolbox"));
 			connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
@@ -239,7 +239,7 @@ namespace ito
 		m_dockWidget->setFeatures(features);
 		m_dockWidget->setAllowedAreas(allowedAreas);
 
-		if(content) m_dockWidget->setWidget(content);
+		if (content) m_dockWidget->setWidget(content);
 	}
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -262,14 +262,14 @@ namespace ito
         QMap<QString, ExecFuncParams>::const_iterator it = m_execFuncList.constFind(funcName);
         ito::RetVal retValue = ito::retOk;
 
-        if(it == m_execFuncList.constEnd())
+        if (it == m_execFuncList.constEnd())
         {
 #ifndef NDEBUG
             //check flags of paramsMand, paramsOpt and paramsOut
             foreach(const ito::Param &p, paramsMand)
             {
                 //mandatory parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
-                if( (p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In) )
+                if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
                     QString err = QString("Mandatory parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
                     retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
@@ -280,7 +280,7 @@ namespace ito
             foreach(const ito::Param &p, paramsOpt)
             {
                 //optional parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
-                if( (p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In) )
+                if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
                     QString err = QString("Optional parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
                     retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
@@ -291,14 +291,14 @@ namespace ito
             foreach(const ito::Param &p, paramsOut)
             {
                 //output parameters must have flag Out and not In, only types Int(Array),Char(Array),Double(Array) or String are allowed
-                if( (p.getFlags() & ito::ParamBase::In) || !(p.getFlags() & ito::ParamBase::Out) )
+                if ((p.getFlags() & ito::ParamBase::In) || !(p.getFlags() & ito::ParamBase::Out))
                 {
                     QString err = QString("Output parameter '%1' must be defined as Out-Parameter").arg(p.getName());
                     retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
                     //throw std::logic_error(err.toAscii().data());
                     break;
                 }
-                if( (p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double ) ) == 0)
+                if ((p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double)) == 0)
                 {
                     QString err = QString("Output parameter '%1' must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(p.getName());
                     retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
@@ -307,12 +307,12 @@ namespace ito
                 }
             }
 #endif
-            if(!retValue.containsError())
+            if (!retValue.containsError())
             {
                 ExecFuncParams newParam;
-                newParam.paramsMand = paramsMand; //implicitly shared (see Qt-doc QVector(const QVector<T> & other) )
-                newParam.paramsOpt  = paramsOpt;  //implicitly shared (see Qt-doc QVector(const QVector<T> & other) )
-                newParam.paramsOut  = paramsOut;  //implicitly shared (see Qt-doc QVector(const QVector<T> & other) )
+                newParam.paramsMand = paramsMand; //implicitly shared (see Qt-doc QVector(const QVector<T> & other))
+                newParam.paramsOpt  = paramsOpt;  //implicitly shared (see Qt-doc QVector(const QVector<T> & other))
+                newParam.paramsOut  = paramsOut;  //implicitly shared (see Qt-doc QVector(const QVector<T> & other))
                 newParam.infoString = infoString;
                 m_execFuncList[funcName] = newParam;
             }
@@ -339,7 +339,7 @@ namespace ito
 	*/
      void AddInBase::dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const
 	 {
-		 if(m_dockWidget)
+		 if (m_dockWidget)
 		 {
 			 floating = false;
 			 visible = false;
@@ -410,12 +410,12 @@ namespace ito
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
 
-//        if(obj->metaObject()->indexOfSlot( QMetaObject::normalizedSignature("dataAvailable(ito::DataObject)") ) == -1)
-        if(obj->metaObject()->indexOfSlot( QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)") ) == -1)
+//        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("dataAvailable(ito::DataObject)")) == -1)
+        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
         {
             retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toAscii().data());
         }
-        else if(m_autoGrabbingListeners.contains(obj))
+        else if (m_autoGrabbingListeners.contains(obj))
         {
             retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toAscii().data());
         }
@@ -423,11 +423,11 @@ namespace ito
         {
             retValue += startDevice(NULL);
 
-            if(m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+            if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
             {
                 m_timerID = startTimer(m_timerIntervalMS);
 
-                if(m_timerID == 0)
+                if (m_timerID == 0)
                 {
                     retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toAscii().data());
                 }
@@ -436,7 +436,7 @@ namespace ito
             m_autoGrabbingListeners.insert(obj);
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -452,7 +452,7 @@ namespace ito
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
 
-        if(!m_autoGrabbingListeners.remove(obj))
+        if (!m_autoGrabbingListeners.remove(obj))
         {
             retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toAscii().data());
         }
@@ -461,9 +461,9 @@ namespace ito
             qDebug("live image has been removed from listener list");
         }
 
-        if(m_autoGrabbingListeners.size() <= 0)
+        if (m_autoGrabbingListeners.size() <= 0)
         {
-            if(m_timerID) //stop timer if no other listeners are registered
+            if (m_timerID) //stop timer if no other listeners are registered
             {
                 killTimer(m_timerID);
                 m_timerID = 0;
@@ -472,7 +472,7 @@ namespace ito
             retValue += stopDevice(NULL);
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -486,13 +486,13 @@ namespace ito
     {
         m_autoGrabbingEnabled = false;
 
-        if(m_timerID)
+        if (m_timerID)
         {
             killTimer(m_timerID);
             m_timerID = 0;
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->release();
             waitCond->deleteSemaphore();
@@ -507,12 +507,12 @@ namespace ito
     {
         m_autoGrabbingEnabled = true;
 
-        if(m_autoGrabbingListeners.size() > 0 && m_timerID == 0)
+        if (m_autoGrabbingListeners.size() > 0 && m_timerID == 0)
         {
             m_timerID = startTimer(m_timerIntervalMS);
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->release();
             waitCond->deleteSemaphore();
@@ -525,10 +525,10 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void AddInDataIO::runStatusChanged(bool deviceStarted)
     {
-        if(deviceStarted && m_autoGrabbingEnabled) 
+        if (deviceStarted && m_autoGrabbingEnabled) 
         {
             //auto grabbing flag is set, the device has probably been stopped as is now restarted -> restart auto-grabbing timer as well
-            if(m_autoGrabbingListeners.size() > 0 && m_timerID == 0)
+            if (m_autoGrabbingListeners.size() > 0 && m_timerID == 0)
             {
                 m_timerID = startTimer(m_timerIntervalMS);
             }
@@ -536,7 +536,7 @@ namespace ito
         else 
         {
             //device is stopped -> also stop the live grabbing timer, if set. The auto grabbing flag is not changed by this method
-            if(m_timerID)
+            if (m_timerID)
             {
                 killTimer(m_timerID);
                 m_timerID = 0;
@@ -552,7 +552,7 @@ namespace ito
 
         ItomSharedSemaphoreLocker locker(waitCond);
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method startDevice() is not implemented in this plugin");
             waitCond->release();
@@ -570,7 +570,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::stopDevice", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method stopDevice() is not implemented in this plugin");
             waitCond->release();
@@ -588,7 +588,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::acquire", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method acquire() is not implemented in this plugin");
             waitCond->release();
@@ -606,7 +606,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin");
             waitCond->release();
@@ -624,7 +624,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method getVal(QSharedPointer<char>, QSharedPointer<int>, ItomSharedSemaphore*) is not implemented in this plugin");
             waitCond->release();
@@ -642,7 +642,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::copyVal(void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin");
             waitCond->release();
@@ -660,7 +660,7 @@ namespace ito
     {
         Q_ASSERT_X(1, "AddInDataIO::setVal(const void *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue += ito::RetVal(ito::retError,0,"method setVal(const void*, const int, ItomSharedSemaphore*) is not implemented in this plugin");
             waitCond->release();
@@ -705,11 +705,11 @@ namespace ito
     */
     void AddInActuator::connectNotify(const char * signal)
     {
-        if(QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections++;
         }
-        else if(QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
+        else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections++;
         }
@@ -729,11 +729,11 @@ namespace ito
     */
     void AddInActuator::disconnectNotify(const char * signal)
     {
-        if(QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections--;
         }
-        else if(QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
+        else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections--;
         }
@@ -750,11 +750,11 @@ namespace ito
     */
     void AddInActuator::sendStatusUpdate(const bool statusOnly)
     {
-        if(m_nrOfStatusChangedConnections>0)
+        if (m_nrOfStatusChangedConnections>0)
         {
-            if(statusOnly)
+            if (statusOnly)
             {
-                emit actuatorStatusChanged(m_currentStatus, QVector<double>() );
+                emit actuatorStatusChanged(m_currentStatus, QVector<double>());
             }
             else
             {
@@ -770,7 +770,7 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
-        if(m_nrOfTargetChangedConnections>0)
+        if (m_nrOfTargetChangedConnections>0)
         {
             emit targetChanged(m_targetPos);
         }
@@ -819,7 +819,7 @@ namespace ito
     ito::RetVal AddInAlgo::rejectFilter(const QString &name)
     {
         QHash<QString, FilterDef *>::iterator it = m_filterList.find(name);
-        if(it != m_filterList.end())
+        if (it != m_filterList.end())
         {
             delete *it;
             m_filterList.erase(it);
@@ -832,7 +832,7 @@ namespace ito
     ito::RetVal AddInAlgo::rejectAlgoWidget(const QString &name)
     {
         QHash<QString, AlgoWidgetDef *>::iterator it = m_algoWidgetList.find(name);
-        if(it != m_algoWidgetList.end())
+        if (it != m_algoWidgetList.end())
         {
             delete *it;
             m_algoWidgetList.erase(it);

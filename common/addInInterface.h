@@ -215,7 +215,7 @@ namespace ito
             //! returns the plugin's filename
             const QString getFilename(void) const { return m_filename; }
 
-            const ito::RetVal setFilename(const QString &name ) { m_filename = name; return ito::retOk; }
+            const ito::RetVal setFilename(const QString &name) { m_filename = name; return ito::retOk; }
             //! returns a list of the actual intantiated classes from this plugin
             inline QList<ito::AddInBase *> getInstList(void) { return m_InstList; }
             inline const QList<ito::AddInBase *> getInstList(void) const { return m_InstList; }
@@ -296,9 +296,9 @@ namespace ito
             const Param getParamRec(const QString name, bool *nameCheckOk = NULL) const
             {
                 QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-                if(rx.indexIn(name) == -1)
+                if (rx.indexIn(name) == -1)
                 {
-                    if(nameCheckOk) *nameCheckOk = false;
+                    if (nameCheckOk) *nameCheckOk = false;
                     return Param();
                 }
                 else
@@ -306,7 +306,7 @@ namespace ito
                     QStringList pname = rx.capturedTexts();
                     if (pname.length() > 1)
                     {
-                        if(nameCheckOk) *nameCheckOk = true;
+                        if (nameCheckOk) *nameCheckOk = true;
                         ito::Param tempParam = m_params.value(pname[1]);
                         if (pname[2].length())
                             tempParam.addNameSuffix(pname[2].toAscii().data());
@@ -472,7 +472,7 @@ namespace ito
             QMap<QString, ExecFuncParams> m_execFuncList;		//!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
         
         private:
-            Q_DISABLE_COPY ( AddInBase )
+            Q_DISABLE_COPY (AddInBase)
 
             //! increments reference counter of this plugin (thread-safe)
             inline void incRefCount(void) 
@@ -519,7 +519,7 @@ namespace ito
             //! method for the initialisation of a new instance of the class (must be overwritten)
             virtual ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! method for closing an instance (must be overwritten)
-            virtual ito::RetVal close( ItomSharedSemaphore *waitCond) = 0;
+            virtual ito::RetVal close(ItomSharedSemaphore *waitCond) = 0;
 
             //! method for the retrieval of a parameter. The actual value is always passed as ito::Param (must be overwritten). See also \ref getParam
             virtual ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL) = 0;
@@ -553,7 +553,7 @@ namespace ito
 
 				\sa parametersChanged
 			*/
-            virtual void dockWidgetVisibilityChanged( bool /*visible*/ ) {}; 
+            virtual void dockWidgetVisibilityChanged(bool /*visible*/) {}; 
 
 			//! call this method, if the dock-widget of the plugin will be deleted.
 			/*!
@@ -596,7 +596,7 @@ namespace ito
         Q_OBJECT
 
         private:
-            Q_DISABLE_COPY ( AddInDataIO )
+            Q_DISABLE_COPY (AddInDataIO)
 
         protected:
             virtual ~AddInDataIO() = 0;
@@ -660,7 +660,7 @@ namespace ito
         Q_OBJECT
 
         private:
-            Q_DISABLE_COPY ( AddInActuator )
+            Q_DISABLE_COPY (AddInActuator)
 
             int m_nrOfStatusChangedConnections; /*!< number of signal-slot connections which are conntected to the signal "actuatorStatusChanged" */
             int m_nrOfTargetChangedConnections; /*!< number of signal-slot connections which are conntected to the signal "targetChanged" */
@@ -671,8 +671,8 @@ namespace ito
             virtual ~AddInActuator() = 0;
             AddInActuator();
 
-            virtual void connectNotify ( const char * signal );
-            virtual void disconnectNotify ( const char * signal );
+            virtual void connectNotify (const char * signal);
+            virtual void disconnectNotify (const char * signal);
             int nrOfStatusChangedConnections() const { return m_nrOfStatusChangedConnections; }  /*!< returns number of signal-slot connections to the signal "actuatorStatusChanged" */
             int nrOfTargetChangedConnections() const { return m_nrOfTargetChangedConnections; }  /*!< returns number of signal-slot connections to the signal "targetChanged" */
             int nrOfConnections() const { return m_nrOfStatusChangedConnections + m_nrOfTargetChangedConnections; }  /*!< total number of signal-slot connections to the signals "actuatorStatusChanged" and "targetChanged" */
@@ -686,7 +686,7 @@ namespace ito
             { 
                 foreach(const int &i, m_currentStatus) 
                 {
-                    if(i & ito::actuatorMoving) return true;
+                    if (i & ito::actuatorMoving) return true;
                 }
                 return false;
             }
@@ -863,7 +863,7 @@ namespace ito
         Q_ENUMS(tAlgoInterface)
 
         private:
-            Q_DISABLE_COPY( AddInAlgo )
+            Q_DISABLE_COPY(AddInAlgo)
 
         public:
             typedef ito::RetVal (* t_filter)(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -927,7 +927,7 @@ namespace ito
                 ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, filter fits to (default: iNotSpecified)
                 QString m_interfaceMeta;	//!< meta information if required by algorithm interface 
             private:
-                FilterDef ( const FilterDef & /*p*/ ); //disable copy constructor
+                FilterDef (const FilterDef & /*p*/); //disable copy constructor
             };
 
 			//! container for publishing widgets provided by any plugin
@@ -966,7 +966,7 @@ namespace ito
                 QString m_interfaceMeta;	//!< meta information if required by algorithm interface 
 
             private:
-                AlgoWidgetDef ( const AlgoWidgetDef & /*p*/ ); //disable copy constructor
+                AlgoWidgetDef (const AlgoWidgetDef & /*p*/); //disable copy constructor
             };
 
             ito::RetVal getFilterList(QHash<QString, FilterDef *> &fList) const;

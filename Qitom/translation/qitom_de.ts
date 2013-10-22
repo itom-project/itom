@@ -54,7 +54,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+771"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+770"/>
         <source>script execution</source>
         <translation>Skript wird ausgeführt</translation>
     </message>
@@ -1315,40 +1315,40 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>mandatory parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Pflichtparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>optional parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionaler Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>output parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgabeparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+32"/>
         <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>Der Parameter &apos;%1&apos; wurde nicht im übergebenen Parametervektor gefunden</translation>
     </message>
     <message>
         <location line="+78"/>
         <location line="+125"/>
         <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Name des Angefragten Parameter ist leer.</translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
+        <source>the parameter name &apos;%1&apos; is invald</source>
+        <translation>Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
         <location line="-101"/>
@@ -1365,7 +1365,7 @@ p, li { white-space: pre-wrap; }
         <location line="-120"/>
         <location line="+127"/>
         <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parameter wurde nicht in m_params gefunden.</translation>
     </message>
     <message>
         <location line="-14"/>
@@ -1376,7 +1376,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../helper/paramHelper.cpp" line="+695"/>
         <location filename="../../common/helperCommon.cpp" line="+55"/>
         <source>invalid parameter name</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiger Parametername</translation>
     </message>
     <message>
         <location line="-655"/>
@@ -1469,18 +1469,18 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <location line="+62"/>
         <source>AddIn must not be NULL</source>
-        <translation type="unfinished"></translation>
+        <translation>AddIn muss NULL sein</translation>
     </message>
     <message>
         <location line="-49"/>
         <location line="+13"/>
         <source>value out of range [%1,%2]</source>
-        <translation type="unfinished">Wert liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
+        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Value out of range [%1,%2]</source>
-        <translation type="unfinished">Wert liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
+        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1495,7 +1495,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+100"/>
         <source>Index value is out of range [0,%i]</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -1520,22 +1520,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+8"/>
         <source>Parameter &apos;%1&apos; is read only.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parameter &apos;%1&apos; ist schreibgeschützt.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Parameter &apos;%1&apos; not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parameter &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>index is ouf of range [0,%i]</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>param is no array</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
         <location filename="../../common/sharedFunctionsQt.cpp" line="+67"/>
@@ -1559,34 +1559,38 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+11"/>
-        <location line="+223"/>
-        <location line="+193"/>
+        <location line="+228"/>
+        <location line="+210"/>
         <source>Can&apos;t open xml file</source>
-        <translation type="unfinished"></translation>
+        <translation>XML-Datei konnte nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+71"/>
         <source>%1
 Autosave parameter %2 not found</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Parameter %2 für die automatische Speicherung wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Warnung XML-Import:
+Parameter %1 für die automatische Speicherung wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>%1
 Obsolete parameter %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1
+Veralteter Parameter %2</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Warnung XML-Import:
+Veralteter Parameter %1</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1948,7 +1952,12 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+892"/>
+        <location line="+104"/>
+        <source>timeout.</source>
+        <translation>Zeitüberschreitung.</translation>
+    </message>
+    <message>
+        <location line="+788"/>
         <source>timeout while calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2161,12 +2170,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location filename="../../plot/AbstractFigure.cpp" line="+104"/>
-        <location line="+44"/>
+        <location line="+46"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="-38"/>
         <location line="+7"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished"></translation>
@@ -2177,13 +2186,13 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished">ungültiger Child-Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location line="+25"/>
-        <location line="+25"/>
+        <location line="+27"/>
+        <location line="+27"/>
         <source>channel does not exist</source>
         <translation type="unfinished">Kanal existiert nicht</translation>
     </message>
@@ -2304,7 +2313,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>%1 (Actuator) loaded</source>
         <translation type="unfinished">%1 (Motor) geladen</translation>
     </message>
@@ -2314,7 +2323,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+19"/>
         <source>error initializing plugin: %1</source>
         <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
@@ -2552,7 +2561,7 @@ Type conflict for %1</source>
         <translation type="obsolete">Dateiname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="../widgets/userUiDialog.cpp" line="+86"/>
+        <location filename="../widgets/userUiDialog.cpp" line="+90"/>
         <source>filename &apos;%s&apos; does not exist</source>
         <translation>Dateiname &apos;%s&apos; existiert nicht</translation>
     </message>
@@ -2562,7 +2571,7 @@ Type conflict for %1</source>
         <translation>UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -3214,12 +3223,12 @@ Type conflict for %1</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+286"/>
         <source>Show Plugin Toolbox</source>
         <translation>Plugin-Toolbox anzeigen</translation>
     </message>
     <message>
-        <location line="-267"/>
+        <location line="-274"/>
         <source>Close Instance</source>
         <translation>Instanz schließen</translation>
     </message>
@@ -3229,12 +3238,12 @@ Type conflict for %1</source>
         <translation>Neue Instanz...</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+49"/>
         <source>Send to Python...</source>
         <translation>An Python senden...</translation>
     </message>
     <message>
-        <location line="-24"/>
+        <location line="-29"/>
         <source>Close all</source>
         <translation>Alles schließen</translation>
     </message>
@@ -3249,7 +3258,7 @@ Type conflict for %1</source>
         <translation>Aufnahmedialog...</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Info...</source>
         <translation></translation>
     </message>
@@ -3259,7 +3268,7 @@ Type conflict for %1</source>
         <translation>Fenster öffnen...</translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+143"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
@@ -3279,17 +3288,22 @@ Type conflict for %1</source>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location line="-265"/>
+        <location line="-272"/>
         <source>Show/Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ein-/ausblenden</translation>
     </message>
     <message>
-        <location line="+351"/>
+        <location line="+21"/>
+        <source>Auto Grabbing</source>
+        <translation>Auto-Grabbing</translation>
+    </message>
+    <message>
+        <location line="+346"/>
         <source>The instance &apos;%1&apos; cannot be closed by GUI since it has been created by Python</source>
         <translation>Die Instanz &apos;%1&apos; kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
     </message>
@@ -3304,7 +3318,7 @@ Type conflict for %1</source>
         <translation>Die Instanz &apos;%1&apos; kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
     </message>
     <message>
-        <location line="+180"/>
+        <location line="+102"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
@@ -3380,7 +3394,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-371"/>
+        <location line="-293"/>
         <location line="+4"/>
         <source>closing not possible</source>
         <translation>Schließen nicht möglich</translation>
@@ -3411,7 +3425,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+310"/>
+        <location line="+232"/>
         <source>Python variable name</source>
         <translation>Variablenname in Python</translation>
     </message>
@@ -3484,12 +3498,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+7"/>
         <source>dock widget</source>
-        <translation type="unfinished">Fenster eindocken</translation>
+        <translation>Fenster eindocken</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>undock widget</source>
-        <translation type="unfinished">Fenster ausdocken</translation>
+        <translation>Fenster ausdocken</translation>
     </message>
     <message>
         <location line="+188"/>
@@ -5102,7 +5116,22 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
-        <location line="+172"/>
+        <location line="+110"/>
+        <source>%1 [Wildcard]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 [Regular Expression]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>[None]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
         <location line="+22"/>
         <source>QT error: Spin box widget could not be found</source>
         <translation type="unfinished">QT-Fehler: QSpinBox wurde nicht gefunden</translation>

@@ -859,7 +859,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         {
             if (!addInObj->isAlive())
             {
-                ret += ito::RetVal(ito::retError, 0, "timeout.");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout.").toAscii().data());
                 timeout = true;
                 break;
             }

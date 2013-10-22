@@ -61,6 +61,7 @@ namespace ito
             QAction *m_pActSendToPython;
             QAction *m_pActLiveImage;
             QAction *m_pActSnapDialog;
+            QAction *m_pActAutoGrabbing;
             QAction *m_pActInfo;
             QAction *m_pActOpenWidget;
             QAction *m_pMainToolbarSeparator1;
@@ -97,6 +98,7 @@ namespace ito
             void mnuOpenWidget();
             void mnuToggleView();
             void mnuShowLiveImage();
+            void mnuToggleAutoGrabbing();
             void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
             void showDetails();

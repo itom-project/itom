@@ -45,7 +45,7 @@ namespace ito
 	*/
     ito::RetVal checkParamVector(QVector<ito::Param> *params)
     {
-        if(params == NULL)
+        if (params == NULL)
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("parameter vector is not initialized").toAscii().data());
         }
@@ -66,15 +66,15 @@ namespace ito
 	*/
     ito::RetVal checkParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
     {
-        if(paramsMand == NULL)
+        if (paramsMand == NULL)
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("mandatory parameter vector is not initialized").toAscii().data());
         }
-        if(paramsOpt == NULL)
+        if (paramsOpt == NULL)
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("optional parameter vector is not initialized").toAscii().data());
         }
-        if(paramsOut == NULL)
+        if (paramsOut == NULL)
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("output parameter vector is not initialized").toAscii().data());
         }
@@ -95,20 +95,20 @@ namespace ito
     ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval)
     {
         const char *temp;
-        if(paramVec)
+        if (paramVec)
         {
             ito::Param* data = paramVec->data();
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
                 temp = data[i].getName();
-                if(strcmp(temp,name) == 0)
+                if (strcmp(temp,name) == 0)
                 {
                     return &(data[i]);
                 }
             }
         }
-        if(retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
+        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
         return NULL;
     }
 
@@ -116,20 +116,20 @@ namespace ito
     ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval)
     {
         const char *temp;
-        if(paramVec)
+        if (paramVec)
         {
             ito::ParamBase* data = paramVec->data();
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
                 temp = data[i].getName();
-                if(strcmp(temp,name) == 0)
+                if (strcmp(temp,name) == 0)
                 {
                     return &(data[i]);
                 }
             }
         }
-        if(retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
+        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
         return NULL;
     }
 
@@ -137,13 +137,13 @@ namespace ito
     QHash<QString, ito::Param*> createParamHashTable(QVector<ito::Param> *paramVec)
     {
         QHash<QString, ito::Param*> hashTable;
-        if(paramVec)
+        if (paramVec)
         {
             ito::Param* data = paramVec->data();
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
-                hashTable.insert( data[i].getName() , &(data[i]) );
+                hashTable.insert(data[i].getName() , &(data[i]));
             }
         }
         return hashTable;
@@ -155,10 +155,10 @@ namespace ito
         bool done = false;
         bool result = false;
 
-        if(param.isNumeric())
+        if (param.isNumeric())
         {
             const ito::ParamMeta *meta = param.getMeta();
-            if(meta)
+            if (meta)
             {
                 done = true;
                 switch(meta->getType())
@@ -166,19 +166,19 @@ namespace ito
                 case ito::Param::Char:
                     {
                         const ito::CharMeta *cMeta = (const ito::CharMeta*)meta;
-                        if(value >= cMeta->getMin() && value <= cMeta->getMax()) result = true;
+                        if (value >= cMeta->getMin() && value <= cMeta->getMax()) result = true;
                     }
                     break;
                 case ito::Param::Int:
                     {
                         const ito::IntMeta *iMeta = (const ito::IntMeta*)meta;
-                        if(value >= iMeta->getMin() && value <= iMeta->getMax()) result = true;
+                        if (value >= iMeta->getMin() && value <= iMeta->getMax()) result = true;
                     }
                     break;
                 case ito::Param::Double:
                     {
                         const ito::DoubleMeta *dMeta = (const ito::DoubleMeta*)meta;
-                        if(value >= dMeta->getMin() && value <= dMeta->getMax()) result = true;
+                        if (value >= dMeta->getMin() && value <= dMeta->getMax()) result = true;
                     }
                     break;
                 }
@@ -190,7 +190,7 @@ namespace ito
             }
         }
 
-        if(ok) *ok = done;
+        if (ok) *ok = done;
         return result;
     }
 
@@ -205,20 +205,20 @@ namespace ito
         bool hasIndex;
         QString additionalTag;
 
-        if(key == "")
+        if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toAscii().data());
         }
         else
         {
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
-            if(retValue.containsError() || paramName.isEmpty())
+            if (retValue.containsError() || paramName.isEmpty())
             {
-                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' in invald").arg(key).toAscii().data());
+                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toAscii().data());
             }
             else
             {
-                if(!hasIndex) index = -1;
+                if (!hasIndex) index = -1;
 
                 QMap<QString, ito::Param>::const_iterator paramIt =  m_params->find(paramName);
 
@@ -243,7 +243,7 @@ namespace ito
                     }
                     else
                     {
-                        if(index >= 0)
+                        if (index >= 0)
                         {
                             retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toAscii().data());
                         }
@@ -330,22 +330,22 @@ namespace ito
         bool hasIndex;
         QString additionalTag;
 
-        if(key == "")
+        if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toAscii().data());
         }
         else
         {
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
-            if(retValue.containsError() || paramName.isEmpty())
+            if (retValue.containsError() || paramName.isEmpty())
             {
-                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' in invald").arg(key).toAscii().data());
+                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toAscii().data());
             }
             else
             {
-                if(!hasIndex) index = -1;
+                if (!hasIndex) index = -1;
 
-                QMap<QString, ito::Param>::iterator paramIt =  (QMap<QString, ito::Param>::iterator)(m_params->find(paramName)); //TODO: why do I need a cast here???
+                QMap<QString, ito::Param>::iterator paramIt = (QMap<QString, ito::Param>::iterator)(m_params->find(paramName)); //TODO: why do I need a cast here???
 
                 if (paramIt != m_params->constEnd())
                 {
@@ -370,7 +370,7 @@ namespace ito
                     }
                     else
                     {
-                        if(index >= 0)
+                        if (index >= 0)
                         {
                             retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toAscii().data());
                         }
@@ -418,7 +418,7 @@ namespace ito
         additionalTag = QString();
 
         QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-        if(rx.indexIn(name) == -1)
+        if (rx.indexIn(name) == -1)
         {
             retValue += ito::RetVal(ito::retError,0,QObject::tr("invalid parameter name").toAscii().data());
         }
@@ -426,14 +426,14 @@ namespace ito
         {
             QStringList pname = rx.capturedTexts();
             paramName = pname[1];
-            if(pname.size()>=4)
+            if (pname.size()>=4)
             {
-                if(!pname[3].isEmpty())
+                if (!pname[3].isEmpty())
                 {
                     index = pname[3].toInt(&hasIndex);
                 }
             }
-            if(pname.size() >=6)
+            if (pname.size() >=6)
             {
                 additionalTag = pname[5];
             }
