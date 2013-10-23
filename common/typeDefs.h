@@ -41,8 +41,8 @@
 
 namespace ito
 {
-    #define PLUGINWAIT 20000    // valgrind setting
-    //#define PLUGINWAIT 5000
+    //#define PLUGINWAIT 20000    // valgrind setting
+    #define PLUGINWAIT 5000
 
     /**
     * LogLevel enumeration
