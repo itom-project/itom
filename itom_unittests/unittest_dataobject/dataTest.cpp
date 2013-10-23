@@ -223,7 +223,7 @@ TYPED_TEST(dataTest, checkOnes)
 
     TypeParam tarValue;
 
-    if(typeid(valueType) == typeid(ito::rgba32))
+    if(typeid(valueType) == typeid(ito::Rgba32))
     {
         tarValue = (ito::uint32)0xFFFFFFFF;
     }

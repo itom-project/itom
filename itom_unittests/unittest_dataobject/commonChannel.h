@@ -16,13 +16,13 @@ typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16, ito::in
 typedef ::testing::Types<ito::int8, ito::int16, ito::int32 > ItomIntDataTypes2;
 typedef ::testing::Types<ito::uint8, ito::uint16 > ItomUIntDataTypes;
 typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::uint32,*/ ito::int32, ito::float32, ito::float64, ito::complex64, ito::complex128 > ItomDataStandardTypes;
-typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::uint32,*/ ito::int32, ito::float32, ito::float64, ito::complex64, ito::complex128, ito::rgba32> ItomDataAllTypes;
+typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::uint32,*/ ito::int32, ito::float32, ito::float64, ito::complex64, ito::complex128, ito::Rgba32> ItomDataAllTypes;
 
-typedef ::testing::Types<ito::rgba32> ItomColorTypes;
-typedef ::testing::Types<ito::alphaChannel, ito::redChannel, ito::greenChannel, ito::blueChannel> ItomAllChannelTypes;
-typedef ::testing::Types<ito::redChannel, ito::greenChannel, ito::blueChannel> ItomColorChannelTypes;
-typedef ::testing::Types<ito::alphaChannel> ItomAlphaChannelTypes;
-typedef ::testing::Types<ito::rgba32, ito::alphaChannel, ito::redChannel, ito::greenChannel, ito::blueChannel> ItomColorAllTypes;
+typedef ::testing::Types<ito::Rgba32> ItomColorTypes;
+typedef ::testing::Types<ito::AlphaChannel, ito::RedChannel, ito::GreenChannel, ito::BlueChannel> ItomAllChannelTypes;
+typedef ::testing::Types<ito::RedChannel, ito::GreenChannel, ito::BlueChannel> ItomColorChannelTypes;
+typedef ::testing::Types<ito::AlphaChannel> ItomAlphaChannelTypes;
+typedef ::testing::Types<ito::Rgba32, ito::AlphaChannel, ito::RedChannel, ito::GreenChannel, ito::BlueChannel> ItomColorAllTypes;
 typedef ::testing::Types<ito::uint8, ito::uint16, ito::uint32, ito::int32, ito::float32, ito::float64> ItomColorCompatibleTypes;
 typedef ::testing::Types<ito::int8, ito::int16, ito::complex64, ito::complex128> ItomColorNotCompTypes;
 

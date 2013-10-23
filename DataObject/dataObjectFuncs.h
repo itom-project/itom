@@ -43,7 +43,7 @@
    FuncName<ito::float64>,                                                   \
    FuncName<ito::complex64>,                                                 \
    FuncName<ito::complex128>,                                                 \
-   FuncName<ito::rgba32>                                                 \
+   FuncName<ito::Rgba32>                                                 \
 };
 
 //! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.

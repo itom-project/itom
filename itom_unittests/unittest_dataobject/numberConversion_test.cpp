@@ -197,9 +197,9 @@ TYPED_TEST(Real_ComplexTest, numberConversionIntToFloat_Test)
 //!< Test for numberConversion<type>() function for floating point variables.
 TYPED_TEST(Real_ComplexTest, numberConversionRGBAToVALUE_Test)
 {
-	ito::rgba32 rgba_var1= ito::rgba32::ZEROS();
-	ito::rgba32 rgba_var2= ito::rgba32::BLACK();
-	ito::rgba32 rgba_var3= ito::rgba32::GREEN();
+	ito::Rgba32 rgba_var1= ito::Rgba32::zeros();
+	ito::Rgba32 rgba_var2= ito::Rgba32::black();
+	ito::Rgba32 rgba_var3= ito::Rgba32(255,0,255,0);
 
     if(typeid(valueType) == typeid(ito::uint32) || typeid(valueType) == typeid(ito::int32))
     {

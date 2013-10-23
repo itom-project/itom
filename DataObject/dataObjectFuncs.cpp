@@ -120,7 +120,7 @@ namespace dObjHelper
         return retError;
     }
 
-    template<> RetVal minValueFunc<rgba32>(const DataObject * /*dObj*/, float64 & /*minValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    template<> RetVal minValueFunc<Rgba32>(const DataObject * /*dObj*/, float64 & /*minValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "minValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
@@ -260,7 +260,7 @@ namespace dObjHelper
         return retError;
     }
 
-    template<> RetVal maxValueFunc<rgba32>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    template<> RetVal maxValueFunc<Rgba32>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
@@ -959,15 +959,15 @@ namespace dObjHelper
 
         \return retOk
     */
-    template<> RetVal minMaxValueFunc<rgba32>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool /*ignoreInf*/, const int specialDataTypeFlags)
+    template<> RetVal minMaxValueFunc<Rgba32>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool /*ignoreInf*/, const int specialDataTypeFlags)
     {
         size_t numMats = dObj->calcNumMats();
         size_t matIndex = 0;
 
         int m,n;
 
-        const rgba32* rowPtr;
-        cv::Mat_<rgba32> *mat = NULL;
+        const Rgba32* rowPtr;
+        cv::Mat_<Rgba32> *mat = NULL;
 
 //        rgba32 tempResultMin;
 //        rgba32 tempResultMax;
@@ -982,15 +982,15 @@ namespace dObjHelper
         for (size_t nmat = 0; nmat < numMats; nmat++)
         {
             matIndex = dObj->seekMat(nmat, numMats);
-            mat = (cv::Mat_<rgba32> *)(dObj->get_mdata())[matIndex];
+            mat = (cv::Mat_<Rgba32> *)(dObj->get_mdata())[matIndex];
 
             switch(specialDataTypeFlags)
             {
-                case Rgba32_t::RGBA_B:
+                case Rgba32::RGBA_B:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
                             if(rowPtr[n].blue() < tmpMin) 
@@ -1011,21 +1011,21 @@ namespace dObjHelper
                     }
                 }
                 break;
-                case Rgba32_t::RGBA_G:
+                case Rgba32::RGBA_G:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
-                            if(rowPtr[n].green() < tmpMin) 
+                            if(rowPtr[n].g < tmpMin) 
                             {
                                 tmpMin = rowPtr[n].green();
                                 firstMinLocation[0] = nmat;
                                 firstMinLocation[1] = m;
                                 firstMinLocation[2] = n;
                             }
-                            if(rowPtr[n].green() > tmpMin) 
+                            if(rowPtr[n].g > tmpMin) 
                             {
                                 tmpMax = rowPtr[n].green();
                                 firstMaxLocation[0] = nmat;
@@ -1036,21 +1036,21 @@ namespace dObjHelper
                     }
                 }
                 break;
-                case Rgba32_t::RGBA_R:
+                case Rgba32::RGBA_R:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
-                            if(rowPtr[n].red() < tmpMin) 
+                            if(rowPtr[n].r < tmpMin) 
                             {
                                 tmpMin = rowPtr[n].red();
                                 firstMinLocation[0] = nmat;
                                 firstMinLocation[1] = m;
                                 firstMinLocation[2] = n;
                             }
-                            if(rowPtr[n].red() > tmpMax) 
+                            if(rowPtr[n].r > tmpMax) 
                             {
                                 tmpMax = rowPtr[n].red();
                                 firstMaxLocation[0] = nmat;
@@ -1061,21 +1061,21 @@ namespace dObjHelper
                     }
                 }
                 break;
-                case Rgba32_t::RGBA_A:
+                case Rgba32::RGBA_A:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
-                            if(rowPtr[n].alpha() < tmpMin) 
+                            if(rowPtr[n].a < tmpMin) 
                             {
                                 tmpMin = rowPtr[n].alpha(); //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 firstMinLocation[0] = nmat;
                                 firstMinLocation[1] = m;
                                 firstMinLocation[2] = n;
                             }
-                            if(rowPtr[n].alpha() > tmpMax) 
+                            if(rowPtr[n].a > tmpMax) 
                             {
                                 tmpMax = rowPtr[n].alpha(); //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 firstMaxLocation[0] = nmat;
@@ -1086,11 +1086,11 @@ namespace dObjHelper
                     }
                 }
                 break;
-                case Rgba32_t::RGBA_Y:
+                case Rgba32::RGBA_Y:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
                             if(rowPtr[n].gray() < tmpMinFloat) 
@@ -1112,11 +1112,11 @@ namespace dObjHelper
                 }
                 break;
                 default:
-                case Rgba32_t::RGBA_RGB:
+                case Rgba32::RGBA_RGB:
                 {
                     for(m = 0; m < mat->rows; m++)
                     {
-                        rowPtr = (rgba32*)mat->ptr(m);
+                        rowPtr = (Rgba32*)mat->ptr(m);
                         for(n = 0; n < mat->cols; n++)
                         {
                             if(rowPtr[n].red() < tmpMin || rowPtr[n].blue() < tmpMin || rowPtr[n].green() < tmpMin ) 
@@ -1124,14 +1124,14 @@ namespace dObjHelper
                                 firstMinLocation[0] = nmat;
                                 firstMinLocation[1] = m;
                                 firstMinLocation[2] = n;
-                                tmpMin = rowPtr[n].red() < rowPtr[n].blue() ? rowPtr[n].red() : (rowPtr[n].green() < rowPtr[n].blue() ? rowPtr[n].green() : rowPtr[n].blue());
+                                tmpMin = rowPtr[n].r < rowPtr[n].b ? rowPtr[n].r : (rowPtr[n].g < rowPtr[n].b ? rowPtr[n].g : rowPtr[n].b);
                             }
                             if(rowPtr[n].red() > tmpMax || rowPtr[n].blue() > tmpMax || rowPtr[n].green() > tmpMax) 
                             {
                                firstMaxLocation[0] = nmat;
                                 firstMaxLocation[1] = m;
                                 firstMaxLocation[2] = n;
-                                tmpMax = rowPtr[n].red() > rowPtr[n].blue() ? rowPtr[n].red() : (rowPtr[n].green() > rowPtr[n].blue() ? rowPtr[n].green() : rowPtr[n].blue());
+                                tmpMax = rowPtr[n].r > rowPtr[n].b ? rowPtr[n].r : (rowPtr[n].g > rowPtr[n].b ? rowPtr[n].g : rowPtr[n].b);
                             }
                         }
                     }
@@ -1140,7 +1140,7 @@ namespace dObjHelper
             }
         }
 
-        if(specialDataTypeFlags == Rgba32_t::RGBA_Y)
+        if(specialDataTypeFlags == Rgba32::RGBA_Y)
         {
             minValue = static_cast<float64>(tmpMinFloat);
             maxValue = static_cast<float64>(tmpMaxFloat);
@@ -1278,12 +1278,12 @@ namespace dObjHelper
         return retError;
     }
 
-    template<> RetVal meanValueFunc<rgba32, uint32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    template<> RetVal meanValueFunc<Rgba32, uint32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
     }
-    template<> RetVal meanValueFunc<rgba32, rgba32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    template<> RetVal meanValueFunc<Rgba32, Rgba32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
@@ -1520,12 +1520,12 @@ namespace dObjHelper
         return retError;
     }
 
-    template<> RetVal devValueFunc<rgba32, uint32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
+    template<> RetVal devValueFunc<Rgba32, uint32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;
     }
-    template<> RetVal devValueFunc<rgba32, rgba32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
+    template<> RetVal devValueFunc<Rgba32, Rgba32>(const ito::DataObject * /*dObj*/, const int /*devTypFlag*/, float64 & /*meanResult*/, float64 & /*devResult*/, bool /*ignoreNaN*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
         return retError;

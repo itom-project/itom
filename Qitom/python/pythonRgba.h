@@ -24,6 +24,7 @@
 #define PYTHONRGBA
 
 #include "../../common/typeDefs.h"
+#include "../../common/color.h"
 
 /* includes */
 #ifndef Q_MOC_RUN
@@ -57,7 +58,7 @@ class PythonRgba
         typedef struct
         {
             PyObject_HEAD
-    		ito::rgba32 rgba;
+    		ito::Rgba32 rgba;
         }
         PyRgba;
 

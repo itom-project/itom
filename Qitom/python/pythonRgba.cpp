@@ -43,7 +43,7 @@ PyObject* PythonRgba::PyRgba_new(PyTypeObject *type, PyObject * /*args*/, PyObje
     PyRgba* self = (PyRgba *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->rgba = 0xFF000000; //alpha 255, rest: 0
+        self->rgba.rgba = 0xFF000000; //alpha 255, rest: 0
     }
 
     return (PyObject *)self;
@@ -71,14 +71,14 @@ For a gray value set all colors to the same value.");
 int PythonRgba::PyRgba_init(PyRgba *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"r", "g", "b", "alpha", NULL};
-	self->rgba.alpha() = 255;
+	self->rgba.a = 255;
 
 	if (args == NULL && kwds == NULL)
 	{
 		return 0; //call from createEmptyPyRgba
 	}
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "BBB|B", const_cast<char**>(kwlist), &(self->rgba.red()), &(self->rgba.green()), &(self->rgba.blue()), &(self->rgba.alpha())))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "BBB|B", const_cast<char**>(kwlist), &(self->rgba.r), &(self->rgba.g), &(self->rgba.b), &(self->rgba.a)))
     {
         return -1;
     }
@@ -448,7 +448,7 @@ PyObject* PythonRgba::PyRgba_name(PyRgba* /*self*/)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_repr(PyRgba *self)
 {
-    PyObject *result = PyUnicode_FromFormat("Rgba(%i,%i,%i alpha:%i)", self->rgba.red(), self->rgba.green(), self->rgba.blue(), self->rgba.alpha());
+    PyObject *result = PyUnicode_FromFormat("Rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
     return result;
 };
 
@@ -457,7 +457,7 @@ PyObject* PythonRgba::PyRgba_Reduce(PyRgba *self, PyObject * /*args*/)
 {
     PyObject *stateTuple = PyTuple_New(0);
 
-    PyObject *tempOut = Py_BuildValue("(O(BBBB)O)", Py_TYPE(self), self->rgba.red(), self->rgba.green(), self->rgba.blue(), self->rgba.alpha(), stateTuple);
+    PyObject *tempOut = Py_BuildValue("(O(BBBB)O)", Py_TYPE(self), self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a, stateTuple);
     Py_DECREF(stateTuple);
 
     return tempOut;
@@ -516,10 +516,10 @@ PyMethodDef PythonRgba::PyRgba_methods[] = {
 
 PyMemberDef PythonRgba::PyRgba_members[] = {
     #ifndef linux //TODO offsetof with member in GCC not possible
-        {"r", T_UBYTE, offsetof(PyRgba, rgba.red()), 0, "red"}, 
-		{"g", T_UBYTE, offsetof(PyRgba, rgba.green()), 0, "green"}, 
-		{"b", T_UBYTE, offsetof(PyRgba, rgba.blue()), 0, "blue"}, 
-		{"alpha", T_UBYTE, offsetof(PyRgba, rgba.alpha()), 0, "alpha"}, 
+        {"r", T_UBYTE, offsetof(PyRgba, rgba.r), 0, "red"}, 
+		{"g", T_UBYTE, offsetof(PyRgba, rgba.g), 0, "green"}, 
+		{"b", T_UBYTE, offsetof(PyRgba, rgba.b), 0, "blue"}, 
+		{"alpha", T_UBYTE, offsetof(PyRgba, rgba.a), 0, "alpha"}, 
     #endif
         {NULL}  /* Sentinel */
     };

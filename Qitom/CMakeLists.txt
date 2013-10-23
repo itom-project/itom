@@ -98,6 +98,7 @@ set(qitom_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
