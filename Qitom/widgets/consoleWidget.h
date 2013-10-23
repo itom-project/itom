@@ -98,8 +98,8 @@ private slots:
 private:
     struct cmdQueueStruct
     { 
-        cmdQueueStruct() { singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1; };
-        cmdQueueStruct(QString text, int lineBegin, int nrOfLines) {singleLine = text; m_lineBegin = lineBegin; m_nrOfLines = nrOfLines; };
+        cmdQueueStruct() { singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1; }
+        cmdQueueStruct(QString text, int lineBegin, int nrOfLines) {singleLine = text; m_lineBegin = lineBegin; m_nrOfLines = nrOfLines; }
         QString singleLine;
         int m_lineBegin;
         int m_nrOfLines;

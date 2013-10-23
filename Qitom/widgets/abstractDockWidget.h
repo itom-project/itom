@@ -53,6 +53,7 @@ namespace ito
 
             struct Toolbar
             {
+                Toolbar() : section(0), key(""), tb(NULL) {}
                 Qt::ToolBarArea area;
                 int section;
                 QString key;

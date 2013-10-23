@@ -50,9 +50,9 @@ public:
 
     struct StyleNode
     {
-        StyleNode(int index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), m_fillToEOL(fillToEOL), m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {};
-        StyleNode() {};
-        StyleNode(int index, QString name) : m_index(index), m_name(name) {};
+        StyleNode(int index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), m_fillToEOL(fillToEOL), m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
+        StyleNode() {}
+        StyleNode(int index, QString name) : m_index(index), m_name(name), m_fillToEOL(0) {}
         int m_index;
         QString m_name;
         QFont m_font;

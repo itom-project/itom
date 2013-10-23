@@ -224,10 +224,10 @@ typedef struct
 		{
 			struct
 			{
-			ito::uint8 b;
-			ito::uint8 g;
-			ito::uint8 r;
-			ito::uint8 a;
+                ito::uint8 b;
+                ito::uint8 g;
+                ito::uint8 r;
+                ito::uint8 a;
 			};
 			float rgb;
 		};

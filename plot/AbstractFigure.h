@@ -57,6 +57,7 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
 
         struct ToolBarItem {
+            ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}
             QToolBar *toolbar;
             bool visible;
             int section;

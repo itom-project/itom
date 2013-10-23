@@ -57,6 +57,7 @@ public:
 
 struct FigurePlugin
 {
+    FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(NULL) {}
     QString filename;
     QString classname;
     PlotDataTypes plotDataTypes;

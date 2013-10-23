@@ -546,6 +546,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 
     QString signature(signalSignature);
     QSharedPointer<int> sigId(new int);
+    // valgrind complains about mismatching delete[]
     QSharedPointer<QObject*> objPtr(new QObject*[1]);
     QSharedPointer<IntList> argTypes(new IntList);
 

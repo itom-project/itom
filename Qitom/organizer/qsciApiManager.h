@@ -53,17 +53,18 @@ namespace ito
 
             struct APIFileInfo
             {
-            public:
-                QString absoluteFilename;
-                quint16 checksum;
-                bool exists;
-                QDateTime lastModified;
+                APIFileInfo() : absoluteFilename(""), checksum(0), exists(0) {}
+                public:
+                    QString absoluteFilename;
+                    quint16 checksum;
+                    bool exists;
+                    QDateTime lastModified;
 
-                //sorting depends on filename only
-                bool operator < (const APIFileInfo rhs) const
-                {
-                    return absoluteFilename < rhs.absoluteFilename;
-                }
+                    //sorting depends on filename only
+                    bool operator < (const APIFileInfo rhs) const
+                    {
+                        return absoluteFilename < rhs.absoluteFilename;
+                    }
             };
 
         protected:

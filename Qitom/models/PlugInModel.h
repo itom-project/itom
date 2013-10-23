@@ -50,6 +50,7 @@ namespace ito
     */
     struct PluginLoadStatus
     {
+        PluginLoadStatus() : filename("") {}
         QString filename;
         QList< QPair<tPluginLoadStatusFlag, QString> > messages;
     };

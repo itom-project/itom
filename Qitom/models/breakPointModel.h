@@ -41,7 +41,7 @@ using namespace ito;
 struct BreakPointItem
 {
     /*! constructor fills struct with default values */
-    BreakPointItem(): filename(""), lineno(-1), enabled(true), temporary(false), conditioned(false), condition(""), ignoreCount(0), pythonDbgBpNumber(-1)  {};
+    BreakPointItem(): filename(""), lineno(-1), enabled(true), temporary(false), conditioned(false), condition(""), ignoreCount(0), pythonDbgBpNumber(-1)  {}
     QString filename;       /*!<  filename of corresponding python file */
     int lineno;             /*!<  line number */
     bool enabled;           /*!<  indicates whether breakpoint is actually enabled */

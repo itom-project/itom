@@ -101,6 +101,7 @@ namespace ito
     };
 
     struct ExecFuncParams{
+        ExecFuncParams() : infoString("") {}
         QVector<Param> paramsMand; /*!< mandatory parameters (default set), must have flag In or In|Out */
         QVector<Param> paramsOpt;  /*!< optional parameters (default set), must have flag In or In|Out */
         QVector<Param> paramsOut;  /*!< return parameters (default set), must have Out. Only types Int,Char,Double,String,IntArray,CharArray or DoubleArray are allowed. */

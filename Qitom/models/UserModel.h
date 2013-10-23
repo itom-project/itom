@@ -33,7 +33,7 @@ namespace ito
     */
     struct UserInfoStruct
     {
-        UserInfoStruct(QString sname, QString sid, QString siniFile, QString srole) : name(sname), id(sid), iniFile(siniFile), role(srole) {};
+        UserInfoStruct(QString sname, QString sid, QString siniFile, QString srole) : name(sname), id(sid), iniFile(siniFile), role(srole) {}
         QString name;
         QString id;
         QString iniFile;

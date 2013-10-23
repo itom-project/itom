@@ -101,11 +101,12 @@ namespace ito
         tPaletteFC          = 0x04,
         tPaletteIndexed     = 0x08,
         tPaletteLinear      = 0x10,
-        tPaletteReadOnly    = 0x20,
+        tPaletteReadOnly    = 0x20
     };    
 
     struct ItomPalette
     {
+        ItomPalette() : type(0), name("") {}
         int type;
         QString name;
         QVector<QPair<double, QColor> > colorStops;
