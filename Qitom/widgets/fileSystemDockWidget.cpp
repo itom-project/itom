@@ -236,7 +236,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     QStringList files;
     settings.beginGroup("fileSystemDockWidget");
     settings.beginWriteArray("lastUsedDirs");
-    for (int i = 0 ; i < m_pShowDirListMenu->actions().count() ; i++)
+    for (int i = 0; i < m_pShowDirListMenu->actions().count(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("dir", m_pShowDirListMenu->actions()[i]->whatsThis() + m_pShowDirListMenu->actions()[i]->data().toString());
@@ -244,7 +244,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     settings.endArray();
 
     settings.beginWriteArray("ColWidth");
-    for (int i = 0 ; i < m_pFileSystemModel->columnCount() ; i++)
+    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("width", m_pTreeView->columnWidth(i));
@@ -252,7 +252,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     settings.endArray();
 
     settings.beginWriteArray("StandardColWidth");
-    for (int i = 0 ; i < m_pFileSystemModel->columnCount() ; i++)
+    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("width", m_pColumnWidth[i]);
@@ -365,7 +365,7 @@ void FileSystemDockWidget::updateActions()
     bool selectedOnlyOne = false;
     int columns = 1;
 
-    if(m_pTreeView->isColumnHidden(1))
+    if (m_pTreeView->isColumnHidden(1))
     {
         selectedOnlyOne = indexList.count() == 1;
         columns = 1;
@@ -483,13 +483,13 @@ void FileSystemDockWidget::fillFilterList()
     {
         m_pCmbFilter->addItem(s);
 
-        if(regExp.indexIn(s) >= 0)
+        if (regExp.indexIn(s) >= 0)
         {
             suffixes = regExp.capturedTexts()[1].split(" ");
             defaultFilterPatterns[s] << suffixes;
         }
 
-        if(s.contains(itomFiles))
+        if (s.contains(itomFiles))
         {
             defFilterNumber = cnt;
         }
@@ -548,6 +548,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         if (i < m_pShowDirListMenu->actions().count())
         {
             removeActionFromDirList(i);
+            m_lastMovedShowDirAction = NULL;
         }
     }
     else
@@ -616,7 +617,10 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
     mutexLocker.unlock();
 
-    emit currentDirChanged();
+    if (!retValue.containsError())
+    {
+        emit currentDirChanged();
+    }
 
     return retValue;
 }
@@ -706,7 +710,7 @@ void FileSystemDockWidget::mnuLocateOnDisk()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuExecuteFile()
 {
-    if(m_pTreeView->selectedIndexes().count() > 0)
+    if (m_pTreeView->selectedIndexes().count() > 0)
     {
         PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 //    pyEngine->pythonRunFile(m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first()).filePath());
@@ -719,7 +723,7 @@ void FileSystemDockWidget::mnuOpenFile()
 {
     int columns = 1;
 
-    if(m_pTreeView->isColumnHidden(1))
+    if (m_pTreeView->isColumnHidden(1))
     {
         columns = 1;
     }
@@ -776,7 +780,7 @@ void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 void FileSystemDockWidget::mnuRenameItem()
 {
     int columns;
-    if(m_pTreeView->isColumnHidden(1))
+    if (m_pTreeView->isColumnHidden(1))
     {
         columns = 1;
     }
@@ -785,7 +789,7 @@ void FileSystemDockWidget::mnuRenameItem()
         columns = m_pFileSystemModel->columnCount();
     }
 
-    if(m_pTreeView->selectedIndexes().count() == columns)
+    if (m_pTreeView->selectedIndexes().count() == columns)
     {
         m_pTreeView->edit(m_pTreeView->currentIndex());
     }
@@ -800,7 +804,7 @@ void FileSystemDockWidget::mnuDeleteItems()
     QStringList fileList;
     int columns;
 
-    if(m_pTreeView->isColumnHidden(1))
+    if (m_pTreeView->isColumnHidden(1))
     {
         columns = 1;
     }
@@ -1034,7 +1038,7 @@ void FileSystemDockWidget::changeDir()
 	QString currentDir = QDir::currentPath();
 	QModelIndex firstInd = currents.takeFirst();
 	Qt::ItemFlags itemFlag = firstInd.flags();
-	if(itemFlag == 47)
+	if (itemFlag == 47)
 	{
 		QVariant selectedDir = firstInd.data();
 		QString newDir = currentDir.append("/");
@@ -1162,7 +1166,7 @@ void FileSystemDockWidget::showDetails()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuToggleView()
 {
-    if(m_pTreeView->isColumnHidden(1))
+    if (m_pTreeView->isColumnHidden(1))
     {
         showDetails();
     }
@@ -1176,8 +1180,8 @@ void FileSystemDockWidget::mnuToggleView()
 void FileSystemDockWidget::removeActionFromDirList(const int &pos)
 {
     QAction *act = m_pShowDirListMenu->actions()[pos];
-    m_pShowDirListMenu->removeAction(act);
     disconnect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
+    m_pShowDirListMenu->removeAction(act);
     DELETE_AND_SET_NULL(act);
 }
 
