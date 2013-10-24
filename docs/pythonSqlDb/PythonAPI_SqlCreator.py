@@ -8,10 +8,10 @@ import itom
 import numpy
 
 # some switches
-add_builtins =                      1      # e.g. open()
-add_builtin_modules =           1      # e.g. sys
-add_manual_modules =          0      # modules from manuallist
-add_package_modules =        1      # modules which are directories with __init__.py files
+add_builtins =                      0      # e.g. open()
+add_builtin_modules =           0      # e.g. sys
+add_manual_modules =          1      # modules from manuallist
+add_package_modules =        0      # modules which are directories with __init__.py files
 
 remove_all_double_underscore = 1 # Alles was mit zwei Unterstrichen beginnt ignorieren
 
@@ -30,7 +30,7 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
                      '__sub__', '__xor__', '__main__','__repr__','itoDebugger','__path__','__file__']
 
 
-manualList = ['demopackage']
+manualList = ['itom']
 
 
 # This is how the DB is named! For singlepackage databases use their name as filename!
@@ -195,7 +195,7 @@ def getAllModules(ns):
 def processModules(ns):
     global stackList
     while len(stackList)>0:
-        print(len(stackList))
+        #print(len(stackList))
         if stackList[0].split('.')[-1:][0] not in blacklist and stackList[0] not in blacklist:
             if not inspect.ismodule(stackList[0]):
                 if not stackList[0].startswith('__') or stackList[0][0] != '_':

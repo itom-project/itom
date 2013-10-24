@@ -40,17 +40,17 @@ private slots:
 
 private:
 	Ui::HelpTreeDockWidget ui;
-    static void CreateItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items);
-	static void loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel);
+    static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items, const QMap<QString,QIcon> *iconGallery);
+	static void loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<QString,QIcon> *iconGallery);
 	static ito::RetVal readSQL(const QString &filter, const QString &file, QList<QString> &items);
 
 	void CreateItem(QStandardItemModel& model, QStringList &items);
     void saveIni();
 	void loadIni();
-	ito::RetVal DisplayHelp(const QString &path, const int newpage);
-	QStringList SeparateLink(const QUrl &link);
-    QTextDocument* HighlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error);
-	QModelIndex FindIndexByName(const QString modelName);
+	ito::RetVal displayHelp(const QString &path, const int newpage);
+	QStringList separateLink(const QUrl &link);
+    QTextDocument* highlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error);
+	QModelIndex findIndexByName(const QString &modelName);
 
 	QFutureWatcher<void> dbLoaderWatcher;
 
@@ -62,6 +62,8 @@ private:
 	QString					m_dbPath;
 
 	QMovie					*m_previewMovie;
+
+    QMap<QString, QIcon> m_iconGallery;
 	
 	int m_historyIndex;
 	int m_autoCollTime;

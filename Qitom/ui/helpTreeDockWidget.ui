@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>897</height>
+    <width>672</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,6 +26,12 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>3</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
@@ -35,8 +41,8 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>20</width>
+         <height>1</height>
         </size>
        </property>
       </spacer>
@@ -74,8 +80,8 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>20</width>
+         <height>1</height>
         </size>
        </property>
       </spacer>
@@ -84,6 +90,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <item>
       <widget class="QCommandLinkButton" name="commandLinkButton">
        <property name="sizePolicy">
@@ -184,6 +193,9 @@
        </widget>
        <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>4</number>
+         </property>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
