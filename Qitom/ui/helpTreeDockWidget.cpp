@@ -39,7 +39,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
 	// Initialize Variables
 	m_treeVisible = false;
 
-	connect(&dbLoaderWatcher, SIGNAL(finished()), this, SLOT(dbLoaderFinished()));
+	connect(&dbLoaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(dbLoaderFinished(int)));
 
 
     m_pMainFilterModel = new LeafFilterProxyModel(this);
@@ -70,12 +70,14 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // GUI-on_close
 HelpTreeDockWidget::~HelpTreeDockWidget()
 {
 	saveIni();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Filter the events for showing and hiding the treeview
 bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 {
@@ -95,6 +97,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
  }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Save Gui positions to Main-ini-File
 void HelpTreeDockWidget::saveIni()
 {
@@ -105,6 +108,7 @@ void HelpTreeDockWidget::saveIni()
 	settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Load Gui positions to Main-ini-File
 void HelpTreeDockWidget::loadIni()
 {
@@ -115,6 +119,7 @@ void HelpTreeDockWidget::loadIni()
 	settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Load SQL-DatabasesList in m_ Variable when properties changed
 void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
@@ -151,6 +156,7 @@ void HelpTreeDockWidget::propertiesChanged()
 	m_forced = false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Build Tree - Bekommt das Model, das zuletzt erstellte Item und eine Liste mit dem Pfad
 /*static*/ void HelpTreeDockWidget::createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items, const QMap<QString,QIcon> *iconGallery)
 {
@@ -222,6 +228,7 @@ void HelpTreeDockWidget::propertiesChanged()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Get Data from SQL File and store it in a table
 /*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<QString> &items)
 {
@@ -258,6 +265,7 @@ void HelpTreeDockWidget::propertiesChanged()
 	return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Reload Database and clear search-edit and start the new Thread
 void HelpTreeDockWidget::reloadDB()
 {
@@ -277,15 +285,17 @@ void HelpTreeDockWidget::reloadDB()
     ui.lblProcessText->setText(tr("Help database is loading..."));
 
 	// THREAD START QtConcurrent::run
-	QFuture<void> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery);
+	QFuture<ito::RetVal> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery);
 	dbLoaderWatcher.setFuture(f1);
 	//f1.waitForFinished();
 	// THREAD END
 	   
 }
 
-void HelpTreeDockWidget::dbLoaderFinished()
+//----------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 {
+    ito::RetVal retval = dbLoaderWatcher.future().resultAt(0);
 	// Ende Neuer Code
 	m_pMainFilterModel->setSourceModel(m_pMainModel);
 
@@ -310,8 +320,9 @@ void HelpTreeDockWidget::dbLoaderFinished()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Load the Database in different Thread
-/*static*/ void HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<QString,QIcon> *iconGallery)
+/*static*/ ito::RetVal HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<QString,QIcon> *iconGallery)
 {
 	QStringList sqlList;
 	ito::RetVal retval;
@@ -332,6 +343,8 @@ void HelpTreeDockWidget::dbLoaderFinished()
 		else
 		{/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

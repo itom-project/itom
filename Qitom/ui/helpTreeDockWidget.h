@@ -36,12 +36,12 @@ private slots:
 	void on_splitter_splitterMoved ( int pos, int index );
     void on_textBrowser_anchorClicked(const QUrl & link);   
 
-	void dbLoaderFinished();
+	void dbLoaderFinished(int index);
 
 private:
 	Ui::HelpTreeDockWidget ui;
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items, const QMap<QString,QIcon> *iconGallery);
-	static void loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<QString,QIcon> *iconGallery);
+	static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<QString,QIcon> *iconGallery);
 	static ito::RetVal readSQL(const QString &filter, const QString &file, QList<QString> &items);
 
 	void CreateItem(QStandardItemModel& model, QStringList &items);
@@ -52,7 +52,7 @@ private:
     QTextDocument* highlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error);
 	QModelIndex findIndexByName(const QString &modelName);
 
-	QFutureWatcher<void> dbLoaderWatcher;
+	QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
 	// Variables
     QStandardItemModel		*m_pMainModel;
