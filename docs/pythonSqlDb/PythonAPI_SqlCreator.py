@@ -10,7 +10,7 @@ import numpy
 # some switches
 add_builtins =                      1      # e.g. open()
 add_builtin_modules =           1      # e.g. sys
-add_manual_modules =          1      # modules from manuallist
+add_manual_modules =          0      # modules from manuallist
 add_package_modules =        1      # modules which are directories with __init__.py files
 
 remove_all_double_underscore = 1 # Alles was mit zwei Unterstrichen beginnt ignorieren
@@ -29,8 +29,8 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
                      '__new__', '__init__', '__name__', '__cached__', '__ior__', '__isub__', '__and__',
                      '__sub__', '__xor__', '__main__','__repr__','itoDebugger','__path__','__file__']
 
+
 manualList = ['demopackage']
-#manualList = ['numpy']
 
 
 # This is how the DB is named! For singlepackage databases use their name as filename!
@@ -46,14 +46,38 @@ idList = {}
 
 doclist = []
 
+reportFile = open("HelpReport.txt","w")
+
+reportE = 0
+reportW = 0
+oldPercentage = 0
 
 def printPercent(value, maxim):
-    percentage = value/maxim
-    str1 = format(percentage)+'%'
-    back = "\b"*len(str1)
-    print(back, end='')
-    print(str1, end='')
+    global oldPercentage
+    percentage = value/maxim*100
+    if percentage > oldPercentage:
+        str1 = format(percentage)+'%'
+        print("Writing to DB progress: %d%%   \r" % (percentage))
+    return
 
+
+def closeReport():
+    reportFile.write('Warnings: '+format(reportW)+'\n')
+    reportFile.write('Errors:   '+format(reportE)+'\n')
+    reportFile.close()
+    return
+
+def reportMessage(message, typ):
+    global reportW
+    global reportE
+    global reportFile
+    if typ == 'w':
+        reportW += 1
+        reportFile.write('Warning'+format(reportW)+': '+message+'\n')
+    else:
+        reportE += 1
+        reportFile.write('Error'+format(reportW)+': '+message+'\n')
+    return
 
 def ispackage(obj):
     """Guess whether a path refers to a package directory."""
@@ -135,8 +159,7 @@ def getAllModules(ns):
                 try:
                     exec('import '+name,ns)
                 except:
-                    pass
-                    #print('Modul ',name,' existiert nicht')
+                    reportMessage('Modul '+name+' existiert nicht','w')
     if add_builtin_modules:
         for name in sys.builtin_module_names:
             if name not in blacklist:
@@ -144,8 +167,7 @@ def getAllModules(ns):
                 try:
                     exec('import '+name,ns)
                 except:
-                    pass
-                    #print('Modul ',name,' existiert nicht')
+                    reportMessage('Modul ',name,' existiert nicht','w')
     if add_manual_modules:
         for name in manualList :
             if name not in blacklist:
@@ -153,8 +175,7 @@ def getAllModules(ns):
                 try:
                     exec('import '+name,ns)
                 except:
-                    pass
-                    #print('Modul ',name,' existiert nicht')
+                    reportMessage('Modul '+name+' existiert nicht','w')
     if add_package_modules:
         # remove the current directory from the list
         selPath = sys.path
@@ -168,18 +189,13 @@ def getAllModules(ns):
                 try:
                     exec('import '+name,ns)
                 except:
-                    pass
-                    #print('Modul ',name,' existiert nicht')
+                    reportMessage('Modul '+name+' existiert nicht','w')
     return len(stackList)
 
 def processModules(ns):
     global stackList
     while len(stackList)>0:
-        #print(len(stackList))
-        str1 = format(len(stackList))
-        back = "\b"*len(str1)
-        print(back, end='')
-        print(str1, end='')
+        print(len(stackList))
         if stackList[0].split('.')[-1:][0] not in blacklist and stackList[0] not in blacklist:
             if not inspect.ismodule(stackList[0]):
                 if not stackList[0].startswith('__') or stackList[0][0] != '_':
@@ -190,8 +206,7 @@ def processModules(ns):
                             stackList.append(ret)
                     except:
                         del stackList[0]
-                        pass
-                    #print('Error_2: '+module+stackList[0])
+                        reportMessage(module+stackList[0],'e')
                 else:
                     del stackList[0]
             else:
@@ -220,8 +235,7 @@ def processName(moduleP, ns, recLevel = 0):
     try:
         exec('mID = id('+prefix+module+')', ns)
     except:
-        pass
-                    #print('Module unknown: ', module)
+        reportMessage('Module unknown: '+module,'e')
         return
     if ns['mID'] not in idList:
         idList[ns['mID']] = prefix+module
@@ -238,8 +252,7 @@ def processName(moduleP, ns, recLevel = 0):
                 else:
                     createSQLEntry(ns['doc'], prefix, module, nametype,ns['mID'])
         except:
-            pass
-                    #print('Error_4: Error in: '+prefix+module)
+            reportMessage(prefix+module, 'e')
         try:
             #this object can only have 'childs' if it is either a class, module or package
             if (nametype == 'package' or nametype == 'module' or nametype == 'class'):
@@ -248,8 +261,7 @@ def processName(moduleP, ns, recLevel = 0):
                 # remove the processed items
                 return
         except:
-            pass
-                    #print('Error_5: Error Sublist of : '+prefix+module)
+            print('Sublist of : '+prefix+module,'e')
     else:
         # Hier werden die Links eingefügt!!!
         # da diese Objekte im original bereits bestehen!
@@ -257,14 +269,17 @@ def processName(moduleP, ns, recLevel = 0):
             return
         nametype = getPyType(prefix+module, ns)
         try:
-            exec('hasdoc = hasattr('+prefix+module+', "__doc__")', ns)
-            if ns['hasdoc']:
-                exec('doc = '+prefix+module+'.__doc__', ns)
-                doclink = '<a id=\"HiLink\" href=\"itom://'+prefix+module+'\">'+prefix+module+'</a>'
-                createSQLEntry(doclink, prefix, module, 'link_'+nametype, 0)
+            prefixP = idList[ns['mID']].split('.')[:-1]
+            moduleL = idList[ns['mID']].split('.')[-1:][0]
+            if len(prefixP) > 0:
+                prefixL = '.'.join(prefixP)
+                prefixL = prefixL +'.'
+            else:
+                prefixL = ''
+            doclink = '<a id=\"HiLink\" href=\"itom://'+prefixL+moduleL+'\">'+prefixL+moduleL+'</a>'
+            createSQLEntry(doclink, prefix, module, 'link_'+nametype, 0)
         except:
-            pass
-                    #print('Error_4: Error in: '+prefix+module)
+            reportMessage('Error in: '+prefix+module,'e')
         return
 
 
@@ -360,17 +375,17 @@ def createSQLDB(ns):
         c.execute('''create table itomCTL (type text, prefix text, prefixL text, name text, param text, sdesc text, doc text, htmlERROR text)''')
         j = 0
         for line in doclist:
-            printPercent(j,len(doclist))
             j = j + 1
             lineS = line[1:9]
             try:
                 c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?,?)',lineS)
             except:
-                pass#print('ERROR at line ['+str(j)+']: ',line)
+                print('ERROR_5: at line ['+str(j)+']: ',line)
+            printPercent(j,len(doclist))
         # Save (commit) the changes
         conn.commit()
     except:
-        print("Error writing the SQL-DB")
+        reportMessage("while writing the SQL-DB", 'e')
     finally:
         c.close()
         print("SQL-DB succesful")
@@ -398,6 +413,7 @@ ns['ispackage'] = ispackage
 
 
 # Collect all Modules
+
 print('-> collecting all python-modules')
 c = getAllModules(ns)
 
@@ -417,3 +433,5 @@ print('-> the db file can be found under:')
 print('    '+filename)
 
 print('--------------DONE--------------')
+
+closeReport()

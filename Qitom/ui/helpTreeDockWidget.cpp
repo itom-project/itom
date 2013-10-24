@@ -1,75 +1,72 @@
 #include "helpTreeDockWidget.h"
 
-#include <qfiledialog.h>
-#include <qfile.h>
-#include <qmessagebox.h>
-#include <qtreeview.h>
-#include <qtextdocument.h>
-#include <qstandarditemmodel.h>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <stdio.h>
+#include <qdebug.h>
+#include <qdesktopservices.h>
 #include <qdiriterator.h>
 #include <qfile.h>
-#include <qtimer.h>
+#include <qfiledialog.h>
+#include <qmessagebox.h>
+#include <qpainter.h>
+#include <qregexp.h>
 #include <qsortfilterproxymodel.h>
-#include <qdesktopservices.h>
+#include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
+#include <qtconcurrentrun.h>
+#include <qtextdocument.h>
+#include <qtextstream.h>
+#include <QThread>
+#include <qtimer.h>
+#include <qtreeview.h>
+#include <stdio.h>
+
 #include "../widgets/helpDockWidget.h"
 #include "../models/leafFilterProxyModel.h"
-#include <qpainter.h>
-
-
-// Debug includes
-#include <qdebug.h>
+#include "../AppManagement.h"
 
 
 
-
-// GUI-on_start
+// on_start
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
     : QWidget(parent, flags),
-	m_pHistoryIndex(-1),
+	m_historyIndex(-1),
 	m_pMainModel(NULL),
-    m_pMainFilterModel(NULL),
-    m_pHistory(NULL),
-	m_dbPath(qApp->applicationDirPath()+"\\help")
+	m_dbPath(qApp->applicationDirPath()+"/help")
 {
     ui.setupUi(this);
-	//connect(ui.commandLinkButton, SIGNAL(moveOver()), this, SLOT(showTreeview()));
+
+	connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
 	// Initialize Variables
-	TreeCloseTimer = new QTimer(this);
-	connect(TreeCloseTimer, SIGNAL(timeout()), this, SLOT(unshowTreeview()));
-	TreeCloseTimer->setSingleShot(true);
-	TreeCloseTimer->setInterval(5000);
+	m_treeVisible = false;
+
+	connect(&dbLoaderWatcher, SIGNAL(finished()), this, SLOT(dbLoaderFinished()));
+
 
     m_pMainFilterModel = new LeafFilterProxyModel(this);
     m_pMainModel = new QStandardItemModel(this);
-    m_pHistory = new QStringList();
     m_pMainFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-
-	reloadDB();
 
 	//Install Eventfilter
 	ui.commandLinkButton->installEventFilter(this);
 	ui.treeView->installEventFilter(this);
 	ui.textBrowser->installEventFilter(this);
+
+	m_previewMovie = new QMovie(":/application/icons/loader32x32trans.gif");
+    ui.lblProcessMovie->setMovie( m_previewMovie );
+    ui.lblProcessMovie->setVisible(false);
+    ui.lblProcessText->setVisible(false);
+
+	loadIni();
+	m_forced = true;
+	propertiesChanged();
+	//reloadDB();
 }
 
-
-// Event when the cursor leaves the widget
-void HelpTreeDockWidget::leaveEvent( QEvent * event )
+// GUI-on_close
+HelpTreeDockWidget::~HelpTreeDockWidget()
 {
-	TreeCloseTimer->start();
-} 
-
-// Event when the cursor enters/reenters the widget
-void HelpTreeDockWidget::enterEvent( QEvent * event )
-{
-	TreeCloseTimer->stop();
+	saveIni();
 }
-
 
 // Filter the events for showing and hiding the treeview
 bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
@@ -79,6 +76,10 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 		showTreeview();
 		return true;
 	}
+	else if (obj == ui.treeView && event->type() == QEvent::Enter)
+	{
+		showTreeview();
+	}
 	else if (obj == ui.textBrowser && event->type() == QEvent::Enter)
 	{
 		unshowTreeview();
@@ -86,21 +87,63 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
  }
 
-
-// GUI-on_close
-HelpTreeDockWidget::~HelpTreeDockWidget()
+// Save Gui positions to Main-ini-File
+void HelpTreeDockWidget::saveIni()
 {
-	while(m_DBList.length() > 0)
-	{
-		m_DBList.first().close();
-		m_DBList.first().removeDatabase(m_DBList.first().databaseName());
-		m_DBList.removeFirst();
-	}
+	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("helpTreeDockWidget");
+	settings.setValue("percWidthVi", m_percWidthVi);
+	settings.setValue("percWidthUn", m_percWidthUn);
+	settings.endGroup();
 }
 
+// Load Gui positions to Main-ini-File
+void HelpTreeDockWidget::loadIni()
+{
+	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("helpTreeDockWidget");
+	m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
+    m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
+	settings.endGroup();
+}
+
+// Load SQL-DatabasesList in m_ Variable when properties changed
+void HelpTreeDockWidget::propertiesChanged()
+{ // Load the new list of DBs with checkstates from the INI-File
+	
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("helpTreeDockWidget");
+	// Read the other Options
+	m_openLinks = settings.value("OpenExtLinks", true).toBool();
+	m_plaintext = settings.value("Plaintext", false).toBool();
+
+	// if the setting of the loaded DBs has changed:
+	// This setting exists only from the time when the property dialog was open till this routine is done!
+	if (settings.value("reLoadDBs", false).toBool() | m_forced)
+	{
+		// Read the List
+		m_includedDBs.clear();
+		int size = settings.beginReadArray("Databases");
+		for (int i = 0; i < size; ++i)
+		{
+			settings.setArrayIndex(i);
+			QString dbName = settings.value("DB", QString()).toString();
+			if (dbName.startsWith("$"))	
+			{// This was checked and will be used
+				dbName.remove(0,2);
+				//Add to m_pMainlist
+				m_includedDBs.append(dbName);
+			}
+		}
+		reloadDB();
+	}
+	settings.remove("reLoadDBs");
+	settings.endGroup();
+	m_forced = false;
+}
 
 // Build Tree - Bekommt das Model, das zuletzt erstellte Item und eine Liste mit dem Pfad
-void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem& parent, const QString parentPath, QList<QString> &items)
+/*static*/ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items)
 {
     QString firstItem;
     QString path;
@@ -152,12 +195,10 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
             QStandardItem *node = new QStandardItem(path.mid(li+1));
 			if (splitt[0][0] != 'l')
 			{
-                node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]+".png"));
+				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]+".png"));
 			}
 			else
 			{
-				// Wenn man in der nächsten Zeile vor die letzte Klammer eine -1 setzt, kann man das L am ANfang für Link wegschneiden
-				//name = splitt[0].right(splitt[0].length());
 				node->setIcon(QIcon(":/helpTreeDockWidget/"+splitt[0]));
 			}
 			node->setEditable(false);
@@ -172,9 +213,8 @@ void HelpTreeDockWidget::CreateItemRek(QStandardItemModel& model, QStandardItem&
     }
 }
 
-
 // Get Data from SQL File and store it in a table
-ito::RetVal HelpTreeDockWidget::readSQL(const QString &filter, const QString &file, QList<QString> &items)
+/*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<QString> &items)
 {
 	ito::RetVal retval = ito::retOk;
 	QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",file);
@@ -195,7 +235,7 @@ ito::RetVal HelpTreeDockWidget::readSQL(const QString &filter, const QString &fi
 				items.append(query.value(0).toString() + QString(":") + query.value(1).toString());
 			}
 
-			m_DBList.append(database);
+			//DBList.append(database);
 		}
 		else
 		{
@@ -211,41 +251,102 @@ ito::RetVal HelpTreeDockWidget::readSQL(const QString &filter, const QString &fi
 	return retval;
 }
 
+// Reload Database and clear search-edit and start the new Thread
+void HelpTreeDockWidget::reloadDB()
+{
+	
+	//Create and Display Mainmodel
+	m_pMainModel->clear();
+    ui.treeView->reset();
+	
+
+	
+	m_pMainFilterModel->setSourceModel(NULL);
+	m_previewMovie->start();
+    ui.lblProcessMovie->setVisible(true);
+    ui.lblProcessText->setVisible(true);
+	ui.treeView->setVisible(false);
+	ui.splitter->setVisible(false);
+
+	// THREAD START QtConcurrent::run
+	QFuture<void> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/);
+	dbLoaderWatcher.setFuture(f1);
+	//f1.waitForFinished();
+	// THREAD END
+	   
+}
+
+void HelpTreeDockWidget::dbLoaderFinished()
+{
+	// Ende Neuer Code
+	m_pMainFilterModel->setSourceModel(m_pMainModel);
+
+	//model has been 
+	ui.treeView->setModel(m_pMainFilterModel);
+
+	m_previewMovie->stop();
+    ui.lblProcessMovie->setVisible(false);
+    ui.lblProcessText->setVisible(false);
+	ui.treeView->setVisible(true);
+	ui.splitter->setVisible(true);
+}
+
+// Load the Database in different Thread
+/*static*/ void HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel)
+{
+	QStringList sqlList;
+	ito::RetVal retval;
+    for (int i = 0; i < includedDBs.length(); i++)
+    {
+		sqlList.clear();
+		QString temp;
+		temp = path+'/'+includedDBs.at(i);
+		retval = readSQL(/*DBList,*/ "", temp, sqlList);
+
+		QCoreApplication::processEvents();
+
+
+		if (!retval.containsWarningOrError())
+		{
+			CreateItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList);
+		}
+		else
+		{/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
+    }
+}
 
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
 // ERROR decides whether it´s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
-QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, const QString &Prefix , const QString &Name , const QString &Param , const QString &ShortDesc, const QString &Error)
+QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error)
 {
-    QString ErrorS = Error.left(Error.indexOf(" ",0));
-    int Errorcode = ErrorS.toInt();
-	QStringList ErrorList;
+    QString errorS = error.left(error.indexOf(" ",0));
+    int errorCode = errorS.toInt();
+	QStringList errorList;
 
 	
 
     /*********************************/
     // Allgemeine HTML sachen anfügen /
     /*********************************/ 
-    QString rawContent = Helptext;
+    QString rawContent = helpText;
     QString html =	"<html><head>"
 					"<link rel='stylesheet' type='text/css' href='help_style.css'>"
 					"</head><body>"
 					"</body></html>";
 
-    if (Errorcode == 1)
+    if (errorCode == 1)
         ui.label->setText("Parser: martin1-Parser");  
-    else if (Errorcode == 0)
+    else if (errorCode == 0)
 	{
         ui.label->setText("Parser: docutils");
 		
 		// REGEX muss noch an den html code angepasst werden . ... und dann noch der betreffende teil aus dem helptext ausgeschnitten werden!
 		QRegExp docError("System Message: ERROR/\\d \\(.+\\).*\\.");
-		ErrorList = docError.capturedTexts();
+		errorList = docError.capturedTexts();
         QStringListModel *listM = new QStringListModel();
-        listM->setStringList(ErrorList);
-		//Helptext.replace(docError, "");
-		// ...
+        listM->setStringList(errorList);
 	}
-    else if (Errorcode == -1)
+    else if (errorCode == -1)
         ui.label->setText("Parser: No Help available");
 
 
@@ -259,7 +360,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 	QString cssFile = QString(cssArray);
 	doc->addResource( QTextDocument::StyleSheetResource, QUrl( "help_style.css" ), cssFile );
 
-	if (Errorcode != 0)
+	if (errorCode != 0)
     {
         // Zeilenumbrüche ersetzen
         // -------------------------------------
@@ -272,7 +373,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
         // Parameter formatieren
         // -------------------------------------
 	}
-	else if (Errorcode == 0)
+	else if (errorCode == 0)
 	{
 		rawContent.replace("h1", "h2");
 	}
@@ -280,28 +381,28 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 
     // Überschrift (Funktionsname) einfuegen
     // -------------------------------------
-    rawContent.insert(0,"<h1 id=\"FunctionName\">"+Name+Param+"</h1>"+"");
+    rawContent.insert(0,"<h1 id=\"FunctionName\">"+name+param+"</h1>"+"");
 
     // Prefix als Navigations-Links einfuegen
     // -------------------------------------
-    QStringList splittedLink = Prefix.split(".");
+    QStringList splittedLink = prefix.split(".");
     rawContent.insert(0,">>"+splittedLink[splittedLink.length()-1]);
     for (int i = splittedLink.length()-2; i > -1; i--)
     {
-        QString linkpath;
+        QString linkPath;
         for (int j = 0; j<=i; j++)
-            linkpath.append(splittedLink.mid(0,i+1)[j]+".");
-		if (linkpath.right(1) == ".")
-			linkpath = linkpath.left(linkpath.length()-1);
-        rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkpath+"\">"+splittedLink[i]+"</a>");
+            linkPath.append(splittedLink.mid(0,i+1)[j]+".");
+		if (linkPath.right(1) == ".")
+			linkPath = linkPath.left(linkPath.length()-1);
+        rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkPath+"\">"+splittedLink[i]+"</a>");
     }
 
-    if (Errorcode != 0)
+    if (errorCode != 0)
     {
         // Variables Declaration
 		//--------------------------------------
-        QStringList Sections; 
-        Sections << "<h2 id=\"Sections\">" << "</h2>" << "Parameters" << "Returns" << "Attributes"<< "Examples" << "Notes" << "Args" <<  "Raises" << "See Also" << "References"; //<< << << ... Hier alle regex für Keywords der 1. Überschrift eintragen
+        QStringList sections; 
+        sections << "<h2 id=\"Sections\">" << "</h2>" << "Parameters" << "Returns" << "Attributes"<< "Examples" << "Notes" << "Args" <<  "Raises" << "See Also" << "References"; //<< << << ... Hier alle regex für Keywords der 1. Überschrift eintragen
         int pos = 0;
         
 		// Sections Highlighten
@@ -320,8 +421,8 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
             content = content.left(pos2);
 
             rawContent.remove(pos, reg.matchedLength());
-            rawContent.insert(pos, Sections[0] + content + Sections[1]);
-            pos += QString(Sections[0] + Sections[1]).length()+content.length();
+            rawContent.insert(pos, sections[0] + content + sections[1]);
+            pos += QString(sections[0] + sections[1]).length()+content.length();
         }
 
         // Enumerations bei folgenden Section setzen 
@@ -329,33 +430,33 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
         // Section[2] = Parameters, Section[3] = Returns,... Attributes
         for (int i = 2; i<5; i++)
         {
-            int headpos = 0;
+            int headPos = 0;
             int pos = 0;
-            int bottompos = 1;
-            QRegExp head(QString("<h2 id=\"Sections\">.*"+Sections[i]+".*</h2>"));
+            int bottomPos = 1;
+            QRegExp head(QString("<h2 id=\"Sections\">.*"+sections[i]+".*</h2>"));
             QRegExp bottom("<h2 id=\"Sections\">");
             head.setMinimal(true);
             // find multiple occurences of one heading
-            while ( ((headpos = head.indexIn(rawContent, headpos)) != -1) && (pos < bottompos) )
+            while ( ((headPos = head.indexIn(rawContent, headPos)) != -1) && (pos < bottomPos) )
             {
-                if (headpos == -1) {
+                if (headPos == -1) {
                     break;}
                 // beginning of the bullets
-                rawContent.insert(headpos + head.matchedLength(),"<ul>");
-                pos = headpos;            
-                bottompos = bottom.indexIn(rawContent, headpos+head.matchedLength());
-                if (bottompos == -1)
+                rawContent.insert(headPos + head.matchedLength(),"<ul>");
+                pos = headPos;            
+                bottomPos = bottom.indexIn(rawContent, headPos+head.matchedLength());
+                if (bottomPos == -1)
                 {
                     rawContent.append("</ul>");
-                    bottompos = rawContent.length()-1;
+                    bottomPos = rawContent.length()-1;
                 }
                 else
-                    rawContent.insert(bottompos,"</ul>");
+                    rawContent.insert(bottomPos,"</ul>");
 
                 // search for: "x : int" for example
                 QRegExp line("[a-zA-Z _,.-]*: [^<br/>]*");            
             
-                while ( ((pos = line.indexIn(rawContent,pos)) != -1) && (pos < bottompos) )
+                while ( ((pos = line.indexIn(rawContent,pos)) != -1) && (pos < bottomPos) )
                 {
                     if (pos == -1) {
                         break;}
@@ -364,7 +465,7 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
                 }
                 // end of the Bullets
             
-                headpos += head.matchedLength() + 5;
+                headPos += head.matchedLength() + 5;
             }
         }
     }
@@ -375,7 +476,6 @@ QTextDocument* HelpTreeDockWidget::HighlightContent(const QString &Helptext, con
 	doc->setHtml( html );
     return doc;
 }
-
 
 // Display the Help-Text
 ito::RetVal HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpage)
@@ -407,7 +507,7 @@ ito::RetVal HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpa
 					doc = qUncompress(docCompressed);
 				}
 
-				if (ui.checkBox->checkState() == false)
+				if (!m_plaintext)
 					ui.textBrowser->setDocument(HighlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
 				else
 				{
@@ -417,11 +517,11 @@ ito::RetVal HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpa
 				}
 				if (newpage == 1)
 				{
-					m_pHistoryIndex++;
-					m_pHistory->insert(m_pHistoryIndex, path.toUtf8());
-					for (int i = m_pHistory->length(); i > m_pHistoryIndex; i--)
+					m_historyIndex++;
+					m_history.insert(m_historyIndex, path.toUtf8());
+					for (int i = m_history.length(); i > m_historyIndex; i--)
 					{
-						m_pHistory->removeAt(i);
+						m_history.removeAt(i);
 					}
 				}
 				QSqlDatabase::removeDatabase(temp);
@@ -434,11 +534,10 @@ ito::RetVal HelpTreeDockWidget::DisplayHelp(const QString &path, const int newpa
 	return retval;
 }
 
-
 // finds a Modelindex belonging to an Itemname
-QModelIndex HelpTreeDockWidget::FindIndexByName(const QString Modelname)
+QModelIndex HelpTreeDockWidget::FindIndexByName(const QString modelName)
 {
-	QStringList path = Modelname.split('.');
+	QStringList path = modelName.split('.');
 	QStandardItem *current = m_pMainModel->invisibleRootItem();
 	while (path.length() > 0)
 	{
@@ -459,12 +558,11 @@ QModelIndex HelpTreeDockWidget::FindIndexByName(const QString Modelname)
 }
 
 // Filter the mainmodel
-void HelpTreeDockWidget::liveFilter(const QString &filtertext)
+void HelpTreeDockWidget::liveFilter(const QString &filterText)
 {
 	showTreeview();
-    m_pMainFilterModel->setFilterRegExp(filtertext);
+    m_pMainFilterModel->setFilterRegExp(filterText);
 }
-
 
 // Returns a list containing the protocol[0] and the real link[1]
 // http://thisisthelink
@@ -491,7 +589,6 @@ QStringList HelpTreeDockWidget::SeparateLink(const QUrl &link)
 		result.append("-1");
 	return result;
 }
-
 
 
 
@@ -551,6 +648,22 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
 		
 }
 
+// Saves the position of the splitter depending on the use of the tree or the textbox
+void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
+{
+	double width = ui.splitter->width();
+	if (m_treeVisible == true)
+		m_percWidthVi = pos/width*100;
+	else
+		m_percWidthUn = pos/width*100;
+	if (m_percWidthVi < m_percWidthUn)
+		m_percWidthVi = m_percWidthUn+10;
+	if (m_percWidthVi == 0)
+		m_percWidthVi = 30;
+	// Verhaltnis testweise anzeigen lassen
+	//ui.label->setText(QString("vi %1 un %2").arg(percWidthVi).arg(percWidthUn));
+}
+
 // Show the Help in the right Memo
 void HelpTreeDockWidget::on_treeView_clicked(QModelIndex i)
 {
@@ -563,63 +676,41 @@ void HelpTreeDockWidget::on_treeView_clicked(QModelIndex i)
 // Back-Button
 void HelpTreeDockWidget::navigateBackwards()
 {
-    if (m_pHistoryIndex > 0)
+    if (m_historyIndex > 0)
     {
-        m_pHistoryIndex--;
-        DisplayHelp(m_pHistory->at(m_pHistoryIndex), 0);
+        m_historyIndex--;
+        DisplayHelp(m_history.at(m_historyIndex), 0);
 		// Highlight the entry in the tree
-		ui.treeView->setCurrentIndex(FindIndexByName(m_pHistory->at(m_pHistoryIndex)));
+		ui.treeView->setCurrentIndex(FindIndexByName(m_history.at(m_historyIndex)));
     }
 }
 
 // Forward-Button
 void HelpTreeDockWidget::navigateForwards()
 {
-    if (m_pHistoryIndex < m_pHistory->length()-1)
+    if (m_historyIndex < m_history.length()-1)
     {
-        m_pHistoryIndex++;
-        DisplayHelp(m_pHistory->at(m_pHistoryIndex), 0);
+        m_historyIndex++;
+        DisplayHelp(m_history.at(m_historyIndex), 0);
 		// Highlight the entry in the tree
-		ui.treeView->setCurrentIndex(FindIndexByName(m_pHistory->at(m_pHistoryIndex)));
+		ui.treeView->setCurrentIndex(FindIndexByName(m_history.at(m_historyIndex)));
     }
-}
-
-// Reload Database and clear search-edit
-void HelpTreeDockWidget::reloadDB()
-{
-	ito::RetVal retval;
-	QList<QString> sqlList;
-
-	//Create and Display Mainmodel
-	m_pMainModel->clear();
-    ui.treeView->reset();
-    //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
-	QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-    while(it.hasNext())
-    {
-		sqlList.clear();
-		QString temp = it.next();
-        retval += readSQL("", temp, sqlList);
-
-		if (!retval.containsWarningOrError())
-		{
-			CreateItemRek(*m_pMainModel, *m_pMainModel->invisibleRootItem(), "", sqlList);
-		}
-    }
-	m_pMainFilterModel->setSourceModel(m_pMainModel);
-    ui.treeView->setModel(m_pMainFilterModel);
 }
 
 // Tree einblenden
 void HelpTreeDockWidget::showTreeview()
 {
-	ui.horizontalLayout_3->setStretch(1,60);
-	ui.horizontalLayout_3->setStretch(2,37);
+	m_treeVisible = true;
+	QList<int> intList;
+	intList << ui.splitter->width()*m_percWidthVi/100 << ui.splitter->width()*(100-m_percWidthVi)/100;
+	ui.splitter->setSizes(intList);
 }
 
 // Tree ausblenden
 void HelpTreeDockWidget::unshowTreeview()
 {
-	ui.horizontalLayout_3->setStretch(1,1);
-	ui.horizontalLayout_3->setStretch(2,1000);
+	m_treeVisible = false;
+	QList<int> intList;
+	intList << ui.splitter->width()*m_percWidthUn/100 << ui.splitter->width()*(100-m_percWidthUn)/100;
+	ui.splitter->setSizes(intList);
 }

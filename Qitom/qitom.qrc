@@ -34,6 +34,7 @@
         <file>icons/dialog-information-4.png</file>
         <file>icons/dialog-warning-4.png</file>
         <file>icons/loader16x16.gif</file>
+        <file>icons/loader32x32trans.gif</file>
         <file>icons/itomicon/splashScreen.png</file>
         <file>icons/empty.png</file>
         <file>icons/pin.png</file>

@@ -80,13 +80,13 @@ private:
 
     QVBoxLayout *m_contentLayout;
 	
-    BreakPointDockWidget *m_breakPointDock;
+    BreakPointDockWidget  *m_breakPointDock;
     LastCommandDockWidget *m_lastCommandDock;
-    HelpDockWidget *m_helpDock;
-    WorkspaceDockWidget *m_globalWorkspaceDock;
-    WorkspaceDockWidget *m_localWorkspaceDock;
-	CallStackDockWidget *m_callStackDock;
-    FileSystemDockWidget *m_fileSystemDock;
+    HelpDockWidget        *m_helpDock;
+    WorkspaceDockWidget   *m_globalWorkspaceDock;
+    WorkspaceDockWidget   *m_localWorkspaceDock;
+	CallStackDockWidget   *m_callStackDock;
+    FileSystemDockWidget  *m_fileSystemDock;
 
     AIManagerWidget* m_pAIManagerWidget;
 

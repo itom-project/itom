@@ -7,6 +7,8 @@
 #include "../../common/sharedStructures.h"
 #include "ui_helpTreeDockWidget.h"
 #include <qtimer.h>
+#include <qfuturewatcher.h>
+#include <qmovie.h>
 
 class LeafFilterProxyModel; //forward declaration
 
@@ -24,37 +26,54 @@ public slots:
 	void expandTree();
 	void collapseTree();
 	void reloadDB();
-    void liveFilter(const QString &filtertext);
+    void liveFilter(const QString &filterText);
 	void showTreeview();
 	void unshowTreeview();
+	void propertiesChanged();
 
 private slots:
     void on_treeView_clicked(QModelIndex i);
+	void on_splitter_splitterMoved ( int pos, int index );
     void on_textBrowser_anchorClicked(const QUrl & link);   
 
+	void dbLoaderFinished();
+
 private:
-    void CreateItemRek(QStandardItemModel& model, QStandardItem& parent, const QString parentPath, QList<QString> &items);
-    void CreateItem(QStandardItemModel& model, QList<QString> &items);
-    ito::RetVal DisplayHelp(const QString &path, const int newpage);
-	QTimer *TreeCloseTimer;
+	Ui::HelpTreeDockWidget ui;
+    static void CreateItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QStringList &items);
+	static void loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel);
+	static ito::RetVal readSQL(const QString &filter, const QString &file, QList<QString> &items);
+
+	void CreateItem(QStandardItemModel& model, QStringList &items);
+    void saveIni();
+	void loadIni();
+	ito::RetVal DisplayHelp(const QString &path, const int newpage);
 	QStringList SeparateLink(const QUrl &link);
+    QTextDocument* HighlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error);
+	QModelIndex FindIndexByName(const QString modelName);
 
-    ito::RetVal readSQL(const QString &filter, const QString &file, QList<QString> &items);
-    QTextDocument* HighlightContent(const QString &Helptext, const QString &Prefix , const QString &Name , const QString &Param , const QString &ShortDesc, const QString &Error);
-	QModelIndex FindIndexByName(const QString Modelname);
+	QFutureWatcher<void> dbLoaderWatcher;
 
-    Ui::HelpTreeDockWidget ui;
+	// Variables
+    QStandardItemModel		*m_pMainModel;
+    LeafFilterProxyModel	*m_pMainFilterModel;
+    QStringList				m_history;
+	QStringList				m_includedDBs;
+	QString					m_dbPath;
 
-    QStandardItemModel *m_pMainModel;
-    LeafFilterProxyModel *m_pMainFilterModel;
-    QStringList *m_pHistory;
-	int m_pHistoryIndex;
-	QString m_dbPath;
-	QList<QSqlDatabase> m_DBList;
+	QMovie					*m_previewMovie;
+	
+	int m_historyIndex;
+	int m_autoCollTime;
+	double m_percWidthVi;
+	double m_percWidthUn;
+	bool m_treeVisible;
+	bool m_plaintext;
+	bool m_openLinks;
+	bool m_autoCollTree;
+	bool m_forced;
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
-	void leaveEvent( QEvent * event );
-	void enterEvent( QEvent * event );
 };
 
 #endif // HELPTREEDOCKWIDGET_H

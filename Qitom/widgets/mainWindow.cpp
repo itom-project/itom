@@ -57,7 +57,9 @@ namespace ito {
 MainWindow::MainWindow() :
     m_console(NULL),
     m_contentLayout(NULL),
-    m_breakPointDock(NULL),
+	m_breakPointDock(NULL),
+    m_lastCommandDock(NULL),
+    m_helpDock(NULL),
     m_globalWorkspaceDock(NULL),
     m_localWorkspaceDock(NULL),
 	m_callStackDock(NULL),
@@ -150,10 +152,10 @@ MainWindow::MainWindow() :
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
 
         // helpDock
-        /*m_helpDock = new HelpDockWidget(tr("Help"), this, true, true, AbstractDockWidget::floatingStandard);
+        m_helpDock = new HelpDockWidget(tr("Help"), this, true, true, AbstractDockWidget::floatingStandard);
 	    m_helpDock->setObjectName("itomHelpDockWidget");
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);*/
+        addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
 	    // CallStack-Dock
 	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
@@ -195,6 +197,12 @@ MainWindow::MainWindow() :
         qDebug(".. plugin manager widget loaded");
 
         addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
+
+		if (m_helpDock)
+		{
+			tabifyDockWidget(m_pAIManagerWidget, m_helpDock);
+			m_pAIManagerWidget->raise();
+		}
     }
 
     // connections
