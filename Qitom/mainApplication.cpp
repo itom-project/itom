@@ -367,9 +367,8 @@ void MainApplication::setupApplication()
     qDebug("..load settings done");
     qDebug("MainApplication::setupApplication .. done");
 
-    std::cout << "\n\tWelcome to itom program!\n\n";
-//    std::cout << "THIS ITOM-COPY IS A PREPUPLISHED ALPHA VERSION\nGIVEN TO ZEISS MICROSCOPY FOR INTERNAL USE WITHIN\nZEISS-ITO-COOPERATION.\nDO NOT DISTRIBUTE TO THIRD PARTY.\n !!! CONFIDENTIAL !!! \n\n";
-    std::cout << "\tPlease report bugs under:\n\t\thttps://bitbucket.org/itom/itom/issues\n\tCheers your itom team\n" << std::endl;
+    std::cout << "\n    Welcome to itom program!\n\n";
+    std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
 
     if (m_mainWin)
     {
