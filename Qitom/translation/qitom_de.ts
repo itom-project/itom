@@ -972,22 +972,33 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/helpTreeDockWidget.ui"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location/>
         <source>Parser: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Plaintext</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>CommandLinkButton</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>&lt;&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+285"/>
+        <source>Help database is loading...</source>
+        <translation>Hilfedatenbank wird geladen...</translation>
+    </message>
+    <message>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+34"/>
+        <source>No help database available</source>
+        <translation>Keine Hilfedatenbank verfügbar</translation>
     </message>
 </context>
 <context>
@@ -1065,7 +1076,7 @@ p, li { white-space: pre-wrap; }
         <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+131"/>
         <source>Do you really want to exit the application?</source>
         <translation>Soll itom wirklich beendet werden?</translation>
     </message>
@@ -2007,7 +2018,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2766"/>
+        <location filename="../python/pythonUi.cpp" line="+2767"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2672,32 +2683,32 @@ Type conflict for %1</source>
     <message>
         <location filename="../ui/widgetPropConsoleLastCommand.ui"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location/>
         <source>command history enabled (set disable to clear the history!)</source>
-        <translation type="unfinished">Befehlsliste aktivieren (Deaktivieren löscht die Liste!)</translation>
+        <translation>Befehlsliste aktivieren (Deaktivieren löscht die Liste!)</translation>
     </message>
     <message>
         <location/>
         <source>number of saving commands</source>
-        <translation type="unfinished">Anzahl speichernde Befehle</translation>
+        <translation>Anzahl zu speichernde Befehle</translation>
     </message>
     <message>
         <location/>
         <source>show time stamp</source>
-        <translation type="unfinished">Uhrzeit anzeigen</translation>
+        <translation>Uhrzeit anzeigen</translation>
     </message>
     <message>
         <location/>
         <source>do not add if the new command is equal to the last one</source>
-        <translation type="unfinished">Nicht hinzufügen wenn der letzte Befehl in der Liste identisch ist</translation>
+        <translation>Nicht hinzufügen wenn der letzte Befehl in der Liste identisch ist</translation>
     </message>
     <message>
         <location/>
         <source>date color</source>
-        <translation type="unfinished">Farbe der Datumsanzeige</translation>
+        <translation>Farbe der Datumsanzeige</translation>
     </message>
 </context>
 <context>
@@ -3153,6 +3164,39 @@ Type conflict for %1</source>
     </message>
 </context>
 <context>
+    <name>WidgetPropHelpDock</name>
+    <message>
+        <location filename="../ui/widgetPropHelpDock.ui"/>
+        <source>Form</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <location/>
+        <source>List of all Modules in help-directory</source>
+        <translation>Liste aller Module im Hilfeverzeichnis</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Behaviour-Options</source>
+        <translation>Verhaltensoptionen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Open external links</source>
+        <translation>Externe Links öffnen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Display plaintext instead of html</source>
+        <translation>Klartext statt HTML anzeigen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are loaded.</source>
+        <translation>Nach Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Je nach Anzahl der zu ladenden Datenbanken kann dies einige Sekunden benötigen.</translation>
+    </message>
+</context>
+<context>
     <name>WidgetPropPythonStartup</name>
     <message>
         <location filename="../ui/widgetPropPythonStartup.ui"/>
@@ -3162,7 +3206,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>Add File</source>
-        <translation type="unfinished">Hinzufügen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location/>
@@ -3172,12 +3216,12 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>base path: </source>
-        <translation type="unfinished">Basis-Ordner: </translation>
+        <translation>Basis-Ordner: </translation>
     </message>
     <message>
         <location filename="../ui/widgetPropPythonStartup.cpp" line="+41"/>
         <source>base path for relative pathes: </source>
-        <translation type="unfinished">Basis-Ordner für relative Verzeichnisse: </translation>
+        <translation>Basis-Ordner für relative Verzeichnisse: </translation>
     </message>
     <message>
         <location line="+53"/>
@@ -3559,7 +3603,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="+985"/>
+        <location filename="../../common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3972,7 +4016,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="+49"/>
+        <location filename="../ui/dialogProperties.cpp" line="+50"/>
         <source>Properties</source>
         <translation>Optionen</translation>
     </message>
@@ -4114,6 +4158,16 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Help Viewer</source>
+        <translation>Hilfeanzeige</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>General - Help Viewer</source>
+        <translation>Allgemein - Hilfeanzeige</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Plots and Figures</source>
         <translation type="unfinished">Plots und Figures</translation>
     </message>
@@ -4239,7 +4293,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+261"/>
         <source>subplot %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Subplot %1</translation>
     </message>
 </context>
 <context>
@@ -4305,13 +4359,13 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+528"/>
+        <location line="+532"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-539"/>
+        <location line="-543"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -4366,7 +4420,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+95"/>
         <source>select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
@@ -4423,32 +4477,37 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/helpDockWidget.cpp" line="+70"/>
         <source>backwards</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>forwards</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorwärts</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>expandTree</source>
-        <translation type="unfinished"></translation>
+        <source>expand tree</source>
+        <translation>Baum erweitern</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>collapseTree</source>
-        <translation type="unfinished"></translation>
+        <source>collapse tree</source>
+        <translation>Baum reduzieren</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Reload Database</source>
-        <translation type="unfinished"></translation>
+        <source>reload database</source>
+        <translation>Datenbank neu laden</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+17"/>
+        <source>type text to filter the keywords in the tree</source>
+        <translation>Text für die Filterung von Schlüsselwörtern im Baum eingeben</translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>navigation</source>
-        <translation type="unfinished"></translation>
+        <translation>Navigation</translation>
     </message>
 </context>
 <context>
@@ -4595,7 +4654,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+10"/>
         <source>Timeout while sending values to python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Versuch Werte an Pyhton zu senden</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -4620,12 +4679,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-669"/>
         <source>file %1 does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
         <location line="+84"/>
         <source>file %1 can not be opened with this application</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
         <location line="+590"/>
@@ -4724,7 +4783,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+96"/>
+        <location filename="../widgets/mainWindow.cpp" line="+98"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -4764,7 +4823,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+33"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
@@ -4837,12 +4896,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-327"/>
+        <location line="-333"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+332"/>
+        <location line="+338"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4957,7 +5016,8 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="-443"/>
+        <location line="+455"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -4981,17 +5041,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+77"/>
         <source>The help assistant could not be started.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Hilfeassistent konnte nicht gestartet werden.</translation>
     </message>
     <message>
         <location line="+154"/>
         <source>The toolbar &apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Symbolleiste &apos;</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>&apos; could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+69"/>
@@ -5042,17 +5102,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+29"/>
         <source>Python is not available. This action cannot be executed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Python ist nicht verfügbar. Diese Anwendung kann nicht ausgeführt werden.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>there is no python code associated to this action.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zu dieser &apos;Action&apos; existiert kein Python-Code.</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>The UI designer (Qt designer) could not be started.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
     </message>
 </context>
 <context>
@@ -5118,17 +5178,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+110"/>
         <source>%1 [Wildcard]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 [Maskenzeichen]</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>%1 [Regular Expression]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 [Regulärer Ausdruck]</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>[None]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+36"/>
@@ -5783,17 +5843,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+412"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Drucken</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>There is nothing to print</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es gibt nichts zu drucken</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>unnamed</source>
-        <translation type="unfinished"></translation>
+        <translation>unbenannt</translation>
     </message>
     <message>
         <location line="+199"/>
