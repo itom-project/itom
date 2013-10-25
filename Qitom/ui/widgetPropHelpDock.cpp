@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "WidgetPropHelpDock.h"
+#include "widgetPropHelpDock.h"
 #include "../global.h"
 #include "../AppManagement.h"
 
