@@ -33,6 +33,9 @@
 #include <exception>      // std::exception
 #include <string.h>
 #include <stdexcept>
+#ifdef linux
+  #include <unistd.h>	// neede for usleep
+#endif
     
 //#include "opencv/cv.h"
 //#include "opencv2/core/core.hpp"
