@@ -2703,7 +2703,6 @@ template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito:
     int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
     for (size_t nmat = 0; nmat < numMats; nmat++)
     {
-       //TODO: check if non iterator version is working
         MatNum = src->seekMat(nmat, numMats);
         tempMat = ((cv::Mat_<_Tp> *)((src->get_mdata())[MatNum]));
 
@@ -2715,14 +2714,6 @@ template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito:
                 dstPtr[x] = (_Tp)scalar2;
             }
         }
-
-//        cv::MatIterator_<_Tp> lhsIt = tempMat->begin();
-//        cv::MatConstIterator_<_Tp> lhsIt_end = tempMat->end();
-
-//        for (; lhsIt != lhsIt_end; ++lhsIt)
-//        {
-//            (*lhsIt) = scalar2;
-//        }
     }
 
     return 0;
@@ -2848,6 +2839,18 @@ DataObject & DataObject::operator = (const complex64 value)
 DataObject & DataObject::operator = (const complex128 value)
 {
     fListAssignScalarFunc[m_type](this, ito::tComplex128, static_cast<const void*>(&value));
+    return *this;
+};
+
+//! Every data element in this data object is set to the given value
+/*!
+    \param value is the scalar assignment value
+    \return modified data object
+    \sa AssignScalarValue
+*/
+DataObject & DataObject::operator = (const ito::Rgba32 value)
+{
+	fListAssignScalarFunc[m_type](this, ito::tRGBA32, static_cast<const void*>(&value));
     return *this;
 };
 

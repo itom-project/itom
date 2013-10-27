@@ -30,6 +30,7 @@
 #include "../global.h"
 
 #include "pythonNpDataObject.h"
+#include "pythonRgba.h"
 
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
@@ -4624,7 +4625,21 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         {
             if(PyLong_Check(value))
             {
-                dataObj = (int)PyLong_AsLong(value);
+				int overflow;
+				long l = PyLong_AsLongAndOverflow(value, &overflow);
+				if (overflow == 0)
+				{
+					dataObj = (ito::int32)l;
+				}
+				else if (overflow == -1)
+				{
+					PyErr_SetString(PyExc_ValueError, "value exceeds the negative boundary of int32.");
+					error = true;
+				}
+				else //overflow = 1
+				{
+					dataObj = (ito::uint32)PyLong_AsUnsignedLong(value);
+				}
             }
             else if(PyFloat_Check(value))
             {
@@ -4647,10 +4662,22 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     error = true;
                 }
             }
+			else if(Py_TYPE(value) == &(PythonRgba::PyRgbaType))
+			{
+				if (dataObj.getType() == ito::tRGBA32)
+				{
+					dataObj = ((PythonRgba::PyRgba*)value)->rgba;
+				}
+				else
+				{
+					PyErr_SetString(PyExc_TypeError, "An assignment of type itom.rgba is only possible for data objects of type rgba32");
+					error = true;
+				}
+			}
             else
             {
                 error = true;
-                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex");
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only)");
             }
         }
 
@@ -5871,7 +5898,11 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
     case ito::tRGBA32:
-        return PyLong_FromUnsignedLong(dataObj->at<Rgba32>(idx).argb());
+		{
+			ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
+			if (color) color->rgba = dataObj->at<ito::Rgba32>(idx).rgba;
+			return (PyObject*)color;
+		}
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -5932,7 +5963,11 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
     case ito::tInt32:
         return PyLong_FromLong( m->at<int32>(row,col) );
     case ito::tRGBA32:
-        return PyLong_FromUnsignedLong(m->at<Rgba32>(row,col).argb());
+		{
+			ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
+			if (color) color->rgba = m->at<Rgba32>(row,col).rgba;
+			return (PyObject*)color;
+		}
     case ito::tFloat32:
         return PyFloat_FromDouble( m->at<float32>(row,col) );
     case ito::tFloat64:

@@ -851,6 +851,7 @@ class DataObject
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
         template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
+		template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
 
         // more friends due to change of std::vector to int ** for m_data ...
         template<typename _Tp> friend RetVal GetRangeFunc(DataObject *dObj, const int dtop, const int dbottom, const int dleft, const int dright);
@@ -1578,6 +1579,7 @@ class DataObject
         DataObject & operator = (const float64 value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex64 value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex128 value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+		DataObject & operator = (const ito::Rgba32 value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
 
 
         DataObject & operator += (const DataObject &rhs);
@@ -2057,21 +2059,46 @@ template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const Da
     size_t numMats = dObj.calcNumMats();
     size_t tMat = 0;
 
-    std::cout << "Array(";
+	if (dObj.getDims() == 0)
+	{
+		std::cout << "DataObject()\n" << std::endl;
+	}
+	else
+	{
+		std::cout << "DataObject(size=[" << dObj.getSize(0);
+		for (int dim = 1; dim < dObj.getDims(); ++dim)
+		{
+			std::cout << "x" << dObj.getSize(dim);
+		}
+		std::cout << "]\n" << std::endl;
 
-    for (size_t nMat = 0; nMat < numMats; nMat++)
-    {
-        tMat = dObj.seekMat(nMat, numMats);
-        std::cout <<  tMat + 1 << "->(";
+		size_t *idx = new size_t[dObj.getDims()];
+		 
 
-//#ifndef linux
-      
-            std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
-//#endif
+		for (size_t nMat = 0; nMat < numMats; nMat++)
+		{
+			tMat = dObj.seekMat(nMat, numMats);
+			//std::cout <<  tMat + 1 << "->(";
 
-        std::cout << ")" << "\n" << std::endl;
-    }
-    std::cout << ")" << "\n" << std::endl;
+			dObj.matNumToIdx(tMat, idx);
+			std::cout << "[";
+			for (int i = 0; i < dObj.getDims() - 2; ++i)
+			{
+				std::cout << idx[i] << ",";
+			}
+			std::cout << ":,:]->(";
+
+			
+
+			std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
+
+			std::cout << ")" << "\n" << std::endl;
+		}
+
+		delete[] idx;
+
+		std::cout << ")" << "\n" << std::endl;
+	}
     return out;
 
 }
@@ -2089,7 +2116,8 @@ static tCoutFunc fListCout[] =
    coutFunc<ito::float32>,
    coutFunc<ito::float64>,
    coutFunc<ito::complex64>,
-   coutFunc<ito::complex128>
+   coutFunc<ito::complex128>,
+   coutFunc<ito::Rgba32>
 };
 
 static inline std::ostream& operator << (std::ostream& out, const DataObject& dObj)

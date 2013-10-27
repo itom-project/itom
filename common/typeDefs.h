@@ -140,7 +140,7 @@ namespace ito
         tFloat64 = 7,    /*!< double (64bit) */ 
         tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */ 
         tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */ 
-        tRGBA32 = 10       /*!< a uint32 / vec4u value coded as 0xAARRGGBB */ 
+        tRGBA32 = 10     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */ 
     };
 
     /**
@@ -220,6 +220,7 @@ namespace ito
     #define vsprintf_s(b,l,f,v) vsprintf(b,f,v);
     #define sprintf_s(b,l,f,v) sprintf(b,f,v);
     #define strcat_s(dest,len,source) strcat(dest,source);
+	#define strcpy_s(dest,len,source) strcpy(dest,source);
 #endif
 
     
