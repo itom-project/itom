@@ -279,10 +279,11 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
 	
-	#GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
+    #GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
 	#STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
 	#SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
 	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+    
 	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
 
 ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)

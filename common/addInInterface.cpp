@@ -33,6 +33,10 @@
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
 
+#if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
+    #include "vld.h"
+#endif
+
 namespace ito
 {
     int AddInBase::m_instCounter = 0;
