@@ -9,6 +9,7 @@
 #include <qtimer.h>
 #include <qfuturewatcher.h>
 #include <qmovie.h>
+#include "../widgets/abstractDockWidget.h"
 
 class LeafFilterProxyModel; //forward declaration
 
@@ -17,7 +18,7 @@ class HelpTreeDockWidget : public QWidget
     Q_OBJECT
 
 public:
-    HelpTreeDockWidget(QWidget *parent = 0, Qt::WFlags flags = 0);
+    HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WFlags flags = 0);
     ~HelpTreeDockWidget();
 
 public slots:
@@ -57,9 +58,11 @@ private:
 	// Variables
     QStandardItemModel		*m_pMainModel;
     LeafFilterProxyModel	*m_pMainFilterModel;
-    QStringList				m_history;
+	ito::AbstractDockWidget *m_pParent;
+	QStringList				m_history;
 	QStringList				m_includedDBs;
 	QString					m_dbPath;
+
 
 	QMovie					*m_previewMovie;
 

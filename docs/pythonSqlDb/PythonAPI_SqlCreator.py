@@ -34,7 +34,7 @@ manualList = ['itom']
 
 
 # This is how the DB is named! For singlepackage databases use their name as filename!
-filename = 'PythonHelp.db'
+filename = 'PythonHelpNew.db'
 
 stackList = []
 
@@ -289,7 +289,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     # create one new Row in Database for every function
     line = [0, 0, 0, 0, 0, 0, 0, 0, 0]
     
-    # 0 ID eintragen, jedoch später nicht auswertden lassen
+    # 0 ID eintragen, jedoch später nicht in DB
     line[0] = id
     
     if type(docstrIn) == str:
@@ -338,6 +338,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     if (id != 0):
         m = re.search(r'.*?\n',docstr,re.DOTALL)
         if (m != None and nametype != 'const'):
+            # Shortdescription extrahieren (Enposition der S.Desc finden)
             s = docstr[m.end():]
             try:
                 sout =docutils.core.publish_string(s,writer_name='html',settings_overrides = {'report_level': '5'})
@@ -346,8 +347,12 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
                 sout = s
                 line[8] = '1'
             line[7] = itom.compressData(sout)
-        else:
+        elif (nametype == 'const'):
             line[7] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
+            line[8] = '4'
+        else:
+            # wenn der String keine Shortdescription hat dann einfach komplett einfügen
+            line[7] = itom.compressData(docstr)
             line[8] = '3'
     else:
         # only a link reference
@@ -355,11 +360,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         line[8] = '2'
     
     # 8 HTML-Error
-    # wird weiter oben gesetzt jenachdem welche Fehler entstehen:
-    #   0: Keine Fehler und mit docutils geparst
-    #   1: Fehler beim Parsen mit Docutils, jetzt kommt der kleine parser zum Einsatz
-    #   2: Dies ist keine Hilfeseite, sondern nur ein Verweis auf eine Hilfeseite
-        
+    # Wiird bereits bei #7 eingetragen
     # Insert commands into doclist
     doclist.append(line)
 

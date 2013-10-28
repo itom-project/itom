@@ -1,6 +1,6 @@
 #include "helpTreeDockWidget.h"
 
-#include <qdebug.h>
+// #include <qdebug.h>
 #include <qdesktopservices.h>
 #include <qdiriterator.h>
 #include <qfile.h>
@@ -25,16 +25,20 @@
 
 
 
+
 // on_start
-HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, Qt::WFlags flags)
+HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WFlags flags)
     : QWidget(parent, flags),
 	m_historyIndex(-1),
 	m_pMainModel(NULL),
-	m_dbPath(qApp->applicationDirPath()+"/help")
+	m_dbPath(qApp->applicationDirPath()+"/help"),
+	m_pParent(dock)
 {
     ui.setupUi(this);
 
 	connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
+
+	
 
 	// Initialize Variables
 	m_treeVisible = false;
@@ -81,18 +85,26 @@ HelpTreeDockWidget::~HelpTreeDockWidget()
 // Filter the events for showing and hiding the treeview
 bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 {
+	// = qobject_cast<ito::AbstractDockWidget*>(parent());
+
 	if (obj == ui.commandLinkButton && event->type() == QEvent::Enter)
 	{
 		showTreeview();
-		return true;
 	}
 	else if (obj == ui.treeView && event->type() == QEvent::Enter)
-	{
-		showTreeview();
+	{	
+		if (m_pParent && !m_pParent->isFloating())
+		{
+			showTreeview();
+		}
 	}
 	else if (obj == ui.textBrowser && event->type() == QEvent::Enter)
 	{
-		unshowTreeview();
+		if (m_pParent && !m_pParent->isFloating())
+		{
+			unshowTreeview();
+			return true;
+		}	
 	}
 	return QObject::eventFilter(obj, event);
  }
@@ -187,15 +199,14 @@ void HelpTreeDockWidget::propertiesChanged()
         {
             items.takeFirst();
             QStandardItem *node = new QStandardItem(name);
-			if (splitt[0][0] != 'l') //Martin TODO: warum der if-case hier?
+			if (splitt[0].startsWith("link_"))
 			{
-				node->setIcon(iconGallery->value(splitt[0])); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
+				// diese Zeile könnte man auch durch Code ersetzen der das Link Icon automatisch zeichnet... das waere flexibler
+				node->setIcon(iconGallery->value(splitt[0]));
 			}
 			else
-			{
-				// Wenn man in der nächsten Zeile vor die letzte Klammer eine -1 setzt, kann man das L am ANfang für Link wegschneiden
-				//name = splitt[0].right(splitt[0].length());
-				node->setIcon(iconGallery->value(splitt[0]));
+			{ // Kein Link Normales Bild
+				node->setIcon(iconGallery->value(splitt[0])); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
 			}
 			node->setEditable(false);
             node->setData(splitt[1],MyR+1);
@@ -208,12 +219,12 @@ void HelpTreeDockWidget::propertiesChanged()
             items.takeFirst();
             int li = path.lastIndexOf(".");
             QStandardItem *node = new QStandardItem(path.mid(li+1));
-			if (splitt[0][0] != 'l') //Martin TODO: warum der if-case hier?
-			{
+			if (splitt[0].startsWith("link_")) // Siehe 19 Zeilen vorher
+			{ //ist ein Link (vielleicht wie oben Icon dynamisch zeichnen lassen
 				node->setIcon(iconGallery->value(splitt[0]));
 			}
 			else
-			{
+			{ // Kein Link Normales Bild
 				node->setIcon(iconGallery->value(splitt[0]));
 			}
 			node->setEditable(false);
@@ -520,56 +531,61 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
 	bool ok = false;
     bool found = false;
 
+	// Das ist ein kleiner workaround mit dem if 5 Zeilen später. Man könnt euahc direkt über die includeddbs list iterieren
+	// dann wäre folgende Zeile hinfällig
 	QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
     while(it.hasNext() && !found)
     {
 		QString temp = it.next();
-        QFile file(temp);
-		
-		if (file.exists())
+		if (m_includedDBs.contains(temp.right(temp.length()-m_dbPath.length()-1)))
 		{
-            { //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
-                // display the help: Run through all the files in the directory
-                QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",temp);
-			    database.setDatabaseName(temp);
-			    ok = database.open();
-                if (ok)
-                {
-			        QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'", database);
-			        query.exec();
-			        found = query.next();
-			        if (found)
-			        {
-				        QByteArray docCompressed = query.value(6).toByteArray();
-				        QString doc;
-				        if (docCompressed.size() > 0)
-				        {
-					        doc = qUncompress(docCompressed);
-				        }
+			QFile file(temp);
+		
+			if (file.exists())
+			{
+				{ //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
+					// display the help: Run through all the files in the directory
+					QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",temp);
+					database.setDatabaseName(temp);
+					ok = database.open();
+					if (ok)
+					{
+						QSqlQuery query("SELECT type, prefix, prefixL, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE prefixL IS '"+path.toUtf8().toLower()+"'", database);
+						query.exec();
+						found = query.next();
+						if (found)
+						{
+							QByteArray docCompressed = query.value(6).toByteArray();
+							QString doc;
+							if (docCompressed.size() > 0)
+							{
+								doc = qUncompress(docCompressed);
+							}
 
-				        if (!m_plaintext)
-					        ui.textBrowser->setDocument(highlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
-				        else
-				        {
-					        QString output = QString(highlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString())->toHtml());
-					        output.replace("<br/>","<br/>\n");
-					        ui.textBrowser->document()->setPlainText(output);             
-				        }
-				        if (newpage == 1)
-				        {
-					        m_historyIndex++;
-					        m_history.insert(m_historyIndex, path.toUtf8());
-					        for (int i = m_history.length(); i > m_historyIndex; i--)
-					        {
-						        m_history.removeAt(i);
-					        }
-				        }
-                    }
-                    database.close();
-			    }
-            }
-			QSqlDatabase::removeDatabase(temp);
+							if (!m_plaintext)
+								ui.textBrowser->setDocument(highlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString()));
+							else
+							{
+								QString output = QString(highlightContent(doc, query.value(1).toString(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(7).toString())->toHtml());
+								output.replace("<br/>","<br/>\n");
+								ui.textBrowser->document()->setPlainText(output);             
+							}
+							if (newpage == 1)
+							{
+								m_historyIndex++;
+								m_history.insert(m_historyIndex, path.toUtf8());
+								for (int i = m_history.length(); i > m_historyIndex; i--)
+								{
+									m_history.removeAt(i);
+								}
+							}
+						}
+						database.close();
+					}
+				}
+				QSqlDatabase::removeDatabase(temp);
+			}
 		}
     }
 
@@ -630,7 +646,7 @@ void HelpTreeDockWidget::liveFilter(const QString &filterText)
 // prot|||....link.....        
 QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
-	qDebug()  <<  "THE REALLINK: "  <<  link.toEncoded()  <<  "The LinkCaption: "  <<  link.userInfo();
+	//qDebug()  <<  "THE REALLINK: "  <<  link.toEncoded()  <<  "The LinkCaption: "  <<  link.userInfo();
 	QStringList result;
 
 	QRegExp maillink(QString("^(mailto):(.*)"));
@@ -678,7 +694,7 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     QStringList parts = separateLink(link.toString());
     if (parts[0] == "itom")
     {
-		qDebug()  <<  "OnTreeClickedPfad: "  <<  parts[1];
+		//qDebug()  <<  "OnTreeClickedPfad: "  <<  parts[1];
 		displayHelp( parts[1], 1);
 
         QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(parts[1]) );
@@ -736,9 +752,8 @@ void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
 void HelpTreeDockWidget::on_treeView_clicked(QModelIndex i)
 {
     int MyR = Qt::UserRole;
-    qDebug()  <<  "OnTreeClickedPfad: "  <<  QString(i.data(MyR+1).toString());
+    //qDebug()  <<  "OnTreeClickedPfad: "  <<  QString(i.data(MyR+1).toString());
 	displayHelp(QString(i.data(MyR+1).toString()), 1);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

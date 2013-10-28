@@ -32,7 +32,7 @@
 
 #include <qheaderview.h>
 #include <qsettings.h>
-
+#include "../widgets/abstractDockWidget.h"
 
 namespace ito {
 
@@ -49,14 +49,14 @@ HelpDockWidget::HelpDockWidget(const QString &title, QWidget *parent, bool docke
 	m_pActCollapse(NULL),
 	m_pActReload(NULL)
 {
-    m_pHelpWidget = new HelpTreeDockWidget(this);
+	//ito::AbstractDockWidget *dockParent = this;
+    m_pHelpWidget = new HelpTreeDockWidget(this, this);
 
 	m_pFilterEdit = new QLineEdit(this);
 
 	AbstractDockWidget::init();
 
     setContentWidget(m_pHelpWidget);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
