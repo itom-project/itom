@@ -550,7 +550,7 @@ FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
  
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)
 IF(MSVC)
-    FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../symbols/lib )
+    FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../symbols/dll )
 ENDIF(MSVC)
 
 #ADD a batch file for itom-release 
