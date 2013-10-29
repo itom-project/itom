@@ -97,6 +97,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
@@ -265,6 +266,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.cpp
