@@ -4137,7 +4137,7 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
 
 	double dmin = std::min(minVal, maxVal);
 	double dmax = std::max(minVal, maxVal);
-	double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./smax-smin) : 0.0);
+	double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./(smax-smin)) : 0.0);
 	double shift = dmin-smin*scale;
     try
     {
