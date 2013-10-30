@@ -127,8 +127,9 @@ namespace ito
 
         enum tPrimitive
         {
-            tPoint      =   0,
-            tLine       =   1,
+            tNoType     =   0,
+            tPoint      =   1,
+            tLine       =   2,
             tElipse     =   3,
             tCircle     =   4,
             tRetangle   =   5,
@@ -136,18 +137,22 @@ namespace ito
             tPolygon    =   10
         };
 
-        inline int getNumberOfElements() const {return m_primitives.getSize(0);};
+        inline int getNumberOfRows() const {return m_primitives.getSize(0);};
+        inline int getNumberOfElements(const int type) const;
         inline int getFirstElementRow(const int type) const;
         inline ito::float32* getElementPtr(const int row);
         inline const ito::float32* getElementPtr(const int row) const;
         inline int getIndexFromRow(const int row) const;
         inline int getRowFromIndex(const int idx) const;
 
-        inline bool hasElement(const int row) const;
+        inline bool isElement(const int row) const;
+        void clear(void);
 
-        inline ito::RetVal addElement(const int type, ito::float32 * cells);
-        inline ito::RetVal changeElement(const int type, ito::float32 * cells);
-        inline ito::RetVal removeElement(const int row);
+        ito::RetVal addElement(const int type, ito::float32 * cells);
+        ito::RetVal changeElement(const int type, ito::float32 * cells);
+        ito::RetVal removeElement(const int row);
+
+        ito::RetVal copyGeometricElements(const ito::DataObject &rhs);
 
     private:
 
