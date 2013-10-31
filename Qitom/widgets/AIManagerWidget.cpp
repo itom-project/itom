@@ -90,7 +90,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
 
-    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close all"), this);
+    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close all"), this);
     connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuCloseAllInstances()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
