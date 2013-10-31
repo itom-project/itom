@@ -372,13 +372,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "rgba", (PyObject *)&PythonRgba::PyRgbaType);
             }
 
-            /*if (PyType_Ready(&PyUiDialogMetaObject::PyMetaObjectType) >= 0)
-            {
-                Py_INCREF(&PyUiDialogMetaObject::PyMetaObjectType);
-                PyUiDialogMetaObject::PyMetaObject_addTpDict(PyUiDialogMetaObject::PyMetaObjectType.tp_dict);
-                PyModule_AddObject(itomModule, "uiDialogMetaObject", (PyObject *)&PyUiDialogMetaObject::PyMetaObjectType);
-            }*/
-
 #if ITOM_POINTCLOUDLIBRARY > 0
             if (PyType_Ready(&PythonPCL::PyPointType) >= 0)
             {
