@@ -150,6 +150,7 @@ class PythonDataObject
         static PyGetSetDef PyDataObject_getseters[];
         static PyObject* PyDataObj_GetDims(PyDataObject *self, void *closure);
         static PyObject* PyDataObj_GetType(PyDataObject *self, void *closure);
+        static PyObject* PyDataObj_GetShape(PyDataObject *self, void *closure);
         static PyObject* PyDataObj_GetContinuous(PyDataObject *self, void *closure);
 
         static PyObject* PyDataObject_getTagDict(PyDataObject *self, void *clousure);
