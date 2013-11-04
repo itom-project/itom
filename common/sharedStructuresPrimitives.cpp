@@ -193,7 +193,7 @@ namespace ito
 
         if( rhs.getSize(rhs.getDims()-1) > m_primitives.getSize(1))
         {
-            int newSize = newSize * (rhs.getSize(rhs.getDims() - 2) / 64 + 1);
+            int newSize = 64 * (rhs.getSize(rhs.getDims() - 2) / 64 + 1);
             m_primitives.zeros(newSize, 11, ito::tFloat32);
             m_internalMat = (cv::Mat*)(m_primitives.get_mdata()[0]);
             newObject = true;
