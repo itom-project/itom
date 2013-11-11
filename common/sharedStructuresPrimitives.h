@@ -31,6 +31,8 @@
 #include "typeDefs.h"
 #include "../DataObject/dataobj.h"
 
+#define PRIM_ELEMENTLENGTH 11
+
 union geometricPrimitives
 {
     struct point
@@ -114,7 +116,7 @@ union geometricPrimitives
         ito::float32 pointNumber;
     };
 
-    ito::float32 cells[11];
+    ito::float32 cells[PRIM_ELEMENTLENGTH];
 };
 
 namespace ito
