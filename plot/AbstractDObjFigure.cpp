@@ -66,7 +66,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
     ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
     if (dObj)
     {
-        return QSharedPointer<ito::DataObject>(); 
+        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
     }
     return QSharedPointer<ito::DataObject>();
 }
