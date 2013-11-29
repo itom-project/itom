@@ -404,10 +404,16 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 	#message(STATUS "sources LEN: ${len1}")
 	#message(STATUS "destinations LEN: ${len2}")
 	
-	
+	#create lib folder (for safety only, if it does not exist some cmake versions do not copy the files in the 
+	#desired way using copy_if_different below
+	ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory
+			"${ITOM_APP_DIR}/lib"
+	)
+
 	foreach(val RANGE ${len1})
 		list(GET ${sources} ${val} val1)
-#		message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
+		#message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
 		
 		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different  			   # which executes "cmake - E copy_if_different..."
