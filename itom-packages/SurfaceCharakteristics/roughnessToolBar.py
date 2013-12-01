@@ -347,7 +347,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                 if dims > 2:
                     if skipBox == False:
                         ui.msgCritical("Roughness", "Dimension must be 1D or 2D", ui.MsgBoxOk)
-                dim = eval("{}.size()".format(varname))
+                dim = eval("{}.shape".format(varname))
                 
             except:
                 if skipBox == False:

@@ -106,9 +106,9 @@ class abstractObjInteractionToolBar():
             if objType == 'empty':
                 dimsTestString = '{}.dims == 0'
             elif objType == 'plane':
-                dimsTestString = '{}.size({}.dims-1)>1 and {}.size({}.dims-2)>1'
+                dimsTestString = '{}.shape[{}.dims-1]>1 and {}.shape[{}.dims-2]>1'
             elif objType == 'line':
-                dimsTestString = '{}.size({}.dims-1) == 1 or {}.size({}.dims-2) == 1'
+                dimsTestString = '{}.shape[{}.dims-1] == 1 or {}.shape[{}.dims-2] == 1'
             else:
                 dimsTestString = '{}.dims > 0'
                 
@@ -236,13 +236,13 @@ class abstractObjInteractionToolBar():
                 return [False, False, '', True]
                 
             elif dims == 3:
-                if eval('{}.size(0) > 1'.format(varname, varname), workSpace):
+                if eval('{}.shape[0] > 1'.format(varname, varname), workSpace):
                     del dims
                     return [False, False, 0, '']
                 
-            if eval('({}.size({}.dims-1) == 1) or ({}.size({}.dims-2) == 1)'.format(varname, varname, varname, varname), workSpace, {'dimensions': dims}):
+            if eval('({}.shape[{}.dims-1] == 1) or ({}.shape[{}.dims-2] == 1)'.format(varname, varname, varname, varname), workSpace, {'dimensions': dims}):
                 isLine = True
-                if eval('({}.size({}.dims-1) == 1)'.format(varname, varname), workSpace):
+                if eval('({}.shape[{}.dims-1] == 1)'.format(varname, varname), workSpace):
                     dir = 'y'
                 else:
                     dir = 'x'

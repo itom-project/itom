@@ -74,9 +74,9 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         dimsTestString = ''
         
         if objType == '1D':
-            dimsTestString = '{}.size({}.dims-1) == 1 or {}.size({}.dims-2) == 1'
+            dimsTestString = '{}.shape({}.dims-1) == 1 or {}.shape({}.dims-2) == 1'
         else:
-            dimsTestString = '{}.size({}.dims-1)>1 and {}.size({}.dims-2)>1'
+            dimsTestString = '{}.shape({}.dims-1)>1 and {}.shape({}.dims-2)>1'
         
         for key in gvar:
             if type(globals()[key]) == itom.dataObject:
@@ -236,7 +236,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             
-            size = eval('{}.size()'.format(dataObj))
+            shape = eval('{}.shape()'.format(dataObj))
             scale = eval('{}.axisScales'.format(dataObj))
             offset = eval('{}.axisOffsets'.format(dataObj))
             unit = eval('{}.axisUnits'.format(dataObj))
@@ -251,8 +251,8 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             npdObj = eval('npDataObject({})'.format(dataObj))
             
             # create supporting points cartesian system
-            x = np.linspace( (0 - offset[dims-1]) * scale[dims-1], (size[dims - 1] -1 - offset[dims-1]) * scale[dims-1] , size[dims-1])
-            y = np.linspace( (0 - offset[dims-2]) * scale[dims-2], (size[dims - 2] -1 - offset[dims-2]) * scale[dims-2] , size[dims-2])
+            x = np.linspace( (0 - offset[dims-1]) * scale[dims-1], (shape[dims - 1] -1 - offset[dims-1]) * scale[dims-1] , shape[dims-1])
+            y = np.linspace( (0 - offset[dims-2]) * scale[dims-2], (shape[dims - 2] -1 - offset[dims-2]) * scale[dims-2] , shape[dims-2])
             
             # transform them to cartesian system
             X,Y = np.meshgrid(x,y)
@@ -266,7 +266,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             ax.set_zlabel(r'${} in {}$'.format(valDes, valUn))
             plt.show()
             
-            del size
+            del shape
             del scale
             del offset
             del unit
