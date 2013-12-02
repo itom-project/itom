@@ -404,7 +404,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             for(int j=0;j<nrOfParams;j++)
             {
                 //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j]), true) //GetItem is a borrowed reference
+                if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
                 {
                     paramContainer->setParamArg(j, ptr, typeNr);
                 }
@@ -412,24 +412,6 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
                 {
                     ok = false;
                     break;
-                }
-            }
-
-            if (!ok) //now try to also allow implicit type conversions (non-strict)
-            {
-                ok = true;
-                for(int j=0;j<nrOfParams;j++)
-                {
-                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j]), false) //GetItem is a borrowed reference
-                    {
-                        paramContainer->setParamArg(j, ptr, typeNr);
-                    }
-                    else
-                    {
-                        ok = false;
-                        break;
-                    }
                 }
             }
 
@@ -450,6 +432,48 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         else
         {
             possibleSignatures += QByteArray("'" + method->signature() + "', ");
+        }
+    }
+    if (!ok)
+    {
+        foreach(const MethodDescription *method, possibleMethods)
+        {
+            ok = true;
+            if(method->checkMethod(slotName, nrOfParams))
+            {
+                ok = true;
+                for(int j=0;j<nrOfParams;j++)
+                {
+                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
+                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], false)) //GetItem is a borrowed reference
+                    {
+                        paramContainer->setParamArg(j, ptr, typeNr);
+                    }
+                    else
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+
+                if(ok)
+                {
+                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+
+                    found = true;
+                    foundMethod = method;
+                    break; //everything ok, we found the method and could convert all given parameters
+                }
+                else
+                {
+                    possibleSignatures += QByteArray("'" + method->signature() + "', ");
+                }
+
+            }
+            else
+            {
+                possibleSignatures += QByteArray("'" + method->signature() + "', ");
+            }
         }
     }
 
