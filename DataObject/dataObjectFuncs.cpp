@@ -2032,6 +2032,34 @@ namespace dObjHelper
         return ito::retOk;
     }
 
+    ito::RetVal dObjSetScaleRetangle(ito::DataObject &DataObjectInOut, const double &x0, const double &x1, const double &y0, const double &y1)
+    {
+        ito::int32 dims = DataObjectInOut.getDims();
+        if(dims > 2)
+        {
+            return ito::RetVal(ito::retError, 0, "Set scale and offset to retangle failed due to invalid dataObject size. Object to small.");
+        }
+
+        ito::float64 scaleX = (x1 - x0);
+        ito::float64 scaleY = (y1 - y0);
+        if(!ito::dObjHelper::isNotZero(scaleX) || !ito::dObjHelper::isNotZero(scaleY))
+        {
+            return ito::RetVal(ito::retError, 0, "Set scale and offset to retangle failed due to zero scale error of at least one scale");
+        }
+
+        if(DataObjectInOut.getSize(dims - 1) > 1) scaleX /= (DataObjectInOut.getSize(dims - 1) - 1);  
+        if(DataObjectInOut.getSize(dims - 2) > 1) scaleY /= (DataObjectInOut.getSize(dims - 2) - 1);  
+        
+        ito::float64 offset = x0 / scaleX;
+        DataObjectInOut.setAxisScale(dims -1, scaleX);
+        DataObjectInOut.setAxisOffset(dims -1, offset);
+
+        offset = y0 / scaleY;
+        DataObjectInOut.setAxisScale(dims -2, scaleY);
+        DataObjectInOut.setAxisOffset(dims -2, offset);
+
+        return ito::retOk;
+    }
     //-----------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------
     /*! \fn minMaxValueHelper 
