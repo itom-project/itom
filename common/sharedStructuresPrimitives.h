@@ -35,6 +35,7 @@
 
 union geometricPrimitives
 {
+/*
     struct point
     {
         ito::float32 idx;
@@ -115,7 +116,7 @@ union geometricPrimitives
         ito::float32 pointIdx;
         ito::float32 pointNumber;
     };
-
+*/
     ito::float32 cells[PRIM_ELEMENTLENGTH];
 };
 
@@ -130,13 +131,13 @@ namespace ito
         enum tPrimitive
         {
             tNoType     =   0,
-            tPoint      =   1,
-            tLine       =   2,
-            tElipse     =   3,
-            tCircle     =   4,
-            tRetangle   =   5,
-            tSquare     =   6,
-            tPolygon    =   10
+            tPoint      =   101,
+            tLine       =   102,
+            tRetangle   =   103,
+            tSquare     =   104,
+            tElipse     =   105,
+            tCircle     =   106,
+            tPolygon    =   110
         };
 
         inline int getNumberOfRows() const {return m_primitives.getSize(0);};
