@@ -131,6 +131,7 @@ namespace ito
         enum tPrimitive
         {
             tNoType     =   0,
+            tMultiPointPick = 6,
             tPoint      =   101,
             tLine       =   102,
             tRetangle   =   103,

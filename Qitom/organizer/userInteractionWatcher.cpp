@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "userInteractionWatcher.h"
-
+#include "common/sharedStructuresPrimitives.h"
 #include <qwidget.h>
 
 namespace ito
@@ -74,7 +74,7 @@ UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int maxNrOfP
     }
     else
     {
-        emit userInteractionStart(1,true,m_maxNrOfPoints);
+        emit userInteractionStart(PrimitiveContainer::tMultiPointPick, true, m_maxNrOfPoints);
     }
 }
 
