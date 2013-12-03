@@ -164,8 +164,8 @@ namespace ito
             QPoint pos() const;
             QSize frameSize() const;
             QSize size() const;
-            inline int width() const;
-            inline int height() const;
+            int width() const;
+            int height() const;
             QRect rect() const;
             QRect childrenRect() const;
             QRegion childrenRegion() const;
@@ -174,7 +174,7 @@ namespace ito
             void move(const QPoint &);
             void resize(int w, int h);
             void resize(const QSize &);
-            inline void setGeometry(int x, int y, int w, int h);
+            void setGeometry(int x, int y, int w, int h);
             void setGeometry(const QRect &);
 
             bool isEnabled() const;

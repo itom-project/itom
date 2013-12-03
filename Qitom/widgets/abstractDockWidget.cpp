@@ -307,7 +307,7 @@ void AbstractDockWidget::resize(const QSize &size)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-inline void AbstractDockWidget::setGeometry(int x, int y, int w, int h)
+void AbstractDockWidget::setGeometry(int x, int y, int w, int h)
 {
     QWIDGETPROPSETTER4(setGeometry,x,y,w,h)
 }
