@@ -99,59 +99,59 @@ namespace ito
             }
 
             //these methods are mainly redirected to QDockWidget or QMainWindow (depending on dock status)
-            #define QWIDGETPROPGETTER(gettername) if(m_docked && m_dockAvailable) { return QDockWidget::##gettername(); } else { return m_pWindow->##gettername(); }
+            #define QWIDGETPROPGETTER(gettername) if(m_docked && m_dockAvailable) { return QDockWidget::gettername(); } else { return m_pWindow->gettername(); }
 
             #define QWIDGETPROPSETTER1(settername,arg1) \
             if (m_docked) \
             { \
-                QDockWidget::##settername(arg1);  \
+                QDockWidget::settername(arg1);  \
             } \
             else \
             { \
                 if (m_floatingStyle == floatingWindow) \
                 { \
-                    m_pWindow->##settername(arg1); \
-                    QDockWidget::##settername(arg1); \
+                    m_pWindow->settername(arg1); \
+                    QDockWidget::settername(arg1); \
                 } \
                 else \
                 { \
-                    QDockWidget::##settername(arg1); \
+                    QDockWidget::settername(arg1); \
                 } \
             }
 
             #define QWIDGETPROPSETTER2(settername,arg1,arg2) \
             if (m_docked) \
             { \
-                QDockWidget::##settername(arg1,arg2);  \
+                QDockWidget::settername(arg1,arg2);  \
             } \
             else \
             { \
                 if (m_floatingStyle == floatingWindow) \
                 { \
-                    m_pWindow->##settername(arg1,arg2); \
-                    QDockWidget::##settername(arg1,arg2); \
+                    m_pWindow->settername(arg1,arg2); \
+                    QDockWidget::settername(arg1,arg2); \
                 } \
                 else \
                 { \
-                    QDockWidget::##settername(arg1,arg2); \
+                    QDockWidget::settername(arg1,arg2); \
                 } \
             }
 
             #define QWIDGETPROPSETTER4(settername,arg1,arg2,arg3,arg4) \
             if (m_docked) \
             { \
-                QDockWidget::##settername(arg1,arg2,arg3,arg4);  \
+                QDockWidget::settername(arg1,arg2,arg3,arg4);  \
             } \
             else \
             { \
                 if (m_floatingStyle == floatingWindow) \
                 { \
-                    m_pWindow->##settername(arg1,arg2,arg3,arg4); \
-                    QDockWidget::##settername(arg1,arg2,arg3,arg4); \
+                    m_pWindow->settername(arg1,arg2,arg3,arg4); \
+                    QDockWidget::settername(arg1,arg2,arg3,arg4); \
                 } \
                 else \
                 { \
-                    QDockWidget::##settername(arg1,arg2,arg3,arg4); \
+                    QDockWidget::settername(arg1,arg2,arg3,arg4); \
                 } \
             }
 
