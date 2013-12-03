@@ -75,7 +75,7 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
 
     changeCurrentSubplot(0);
 
-    resizeDockWidget(700,400);
+    resize(700,400);
 
     setContentWidget(m_pCenterWidget);
     m_pCenterWidget->setContentsMargins(0,0,0,0);

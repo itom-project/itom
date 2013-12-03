@@ -44,6 +44,24 @@ namespace ito
     class AbstractDockWidget : public QDockWidget
     {
         Q_OBJECT
+        
+        //these properties are taken from QWidget in order to redirect them either to the QDockWidget or to the main window (depending on dock status)
+        Q_PROPERTY(bool visible READ isVisible WRITE setVisible DESIGNABLE false)
+        Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
+
+        Q_PROPERTY(QRect geometry READ geometry WRITE setGeometry)
+        Q_PROPERTY(QRect frameGeometry READ frameGeometry)
+        Q_PROPERTY(QRect normalGeometry READ normalGeometry)
+        Q_PROPERTY(int x READ x)
+        Q_PROPERTY(int y READ y)
+        Q_PROPERTY(QPoint pos READ pos WRITE move DESIGNABLE false STORED false)
+        Q_PROPERTY(QSize frameSize READ frameSize)
+        Q_PROPERTY(QSize size READ size WRITE resize DESIGNABLE false STORED false)
+        Q_PROPERTY(int width READ width)
+        Q_PROPERTY(int height READ height)
+        Q_PROPERTY(QRect rect READ rect)
+        Q_PROPERTY(QRect childrenRect READ childrenRect)
+        Q_PROPERTY(QRegion childrenRegion READ childrenRegion)
 
         public:
 
@@ -80,7 +98,91 @@ namespace ito
                 return this;
             }
 
-            void setVisible(bool visible);
+            //these methods are mainly redirected to QDockWidget or QMainWindow (depending on dock status)
+            #define QWIDGETPROPGETTER(gettername) if(m_docked && m_dockAvailable) { return QDockWidget::##gettername(); } else { return m_pWindow->##gettername(); }
+
+            #define QWIDGETPROPSETTER1(settername,arg1) \
+            if (m_docked) \
+            { \
+                QDockWidget::##settername(arg1);  \
+            } \
+            else \
+            { \
+                if (m_floatingStyle == floatingWindow) \
+                { \
+                    m_pWindow->##settername(arg1); \
+                    QDockWidget::##settername(arg1); \
+                } \
+                else \
+                { \
+                    QDockWidget::##settername(arg1); \
+                } \
+            }
+
+            #define QWIDGETPROPSETTER2(settername,arg1,arg2) \
+            if (m_docked) \
+            { \
+                QDockWidget::##settername(arg1,arg2);  \
+            } \
+            else \
+            { \
+                if (m_floatingStyle == floatingWindow) \
+                { \
+                    m_pWindow->##settername(arg1,arg2); \
+                    QDockWidget::##settername(arg1,arg2); \
+                } \
+                else \
+                { \
+                    QDockWidget::##settername(arg1,arg2); \
+                } \
+            }
+
+            #define QWIDGETPROPSETTER4(settername,arg1,arg2,arg3,arg4) \
+            if (m_docked) \
+            { \
+                QDockWidget::##settername(arg1,arg2,arg3,arg4);  \
+            } \
+            else \
+            { \
+                if (m_floatingStyle == floatingWindow) \
+                { \
+                    m_pWindow->##settername(arg1,arg2,arg3,arg4); \
+                    QDockWidget::##settername(arg1,arg2,arg3,arg4); \
+                } \
+                else \
+                { \
+                    QDockWidget::##settername(arg1,arg2,arg3,arg4); \
+                } \
+            }
+
+            QRect frameGeometry() const;
+            const QRect &geometry() const;
+            QRect normalGeometry() const;
+
+            int x() const;
+            int y() const;
+            QPoint pos() const;
+            QSize frameSize() const;
+            QSize size() const;
+            inline int width() const;
+            inline int height() const;
+            QRect rect() const;
+            QRect childrenRect() const;
+            QRegion childrenRegion() const;
+
+            void move(int x, int y);
+            void move(const QPoint &);
+            void resize(int w, int h);
+            void resize(const QSize &);
+            inline void setGeometry(int x, int y, int w, int h);
+            void setGeometry(const QRect &);
+
+            bool isEnabled() const;
+            bool isVisible() const;
+
+        public Q_SLOTS:
+            void setEnabled(bool);
+            virtual void setVisible(bool visible);
    
         protected:
 
@@ -189,7 +291,6 @@ namespace ito
             };
 
             void init();
-            void resizeDockWidget(int width, int height);
 
             virtual void closeEvent(QCloseEvent *event);
 

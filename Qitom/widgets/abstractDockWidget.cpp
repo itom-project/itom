@@ -198,41 +198,153 @@ void AbstractDockWidget::init()
     updateActions();
 }
 
+//---------------------------------------------------------------------------------------------------------
+// BEGIN of the section where many properties of QWidget as base class of this class is overwritten such that depending on the dock-status
+// the right properties of the underlying windows (dockWidget or mainWindow) are get or set.
+//--------------------------------------------------------------------------------------------------------
+
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDockWidget::setVisible(bool visible)
+QRect AbstractDockWidget::frameGeometry() const
 {
-    if (m_docked)
-    {
-        QDockWidget::setVisible(visible);
-    }
-    else
-    {
-        if (m_floatingStyle == floatingWindow)
-        {
-            m_pWindow->setVisible(visible);
-            if (visible == false)
-            {
-                QDockWidget::setVisible(visible);
-            }
-        }
-        else
-        {
-            QDockWidget::setVisible(visible);
-        }
-    }
+    QWIDGETPROPGETTER(frameGeometry)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! resizes this widget to the given size
-/*!
-    \param width
-    \param height
-*/
-void AbstractDockWidget::resizeDockWidget(int width, int height)
+const QRect &AbstractDockWidget::geometry() const
 {
-    resize(width, height);
-    m_pWindow->resize(width, height);
+    QWIDGETPROPGETTER(geometry)
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QRect AbstractDockWidget::normalGeometry() const
+{
+    QWIDGETPROPGETTER(normalGeometry)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractDockWidget::x() const
+{
+    QWIDGETPROPGETTER(x)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractDockWidget::y() const
+{
+    QWIDGETPROPGETTER(y)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QPoint AbstractDockWidget::pos() const
+{
+    QWIDGETPROPGETTER(pos)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QSize AbstractDockWidget::frameSize() const
+{
+    QWIDGETPROPGETTER(frameSize)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QSize AbstractDockWidget::size() const
+{
+    QWIDGETPROPGETTER(size)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractDockWidget::width() const
+{
+    QWIDGETPROPGETTER(width)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractDockWidget::height() const
+{
+    QWIDGETPROPGETTER(height)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QRect AbstractDockWidget::rect() const
+{
+    QWIDGETPROPGETTER(rect)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QRect AbstractDockWidget::childrenRect() const
+{
+    QWIDGETPROPGETTER(childrenRect)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QRegion AbstractDockWidget::childrenRegion() const
+{
+    QWIDGETPROPGETTER(childrenRegion)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+void AbstractDockWidget::move(int x, int y)
+{
+    QWIDGETPROPSETTER2(move,x,y)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::move(const QPoint &point)
+{
+    QWIDGETPROPSETTER1(move,point)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::resize(int w, int h)
+{
+    QWIDGETPROPSETTER2(resize,w,h)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::resize(const QSize &size)
+{
+    QWIDGETPROPSETTER1(resize,size)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+inline void AbstractDockWidget::setGeometry(int x, int y, int w, int h)
+{
+    QWIDGETPROPSETTER4(setGeometry,x,y,w,h)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setGeometry(const QRect &rect)
+{
+    QWIDGETPROPSETTER1(setGeometry,rect)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool AbstractDockWidget::isEnabled() const
+{
+    QWIDGETPROPGETTER(isEnabled)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool AbstractDockWidget::isVisible() const
+{
+    QWIDGETPROPGETTER(isVisible)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setEnabled(bool enabled)
+{
+    QWIDGETPROPSETTER1(setEnabled,enabled)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setVisible(bool visible)
+{
+    QWIDGETPROPSETTER1(setVisible,visible)
+}
+
+//---------------------------------------------------------------------------------------------------------
+// END of the property overwrite section
+//--------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! sets any given QWidget as central widget of QMainWindow and inversely sets this QWidget's parent to the instance of QMainWindget

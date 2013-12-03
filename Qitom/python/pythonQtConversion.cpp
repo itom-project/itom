@@ -1166,15 +1166,15 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 }
 
 
-/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, bool &ok)
+/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval)
 {
 	if (item.type() == destType)
 	{
-		ok = true;
+		retval += ito::retOk;
 		return item;
 	}
 
-	ok = false;
+    bool ok = false;
 	QVariant result;
 
 	if (destType == QVariant::PointF && item.type() == QVariant::List)
@@ -1182,10 +1182,19 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 		const QVariantList list = item.toList();
 		if (list.size() == 2)
 		{
-			bool ok2;
+            bool ok2;
 			result = QPointF(list[0].toFloat(&ok), list[1].toFloat(&ok2));
 			ok &= ok2;
+
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError,0,"transformation error to PointF: at least one value could not be transformed to float.");
+            }
 		}
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to PointF: 2 values required.");
+        }
 	}
 	else if (destType == QVariant::Point && item.type() == QVariant::List)
 	{
@@ -1195,27 +1204,90 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 			bool ok2;
 			result = QPoint(list[0].toInt(&ok), list[1].toInt(&ok2));
 			ok &= ok2;
+            
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError,0,"transformation error to Point: at least one value could not be transformed to integer.");
+            }
 		}
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to Point: 2 values required.");
+        }
 	}
     else if (destType == QVariant::Rect && item.type() == QVariant::List)
     {
         const QVariantList list = item.toList();
 		if (list.size() == 4)
 		{
-			bool ok2;
-			result = QRect(list[0].toInt(&ok), list[1].toInt(&ok2), list[2].toInt(&ok), list[3].toInt(&ok2));
+			bool ok2, ok3, ok4;
+			result = QRect(list[0].toInt(&ok), list[1].toInt(&ok2), list[2].toInt(&ok3), list[3].toInt(&ok4));
 			ok &= ok2;
+            ok &= ok3;
+            ok &= ok4;
+            
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError,0,"transformation error to Rect: at least one value could not be transformed to integer.");
+            }
 		}
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to Rect: 4 values required.");
+        }
     }
     else if (destType == QVariant::RectF && item.type() == QVariant::List)
     {
         const QVariantList list = item.toList();
 		if (list.size() == 4)
 		{
-			bool ok2;
-			result = QRectF(list[0].toInt(&ok), list[1].toInt(&ok2), list[2].toInt(&ok), list[3].toInt(&ok2));
+			bool ok2, ok3, ok4;
+			result = QRectF(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3), list[3].toFloat(&ok4));
 			ok &= ok2;
+            ok &= ok3;
+            ok &= ok4;
+            
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError,0,"transformation error to RectF: at least one value could not be transformed to float.");
+            }
 		}
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to RectF: 4 values required.");
+        }
+    }
+    else if (destType == QVariant::Size && item.type() == QVariant::List)
+    {
+        const QVariantList list = item.toList();
+        if (list.size() == 2)
+        {
+            bool ok2;
+            result = QSize(list[0].toInt(&ok), list[1].toInt(&ok2));
+            ok &= ok2;
+            
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError,0,"transformation error to Size: at least one value could not be transformed to integer.");
+            }
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to Size: 2 values required.");
+        }
+    }
+    else if (destType == QVariant::Bool && item.type() == QVariant::Int)
+    {
+        result = (item.toInt(&ok) == 0 ? false : true);
+
+        if (!ok)
+        {
+            retval += ito::RetVal(ito::retError,0,"transformation error to bool: at least one value could not be transformed to bool.");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal::format(ito::retError,0,"unknown QVariant transformation from QVariant::Type %i to QVariant::Type %i", item.type(), destType);
     }
 
 	if (ok)
