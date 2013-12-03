@@ -285,37 +285,37 @@ QRegion AbstractDockWidget::childrenRegion() const
 
 void AbstractDockWidget::move(int x, int y)
 {
-    QWIDGETPROPSETTER2(move,x,y)
+    QWIDGETPROPSETTER(move,x,y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::move(const QPoint &point)
 {
-    QWIDGETPROPSETTER1(move,point)
+    QWIDGETPROPSETTER(move,point)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::resize(int w, int h)
 {
-    QWIDGETPROPSETTER2(resize,w,h)
+    QWIDGETPROPSETTER(resize,w,h)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::resize(const QSize &size)
 {
-    QWIDGETPROPSETTER1(resize,size)
+    QWIDGETPROPSETTER(resize,size)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setGeometry(int x, int y, int w, int h)
 {
-    QWIDGETPROPSETTER4(setGeometry,x,y,w,h)
+    QWIDGETPROPSETTER(setGeometry,x,y,w,h)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setGeometry(const QRect &rect)
 {
-    QWIDGETPROPSETTER1(setGeometry,rect)
+    QWIDGETPROPSETTER(setGeometry,rect)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -333,13 +333,13 @@ bool AbstractDockWidget::isVisible() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setEnabled(bool enabled)
 {
-    QWIDGETPROPSETTER1(setEnabled,enabled)
+    QWIDGETPROPSETTER(setEnabled,enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setVisible(bool visible)
 {
-    QWIDGETPROPSETTER1(setVisible,visible)
+    QWIDGETPROPSETTER(setVisible,visible)
 }
 
 //---------------------------------------------------------------------------------------------------------
