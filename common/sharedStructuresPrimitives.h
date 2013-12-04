@@ -134,9 +134,9 @@ namespace ito
             tMultiPointPick = 6,
             tPoint      =   101,
             tLine       =   102,
-            tRetangle   =   103,
+            tRectangle   =   103,
             tSquare     =   104,
-            tElipse     =   105,
+            tEllipse     =   105,
             tCircle     =   106,
             tPolygon    =   110
         };
