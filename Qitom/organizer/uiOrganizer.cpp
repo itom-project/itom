@@ -1563,9 +1563,12 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
 {
     RetVal retValue(retOk);
     QObject *obj = getWeakObjectReference(objectID);
+    
 
     if(obj)
     {
+        QStringList errString;
+
         QMap<QString, QVariant>::iterator i = properties->begin();
         while (i !=  properties->end())
         {
@@ -1576,18 +1579,23 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
                 QMetaProperty prop = m_widgetWrapper->fakeProperty(obj, i.key(), &newObj);
                 if(prop.isValid() == false)
                 {
-                    retValue += RetVal(retError, errorObjPropRead, tr("at least one property could not be read").toAscii().data());
+                    errString.append( tr("property '%1' does not exist").arg(i.key()) );
                 }
                 else
                 {
                     i.value() = prop.read(newObj);
                     if(!i.value().isValid())
                     {
-                        retValue += RetVal(retError, errorObjPropRead, tr("at least one property could not be read").toAscii().data());
+                        errString.append( tr("property '%1' could not be read").arg(i.key()) );
                     }
                 }
             }
             ++i;
+        }
+
+        if (errString.count() > 0)
+        {
+            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
         }
     }
     else
@@ -1614,6 +1622,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
 
     if(obj)
     {
+        QStringList errString;
         const QMetaObject *mo = obj->metaObject();
         QMetaProperty prop;
         int index;
@@ -1627,17 +1636,22 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 prop = m_widgetWrapper->fakeProperty(obj, i.key(), &newObj);
                 if(prop.isValid() == false)
                 {
-                    retValue += RetVal(retError, errorObjPropRead, tr("at least one property name does not exist").toAscii().data());
+                    errString.append( tr("property '%1' does not exist").arg(i.key()) );
                 }
                 else
                 {
 					//check whether types need to be casted
 					//e.g. QVariantList can sometimes be casted to QPointF...
-					QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), retValue);
+                    RetVal tempRet;
+					QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
 
-                    if(!retValue.containsError() && prop.write(newObj, item) == false)
+                    if(tempRet.containsError())
                     {
-                        retValue += RetVal(retError, errorObjPropWrite, tr("at least one property could not be written").toAscii().data());
+                        retValue += tempRet;
+                    }
+                    else if(prop.write(obj, item) == false)
+                    {
+                        errString.append( tr("property '%1' could not be written").arg(i.key()) );
                     }
                 }
             }
@@ -1648,14 +1662,25 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
 				//check whether types need to be casted
 				//e.g. QVariantList can sometimes be casted to QPointF...
 				bool ok;
-				QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), retValue);
+                RetVal tempRet;
+				QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
 
-                if(!retValue.containsError() && prop.write(obj, item) == false)
+                if(tempRet.containsError())
                 {
-                    retValue += RetVal(retError, errorObjPropWrite, tr("at least one property could not be written").toAscii().data());
+                    retValue += tempRet;
                 }
+                else if(prop.write(obj, item) == false)
+                {
+                    errString.append( tr("property '%1' could not be written").arg(i.key()) );
+                }
+                
             }
             ++i;
+        }
+
+        if (errString.count() > 0)
+        {
+            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
         }
     }
     else
