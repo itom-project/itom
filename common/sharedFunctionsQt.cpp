@@ -256,7 +256,9 @@ namespace ito
 
         if (!paramFile.open(QIODevice::ReadOnly))
         {
-            return RetVal(retWarning, 0, QObject::tr("Can't open xml file").toAscii().data());
+            QString err;
+            err.sprintf("Can't open xml file: %s", paramFile.fileName().toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr(err.toAscii().data()).toAscii().data());
         }
 
         if (!paramDomDoc.setContent((QIODevice *)&paramFile, true, &errorStr, &errorLine, &errorColumn))
