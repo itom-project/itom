@@ -126,11 +126,11 @@ public:
     //! it will guess from the python type
     static QVariant PyObjToQVariant(PyObject* val, int type = -1);
 
-	static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, bool &ok);
+	static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval);
 
     //! convert python object to void* using QMetaType. if type is given it will try to create a void* of that type, otherwise
     //! it will guess from the python type. If fails, NULL is returned
-    static bool PyObjToVoidPtr(PyObject* val, void **retPtr, int *retType, int type = -1);
+    static bool PyObjToVoidPtr(PyObject* val, void **retPtr, int *retType, int type = -1, bool strict = false);
 
     //! convert QVariant from PyObject
     static PyObject* GetPyBool(bool val);

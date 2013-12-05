@@ -88,7 +88,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDoc
     //The shortcut is deleted when this instance is deleted (due to parent-indication).
     //QShortcut *s = new QShortcut(QKeySequence::Find, this, SLOT(mnuFindTextExpr()), 0, Qt::WidgetWithChildrenShortcut);
 
-    resizeDockWidget(700,400);
+    resize(700,400);
 
     connect(m_tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
     if (m_tabContextMenu != NULL)

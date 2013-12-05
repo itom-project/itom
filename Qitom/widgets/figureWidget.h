@@ -43,6 +43,8 @@ class FigureWidget : public AbstractDockWidget
 {
     Q_OBJECT
 
+    Q_PROPERTY(QRect geometry READ geometry WRITE setGeometry)
+
 
 public:
     FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent = 0, Qt::WindowFlags flags = 0);
