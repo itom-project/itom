@@ -131,7 +131,7 @@ namespace ito
         enum tPrimitive
         {
             tNoType     =   0,
-            tMultiPointPick = 6,
+            tMultiPointPick = 6,    // this is just for compability to multi point picking of plots!
             tPoint      =   101,
             tLine       =   102,
             tRectangle   =   103,

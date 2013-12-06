@@ -1393,7 +1393,7 @@ namespace dObjHelper
         const _Tp* rowPtr;
         _BufTp sum = 0;
 
-        if(ignoreNaN)
+        if(ignoreNaN && !std::numeric_limits<_Tp>::is_exact)
         {
             for (unsigned int nmat = 0; nmat < numMats; nmat++)
             {
@@ -1444,7 +1444,7 @@ namespace dObjHelper
         {
             nrOfValidElements = 0;
             float64 temp = 0.0;
-            if(ignoreNaN)
+            if(ignoreNaN && !std::numeric_limits<_Tp>::is_exact)
             {
                 for (unsigned int nmat = 0; nmat < numMats; nmat++)
                 {

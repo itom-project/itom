@@ -27,7 +27,7 @@
 namespace ito
 {
 
-UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent) :
+UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int geomtriecType, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent) :
     QObject(parent), 
     m_pPlotWidget(plotWidget), 
     m_pSemaphore(semaphore), 
@@ -74,7 +74,7 @@ UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int maxNrOfP
     }
     else
     {
-        emit userInteractionStart(PrimitiveContainer::tMultiPointPick, true, m_maxNrOfPoints);
+        emit userInteractionStart(geomtriecType, true, m_maxNrOfPoints);
     }
 }
 
@@ -112,40 +112,75 @@ void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
 //----------------------------------------------------------------------------------------------------------------------------------
 void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygonF points)
 {
-    if (type == 1)
+    int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
+    
+    switch(type)
     {
-        m_waiting = false;
-
-        if (aborted) points.clear();
-
-        int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
-        ito::DataObject output(dims, points.size(), ito::tFloat64);
-
-        ito::float64 *ptr = (ito::float64*)output.rowPtr(0,0);
-        int stride = points.size();
-
-        for (int i = 0; i < points.size(); ++i)
+        case ito::PrimitiveContainer::tSquare:
+        case ito::PrimitiveContainer::tCircle:
+        case ito::PrimitiveContainer::tPolygon:
+        default:
         {
-            ptr[i] = points[i].rx();
-            ptr[i + stride] = points[i].ry();
+            *m_coords = ito::DataObject();
+            break;
         }
-
-        *m_coords = output;
-
-        if (m_pSemaphore)
+        case ito::PrimitiveContainer::tMultiPointPick:
+        case ito::PrimitiveContainer::tPoint:
         {
             if (aborted)
             {
-                m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"User interaction aborted.");
+                points.clear();
+                *m_coords = ito::DataObject();
+                break;
             }
-            m_pSemaphore->release();
-            m_pSemaphore->deleteSemaphore();
-            m_pSemaphore = NULL;
+            m_waiting = false;
+
+            if (aborted) points.clear();
+
+            ito::DataObject output(dims, points.size(), ito::tFloat64);
+
+            ito::float64 *ptr = (ito::float64*)output.rowPtr(0,0);
+            int stride = points.size();
+
+            for (int i = 0; i < points.size(); ++i)
+            {
+                ptr[i] = points[i].rx();
+                ptr[i + stride] = points[i].ry();
+            }
+
+            *m_coords = output;
+            break;
         }
-
-        emit finished();
-
+        case ito::PrimitiveContainer::tLine:
+        case ito::PrimitiveContainer::tRectangle:
+        case ito::PrimitiveContainer::tEllipse:
+        {
+            if (aborted)
+            {
+                points.clear();
+                *m_coords = ito::DataObject();
+                break;
+            }
+            ito::DataObject output = ito::DataObject();
+            *m_coords = output;
+        }
+        break;
     }
+
+        
+
+    if (m_pSemaphore)
+    {
+        if (aborted)
+        {
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"User interaction aborted.");
+        }
+        m_pSemaphore->release();
+        m_pSemaphore->deleteSemaphore();
+        m_pSemaphore = NULL;
+    }
+
+    emit finished();
 }
 
 

@@ -38,6 +38,8 @@
 #include "userInteractionWatcher.h"
 #include "../python/pythonQtConversion.h"
 
+#include "common/sharedStructuresPrimitives.h"
+
 #include "qmainwindow.h"
 #include "widgets/mainWindow.h"
 
@@ -1563,7 +1565,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
 {
     RetVal retValue(retOk);
     QObject *obj = getWeakObjectReference(objectID);
-    
+
 
     if(obj)
     {
@@ -1596,7 +1598,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
         if (errString.count() > 0)
         {
             retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
-        }
+    }
     }
     else
     {
@@ -1652,8 +1654,8 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                     else if(prop.write(obj, item) == false)
                     {
                         errString.append( tr("property '%1' could not be written").arg(i.key()) );
-                    }
                 }
+            }
             }
             else
             {
@@ -1661,7 +1663,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
 
 				//check whether types need to be casted
 				//e.g. QVariantList can sometimes be casted to QPointF...
-				bool ok;
+				//bool ok;
                 RetVal tempRet;
 				QVariant item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
 
@@ -1672,7 +1674,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 else if(prop.write(obj, item) == false)
                 {
                     errString.append( tr("property '%1' could not be written").arg(i.key()) );
-                }
+            }
                 
             }
             ++i;
@@ -1681,7 +1683,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
         if (errString.count() > 0)
         {
             retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
-        }
+    }
     }
     else
     {
@@ -3013,7 +3015,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::PrimitiveContainer::tMultiPointPick, maxNrPoints, coords, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);

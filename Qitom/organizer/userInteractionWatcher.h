@@ -40,7 +40,7 @@ class UserInteractionWatcher : public QObject
     Q_OBJECT
 
 public:
-    UserInteractionWatcher(QWidget *plotWidget, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent = 0); //constructor
+    UserInteractionWatcher(QWidget *plotWidget, int geomtriecType, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent = 0); //constructor
     virtual ~UserInteractionWatcher(); //destructor
 
 private:
