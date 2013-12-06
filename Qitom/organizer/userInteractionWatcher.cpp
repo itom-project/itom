@@ -163,35 +163,53 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
             }
             m_waiting = false;
 
-            if (aborted) points.clear();
-
             dims = 8;
             int elementCount = (points.size() * 2)/ dims;
 
             ito::DataObject output(dims, elementCount, ito::tFloat64);
 
-            ito::float64 *ptr = NULL;
-
+#if 0
+            ito::float64 *ptr = (ito::float64*)output.rowPtr(0, 0);
             for (int i = 0; i < elementCount; i++)
             {
-                ptr = (ito::float64*)output.rowPtr(0,0);
-                ptr[i] = points[i].rx();      //idx
-                ptr += elementCount;
-                ptr[i] = points[i].ry();      // type
-                ptr += elementCount;
-                ptr[i] = points[i + 1].rx();  // x1
-                ptr += elementCount;
-                ptr[i] = points[i + 1].ry();  // y1
-                ptr += elementCount;
-                ptr[i] = points[i + 2].rx();  // x1
-                ptr += elementCount;
-                ptr[i] = points[i + 2].ry();  // y1
-                ptr += elementCount;
-                ptr[i] = points[i + 3].rx();  // z1
-                ptr += elementCount;
-                ptr[i] = points[i + 3].ry();  // z1
+                int n = i;
+                ptr[i]                    = points[i].rx();      //idx
+                
+                n += elementCount;
+                ptr[n]     = points[i].ry();      // type
+                
+                n += elementCount;
+                ptr[n] = points[i + 1].rx();  // x1
+                
+                n += elementCount;
+                ptr[n] = points[i + 1].ry();  // y1
+                
+                n += elementCount;
+                ptr[n] = points[i + 2].rx();  // x2
+                
+                n += elementCount;
+                ptr[n] = points[i + 2].ry();  // y2
+                
+                n += elementCount;
+                ptr[n] = 0.0;  // to be announced
+                
+                n += elementCount;
+                ptr[n] = 0.0;  // alpha
             }
-
+#else
+            cv::Mat* dst = (cv::Mat*)(output.get_mdata()[0]);
+            for (int i = 0; i < elementCount; i++)
+            {
+                dst->at<ito::float64>(0, i) = points[4 * i].rx();      //idx
+                dst->at<ito::float64>(1, i) = points[4 * i].ry();      //type
+                dst->at<ito::float64>(2, i) = points[4 * i + 1].rx();      //x1
+                dst->at<ito::float64>(3, i) = points[4 * i + 1].ry();      //y1
+                dst->at<ito::float64>(4, i) = points[4 * i + 2].rx();      //x2
+                dst->at<ito::float64>(5, i) = points[4 * i + 2].ry();      //y2
+                dst->at<ito::float64>(6, i) = 0.0; //points[i + 3].rx();      //???
+                dst->at<ito::float64>(7, i) = 0.0; //points[i + 3].ry();      //???
+            }
+#endif
             *m_coords = output;
             break;
         }
