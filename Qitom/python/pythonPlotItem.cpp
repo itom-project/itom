@@ -27,6 +27,7 @@
 
 #include "../organizer/uiOrganizer.h"
 #include "../AppManagement.h"
+#include "common/sharedStructuresPrimitives.h"
 
 namespace ito
 {
@@ -215,10 +216,101 @@ maxNrPoints: {int}, optional \n\
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, elementData, [,maxNrElements]) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
+\n\
+This method lets the user select one or multiple elements of type (up to maxNrElements) at the current plot (if the plot supports this).\n\
+\n\
+Parameters\n\
+-----------\n\
+elementType : {int} \n\
+    The element type to plot according to ito::PrimitiveContainer::tPrimitive.\n\
+points : {DataObject} \n\
+    resulting data object containing the 2D positions of the selected points [2 x nrOfSelectedPoints].\n\
+maxNrPoints: {int}, optional \n\
+    let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc.");
+/*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"elementType", "elementData", "maxNrElements", NULL};
+    ito::RetVal retval;
+    PyObject *dataObject = NULL;
+    int maxNrPoints = -1;
+    int elementType = -1;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"iO!|i",const_cast<char**>(kwlist), &elementType, &PythonDataObject::PyDataObjectType, &dataObject, &maxNrPoints))
+    {
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    
+    switch(elementType)
+    {
+        case ito::PrimitiveContainer::tSquare:
+        case ito::PrimitiveContainer::tCircle:
+        case ito::PrimitiveContainer::tPolygon:
+            PyErr_SetString(PyExc_RuntimeError, "Drawing of element type currently not supported");
+            return NULL;
+
+        case ito::PrimitiveContainer::tMultiPointPick:
+        case ito::PrimitiveContainer::tPoint:
+        case ito::PrimitiveContainer::tLine:
+        case ito::PrimitiveContainer::tRectangle:
+        case ito::PrimitiveContainer::tEllipse:
+            break;
+    }
+
+    bool ok;
+    QSharedPointer<ito::DataObject> coords = PythonQtConversion::PyObjGetSharedDataObject(dataObject, ok);
+
+    if (!ok)
+    {
+        retval += ito::RetVal(ito::retError,0,"data object cannot be converted to a shared data object");
+    }
+    else
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricElements", Q_ARG(unsigned int, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        bool finished = false;
+
+        while(!finished)
+        {
+            if (PyErr_CheckSignals())
+            {
+                retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
+                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(unsigned int, self->uiItem.objectID));
+            }
+            else
+            {
+                finished = locker.getSemaphore()->wait(200);
+            }
+        }
+
+        if (finished)
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if(!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlotItem::PyPlotItem_methods[] = {
     {"pickPoints", (PyCFunction)PyPlotItem_pickPoints, METH_KEYWORDS | METH_VARARGS, pyPlotItem_pickPoints_doc},
+    {"drawAndPickElements", (PyCFunction)PyPlotItem_drawAndPickElement, METH_KEYWORDS | METH_VARARGS, pyPlotItem_drawAndPickElement_doc},
     {NULL}  /* Sentinel */
 };
 

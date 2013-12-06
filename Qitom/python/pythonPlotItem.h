@@ -75,7 +75,7 @@ public:
     static PyObject* PyPlotItem_repr(PyPlotItem *self);
 
     static PyObject* PyPlotItem_pickPoints(PyPlotItem *self, PyObject *args, PyObject *kwds);
-
+    static PyObject* PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds);
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //------------------------------------------------------------------------------------------------- 

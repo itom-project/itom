@@ -374,6 +374,7 @@ public slots:
     RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
+    RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
 
     void figureDestroyed(QObject *obj)

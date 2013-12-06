@@ -161,8 +161,39 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
                 *m_coords = ito::DataObject();
                 break;
             }
-            ito::DataObject output = ito::DataObject();
+            m_waiting = false;
+
+            if (aborted) points.clear();
+
+            dims = 8;
+            int elementCount = (points.size() * 2)/ dims;
+
+            ito::DataObject output(dims, elementCount, ito::tFloat64);
+
+            ito::float64 *ptr = NULL;
+
+            for (int i = 0; i < elementCount; i++)
+            {
+                ptr = (ito::float64*)output.rowPtr(0,0);
+                ptr[i] = points[i].rx();      //idx
+                ptr += elementCount;
+                ptr[i] = points[i].ry();      // type
+                ptr += elementCount;
+                ptr[i] = points[i + 1].rx();  // x1
+                ptr += elementCount;
+                ptr[i] = points[i + 1].ry();  // y1
+                ptr += elementCount;
+                ptr[i] = points[i + 2].rx();  // x1
+                ptr += elementCount;
+                ptr[i] = points[i + 2].ry();  // y1
+                ptr += elementCount;
+                ptr[i] = points[i + 3].rx();  // z1
+                ptr += elementCount;
+                ptr[i] = points[i + 3].ry();  // z1
+            }
+
             *m_coords = output;
+            break;
         }
         break;
     }
