@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MeasureTool</class>
+ <widget class="QWidget" name="MeasureTool">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>655</width>
+    <height>629</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="Itom2dQwtPlot" name="dataPlot">
+       <property name="keepAspectRatio" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="enablePlotting" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showCenterMarker" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButtonRadius">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>radius</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonDistanceP2P">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>distance (p2p)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonDistanceP2L">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>distance (p2l)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonMean">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>mean value</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonCancel">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonClearAll">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Clear all</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="EvaluateGeometricsFigure" name="measurementTable">
+     <property name="considerOnly2D" stdset="0">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>EvaluateGeometricsFigure</class>
+   <extends>QMainWindow</extends>
+   <header>evaluateGeometrics.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Itom2dQwtPlot</class>
+   <extends>QMainWindow</extends>
+   <header>itom2dqwtplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>dataPlot</sender>
+   <signal>plotItemChanged(ito::int32,ito::int32,QVector&lt;ito::float32&gt;)</signal>
+   <receiver>measurementTable</receiver>
+   <slot>plotItemChanged(ito::int32,ito::int32,QVector&lt;ito::float32&gt;)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>232</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
