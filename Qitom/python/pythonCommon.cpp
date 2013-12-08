@@ -431,6 +431,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         else
                         {
                             temp = tempbuf;
+							temp.replace("\n","\\n");
+							temp.replace("\r","\\r");
                             if (temp.size() > 20)
                             {
                                 temp = QString("\"%1...\"").arg(temp.left(20));
