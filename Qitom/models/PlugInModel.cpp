@@ -1119,7 +1119,7 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
         }
         case itemCatActuator:
         {
-            return getFixedNodeInfo(index, tr("Motor"), itemType, role, m_iconActuator);
+            return getFixedNodeInfo(index, tr("Actuator"), itemType, role, m_iconActuator);
         }
         case itemCatAlgo:
         {
