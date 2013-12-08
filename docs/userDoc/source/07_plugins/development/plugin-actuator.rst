@@ -75,15 +75,15 @@ A sample header file of the actuator's plugin class is illustrated in the follow
             ito::RetVal waitForDone(int timeoutMS = -1, QVector<int> axis = QVector<int>() /*if empty -> all axis*/, int flags = 0 /*for your use*/);
 
         signals:
-            void parametersChanged(QMap<QString, ito::tParam> params);	/*!< Sends a signal if parameters have changes */
+            void parametersChanged(QMap<QString, ito::Param> params);	/*!< Sends a signal if parameters have changes */
 
         public slots:
             //! get/set parameters
-            ito::RetVal getParam(QSharedPointer<ito::tParam> val, ItomSharedSemaphore *waitCond = NULL);
-            ito::RetVal setParam(QSharedPointer<ito::tParam> val, ItomSharedSemaphore *waitCond = NULL);
+            ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
+            ito::RetVal setParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
             
             //! init/close method
-            ito::RetVal init(QVector<ito::tParam> *paramsMand, QVector<ito::tParam> *paramsOpt, ItomSharedSemaphore *waitCond = NULL); 
+            ito::RetVal init(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ItomSharedSemaphore *waitCond = NULL); 
             ito::RetVal close(ItomSharedSemaphore *waitCond);
 
             //! calibration for single or multiple axis

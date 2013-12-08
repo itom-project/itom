@@ -87,11 +87,11 @@ A sample header file of the DataIO's plugin class is illustrated in the followin
 
 		public slots:
 			//!< Get Camera-Parameter
-			ito::RetVal getParam(QSharedPointer<ito::tParam> val, ItomSharedSemaphore *waitCond);
+			ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
 			//!< Set Camera-Parameter
-			ito::RetVal setParam(QSharedPointer<ito::tParam> val, ItomSharedSemaphore *waitCond);
+			ito::RetVal setParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
 			//!< Initialise board, load dll, allocate buffer
-			ito::RetVal init(QVector<ito::tParam> *paramsMand, QVector<ito::tParam> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+			ito::RetVal init(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
 			//!< Free buffer, delete board, unload dll
 			ito::RetVal close(ItomSharedSemaphore *waitCond);
 
@@ -108,7 +108,7 @@ A sample header file of the DataIO's plugin class is illustrated in the followin
 
 			ito::RetVal ConvertY16(UINT32 XSize,UINT32 YSize,UINT8 *pBuf,UINT8 *pBGR);
 
-			void updateParameters(QMap<QString, ito::tParam> params);
+			void updateParameters(QMap<QString, ito::Param> params);
 
 		private slots:
 		

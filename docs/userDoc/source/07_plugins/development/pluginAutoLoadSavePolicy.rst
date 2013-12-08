@@ -7,7 +7,7 @@
 Automatic loading and saving of plugin parameters
 =================================================
 
-|itom| has the optional ability, that all plugin parameters (type *tParam*), which are part of the **m_params** vector of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
+|itom| has the optional ability, that all plugin parameters (type *Param*), which are part of the **m_params** vector of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
 |itom| has the optional ability, that all plugin parameters (of type **Param** or **ParamBase**), which are part of the **m_params** vector of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
 
 Additionally, the decision whether these parameters should be saved or not, is set by the member variable **m_autoSavePolicy** of the interface class of the plugin (see :ref:`plugin-interface-class`). This variable can have the following values:

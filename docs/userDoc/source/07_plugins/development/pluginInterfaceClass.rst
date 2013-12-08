@@ -188,7 +188,7 @@ The mandatory parameters are contained in the vector
     
     QVector<ito::Param> m_initParamsMand
 
-Using the methods *append* or *insert* you can add an arbitrary number of values (type *tParam*) to this vector. The type *QVector* is a |Qt|-specific class which is similar to *std::vector*. The optional parameters are analogously contained in the vector
+Using the methods *append* or *insert* you can add an arbitrary number of values (type *Param*) to this vector. The type *QVector* is a |Qt|-specific class which is similar to *std::vector*. The optional parameters are analogously contained in the vector
 
 .. code-block:: c++
     
