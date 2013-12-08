@@ -129,10 +129,10 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     self->uiItem.baseItem = (PyObject*)figure;
     DELETE_AND_SET_NULL_ARRAY(self->uiItem.objName);
     self->uiItem.objName = new char[objectName->size()+1];
-    strcpy(self->uiItem.objName, objectName->data() );
+    strcpy_s(self->uiItem.objName, objectName->size()+1, objectName->data() );
     DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
     self->uiItem.widgetClassName = new char[widgetClassName->size()+1];
-    strcpy(self->uiItem.widgetClassName, widgetClassName->data() );
+    strcpy_s(self->uiItem.widgetClassName, widgetClassName->size()+1, widgetClassName->data() );
     self->uiItem.objectID = objectID;
 
     return 0;

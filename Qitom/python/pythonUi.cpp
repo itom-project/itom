@@ -97,10 +97,10 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
         Py_XINCREF(self->baseItem); //if parent available increment its reference
         DELETE_AND_SET_NULL_ARRAY(self->objName);
         self->objName = new char[strlen(objName)+1];
-        strcpy(self->objName, objName);
+        strcpy_s(self->objName, strlen(objName)+1, objName);
         DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
         self->widgetClassName = new char[strlen(widgetClassName)+1];
-        strcpy(self->widgetClassName, widgetClassName);
+        strcpy_s(self->widgetClassName, strlen(widgetClassName)+1, widgetClassName);
         self->objectID = *objectID;
         *widgetClassNameBA = widgetClassName;
     }
@@ -131,10 +131,10 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
             self->baseItem = parentObj;
             DELETE_AND_SET_NULL_ARRAY(self->objName);
             self->objName = new char[strlen(objName)+1];
-            strcpy(self->objName, objName);
+            strcpy_s(self->objName, strlen(objName)+1, objName);
             DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
             self->widgetClassName = new char[widgetClassNameBA->size()+1];
-            strcpy(self->widgetClassName, widgetClassNameBA->data());
+            strcpy_s(self->widgetClassName, widgetClassNameBA->size()+1, widgetClassNameBA->data());
             self->objectID = *objectID;
         }
     }
@@ -1664,8 +1664,8 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 
     DELETE_AND_SET_NULL_ARRAY(self->filename);
     internalFilename = PyBytes_AsString((PyObject*)bytesFilename);
-    self->filename = new char[ strlen(internalFilename)+1];
-    strcpy(self->filename, internalFilename);
+    self->filename = new char[strlen(internalFilename)+1];
+    strcpy_s(self->filename, strlen(internalFilename)+1, internalFilename);
     internalFilename = NULL;
     Py_XDECREF(bytesFilename);
 
@@ -2922,11 +2922,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     dialog->uiItem.methodList = NULL;
     dialog->uiItem.objectID = *objectID;
     dialog->uiItem.widgetClassName = new char[className->size()+1];
-    strcpy(dialog->uiItem.widgetClassName, className->data());
+    strcpy_s(dialog->uiItem.widgetClassName, className->size()+1, className->data());
 
     char *objName = "<plugin-widget>\0";
     dialog->uiItem.objName = new char[strlen(objName)+1];
-    strcpy(dialog->uiItem.objName, objName);  
+    strcpy_s(dialog->uiItem.objName, strlen(objName)+1, objName);  
 
     return (PyObject*)dialog;
 }
