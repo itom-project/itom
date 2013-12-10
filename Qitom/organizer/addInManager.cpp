@@ -1295,7 +1295,7 @@ end:
         {
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore *, waitCond));
-            waitCond->wait(PLUGINWAIT);
+            waitCond->wait(PLUGINWAIT); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
             retval += waitCond->returnValue;
             waitCond->deleteSemaphore();
             waitCond = NULL;
