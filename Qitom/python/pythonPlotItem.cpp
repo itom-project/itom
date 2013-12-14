@@ -65,7 +65,11 @@ row-wisely addresses the subplots, beginning with 0. \n\
 \n\
 Parameters \n\
 ------------ \n\
-doc");
+figure : {???} \n\
+\n\
+subplotIdx: {???}\n\
+\n\
+");
 int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
     PythonFigure::PyFigure *figure = NULL;
@@ -227,7 +231,7 @@ elementType : {int} \n\
     The element type to plot according to ito::PrimitiveContainer::tPrimitive.\n\
 points : {DataObject} \n\
     resulting data object containing the 2D positions of the selected points [2 x nrOfSelectedPoints].\n\
-maxNrPoints: {int}, optional \n\
+maxNrElements: {int}, optional \n\
     let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc.");
 /*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {

@@ -30,4 +30,5 @@ Content:
    linePlots
    imagePlots
    isometricPlot
+   primitives
 

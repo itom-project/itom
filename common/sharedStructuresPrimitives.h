@@ -31,10 +31,34 @@
 #include "typeDefs.h"
 #include "../DataObject/dataobj.h"
 
-#define PRIM_ELEMENTLENGTH 11
 
-union geometricPrimitives
+#define PRIM_ELEMENTLENGTH 11 /** \brief number of elements within the geometricPrimitives */
+
+
+/** \struct geometricPrimitives
+*   \brief This union was defined for adressing geometricPrimitives.
+    \detail The union geometricPrimitives contains an array called cells with the size of PRIM_ELEMENTLENGTH.
+    The cells contain:
+    0. The unique index of the current primitive, castable to int32 with a maximum up to 16bit index values
+    1. Type flag 0000FFFF and further flags e.g. read&write only FFFF0000
+    2. First coordinate with x value
+    3. First coordinate with y value
+    4. First coordinate with z value
+    All other values depends on the primitiv type and may change between each type.
+    A point is defined as idx, flags, centerX0, centerY0, centerZ0
+    A line is defined as idx, flags, x0, y0, z0, x1, y1, z1
+    A ellipse is defined as idx, flags, centerX, centerY, centerZ, r1, r2
+    A circle is defined as idx, flags, centerX, centerY, centerZ, r
+    A rectangle is defined as idx, flags, x0, y0, z0, x1, y1, z1, alpha
+    A square is defined as idx, flags, centerX, centerY, centerZ, a, alpha
+    A polygon is defined as idx, flags, posX, posY, posZ, directionX, directionY, directionZ, idx, numIdx
+    \author Wolfram Lyda, twip optical solutions GmbH, Stuttgart
+    \date   12.2013
+*/
+
+struct geometricPrimitives
 {
+
 /*
     struct point
     {
@@ -120,26 +144,43 @@ union geometricPrimitives
     ito::float32 cells[PRIM_ELEMENTLENGTH];
 };
 
+
+
 namespace ito
 {
+
+    /** \class PrimitiveContainer
+    *   \detail This is a container to store geometric primitives.
+                The enum tPrimitive of this file defines the geometric primitives for all plots.
+        \author Wolfram Lyda, twip optical solutions GmbH, Stuttgart
+        \date   12.2013
+    */
     class PrimitiveContainer 
     {
     public:
+
+        /** \enum tPrimitive
+        *   \detail Discribes the different primtive types
+            \sa itom1DQwtPlot, itom2DQwtPlot
+        */
+        enum tPrimitive
+        {
+            tNoType         =   0,   /**! NoType for pick*/
+            tMultiPointPick =   6,   /**! Multi point pick*/
+            tPoint          =   101, /**! Element is tPoint or order to pick points*/
+            tLine           =   102, /**! Element is tLine or order to pick lines*/
+            tRectangle      =   103, /**! Element is tRectangle or order to pick rectangles*/
+            tSquare         =   104, /**! Element is tSquare or order to pick squares*/
+            tEllipse        =   105, /**! Element is tEllipse or order to pick ellipses*/
+            tCircle         =   106, /**! Element is tCircle or order to pick circles*/
+            tPolygon        =   110  /**! Element is tPolygon or order to pick polygon*/
+        };
+
+/** \cond HIDDEN_SYMBOLS */
         PrimitiveContainer(DataObject primitives = DataObject());
         ~PrimitiveContainer();
 
-        enum tPrimitive
-        {
-            tNoType     =   0,
-            tMultiPointPick = 6,    // this is just for compability to multi point picking of plots!
-            tPoint      =   101,
-            tLine       =   102,
-            tRectangle   =   103,
-            tSquare     =   104,
-            tEllipse     =   105,
-            tCircle     =   106,
-            tPolygon    =   110
-        };
+
 
         inline int getNumberOfRows() const {return m_primitives.getSize(0);};
         inline int getNumberOfElements(const int type) const;
@@ -162,6 +203,8 @@ namespace ito
 
         ito::DataObject m_primitives;
         cv::Mat * m_internalMat;
+/** \endcond */
+
     };
 
 
