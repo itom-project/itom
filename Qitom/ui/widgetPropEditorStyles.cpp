@@ -58,7 +58,6 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
             m_styles.push_back(entry);
         }
     }
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -72,7 +71,7 @@ void WidgetPropEditorStyles::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    for (int i = 0; i<m_styles.size(); i++)
+    for (int i = 0; i < m_styles.size(); i++)
     {
         settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(m_styles[i].m_index));
         m_styles[i].m_backgroundColor = QColor(settings.value("backgroundColor", m_styles[i].m_backgroundColor.name()).toString());
@@ -83,7 +82,6 @@ void WidgetPropEditorStyles::readSettings()
         m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
         settings.endGroup();
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -106,7 +104,6 @@ void WidgetPropEditorStyles::writeSettings()
         settings.setValue("italic", entry.m_font.italic());
         settings.endGroup();
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,3 +184,32 @@ void WidgetPropEditorStyles::on_checkFillEOL_stateChanged(int state)
         m_styles[index].m_fillToEOL = (state != Qt::Unchecked);
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::setFontSizeGeneral(const int fontSizeAdd)
+{
+    int selectedRow = ui.listWidget->currentIndex().row();
+
+    for (int i = 0; i < m_styles.size(); i++)
+    {
+        m_styles[i].m_font.setPointSize(m_styles[i].m_font.pointSize() + fontSizeAdd);
+
+        if (i == selectedRow)
+        {
+            on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnFontSizeDec_clicked()
+{
+    setFontSizeGeneral(-1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnFontSizeInc_clicked()
+{
+    setFontSizeGeneral(1);
+}
+
