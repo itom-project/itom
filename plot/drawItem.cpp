@@ -65,6 +65,13 @@ DrawItem::~DrawItem()
 void DrawItem::setSelected(const bool selected)
 {
     m_selected = selected;
+
+    if(m_type == ito::PrimitiveContainer::tPoint && m_marker.size() > 0)
+    {
+        QColor markerColor = m_marker[0]->linePen().color();
+        m_marker[0]->setSymbol(new QwtSymbol(selected ? QwtSymbol::Rect : QwtSymbol::Triangle, QBrush(markerColor),
+            QPen(QBrush(markerColor), 1), selected ? QSize(9,9) : QSize(7,7) ));
+    }
     setPen(pen().color(), m_selected ? 3 : 1);
     return;
 }
@@ -81,41 +88,56 @@ void DrawItem::setActive(int active)
     QColor markerColor = Qt::green;
     if(m_marker.size()) markerColor = m_marker[0]->linePen().color();
 
-    for (int n = 0; n < m_marker.size(); n++)
-        m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(markerColor),
-            QPen(QBrush(markerColor), 3),  QSize(7,7) ));
+    if(m_type == ito::PrimitiveContainer::tPoint)
+    {
+        for (int n = 0; n < m_marker.size(); n++)
+        {
+            m_marker[n]->setLinePen(QPen(markerColor));
+            m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Triangle,QBrush(markerColor),
+                QPen(QBrush(markerColor), 1),  QSize(7,7) ));
+        }
+    }
+    else
+    {
+        for (int n = 0; n < m_marker.size(); n++)
+        {
+            m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(markerColor),
+                QPen(QBrush(markerColor), 1),  QSize(7,7) ));
+        }
+    }
 
     if (active == 1)
     {
         if (m_marker.size() >= 1)
             m_marker[0]->setSymbol(new QwtSymbol(QwtSymbol::Rect, QBrush(markerColor),
-                QPen(QBrush(markerColor), 3),  QSize(7,7) ));
+                QPen(QBrush(markerColor), 1),  QSize(9,9) ));
     }
     else if (active == 2)
     {
         if (m_marker.size() >= 2)
             m_marker[1]->setSymbol(new QwtSymbol(QwtSymbol::Rect, QBrush(markerColor),
-                QPen(QBrush(markerColor), 3),  QSize(7,7) ));
+                QPen(QBrush(markerColor), 1),  QSize(9,9) ));
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void DrawItem::setColor(const QColor &markerColor, const QColor &lineColor)
 {
-    for (int n = 0; n < m_marker.size(); n++)
-        m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(markerColor),
-            QPen(QBrush(markerColor), 3),  QSize(7,7) ));
-
-    if (m_active == 1)
+    if(m_type == ito::PrimitiveContainer::tPoint)
     {
-        if (m_marker.size() >= 1)
-            m_marker[0]->setSymbol(new QwtSymbol(QwtSymbol::Rect, QBrush(markerColor),
-                QPen(QBrush(markerColor), 3),  QSize(7,7) ));
+        for (int n = 0; n < m_marker.size(); n++)
+        {
+            m_marker[n]->setLinePen(QPen(markerColor));
+            m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Triangle,QBrush(markerColor),
+                QPen(QBrush(markerColor), 1),  QSize(7,7) ));
+        }
     }
-    else if (m_active == 2)
+    else
     {
-        if (m_marker.size() >= 2)
-            m_marker[1]->setSymbol(new QwtSymbol(QwtSymbol::Rect, QBrush(markerColor),
-                QPen(QBrush(markerColor), 3),  QSize(7,7) ));
+        for (int n = 0; n < m_marker.size(); n++)
+        {
+            m_marker[n]->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(markerColor),
+                QPen(QBrush(markerColor), 1),  QSize(7,7) ));
+        }
     }
     setPen(QColor(lineColor), m_selected ? 3 : 1);
 }
@@ -128,7 +150,7 @@ void DrawItem::setShape(const QPainterPath &path, const QColor &firstColor, cons
     if (numOfElements <= 0)
         return;
     
-    setPen(firstColor);
+    setPen(firstColor, m_selected ? 3 : 1);
 
     QwtPlotShapeItem::setShape(path);
     
@@ -148,17 +170,32 @@ void DrawItem::setShape(const QPainterPath &path, const QColor &firstColor, cons
     {
         QPainterPath::Element el;
         marker = new QwtPlotMarker();
-        if (secondColor.isValid())
+
+
+        if(m_type == ito::PrimitiveContainer::tPoint)
+        {
+            marker->setLinePen(QPen(secondColor));
+            marker->setSymbol(new QwtSymbol(QwtSymbol::Triangle,QBrush(secondColor),
+                QPen(QBrush(secondColor), 1),  QSize(7,7) ));
+        }
+        else
         {
             marker->setLinePen(QPen(secondColor));
             marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(secondColor),
-                QPen(QBrush(secondColor), 3),  QSize(7,7) ));
+                QPen(QBrush(secondColor), 1),  QSize(7,7) ));
+            
+        }
+
+        /*
+        if (secondColor.isValid())
+        {
+            marker->setLinePen(QPen(secondColor));
         }
         else
         {
             marker->setLinePen(QPen(Qt::green));
-            marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(Qt::green), QPen(QBrush(Qt::green),3),  QSize(7,7) ));
         }
+        */
 
 
         switch (m_type)
@@ -201,17 +238,10 @@ void DrawItem::setShape(const QPainterPath &path, const QColor &firstColor, cons
     {
         QPainterPath::Element el;
         marker = new QwtPlotMarker();
-        if (secondColor.isValid())
-        {
-            marker->setLinePen(QPen(secondColor));
-            marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(secondColor),
-                QPen(QBrush(secondColor), 3),  QSize(7, 7) ));
-        }
-        else
-        {
-            marker->setLinePen(QPen(Qt::green));
-            marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(Qt::green), QPen(QBrush(Qt::green),3),  QSize(7,7) ));
-        }
+        marker->setLinePen(QPen(secondColor));
+        marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(secondColor),
+            QPen(QBrush(secondColor), 1),  QSize(7,7) ));
+        
 
         switch (m_type)
         {
