@@ -23,28 +23,23 @@
 #include "../models/leafFilterProxyModel.h"
 #include "../AppManagement.h"
 
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 // on_start
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WFlags flags)
     : QWidget(parent, flags),
 	m_historyIndex(-1),
 	m_pMainModel(NULL),
-	m_dbPath(qApp->applicationDirPath()+"/help"),
+	m_dbPath(qApp->applicationDirPath() + "/help"),
 	m_pParent(dock)
 {
     ui.setupUi(this);
 
 	connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
-	
-
 	// Initialize Variables
 	m_treeVisible = false;
 
 	connect(&dbLoaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(dbLoaderFinished(int)));
-
 
     m_pMainFilterModel = new LeafFilterProxyModel(this);
     m_pMainModel = new QStandardItemModel(this);
@@ -57,7 +52,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 	ui.textBrowser->installEventFilter(this);
 
 	m_previewMovie = new QMovie(":/application/icons/loader32x32trans.gif", QByteArray(), this);
-    ui.lblProcessMovie->setMovie( m_previewMovie );
+    ui.lblProcessMovie->setMovie(m_previewMovie);
     ui.lblProcessMovie->setVisible(false);
     ui.lblProcessText->setVisible(false);
 
@@ -70,7 +65,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     iconAliases << "class" << "const" << "routine" << "module" << "package" << "unknown" << "link_unknown" << "link_class" << "link_const" << "link_module" << "link_package" << "link_routine";
     foreach(const QString &icon, iconAliases)
     {
-        m_iconGallery[icon] = QIcon(":/helpTreeDockWidget/"+icon);
+        m_iconGallery[icon] = QIcon(":/helpTreeDockWidget/" + icon);
     }
 }
 
@@ -114,7 +109,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 void HelpTreeDockWidget::saveIni()
 {
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup(objectName());
 	settings.setValue("percWidthVi", m_percWidthVi);
 	settings.setValue("percWidthUn", m_percWidthUn);
 	settings.endGroup();
@@ -125,7 +120,7 @@ void HelpTreeDockWidget::saveIni()
 void HelpTreeDockWidget::loadIni()
 {
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup(objectName());
 	m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
     m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
 	settings.endGroup();
@@ -137,7 +132,7 @@ void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
 	
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup(objectName());
 	// Read the other Options
 	m_openLinks = settings.value("OpenExtLinks", true).toBool();
 	m_plaintext = settings.value("Plaintext", false).toBool();
@@ -155,7 +150,7 @@ void HelpTreeDockWidget::propertiesChanged()
 			QString dbName = settings.value("DB", QString()).toString();
 			if (dbName.startsWith("$"))	
 			{// This was checked and will be used
-				dbName.remove(0,2);
+				dbName.remove(0, 2);
 				//Add to m_pMainlist
 				m_includedDBs.append(dbName);
 			}
@@ -178,7 +173,7 @@ void HelpTreeDockWidget::propertiesChanged()
     QStringList splitt;
     int MyR = Qt::UserRole;
 
-    while( items.count() > 0)
+    while(items.count() > 0)
     {
         firstItem = items[0];
         splitt = firstItem.split(':');
@@ -188,7 +183,7 @@ void HelpTreeDockWidget::propertiesChanged()
         if(li >= 0)
         {
             path = splitt[1].left(li);
-            name = splitt[1].mid(li+1);
+            name = splitt[1].mid(li + 1);
         }
         else
         {
@@ -209,16 +204,16 @@ void HelpTreeDockWidget::propertiesChanged()
 				node->setIcon(iconGallery->value(splitt[0])); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
 			}
 			node->setEditable(false);
-            node->setData(splitt[1],MyR+1);
+            node->setData(splitt[1], MyR + 1);
             node->setToolTip(splitt[1]);
             createItemRek(model, *node, splitt[1], items, iconGallery);
             parent.appendRow(node);
         }
-        else if(path.indexOf( parentPath ) == 0) //parentPath is the first part of path
+        else if(path.indexOf(parentPath) == 0) //parentPath is the first part of path
         {
             items.takeFirst();
             int li = path.lastIndexOf(".");
-            QStandardItem *node = new QStandardItem(path.mid(li+1));
+            QStandardItem *node = new QStandardItem(path.mid(li + 1));
 			if (splitt[0].startsWith("link_")) // Siehe 19 Zeilen vorher
 			{ //ist ein Link (vielleicht wie oben Icon dynamisch zeichnen lassen
 				node->setIcon(iconGallery->value(splitt[0]));
@@ -228,7 +223,7 @@ void HelpTreeDockWidget::propertiesChanged()
 				node->setIcon(iconGallery->value(splitt[0]));
 			}
 			node->setEditable(false);
-            node->setData(path,MyR+1);                
+            node->setData(path, MyR + 1);                
             createItemRek(model, *node, path, items, iconGallery);  
             parent.appendRow(node);
         }
@@ -244,11 +239,11 @@ void HelpTreeDockWidget::propertiesChanged()
 /*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<QString> &items)
 {
 	ito::RetVal retval = ito::retOk;
-	QFile f( file );
+	QFile f(file);
   
-	if( f.exists() )
+	if(f.exists())
 	{
-        QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",file); //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
+        QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", file); //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
 	    database.setDatabaseName(file);
 		bool ok = database.open();
 		if(ok)
@@ -264,13 +259,13 @@ void HelpTreeDockWidget::propertiesChanged()
 		}
 		else
 		{
-			retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be opened", file.toAscii().data());
+			retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be opened").toAscii().data(), file.toAscii().data());
 		}
 		database.close();
 	}
 	else
 	{
-		retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be found", file.toAscii().data());
+		retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be found").toAscii().data(), file.toAscii().data());
 	}	
 	QSqlDatabase::removeDatabase(file);
 	return retval;
@@ -285,8 +280,6 @@ void HelpTreeDockWidget::reloadDB()
 	m_pMainModel->clear();
     ui.treeView->reset();
 	
-
-	
 	m_pMainFilterModel->setSourceModel(NULL);
 	m_previewMovie->start();
     ui.lblProcessMovie->setVisible(true);
@@ -300,7 +293,6 @@ void HelpTreeDockWidget::reloadDB()
 	dbLoaderWatcher.setFuture(f1);
 	//f1.waitForFinished();
 	// THREAD END
-	   
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -346,7 +338,6 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
 		QCoreApplication::processEvents();
 
-
 		if (!retval.containsWarningOrError())
 		{
 			createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
@@ -367,8 +358,6 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
     int errorCode = errorS.toInt();
 	QStringList errorList;
 
-	
-
     /*********************************/
     // Allgemeine HTML sachen anfügen /
     /*********************************/ 
@@ -379,10 +368,12 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
 					"</body></html>";
 
     if (errorCode == 1)
-        ui.label->setText("Parser: martin1-Parser");  
+    {
+        ui.label->setText(tr("Parser: martin1-Parser"));
+    }
     else if (errorCode == 0)
 	{
-        ui.label->setText("Parser: docutils");
+        ui.label->setText(tr("Parser: docutils"));
 		
 		// REGEX muss noch an den html code angepasst werden . ... und dann noch der betreffende teil aus dem helptext ausgeschnitten werden!
 		/*QRegExp docError("System Message: ERROR/\\d \\(.+\\).*\\.");
@@ -391,8 +382,9 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
         listM->setStringList(errorList);*/
 	}
     else if (errorCode == -1)
-        ui.label->setText("Parser: No Help available");
-
+    {
+        ui.label->setText(tr("Parser: No Help available"));
+    }
 
 	//CSS File als QString einlesen
 	// -------------------------------------
@@ -402,7 +394,7 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
 	file.open(QIODevice::ReadOnly);
 	QByteArray cssArray = file.readAll();
 	QString cssFile = QString(cssArray);
-	doc->addResource( QTextDocument::StyleSheetResource, QUrl( "help_style.css" ), cssFile );
+	doc->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), cssFile);
 
 	if (errorCode != 0)
     {
@@ -421,7 +413,6 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
 	{
 		rawContent.replace("h1", "h2");
 	}
-
 
     // Überschrift (Funktionsname) einfuegen
     // -------------------------------------
@@ -481,7 +472,7 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
             QRegExp bottom("<h2 id=\"Sections\">");
             head.setMinimal(true);
             // find multiple occurences of one heading
-            while ( ((headPos = head.indexIn(rawContent, headPos)) != -1) && (pos < bottomPos) )
+            while (((headPos = head.indexIn(rawContent, headPos)) != -1) && (pos < bottomPos))
             {
                 if (headPos == -1) {
                     break;}
@@ -500,7 +491,7 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
                 // search for: "x : int" for example
                 QRegExp line("[a-zA-Z _,.-]*: [^<br/>]*");            
             
-                while ( ((pos = line.indexIn(rawContent,pos)) != -1) && (pos < bottomPos) )
+                while (((pos = line.indexIn(rawContent,pos)) != -1) && (pos < bottomPos))
                 {
                     if (pos == -1) {
                         break;}
@@ -517,7 +508,7 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &helpText, con
     // Alles zusammenführen
     // -------------------------------------
 	html.insert(86, rawContent);
-	doc->setHtml( html );
+	doc->setHtml(html);
     return doc;
 }
 
@@ -668,7 +659,6 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 }
 
 
-
 /*************************************************************/
 /*****************GUI-Bezogene-Funktionen*********************/
 /*************************************************************/
@@ -695,9 +685,9 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     if (parts[0] == "itom")
     {
 		//qDebug()  <<  "OnTreeClickedPfad: "  <<  parts[1];
-		displayHelp( parts[1], 1);
+		displayHelp(parts[1], 1);
 
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(parts[1]) );
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(parts[1]));
 		ui.treeView->setCurrentIndex(filteredIndex);
     }
     else if (parts[0] == "http")
@@ -709,13 +699,15 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
 		QDesktopServices::openUrl(parts[1]);
     }
 	else if (parts[0] == "-1")
-		ui.label->setText("invalid Link");
+    {
+		ui.label->setText(tr("invalid Link"));
+    }
 	else
 	{
-		ui.label->setText("unknown protocol");
+		ui.label->setText(tr("unknown protocol"));
 		QMessageBox msgBox;
-		msgBox.setText("The protocol of the link is unknown. ");
-		msgBox.setInformativeText("Do you want to try with the external browser?");
+		msgBox.setText(tr("The protocol of the link is unknown. "));
+		msgBox.setInformativeText(tr("Do you want to try with the external browser?"));
 		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 		msgBox.setDefaultButton(QMessageBox::Yes);
 		int ret = msgBox.exec();
@@ -727,12 +719,11 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
 				break;
 		}
 	}
-		
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Saves the position of the splitter depending on the use of the tree or the textbox
-void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
+void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
 {
 	double width = ui.splitter->width();
 	if (m_treeVisible == true)
@@ -766,7 +757,7 @@ void HelpTreeDockWidget::navigateBackwards()
         displayHelp(m_history.at(m_historyIndex), 0);
 
 		// Highlight the entry in the tree
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(m_history.at(m_historyIndex)) );
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
 		ui.treeView->setCurrentIndex(filteredIndex);
     }
 }
@@ -781,7 +772,7 @@ void HelpTreeDockWidget::navigateForwards()
         displayHelp(m_history.at(m_historyIndex), 0);
 
 		// Highlight the entry in the tree
-		QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(m_history.at(m_historyIndex)) );
+		QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
 		ui.treeView->setCurrentIndex(filteredIndex);
     }
 }

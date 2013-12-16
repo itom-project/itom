@@ -105,7 +105,7 @@ void WidgetPropHelpDock::refreshDBs()
 void WidgetPropHelpDock::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup(objectName());
 
     ui.checkBox->setChecked( settings.value("OpenExtLinks", true).toBool() );
 	ui.checkBox_2->setChecked( settings.value("Plaintext", false).toBool() );
@@ -137,7 +137,7 @@ void WidgetPropHelpDock::readSettings()
 void WidgetPropHelpDock::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup(objectName());
 
     settings.setValue("OpenExtLinks", ui.checkBox->isChecked() );
 	settings.setValue("Plaintext", ui.checkBox_2->isChecked() );

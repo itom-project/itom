@@ -35,6 +35,7 @@
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 namespace ito {
 
@@ -58,7 +59,7 @@ namespace ito {
     \param parent parent-widget, default: NULL
     \sa init
 */
-AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title, QWidget *parent) :
+AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title, const QString &objName, QWidget *parent) :
     m_actStayOnTop(NULL),
     m_actStayOnTopOfApp(NULL),
     m_pWindow(NULL),
@@ -77,6 +78,11 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     m_overallParent(parent),
     m_recentTopLevelStyle(topLevelNothing)
 {
+    if (objName != "")
+    {
+        this->setObjectName(objName);
+    }
+
     PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEngine != NULL)
     {
@@ -343,6 +349,30 @@ void AbstractDockWidget::setEnabled(bool enabled)
 void AbstractDockWidget::setVisible(bool visible)
 {
     QWIDGETPROPSETTER(setVisible,visible)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::saveState() const 
+{
+    if (objectName() != "")
+    {
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup(objectName());
+        settings.setValue("state", this->m_pWindow->saveState());
+        settings.endGroup();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::restoreState() const
+{
+    if (objectName() != "")
+    {
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup(objectName());
+        m_pWindow->restoreState(settings.value("state").toByteArray());
+        settings.endGroup();
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------

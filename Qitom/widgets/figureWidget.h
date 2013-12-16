@@ -103,10 +103,6 @@ private:
 
     QVector<QWidget*> m_widgets;
 
-
-
-	
-
 signals:
     
 private slots:

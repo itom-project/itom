@@ -78,7 +78,7 @@ namespace ito
                 QToolBar *tb;
             };
 
-            AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title = QString(), QWidget *parent = 0);
+            AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title = QString(), const QString &objName = QString(), QWidget *parent = 0);
             virtual ~AbstractDockWidget();
 
             inline bool docked() const { return m_docked; }    /*!<  returns if docking widget is docked (true) or undocked (false) */
@@ -143,6 +143,9 @@ namespace ito
 
             bool isEnabled() const;
             bool isVisible() const;
+
+            void saveState() const;
+            void restoreState() const;
 
         public Q_SLOTS:
             void setEnabled(bool);

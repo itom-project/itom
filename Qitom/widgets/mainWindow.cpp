@@ -130,8 +130,9 @@ MainWindow::MainWindow() :
     if (uOrg->hasFeature(featFileSystem))
     {
         // FileDir-Dock
-        m_fileSystemDock = new FileSystemDockWidget(tr("File System"), this, true, true, AbstractDockWidget::floatingStandard);
-	    m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
+        m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
+//        m_fileSystemDock->restoreState();
 	    m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
@@ -140,26 +141,26 @@ MainWindow::MainWindow() :
     if (uOrg->hasFeature(featDeveloper))
     {
         // breakPointDock
-        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), this, true, true, AbstractDockWidget::floatingStandard);
-	    m_breakPointDock->setObjectName("itomBreakPointDockWidget");
+        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_breakPointDock->setObjectName("itomBreakPointDockWidget");
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
         // lastCommandDock
-        m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), this, true, true, AbstractDockWidget::floatingStandard);
-	    m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
+        m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), "itomLastCommandDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
         m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
 
         // helpDock
-        m_helpDock = new HelpDockWidget(tr("Help"), this, true, true, AbstractDockWidget::floatingStandard);
-	    m_helpDock->setObjectName("itomHelpDockWidget");
+        m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_helpDock->setObjectName("itomHelpDockWidget");
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
 	    // CallStack-Dock
-	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), this, true, true, AbstractDockWidget::floatingStandard);
-	    m_callStackDock->setObjectName("itomCallStackDockWidget");
+	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), "itomCallStackDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_callStackDock->setObjectName("itomCallStackDockWidget");
 	    m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
 	    addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
@@ -169,15 +170,15 @@ MainWindow::MainWindow() :
         m_fileSystemDock->raise();
 
         // global workspace widget (Python)
-        m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), true, this, true, true, AbstractDockWidget::floatingStandard);
-	    m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
+        m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), "itomGlobalWorkspaceDockWidget", true, this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
         m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
         connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
         // local workspace widget (Python)
-        m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), false, this, true, true, AbstractDockWidget::floatingStandard);
-	    m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
+        m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), "itomLocalWorkspaceDockWidget", false, this, true, true, AbstractDockWidget::floatingStandard);
+//	    m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
         m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
         connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString, int)), this, SLOT(setStatusText(QString, int)));
@@ -192,8 +193,8 @@ MainWindow::MainWindow() :
     {
         // AddIn-Manager
     //    m_pAIManagerWidget = new AIManagerWidget();
-        m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
-	    m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
+        m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
+//	    m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
         qDebug(".. plugin manager widget loaded");
 
         addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
@@ -293,6 +294,8 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
+    m_fileSystemDock->saveState();
+
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings->beginGroup("MainWindow");

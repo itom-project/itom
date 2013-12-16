@@ -52,7 +52,7 @@ namespace ito
         Q_OBJECT
 
         public:
-            FileSystemDockWidget(const QString &title, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled, const QString &baseDirectory = QDir::currentPath());
+            FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled, const QString &baseDirectory = QDir::currentPath());
             ~FileSystemDockWidget();
 
         protected:
