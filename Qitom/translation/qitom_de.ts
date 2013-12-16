@@ -991,14 +991,59 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+285"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+289"/>
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
     </message>
     <message>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+34"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="-27"/>
+        <source>Database %s could not be opened</source>
+        <translation>Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Database %s could not be found</source>
+        <translation>Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+54"/>
         <source>No help database available</source>
         <translation>Keine Hilfedatenbank verfügbar</translation>
+    </message>
+    <message>
+        <location line="+50"/>
+        <source>Parser: martin1-Parser</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Parser: docutils</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Parser: No Help available</source>
+        <translation>Parser: Keine Hilfe verfügbar</translation>
+    </message>
+    <message>
+        <location line="+317"/>
+        <source>invalid Link</source>
+        <translation>ungültiger Link</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>unknown protocol</source>
+        <translation>Unbekanntes Protokoll</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The protocol of the link is unknown. </source>
+        <translation>Das Protokoll des Links ist unbekannt. </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Do you want to try with the external browser?</source>
+        <translation>Soll versucht werden den Link mit dem Browser zu öffnen?</translation>
     </message>
 </context>
 <context>
@@ -1113,7 +1158,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+194"/>
+        <location line="+187"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1569,8 +1614,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+228"/>
+        <location line="+241"/>
         <location line="+210"/>
         <source>Can&apos;t open xml file</source>
         <translation>XML-Datei konnte nicht geöffnet werden</translation>
@@ -1918,7 +1962,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+977"/>
+        <location filename="../python/pythonCommon.cpp" line="+979"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2018,7 +2062,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2767"/>
+        <location filename="../python/pythonUi.cpp" line="+2810"/>
         <source>no widget name specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2413,7 +2457,7 @@ Type conflict for %1</source>
         <translation>Script-Editor</translation>
     </message>
     <message>
-        <location line="+97"/>
+        <location line="+96"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
@@ -3061,7 +3105,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>Foreground Color</source>
-        <translation type="unfinished">Vordergundsfarbe</translation>
+        <translation>Vordergundsfarbe</translation>
     </message>
     <message>
         <location/>
@@ -3076,7 +3120,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>Fill to end of line</source>
-        <translation type="unfinished">Bis Zeilenende ausfüllen</translation>
+        <translation>Bis Zeilenende ausfüllen</translation>
     </message>
     <message>
         <location/>
@@ -3084,14 +3128,29 @@ Type conflict for %1</source>
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.cpp" line="+136"/>
+        <location filename="../ui/widgetPropEditorStyles.cpp" line="+133"/>
         <source>choose background color</source>
         <translation>Hintergrundfarbe auswählen</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>choose foreground color</source>
-        <translation type="unfinished">Vordergrundsfarbe auswählen</translation>
+        <translation>Vordergrundsfarbe auswählen</translation>
+    </message>
+    <message>
+        <location filename="../ui/widgetPropEditorStyles.ui"/>
+        <source>Font Size general</source>
+        <translation>Generelle Schriftgröße</translation>
+    </message>
+    <message>
+        <location/>
+        <source>-</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>+</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -3099,7 +3158,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../ui/widgetPropFigurePlugins.ui"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location/>
@@ -3525,7 +3584,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="+103"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+109"/>
         <source>stay on top</source>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
@@ -3535,7 +3594,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+55"/>
         <source>docking toolbar</source>
         <translation>Symbolleiste Fenster andocken</translation>
     </message>
@@ -3550,7 +3609,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Fenster ausdocken</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+324"/>
         <source>toolbar &apos;%1&apos; is already available</source>
         <translation>Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
@@ -3585,7 +3644,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="+683"/>
+        <location filename="../../common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
@@ -4276,7 +4335,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::FigureWidget</name>
     <message>
-        <location filename="../widgets/figureWidget.cpp" line="+126"/>
+        <location filename="../widgets/figureWidget.cpp" line="+124"/>
         <source>subplot %1 (empty)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4286,14 +4345,66 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>&amp;Windows</source>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+261"/>
+        <location line="+69"/>
+        <location line="+111"/>
+        <source>designer widget of class &apos;%s&apos; cannot plot objects of type dataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-100"/>
+        <location line="+19"/>
+        <source>designerWidgetOrganizer is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>camera is not available any more</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+104"/>
+        <source>areaRow out of range [0,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>arealCol out of range [0,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
         <source>subplot %1</source>
         <translation type="unfinished">Subplot %1</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>could not create designer widget of class &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>designerWidgetOrganizer or uiOrganizer is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>addInBase pointer is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>timeout while getting parameter &apos;%s&apos; from plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>parameter &apos;%s&apos; is not defined in plugin</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4309,7 +4420,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>open new folder</source>
         <translation>Neues Verzeichnis öffnen</translation>
     </message>
@@ -4788,12 +4899,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>itom</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+46"/>
         <source>Breakpoints</source>
         <translation type="unfinished">Haltepunkte</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>File System</source>
         <translation type="unfinished">Dateisystem</translation>
     </message>
@@ -4803,7 +4914,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+66"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -4836,7 +4947,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+235"/>
+        <location line="+237"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4896,12 +5007,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-333"/>
+        <location line="-335"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+338"/>
+        <location line="+340"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5016,8 +5127,8 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="-443"/>
-        <location line="+455"/>
+        <location line="-445"/>
+        <location line="+457"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -5251,13 +5362,9 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+673"/>
+        <location line="+412"/>
         <source>Actuator</source>
         <translation type="unfinished">Motor</translation>
-    </message>
-    <message>
-        <location line="+412"/>
-        <source>Motor</source>
-        <translation></translation>
     </message>
     <message>
         <location line="-408"/>
@@ -5350,7 +5457,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+510"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -5609,7 +5716,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+624"/>
+        <location line="+619"/>
         <location line="+38"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
@@ -5625,7 +5732,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-838"/>
+        <location line="-833"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5884,7 +5991,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+312"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+314"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5979,8 +6086,8 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+181"/>
-        <location line="+86"/>
-        <location line="+69"/>
+        <location line="+94"/>
+        <location line="+85"/>
         <location line="+151"/>
         <location line="+59"/>
         <location line="+52"/>
@@ -5993,24 +6100,24 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-621"/>
-        <location line="+7"/>
-        <source>at least one property could not be read</source>
+        <location line="-642"/>
+        <location line="+57"/>
+        <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
-        <source>at least one property name does not exist</source>
+        <location line="-50"/>
+        <source>property &apos;%1&apos; could not be read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+15"/>
-        <source>at least one property could not be written</source>
+        <location line="+65"/>
+        <location line="+20"/>
+        <source>property &apos;%1&apos; could not be written</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+39"/>
         <location line="+32"/>
         <source>The attribute number is out of range.</source>
         <translation type="unfinished"></translation>
@@ -6022,11 +6129,12 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+25"/>
         <location line="+1222"/>
         <location line="+38"/>
+        <location line="+37"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1198"/>
+        <location line="-1235"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6090,7 +6198,8 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+118"/>
-        <location line="+39"/>
+        <location line="+38"/>
+        <location line="+38"/>
         <source>The desired widget has no signals/slots defined that enable the pick points interaction</source>
         <translation type="unfinished"></translation>
     </message>
