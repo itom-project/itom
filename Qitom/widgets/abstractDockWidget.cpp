@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2013, Institut für Technische Optik (ITO), 
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -60,22 +60,22 @@ namespace ito {
     \sa init
 */
 AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title, const QString &objName, QWidget *parent) :
-    m_actStayOnTop(NULL),
-    m_actStayOnTopOfApp(NULL),
-    m_pWindow(NULL),
-    m_docked(docked && isDockAvailable),
-    m_dockAvailable(isDockAvailable),
-    m_floatingStyle(floatingStyle),
-    m_movingStyle(movingStyle),
-    m_basicTitle(title),
-    m_completeTitle(title),
-    m_pythonBusy(false),
-    m_pythonDebugMode(false),
-    m_pythonInWaitingMode(false),
-    m_dockToolbar(NULL),
-    m_actDock(NULL),
-    m_actUndock(NULL),
-    m_overallParent(parent),
+    m_actStayOnTop(NULL), 
+    m_actStayOnTopOfApp(NULL), 
+    m_pWindow(NULL), 
+    m_docked(docked && isDockAvailable), 
+    m_dockAvailable(isDockAvailable), 
+    m_floatingStyle(floatingStyle), 
+    m_movingStyle(movingStyle), 
+    m_basicTitle(title), 
+    m_completeTitle(title), 
+    m_pythonBusy(false), 
+    m_pythonDebugMode(false), 
+    m_pythonInWaitingMode(false), 
+    m_dockToolbar(NULL), 
+    m_actDock(NULL), 
+    m_actUndock(NULL), 
+    m_overallParent(parent), 
     m_recentTopLevelStyle(topLevelNothing)
 {
     if (objName != "")
@@ -294,37 +294,37 @@ QRegion AbstractDockWidget::childrenRegion() const
 
 void AbstractDockWidget::move(int x, int y)
 {
-    QWIDGETPROPSETTER(move,x,y)
+    QWIDGETPROPSETTER(move, x, y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::move(const QPoint &point)
 {
-    QWIDGETPROPSETTER(move,point)
+    QWIDGETPROPSETTER(move, point)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::resize(int w, int h)
 {
-    QWIDGETPROPSETTER(resize,w,h)
+    QWIDGETPROPSETTER(resize, w, h)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::resize(const QSize &size)
 {
-    QWIDGETPROPSETTER(resize,size)
+    QWIDGETPROPSETTER(resize, size)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setGeometry(int x, int y, int w, int h)
 {
-    QWIDGETPROPSETTER(setGeometry,x,y,w,h)
+    QWIDGETPROPSETTER(setGeometry, x, y, w, h)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setGeometry(const QRect &rect)
 {
-    QWIDGETPROPSETTER(setGeometry,rect)
+    QWIDGETPROPSETTER(setGeometry, rect)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -342,13 +342,13 @@ bool AbstractDockWidget::isVisible() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setEnabled(bool enabled)
 {
-    QWIDGETPROPSETTER(setEnabled,enabled)
+    QWIDGETPROPSETTER(setEnabled, enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setVisible(bool visible)
 {
-    QWIDGETPROPSETTER(setVisible,visible)
+    QWIDGETPROPSETTER(setVisible, visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -445,7 +445,7 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
 //*/
 //RetVal AbstractDockWidget::addAndRegisterToolBar(QToolBar* tb, QString key)
 //{
-//    QMap<QString,QToolBar*>::iterator it = m_toolBars.find(key);
+//    QMap<QString, QToolBar*>::iterator it = m_toolBars.find(key);
 //
 //    if (it == m_toolBars.end())
 //    {
@@ -453,14 +453,14 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
 //
 //        if (!m_docked && m_floatingStyle == floatingWindow)
 //        {
-//            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+//            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
 //        }
 //        else
 //        {
-//            tb->setIconSize(QSize(16,16));
+//            tb->setIconSize(QSize(16, 16));
 //        }
 //
-//        m_toolBars.insert(key,tb);
+//        m_toolBars.insert(key, tb);
 //        return RetVal(retOk);
 //    }
 //    return RetVal(retError);
@@ -617,7 +617,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
 */
 QToolBar* AbstractDockWidget::getToolBar(QString key) const
 {
-    QMap<QString,QToolBar*>::const_iterator it = m_toolBars.find(key);
+    QMap<QString, QToolBar*>::const_iterator it = m_toolBars.find(key);
 
     if (it != m_toolBars.end())
     {
@@ -721,7 +721,7 @@ void AbstractDockWidget::dockWidget()
 
     windowStateChanged(false);
 
-    m_dockToolbar->setIconSize(QSize(20,15));
+    m_dockToolbar->setIconSize(QSize(20, 15));
 
     QList<Toolbar>::iterator it;
     for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
@@ -729,7 +729,7 @@ void AbstractDockWidget::dockWidget()
         it->tb->setIconSize(QSize(16, 16));
     }
 
-    //QMap<QString,QToolBar*>::iterator it;
+    //QMap<QString, QToolBar*>::iterator it;
     ////qDebug() << "AbstractDockWidget::dockWidget 2";
     //for (it = m_toolBars.begin(); it != m_toolBars.end(); ++it)
     //{
@@ -813,17 +813,17 @@ void AbstractDockWidget::undockWidget()
         }
     }
 
-    /*QMap<QString,QToolBar*>::iterator it;
+    /*QMap<QString, QToolBar*>::iterator it;
 
     for (it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
     {
         if (m_floatingStyle == floatingWindow)
         {
-            (*it)->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize),style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
+            (*it)->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
         }
         else
         {
-            (*it)->setIconSize(QSize(16,16));
+            (*it)->setIconSize(QSize(16, 16));
         }
     }*/
 
@@ -898,7 +898,7 @@ void AbstractDockWidget::mnuStayOnTopOfApp(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! activates this dock widget or window and raises it on top of all opened windows
 /*!
-    Depending on the docking-state of this widget and its style (docking-widget or single-window),
+    Depending on the docking-state of this widget and its style (docking-widget or single-window), 
     this widget is activated and if undocked raised on top of the window stack.
 
     \return retOk
@@ -963,7 +963,7 @@ void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
 	{
 		if (newHeight > 0 && newWidth > 0)
 		{
-			m_pWindow->resize(newWidth,newHeight);
+			m_pWindow->resize(newWidth, newHeight);
 		}
 		else if (newHeight > 0)
 		{
