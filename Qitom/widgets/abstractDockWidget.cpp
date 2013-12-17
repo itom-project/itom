@@ -145,7 +145,6 @@ void AbstractDockWidget::init()
     m_pWindow->setWindowFlags(Qt::Widget);
     setWidget(m_pWindow);
 
-
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable;
 
     if (m_floatingStyle == floatingStandard)
