@@ -37,8 +37,8 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-HelpDockWidget::HelpDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+HelpDockWidget::HelpDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
 	m_pHelpWidget(NULL),
 	m_pActBackward(NULL),
 	m_pActForward(NULL),

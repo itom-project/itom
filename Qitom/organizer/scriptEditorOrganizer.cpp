@@ -39,7 +39,7 @@
 
     \param dockAvailable true if dock functionality is available
 */
-ScriptEditorOrganizer::ScriptEditorOrganizer( bool dockAvailable)
+ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
 {
     m_dockAvailable = dockAvailable;
 
@@ -109,9 +109,9 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
         docked = false;
     }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), docked, m_dockAvailable, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+    newWidget = new ScriptDockWidget(tr("Script Editor"), "", docked, m_dockAvailable, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
     m_scriptStackMutex.lock();
-    scriptDockElements.push_front( newWidget );
+    scriptDockElements.push_front(newWidget);
     m_scriptStackMutex.unlock();
 
     connect(newWidget,SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)),this,SLOT(removeScriptDockWidget(ScriptDockWidget*)));
@@ -123,10 +123,10 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     connect(newWidget, SIGNAL(pythonRunFileRequest(QString)), this, SLOT(pythonRunFileRequested(QString)));
     connect(newWidget, SIGNAL(pythonDebugFileRequest(QString)), this, SLOT(pythonDebugFileRequested(QString)));
     //!< setup signal/slot-connection to python thread
-    qRegisterMetaType<ito::tPythonDbgCmd>("tPythonDbgCmd" );
+    qRegisterMetaType<ito::tPythonDbgCmd>("tPythonDbgCmd");
     
 	const PythonEngine *pyEngine = PythonEngine::getInstance();
-	if(pyEngine)
+	if (pyEngine)
 	{
 		connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
 		connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
@@ -142,7 +142,6 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     }
 
     return newWidget;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -165,7 +164,7 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
     disconnect(widget,SIGNAL(openScriptRequest(QString,ScriptDockWidget*)), this, SLOT(openScriptRequested(QString,ScriptDockWidget*)));
 
 	const PythonEngine *pyEngine = PythonEngine::getInstance();
-	if(pyEngine)
+	if (pyEngine)
 	{
 		disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
 		disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
@@ -200,7 +199,7 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
         m_scriptStackMutex.lock();
         for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
         {
-            unsavedFileNames.append( (*it)->getModifiedFileNames(ignoreNewScripts));
+            unsavedFileNames.append((*it)->getModifiedFileNames(ignoreNewScripts));
         }
         m_scriptStackMutex.unlock();
 
@@ -221,8 +220,6 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
                 return RetVal(retOk);
             }
         }
-        
-
     }
 
     m_scriptStackMutex.lock();
@@ -310,12 +307,16 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement()
 {
     QMutexLocker locker(&m_scriptStackMutex);
     foreach(ito::ScriptDockWidget *sdw, scriptDockElements)
     {
-        if(sdw->docked() == false) return sdw;
+        if (sdw->docked() == false)
+        {
+            return sdw;
+        }
     }
     return NULL;
 }
@@ -356,7 +357,6 @@ void ScriptEditorOrganizer::widgetFocusChanged(QWidget* /*old*/, QWidget* now)
                 }
 
                 //m_scriptStackMutex.unlock();
-
             }
             else
             {
@@ -414,7 +414,7 @@ void ScriptEditorOrganizer::undockScriptTab(ScriptDockWidget* widget, int index,
     {
         ScriptDockWidget *undockedWidget = NULL;
         undockedWidget = getFirstUndockedElement(); //the really first element is per default the active one. //getActiveDockWidget();
-        if ( undockedWidget == NULL || undockToNewScriptWindow) // activeWidget is docked, so open a new one
+        if (undockedWidget == NULL || undockToNewScriptWindow) // activeWidget is docked, so open a new one
         {
             undockedWidget = createEmptyScriptDock(false);
         }
@@ -427,7 +427,6 @@ void ScriptEditorOrganizer::undockScriptTab(ScriptDockWidget* widget, int index,
             widget->close();
         }
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -509,7 +508,7 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
         {
             exist = true;
             (*it)->raiseAndActivate();
-			if(visibleLineNr >= 0)
+			if (visibleLineNr >= 0)
 			{
 				(*it)->activeTabEnsureLineVisible(visibleLineNr);
 			}
@@ -536,7 +535,7 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
 				retValue += activeWidget->openScript(filename, false);
 			}
 
-			if(visibleLineNr >= 0)
+			if (visibleLineNr >= 0)
 			{
 				activeWidget->activeTabEnsureLineVisible(visibleLineNr);
 			}
@@ -594,7 +593,6 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(QString filename, S
         }
          widget->openScript(filename, true);
          tempWidget = widget;
-
     }
 
     return tempWidget;

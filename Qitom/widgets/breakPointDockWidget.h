@@ -40,7 +40,7 @@ namespace ito
         Q_OBJECT
 
         public:
-            BreakPointDockWidget(const QString &title, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled);
+            BreakPointDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled);
             ~BreakPointDockWidget();
 
         protected:

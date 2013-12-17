@@ -56,7 +56,6 @@ signals:
     void pythonRunFile(QString filename);           //! signal emitted if macro (filename) should be executed in python
     void pythonDebugFile(QString filename);         //! signal emitted if macro (filename) should be debugged in python
 
-
 public slots:
     void removeScriptDockWidget(ScriptDockWidget* widget);
 
@@ -75,7 +74,6 @@ public slots:
     void pythonDebugPositionChanged(QString filename, int lineNo);
 
 private slots:
-
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
 };

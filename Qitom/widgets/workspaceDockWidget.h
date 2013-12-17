@@ -40,7 +40,7 @@ class WorkspaceDockWidget : public AbstractDockWidget
     Q_OBJECT
 
 public:
-    WorkspaceDockWidget(const QString &title, bool globalNotLocal, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled);
+    WorkspaceDockWidget(const QString &title, const QString &objName, bool globalNotLocal, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled);
     ~WorkspaceDockWidget();
 
 protected:
@@ -79,8 +79,6 @@ private slots:
     void treeWidgetItemSelectionChanged() { updateActions(); };
     void treeWidgetItemChanged(QTreeWidgetItem * item, int column);
     void treeViewContextMenuRequested(const QPoint &pos);
-
-	
 
 signals:
     void setStatusInformation(QString text, int timeout = 0);

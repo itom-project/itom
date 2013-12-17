@@ -38,8 +38,8 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_pContextMenu(NULL),
     m_pShowConfDialog(NULL),
     m_pActDockWidget(NULL),
@@ -139,7 +139,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, QWidget *parent, bool doc
     }
     
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings->beginGroup("AIManagerWidget");
+    settings->beginGroup(objectName());
     size = settings->beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i)
     {
@@ -200,7 +200,7 @@ AIManagerWidget::~AIManagerWidget()
     QString setFile(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
-    settings->beginGroup("AIManagerWidget");
+    settings->beginGroup(objectName());
 
 //    QByteArray state = m_pMainToolbar->saveGeometry();
 //    settings->setValue("stateToolBar", state);

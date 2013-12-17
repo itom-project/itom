@@ -62,8 +62,8 @@ namespace ito {
     \return description
     \sa AbstractDockWidget::AbstractDockWidget
 */
-ScriptDockWidget::ScriptDockWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/)
-    : AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, parent),
+ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/)
+    : AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(NULL), m_pWidgetFindWord(NULL), m_pDialogReplace(NULL), m_actTabIndex(-1), m_tabContextMenu(NULL), m_winMenu(NULL)
 {
     m_tab = new QTabWidgetItom(this);
@@ -132,7 +132,7 @@ ScriptDockWidget::~ScriptDockWidget()
 
     for (int i = m_tab->count()-1 ; i >= 0 ; i--)
     {
-        closeTab(i,false);
+        closeTab(i, false);
     }
 
     DELETE_AND_SET_NULL(m_tab);
@@ -159,7 +159,7 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     for (int i = 0; i < m_tab->count() ; i++)
     {
         sew = getEditorByIndex(i);
-        if (sew!=NULL && sew->isModified() && i != excludeIndex)
+        if (sew != NULL && sew->isModified() && i != excludeIndex)
         {
             if (!ignoreUnsavedFiles || !sew->hasNoFilename())
             {
@@ -430,7 +430,6 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     }
 
     return removedWidget;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1089,7 +1088,6 @@ void ScriptDockWidget::createToolBars()
 //! init status bar \todo right now, this is an empty method
 void ScriptDockWidget::createStatusBar()
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1111,8 +1109,6 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
     {
         sew = static_cast<ScriptEditorWidget *>(m_tab->widget(i));
 
-
-
         if (!sew->hasNoFilename())
         {
             finfo2.setFile(sew->getFilename());
@@ -1120,8 +1116,6 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
                 temp2 = finfo2.canonicalFilePath().toLower();
             if (filename== finfo2.canonicalFilePath().toLower())
             {
-
-
                 m_tab->setCurrentIndex(i);
                 raiseAndActivate();
 

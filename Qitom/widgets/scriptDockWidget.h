@@ -43,7 +43,7 @@ class ScriptDockWidget : public AbstractDockWidget
 {
     Q_OBJECT
 public:
-    ScriptDockWidget(const QString &title, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
@@ -146,7 +146,6 @@ private:
     QToolBar* m_editToolBar;
     QToolBar* m_scriptToolBar;
     QToolBar* m_bookmarkToolBar;
-
 
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */

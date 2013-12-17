@@ -41,8 +41,8 @@ namespace ito {
 */
 
 
-CallStackDockWidget::CallStackDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
 	m_table(NULL)
 {
     m_table = new QTableWidget(this);
@@ -51,7 +51,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, QWidget *parent, 
 
 	m_table->setColumnCount(3);
 	m_table->setSortingEnabled(false);
-	m_table->setTextElideMode( Qt::ElideLeft );
+	m_table->setTextElideMode(Qt::ElideLeft);
 	m_table->verticalHeader()->setDefaultSectionSize(20);
 	m_table->horizontalHeader()->setStretchLastSection(true);
 	m_table->setAlternatingRowColors(true);
@@ -62,14 +62,13 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, QWidget *parent, 
 
 	connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(itemDoubleClicked(QTableWidgetItem*)));
 	
-
     setContentWidget(m_table);
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     
-    if(eng)
+    if (eng)
     {
-		connect(eng, SIGNAL( updateCallStack(QStringList,IntList,QStringList) ), this, SLOT( updateCallStack(QStringList,IntList,QStringList) ));
+		connect(eng, SIGNAL(updateCallStack(QStringList,IntList,QStringList)), this, SLOT(updateCallStack(QStringList,IntList,QStringList)));
 		connect(eng, SIGNAL(deleteCallStack()), this, SLOT(deleteCallStack()));
     }
 }
@@ -125,21 +124,21 @@ void CallStackDockWidget::createToolBars()
     m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
     addAndRegisterToolBar(m_pMainToolBar, "mainToolBar");
 
-    m_pMainToolBar->addAction( m_actImport->action() );
-    m_pMainToolBar->addAction( m_actExport->action() );
-    m_pMainToolBar->addAction( m_actDelete->action() );
-    m_pMainToolBar->addAction( m_actRename->action() );*/
+    m_pMainToolBar->addAction(m_actImport->action());
+    m_pMainToolBar->addAction(m_actExport->action());
+    m_pMainToolBar->addAction(m_actDelete->action());
+    m_pMainToolBar->addAction(m_actRename->action());*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void CallStackDockWidget::createMenus()
 {
     /*m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction( m_actDelete->action() );
-    m_pContextMenu->addAction( m_actRename->action() );
+    m_pContextMenu->addAction(m_actDelete->action());
+    m_pContextMenu->addAction(m_actRename->action());
     m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction( m_actExport->action() );
-    m_pContextMenu->addAction( m_actImport->action() );*/
+    m_pContextMenu->addAction(m_actExport->action());
+    m_pContextMenu->addAction(m_actImport->action());*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -156,14 +155,14 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
 	m_table->setRowCount(filenames.count());
 	m_table->setHorizontalHeaderLabels(m_headers);
 
-	if(lines.count() < filenames.count()) return;
-	if(methods.count() < filenames.count()) return;
+	if (lines.count() < filenames.count()) return;
+	if (methods.count() < filenames.count()) return;
 
-	for(int i = 0 ; i < filenames.count() ; i++)
+	for (int i = 0 ; i < filenames.count() ; i++)
 	{
 		info = QFileInfo(filenames[i]);
 		filename = info.fileName();
-		if(filename.contains("<"))
+		if (filename.contains("<"))
 		{
 			flags = flagsDisabled;
 		}
@@ -172,12 +171,12 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
 			flags = flagsEnabled;
 		}
 
-		item = new QTableWidgetItem( filename );
+		item = new QTableWidgetItem(filename);
 		item->setFlags(flags);
-		item->setData(Qt::ToolTipRole, info.canonicalFilePath() );
+		item->setData(Qt::ToolTipRole, info.canonicalFilePath());
 		m_table->setItem(i,0, item);
 
-		item = new QTableWidgetItem( QString::number(lines[i]) );
+		item = new QTableWidgetItem(QString::number(lines[i]));
 		item->setFlags(flags);
 		m_table->setItem(i,1,item);
 
@@ -201,25 +200,25 @@ void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
 	QString canonicalPath;
 	int lineNr = -1;
 
-	if(item)
+	if (item)
 	{
-		QTableWidgetItem *item2 = m_table->item( item->row(),0 );
-		if(item2)
+		QTableWidgetItem *item2 = m_table->item(item->row(),0);
+		if (item2)
 		{
-			canonicalPath = item2->data( Qt::ToolTipRole ).toString();
+			canonicalPath = item2->data(Qt::ToolTipRole).toString();
 
-			item2 = m_table->item( item->row(), 1);
-			if(item2)
+			item2 = m_table->item(item->row(), 1);
+			if (item2)
 			{
 				lineNr = item2->text().toInt() - 1;
 			}
 
-			if(canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
+			if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
 			{
 				ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-				if(seo)
+				if (seo)
 				{
-					seo->openScript( canonicalPath, NULL, lineNr );
+					seo->openScript(canonicalPath, NULL, lineNr);
 				}
 			}
 		}

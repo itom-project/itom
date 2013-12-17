@@ -44,8 +44,8 @@ namespace ito {
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_pShowDirListMenu(NULL),
     m_pFileSystemSettingMenu(NULL),
     m_pContextMenu(NULL),
@@ -90,7 +90,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, QWidget *parent
     m_pShowDirListMenu->installEventFilter(this);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("fileSystemDockWidget");
+    settings.beginGroup(objectName());
     size = settings.beginReadArray("lastUsedDirs");
     for (int i = 0; i < size; ++i) 
     {
@@ -234,7 +234,8 @@ FileSystemDockWidget::~FileSystemDockWidget()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     QStringList files;
-    settings.beginGroup("fileSystemDockWidget");
+
+    settings.beginGroup(objectName());
     settings.beginWriteArray("lastUsedDirs");
     for (int i = 0; i < m_pShowDirListMenu->actions().count(); i++)
     {

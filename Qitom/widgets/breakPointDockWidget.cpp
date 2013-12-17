@@ -34,8 +34,8 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-BreakPointDockWidget::BreakPointDockWidget(const QString &title, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent)
+BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent)
 {
 	m_breakPointView = new QTableView(this);
 

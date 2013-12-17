@@ -53,8 +53,8 @@ namespace ito {
     \param movingStyle indicates the style for movement of the docked widget [default: movingEnabled]
 */
 
-WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, bool globalNotLocal, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, parent),
+WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &objName, bool globalNotLocal, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_globalNotLocal(globalNotLocal),
     m_pWorkspaceWidget(NULL),
     m_actDelete(NULL),

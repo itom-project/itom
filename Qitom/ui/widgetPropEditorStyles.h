@@ -47,7 +47,6 @@ class WidgetPropEditorStyles : public AbstractPropertyPageWidget
     Q_OBJECT
 
 public:
-
     struct StyleNode
     {
         StyleNode(int index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), m_fillToEOL(fillToEOL), m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
@@ -76,6 +75,7 @@ private:
 
     QsciLexerPython* qSciLex;
     
+    void setFontSizeGeneral(const int fontSizeAdd);
 
 signals:
 
@@ -87,6 +87,8 @@ private slots:
     void on_btnFont_clicked();
     void on_btnForegroundColor_clicked();
     void on_checkFillEOL_stateChanged(int state);
+    void on_btnFontSizeDec_clicked();
+    void on_btnFontSizeInc_clicked();
 
 };
 

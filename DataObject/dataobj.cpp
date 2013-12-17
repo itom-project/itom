@@ -2197,7 +2197,7 @@ RetVal DataObject::rand(const size_t sizeZ, const size_t sizeY, const size_t siz
 */
 template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
 {
-    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    //dstMat must already be preallocated concerning size and type!
 
     if(randMode)
     {
@@ -2207,7 +2207,7 @@ template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, c
     {
         cv::randu((*((cv::Mat_<_Tp> *)(*dstMat))), value1, value2);
     }
-   return 0;
+   return retOk;
 }
 
 //! template specialisation for low-level, templated method for creation of random-valued matrix-plane of type complex128
@@ -2217,7 +2217,7 @@ template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, c
 */
 template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
 {
-    (*((cv::Mat_<ito::complex128> *)(*dstMat))) = cv::Mat_<ito::complex128>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    //dstMat must already be preallocated concerning size and type!
 
     if(randMode)
     {
@@ -2228,7 +2228,7 @@ template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t siz
     {
         cv::randu((*((cv::Mat_<ito::complex128> *)(*dstMat))), value1, value2);
     }
-   return 0;
+   return retOk;
 }
 
 //! template specialisation for low-level, templated method for creation of random-valued matrix-plane of type rgba32
@@ -2238,7 +2238,7 @@ template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t siz
 */
 template<> RetVal RandFunc<ito::Rgba32>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
 {
-    (*((cv::Mat_<ito::Rgba32> *)(*dstMat))) = cv::Mat_<ito::Rgba32>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    //dstMat must already be preallocated concerning size and type!
     cv::Mat_<ito::uint8> tempMat(sizeY, sizeX * 4, ((cv::Mat*)(*dstMat))->ptr<ito::uint8>());
     if(randMode)
     {
@@ -2248,7 +2248,7 @@ template<> RetVal RandFunc<ito::Rgba32>(const size_t sizeY, const size_t sizeX, 
     {
         cv::randu(tempMat, value1, value2);
     }
-   return 0;
+   return retOk;
 }
 
 typedef RetVal (*tRandFunc)(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat);
@@ -2257,7 +2257,7 @@ MAKEFUNCLIST(RandFunc);
 //! high-level, non-templated base function for allocation of new matrix whose elements are all set to one
 /*!
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode = false) or gausion noise (randMode = true).
-            In case of an integer type, the uniform noise is from min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and 1(exclusiv).
+            In case of an integer type, the uniform noise is from min(inclusiv) to max(exclusive). For floating point types, the noise is between 0(inclusiv) and 1(exclusiv).
             In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0 and the standard deviation is 1.0/3.0.
     \param dimensions indicates the number of dimensions
     \param *sizes is a vector with the same length than dimensions. Every element indicates the size of the specific dimension
@@ -2319,19 +2319,19 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
             case ito::tRGBA32:
             case ito::tUInt8:
                 val1 = (double)std::numeric_limits<uint8>::min();
-                val2 = (double)std::numeric_limits<uint8>::max() + 1;
+                val2 = (double)std::numeric_limits<uint8>::max(); //was +1 in order to make it inclusive, however this leads to overflows with non-uniform distribution
             break;
             case ito::tInt8:
                 val1 = (double)std::numeric_limits<int8>::min();
-                val2 = (double)std::numeric_limits<int8>::max() + 1;
+                val2 = (double)std::numeric_limits<int8>::max(); //was +1 in order to make it inclusive, however this leads to overflows with non-uniform distribution
             break;
             case ito::tUInt16:
                 val1 = (double)std::numeric_limits<uint16>::min();
-                val2 = (double)std::numeric_limits<uint16>::max() + 1;
+                val2 = (double)std::numeric_limits<uint16>::max(); //was +1 in order to make it inclusive, however this leads to overflows with non-uniform distribution
             break;
             case ito::tInt16:
                 val1 = (double)std::numeric_limits<int16>::min();
-                val2 = (double)std::numeric_limits<int16>::max() + 1;
+                val2 = (double)std::numeric_limits<int16>::max(); //was +1 in order to make it inclusive, however this leads to overflows with non-uniform distribution
             break;
             case ito::tUInt32:
                 val1 = (double)std::numeric_limits<uint32>::min();
@@ -2339,7 +2339,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
             break;
             case ito::tInt32:
                 val1 = (double)std::numeric_limits<int32>::min();
-                val2 = (double)std::numeric_limits<int32>::max() + 1;
+                val2 = (double)std::numeric_limits<int32>::max(); //was +1 in order to make it inclusive, however this leads to overflows with non-uniform distribution
             break;
             default:
                 val1 = 0.0;
@@ -2361,7 +2361,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
         fListRandFunc[type](sizeY, sizeX, val1, val2, randMode, &(m_data[matn]));
     }
 
-   return 0;
+   return retOk;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
