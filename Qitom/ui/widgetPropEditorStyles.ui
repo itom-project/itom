@@ -81,7 +81,7 @@
      <item>
       <widget class="QLabel" name="labelFontSize">
        <property name="text">
-        <string>Font Size general</string>
+        <string>Overall font size:</string>
        </property>
       </widget>
      </item>
