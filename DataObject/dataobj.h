@@ -976,7 +976,7 @@ class DataObject
                 return false;
             }
 
-            if((tagNumber < 0) || ((int)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
+            if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
             {
                 key = std::string();
                 value = std::string();
@@ -1002,7 +1002,7 @@ class DataObject
                 validOperation = false;
                 return std::string(""); //error
             }
-            if((tagNumber < 0) || ((int)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
+            if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
             {
                 validOperation = false;
                 return std::string(""); //does not exist
