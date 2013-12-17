@@ -132,8 +132,8 @@ PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) -> opens the given script in
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
-    Path and File of the file to open. Unter windows not case sensitiv.\n\
+filename : {str} or {obj} \n\
+    Relative or absolute filename to a python script that is then opened (in the current editor window). Alternatively an object with a __file__ attribute is allowed.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -142,9 +142,34 @@ Open an existing itom script from the harddrive into the latest opened editor wi
 PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 {
     const char* filename;
+    QByteArray filename2;
     if (PyArg_ParseTuple(pArgs, "s", &filename) == false)
     {
-        return PyErr_Format(PyExc_RuntimeError, "no valid filename string available");
+        //check if argument is a PyObject with a __file__ argument
+        PyObject *obj = NULL;
+        if (!PyArg_ParseTuple(pArgs, "O", &obj))
+        {
+            return NULL;
+        }
+        else if (PyObject_HasAttrString(obj, "__file__"))
+        {
+            PyObject *__file__ = PyObject_GetAttrString(obj, "__file__");
+            bool ok;
+            QString f = PythonQtConversion::PyObjGetString(__file__,true,ok);
+            if (ok)
+            {
+                filename2 = f.toAscii();
+                filename = filename2.data(); //be carefull, filename is borrowed from filename2
+            }
+            else
+            {
+                return PyErr_Format(PyExc_ValueError, "__file__ attribute of given argument could not be parsed as string.");
+            }
+        }
+        else
+        { 
+            return PyErr_Format(PyExc_ValueError, "argument is no filename string and no other object that has a __file__ attribute.");
+        }
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
