@@ -106,7 +106,7 @@ namespace ito
         ito::RetVal retVal;
         QVector<ito::Param> pMand;
         QVector<ito::Param> pOut;
-        size_t maxNum = std::numeric_limits<size_t>::max();
+        int maxNum = std::numeric_limits<int>::max();
 
         //1. ito::AddInAlgo::iReadDataObject
         pMand.clear();
@@ -234,7 +234,7 @@ namespace ito
 
 		\sa AddInAlgo::tAlgoInterface
 	*/
-    ito::RetVal AlgoInterfaceValidator::addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, size_t maxNumMand, size_t maxNumOpt, size_t maxNumOut)
+    ito::RetVal AlgoInterfaceValidator::addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, int maxNumMand, int maxNumOpt, int maxNumOut)
     {
         QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind( (int)iface );
         if(it == m_interfaces.constEnd())
@@ -333,19 +333,19 @@ namespace ito
                 return false;
             }
 
-            if((size_t)paramsMand.size() > it->maxNumMand)
+            if((int)paramsMand.size() > it->maxNumMand)
             {
                 ret += ito::RetVal(ito::retError,0,tr("Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
                 return false;
             }
 
-            if((size_t)paramsOpt.size() > it->maxNumOpt)
+            if((int)paramsOpt.size() > it->maxNumOpt)
             {
                 ret += ito::RetVal(ito::retError,0,tr("Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
                 return false;
             }
 
-            if((size_t)paramsOut.size() > it->maxNumOut)
+            if((int)paramsOut.size() > it->maxNumOut)
             {
                 ret += ito::RetVal(ito::retError,0,tr("Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
                 return false;
@@ -522,12 +522,12 @@ namespace ito
                 const char* sT = NULL;
                 bool found = false;
 
-                for(size_t i=0;i<mT->getLen();i++)
+                for(int i=0;i<mT->getLen();i++)
                 {
                     sT = mT->getString(i);
                     found = false;
 
-                    for(size_t j=0;j<m->getLen();j++)
+                    for(int j=0;j<m->getLen();j++)
                     {
                         if( strcmp(sT, m->getString(j)) == 0)
                         {

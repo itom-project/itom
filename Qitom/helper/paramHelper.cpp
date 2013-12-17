@@ -177,12 +177,12 @@ namespace ito {
                 const char* sT = NULL;
                 bool found = false;
 
-                for(size_t i=0;i<mT->getLen();i++)
+                for(int i=0;i<mT->getLen();i++)
                 {
                     sT = mT->getString(i);
                     found = false;
 
-                    for(size_t j=0;j<m->getLen();j++)
+                    for(int j=0;j<m->getLen();j++)
                     {
                         if( strcmp(sT, m->getString(j)) == 0)
                         {
@@ -331,7 +331,7 @@ namespace ito {
                 break;
             }
 
-            for(size_t i = 0 ; i < meta->getLen() ; i++)
+            for(int i = 0 ; i < meta->getLen() ; i++)
             {
                 pattern = meta->getString(i);
                 reg.setPattern( pattern );

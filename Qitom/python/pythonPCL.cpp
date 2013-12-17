@@ -1011,7 +1011,7 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
 
         try
         {
-        size = self->data->size();
+        size = (int)self->data->size();
         width = self->data->width();
         height = self->data->height();
         }
@@ -3765,7 +3765,7 @@ PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> ");
         verticePtr++;
     }
 
-    dataObj->dataObject = new ito::DataObject( p->size(), numVertices, ito::tInt32 );
+    dataObj->dataObject = new ito::DataObject( (int)p->size(), (int)numVertices, ito::tInt32 );
     ito::int32 *ptr = (ito::int32*)dataObj->dataObject->rowPtr(0,0);
 
     verticePtr = &(p->front());

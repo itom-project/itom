@@ -38,7 +38,7 @@ public:
     AlgoInterfaceValidator(ito::RetVal &retValue);
     ~AlgoInterfaceValidator();
 
-    ito::RetVal addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, size_t maxNumMand, size_t maxNumOpt, size_t maxNumOut);
+    ito::RetVal addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, int maxNumMand, int maxNumOpt, int maxNumOut);
     bool isValidFilter(const ito::AddInAlgo::FilterDef &filter, ito::RetVal &ret, QStringList &tags) const;
     bool isValidWidget(const ito::AddInAlgo::AlgoWidgetDef &widget, ito::RetVal &ret, QStringList &tags) const;
     ito::RetVal getInterfaceParameters(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::ParamBase> &mandParams, QVector<ito::ParamBase> &outParams) const;
@@ -49,9 +49,9 @@ protected:
         AlgoInterface() : maxNumMand(0), maxNumOpt(0), maxNumOut(0) {}
         QVector<ito::Param> mandParams;
         QVector<ito::Param> outParams;
-        size_t maxNumMand;
-        size_t maxNumOpt;
-        size_t maxNumOut;
+        int maxNumMand;
+        int maxNumOpt;
+        int maxNumOut;
     };
 
     enum tCompareResult { tCmpEqual, tCmpCompatible, tCmpFailed };

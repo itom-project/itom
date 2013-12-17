@@ -184,8 +184,8 @@ class PythonDataObject
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
         static PyObject* PyDataObj_At(ito::DataObject *dataObj, unsigned int *idx);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, size_t continuousIdx);
-        static PyObject* PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, size_t iterationIndex);
+        static PyObject* PyDataObj_At(ito::DataObject *dataObj, int continuousIdx);
+        static PyObject* PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, int iterationIndex);
 
 
         static void PyDataObj_Capsule_Destructor(PyObject* capsule); //called if capsule (dataObject exported by __array__struct_) is destroyed

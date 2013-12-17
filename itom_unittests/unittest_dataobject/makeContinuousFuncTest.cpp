@@ -23,7 +23,7 @@ public:
     virtual void SetUp(void)
     {
         dObj_3d = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[4];
+		int *temp_size = new int[4];
 		temp_size[0] = 4;
 		temp_size[1] = 5;
 		temp_size[2] = 2;
@@ -51,9 +51,9 @@ TYPED_TEST_CASE(makeContinuousFunc_test, ItomRealDataTypes);
 */
 TYPED_TEST(makeContinuousFunc_test, nonContTest_3d)
 {
-	size_t dim1 = dObj_3d.getSize(0);
-	size_t dim2 = dObj_3d.getSize(1);
-	size_t dim3 = dObj_3d.getSize(2);
+	int dim1 = dObj_3d.getSize(0);
+	int dim2 = dObj_3d.getSize(1);
+	int dim3 = dObj_3d.getSize(2);
 	int test_res3d[] = {36,37,38,41,42,43,61,62,63,66,67,68};	//!< Expected result vector for dObj3 after adjustROI method using 2 parameter (general) implementation
 	int matLimits3d[] = {-1,-1,-2,-1,-1,-1};	//!< defining ROI offsets for 3 Dimensional Data Object dObj3
 	int temp=0;
@@ -129,15 +129,15 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_big3d)
 */
 TYPED_TEST(makeContinuousFunc_test, nonContTest_4d)
 {
-	size_t dim1 = dObj_4d.getSize(0);
-	size_t dim2 = dObj_4d.getSize(1);
-	size_t dim3 = dObj_4d.getSize(2);
-	size_t dim4 = dObj_4d.getSize(3);
+	int dim1 = dObj_4d.getSize(0);
+	int dim2 = dObj_4d.getSize(1);
+	int dim3 = dObj_4d.getSize(2);
+	int dim4 = dObj_4d.getSize(3);
 	int matLimits4d[] = {-1,-1,0,-1,0,0,-1,-1}; //!< defining ROI offsets for 4 Dimensional Data Object dObj_4d
 	int test_res4d[] = {31,34,37,40,43,46,49,52,61,64,67,70,73,76,79,82};	//!< Expected result vector for dObj3 after adjustROI method using 2 parameter (general) implementation
 	int temp=0;
 	TypeParam *rowPtr1= NULL; 
-	size_t dataIdx = 0;		
+	int dataIdx = 0;		
 	temp=0;
 
 	for(int j=0; j<dim1;j++)
@@ -194,7 +194,7 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_4d)
 
 TYPED_TEST(makeContinuousFunc_test, nonContTest_big4d)
 {
-	size_t *temp_size = new size_t[4];
+	int *temp_size = new int[4];
 	temp_size[0] = 50;
 	temp_size[1] = 50;
 	temp_size[2] = 100;
@@ -210,9 +210,9 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_big4d)
 TYPED_TEST(makeContinuousFunc_test, ContTest_3d)
 {	
 	ito::DataObject dObj_3d_con(4,5,5,ito::getDataType( (const TypeParam *) NULL ),1);
-	size_t dim1 = dObj_3d_con.getSize(0);
-	size_t dim2 = dObj_3d_con.getSize(1);
-	size_t dim3 = dObj_3d_con.getSize(2);
+	int dim1 = dObj_3d_con.getSize(0);
+	int dim2 = dObj_3d_con.getSize(1);
+	int dim3 = dObj_3d_con.getSize(2);
 	int test_res3d[] = {32,33,37,38,42,43,57,58,62,63,67,68};	//!< Expected result vector for dObj3 after adjustROI method using 2 parameter (general) implementation
 	//int matLimits3d[] = {-1,-1,-1,-1,-2,-1};	//!< defining ROI offsets for 3 Dimensional Data Object dObj3
 	int matLimits3d[] = {0,0,0,0,-1,-1};

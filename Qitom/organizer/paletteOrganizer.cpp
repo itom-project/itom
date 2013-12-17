@@ -136,13 +136,13 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 //----------------------------------------------------------------------------------------------------------------------------------
 double ItomPaletteBase::getPos(unsigned int color) const
 {
-    if(color > (m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].first;
+    if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].first;
     return m_colorStops[color].first;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 QColor ItomPaletteBase::getColor(unsigned int color) const
 {
-    if(color > (m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].second;
+    if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].second;
     return m_colorStops[color].second;
 }
 //----------------------------------------------------------------------------------------------------------------------------------

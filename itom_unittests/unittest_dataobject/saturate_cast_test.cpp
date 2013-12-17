@@ -64,7 +64,7 @@ TYPED_TEST_CASE(SaturateTestUInt, ItomUIntDataTypes);
 TYPED_TEST(SaturateTestUInt, saturate_cast_Test)
 {
 	//!< declaring variables of unsigned fixed point types.
-    TypeParam uint_var1 = -5;
+    TypeParam uint_var1 = 235;
     TypeParam uint_var2 = 0;
 	TypeParam uint_var3 = 5;
    
@@ -256,7 +256,7 @@ TYPED_TEST(SaturateTestRGBA_compatible_cast, saturate_cast_Test)
         EXPECT_EQ(tempVal, rgba_val4);
 
     }
-
+//    char c = getchar();
 }
 
 //! SaturateTestRGBA_not_compatible_cast

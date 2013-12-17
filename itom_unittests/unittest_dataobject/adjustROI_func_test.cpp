@@ -22,13 +22,13 @@ public:
 	
 	virtual void SetUp(void)
 	{
-		size_t *temp_size1 = new size_t[2];
+		int *temp_size1 = new int[2];
 		temp_size1[0] =10;
 		temp_size1[1] =10;
 		dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj2 = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj3 = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 4;
 		temp_size[1] = 5;
 		temp_size[2] = 5;
@@ -60,7 +60,7 @@ TYPED_TEST_CASE(adjustROI_func_test, ItomRealDataTypes);
 //!< This test checks the functionality of adjustROI function with four parameter implementation and general implementation.
 TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 {			
-	int matLimits1d[] = {-4,-6};			//!< defining ROI offsets for empty Data Object dObj1  
+//	int matLimits1d[] = {-4,-6};			//!< defining ROI offsets for empty Data Object dObj1  
 	int matLimits2d[] = {-4,-4,-1,-3};		//!< defining ROI offsets for 2 Dimensional Data Object dObj2 
 	int matLimits3d[] = {-1,-1,-1,-1,-2,-1};	//!< defining ROI offsets for 3 Dimensional Data Object dObj3
 	int matLimits5d[] = {0,-3,0,-4,0,0,-1,-1,-2,0}; //!< defining ROI offsets for 5 Dimensional Data Object dObj5
@@ -73,7 +73,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 	{
 		for(int j = 0; j <10; j++)
 		{
-			dObj2.at<TypeParam>(i,j) = 10*i + j;
+			dObj2.at<TypeParam>(i,j) = (TypeParam) (10 * i + j);
 		}
 	}
 
@@ -85,7 +85,7 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 		{
 			for(int k=0;k<5;k++)
 			{
-				dObj3.at<TypeParam>(i,j,k) = temp++;
+				dObj3.at<TypeParam>(i,j,k) = (TypeParam) temp++;
 			}
 		}
 	}
@@ -129,12 +129,12 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test1)
 
 	//!< test for checking values of  5 dimensional data object dObj5 after applying adjustROI().
 	TypeParam *rowPtr1= NULL; 
-	size_t dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
-	size_t dim2 = dObj4.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
-	size_t dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
-	size_t dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
-	size_t dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
-	size_t dataIdx = 0;		
+	int dim1 = dObj4.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	int dim2 = dObj4.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	int dim3 = dObj4.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	int dim4 = dObj4.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	int dim5 = dObj4.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	int dataIdx = 0;		
 	temp=0;
 	for(int i=0; i<dim1; i++)
 	{

@@ -710,7 +710,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pc->toPointXYZ();
         pcl::PointCloud<pcl::PointXYZ>::VectorType points = cloud->points;
-        out = DataObject(3, cloud->size(), ito::tFloat32);
+        out = DataObject(3, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZ *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
@@ -729,7 +729,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
     {
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloud = pc->toPointXYZI();
         pcl::PointCloud<pcl::PointXYZI>::VectorType points = cloud->points;
-        out = DataObject(4, cloud->size(), ito::tFloat32);
+        out = DataObject(4, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZI *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
@@ -750,7 +750,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
     {
         pcl::PointCloud<pcl::PointNormal>::Ptr cloud = pc->toPointXYZNormal();
         pcl::PointCloud<pcl::PointNormal>::VectorType points = cloud->points;
-        out = DataObject(6, cloud->size(), ito::tFloat32);
+        out = DataObject(6, (int)cloud->size(), ito::tFloat32);
         pcl::PointNormal *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
@@ -775,7 +775,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
     {
         pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud = pc->toPointXYZINormal();
         pcl::PointCloud<pcl::PointXYZINormal>::VectorType points = cloud->points;
-        out = DataObject(7, cloud->size(), ito::tFloat32);
+        out = DataObject(7, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZINormal *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);

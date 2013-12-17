@@ -222,7 +222,7 @@ namespace ito
 		\return shallow or deep copy of the input data object or NULL (in case of unsolvable incompatibility)
 	*/
 	#define apiCreateFromDataObject \
-		(* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
+		(* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
 
 	/** \} */
 

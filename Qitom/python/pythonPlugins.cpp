@@ -3968,7 +3968,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             else if (sizeof(Py_UNICODE) == 1)
             {
                 buf = PyUnicode_AS_DATA(tempObj);
-                datalen = strlen(buf);
+                datalen = (int)strlen(buf);
             }
             else if (sizeof(Py_UNICODE) == 2)
             {

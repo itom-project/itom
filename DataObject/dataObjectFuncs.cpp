@@ -49,7 +49,7 @@ namespace dObjHelper
     template<typename _Tp> RetVal minValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf)
     {
         unsigned int numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int matIndex = 0;
         int m,n;
 
         cv::Mat_<_Tp> *mat = NULL;
@@ -180,7 +180,7 @@ namespace dObjHelper
     template<typename _Tp> RetVal maxValueFunc(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreNaN)
     {
        unsigned int numMats = dObj->calcNumMats();
-       size_t matIndex = 0;
+       int matIndex = 0;
        int m,n;
 
        cv::Mat_<_Tp> *mat = NULL;
@@ -321,8 +321,8 @@ namespace dObjHelper
     */
     template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int /*specialDataTypeFlags*/)
     {
-        size_t numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int numMats = dObj->calcNumMats();
+        int matIndex = 0;
 
         int m,n;
 
@@ -343,7 +343,7 @@ namespace dObjHelper
 
         if(ignoreInf)   // Ignores inf
         {
-            for (size_t nmat = 0; nmat < numMats; nmat++)
+            for (int nmat = 0; nmat < numMats; nmat++)
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<_Tp> *)(dObj->get_mdata())[matIndex];
@@ -377,7 +377,7 @@ namespace dObjHelper
         }
         else
         {
-            for (size_t nmat = 0; nmat < numMats; nmat++)
+            for (int nmat = 0; nmat < numMats; nmat++)
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<_Tp> *)(dObj->get_mdata())[matIndex];
@@ -431,8 +431,8 @@ namespace dObjHelper
     */
     template<> RetVal minMaxValueFunc<ito::complex64>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
-        size_t numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int numMats = dObj->calcNumMats();
+        int matIndex = 0;
 
         uint32 m,n;
         uint32 cols,rows;
@@ -448,7 +448,7 @@ namespace dObjHelper
 
         if(ignoreInf)   // Ignores inf
         {
-            for (uint32 nmat = 0; nmat < (uint32)numMats; nmat++)
+            for (int32 nmat = 0; nmat < (int32)numMats; nmat++)
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex64> *)(dObj->get_mdata())[matIndex];
@@ -708,8 +708,8 @@ namespace dObjHelper
 
     template<> RetVal minMaxValueFunc<ito::complex128>(const DataObject *dObj, float64 &minValue, uint32 * /*firstMinLocation*/, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
-        size_t numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int numMats = dObj->calcNumMats();
+        int matIndex = 0;
 
         int m,n;
 
@@ -724,7 +724,7 @@ namespace dObjHelper
 
         if(ignoreInf)   // Ignores inf
         {
-            for (size_t nmat = 0; nmat < numMats; nmat++)
+            for (int nmat = 0; nmat < numMats; nmat++)
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
@@ -831,7 +831,7 @@ namespace dObjHelper
         }
         else
         {
-            for (size_t nmat = 0; nmat < numMats; nmat++)
+            for (int nmat = 0; nmat < numMats; nmat++)
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
@@ -961,8 +961,8 @@ namespace dObjHelper
     */
     template<> RetVal minMaxValueFunc<Rgba32>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool /*ignoreInf*/, const int specialDataTypeFlags)
     {
-        size_t numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int numMats = dObj->calcNumMats();
+        int matIndex = 0;
 
         int m,n;
 
@@ -979,7 +979,7 @@ namespace dObjHelper
         float32 tmpMinFloat = std::numeric_limits<float32>::max();
         float32 tmpMaxFloat = -std::numeric_limits<float32>::max();
 
-        for (size_t nmat = 0; nmat < numMats; nmat++)
+        for (int nmat = 0; nmat < numMats; nmat++)
         {
             matIndex = dObj->seekMat(nmat, numMats);
             mat = (cv::Mat_<Rgba32> *)(dObj->get_mdata())[matIndex];
@@ -1202,7 +1202,7 @@ namespace dObjHelper
     template<typename _Tp, typename _BufTp> RetVal meanValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN)
     {
         unsigned int numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int matIndex = 0;
 
         int m,n;
         unsigned int nrOfValidElements = 0;
@@ -1384,7 +1384,7 @@ namespace dObjHelper
     template<typename _Tp, typename _BufTp> RetVal devValueFunc(const ito::DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN)
     {
         unsigned int numMats = dObj->calcNumMats();
-        size_t matIndex = 0;
+        int matIndex = 0;
 
         int m,n;
         unsigned int nrOfValidElements = 0;
@@ -1949,12 +1949,12 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
-    ito::RetVal verifySize(size_t size, int minSize, int maxSize, const char *axisName, const char* dObjName)
+    ito::RetVal verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName)
     {
         if(minSize < 0) minSize = 0;
         if(maxSize == -1)
         {
-            if(size < (size_t)minSize)
+            if(size < (int)minSize)
             {
                 return ito::RetVal::format(ito::retError, 0, "DataObject '%s': size of %s must be %i or bigger.", dObjName, axisName, minSize);
             }
@@ -1962,7 +1962,7 @@ namespace dObjHelper
         else
         {
             if(maxSize < minSize) std::swap(minSize, maxSize);
-            if(size < (size_t)minSize || size > (size_t)maxSize)
+            if(size < (int)minSize || size > (int)maxSize)
             {
                 return ito::RetVal::format(ito::retError, 0, "DataObject '%s': size of %s must be between %i and %i.", dObjName, axisName, minSize, maxSize);
             }

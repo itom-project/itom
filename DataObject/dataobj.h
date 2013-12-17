@@ -458,7 +458,7 @@ protected:
     
     const DataObject* dObj;
     bool   planeContinuous;
-    size_t elemSize;
+    int elemSize;
     uchar* ptr;
     uchar* sliceStart;
     uchar* sliceEnd;
@@ -519,7 +519,7 @@ class DataObject
             \sa CreateFunc
         */
         //length(sizes) == length(steps)
-        void createHeader(const unsigned char dimensions, const size_t *sizes, const size_t *steps, const size_t elemSize)
+        void createHeader(const unsigned char dimensions, const int *sizes, const int *steps, const int elemSize)
         {
             if(dimensions == 1)
             {
@@ -537,10 +537,10 @@ class DataObject
                     {
                         delete[] (m_roi.m_p - 1);
 
-                        m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
-                        m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
+                        m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                        m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                         m_osize.m_p[-1] = dimensions;
-                        m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
+                        m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                         m_size.m_p[-1] = dimensions;
                         m_roi.m_p = m_roi.m_p + 1;
                         m_roi.m_p[-1] = dimensions;
@@ -548,10 +548,10 @@ class DataObject
                 }
                 else
                 {
-                    m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
-                    m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
+                    m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                    m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                     m_osize.m_p[-1] = dimensions;
-                    m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
+                    m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                     m_size.m_p[-1] = dimensions;
                     m_roi.m_p = m_roi.m_p + 1;
                     m_roi.m_p[-1] = dimensions;
@@ -592,7 +592,7 @@ class DataObject
             \throws cv::Exception if dimensions is <= 1
             \sa CreateFunc
         */
-        void createHeaderWithROI(const unsigned char dimensions, const size_t *sizes, const size_t *osizes = NULL, const size_t *roi = NULL)
+        void createHeaderWithROI(const unsigned char dimensions, const int *sizes, const int *osizes = NULL, const int *roi = NULL)
         {
             if(dimensions == 1)
             {
@@ -610,10 +610,10 @@ class DataObject
                     {
                         delete[] (m_roi.m_p-1);
 
-                        m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
-                        m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
+                        m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                        m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                         m_osize.m_p[-1] = dimensions;
-                        m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
+                        m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                         m_size.m_p[-1] = dimensions;
                         m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                         m_roi.m_p[-1] = dimensions;
@@ -621,10 +621,10 @@ class DataObject
                 }
                 else
                 {
-                    m_roi.m_p = new size_t [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
-                    m_osize.m_p = static_cast<size_t *>(m_roi.m_p + dimensions) + 1;
+                    m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                    m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                     m_osize.m_p[-1] = dimensions;
-                    m_size.m_p = static_cast<size_t *>(m_osize.m_p + dimensions) + 1;
+                    m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                     m_size.m_p[-1] = dimensions;
                     m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                     m_roi.m_p[-1] = dimensions;
@@ -655,9 +655,9 @@ class DataObject
             }
         }
 
-        void create(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const size_t* steps = NULL);  /*!< allocates new data */
+        void create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const int* steps = NULL);  /*!< allocates new data */
 
-        void create(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes);
+        void create(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes);
 
         void freeData(void);     /*!< decrements reference counter and deletes data, if no other instance is using them (ref counter < 0) */
 
@@ -666,7 +666,7 @@ class DataObject
 
 
         //----------------------------------------------------------------------------------------------------------------------------------
-        ito::RetVal matNumToIdx(const size_t matNum, size_t *matIdx) const;
+        ito::RetVal matNumToIdx(const int matNum, int *matIdx) const;
 
         //! brief calculates the index of the matrix-plane in the m_data-vector for a given vector of indices, which address one element in the n-dimensional matrix
         /*!
@@ -677,7 +677,7 @@ class DataObject
             \return retOk
             \throws cv::Exception if the given indices are out of bounds
         */
-        inline ito::RetVal matIdxToNum(const unsigned int *matIdx, size_t *matNum) const
+        inline ito::RetVal matIdxToNum(const unsigned int *matIdx, int *matNum) const
         {
            *matNum = 0;
            if (m_dims <= 2)
@@ -685,17 +685,17 @@ class DataObject
                  return 0;
            }
 
-           size_t planeSize = 1;
+           int planeSize = 1;
 
            for (int n = m_dims - 3; n >= 0; n--)
            {
         #if __ITODEBUG
-                 if (((size_t)matIdx[n] + m_roi[n]) >= m_osize[n])
+                 if (((int)matIdx[n] + m_roi[n]) >= m_osize[n])
                  {
                     cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                  }
         #endif
-                 (*matNum) += ((size_t)matIdx[n] + m_roi[n]) * planeSize; //CAST_TODO
+                 (*matNum) += ((int)matIdx[n] + m_roi[n]) * planeSize; //CAST_TODO
                  planeSize *= m_osize[n];
            }
 
@@ -705,14 +705,14 @@ class DataObject
         struct MSize
         {
             inline MSize() : m_p(NULL) {}
-            //inline MSize(size_t *_p, char *_transp) : m_p(_p) {}
+            //inline MSize(int *_p, char *_transp) : m_p(_p) {}
 //            Size operator()() const;
-            inline size_t operator [] (const int dim) const
+            inline int operator [] (const int dim) const
             {
                 return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             };
 //            inline unsigned int& operator [](const int i) { return m_p[i]; };
-            inline operator const size_t * () const { return m_p; }
+            inline operator const int * () const { return m_p; }
             bool operator == (const MSize& sz) const
             {
                 if(m_p == NULL || sz.m_p == NULL)
@@ -720,7 +720,7 @@ class DataObject
                     return sz.m_p == m_p;
                 }
 
-                size_t d = m_p[-1], dsz = sz.m_p[-1];
+                int d = m_p[-1], dsz = sz.m_p[-1];
                 if( d != dsz )
                     return false;
                 if( d == 2 )
@@ -728,7 +728,7 @@ class DataObject
                     return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];            
                 }
 
-                for( size_t i = 0; i < d - 2; i++ )
+                for( int i = 0; i < d - 2; i++ )
                 {
                     if( m_p[i] != sz.m_p[i] )
                     {
@@ -740,14 +740,14 @@ class DataObject
 
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
 
-            size_t *m_p;
+            int *m_p;
         };
 
         struct MROI
         {
             inline MROI() : m_p(NULL) {};
-            //inline MROI(size_t *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
-            inline size_t operator [] (const int dim) const
+            //inline MROI(int *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
+            inline int operator [] (const int dim) const
             {
                 return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             }
@@ -766,8 +766,8 @@ class DataObject
                     return false;
                 }
 
-                size_t d = m_p[-1];
-                for (size_t n = 0; n < d - 2; n++)
+                int d = m_p[-1];
+                for (int n = 0; n < d - 2; n++)
                 {
                     if (m_p[n] != rroi.m_p[n])
                     {
@@ -779,7 +779,7 @@ class DataObject
                 
             }
 
-            size_t *m_p;
+            int *m_p;
         };
 
 		DataObject(const DataObject& dObj, bool transposed);    /*!< copy constructor for transposed creation */
@@ -794,43 +794,40 @@ class DataObject
         MROI    m_roi;                               /*!< vector containing the offset to the starting point of the ROI for each dimension, is used for detecting and adjusting the ROI */
         MSize   m_size;                              /*!< vector containing the "virtual" size of each dimension considering the ROI */
 //        std::vector<int *>  m_data;                  /*!< vector with references to each matrix-plane. Must be cast to cv::Mat_<"m_type"> */
-        int     **m_data;
+        uchar  **m_data;
         ReadWriteLock      *m_objSharedDataLock;     /*!< readWriteLock for data block, this lock is shared within every instance which is using the same data. */
         DataObjectTags     *m_pDataObjectTags;        /*!< class containing the object metadata */
         ReadWriteLock       m_objHeaderLock;         /*!< readWriteLock for this instance of dataObject. */
+        const static int m_sizeofs;
 
-        inline int mdata_realloc(const size_t size)
+        inline int mdata_realloc(const int size)
         {
-            static size_t sizeofs = sizeof(size_t) / sizeof(int *);
-
             if (m_data)
             {
-                m_data = static_cast<int **>(realloc(m_data - sizeofs, size * sizeof(int *) + sizeof(size_t)));
+                m_data = static_cast<uchar **>(realloc(m_data - m_sizeofs, (size + m_sizeofs) * sizeof(uchar *)));
             }
             else
             {
-                size_t numBytes = size * sizeof(int *) + sizeof(size_t);
-                m_data = static_cast<int **>(calloc(numBytes, 1));
+                int numBytes = (size + m_sizeofs) * sizeof(uchar *);
+                m_data = static_cast<uchar **>(calloc(numBytes, 1));
                 memset( m_data, 0, numBytes );
             }
-            (*reinterpret_cast<size_t*>(m_data)) = size;
-            m_data += sizeofs;
+            (*reinterpret_cast<int*>(m_data)) = size;
+            m_data += m_sizeofs;
             return 0;
         }
-        inline size_t mdata_size(void) const
+        inline int mdata_size(void) const
         {
-            static size_t sizeofs = sizeof(size_t) / sizeof(int *);
             if (!m_data)
                 return 0;
             else
-                return (*reinterpret_cast<size_t *>(m_data - sizeofs));
+                return (*reinterpret_cast<int *>(m_data - m_sizeofs));
         }
         inline int mdata_free()
         {
-            static size_t sizeofs = sizeof(size_t) / sizeof(int *);
             if (m_data)
             {
-                int **ptr = m_data - sizeofs;
+                uchar **ptr = m_data - m_sizeofs;
                 free(ptr);
             }
             m_data = NULL;
@@ -839,14 +836,14 @@ class DataObject
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
-        template<typename _Tp> friend RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const size_t* steps);
-        template<typename _Tp> friend RetVal CreateFuncWithCVPlanes(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes);
+        template<typename _Tp> friend RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps);
+        template<typename _Tp> friend RetVal CreateFuncWithCVPlanes(DataObject *dObj, const unsigned char dimensions, const int *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes);
         template<typename _Tp> friend RetVal FreeFunc(DataObject *dObj);
         template<typename _Tp> friend RetVal SecureFreeFunc(DataObject *dObj);
         template<typename _Tp> friend RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
         template<typename _Tp> friend RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
         template<typename _Tp> friend RetVal AdjustROIFunc(DataObject *dObj, const int *lims);
-        template<typename _Tp> friend RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, size_t *minPos, size_t *maxPos);
+        template<typename _Tp> friend RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
@@ -858,9 +855,9 @@ class DataObject
         template<typename _Tp> friend RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbottom, int dleft, int dright);
 
     public:
-        size_t seekMat(const size_t matNum, const size_t numMats) const;
-        size_t seekMat(const size_t matNum) const;
-        size_t calcNumMats(void) const;
+        int seekMat(const int matNum, const int numMats) const;
+        int seekMat(const int matNum) const;
+        int calcNumMats(void) const;
 
         // TAGSPACEFUNCTIONS
 
@@ -979,7 +976,7 @@ class DataObject
                 return false;
             }
 
-            if((tagNumber < 0) || ((size_t)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
+            if((tagNumber < 0) || ((int)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
             {
                 key = std::string();
                 value = std::string();
@@ -1005,7 +1002,7 @@ class DataObject
                 validOperation = false;
                 return std::string(""); //error
             }
-            if((tagNumber < 0) || ((size_t)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
+            if((tagNumber < 0) || ((int)(tagNumber + 1) > m_pDataObjectTags->m_tags.size()))
             {
                 validOperation = false;
                 return std::string(""); //does not exist
@@ -1302,10 +1299,10 @@ class DataObject
             \return number of elements
             \sa getDims, getSize
         */
-        inline size_t getTotal() const
+        inline int getTotal() const
         {
             int dims = getDims();
-            size_t total = dims > 0 ? 1 : 0;
+            int total = dims > 0 ? 1 : 0;
             for(int i = 0 ; i<dims ; i++)
             {
                 total *= getSize(i);
@@ -1319,10 +1316,10 @@ class DataObject
             \return number of elements
             \sa getDims, getSize
         */
-        inline size_t getOriginalTotal() const
+        inline int getOriginalTotal() const
         {
             int dims = getDims();
-            size_t total = dims > 0 ? 1 : 0;
+            int total = dims > 0 ? 1 : 0;
             for(int i = 0 ; i<dims ; i++)
             {
                 total *= m_osize[i];
@@ -1373,9 +1370,9 @@ class DataObject
 
 
 //        std::vector<int *> get_mdata(void);
-        int ** get_mdata(void);
+        uchar ** get_mdata(void);
 //        std::vector<int *> get_mdata(void) const;
-        int ** get_mdata(void) const;
+        uchar ** get_mdata(void) const;
 
         //! returns the size-member. m_size fits to the physical organization of data in memory.
         /*!
@@ -1451,9 +1448,9 @@ class DataObject
             \param type is the data-type of each element (use type of enumeration tDataType)
             \sa create, tDataType
         */
-        DataObject(const size_t size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const int size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
-            size_t sizes[2] = {1, size};
+            int sizes[2] = {1, size};
             this->create(2, sizes, type, 1);
             //DataObject(1, size, type);
         }
@@ -1467,9 +1464,9 @@ class DataObject
             \param type is the data-type of each element (use type of enumeration tDataType)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeY, const size_t sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const int sizeY, const int sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
-            size_t sizes[2] = {sizeY, sizeX};
+            int sizes[2] = {sizeY, sizeX};
             this->create(2, sizes, type, 1);
         }
 
@@ -1484,9 +1481,9 @@ class DataObject
             \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
-             size_t sizes[3] = {sizeZ, sizeY, sizeX};
+             int sizes[3] = {sizeZ, sizeY, sizeX};
 
             this->create(3, sizes, type, m_continuous);
         }
@@ -1506,9 +1503,9 @@ class DataObject
                     one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
             \sa create, tDataType
         */
-        DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const uchar* continuousDataPtr,  const size_t* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
-            size_t sizes[3] = {sizeZ, sizeY, sizeX};
+            int sizes[3] = {sizeZ, sizeY, sizeX};
 
             this->create(3, sizes, type, m_continuous, continuousDataPtr, steps);
         }
@@ -1523,7 +1520,7 @@ class DataObject
             \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
             \sa create, tDataType
         */
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, m_continuous);
         }
@@ -1542,12 +1539,12 @@ class DataObject
                     one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
             \sa create, ito::tDataType
         */
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const uchar* continuousDataPtr, const size_t* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, m_continuous, continuousDataPtr, steps);
         }
 
-        DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
+        DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             this->create(dimensions, sizes, type, planes, nrOfPlanes);
         }
@@ -1625,28 +1622,28 @@ class DataObject
 
         // allocates matrix with zero values
         RetVal zeros(const int type);
-        RetVal zeros(const size_t size, const int type);
-        RetVal zeros(const size_t sizeY, const size_t sizeX, const int type);
-        RetVal zeros(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous = 0);
-        RetVal zeros(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous = 0);
+        RetVal zeros(const int size, const int type);
+        RetVal zeros(const int sizeY, const int sizeX, const int type);
+        RetVal zeros(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0);
+        RetVal zeros(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);
 
         // allocates matrix with all values set to one
         RetVal ones(const int type);
-        RetVal ones(const size_t size, const int type);
-        RetVal ones(const size_t sizeY, const size_t sizeX, const int type);
-        RetVal ones(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous = 0);
-        RetVal ones(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous = 0);
+        RetVal ones(const int size, const int type);
+        RetVal ones(const int sizeY, const int sizeX, const int type);
+        RetVal ones(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0);
+        RetVal ones(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);
 
         // allocates matrix with uniform distributed noise
         RetVal rand(const int type, const bool randMode = false);
-        RetVal rand(const size_t size, const int type, const bool randMode = false);
-        RetVal rand(const size_t sizeY, const size_t sizeX, const int type, const bool randMode = false);
-        RetVal rand(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const bool randMode, const unsigned char continuous = 0);
-        RetVal rand(const unsigned char dimensions, const size_t *sizes, const int type, const bool randMode, const unsigned char continuous = 0);
+        RetVal rand(const int size, const int type, const bool randMode = false);
+        RetVal rand(const int sizeY, const int sizeX, const int type, const bool randMode = false);
+        RetVal rand(const int sizeZ, const int sizeY, const int sizeX, const int type, const bool randMode, const unsigned char continuous = 0);
+        RetVal rand(const unsigned char dimensions, const int *sizes, const int type, const bool randMode, const unsigned char continuous = 0);
 
         // allocates matrix with eye-matrix representation
         RetVal eye(const int type);
-        RetVal eye(const size_t size, const int type);
+        RetVal eye(const int size, const int type);
 
         RetVal conj();
         DataObject adj() const;
@@ -1659,7 +1656,7 @@ class DataObject
 
         DataObject squeeze() const;
 
-        size_t elemSize() const;
+        int elemSize() const;
 
 /*
         // Adressing operators ()
@@ -1694,7 +1691,7 @@ class DataObject
             if (m_dims == 1)
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[0])
+               if ((int)x >= m_size[0])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1704,7 +1701,7 @@ class DataObject
             else if (m_size[0] == 1)
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[1])
+               if ((int)x >= m_size[1])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1714,7 +1711,7 @@ class DataObject
             else
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[0])
+               if ((int)x >= m_size[0])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1739,7 +1736,7 @@ class DataObject
             if (m_dims == 1)
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[0])
+               if ((int)x >= m_size[0])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1749,7 +1746,7 @@ class DataObject
             else if (m_size[0] == 1)
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[1])
+               if ((int)x >= m_size[1])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1759,7 +1756,7 @@ class DataObject
             else
             {
          #if __ITODEBUG
-               if ((size_t)x >= m_size[0])
+               if ((int)x >= m_size[0])
                {
                   cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
                }
@@ -1802,7 +1799,7 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }          
-            else if (((size_t)x >= m_size[1]) || ((size_t)y >= m_size[0]) )
+            else if (((int)x >= m_size[1]) || ((int)y >= m_size[0]) )
             {
                 cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
             }
@@ -1825,7 +1822,7 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-            else if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
+            else if (((int)x >= m_size[2]) || ((int)y >= m_size[1]) || (((int)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
             {
                 cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
             }
@@ -1848,7 +1845,7 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-            else if (((size_t)x >= m_size[2]) || ((size_t)y >= m_size[1]) || (((size_t)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
+            else if (((int)x >= m_size[2]) || ((int)y >= m_size[1]) || (((int)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
             {
                 cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
             }
@@ -1864,7 +1861,7 @@ class DataObject
         */
         template<typename _Tp> _Tp& at(const unsigned int *idx) const //idx is in virtual order 
         {
-            size_t matNum = 0;
+            int matNum = 0;
 
             matIdxToNum(idx, &matNum);
 
@@ -1879,7 +1876,7 @@ class DataObject
         */
         template<typename _Tp> _Tp& at(const unsigned int *idx) //idx is in virtual order 
         {
-            size_t matNum = 0;
+            int matNum = 0;
 
             matIdxToNum(idx, &matNum);
 
@@ -1896,9 +1893,9 @@ class DataObject
             \remark No further error checking (e.g. boundaries)
             \return data-pointer
         */
-        uchar* rowPtr(const size_t matNum, const int y)
+        uchar* rowPtr(const int matNum, const int y)
         {
-            size_t matIndex = seekMat(matNum);
+            int matIndex = seekMat(matNum);
             return ((cv::Mat*)m_data[matIndex])->ptr(y);
         }
 
@@ -1909,9 +1906,9 @@ class DataObject
             \remark No further error checking (e.g. boundaries)
             \return data-pointer
         */
-        const uchar* rowPtr(const size_t matNum, const int y) const
+        const uchar* rowPtr(const int matNum, const int y) const
         {
-            size_t matIndex = seekMat(matNum);
+            int matIndex = seekMat(matNum);
             return ((cv::Mat*)m_data[matIndex])->ptr(y);
         }
 
@@ -1924,8 +1921,8 @@ class DataObject
         DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
         RetVal locateROI(int *wholeSizes, int *offsets);                              /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
         RetVal locateROI(int *lims);                                                  /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const size_t sizeX, const size_t sizeY);        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const size_t sizeX, const size_t sizeY, const int x0, const int y0, const size_t width, const size_t height);       //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY);        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height);       //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
         template<typename _Tp> RetVal checkType(const _Tp *src);    //compares type of elements in this data objects and type of given argument (doc in source)
 
         //
@@ -1945,7 +1942,7 @@ DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data obje
 
 template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
 
-//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, size_t *minPos = NULL, size_t *maxPos = NULL);
+//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos = NULL, int *maxPos = NULL);
 
 //! templated method for converting a given scalar value to the data type, indicated by the template parameter
 /*!
@@ -2056,8 +2053,8 @@ template<typename _Tp> _Tp numberConversion(ito::tDataType fromType, void *scala
 template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const DataObject& dObj)
 {
     //cv::Mat_<_Tp> *cvMat = NULL;
-    size_t numMats = dObj.calcNumMats();
-    size_t tMat = 0;
+    int numMats = dObj.calcNumMats();
+    int tMat = 0;
 
 	if (dObj.getDims() == 0)
 	{
@@ -2072,10 +2069,10 @@ template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const Da
 		}
 		std::cout << "]\n" << std::endl;
 
-		size_t *idx = new size_t[dObj.getDims()];
+		int *idx = new int[dObj.getDims()];
 		 
 
-		for (size_t nMat = 0; nMat < numMats; nMat++)
+		for (int nMat = 0; nMat < numMats; nMat++)
 		{
 			tMat = dObj.seekMat(nMat, numMats);
 			//std::cout <<  tMat + 1 << "->(";

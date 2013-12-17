@@ -1414,7 +1414,7 @@ namespace ito
     {
         RetVal ret(retOk);
         
-        size_t *sizes= NULL;     /*!< Sizes of the new dataObject. Will be freed at end: */
+        int *sizes= NULL;     /*!< Sizes of the new dataObject. Will be freed at end: */
         QString attrname;
         QString type("");
         QXmlStreamAttributes attrStream = stream.attributes();
@@ -1435,7 +1435,7 @@ namespace ito
 
         if(!ret.containsError())
         {
-            if (NULL==(sizes = (size_t *)calloc( ndims, sizeof(size_t))))
+            if (NULL==(sizes = (int *)calloc( ndims, sizeof(int))))
             {
                 ret += RetVal(retError, 0, QObject::tr("Not enough memory to alloc sizes vector").toAscii().data());
             }

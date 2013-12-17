@@ -127,7 +127,7 @@ public:
 
 
 protected:
-    static QHash<unsigned int, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
+    static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
 };
 
 } //end namespace ito

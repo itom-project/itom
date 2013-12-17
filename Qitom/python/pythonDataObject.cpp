@@ -183,7 +183,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     Py_ssize_t dims = 0;
     int intDims = 0;
     int typeno = 0;
-    size_t *sizes = NULL;
+    int *sizes = NULL;
     int tempSizes = 0;
 
     RetVal retValue(retOk);
@@ -327,9 +327,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 {
                     data = (uchar*)PyArray_DATA(ndArray);
                     npy_intp* npsizes = PyArray_DIMS(ndArray);
-                    size_t *steps = (size_t *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
+                    int *steps = (int *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
 
-                    size_t *sizes = new size_t[dimensions];
+                    int *sizes = new int[dimensions];
                     for (int n = 0; n < dimensions; n++)
                     {
                         sizes[n] = npsizes[n];
@@ -346,8 +346,8 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     {
                         //increase dimension by one and add last dimension with size 1 in order to realize a last step size equal to itemsize
                         dimensions = dimensions + 1;
-                        size_t* sizes_inc = new size_t[dimensions];
-                        size_t *steps_inc = new size_t[dimensions];
+                        int* sizes_inc = new int[dimensions];
+                        int *steps_inc = new int[dimensions];
 
                         for(uchar i = 0 ; i < dimensions - 1 ; i++)
                         {
@@ -417,7 +417,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 if(!retValue.containsError())
                 {
                     dimensions = static_cast<unsigned char>(intDims);
-                    sizes = new size_t[intDims];
+                    sizes = new int[intDims];
                     for(int i = 0; i<intDims ; i++) sizes[i]=0;
 
                     int totalElems = 1;
@@ -525,14 +525,14 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     {
                                         void *data = PyArray_DATA( (PyArrayObject*)npArray );
 
-                                        size_t numMats = self->dataObject->calcNumMats();
-                                        size_t matIndex = 0;
+                                        int numMats = self->dataObject->calcNumMats();
+                                        int matIndex = 0;
                                         int c=0;
                                         //PyObject *temp = NULL;
                                         cv::Mat *mat = NULL;
                                         int m,n;
 
-                                        for(size_t i=0;i<numMats;i++)
+                                        for(int i=0;i<numMats;i++)
                                         {
                                             matIndex = self->dataObject->seekMat(i, numMats);
                                             mat = (cv::Mat*)(self->dataObject->get_mdata())[matIndex];
@@ -1867,7 +1867,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         return -1;
     }
     
-    size_t total = self->dataObject->getTotal();
+    int total = self->dataObject->getTotal();
     int typenum;
 
     switch( self->dataObject->getType() )
@@ -5376,7 +5376,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     unsigned int seekNr;
     int sizeU = 0;
     int sizeV = 0;
-    size_t elemSize = 0;
+    int elemSize = 0;
     char *dummy = 0;
     char *startingPoint = NULL;
     //int res;
@@ -5399,7 +5399,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         {
             seekNr = self->dataObject->seekMat(i);
             tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = tempMat->elemSize();
+            elemSize = (int)tempMat->elemSize();
 
             //in version (checksum) 21120 the data has been stored as bytearray, which is reduced to a unicode and needs a lot of space
             byteArray = PyByteArray_FromStringAndSize(dummy,0);
@@ -5439,7 +5439,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         {
             seekNr = self->dataObject->seekMat(i);
             tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = tempMat->elemSize();
+            elemSize = (int)tempMat->elemSize();
 
             //in version (checksum) 21120 the data has been stored as bytearray, which is reduced to a unicode and needs a lot of space
             byteArray = PyBytes_FromStringAndSize(NULL, sizeV * sizeU * elemSize);
@@ -5677,7 +5677,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     int sizeV = 0;
     uchar* startPtr = NULL;
     char* byteArrayContent = NULL;
-    size_t elemSize = 0;
+    int elemSize = 0;
     std::string tempString;
     std::string keyString;
     PyObject *key, *value;
@@ -5701,7 +5701,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             seekNr = self->dataObject->seekMat(i);
             tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = tempMat->elemSize();
+            elemSize = (int)tempMat->elemSize();
             startPtr = tempMat->ptr(0); //mat is continuous!!! (should be ;) )
             byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
 
@@ -5715,7 +5715,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             seekNr = self->dataObject->seekMat(i);
             tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = tempMat->elemSize();
+            elemSize = (int)tempMat->elemSize();
             startPtr = tempMat->ptr(0); //mat is continuous!!! (should be ;) )
             byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
 
@@ -5865,7 +5865,7 @@ PyObject* PythonDataObject::PyDataObj_ToList(PyDataObject *self)
     
 }
 
-PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, size_t iterationIndex)
+PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, int iterationIndex)
 {
     if(dataObj == NULL)
     {
@@ -5877,9 +5877,9 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, 
 
     if((int)iterationIndex == dataObj->getDims() - 1) //last index
     {
-        size_t len = dataObj->getSize(iterationIndex);
+        int len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New( len );
-        for(size_t i = 0; i < len ; i++)
+        for(int i = 0; i < len ; i++)
         {
             currentIdx[iterationIndex] = i;
             temp = PyDataObj_At(dataObj, currentIdx);
@@ -5890,9 +5890,9 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, 
     }
     else if((int)iterationIndex < dataObj->getDims() - 1) //previous indexes (besides last one)
     {
-        size_t len = dataObj->getSize(iterationIndex);
+        int len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New( len );
-        for(size_t i = 0; i < len ; i++)
+        for(int i = 0; i < len ; i++)
         {
             currentIdx[iterationIndex] = i;
             temp = PyDataObj_ToListRecursive(dataObj, currentIdx, iterationIndex + 1);
@@ -5957,7 +5957,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
 
 }
 
-PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t continuousIdx)
+PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuousIdx)
 {
     if(dataObj == NULL)
     {
@@ -5972,11 +5972,11 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, size_t contin
     }
 
     int dims = dataObj->getDims();
-    size_t planeSize = dataObj->getSize(dims - 1) * dataObj->getSize(dims - 2);
-    size_t planeIdx = continuousIdx % planeSize;
-    size_t col = planeIdx % dataObj->getSize(dims - 1);
-    size_t row = (planeIdx - col) / dataObj->getSize(dims - 1);
-    size_t mat = (continuousIdx - planeIdx) / planeSize;
+    int planeSize = dataObj->getSize(dims - 1) * dataObj->getSize(dims - 2);
+    int planeIdx = continuousIdx % planeSize;
+    int col = planeIdx % dataObj->getSize(dims - 1);
+    int row = (planeIdx - col) / dataObj->getSize(dims - 1);
+    int mat = (continuousIdx - planeIdx) / planeSize;
     mat = dataObj->seekMat(mat);
 
     cv::Mat* m = (cv::Mat*)dataObj->get_mdata()[mat];
@@ -6074,7 +6074,7 @@ PyObject* PythonDataObject::PyDataObj_StaticZeros(PyObject * /*self*/, PyObject 
 
     if(selfDO->dataObject != NULL)
     {
-        size_t *sizes2 = new size_t[sizes.size()];
+        int *sizes2 = new int[sizes.size()];
         for(unsigned int i = 0; i < sizes.size(); i++)
             sizes2[i] = sizes[i];
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
@@ -6130,7 +6130,7 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
 
     if(selfDO->dataObject != NULL)
     {
-        size_t *sizes2 = new size_t[sizes.size()];
+        int *sizes2 = new int[sizes.size()];
         for(unsigned int i = 0; i < sizes.size(); i++)
             sizes2[i]=sizes[i];
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
@@ -6185,7 +6185,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
 
     if(selfDO->dataObject != NULL)
     {
-        size_t *sizes2 = new size_t[sizes.size()];
+        int *sizes2 = new int[sizes.size()];
         for(unsigned int i = 0; i < sizes.size(); i++)
             sizes2[i]=sizes[i];
 
@@ -6241,7 +6241,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
 
     if(selfDO->dataObject != NULL)
     {
-        size_t *sizes2 = new size_t[sizes.size()];
+        int *sizes2 = new int[sizes.size()];
         for(unsigned int i = 0; i < sizes.size(); i++)
             sizes2[i]=sizes[i];
 

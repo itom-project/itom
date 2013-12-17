@@ -23,20 +23,20 @@ public:
 	
 	virtual void SetUp(void)
 	{
-		size_t *temp_size1 = new size_t[2];
+		int *temp_size1 = new int[2];
 		temp_size1[0] =10;
 		temp_size1[1] =10;
 		dObj1_s = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj2_s = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj3_s = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 4;
 		temp_size[1] = 4;
 		temp_size[2] = 4;
 		temp_size[3] = 4;
 		temp_size[4] = 4;
 		dObj4_s = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size2 = new size_t[5];
+		int *temp_size2 = new int[5];
 		temp_size2[0] = 1;
 		temp_size2[1] = 1;
 		temp_size2[2] = 2;
@@ -287,19 +287,19 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test2)
 */
 TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 {
-	std::size_t planeId; 
+	int planeId; 
 	TypeParam *rowPtr  = NULL;	//!< Row pointer to locate each element of 5 dimensional data object dObj4_s at each row
-	std::size_t planeId_d; 
+	int planeId_d; 
 	TypeParam *rowPtr_d  = NULL;	//!< Row pointer to locate each element of 5 dimensional data object dObj4_d at each row
 	
-	std::size_t dim1 = dObj4_s.getSize(0);
-	std::size_t dim2 = dObj4_s.getSize(1);
-	std::size_t dim3 = dObj4_s.getSize(2);
-	std::size_t dim4 = dObj4_s.getSize(3);
-	std::size_t dim5 = dObj4_s.getSize(4);
+	int dim1 = dObj4_s.getSize(0);
+	int dim2 = dObj4_s.getSize(1);
+	int dim3 = dObj4_s.getSize(2);
+	int dim4 = dObj4_s.getSize(3);
+	int dim5 = dObj4_s.getSize(4);
 	
-	size_t dataIdx = 0;
-	size_t dataIdx_d = 0;
+	int dataIdx = 0;
+	int dataIdx_d = 0;
 
 	for(int i=0; i<dim1; i++)
 	{
@@ -326,11 +326,11 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
 
 	dObj4_s.deepCopyPartial(dObj4_d);		//!< Creating a deep copy of dObj4_s into dObj4_d using deepCopyPartial() funtion
 
-	std::size_t dim1_d = dObj4_d.getSize(0);
-	std::size_t dim2_d = dObj4_d.getSize(1);
-	std::size_t dim3_d = dObj4_d.getSize(2);
-	std::size_t dim4_d = dObj4_d.getSize(3);
-	std::size_t dim5_d = dObj4_d.getSize(4);
+	int dim1_d = dObj4_d.getSize(0);
+	int dim2_d = dObj4_d.getSize(1);
+	int dim3_d = dObj4_d.getSize(2);
+	int dim4_d = dObj4_d.getSize(3);
+	int dim5_d = dObj4_d.getSize(4);
 
 	for(int i=0; i<dim1_d; i++)
 	{
@@ -365,17 +365,17 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
 	int matLimits5d_1[] = {-1,-2,-1,-1,-2,0,-1,-1,-2,-1};
 	dObj4_dr = dObj4_d;
 	int matLimits5d_2[] = {1,2,1,1,2,0,1,1,2,1};
-	std::size_t planeId; 
+	int planeId; 
 	TypeParam *rowPtr  = NULL; 
-	std::size_t planeId_d; 
+	int planeId_d; 
 	TypeParam *rowPtr_d  = NULL;	
-	std::size_t dim1 = dObj4_s.getSize(0);
-	std::size_t dim2 = dObj4_s.getSize(1);
-	std::size_t dim3 = dObj4_s.getSize(2);
-	std::size_t dim4 = dObj4_s.getSize(3);
-	std::size_t dim5 = dObj4_s.getSize(4);	
-	size_t dataIdx = 0;
-	size_t dataIdx_d = 0;
+	int dim1 = dObj4_s.getSize(0);
+	int dim2 = dObj4_s.getSize(1);
+	int dim3 = dObj4_s.getSize(2);
+	int dim4 = dObj4_s.getSize(3);
+	int dim5 = dObj4_s.getSize(4);	
+	int dataIdx = 0;
+	int dataIdx_d = 0;
 	for(int i=0; i<dim1; i++)
 	{
 		for(int j=0; j<dim2;j++)
@@ -405,11 +405,11 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
 	dObj4_sr.adjustROI(5,matLimits5d_1);   //!< adjust ROI (shrinking because offset values are negative)
 	dObj4_sr.deepCopyPartial(dObj4_dr);	   //!< creating a deep copy of dObj4_sr into dObj4_dr
 	dObj4_dr.adjustROI(5,matLimits5d_2);   //!< adjust ROI (shrinking because offset values are negative)
-	std::size_t dim1_d = dObj4_d.getSize(0);
-	std::size_t dim2_d = dObj4_d.getSize(1);
-	std::size_t dim3_d = dObj4_d.getSize(2);
-	std::size_t dim4_d = dObj4_d.getSize(3);
-	std::size_t dim5_d = dObj4_d.getSize(4);
+	int dim1_d = dObj4_d.getSize(0);
+	int dim2_d = dObj4_d.getSize(1);
+	int dim3_d = dObj4_d.getSize(2);
+	int dim4_d = dObj4_d.getSize(3);
+	int dim5_d = dObj4_d.getSize(4);
 
 	//!< To test the values of dObj4_dr are same as those of origianal after adjusting the ROI back to original size.
 	for(int i=0; i<dim1_d; i++)

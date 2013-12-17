@@ -25,7 +25,7 @@ public:
 		dObj1 = ito::DataObject();
 		dObj2 = ito::DataObject(10,10,ito::getDataType( (const _Tp *) NULL ));
 		dObj3 = ito::DataObject(5,10,10,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 3;
 		temp_size[1] = 4;
 		temp_size[2] = 2;

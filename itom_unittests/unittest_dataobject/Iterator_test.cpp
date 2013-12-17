@@ -25,7 +25,7 @@ public:
 	{
 		dObj2d = ito::DataObject(21,13,ito::getDataType( (const _Tp *) NULL ));
 		dObj3d = ito::DataObject(5,10,10,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 3;
 		temp_size[1] = 4;
 		temp_size[2] = 2;
@@ -214,7 +214,7 @@ TYPED_TEST(iterator_test, iterator_test_4d)
 	int dim2 = dObj4d.getSize(1);
 	int dim3 = dObj4d.getSize(2);
 	int dim4 = dObj4d.getSize(3);	
-	size_t dataIdx = 0;
+	int dataIdx = 0;
 		for(int i=0; i<dim1;i++)
 		{
 			for(int j=0; j<dim2;j++)
@@ -258,7 +258,7 @@ TYPED_TEST(iterator_test, iteratorROI_test_4d)
 	int dim2 = dObj4d.getSize(1);
 	int dim3 = dObj4d.getSize(2);
 	int dim4 = dObj4d.getSize(3);	
-	size_t dataIdx = 0;
+	int dataIdx = 0;
 		for(int i=0; i<dim1;i++)
 		{
 			for(int j=0; j<dim2;j++)

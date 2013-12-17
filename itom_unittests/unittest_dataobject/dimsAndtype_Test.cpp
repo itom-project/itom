@@ -24,13 +24,13 @@ public:
 	virtual void SetUp(void)
 	{
 		//dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size1 = new size_t[1];
+		int *temp_size1 = new int[1];
 		temp_size1[0] =10;
 		dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));	//!< Empty Data Object
 		dObj2 = ito::DataObject(1,temp_size1,ito::getDataType( (const _Tp *) NULL ));	//!< 1 dimensional data object
 		dObj3 = ito::DataObject(5,10,ito::getDataType( (const _Tp *) NULL ));			//!< 2 dimensional data object 
 		dObj4 = ito::DataObject(2,3,4,ito::getDataType( (const _Tp *) NULL ));			//!< 3 dimensional data object
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 3;
 		temp_size[1] = 4;
 		temp_size[2] = 2;

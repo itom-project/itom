@@ -71,7 +71,7 @@ namespace dObjHelper
         if(oldUnit.empty())
             return oldUnit;
 
-        size_t found = oldUnit.find('/');
+        int found = (int)oldUnit.find('/');
 
         if(found!=std::string::npos)
         {
@@ -520,7 +520,7 @@ namespace dObjHelper
     ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     ito::RetVal verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     ito::RetVal verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    ito::RetVal verifySize(size_t size, int minSize, int maxSize, const char *axisName, const char* dObjName);
+    ito::RetVal verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
     
     //-----------------------------------------------------------------------------------------------
     /*! \fn freeRowPointer
@@ -598,7 +598,7 @@ namespace dObjHelper
         }
 
         ito::RetVal retVal(ito::retOk);
-        memset(pointer, 0, (dObj->calcNumMats() + 1) * sizeof(size_t));
+        memset(pointer, 0, (dObj->calcNumMats() + 1) * sizeof(int));
         int sizeY = dObj->getSize(dObj->getDims() - 2);
 
         int** mdata = dObj->get_mdata();

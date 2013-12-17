@@ -22,13 +22,13 @@ public:
 	
 	virtual void SetUp(void)
 	{
-		size_t *temp_size1 = new size_t[2];
+		int *temp_size1 = new int[2];
 		temp_size1[0] =10;
 		temp_size1[1] =10;
 		dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj2 = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj3 = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 4;
 		temp_size[1] = 5;
 		temp_size[2] = 5;
@@ -65,7 +65,7 @@ int dim2 = dObj4.getSize(1);
 int dim3 = dObj4.getSize(2);
 int dim4 = dObj4.getSize(3);
 int dim5 = dObj4.getSize(4);	
-size_t dataIdx = 0;
+int dataIdx = 0;
 int temp=0;
 	for(int i=0; i<dim1; i++)
 	{
@@ -135,7 +135,7 @@ TYPED_TEST(at_func_test2, at_Test5)
 	int dim3 = dObj4.getSize(2);
 	int dim4 = dObj4.getSize(3);
 	int dim5 = dObj4.getSize(4);	
-	size_t dataIdx = 0;
+	int dataIdx = 0;
 	int temp=0;
 	for(int i=0; i<dim1; i++)
 	{
@@ -219,7 +219,7 @@ TYPED_TEST(at_func_test2, at_Test6)
 	int dim3 = dObj4.getSize(2);
 	int dim4 = dObj4.getSize(3);
 	int dim5 = dObj4.getSize(4);	
-	size_t dataIdx = 0;
+	int dataIdx = 0;
 	for(int i=0; i<dim1; i++)
 	{
 		for(int j=0; j<dim2;j++)

@@ -31,6 +31,8 @@
 
 namespace ito {
 
+
+const int DataObject::m_sizeofs = sizeof(int) < sizeof(int *) ? 1 : sizeof(int) / sizeof(int *);
 //-------------------------------------------------------------------------  
 //! default constructor
 DObjConstIterator::DObjConstIterator() :
@@ -50,7 +52,7 @@ DObjConstIterator::DObjConstIterator(const DataObject* _dObj, int pos /*= 0*/):
     dObj(_dObj)
 {
     elemSize = _dObj->elemSize();
-    size_t dims = dObj->getDims();
+    int dims = dObj->getDims();
 
     if(dObj->getSize(dims-1) == dObj->getOriginalSize(dims-1))
     {
@@ -215,13 +217,13 @@ void DObjConstIterator::seekAbs(int ofs)
 {
     if(dObj)
     {
-        size_t matIndex;
-        size_t dims = dObj->getDims();
+        int matIndex;
+        int dims = dObj->getDims();
 
         if(ofs <= 0) //begin
         {
             //ptr = dObj->rowPtr(0,0);
-            size_t matIndex = dObj->seekMat(0);
+            int matIndex = dObj->seekMat(0);
             ptr = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
 
             sliceStart = ptr;
@@ -236,7 +238,7 @@ void DObjConstIterator::seekAbs(int ofs)
                 sliceEnd = ptr + elemSize * dObj->getSize(dims-1);
             }
         }
-        else if((size_t)ofs >= dObj->getTotal()) //end, (ofs > 0)
+        else if((int)ofs >= dObj->getTotal()) //end, (ofs > 0)
         {
             plane = dObj->calcNumMats() - 1;
 
@@ -261,7 +263,7 @@ void DObjConstIterator::seekAbs(int ofs)
         else
         {
             //determine the plane, where it lies in
-            size_t planeSize = dObj->getSize( dims-1 ) * dObj->getSize( dims-2 );
+            int planeSize = dObj->getSize( dims-1 ) * dObj->getSize( dims-2 );
             plane = ofs / planeSize; //floor value
             ofs -= (plane * planeSize);
 
@@ -275,7 +277,7 @@ void DObjConstIterator::seekAbs(int ofs)
             }
             else
             {
-                size_t row = ofs / dObj->getSize(dims-2); //floor value
+                int row = ofs / dObj->getSize(dims-2); //floor value
 
                 //sliceStart = dObj->rowPtr(plane,row);
                 matIndex = dObj->seekMat(plane);
@@ -294,12 +296,12 @@ void DObjConstIterator::seekRel(int ofs)
 {
     if(dObj)
     {
-        size_t matIndex;
-        size_t dims = dObj->getDims();
-        size_t width = dObj->getSize(dims-1);
-        size_t stride = dObj->getOriginalSize(dims-1);
+        int matIndex;
+        int dims = dObj->getDims();
+        int width = dObj->getSize(dims-1);
+        int stride = dObj->getOriginalSize(dims-1);
 
-        size_t curRowIdx = (ptr - dObj->rowPtr(plane,0)) / (stride * elemSize); //floor
+        int curRowIdx = (ptr - dObj->rowPtr(plane,0)) / (stride * elemSize); //floor
         int curElemIdxInPlane;
         if(planeContinuous)
         {
@@ -350,7 +352,7 @@ void DObjConstIterator::seekRel(int ofs)
         if( plane < 0) //move to begin
         {
             //ptr = dObj->rowPtr(0,0);
-            size_t matIndex = dObj->seekMat(0);
+            int matIndex = dObj->seekMat(0);
             ptr = ((cv::Mat*)dObj->get_mdata()[matIndex])->data;
             sliceStart = ptr;
             plane = 0;
@@ -364,7 +366,7 @@ void DObjConstIterator::seekRel(int ofs)
                 sliceEnd = ptr + elemSize * width;
             }
         }
-        else if ( (size_t)plane >= dObj->calcNumMats() ) //move to end (plane cannot be negative again)
+        else if ( (int)plane >= dObj->calcNumMats() ) //move to end (plane cannot be negative again)
         {
             plane = dObj->calcNumMats() - 1;
 
@@ -636,7 +638,7 @@ DObjIterator DObjIterator::operator ++(int)
     \remark the returned type of std::vector is int*, you should cast it to the appropriate type (e.g. cv::_Mat<int8>)
 */
 //std::vector<int *> DataObject::get_mdata(void)
-int ** DataObject::get_mdata(void)
+uchar ** DataObject::get_mdata(void)
 {
    return this->m_data;
 }
@@ -647,7 +649,7 @@ int ** DataObject::get_mdata(void)
     \sa get_mdata
 */
 //std::vector<int *> DataObject::get_mdata(void) const
-int ** DataObject::get_mdata(void) const
+uchar ** DataObject::get_mdata(void) const
 {
    return this->m_data;
 }
@@ -657,18 +659,18 @@ int ** DataObject::get_mdata(void) const
 /*!
 
 */
-RetVal DataObject::matNumToIdx(const size_t matNum, size_t *matIdx) const
+RetVal DataObject::matNumToIdx(const int matNum, int *matIdx) const
 {
-   size_t tMatNum = matNum;
-   size_t planeSize = 1;
-   size_t m_dims_us = m_dims;
+   int tMatNum = matNum;
+   int planeSize = 1;
+   int m_dims_us = m_dims;
 
-   for (size_t nDim = 1; nDim < m_dims_us - 2; nDim++)
+   for (int nDim = 1; nDim < m_dims_us - 2; nDim++)
    {
          planeSize *= m_osize[nDim];
    }
 
-   for (size_t nDim = 0; nDim < m_dims_us - 2; nDim++)
+   for (int nDim = 0; nDim < m_dims_us - 2; nDim++)
    {
          matIdx[nDim] = tMatNum / planeSize - m_roi[nDim];
          tMatNum %= planeSize;
@@ -685,11 +687,11 @@ RetVal DataObject::matNumToIdx(const size_t matNum, size_t *matIdx) const
 /*!
     \return 0 if empty range or empty matrix, 1 if two dimensional, else product of sizes of all dimensions besides the last two ones.
 */
-size_t DataObject::calcNumMats(void) const
+int DataObject::calcNumMats(void) const
 {
    if (m_dims > 2)
    {
-      size_t numMat = 1;
+      int numMat = 1;
       for (int n = 0; n < m_dims - 2; n++)
       {
          numMat *= m_size[n];
@@ -717,9 +719,9 @@ size_t DataObject::calcNumMats(void) const
     \sa seekMat
     \sa calcNumMats
 */
-size_t DataObject::seekMat(const size_t matNum) const
+int DataObject::seekMat(const int matNum) const
 {
-   size_t numMats = calcNumMats();
+   int numMats = calcNumMats();
    return seekMat(matNum, numMats);
 };
 
@@ -733,7 +735,7 @@ size_t DataObject::seekMat(const size_t matNum) const
     \param numMats total number of matrix-planes, lying within the ROI
     \return real vector-index for the desired matrix-plane or 0 if matNum >= numMats.
 */
-size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
+int DataObject::seekMat(const int matNum, const int numMats) const
 {
     if( matNum >= numMats) return 0; //check boundaries
 
@@ -757,12 +759,12 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
 
     ////begin 1. possibility: determine indices within region of interest an call matIdxToNum in order to get the plane-number for this index
     ////begin 2. possibility: integrate matIdxToNum here.
-    //size_t *idx = new size_t[m_dims];
+    //int *idx = new int[m_dims];
     //idx[m_dims-2] = 0;
     //idx[m_dims-1] = 0;
-    //size_t val = matNum;
-    //size_t t = 1;
-    //size_t result = 0;
+    //int val = matNum;
+    //int t = 1;
+    //int result = 0;
 
     //for(int i = m_dims - 3 ; i >=0 ; i--)
     //{
@@ -775,7 +777,7 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
     //matIdxToNum(idx, &result);
 
     ////2. possibility:
-    //size_t planeSize = 1;
+    //int planeSize = 1;
 
     //for (int n = m_dims - 3; n >= 0; n--)
     //{
@@ -789,11 +791,11 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
     ////end 1. and 2. possibility
 
     //begin 3. possibility, directly combine 2. possiblity into one loop without allocating idx-vector
-    size_t val = matNum;
-    size_t t = 1;
-    size_t result = 0;
-    size_t idx = 0;
-    size_t planeSize = 1;
+    int val = matNum;
+    int t = 1;
+    int result = 0;
+    int idx = 0;
+    int planeSize = 1;
 
     for(int i = m_dims - 3 ; i >=0 ; i--)
     {
@@ -809,8 +811,8 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
 
     //original version (buggy)
 
-    /*size_t tmat = 0;
-    size_t dmat = 0;
+    /*int tmat = 0;
+    int dmat = 0;
     int ndim;
 
     tmat = 0;
@@ -842,9 +844,9 @@ size_t DataObject::seekMat(const size_t matNum, const size_t numMats) const
     \return retOk
     \sa create
 */
-template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const size_t* steps)
+template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps)
 {
-   size_t numMats = 0;
+   int numMats = 0;
 
    if(dimensions == 0)
    {
@@ -856,8 +858,8 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
    }
    else //if one-dimensional create a two-dimensional data-object
    {
-       size_t sizes_inc[2] = {1,sizes[0]};
-       size_t steps_inc[2] = {sizes[0] * sizeof(_Tp), sizeof(_Tp)};
+       int sizes_inc[2] = {1,sizes[0]};
+       int steps_inc[2] = {sizes[0] * sizeof(_Tp), sizeof(_Tp)};
        dObj->createHeader(2, sizes_inc, steps_inc, sizeof(_Tp));
    }
 
@@ -906,7 +908,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                 throw; //rethrow error
             }
 
-            dObj->m_data[0] = reinterpret_cast<int *>(dataMat);
+            dObj->m_data[0] = reinterpret_cast<uchar *>(dataMat);
             break;
 
          case 2:
@@ -929,7 +931,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                 throw; //rethrow error
             }
 
-            dObj->m_data[0] = reinterpret_cast<int *>(dataMat);
+            dObj->m_data[0] = reinterpret_cast<uchar *>(dataMat);
             break;
 
          default:
@@ -940,25 +942,25 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
             {
                 if (!continuous)
                 {
-                   for (size_t n = 0; n < numMats; n++)
+                   for (int n = 0; n < numMats; n++)
                    {
                       dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]));
-                      dObj->m_data[n] = reinterpret_cast<int *>(dataMat);
+                      dObj->m_data[n] = reinterpret_cast<uchar *>(dataMat);
     //                  dObj->m_data.push_back((int *)dataMat);
                    }
                 }
                 else //!continuous
                 {
-                    size_t matSize = dObj->m_osize.m_p[dimensions - 2] * dObj->m_osize.m_p[dimensions - 1] * sizeof(_Tp);
+                    int matSize = dObj->m_osize.m_p[dimensions - 2] * dObj->m_osize.m_p[dimensions - 1] * sizeof(_Tp);
 
                     if(continuousDataPtr)
                     {
                         dObj->mdata_realloc(numMats);
-                        for (size_t n = 0; n < numMats; n++)
+                        for (int n = 0; n < numMats; n++)
                         {
                             dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]), (_Tp *)continuousDataPtr, steps[dimensions-2]);
     //                        dObj->m_data.push_back((int *)dataMat);
-                            dObj->m_data[n] = reinterpret_cast<int *>(dataMat);
+                            dObj->m_data[n] = reinterpret_cast<uchar *>(dataMat);
                             continuousDataPtr += matSize;
                         }
                     }
@@ -971,11 +973,11 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                         }
 
                         dObj->mdata_realloc(numMats);
-                        for (size_t n = 0; n < numMats; n++)
+                        for (int n = 0; n < numMats; n++)
                         {
                             dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]), (_Tp *)dataPtr);
     //                        dObj->m_data.push_back((int *)dataMat);
-                            dObj->m_data[n] = reinterpret_cast<int *>(dataMat);
+                            dObj->m_data[n] = reinterpret_cast<uchar *>(dataMat);
                             dataPtr += matSize;
                         }
                     }
@@ -993,7 +995,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
    return 0;
 }
 
-typedef RetVal (*tCreateFunc)(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const size_t* steps);
+typedef RetVal (*tCreateFunc)(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps);
 MAKEFUNCLIST(CreateFunc)
 
 //! high-level, non-templated method for data allocation
@@ -1007,7 +1009,7 @@ MAKEFUNCLIST(CreateFunc)
     \throws open-cv error in case of error
     \sa CreateFunc
 */
-void DataObject::create(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr, const size_t* steps)
+void DataObject::create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps)
 {
     m_type = type;
 
@@ -1042,7 +1044,7 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
     \return retOk
     \sa create
 */
-template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes)
+template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const unsigned char dimensions, const int *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes)
 {
     cv::Size tempOrgSize;
     cv::Size tempSize;
@@ -1065,9 +1067,9 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         dbottom = tempOrgSize.height - tempSize.height - tempPoint.y;
 //        dright = tempOrgSize.width - tempSize.width - tempPoint.x;
 
-        size_t* sizes_inc = new size_t[dimensions];
-        size_t* osizes_inc = new size_t[dimensions];
-        size_t* roi_inc = new size_t[dimensions];
+        int* sizes_inc = new int[dimensions];
+        int* osizes_inc = new int[dimensions];
+        int* roi_inc = new int[dimensions];
 
         if(dimensions > 1)
         {
@@ -1114,7 +1116,7 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
             for(unsigned int i = 0 ; i < nrOfPlanes ; i++)
             {
                 dataMat = new cv::Mat_<_Tp>(planes[i]); //memory error might occur
-                dObj->m_data[i] = reinterpret_cast<int *>(dataMat);
+                dObj->m_data[i] = reinterpret_cast<uchar *>(dataMat);
             }
         }
         catch(cv::Exception exc) //memory exception
@@ -1127,7 +1129,7 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
     return retOk;
 }
 
-typedef RetVal (*tCreateFuncWithCVPlanes)(DataObject *dObj, const unsigned char dimensions, const size_t *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes);
+typedef RetVal (*tCreateFuncWithCVPlanes)(DataObject *dObj, const unsigned char dimensions, const int *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes);
 MAKEFUNCLIST(CreateFuncWithCVPlanes)
 
 //! high-level, non-templated method for data allocation
@@ -1140,7 +1142,7 @@ MAKEFUNCLIST(CreateFuncWithCVPlanes)
     \throws open-cv error in case of error
     \sa CreateFuncWithCVPlanes
 */
-void DataObject::create(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes)
+void DataObject::create(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes)
 {
     m_type = type;
     m_owndata = 1;
@@ -1160,11 +1162,11 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
     }
 
     //check whether planes do have the right size
-    size_t sizex = dimensions ? sizes[dimensions - 1] : static_cast<size_t>(0);
-    size_t sizey = dimensions ? sizes[dimensions - 2] : static_cast<size_t>(0);
-    size_t numMats = dimensions ? 1 : 0;
+    int sizex = dimensions ? sizes[dimensions - 1] : static_cast<int>(0);
+    int sizey = dimensions ? sizes[dimensions - 2] : static_cast<int>(0);
+    int numMats = dimensions ? 1 : 0;
     cv::Size planeSize;
-    size_t requiredElemSize = 0;
+    int requiredElemSize = 0;
 
     switch(type)
     {
@@ -1206,11 +1208,11 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
 
     if ((type == ito::tComplex64) || (type ==ito::tComplex128))
     {
-        for(size_t i = 0 ; i < numMats ; i++)
+        for(int i = 0 ; i < numMats ; i++)
         {
             planeSize = planes[i].size();
 
-            if((size_t)planeSize.height != sizey || (size_t)planeSize.width != sizex)
+            if((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
                 cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
             }
@@ -1228,11 +1230,11 @@ void DataObject::create(const unsigned char dimensions, const size_t *sizes, con
     }
     else
     {
-        for(size_t i = 0 ; i < numMats ; i++)
+        for(int i = 0 ; i < numMats ; i++)
         {
             planeSize = planes[i].size();
 
-            if((size_t)planeSize.height != sizey || (size_t)planeSize.width != sizex)
+            if((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
                 cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
             }
@@ -1292,8 +1294,8 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
 
             //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
 //            unsigned int size = dObj->m_data.size();
-            size_t size = dObj->mdata_size();
-            for ( size_t i = 0 ; i < size ; i++)
+            int size = dObj->mdata_size();
+            for ( int i = 0 ; i < size ; i++)
             {
                 dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
                 delete dataMat;
@@ -1314,7 +1316,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     }
 
     // yes so really clean up
-    size_t numMats;
+    int numMats;
     if (!(numMats = dObj->mdata_size()))
     {
         return 0;
@@ -1329,8 +1331,8 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
 
     //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
 //    unsigned int size = dObj->m_data.size();
-    size_t size = dObj->mdata_size();
-    for ( size_t i = 0 ; i < size ; i++)
+    int size = dObj->mdata_size();
+    for ( int i = 0 ; i < size ; i++)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
         delete dataMat;
@@ -1381,8 +1383,8 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
             //delete cvMats in m_data array (OpenCV organizes the rest)
             if(dObj->m_data)
             {
-                size_t size = dObj->mdata_size();
-                for ( size_t i = 0 ; i < size ; i++)
+                int size = dObj->mdata_size();
+                for ( int i = 0 ; i < size ; i++)
                 {
                     dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
                     if(dataMat) delete dataMat;
@@ -1404,7 +1406,7 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
     }
 
     //this section is only entered if we are the last to use the data or if no reference counter has been set (the latter usually should not happen)
-    size_t numMats = dObj->mdata_size();
+    int numMats = dObj->mdata_size();
 
     if(numMats > 0)
     {
@@ -1418,7 +1420,7 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
             }
         }
 
-        for ( size_t i = 0 ; i < numMats ; i++)
+        for ( int i = 0 ; i < numMats ; i++)
         {
             dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
             if(dataMat) delete dataMat;
@@ -1460,8 +1462,8 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
          return 0;
    }
 
-   size_t numMats = 0;
-   size_t tMat = 0;
+   int numMats = 0;
+   int tMat = 0;
    cv::Mat_<_Tp> *tempMat = NULL;
    cv::Mat_<_Tp> *rhsMat = NULL;
 
@@ -1474,7 +1476,7 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
    {
          numMats = lhs.calcNumMats();
          CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
-         for (size_t nMat = 0; nMat < numMats; nMat++)
+         for (int nMat = 0; nMat < numMats; nMat++)
          {
             tMat = lhs.seekMat(nMat);
             tempMat = (cv::Mat_<_Tp> *)lhs.m_data[tMat];
@@ -1488,17 +1490,17 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
          numMats = lhs.mdata_size();
          CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
 
-         for(unsigned int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
+         for(int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
          {
              rhs.m_size.m_p[i] = lhs.m_size.m_p[i];
          }
-         for(unsigned int i = 0 ; i < rhs.m_roi.m_p[-1]; i++)
+         for(int i = 0 ; i < rhs.m_roi.m_p[-1]; i++)
          {
              rhs.m_roi.m_p[i] = lhs.m_roi.m_p[i];
          }
 
 
-         for (unsigned int nMat = 0; nMat < numMats; nMat++)
+         for (int nMat = 0; nMat < numMats; nMat++)
          {
             tempMat = (cv::Mat_<_Tp> *)lhs.m_data[nMat];
             rhsMat = (cv::Mat_<_Tp> *)rhs.m_data[nMat];
@@ -1573,7 +1575,7 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(DataObject &lhs, DataObject &r
 
    int sizeX = static_cast<int>(lhs.getSize(lhs.getDims() - 1));
    int sizeY = static_cast<int>(lhs.getSize(lhs.getDims() - 2));
-   for (unsigned int nMat = 0; nMat < lhs.calcNumMats(); nMat++)
+   for (int nMat = 0; nMat < lhs.calcNumMats(); nMat++)
    {
         cv::Mat_<_Tp> *cvMatLhs = ((cv::Mat_<_Tp> *)lhs.get_mdata()[lhs.seekMat(nMat)]);
         cv::Mat_<_Tp> *cvMatRhs = ((cv::Mat_<_Tp> *)rhs.get_mdata()[rhs.seekMat(nMat)]);
@@ -1625,8 +1627,8 @@ RetVal DataObject::deepCopyPartial(DataObject &rhs)
     //calc and compare squeezed dimensions
     int thisDims = this->getDims();
     int rhsDims = rhs.getDims();
-    size_t *thisSizes = new size_t[thisDims];
-    size_t *rhsSizes = new size_t[rhsDims];
+    int *thisSizes = new int[thisDims];
+    int *rhsSizes = new int[rhsDims];
 
     int j = 0;
     for(int i=0; i<thisDims; i++)
@@ -1881,7 +1883,7 @@ RetVal DataObject::copyAxisTagsTo(DataObject &rhs) const
 */
 RetVal DataObject::zeros(const int type)
 {
-   size_t sizes[2] = {1, 1};
+   int sizes[2] = {1, 1};
    return zeros(2, sizes, type);
 };
 
@@ -1893,9 +1895,9 @@ RetVal DataObject::zeros(const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::zeros(const size_t size, const int type)
+RetVal DataObject::zeros(const int size, const int type)
 {
-   size_t sizes[2] = {1, size};
+   int sizes[2] = {1, size};
    return zeros(2, sizes, type);
 };
 
@@ -1908,9 +1910,9 @@ RetVal DataObject::zeros(const size_t size, const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::zeros(const size_t sizeY, const size_t sizeX, const int type)
+RetVal DataObject::zeros(const int sizeY, const int sizeX, const int type)
 {
-   size_t sizes[2] = {sizeY, sizeX};
+   int sizes[2] = {sizeY, sizeX};
    return zeros(2, sizes, type);
 };
 
@@ -1925,9 +1927,9 @@ RetVal DataObject::zeros(const size_t sizeY, const size_t sizeX, const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::zeros(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous)
+RetVal DataObject::zeros(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous)
 {
-   size_t sizes[3] = {sizeZ, sizeY, sizeX};
+   int sizes[3] = {sizeZ, sizeY, sizeX};
    return zeros(3, sizes, type, continuous);
 };
 
@@ -1941,14 +1943,14 @@ RetVal DataObject::zeros(const size_t sizeZ, const size_t sizeY, const size_t si
     \return retOk
     \sa zeros
 */
-template<typename _Tp> RetVal ZerosFunc(const size_t sizeY, const size_t sizeX, int **dstMat)
+template<typename _Tp> RetVal ZerosFunc(const int sizeY, const int sizeX, uchar **dstMat)
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
 
    return 0;
 }
 
-typedef RetVal (*tZerosFunc)(const size_t sizeY, const size_t sizeX, int **dstMat);
+typedef RetVal (*tZerosFunc)(const int sizeY, const int sizeX, uchar **dstMat);
 MAKEFUNCLIST(ZerosFunc);
 
 //! high-level, non-templated base function for allocation of new matrix whose elements are all set to zero
@@ -1960,21 +1962,21 @@ MAKEFUNCLIST(ZerosFunc);
     \return retOk
     \sa ZerosFunc
 */
-RetVal DataObject::zeros(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous)
+RetVal DataObject::zeros(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous)
 {
    freeData();
    create(dimensions, sizes, type, continuous);
 
-   size_t numMats = calcNumMats();
+   int numMats = calcNumMats();
 
-    size_t sizeX = sizes[dimensions - 1];
-    size_t sizeY = 1;
+    int sizeX = sizes[dimensions - 1];
+    int sizeY = 1;
     if(dimensions > 1)
     {
         sizeY = sizes[dimensions - 2];
     }
 
-    for (size_t matn = 0; matn < numMats; matn++)
+    for (int matn = 0; matn < numMats; matn++)
     {
         fListZerosFunc[type](sizeY, sizeX, &(m_data[matn]));
     }
@@ -1991,7 +1993,7 @@ RetVal DataObject::zeros(const unsigned char dimensions, const size_t *sizes, co
 */
 RetVal DataObject::ones(const int type)
 {
-   size_t sizes[2] = {1, 1};
+   int sizes[2] = {1, 1};
    return ones(2, sizes, type);
 };
 
@@ -2003,9 +2005,9 @@ RetVal DataObject::ones(const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::ones(const size_t size, const int type)
+RetVal DataObject::ones(const int size, const int type)
 {
-   size_t sizes[2] = {1, size};
+   int sizes[2] = {1, size};
    return ones(2, sizes, type);
 };
 
@@ -2018,9 +2020,9 @@ RetVal DataObject::ones(const size_t size, const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::ones(const size_t sizeY, const size_t sizeX, const int type)
+RetVal DataObject::ones(const int sizeY, const int sizeX, const int type)
 {
-   size_t sizes[2] = {sizeY, sizeX};
+   int sizes[2] = {sizeY, sizeX};
    return ones(2, sizes, type);
 };
 
@@ -2035,9 +2037,9 @@ RetVal DataObject::ones(const size_t sizeY, const size_t sizeX, const int type)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::ones(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const unsigned char continuous)
+RetVal DataObject::ones(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous)
 {
-   size_t sizes[3] = {sizeZ, sizeY, sizeX};
+   int sizes[3] = {sizeZ, sizeY, sizeX};
    return ones(3, sizes, type, continuous);
 };
 
@@ -2051,7 +2053,7 @@ RetVal DataObject::ones(const size_t sizeZ, const size_t sizeY, const size_t siz
     \return retOk
     \sa zeros
 */
-template<typename _Tp> RetVal OnesFunc(const size_t sizeY, const size_t sizeX, int **dstMat)
+template<typename _Tp> RetVal OnesFunc(const int sizeY, const int sizeX, uchar **dstMat)
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::ones(static_cast<int>(sizeY), static_cast<int>(sizeX));
    return 0;
@@ -2067,14 +2069,14 @@ template<typename _Tp> RetVal OnesFunc(const size_t sizeY, const size_t sizeX, i
     \return retOk
     \sa zeros
 */
-template<> RetVal OnesFunc<ito::Rgba32>(const size_t sizeY, const size_t sizeX, int **dstMat)
+template<> RetVal OnesFunc<ito::Rgba32>(const int sizeY, const int sizeX, uchar **dstMat)
 {
    (*((cv::Mat_<ito::Rgba32> *)(*dstMat))) = cv::Mat_<ito::Rgba32>(static_cast<int>(sizeY), static_cast<int>(sizeX));
    memset( (*((cv::Mat*)(*dstMat))).ptr<ito::uint8>(), 255, static_cast<int>(sizeY) * static_cast<int>(sizeX) * sizeof(ito::Rgba32));
    return 0;
 }
 
-typedef RetVal (*tOnesFunc)(const size_t sizeY, const size_t sizeX, int **dstMat);
+typedef RetVal (*tOnesFunc)(const int sizeY, const int sizeX, uchar **dstMat);
 MAKEFUNCLIST(OnesFunc);
 
 //! high-level, non-templated base function for allocation of new matrix whose elements are all set to one
@@ -2086,21 +2088,21 @@ MAKEFUNCLIST(OnesFunc);
     \return retOk
     \sa OnesFunc
 */
-RetVal DataObject::ones(const unsigned char dimensions, const size_t *sizes, const int type, const unsigned char continuous)
+RetVal DataObject::ones(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous)
 {
     freeData();
     create(dimensions, sizes, type, continuous);
 
-    size_t numMats = calcNumMats();
+    int numMats = calcNumMats();
 
-    size_t sizeX = sizes[dimensions - 1];
-    size_t sizeY = 1;
+    int sizeX = sizes[dimensions - 1];
+    int sizeY = 1;
     if(dimensions > 1)
     {
         sizeY = sizes[dimensions - 2];
     }
 
-    for (size_t matn = 0; matn < numMats; matn++)
+    for (int matn = 0; matn < numMats; matn++)
     {
         fListOnesFunc[type](sizeY, sizeX, &(m_data[matn]));
     }
@@ -2121,7 +2123,7 @@ RetVal DataObject::ones(const unsigned char dimensions, const size_t *sizes, con
 */
 RetVal DataObject::rand(const int type, const bool randMode)
 {
-   size_t sizes[2] = {1, 1};
+   int sizes[2] = {1, 1};
    return rand(2, sizes, type, randMode);
 };
 
@@ -2137,9 +2139,9 @@ RetVal DataObject::rand(const int type, const bool randMode)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::rand(const size_t size, const int type, const bool randMode)
+RetVal DataObject::rand(const int size, const int type, const bool randMode)
 {
-   size_t sizes[2] = {1, size};
+   int sizes[2] = {1, size};
    return rand(2, sizes, type, randMode);
 };
 
@@ -2156,9 +2158,9 @@ RetVal DataObject::rand(const size_t size, const int type, const bool randMode)
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::rand(const size_t sizeY, const size_t sizeX, const int type, const bool randMode)
+RetVal DataObject::rand(const int sizeY, const int sizeX, const int type, const bool randMode)
 {
-   size_t sizes[2] = {sizeY, sizeX};
+   int sizes[2] = {sizeY, sizeX};
    return rand(2, sizes, type, randMode);
 };
 
@@ -2177,9 +2179,9 @@ RetVal DataObject::rand(const size_t sizeY, const size_t sizeX, const int type, 
     \return retOk
     \sa zeros, ZerosFunc
 */
-RetVal DataObject::rand(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const bool randMode, const unsigned char continuous)
+RetVal DataObject::rand(const int sizeZ, const int sizeY, const int sizeX, const int type, const bool randMode, const unsigned char continuous)
 {
-   size_t sizes[3] = {sizeZ, sizeY, sizeX};
+   int sizes[3] = {sizeZ, sizeY, sizeX};
    return rand(3, sizes, type, randMode, continuous);
 };
 
@@ -2195,7 +2197,7 @@ RetVal DataObject::rand(const size_t sizeZ, const size_t sizeY, const size_t siz
     \return retOk
     \sa zeros
 */
-template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+template<typename _Tp> RetVal RandFunc(const int sizeY, const int sizeX, const double value1, const double value2, const bool randMode, uchar **dstMat)
 {
     //dstMat must already be preallocated concerning size and type!
 
@@ -2215,7 +2217,7 @@ template<typename _Tp> RetVal RandFunc(const size_t sizeY, const size_t sizeX, c
     \return retOk
     \sa  RandFunc, zeros, ones
 */
-template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+template<> RetVal RandFunc<ito::complex128>(const int sizeY, const int sizeX, const double value1, const double value2, const bool randMode, uchar **dstMat)
 {
     //dstMat must already be preallocated concerning size and type!
 
@@ -2236,7 +2238,7 @@ template<> RetVal RandFunc<ito::complex128>(const size_t sizeY, const size_t siz
     \return retOk
     \sa  RandFunc, zeros, ones
 */
-template<> RetVal RandFunc<ito::Rgba32>(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat)
+template<> RetVal RandFunc<ito::Rgba32>(const int sizeY, const int sizeX, const double value1, const double value2, const bool randMode, uchar **dstMat)
 {
     //dstMat must already be preallocated concerning size and type!
     cv::Mat_<ito::uint8> tempMat(sizeY, sizeX * 4, ((cv::Mat*)(*dstMat))->ptr<ito::uint8>());
@@ -2251,7 +2253,7 @@ template<> RetVal RandFunc<ito::Rgba32>(const size_t sizeY, const size_t sizeX, 
    return retOk;
 }
 
-typedef RetVal (*tRandFunc)(const size_t sizeY, const size_t sizeX, const double value1, const double value2, const bool randMode, int **dstMat);
+typedef RetVal (*tRandFunc)(const int sizeY, const int sizeX, const double value1, const double value2, const bool randMode, uchar **dstMat);
 MAKEFUNCLIST(RandFunc);
 
 //! high-level, non-templated base function for allocation of new matrix whose elements are all set to one
@@ -2267,7 +2269,7 @@ MAKEFUNCLIST(RandFunc);
     \return retOk
     \sa OnesFunc
 */
-RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, const int type, const bool randMode, const unsigned char continuous)
+RetVal DataObject::rand(const unsigned char dimensions, const int *sizes, const int type, const bool randMode, const unsigned char continuous)
 {
    freeData();
    create(dimensions, sizes, type, continuous);
@@ -2275,7 +2277,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
    double val1 = 1.0;
    double val2 = 1.0;
 
-   size_t numMats = calcNumMats();
+   int numMats = calcNumMats();
 
     if(randMode)
     {
@@ -2349,14 +2351,14 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     }
 
 
-    size_t sizeX = sizes[dimensions - 1];
-    size_t sizeY = 1;
+    int sizeX = sizes[dimensions - 1];
+    int sizeY = 1;
     if(dimensions > 1)
     {
         sizeY = sizes[dimensions - 2];
     }
 
-    for (size_t matn = 0; matn < numMats; matn++)
+    for (int matn = 0; matn < numMats; matn++)
     {
         fListRandFunc[type](sizeY, sizeX, val1, val2, randMode, &(m_data[matn]));
     }
@@ -2373,37 +2375,36 @@ RetVal DataObject::rand(const unsigned char dimensions, const size_t *sizes, con
     \sa operator =, DataObject::DataObject(const DataObject& copyConstr)
 */
 //template<typename _Tp> RetVal CopyMatFunc(const std::vector<int *> &src, std::vector<int *> &dst)
-template<typename _Tp> RetVal CopyMatFunc(int **src, int **&dst, bool transposed)
+template<typename _Tp> RetVal CopyMatFunc(uchar **src, uchar **&dst, bool transposed, const int sizeofs)
 {
-    static size_t sizeofs = sizeof(size_t) / sizeof(int *);
-    size_t size = (*reinterpret_cast<size_t *>(src - sizeofs));
+    int size = (*reinterpret_cast<int *>(src - sizeofs));
 
     if (dst)
     {
-        dst = reinterpret_cast<int **>(realloc((dst - sizeofs), size * sizeof(int *) + sizeof(size_t)));
+        dst = reinterpret_cast<uchar **>(realloc((dst - sizeofs), (size + sizeofs) * sizeof(uchar *)));
     }
     else
     {
-        size_t numBytes = size * sizeof(int *) + sizeof(size_t);
-        dst = reinterpret_cast<int **>(calloc(numBytes, 1));
+        int numBytes = (size + sizeofs) * sizeof(uchar *);
+        dst = reinterpret_cast<uchar **>(calloc(numBytes, 1));
         memset(dst, 0, numBytes);
     }
 
-    (*reinterpret_cast<size_t *>(dst)) = size;
+    (*reinterpret_cast<int *>(dst)) = size;
     dst += sizeofs;
 
 	if(transposed)
 	{
-		for( size_t i = 0 ; i < size ; i++)
+		for( int i = 0 ; i < size ; i++)
 		{
-			dst[i] = reinterpret_cast<int*>( new cv::Mat_<_Tp>( ((cv::Mat_<_Tp> *)(src[i]))->t() ) );
+			dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( ((cv::Mat_<_Tp> *)(src[i]))->t() ) );
 		}
 	}
 	else
 	{
-		for( size_t i = 0 ; i < size ; i++)
+		for( int i = 0 ; i < size ; i++)
 		{
-			dst[i] = reinterpret_cast<int*>( new cv::Mat_<_Tp>( *((cv::Mat_<_Tp> *)(src[i])) ) );
+			dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( *((cv::Mat_<_Tp> *)(src[i])) ) );
 		}
 	}
 
@@ -2411,7 +2412,7 @@ template<typename _Tp> RetVal CopyMatFunc(int **src, int **&dst, bool transposed
 }
 
 //typedef RetVal (*tCopyMatFunc)(const std::vector<int *> &src, std::vector<int *> &dst);
-typedef RetVal (*tCopyMatFunc)(int **src, int  **&dst, bool transposed);
+typedef RetVal (*tCopyMatFunc)(uchar **src, uchar  **&dst, bool transposed, const int sizeofs);
 MAKEFUNCLIST(CopyMatFunc)
 
 
@@ -2458,7 +2459,7 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 
     freeData();
 
-    const size_t sizes[2] = {(size_t)rhs.rows, (size_t)rhs.cols};
+    const int sizes[2] = {(int)rhs.rows, (int)rhs.cols};
     create(2, sizes, dataObjType, &rhs, 1);
 
     return *this;
@@ -2514,7 +2515,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
 
         try
         {
-            fListCopyMatFunc[m_type](rhs.get_mdata(), m_data, false);
+            fListCopyMatFunc[m_type](rhs.get_mdata(), m_data, false, m_sizeofs);
         }
         catch(cv::Exception exc) //memory error
         {
@@ -2567,7 +2568,7 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
 
         try
         {
-            fListCopyMatFunc[m_type](copyConstr.m_data, m_data, false);
+            fListCopyMatFunc[m_type](copyConstr.m_data, m_data, false, m_sizeofs);
         }
         catch(cv::Exception exc) //memory error
         {
@@ -2606,7 +2607,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 
 			try
 			{
-				fListCopyMatFunc[m_type](dObj.m_data, m_data, false);
+				fListCopyMatFunc[m_type](dObj.m_data, m_data, false, m_sizeofs);
 			}
 			catch(cv::Exception exc) //memory error
 			{
@@ -2618,12 +2619,12 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 	else //deep, transposed copy of dataObject
 	{
 		int dims = dObj.m_dims;
-		size_t *newSize = new size_t[dims];
-		size_t *newOSize = new size_t[dims];
-		size_t *newRoi = new size_t[dims];
-		memcpy(newSize, dObj.m_size.m_p, dims * sizeof(size_t));
-		memcpy(newOSize, dObj.m_osize.m_p, dims * sizeof(size_t));
-		memcpy(newRoi, dObj.m_roi.m_p, dims * sizeof(size_t));
+		int *newSize = new int[dims];
+		int *newOSize = new int[dims];
+		int *newRoi = new int[dims];
+		memcpy(newSize, dObj.m_size.m_p, dims * sizeof(int));
+		memcpy(newOSize, dObj.m_osize.m_p, dims * sizeof(int));
+		memcpy(newRoi, dObj.m_roi.m_p, dims * sizeof(int));
 
 		//flip the last two dimensions
 		if(dims >= 2)
@@ -2668,7 +2669,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 
 		try
 		{
-			fListCopyMatFunc[m_type](dObj.m_data, m_data, true);
+			fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
 		}
 		catch(cv::Exception exc) //memory error
 		{
@@ -2693,15 +2694,15 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
 */
 template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar)
 {
-    size_t numMats = src->calcNumMats();
-    size_t MatNum = 0;
+    int numMats = src->calcNumMats();
+    int MatNum = 0;
 
     _Tp scalar2 = ito::numberConversion<_Tp>(type, const_cast<void*>(scalar)); //convert the void* scalar to the data type of the source data object (throws error if not possible)
 
     cv::Mat_<_Tp> * tempMat = NULL;
     int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
     int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
         tempMat = ((cv::Mat_<_Tp> *)((src->get_mdata())[MatNum]));
@@ -2871,15 +2872,15 @@ DataObject & DataObject::operator = (const ito::Rgba32 value)
 */
 template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t srcTmat1 = 0;
-   size_t srcTmat2 = 0;
-   size_t dstTmat = 0;
-   size_t numMats = dObj1->calcNumMats();
+   int srcTmat1 = 0;
+   int srcTmat2 = 0;
+   int dstTmat = 0;
+   int numMats = dObj1->calcNumMats();
    cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
 
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
 		dstTmat = dObjRes->seekMat(nmat, numMats);
 		srcTmat1 = dObj1->seekMat(nmat, numMats);
@@ -2898,14 +2899,14 @@ MAKEFUNCLIST(AddFunc);
 
 template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
 {
-   size_t srcTmat = 0;
-   size_t dstTmat = 0;
-   size_t numMats = dObjIn->calcNumMats();
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->calcNumMats();
    cv::Mat_<_Tp> *cvSrc = NULL;
    cv::Mat_<_Tp> *cvDest = NULL;
    cv::Scalar s = scalar;
 
-    for (size_t nmat = 0; nmat < numMats; ++nmat)
+    for (int nmat = 0; nmat < numMats; ++nmat)
     {
 		dstTmat = dObjOut->seekMat(nmat, numMats);
 		srcTmat = dObjIn->seekMat(nmat, numMats);
@@ -2919,9 +2920,9 @@ template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float
 
 template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
 {
-   size_t srcTmat = 0;
-   size_t dstTmat = 0;
-   size_t numMats = dObjIn->calcNumMats();
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->calcNumMats();
    cv::Mat_<ito::Rgba32> *cvSrc = NULL;
    cv::Mat_<ito::Rgba32> *cvDest = NULL;
    cv::Scalar s;
@@ -2932,7 +2933,7 @@ template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::floa
    s[2] = ((ito::uint8*)&val)[2] * sign;
    s[3] = ((ito::uint8*)&val)[3] * sign;
 
-    for (size_t nmat = 0; nmat < numMats; ++nmat)
+    for (int nmat = 0; nmat < numMats; ++nmat)
     {
 		dstTmat = dObjOut->seekMat(nmat, numMats);
 		srcTmat = dObjIn->seekMat(nmat, numMats);
@@ -3022,11 +3023,11 @@ DataObject DataObject::operator + (const float64 value)
 */
 template<typename _Tp> RetVal SubFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t nmat = 0;
-   size_t srcTmat1 = 0;
-   size_t srcTmat2 = 0;
-   size_t dstTmat = 0;
-   size_t numMats = dObj1->calcNumMats();
+   int nmat = 0;
+   int srcTmat1 = 0;
+   int srcTmat2 = 0;
+   int dstTmat = 0;
+   int numMats = dObj1->calcNumMats();
    cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
@@ -3118,11 +3119,11 @@ DataObject DataObject::operator - (const float64 value)
 */
 template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t nmat = 0;
-   size_t srcTmat1 = 0;
-   size_t srcTmat2 = 0;
-   size_t dstTmat = 0;
-   size_t numMats = dObj1->calcNumMats();
+   int nmat = 0;
+   int srcTmat1 = 0;
+   int srcTmat2 = 0;
+   int dstTmat = 0;
+   int numMats = dObj1->calcNumMats();
    cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
@@ -3216,15 +3217,15 @@ DataObject DataObject::operator * (const DataObject &rhs)
 */
 template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const double factor)
 {
-   size_t numMats = src->calcNumMats();
-   size_t MatNum = 0;
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
 
    _Tp factor2 = cv::saturate_cast<_Tp>(factor);
 
    cv::Mat_<_Tp> * tempMat = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       //TODO: check if non iterator version is working
        MatNum = src->seekMat(nmat, numMats);
@@ -3253,8 +3254,8 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
 
 template<> RetVal OpScalarMulFunc<ito::Rgba32>(const DataObject *src, const double factor)
 {
-   size_t numMats = src->calcNumMats();
-   size_t MatNum = 0;
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
 
    ito::Rgba32 factor2;
    factor2 = (factor < 0.0 ? (ito::uint32)0 : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
@@ -3262,7 +3263,7 @@ template<> RetVal OpScalarMulFunc<ito::Rgba32>(const DataObject *src, const doub
    cv::Mat_<ito::Rgba32> * tempMat = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = ((cv::Mat_<ito::Rgba32> *)((src->get_mdata())[MatNum]));
@@ -3326,16 +3327,16 @@ DataObject DataObject::operator * (const double factor)
 */
 template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *src2, DataObject *dst, int cmpOp)
 {
-   size_t numMats = src1->calcNumMats();
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int numMats = src1->calcNumMats();
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
    cv::Mat_<_Tp> *src1mat;
    cv::Mat_<_Tp> *src2mat;
    cv::Mat_<uint8> *dest;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       lhsMatNum = src1->seekMat(nmat, numMats);
       rhsMatNum = src2->seekMat(nmat, numMats);
@@ -3502,13 +3503,13 @@ DataObject DataObject::operator != (DataObject &rhs)
 */
 template<typename _Tp> RetVal ShiftLFunc(DataObject *src, const unsigned char shiftbit)
 {
-   size_t numMats = src->calcNumMats();
-   size_t MatNum = 0;
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
 
    cv::Mat_<_Tp> * tempMat = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       MatNum = src->seekMat(nmat, numMats);
       //TODO: check if non iterator version is working
@@ -3638,13 +3639,13 @@ DataObject DataObject::operator << (const unsigned int shiftbit)
 */
 template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char shiftbit)
 {
-   size_t numMats = src->calcNumMats();
-   size_t MatNum = 0;
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
 
    cv::Mat_<_Tp> * tempMat = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
         MatNum = src->seekMat(nmat, numMats);
         //TODO: check if non iterator version is working
@@ -3779,12 +3780,12 @@ DataObject DataObject::operator >> (const unsigned int shiftbit)
 */
 template<typename _Tp> RetVal BitAndFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t numMats = dObj1->calcNumMats();
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int numMats = dObj1->calcNumMats();
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
@@ -3915,12 +3916,12 @@ DataObject DataObject::operator & (const DataObject & rhs)
 */
 template<typename _Tp> RetVal BitOrFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t numMats = dObj1->calcNumMats();
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int numMats = dObj1->calcNumMats();
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
@@ -4048,12 +4049,12 @@ DataObject DataObject::operator | (const DataObject & rhs)
 */
 template<typename _Tp> RetVal BitXorFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   size_t numMats = dObj1->calcNumMats();
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int numMats = dObj1->calcNumMats();
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
@@ -4199,8 +4200,8 @@ template<typename _Tp> RetVal GetRangeFunc(DataObject *dObj, const int dtop, con
 {
    if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
    {
-      size_t numMats = dObj->mdata_size();
-      for (size_t nmat = 0; nmat < numMats; nmat++)
+      int numMats = dObj->mdata_size();
+      for (int nmat = 0; nmat < numMats; nmat++)
       {
          ((cv::Mat_<_Tp> *)((dObj->get_mdata())[nmat]))->adjustROI(dtop, dbottom, dleft, dright);
       }
@@ -4227,7 +4228,7 @@ DataObject DataObject::at(ito::Range *ranges)
     DataObject resMat = *this;
 
     int *lims = new int[m_dims*2];
-    size_t size;
+    int size;
     int start, end;
 
     for(int n = 0; n < m_dims; n++)
@@ -4274,9 +4275,9 @@ template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbot
 {
    if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
    {
-//      size_t numMats = dObj->get_mdata().size();
-      size_t numMats = dObj->mdata_size();
-      for (size_t nmat = 0; nmat < numMats; nmat++)
+//      int numMats = dObj->get_mdata().size();
+      int numMats = dObj->mdata_size();
+      for (int nmat = 0; nmat < numMats; nmat++)
       {
          //(*((cv::Mat_<_Tp> *)((dObj->get_mdata())[nmat]))) = ((cv::Mat_<_Tp> *)((dObj->get_mdata())[nmat]))->adjustROI(dtop, dbottom, dleft, dright);
          ((cv::Mat_<_Tp> *)((dObj->get_mdata())[nmat]))->adjustROI(dtop, dbottom, dleft, dright);
@@ -4359,7 +4360,7 @@ DataObject & DataObject::adjustROI(const unsigned char dims, const int *lims)
    //for (int n = 0; n < (dims - 2); n++)
    //{
    //   m_size.m_p[n] = (((int)m_roi[n] + (int)m_size[n] + lims[n * 2 + 1]) > (int)m_osize[n]) ? m_osize[n] : (m_roi[n] + m_size[n] + lims[n * 2 + 1]);
-   //   m_roi.m_p[n] = ((int)m_roi[n] - lims[n * 2]) < 0 ? 0 : (size_t)(m_roi[n] - lims[n * 2]);
+   //   m_roi.m_p[n] = ((int)m_roi[n] - lims[n * 2]) < 0 ? 0 : (int)(m_roi[n] - lims[n * 2]);
    //   m_size.m_p[n] -= m_roi[n];
    //}
 
@@ -4367,22 +4368,22 @@ DataObject & DataObject::adjustROI(const unsigned char dims, const int *lims)
    //{
    //    if (isT())
    //    {
-   //       m_size.m_p[dims - 2] = (((int)m_roi[dims - 2] + (int)m_size[dims - 2] + lims[(dims - 1) * 2 + 1]) > (int)m_osize[dims - 2]) ? m_osize[dims - 2] : (size_t)(m_roi[dims - 2] + m_size[dims - 2] + lims[(dims - 1) * 2 + 1]);
-   //       m_roi.m_p[dims - 2] = ((int)m_roi[dims - 2] - lims[(dims - 1) * 2]) < 0 ? 0 : (size_t)(m_roi[dims - 2] - lims[(dims - 1) * 2]);
+   //       m_size.m_p[dims - 2] = (((int)m_roi[dims - 2] + (int)m_size[dims - 2] + lims[(dims - 1) * 2 + 1]) > (int)m_osize[dims - 2]) ? m_osize[dims - 2] : (int)(m_roi[dims - 2] + m_size[dims - 2] + lims[(dims - 1) * 2 + 1]);
+   //       m_roi.m_p[dims - 2] = ((int)m_roi[dims - 2] - lims[(dims - 1) * 2]) < 0 ? 0 : (int)(m_roi[dims - 2] - lims[(dims - 1) * 2]);
    //       m_size.m_p[dims - 2] -= m_roi[dims - 2];
 
-   //       m_size.m_p[dims - 1] = (((int)m_roi[dims - 1] + (int)m_size[dims - 1] + lims[(dims - 2) * 2 + 1]) > (int)m_osize[dims - 1]) ? m_osize[dims - 1] : (size_t)(m_roi[dims - 1] + m_size[dims - 1] + lims[(dims - 2) * 2 + 1]);
+   //       m_size.m_p[dims - 1] = (((int)m_roi[dims - 1] + (int)m_size[dims - 1] + lims[(dims - 2) * 2 + 1]) > (int)m_osize[dims - 1]) ? m_osize[dims - 1] : (int)(m_roi[dims - 1] + m_size[dims - 1] + lims[(dims - 2) * 2 + 1]);
    //       m_roi.m_p[dims - 1] = ((int)m_roi[dims - 1] - lims[(dims - 2) * 2]) < 0 ? 0 : m_roi[dims - 1] - lims[(dims - 2) * 2];
    //       m_size.m_p[dims - 1] -= m_roi[dims - 1];
    //    }
    //    else
    //    {
-   //       m_size.m_p[dims - 2] = (((int)m_roi[dims - 2] + (int)m_size[dims - 2] + lims[(dims - 2) * 2 + 1]) > (int)m_osize[dims - 2]) ? m_osize[dims - 2] : (size_t)(m_roi[dims - 2] + m_size[dims - 2] + lims[(dims - 2) * 2 + 1]);
-   //       m_roi.m_p[dims - 2] = ((int)m_roi[dims - 2] - lims[(dims - 2) * 2]) < 0 ? 0 : (size_t)(m_roi[dims - 2] - lims[(dims - 2) * 2]);
+   //       m_size.m_p[dims - 2] = (((int)m_roi[dims - 2] + (int)m_size[dims - 2] + lims[(dims - 2) * 2 + 1]) > (int)m_osize[dims - 2]) ? m_osize[dims - 2] : (int)(m_roi[dims - 2] + m_size[dims - 2] + lims[(dims - 2) * 2 + 1]);
+   //       m_roi.m_p[dims - 2] = ((int)m_roi[dims - 2] - lims[(dims - 2) * 2]) < 0 ? 0 : (int)(m_roi[dims - 2] - lims[(dims - 2) * 2]);
    //       m_size.m_p[dims - 2] -= m_roi[dims - 2];
 
-   //       m_size.m_p[dims - 1] = (((int)m_roi.m_p[dims - 1] + (int)m_size[dims - 1] + lims[(dims - 1) * 2 + 1]) > (int)m_osize[dims - 1]) ? m_osize[dims - 1] : (size_t)(m_roi[dims - 1] + m_size[dims - 1] + lims[(dims - 1) * 2 + 1]);
-   //       m_roi.m_p[dims - 1] = ((int)m_roi[dims - 1] - lims[(dims - 1) * 2]) < 0 ? 0 : (size_t)(m_roi[dims - 1] - lims[(dims - 1) * 2]);
+   //       m_size.m_p[dims - 1] = (((int)m_roi.m_p[dims - 1] + (int)m_size[dims - 1] + lims[(dims - 1) * 2 + 1]) > (int)m_osize[dims - 1]) ? m_osize[dims - 1] : (int)(m_roi[dims - 1] + m_size[dims - 1] + lims[(dims - 1) * 2 + 1]);
+   //       m_roi.m_p[dims - 1] = ((int)m_roi[dims - 1] - lims[(dims - 1) * 2]) < 0 ? 0 : (int)(m_roi[dims - 1] - lims[(dims - 1) * 2]);
    //       m_size.m_p[dims - 1] -= m_roi[dims - 1];
    //    }
    //}
@@ -4472,14 +4473,14 @@ RetVal DataObject::locateROI(int *lims)
     \param **dstMat is a pointer to which the eye-matrix is assigned to. The eye matrix is of type cv::Mat_<_Tp>
     \return retOk
 */
-template<typename _Tp> RetVal EyeFunc(const size_t size, int **dstMat)
+template<typename _Tp> RetVal EyeFunc(const int size, uchar **dstMat)
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::eye(static_cast<int>(size), static_cast<int>(size));
 
    return 0;
 }
 
-typedef RetVal (*tEyeFunc)(const size_t size, int **dstMat);
+typedef RetVal (*tEyeFunc)(const int size, uchar **dstMat);
 MAKEFUNCLIST(EyeFunc)
 
 //! sets the matrix of this data object to a two-dimensional eye-matrix of size 1, hence [1]
@@ -4490,7 +4491,7 @@ MAKEFUNCLIST(EyeFunc)
 */
 RetVal DataObject::eye(const int type)
 {
-   size_t sizes[2] = {1, 1};
+   int sizes[2] = {1, 1};
    return ones(2, sizes, type);
 }
 
@@ -4503,9 +4504,9 @@ RetVal DataObject::eye(const int type)
     \return retOk
     \sa freeData, create, EyeFunc
 */
-RetVal DataObject::eye(const size_t size, const int type)
+RetVal DataObject::eye(const int size, const int type)
 {
-   size_t sizes[2] = {size, size};
+   int sizes[2] = {size, size};
 
    freeData();
    create(2, sizes, type, 1);
@@ -4527,13 +4528,13 @@ RetVal DataObject::eye(const size_t size, const int type)
 */
 template<typename _Tp> RetVal ConjFunc(DataObject *dObj)
 {
-   size_t numMats = dObj->calcNumMats();
-   size_t MatNum = 0;
+   int numMats = dObj->calcNumMats();
+   int MatNum = 0;
 
    cv::Mat_<_Tp> * tempMat = NULL;
    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
         //TODO: check if non iterator version is working
        MatNum = dObj->seekMat(nmat, numMats);
@@ -4770,11 +4771,11 @@ DataObject DataObject::diag(void)
 template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
 {
    //the transpose flag of this matrix already is evaluated if src2 is not transposed
-   size_t numMats = src1->calcNumMats();
+   int numMats = src1->calcNumMats();
 
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
    const _Tp* src1RowPtr;
    const _Tp* src2RowPtr;
@@ -4784,7 +4785,7 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
    cv::Mat_<_Tp>* dstMat = NULL;
    cv::Mat_<_Tp>* srcMat2 = NULL;
 
-   for (unsigned int nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
         cv::Mat_<_Tp> tempMat;
         lhsMatNum = src1->seekMat(nmat, numMats);
@@ -4850,11 +4851,11 @@ DataObject DataObject::mul(const DataObject &mat2, const double scale)
 template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
 {
     //the transpose flag of this matrix already is evaluated if src2 is not transposed
-   size_t numMats = src1->calcNumMats();
+   int numMats = src1->calcNumMats();
 
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
    const _Tp* src1RowPtr;
    const _Tp* src2RowPtr;
@@ -4867,7 +4868,7 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
    cv::Mat_<_Tp>* dstMat = NULL;
    cv::Mat_<_Tp>* srcMat2 = NULL;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
         cv::Mat_<_Tp> tempMat;
         lhsMatNum = src1->seekMat(nmat, numMats);
@@ -4933,11 +4934,11 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
 template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
 {
     //the transpose flag of this matrix already is evaluated if src2 is not transposed
-   size_t numMats = src1->calcNumMats();
+   int numMats = src1->calcNumMats();
 
-   size_t lhsMatNum = 0;
-   size_t rhsMatNum = 0;
-   size_t resMatNum = 0;
+   int lhsMatNum = 0;
+   int rhsMatNum = 0;
+   int resMatNum = 0;
 
    const Rgba32* src1RowPtr;
    const Rgba32* src2RowPtr;
@@ -4946,7 +4947,7 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
    cv::Mat_<Rgba32>* dstMat = NULL;
    cv::Mat_<Rgba32>* srcMat2 = NULL;
 
-   for (size_t nmat = 0; nmat < numMats; nmat++)
+   for (int nmat = 0; nmat < numMats; nmat++)
    {
         cv::Mat_<Rgba32> tempMat;
         lhsMatNum = src1->seekMat(nmat, numMats);
@@ -5012,16 +5013,16 @@ DataObject DataObject::squeeze() const
         cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze may not have dimension = 1",  "", __FILE__, __LINE__));
     }
 
-    size_t numMats = calcNumMats();
+    int numMats = calcNumMats();
     cv::Mat * planes = new cv::Mat[numMats];
 
-    for(size_t i = 0 ; i < numMats ; i++)
+    for(int i = 0 ; i < numMats ; i++)
     {
         planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
     }
 
     unsigned char newDimensions = 2;
-    size_t *newSizes = new size_t[m_dims];
+    int *newSizes = new int[m_dims];
     int counter = 0;
 
     for(int i = 0; i < m_dims - 2 ; i++)
@@ -5107,7 +5108,7 @@ template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const size_t sizeX, const size_t sizeY)
+template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const int sizeX, const int sizeY)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -5127,7 +5128,7 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const s
     }
     else
     {
-        for (size_t y = 0; y < sizeY; y++)
+        for (int y = 0; y < sizeY; y++)
         {
             memcpy(cvMat->ptr(y), src + y * sizeX * sizeof(_Tp), sizeX * sizeof(_Tp));
         }
@@ -5137,7 +5138,7 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const size_t sizeX, const size_t /* sizeY */, const int x0, const int y0, const size_t width, const size_t height)
+template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const int sizeX, const int /* sizeY */, const int x0, const int y0, const int width, const int height)
 {
     ito::RetVal retval;
 
@@ -5151,7 +5152,7 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const s
         return retval;
 
     cv::Mat_<_Tp> *cvMat = ((cv::Mat_<_Tp> *)this->get_mdata()[this->seekMat(0)]);
-    for (size_t y = 0; y < height; y++)
+    for (int y = 0; y < height; y++)
     {
         memcpy(cvMat->ptr(y), src + ((y0 + y) * sizeX + x0) * sizeof(_Tp) , width * sizeof(_Tp));
     }
@@ -5174,9 +5175,9 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const s
 */
 template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha, double beta)
 {
-   size_t numMats = dObj->calcNumMats();
-   size_t resTmat = 0;
-   size_t srcTmat = 0;
+   int numMats = dObj->calcNumMats();
+   int resTmat = 0;
+   int srcTmat = 0;
 
    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
@@ -5185,7 +5186,7 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
 
    if(alpha == 1.0 && beta == 0.0)
    {
-       for (size_t nmat = 0; nmat < numMats; nmat++)
+       for (int nmat = 0; nmat < numMats; nmat++)
        {
           resTmat = resObj->seekMat(nmat, numMats);
           srcTmat = dObj->seekMat(nmat, numMats);
@@ -5207,7 +5208,7 @@ template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, Dat
    {
        _Tp alpha2 = cv::saturate_cast<_Tp>(alpha);
        _Tp beta2 = cv::saturate_cast<_Tp>(beta);
-       for (size_t nmat = 0; nmat < numMats; nmat++)
+       for (int nmat = 0; nmat < numMats; nmat++)
        {
           resTmat = resObj->seekMat(nmat, numMats);
           srcTmat = dObj->seekMat(nmat, numMats);
@@ -5262,9 +5263,9 @@ template<typename T2> DataObject::operator T2 ()
 */
 template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj, DataObject *resObj)
 {
-    size_t numMats = dObj->calcNumMats();
-    size_t srcMatNum = 0;
-    size_t dstMatNum = 0;
+    int numMats = dObj->calcNumMats();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
 
     cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
@@ -5273,7 +5274,7 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
     const _CmplxTp* srcPtr = NULL;
     _Tp* dstPtr = NULL;
 
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
@@ -5317,15 +5318,15 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
 */
 template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *resObj)
 {
-    size_t numMats = dObj->calcNumMats();
-    size_t srcMatNum = 0;
-    size_t dstMatNum = 0;
+    int numMats = dObj->calcNumMats();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
 
     cv::Mat_<_Tp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
@@ -5419,15 +5420,15 @@ DataObject abs(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj, DataObject *resObj)
 {
-    size_t numMats = dObj->calcNumMats();
-    size_t srcMatNum = 0;
-    size_t dstMatNum = 0;
+    int numMats = dObj->calcNumMats();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
 
     cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
@@ -5499,15 +5500,15 @@ DataObject arg(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj, DataObject *resObj)
 {
-    size_t numMats = dObj->calcNumMats();
-    size_t srcMatNum = 0;
-    size_t dstMatNum = 0;
+    int numMats = dObj->calcNumMats();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
 
     cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
@@ -5578,15 +5579,15 @@ DataObject real(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj, DataObject *resObj)
 {
-    size_t numMats = dObj->calcNumMats();
-    size_t srcMatNum = 0;
-    size_t dstMatNum = 0;
+    int numMats = dObj->calcNumMats();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
 
     cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-    for (size_t nmat = 0; nmat < numMats; nmat++)
+    for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
@@ -5673,16 +5674,16 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         resDObj.m_roi.m_p[i] = dObj.m_roi.m_p[i];
     }
 
-    size_t roiOffset = 0;
+    int roiOffset = 0;
     
     if(dims > 1)
     {
         roiOffset = sizeof(_Tp) * (dObj.m_roi.m_p[dims-1] + dObj.m_roi.m_p[dims-2] * dObj.m_osize.m_p[dims-1]);
     }
 
-    size_t numMats = dObj.mdata_size();
+    int numMats = dObj.mdata_size();
 
-    size_t matSize = sizeof(_Tp) * dObj.m_osize[dObj.getDims()-2] * dObj.m_osize[dObj.getDims()-1];
+    int matSize = sizeof(_Tp) * dObj.m_osize[dObj.getDims()-2] * dObj.m_osize[dObj.getDims()-1];
 
     if(numMats > 0)
     {
@@ -5690,7 +5691,7 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         uchar* newDataPtr = ((cv::Mat_<_Tp>*)(resDObj.m_data[0]))->data;
         cv::Mat_<_Tp> *tempMat;
 
-        for (size_t n = 0; n < numMats; n++)
+        for (int n = 0; n < numMats; n++)
         {
             tempMat = (cv::Mat_<_Tp>*)(dObj.m_data[n]);
             memcpy((void*)newDataPtr , (void*)(tempMat->datastart), matSize);
@@ -5704,7 +5705,7 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         int dleft = -(int)dObj.m_roi.m_p[dims-1];
         int dbottom = -( (int)dObj.m_osize.m_p[dims-2] - (int)dObj.m_size.m_p[dims-2] + dtop );
         int dright = -( (int)dObj.m_osize.m_p[dims-1] - (int)dObj.m_size.m_p[dims-1] + dleft );
-        for (size_t n = 0; n < numMats; n++)
+        for (int n = 0; n < numMats; n++)
         {
             ((cv::Mat*)resDObj.m_data[n])->adjustROI(dtop,dbottom,dleft,dright);
         }
@@ -5859,7 +5860,7 @@ int DataObject::addToProtocol(const std::string &value)
     {
         int * sizeTotal = (int*)calloc(m_dims, sizeof(int));
         int * posROI = (int*)calloc(m_dims, sizeof(int));
-        size_t sizeDim = 0;
+        int sizeDim = 0;
         locateROI(sizeTotal, posROI);
         newcontent.append("ROI[");
         for(int dim = 0; dim < m_dims; dim++)
@@ -5910,7 +5911,7 @@ int DataObject::addToProtocol(const std::string &value)
 }
 
 
-size_t DataObject::elemSize() const
+int DataObject::elemSize() const
 {
     switch(m_type)
     {
@@ -5968,7 +5969,7 @@ DObjConstIterator DataObject::constEnd() const
 ///*!
 //    \todo check that function
 //*/
-//template <typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, size_t *minPos, size_t *maxPos)
+//template <typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos)
 //{
 //    if(std::numeric_limits<_Tp>::is_exact)
 //    {
@@ -5981,10 +5982,10 @@ DObjConstIterator DataObject::constEnd() const
 //
 //    *minVal = std::numeric_limits<_Tp>::max();
 //
-//    size_t minMatNum = 0;
-//    size_t maxMatNum = 0;
-//    size_t numMats = 0;
-//    size_t tMat = 0;
+//    int minMatNum = 0;
+//    int maxMatNum = 0;
+//    int numMats = 0;
+//    int tMat = 0;
 //    numMats = dObj.calcNumMats();
 //    cv::Point minPt;
 //    cv::Point maxPt;
@@ -6008,7 +6009,7 @@ DObjConstIterator DataObject::constEnd() const
 //        locMaxVal = -1 * std::numeric_limits<_Tp>::max();
 //    }
 //
-//    for (size_t nMat = 0; nMat < numMats; nMat++)
+//    for (int nMat = 0; nMat < numMats; nMat++)
 //    {
 //        tMat = dObj.seekMat(nMat, numMats);
 //        if (dObj.isT())
@@ -6053,57 +6054,57 @@ DObjConstIterator DataObject::constEnd() const
 //}
 //
 ////! template specialization for data object of type complex64. throws cv::Exception, since the data type is not supported.
-//template <> RetVal MinMaxLocFunc<ito::complex64>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, size_t * /*minPos*/, size_t * /*maxPos*/)
+//template <> RetVal MinMaxLocFunc<ito::complex64>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, int * /*minPos*/, int * /*maxPos*/)
 //{
 //   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
 //   return 0;
 //}
 //
 ////! template specialization for data object of type complex128. throws cv::Exception, since the data type is not supported.
-//template <> RetVal MinMaxLocFunc<ito::complex128>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, size_t * /*minPos*/, size_t * /*maxPos*/)
+//template <> RetVal MinMaxLocFunc<ito::complex128>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, int * /*minPos*/, int * /*maxPos*/)
 //{
 //   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
 //   return 0;
 //}
 //
 //
-//typedef RetVal (*tMinMaxLocFunc)(const DataObject &dObj, double *minVal, double *maxVal, size_t *minPos, size_t *maxPos);
+//typedef RetVal (*tMinMaxLocFunc)(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
 //MAKEFUNCLIST(MinMaxLocFunc)
 //
 ////! missing documentation
 ///*!
 //    \todo check that function
 //*/
-//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, size_t *minPos, size_t *maxPos)
+//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos)
 //{
 //    return fListMinMaxLocFunc[dObj.getType()](dObj, minVal, maxVal, minPos, maxPos);
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template RetVal DataObject::copyFromData2D<int8>(const int8*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<int16>(const int16*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<int32>(const int32*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int);
+template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int);
+template RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int);
+template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int);
+template RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int);
+template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template RetVal DataObject::copyFromData2D<int8>(const int8*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<int16>(const int16*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<int32>(const int32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const size_t, const size_t, const int, const int, const size_t, const size_t);
-template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const size_t, const size_t, const int, const int, const size_t, const size_t);
+template RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int, const int, const int, const int, const int);
+template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int, const int, const int, const int, const int);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 }// namespace ito

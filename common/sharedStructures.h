@@ -98,7 +98,7 @@ namespace ito
             {
                 if (pRetMessage != NULL)
                 {
-                    size_t messageLen = strlen(pRetMessage);
+                    int messageLen = (int)strlen(pRetMessage);
                     m_pRetMessage = new char [messageLen + 1];
                     memcpy(m_pRetMessage, pRetMessage, sizeof(*pRetMessage) * messageLen);
                     m_pRetMessage[messageLen] = '\0';
@@ -118,7 +118,7 @@ namespace ito
 
                 if (copyConstr.m_pRetMessage != NULL)
                 {
-                    size_t messageLen = strlen(copyConstr.m_pRetMessage);
+                    int messageLen = (int)strlen(copyConstr.m_pRetMessage);
                     m_pRetMessage = new char [messageLen + 1];
                     memcpy(m_pRetMessage, copyConstr.m_pRetMessage, sizeof(*copyConstr.m_pRetMessage) * messageLen);
                     m_pRetMessage[messageLen] = '\0';
@@ -166,7 +166,7 @@ namespace ito
 
                 if (rhs.m_pRetMessage != NULL)
                 {
-                    size_t messageLen = strlen(rhs.m_pRetMessage);
+                    int messageLen = (int)strlen(rhs.m_pRetMessage);
                     this->m_pRetMessage = new char [messageLen + 1];
                     memcpy(this->m_pRetMessage, rhs.m_pRetMessage, sizeof(*rhs.m_pRetMessage) * messageLen);
                     this->m_pRetMessage[messageLen] = '\0';
@@ -195,7 +195,7 @@ namespace ito
 
                     if (rhs.m_pRetMessage != NULL)
                     {
-                        size_t messageLen = strlen(rhs.m_pRetMessage);
+                        int messageLen = (int)strlen(rhs.m_pRetMessage);
                         this->m_pRetMessage = new char [messageLen + 1];
                         memcpy(this->m_pRetMessage, rhs.m_pRetMessage, sizeof(*rhs.m_pRetMessage) * messageLen);
                         this->m_pRetMessage[messageLen] = '\0';
@@ -271,7 +271,7 @@ namespace ito
             {
                 if (pRetMessage != NULL)
                 {
-                    //size_t messageLen = strlen(pRetMessage);
+                    //int messageLen = strlen(pRetMessage);
                     va_list args;
                     va_start (args, pRetMessage);
                     char buffer[2048];
@@ -296,13 +296,13 @@ namespace ito
             {
                 if (addRetMessage != NULL)
                 {
-                    size_t messageLen = 0;
-                    size_t messageLen2 = strlen(addRetMessage);
+                    int messageLen = 0;
+                    int messageLen2 = (int)strlen(addRetMessage);
                     char *tempRetMessage = NULL;
                     
                     if (m_pRetMessage != NULL)
                     {
-                        messageLen = strlen(m_pRetMessage);
+                        messageLen = (int)strlen(m_pRetMessage);
                         tempRetMessage = new char [messageLen + messageLen2 + 1];
                         memcpy(tempRetMessage, m_pRetMessage, sizeof(*m_pRetMessage) * messageLen);
                         delete [] m_pRetMessage;
@@ -411,7 +411,7 @@ namespace ito
         { 
             if (suffix && m_pName)  
             { 
-                size_t newSize = strlen(m_pName) + strlen(suffix) + 1;
+                int newSize = (int)strlen(m_pName) + (int)strlen(suffix) + 1;
                 m_pName = (char *)realloc(m_pName, newSize);
                 strcat_s(m_pName, newSize, suffix);
                 return ito::retOk;
@@ -727,20 +727,20 @@ namespace ito
                 if(m_len > 0)
                 {
                     m_val = (char**) calloc(m_len, sizeof(char*));
-                    for(size_t i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
+                    for(int i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
                 }
             }
 
             //! destructor
             ~StringMeta()
             {
-                for(size_t i=0;i<m_len;++i) free(m_val[i]);
+                for(int i=0;i<m_len;++i) free(m_val[i]);
                 free(m_val);
             }
 
             inline tType getStringType() const { return m_stringType; } //!< returns the type how strings in list should be considered. \sa tType
-            inline size_t getLen() const { return m_len; } //!< returns the number of string elements in meta information class.
-            inline const char* getString(size_t idx = 0) const { return (idx >= m_len) ? NULL : m_val[idx]; } //!< returns string from list at index position or NULL, if index is out of range.
+            inline int getLen() const { return m_len; } //!< returns the number of string elements in meta information class.
+            inline const char* getString(int idx = 0) const { return (idx >= m_len) ? NULL : m_val[idx]; } //!< returns string from list at index position or NULL, if index is out of range.
             void addItem(const char *val) //!< adds another element to the string list.
             {
                 if(m_val)
@@ -761,7 +761,7 @@ namespace ito
 
         private:
             tType m_stringType;
-            size_t m_len;
+            int m_len;
             char **m_val;
     };
 
@@ -773,15 +773,15 @@ namespace ito
     class DObjMeta : public ParamMeta
     {
         public:
-            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, size_t minDim = 0, size_t maxDim = std::numeric_limits<int>::max()) : ParamMeta(ParamBase::DObjPtr), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
+            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = std::numeric_limits<int>::max()) : ParamMeta(ParamBase::DObjPtr), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
             inline int getAllowedTypes() const { return m_allowedTypes; }
-            inline size_t getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
-            inline size_t getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
+            inline int getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
+            inline int getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
 
         private:
             uint32 m_allowedTypes;
-            size_t m_minDim;
-            size_t m_maxDim;
+            int m_minDim;
+            int m_maxDim;
     };
 
 

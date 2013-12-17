@@ -349,7 +349,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
     {
         QComboBox *cmb = new QComboBox(parent);
         int cur = -1;
-        for(size_t i=0;i<meta->getLen();i++)
+        for(int i=0;i<meta->getLen();i++)
         {
             cmb->addItem( meta->getString(i) );
             if(param.getVal<char*>() && strcmp(param.getVal<char*>(), meta->getString(i))==0)

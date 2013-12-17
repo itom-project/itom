@@ -43,7 +43,7 @@
 #include <qcoreapplication.h>
 #include <qdesktopwidget.h>
 
-QHash<unsigned int, QString> ito::PythonItom::m_gcTrackerList;
+QHash<size_t, QString> ito::PythonItom::m_gcTrackerList;
 
 namespace ito
 {
@@ -2277,7 +2277,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
         for (Py_ssize_t i = 0; i < PyList_Size(obj_list); i++)
         {
             t = PyList_GET_ITEM(obj_list,i); //borrowed
-            m_gcTrackerList[ (size_t)t] = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok)); //t->ob_type->tp_name;
+            m_gcTrackerList[(size_t)t] = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok)); //t->ob_type->tp_name;
         }
         Py_DECREF(obj_list);
         std::cout << m_gcTrackerList.count() << " elements tracked" << std::endl;
@@ -2327,7 +2327,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
             }
         }
 
-         QHashIterator<unsigned int, QString> i(m_gcTrackerList);
+         QHashIterator<size_t, QString> i(m_gcTrackerList);
          while (i.hasNext()) 
          {
              i.next();
@@ -2540,7 +2540,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 if (tempName == matrixName)
                 {
                     key = (char*)calloc(strlen(tempName) + sizeIter + 1, sizeof(char));
-                    snprintf(key, strlen(tempName) + sizeIter, "%s%i", matrixName, ((int)i + 1));
+                    snprintf(key, strlen(tempName) + sizeIter, "%s%i", matrixName, ((size_t)i + 1));
                     matlabData = PyMatlabMatDataObjectConverter(tempItem);
                     PyDict_SetItemString(saveDict, key, matlabData);
                     Py_DECREF(matlabData);

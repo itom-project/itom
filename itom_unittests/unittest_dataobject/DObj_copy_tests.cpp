@@ -23,27 +23,27 @@ public:
 	
 	virtual void SetUp(void)
 	{
-		size_t *temp_size1 = new size_t[2];
+		int *temp_size1 = new int[2];
 		temp_size1[0] =10;
 		temp_size1[1] =10;
 		dObj1_s = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj2_s = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
 		dObj3_s = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size = new size_t[5];
+		int *temp_size = new int[5];
 		temp_size[0] = 10;
 		temp_size[1] = 12;
 		temp_size[2] = 16;
 		temp_size[3] = 18;
 		temp_size[4] = 10;
 		dObj4_s = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size3 = new size_t[5];
+		int *temp_size3 = new int[5];
 		temp_size3[0] = 4;
 		temp_size3[1] = 5;
 		temp_size3[2] = 5;
 		temp_size3[3] = 4;
 		temp_size3[4] = 3;
 		dObj4_s2 = ito::DataObject(5,temp_size3,ito::getDataType( (const _Tp *) NULL ));
-		size_t *temp_size2 = new size_t[5];
+		int *temp_size2 = new int[5];
 		temp_size2[0] = 1;
 		temp_size2[1] = 1;
 		temp_size2[2] = 2;
@@ -366,13 +366,13 @@ TYPED_TEST(copyTests, copyTo_False_Test1)
 	
 	TypeParam *rowPtr1= NULL; 
 	TypeParam *rowPtr_d1= NULL;	
-	size_t dim1 = dObj4_s2.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
-	size_t dim2 = dObj4_s2.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
-	size_t dim3 = dObj4_s2.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
-	size_t dim4 = dObj4_s2.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
-	size_t dim5 = dObj4_s2.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
-	size_t dataIdx = 0;					
-	size_t dataIdx_d = 0; 
+	int dim1 = dObj4_s2.getSize(0);		//!< assigning size of 0th dimension of dObj4 to dim1 for test purpose
+	int dim2 = dObj4_s2.getSize(1);		//!< assigning size of 1st dimension of dObj4 to dim2 for test purpose
+	int dim3 = dObj4_s2.getSize(2);		//!< assigning size of 2nd dimension of dObj4 to dim3 for test purpose
+	int dim4 = dObj4_s2.getSize(3);		//!< assigning size of 3rd dimension of dObj4 to dim4 for test purpose
+	int dim5 = dObj4_s2.getSize(4);		//!< assigning size of 4th dimension of dObj4 to dim5 for test purpose
+	int dataIdx = 0;					
+	int dataIdx_d = 0; 
 	temp=0;
 	for(int i=0; i<dim1; i++)
 	{
