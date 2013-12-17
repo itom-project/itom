@@ -601,7 +601,7 @@ namespace dObjHelper
         memset(pointer, 0, (dObj->calcNumMats() + 1) * sizeof(int));
         int sizeY = dObj->getSize(dObj->getDims() - 2);
 
-        int** mdata = dObj->get_mdata();
+        uchar** mdata = dObj->get_mdata();
 
         for(int i = 0; i < dObj->calcNumMats(); i++)
         {
