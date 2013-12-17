@@ -122,7 +122,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             dataObj = defaultVarName
         
         if skipBox == False:
-            [dataObj, obtype, check] = self.getVarNameDialog("Choose Object:", dataObj, globals(), 'plane', 1)
+            [dataObj, obtype, check] = self.getVarNameDialog("Choose Object:", dataObj, globals(), 'lineORplane', 1)
         else:
             check = True
         
