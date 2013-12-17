@@ -1302,6 +1302,52 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 	return item;
 }
 
+/*static*/ QVariant PythonQtConversion::QVariantToEnumCast(const QVariant &item, QMetaEnum &enumerator, ito::RetVal &retval)
+{
+    int val;
+    bool ok;
+    val = item.toInt(&ok);
+    QVariant result;
+
+    if (ok) //integer
+    {
+        const char *key = enumerator.valueToKey(val);
+        if (key)
+        {
+            result = val;
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"The value %i does not exist in the enumeration %s::%s",val,enumerator.scope(),enumerator.name());
+            return result;
+        }
+    }
+    else //
+    {
+        QString str = item.toString();
+        if (str.isEmpty() == false) //string
+        {
+            val = enumerator.keyToValue(str.toAscii().data());
+            if (val >= 0)
+            {
+                result = val;
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError,0,"The key %s does not exist in the enumeration %s::%s",str.toAscii().data(),enumerator.scope(),enumerator.name());
+                return result;
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"Use an integer or a string to for a value of the enumeration %s::%s",enumerator.scope(),enumerator.name());
+            return result;
+        }
+    }
+
+    return result;
+}
+
 //! tries to convert PyObject* to known data type and returns deep-copy of the value, given as void*
 /*!
     methods tries to convert PyObject* to QVariant. Type indicates the desired type of QVariant, given by the type-number of QMetaType.
@@ -1610,12 +1656,24 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
 
         case QMetaType::QColor:
         {
-            ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
-            if (rgba)
+            if (PyRgba_Check(val))
             {
-                //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
-                QColor c(rgba->rgba.argb());
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
+                ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
+                if (rgba)
+                {
+                    //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
+                    QColor c(rgba->rgba.argb());
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
+                }
+            }
+            else
+            {
+                QString text = PyObjGetString(val, strict, ok);
+                if(ok)
+                {
+                    QColor c(text);
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
+                }
             }
             break;
         }
