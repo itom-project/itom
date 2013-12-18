@@ -1032,6 +1032,7 @@ namespace ito
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<int>(val);
                     return ito::retOk;
                 break;
@@ -1047,6 +1048,7 @@ namespace ito
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<double>(iVal);
                 break;
                 case ito::ParamBase::Double & ito::paramTypeMask:
@@ -1074,6 +1076,7 @@ namespace ito
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = val;
                     return ito::retOk;
                 break;
@@ -1089,6 +1092,7 @@ namespace ito
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     return iVal;
                 break;
 
@@ -1122,6 +1126,7 @@ namespace ito
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<char>(val);
                     return ito::retOk;
                 break;
@@ -1137,6 +1142,7 @@ namespace ito
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<char>(iVal);
                 break;
 
@@ -1170,6 +1176,7 @@ namespace ito
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<unsigned char>(val);
                     return ito::retOk;
                 break;
@@ -1185,6 +1192,7 @@ namespace ito
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<unsigned char>(iVal);
                 break;
 

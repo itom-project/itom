@@ -121,6 +121,9 @@ ParamBase::ParamBase(const char *name, const uint32 type, const double val) :
 
     switch(typeFilter(type))
     {
+        case Char:
+            m_iVal = (char)val;
+        break;
         case Int:
             m_iVal = (int)val;
         break;
@@ -154,6 +157,9 @@ ParamBase::ParamBase(const char *name, const uint32 type, const int val) :
 
     switch(typeFilter(type))
     {
+        case Char & paramTypeMask:
+            m_iVal = (char)val;
+        break;
         case Int & paramTypeMask:
             m_iVal = val;
         break;
@@ -434,6 +440,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
     switch (copyConstr.m_type & paramTypeMask)
     {
         case Int & ito::paramTypeMask:
+        case Char & ito::paramTypeMask:
             m_iVal = copyConstr.m_iVal;
         break;
 
@@ -688,6 +695,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
     switch (m_type & paramTypeMask)
     {
+        case Char:
         case Int:
             m_iVal = rhs->m_iVal;
         break;
