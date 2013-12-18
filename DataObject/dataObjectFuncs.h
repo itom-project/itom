@@ -590,7 +590,7 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject was not initialized in function getRowPointer(...)");   
         }
 
-        pointer = (_Tp**)calloc(dObj->calcNumMats() + 1, sizeof(_Tp**));
+        pointer = (_Tp***)calloc(dObj->calcNumMats() + 1, sizeof(_Tp**));
 
         if(pointer == NULL)
         {
@@ -603,7 +603,7 @@ namespace dObjHelper
         uchar** mdata = dObj->get_mdata();
         for(int i = 0; i < dObj->calcNumMats(); i++)
         {
-            pointer[i] = (_Tp*)calloc(sizeY, sizeof(_Tp*));
+            pointer[i] = (_Tp**)calloc(sizeY, sizeof(_Tp*));
             if(pointer[i])
             {
                 for(int y = 0; y < sizeY; y++)
