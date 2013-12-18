@@ -418,7 +418,7 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, size_t *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
+ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
 {
 	ito::DataObject *output = NULL;
 	ito::RetVal ret;
@@ -433,7 +433,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 		{
 			for (int i = 0; i < nrDims; ++i)
 			{
-				size_t s = dObj->getSize(i);
+				int s = dObj->getSize(i);
 				if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
 				{
 					ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
