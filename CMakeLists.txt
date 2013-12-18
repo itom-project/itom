@@ -32,7 +32,7 @@ IF(BUILD_UNITTEST)
 	ADD_SUBDIRECTORY(gtest-1.6.0)
 	ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)  
-
+  
 #find current itom version from qitom/global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
 string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
