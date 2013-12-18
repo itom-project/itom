@@ -68,7 +68,7 @@ TYPED_TEST(operatorComplexTest, complexDivTest1d)
 	mat3_1d = cv::saturate_cast<TypeParam>(TypeParam(1,1));
 
 	mat3_1d=mat1_1d.div(mat2_1d);
-	for(int i=0;i<2;i++)EXPECT_EQ(mat3_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(TypeParam(5,1)));
+	for(int i=0;i<2;i++)EXPECT_EQ(mat3_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(TypeParam(5,1)));
 }
 //complexDivTest2d
 /*!
@@ -106,7 +106,7 @@ TYPED_TEST(operatorComplexTest, complexMulTest1d)
 	mat3_1d = cv::saturate_cast<TypeParam>(TypeParam(1,1));
 
 	mat3_1d=mat1_1d.mul(mat2_1d);
-	for(int i=0;i<3;i++)EXPECT_EQ(mat3_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(TypeParam(1,7)));
+	for(int i=0;i<3;i++)EXPECT_EQ(mat3_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(TypeParam(1,7)));
 }
 //complexMulTest2d
 /*!
@@ -139,13 +139,13 @@ TYPED_TEST(operatorComplexTest, complexMulTest3d)
 */
 TYPED_TEST(operatorComplexTest, complexConjTest1d)
 {
-	mat1_1d.at<TypeParam>(0) = cv::saturate_cast<TypeParam>(TypeParam(10.09,0.012));
-	mat1_1d.at<TypeParam>(1) = cv::saturate_cast<TypeParam>(TypeParam(1,-2.3));
-	mat1_1d.at<TypeParam>(2) = cv::saturate_cast<TypeParam>(TypeParam(0,2));
+	mat1_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(TypeParam(10.09,0.012));
+	mat1_1d.at<TypeParam>(0,1) = cv::saturate_cast<TypeParam>(TypeParam(1,-2.3));
+	mat1_1d.at<TypeParam>(0,2) = cv::saturate_cast<TypeParam>(TypeParam(0,2));
 	mat1_1d.conj();
-	EXPECT_EQ (mat1_1d.at<TypeParam>(0), cv::saturate_cast<TypeParam>(TypeParam(10.09,-0.012)));
-	EXPECT_EQ (mat1_1d.at<TypeParam>(1), cv::saturate_cast<TypeParam>(TypeParam(1,2.3)));
-	EXPECT_EQ (mat1_1d.at<TypeParam>(2), cv::saturate_cast<TypeParam>(TypeParam(0,-2)));	
+	EXPECT_EQ (mat1_1d.at<TypeParam>(0,0), cv::saturate_cast<TypeParam>(TypeParam(10.09,-0.012)));
+	EXPECT_EQ (mat1_1d.at<TypeParam>(0,1), cv::saturate_cast<TypeParam>(TypeParam(1,2.3)));
+	EXPECT_EQ (mat1_1d.at<TypeParam>(0,2), cv::saturate_cast<TypeParam>(TypeParam(0,-2)));	
 }
 //complexConjTest2d
 /*!
@@ -181,13 +181,13 @@ TYPED_TEST(operatorComplexTest, complexConjTest3d)
 */
 TYPED_TEST(operatorComplexTest, complexAdjTest1d)
 {
-	mat1_1d.at<TypeParam>(0) = cv::saturate_cast<TypeParam>(TypeParam(10.09,0.012));
-	mat1_1d.at<TypeParam>(1) = cv::saturate_cast<TypeParam>(TypeParam(1,-2.3));
-	mat1_1d.at<TypeParam>(2) = cv::saturate_cast<TypeParam>(TypeParam(0,2));
+	mat1_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(TypeParam(10.09,0.012));
+	mat1_1d.at<TypeParam>(0,1) = cv::saturate_cast<TypeParam>(TypeParam(1,-2.3));
+	mat1_1d.at<TypeParam>(0,2) = cv::saturate_cast<TypeParam>(TypeParam(0,2));
 	ito::DataObject adjugatedDataObj = mat1_1d.adj();
-	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(0), cv::saturate_cast<TypeParam>(TypeParam(10.09,-0.012)));
-	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(1), cv::saturate_cast<TypeParam>(TypeParam(1,2.3)));
-	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(2), cv::saturate_cast<TypeParam>(TypeParam(0,-2)));	
+	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(0,0), cv::saturate_cast<TypeParam>(TypeParam(10.09,-0.012)));
+	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(1,0), cv::saturate_cast<TypeParam>(TypeParam(1,2.3)));
+	EXPECT_EQ (adjugatedDataObj.at<TypeParam>(2,0), cv::saturate_cast<TypeParam>(TypeParam(0,-2)));	
 }
 //complexAdjTest2d
 /*!
@@ -271,7 +271,7 @@ TYPED_TEST(operatorComplexTest1, imageValTest1d)
 {
 	mat1_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(0,24));
 	mat2_1d = ito::imag(mat1_1d);
-	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(24));
+	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(24));
 }
 //imageValTest2d
 /*!
@@ -301,7 +301,7 @@ TYPED_TEST(operatorComplexTest1, realValTest1d)
 {
 	mat1_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(4,24));
 	mat2_1d = ito::real(mat1_1d);
-	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(4));
+	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(4));
 }
 //realValTest2d
 /*!
@@ -331,7 +331,7 @@ TYPED_TEST(operatorComplexTest1, absValTest1d)
 {
 	mat1_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(3,4));
 	mat2_1d = ito::abs(mat1_1d);
-	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(5));
+	for(int i=0;i<3;i++)EXPECT_EQ(mat2_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(5));
 }
 //absValTest2d
 /*!
@@ -363,9 +363,9 @@ TYPED_TEST(operatorComplexTest1, complexAddTest1d)
 	mat2_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(-7.321,-2.832));
 	mat3_1d=mat1_1d + mat2_1d;
 	mat4_1d =ito::imag(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(6.345+(-2.832)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(6.345+(-2.832)));
 	mat4_1d =ito::real(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(-4.24+(-7.321)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(-4.24+(-7.321)));
 }
 //complexAddTest2d
 /*!
@@ -405,9 +405,9 @@ TYPED_TEST(operatorComplexTest1, complexSubTest1d)
 	mat2_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(-7.321,-2.832));
 	mat3_1d=mat1_1d - mat2_1d;
 	mat4_1d =ito::imag(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(6.345-(-2.832)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(6.345-(-2.832)));
 	mat4_1d =ito::real(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(-4.24-(-7.321)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(-4.24-(-7.321)));
 }
 //complexSubTest2d
 /*!
@@ -447,9 +447,9 @@ TYPED_TEST(operatorComplexTest1, complexAdd1Test1d)
 	mat3_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(-7.321,-28.832));
 	mat3_1d+= mat1_1d;
 	mat4_1d =ito::imag(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(6.345+(-28.832)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(6.345+(-28.832)));
 	mat4_1d =ito::real(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(339.24+(-7.321)));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(339.24+(-7.321)));
 }
 //complexAdd1Test2d
 /*!
@@ -489,9 +489,9 @@ TYPED_TEST(operatorComplexTest1, complexSub1Test1d)
 	mat3_1d = cv::saturate_cast<std::complex<TypeParam> >(std::complex<TypeParam>(-7.321,-235.832));
 	mat3_1d-= mat1_1d;
 	mat4_1d =ito::imag(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(-235.832-263.453));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(-235.832-263.453));
 	mat4_1d =ito::real(mat3_1d);
-	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(i) , cv::saturate_cast<TypeParam>(-7.321-35.947));
+	for(int i=0;i<3;i++)EXPECT_FLOAT_EQ(mat4_1d.at<TypeParam>(0,i) , cv::saturate_cast<TypeParam>(-7.321-35.947));
 }
 //complexSub1Test2d
 /*!

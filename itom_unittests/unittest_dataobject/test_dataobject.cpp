@@ -133,7 +133,7 @@
 //TYPED_TEST(AddressTest, checkValues)
 //{
 //    int typeno = getTypeNumber<TypeParam>();
-//    EXPECT_EQ ( this->matrix1x1.at<TypeParam>(0) , cv::saturate_cast<TypeParam>(11));
+//    EXPECT_EQ ( this->matrix1x1.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
 //    EXPECT_EQ ( this->matrix1x1.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
 //
 //    EXPECT_EQ ( this->matrix1x2.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));

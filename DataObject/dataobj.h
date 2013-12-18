@@ -1673,97 +1673,97 @@ class DataObject
         DataObject operator () (ito::Range *ranges);
 
 */
-        // Adressing functions
+        //// Adressing functions
 
-        //! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
-        /*!
-            \param x is the zero-based index to the element which is requested (considering any ROI)
-            \return reference to specific element
-        */
-        template<typename _Tp> _Tp& at(const int x) const
-        {
-         #if __ITODEBUG
-            if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
-            {
-               cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
-            }
-         #endif
-            if (m_dims == 1)
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[0])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(0, x);
-            }
-            else if (m_size[0] == 1)
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[1])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(0, x);
-            }
-            else
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[0])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(x, 0);
-            }
-        }
+        ////! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
+        ///*!
+        //    \param x is the zero-based index to the element which is requested (considering any ROI)
+        //    \return reference to specific element
+        //*/
+        //template<typename _Tp> _Tp& at(const unsigned int x) const
+        //{
+        // #if __ITODEBUG
+        //    if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
+        //    {
+        //       cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+        //    }
+        // #endif
+        //    if (m_dims == 1)
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[0])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
+        //    }
+        //    else if (m_size[0] == 1)
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[1])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
+        //    }
+        //    else
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[0])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(x, 0);
+        //    }
+        //}
 
-        //! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
-        /*!
-            \param x is the zero-based index to the element which is requested (considering any ROI)
-            \return const reference to specific element
-        */
-        template<typename _Tp> _Tp& at(const int x)
-        {
-         #if __ITODEBUG
-            if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
-            {
-               cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
-            }
-         #endif
-            if (m_dims == 1)
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[0])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(0, x);
-            }
-            else if (m_size[0] == 1)
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[1])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(0, x);
-            }
-            else
-            {
-         #if __ITODEBUG
-               if ((int)x >= m_size[0])
-               {
-                  cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-               }
-         #endif
-               return (*(cv::Mat_<_Tp> *)(m_data[0]))(x, 0);
-            }
-        }
+        ////! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
+        ///*!
+        //    \param x is the zero-based index to the element which is requested (considering any ROI)
+        //    \return const reference to specific element
+        //*/
+        //template<typename _Tp> _Tp& at(const unsigned int x)
+        //{
+        // #if __ITODEBUG
+        //    if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
+        //    {
+        //       cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+        //    }
+        // #endif
+        //    if (m_dims == 1)
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[0])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
+        //    }
+        //    else if (m_size[0] == 1)
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[1])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
+        //    }
+        //    else
+        //    {
+        // #if __ITODEBUG
+        //       if ((int)x >= m_size[0])
+        //       {
+        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        //       }
+        // #endif
+        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(x, 0);
+        //    }
+        //}
 
         //! addressing method for two-dimensional data object.
         /*!
@@ -1778,7 +1778,7 @@ class DataObject
             {
                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
             }
-            else if ((x >= m_size[1]) || (y >= m_size[0]) )
+            else if (((int)x >= m_size[1]) || ((int)y >= m_size[0]) )
             {
                 cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
             }
@@ -1865,7 +1865,7 @@ class DataObject
 
             matIdxToNum(idx, &matNum);
 
-               return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
+            return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
         }
 
         //! addressing method for n-dimensional data object.
@@ -1880,7 +1880,7 @@ class DataObject
 
             matIdxToNum(idx, &matNum);
 
-               return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
+            return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
         }
 
         DataObject at(const ito::Range rowRange, const ito::Range colRange);     /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */

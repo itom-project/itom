@@ -133,8 +133,8 @@ This test checks functionality of "+" operator for 1, 2 and 3 dimensional matric
 */
 TYPED_TEST(operatorTest, AddTest)
 {
-	 mat1_1d.at<TypeParam>(0) = cv::saturate_cast<TypeParam>(3);
-    mat2_1d.at<TypeParam>(0) = cv::saturate_cast<TypeParam>(2);
+	 mat1_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(3);
+    mat2_1d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(2);
 
 	mat1_2d.at<TypeParam>(0,0) = cv::saturate_cast<TypeParam>(2);
 	mat1_2d.at<TypeParam>(0,1) = cv::saturate_cast<TypeParam>(3);
@@ -152,7 +152,7 @@ TYPED_TEST(operatorTest, AddTest)
 	add_mat3_2d = mat1_2d + mat2_2d;
 	add_mat3_3d = mat1_3d + mat2_3d;
 
-	 EXPECT_EQ ( this->add_mat3_1d.at<TypeParam>(0) , cv::saturate_cast<TypeParam>(5));
+	 EXPECT_EQ ( this->add_mat3_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(5));
 
 	 EXPECT_EQ ( this->add_mat3_2d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(3));
 	 EXPECT_EQ ( this->add_mat3_2d.at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(4));
@@ -1073,7 +1073,7 @@ TYPED_TEST(operatorTest_float,Float_Add_Test1d)
 	mat1_1d = cv::saturate_cast<TypeParam>(245.313);
 	mat2_1d = cv::saturate_cast<TypeParam>(7465.3768);
 	mat3_1d = mat1_1d + mat2_1d;
-	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat3_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(245.313+7465.3768));
+	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat3_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(245.313+7465.3768));
 };
 //Float_Add_Test2d
 /*!
@@ -1107,7 +1107,7 @@ TYPED_TEST(operatorTest_float,Float_Sub_Test1d)
 	mat1_1d = cv::saturate_cast<TypeParam>(245.313);
 	mat2_1d = cv::saturate_cast<TypeParam>(7465.3768);
 	mat3_1d = mat1_1d - mat2_1d;
-	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat3_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(245.313-7465.3768));
+	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat3_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(245.313-7465.3768));
 };
 //Float_Sub_Test2d
 /*!
@@ -1141,7 +1141,7 @@ TYPED_TEST(operatorTest_float,Float_Add1_Test1d)
 	mat1_1d = cv::saturate_cast<TypeParam>(245.313);
 	mat2_1d = cv::saturate_cast<TypeParam>(7465.3768);
 	mat1_1d += mat2_1d;
-	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat1_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(245.313+7465.3768));
+	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat1_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(245.313+7465.3768));
 };
 //Float_Add1_Test2d
 /*!
@@ -1175,7 +1175,7 @@ TYPED_TEST(operatorTest_float,Float_Sub1_Test1d)
 	mat1_1d = cv::saturate_cast<TypeParam>(245.313);
 	mat2_1d = cv::saturate_cast<TypeParam>(7465.3768);
 	mat1_1d -= mat2_1d;
-	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat1_1d.at<TypeParam>(i), cv::saturate_cast<TypeParam>(245.313-7465.3768));
+	for(int i=0;i<2;i++)EXPECT_FLOAT_EQ (this->mat1_1d.at<TypeParam>(0,i), cv::saturate_cast<TypeParam>(245.313-7465.3768));
 };
 //Float_Sub1_Test2d
 /*!
