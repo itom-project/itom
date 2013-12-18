@@ -130,7 +130,6 @@ namespace cv
    template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
 
 
-
     template<> class DataType<ito::Rgba32>
     {
         public:
@@ -324,8 +323,8 @@ class DataObjectTagType
             }
             else
             {
-				if(cvIsNaN(m_dVal)) return std::string("NaN");
-				if(cvIsInf(m_dVal)) return std::string("Inf");
+				if (cvIsNaN(m_dVal)) return std::string("NaN");
+				if (cvIsInf(m_dVal)) return std::string("Inf");
                 /*if(m_dVal == std::numeric_limits<double>::quiet_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::signaling_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::infinity()) return std::string("Inf");*/
@@ -350,9 +349,7 @@ class DataObjectTagType
 class DataObjectTags
 {
 private:
-    //std::map<std::string,std::string> m_tags;   /*!< map for tags with keyword (std::string) and value (std::string) */
     std::map<std::string, DataObjectTagType> m_tags;   /*!< map for tags with keyword (std::string) and value (either std::string or double) */
-
     std::vector<double> m_axisOffsets;          /*!< vector with offset-values for each axis (offset in dataObject-Pixel). Describes the distance from pixel [0,0,..0] to coordiante system origin. Unit-Coordinate = ( px-Coordinate - Offset)* Scale*/
     std::vector<double> m_axisScales;           /*!< vector with scale-values for each axis (unit / px). Unit-Coordinate = ( px-Coordinate - Offset)* Scale. Scale cannot be 0.0*/
     std::vector<std::string> m_axisDescription; /*!< vector with axis-describtions */
@@ -409,7 +406,6 @@ public:
     }
 
     //friend class DataObjectTags; //I am my best friend (my own and only friend, and therefore my copy-constr has access to my friends members. nice.)
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -656,13 +652,10 @@ class DataObject
         }
 
         void create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const int* steps = NULL);  /*!< allocates new data */
-
         void create(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes);
 
         void freeData(void);     /*!< decrements reference counter and deletes data, if no other instance is using them (ref counter < 0) */
-
         void secureFreeData(void); /*!< decrements reference counter and deletes data, if no other instance is using them (ref counter < 0). This method makes a lot of security checks instead of freeFunc. */
-
 
 
         //----------------------------------------------------------------------------------------------------------------------------------
@@ -705,13 +698,10 @@ class DataObject
         struct MSize
         {
             inline MSize() : m_p(NULL) {}
-            //inline MSize(int *_p, char *_transp) : m_p(_p) {}
-//            Size operator()() const;
             inline int operator [] (const int dim) const
             {
                 return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             };
-//            inline unsigned int& operator [](const int i) { return m_p[i]; };
             inline operator const int * () const { return m_p; }
             bool operator == (const MSize& sz) const
             {
@@ -746,14 +736,11 @@ class DataObject
         struct MROI
         {
             inline MROI() : m_p(NULL) {};
-            //inline MROI(int *_p, char *_transp) : m_p(_p), m_pTransp(_transp) {}
             inline int operator [] (const int dim) const
             {
                 return m_p[dim]; //return the size value. this operator corresponds to the real data representation in memory
             }
 
-//            inline unsigned int operator () (unsigned char dim, unsigned char beginEnd) const { beginEnd > 0 ? beginEnd = 1 : beginEnd = 0; return m_p[dim + beginEnd]; };
-//            inline unsigned int & operator () (unsigned char dim, unsigned char beginEnd) { return m_p[dim + beginEnd]; };
             bool operator == (const MROI & rroi) const
             {
                 if(m_p == NULL || rroi.m_p == NULL)
@@ -782,9 +769,8 @@ class DataObject
             int *m_p;
         };
 
-		DataObject(const DataObject& dObj, bool transposed);    /*!< copy constructor for transposed creation */
+        DataObject(const DataObject& dObj, bool transposed);    /*!< copy constructor for transposed creation */
 
-        
         char    m_continuous;                        /*!< continuous flag */
         char    m_owndata;                           /*!< owndata flag (false if the data object is constructed with a given continuousDataPointer, else true) */
         int     m_type;                              /*!< element data type */
@@ -793,10 +779,9 @@ class DataObject
         MSize   m_osize;                             /*!< vector containing the original size of each dimension. The allocated data block corresponds to these sizes */
         MROI    m_roi;                               /*!< vector containing the offset to the starting point of the ROI for each dimension, is used for detecting and adjusting the ROI */
         MSize   m_size;                              /*!< vector containing the "virtual" size of each dimension considering the ROI */
-//        std::vector<int *>  m_data;                  /*!< vector with references to each matrix-plane. Must be cast to cv::Mat_<"m_type"> */
-        uchar  **m_data;
+        uchar  **m_data;                             /*!< vector with references to each matrix-plane. array of char pointers */
         ReadWriteLock      *m_objSharedDataLock;     /*!< readWriteLock for data block, this lock is shared within every instance which is using the same data. */
-        DataObjectTags     *m_pDataObjectTags;        /*!< class containing the object metadata */
+        DataObjectTags     *m_pDataObjectTags;       /*!< class containing the object metadata */
         ReadWriteLock       m_objHeaderLock;         /*!< readWriteLock for this instance of dataObject. */
         const static int m_sizeofs;
 
@@ -955,7 +940,6 @@ class DataObject
             {
                 return DataObjectTagType(); //error
             }
-            //std::map<std::string, std::string>::iterator it = m_pDataObjectTags->m_tags.find(key);
             std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
             if(it != m_pDataObjectTags->m_tags.end())
             {
@@ -965,8 +949,6 @@ class DataObject
             return DataObjectTagType();
         }
 
-        //!<
-        //inline bool getTagByIndex(const int tagNumber, std::string &key, std::string &value) const
         inline bool getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const
         {
             if(!m_pDataObjectTags)
@@ -982,7 +964,6 @@ class DataObject
                 value = std::string();
                 return false;
             }
-            //std::map<std::string,std::string>::iterator it = m_pDataObjectTags->m_tags.begin();
             std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
             for(int i = 0; i < tagNumber; i++)
             {
@@ -1007,7 +988,6 @@ class DataObject
                 validOperation = false;
                 return std::string(""); //does not exist
             }
-            //std::map<std::string,std::string>::iterator it = m_pDataObjectTags->m_tags.begin();
             std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
             validOperation = true;
             for(int i = 0; i < tagNumber; i++)
@@ -1367,11 +1347,7 @@ class DataObject
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const;
         RetVal deepCopyPartial(DataObject &rhs);                         /*!< copies the values of each element from this data object to the ROI of the given rhs-dataObject. The rhs-dataObject must be allocated yet and its ROI must be the same size than this ROI */
 
-
-
-//        std::vector<int *> get_mdata(void);
         uchar ** get_mdata(void);
-//        std::vector<int *> get_mdata(void) const;
         uchar ** get_mdata(void) const;
 
         //! returns the size-member. m_size fits to the physical organization of data in memory.
@@ -1399,7 +1375,6 @@ class DataObject
             }
             else
             {
-
                 return m_size[index];
             }
         }
@@ -1417,7 +1392,6 @@ class DataObject
             }
             else
             {
-
                 return m_osize[index];
             }
         }
@@ -1429,9 +1403,6 @@ class DataObject
 
         DObjConstIterator constBegin() const;
         DObjConstIterator constEnd() const;
-
-        
-
 
         //! constructor for empty data object
         /*!
@@ -1452,7 +1423,6 @@ class DataObject
         {
             int sizes[2] = {1, size};
             this->create(2, sizes, type, 1);
-            //DataObject(1, size, type);
         }
 
         //! constructor for two-dimensional data object. The data is newly allocated and arbitrarily filled.
@@ -1483,8 +1453,7 @@ class DataObject
         */
         DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
-             int sizes[3] = {sizeZ, sizeY, sizeX};
-
+            int sizes[3] = {sizeZ, sizeY, sizeX};
             this->create(3, sizes, type, m_continuous);
         }
 
@@ -1506,7 +1475,6 @@ class DataObject
         DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps = NULL) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
             int sizes[3] = {sizeZ, sizeY, sizeX};
-
             this->create(3, sizes, type, m_continuous, continuousDataPtr, steps);
         }
 
@@ -1653,117 +1621,8 @@ class DataObject
 
         DataObject mul(const DataObject &mat2, const double scale = 1.0);
         DataObject div(const DataObject &mat2, const double scale = 1.0);
-
         DataObject squeeze() const;
-
         int elemSize() const;
-
-/*
-        // Adressing operators ()
-        // You should NOT use DataObject::operator here! Otherwise the MsVc compiler will hate you  - at least today: 30.03.2011
-        template<typename _Tp> _Tp& operator () (const unsigned int x) const;
-        template<typename _Tp> _Tp& operator () (const unsigned int x);
-        template<typename _Tp> _Tp& operator () (const unsigned int y, const unsigned int x) const;
-        template<typename _Tp> _Tp& operator () (const unsigned int y, const unsigned int x);
-        template<typename _Tp> _Tp& operator () (const unsigned int z, const unsigned int y, const unsigned int x) const;
-        template<typename _Tp> _Tp& operator () (const unsigned int z, const unsigned int y, const unsigned int x);
-        template<typename _Tp> _Tp& operator () (const unsigned int *idx) const;
-        template<typename _Tp> _Tp& operator () (const unsigned int *idx);
-        DataObject operator () (const ito::Range rowRange, const ito::Range colRange);
-        DataObject operator () (ito::Range *ranges);
-
-*/
-        //// Adressing functions
-
-        ////! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
-        ///*!
-        //    \param x is the zero-based index to the element which is requested (considering any ROI)
-        //    \return reference to specific element
-        //*/
-        //template<typename _Tp> _Tp& at(const unsigned int x) const
-        //{
-        // #if __ITODEBUG
-        //    if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
-        //    {
-        //       cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
-        //    }
-        // #endif
-        //    if (m_dims == 1)
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[0])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
-        //    }
-        //    else if (m_size[0] == 1)
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[1])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
-        //    }
-        //    else
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[0])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(x, 0);
-        //    }
-        //}
-
-        ////! addressing method for one-dimensional data object or two-dimensional data object having at least one dimension with size 1.
-        ///*!
-        //    \param x is the zero-based index to the element which is requested (considering any ROI)
-        //    \return const reference to specific element
-        //*/
-        //template<typename _Tp> _Tp& at(const unsigned int x)
-        //{
-        // #if __ITODEBUG
-        //    if ((m_dims != 1) && !((m_dims == 2) && ((m_size[0] == 1) || (m_size[1] == 1))))
-        //    {
-        //       cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
-        //    }
-        // #endif
-        //    if (m_dims == 1)
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[0])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
-        //    }
-        //    else if (m_size[0] == 1)
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[1])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(0, x);
-        //    }
-        //    else
-        //    {
-        // #if __ITODEBUG
-        //       if ((int)x >= m_size[0])
-        //       {
-        //          cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
-        //       }
-        // #endif
-        //       return (*(cv::Mat_<_Tp> *)(m_data[m_roi[0]]))(x, 0);
-        //    }
-        //}
 
         //! addressing method for two-dimensional data object.
         /*!
@@ -1927,6 +1786,8 @@ class DataObject
 
         //
         template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
+
+        template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
 };
 
 
@@ -2084,8 +1945,6 @@ template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const Da
 				std::cout << idx[i] << ",";
 			}
 			std::cout << ":,:]->(";
-
-			
 
 			std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
 
@@ -2245,9 +2104,6 @@ template<> inline bool isZeroValue(std::complex<ito::float64> v, std::complex<it
 {
     return isZeroValue<ito::float64>(v.real(),epsilon.real()) && isZeroValue<ito::float64>(v.imag(),epsilon.real());
 }
-
-
-
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
