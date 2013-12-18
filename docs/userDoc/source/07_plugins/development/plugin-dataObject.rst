@@ -33,7 +33,7 @@ dataObject and its way of allocating memory is called *unorganized*.
 
 In order to make the *dataObject* compatible to matrices that are allocated in one huge memory block (like Numpy arrays), it is also possible to
 make any *dataObject* continuous. Then, a huge data block is allocated, such that all planes lie consecutively in memory. Nevertheless, the pointer-tree
-is still available, pointing to the starting points of all planes. This reallocation is implicitely done, when creating a Numpy-array from a dataObject.
+is still available, pointing to the starting points of all planes. This reallocation is implicitly done, when creating a Numpy-array from a dataObject.
 	
 DataObject can be declared in different possible ways with different dimensions and different data types.
 Various possible implementations of declaring DataObject are listed below.
@@ -57,11 +57,11 @@ Let's take an example of a data object with a dimensions 3x2x5. It can be imagin
 	:scale: 100
 
 As we can see in this figure, each plane is of a type **cv::Mat** class from **openCV** library which we know.
-**m_data** corresponds to the zero-based two-dimensional matrix-index for a perticular plane. 
+**m_data** corresponds to the zero-based two-dimensional matrix-index for a particular plane. 
 This matrix-index can be retrieved using **seekMat()** method and later on with the use of **get_mdata()** method, we can have the matrix pointer of the whole plane. The return type of **get_mdata()** method is **int*** which can be type-casted by **cv:Mat*** easily.
 Please read the section `Direct Access to the underlying cv::Mat`_ to understand this concept in detail with a working example.
  
-Following are some sample codes to get one quickly understand *basic programing structure of Data Objects*.
+Following are some sample codes to get one quickly understand *basic programming structure of Data Objects*.
 
 The following code creates an empty data object with no dimensions (0) and no type (0).
 
@@ -128,7 +128,7 @@ All indices are zero-based, hence the first element can be referred by addressin
     The **at()** method is templated where the template parameter must correspond to the type of the corresponding
     data object.
 
-Let's try to summerize some pros and cons of this method.
+Let's try to summarize some pros and cons of this method.
 	
 **Advantages**
 
@@ -271,7 +271,7 @@ Following example shows the method to access underlying planes in multidimension
 	
 Let's try to analyse the code above. As we can see in line #6, we used **seekMat()** method to retrieve the plane id of 3rd plane in 3 dimensional matrix d4. 
 
-line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. Line #11 declares a row pointer to point a perticular row 
+line #7 declares a pointer variable plane3 of type cv::Mat to hold the contents of plane 3 of data object d4. Line #11 declares a row pointer to point a particular row 
 in plane 3 of data object d4 as a revision to the previous method of accessing elements of a data object using row pointer.
 
 line #14 defines the exemplary ranges to create a new data object d5 from a part of data object d4, which is done in line #15 with the use of **at()** method.
@@ -321,7 +321,7 @@ last element of the data object checking the condition **it!=d6.end()**.
 Advantages
 """""""""""""""
 
-* This method is a compromise between its useability with ease and performance on execution level. Integration of this method in code is fast and easy.
+* This method is a compromise between its usability with ease and performance on execution level. Integration of this method in code is fast and easy.
 * Developer does not think about **if...else** conditions to decide the boundaries of Region of Interest to access any data object.
 
 Drawbacks
@@ -443,7 +443,7 @@ The following example code shows the way to adjust ROI with adjustROI() method a
 		std::cout << roiLocate[i] << std::endl;
 	}
 	
-Here, line #4 shows the use of adjustROI() function where negative parameters indicate that the ROI is shrinking in perticular dimension. More detailed description of adjustROI() and locateROI() methods can be seen under :ref:`plugin-DataObject-Ref` document.
+Here, line #4 shows the use of adjustROI() function where negative parameters indicate that the ROI is shrinking in particular dimension. More detailed description of adjustROI() and locateROI() methods can be seen under :ref:`plugin-DataObject-Ref` document.
 
 One can also pass an array as a parameter to this adjustROI() function describing the offset details as shown in the following code.
 
@@ -483,7 +483,7 @@ Line #7 will print the resultant data object after being adjusted by **adjustROI
 Setting and Getting Axis Units
 -------------------------------------------------------------
 
-In this section, you will study about assigning and retrieving the axis units at each dimension of a data object. **setAxisUnit()** method is used to assign a unit to a perticular axis (dimension) of a data object and is declared under **DataObject** class. 
+In this section, you will study about assigning and retrieving the axis units at each dimension of a data object. **setAxisUnit()** method is used to assign a unit to a particular axis (dimension) of a data object and is declared under **DataObject** class. 
 Syntax for this method is given below.
 
 *dataObjectName.setAxisUnit(const unsigned int axisNum, const std::string &unit);* 
@@ -492,7 +492,7 @@ Syntax for this method is given below.
 
 This function returns 1 if the axis does not exists.
 
-**getAxisUnit()** method is used to retrieve a unit of a perticular axis and is also declared under **DataObject** class. The syntax for this method is shown below.
+**getAxisUnit()** method is used to retrieve a unit of a particular axis and is also declared under **DataObject** class. The syntax for this method is shown below.
 
 *dataObjectName.getAxisUnit(const int axisNum, bool &validOperation);*
 
@@ -522,7 +522,7 @@ These assigned axis units can be retrieved by getAxisUnit() method as shown in l
 Setting and Getting Axis Scale
 --------------------------------------------------
 
-In this section, we will learn about setting and getting the scale values of perticular Axis (dimension) of a data object. 
+In this section, we will learn about setting and getting the scale values of particular Axis (dimension) of a data object. 
 This can be done using setAxisScale() and getAxisScale() functions as shown below. These both functions are declared under *DataObject* class.
 Syntax for the setAxisScale() function is shown below:
 
@@ -536,7 +536,7 @@ In the same way, syntax for the **getAxisScale()** function is shown below.
 
 *Return Type: double*
 
-Following examplary code can explain the usage of these functions in a better way.
+Following exemplary code can explain the usage of these functions in a better way.
 
 .. code-block:: c++
 	:linenos:
@@ -621,7 +621,7 @@ Basic Operators with Data Objects
 -------------------------------------------------------------------------------
 
 (Same syntax can be used for other operators like '+','-','=+','=-', div, cross multiplication (!=), <<(shift left), >> ( shift right))
-For the sake of simplicity, some arithmatic operators are overloaded to work upon data objects easily. In this section, such operators to work upon data objects are discussed in details with example codes and syntaxes.  	
+For the sake of simplicity, some arithmetic operators are overloaded to work upon data objects easily. In this section, such operators to work upon data objects are discussed in details with example codes and syntaxes.  	
 Let us start with basic Add "+" operator. Following is one example shown to add two data objects with "+" operator.
 
 .. code-block:: c++
@@ -635,7 +635,7 @@ Let us start with basic Add "+" operator. Following is one example shown to add 
 	d14= d12 + d13;
 	std::cout << "Addition of two matrix is:" << d14 << std::endl;
 
-Here, two data objects d12 and d13 are added elementwise and the resulant data object is stored in d14. In the same way many other arithmatic, compare, bitwise oprators can work with data objects.
+Here, two data objects d12 and d13 are added element-wise and the resultant data object is stored in d14. In the same way many other arithmetic, compare, bitwise operators can work with data objects.
 Follwing is the explanation of each possible operator to work with data object.
 
 **Arithmatic Operators**
@@ -644,38 +644,38 @@ Follwing is the explanation of each possible operator to work with data object.
 **Add Operator '+'**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If mat1, mat2 and mat3 are data objects of same size and same type, then "+" operator can be used to perform elementwise addition in the following way. 
+If mat1, mat2 and mat3 are data objects of same size and same type, then "+" operator can be used to perform element-wise addition in the following way. 
 
 *mat3 = mat1 + mat2;*
 
-"+" operator performs elementwise addition on mat1 and mat2 and returns a resultant data object. This operator returns the resultant data object of same size and type which needs to be stored in some other data object of same size and type (mat3) as shown in the statement above.
+"+" operator performs element-wise addition on mat1 and mat2 and returns a resultant data object. This operator returns the resultant data object of same size and type which needs to be stored in some other data object of same size and type (mat3) as shown in the statement above.
 
 **Add and Assign Operator '+='**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If mat1 and mat2 are data objects of same size and same type, then "+=" operator can be used to perform elementwise add and assign operation in the following way. 
+If mat1 and mat2 are data objects of same size and same type, then "+=" operator can be used to perform element-wise add and assign operation in the following way. 
 
 *mat2 += mat1;*
 
-"+=" operator performs elementwise addition operation on mat1 and mat2 and stores the resultant data object leftside of this it.
+"+=" operator performs element-wise addition operation on mat1 and mat2 and stores the resulting data object leftside of this it.
 
 **Subtract Operator '-'** 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If mat1, mat2 and mat3 are data objects of same size and type, then "-" operator can be used to perform elementwise subtraction between these data objects in the following way.
+If mat1, mat2 and mat3 are data objects of same size and type, then "-" operator can be used to perform element-wise subtraction between these data objects in the following way.
 
 *mat3 = mat1 - mat2;*
 
-In the statement above, mat2 is subtracted from mat1 elementwise and the resultant data object is stored in mat3. 
+In the statement above, mat2 is subtracted from mat1 element-wise and the resultant data object is stored in mat3. 
 
 **Subtract and Assign Operator '-='**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If mat1 and mat2 are data objects of same size and type, then "-=" operator can be used to perform elementwise subtraction between these data objects in the following way.
+If mat1 and mat2 are data objects of same size and type, then "-=" operator can be used to perform element-wise subtraction between these data objects in the following way.
 
 *mat2 -= mat1;*
 
-In the statement above, mat1 is subtracted from mat2 elementwise and the resultant data object is stored back to mat2. 
+In the statement above, mat1 is subtracted from mat2 element-wise and the resultant data object is stored back to mat2. 
  
 **Multiplication with Constant Factor '*'**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -711,7 +711,7 @@ In the statement above, operator **"*"** is used to perform cross multiplication
 **Dot Multiplication Operator 'mul'**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 
-With the use of "mul" operator, one can perform dot product (elementwise multiplication) between two data objects in the following way.
+With the use of "mul" operator, one can perform dot product (element-wise multiplication) between two data objects in the following way.
 
 *mul_mat=mat1.mul(mat2);*
 
@@ -720,11 +720,11 @@ Here, "mul" operator takes two data objects mat1 and mat2 of same type and same 
 **Division Operator 'div'**
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""+
 
-This operator is used to perform elementwise division between two data objects in the following way.
+This operator is used to perform element-wise division between two data objects in the following way.
 
 *div_mat = mat1.div(mat2);*
 
-Here, data object **mat1** is divided from data object **mat2** elementwise using **"div"** operator and the result is stored in data object **div_mat**. Sizes and data types of mat1, mat2 and mat2 should be same.
+Here, data object **mat1** is divided from data object **mat2** element-wise using **"div"** operator and the result is stored in data object **div_mat**. Sizes and data types of mat1, mat2 and mat2 should be same.
 
 .. note::
 	
@@ -738,35 +738,35 @@ Compare operations are frequently needed while working with data objects. Keepin
 **== (Equal to)  (Elementwise operator)**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This operator compares the element values of two different data objects on respective positions and retunrs a resultant data object with **0s** and **1s** according to the comparision result.
+This operator compares the element values of two different data objects on respective positions and returns a resultant data object with **0s** and **1s** according to the comparison result.
 If two values on the respective positions match in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
 The way to use this **== (Equal to)** operator is shown as follows.
 
 *mat3 = mat1 == mat2;*
 
-Here, a comparision between data objects mat1 and mat2 is done with **==** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are equal, otherwise '0' where the values are unequal.
+Here, a comparison between data objects mat1 and mat2 is done with **==** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are equal, otherwise '0' where the values are unequal.
 Sizes of mat1, mat2 and mat3 should be equal.
 
 **!= (unEqual to) (Elementwise operator)** 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This operator compares the element values of two different data objects on respective positions and retunrs a resultant data object with **0s** and **1s** according to the comparision result.
+This operator compares the element values of two different data objects on respective positions and returns a resultant data object with **0s** and **1s** according to the comparison result.
 If two values on the respective positions differ in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
 The way to use this **!= (unEqual to)** operator is shown as follows.
 
 *mat3 = mat1 != mat2;*
 
-Here, a comparision between data objects mat1 and mat2 is done with **!=** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are unequal, otherwise '0' where the values are equal.
+Here, a comparison between data objects mat1 and mat2 is done with **!=** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are unequal, otherwise '0' where the values are equal.
 Sizes of mat1, mat2 and mat3 should be equal.
 
 **< (lower than) (Elementwise operator)**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This operator performs "lower than" comparision operation between the element values of two data objects. The way to perform this comparision is shown in the following statement.
+This operator performs "lower than" comparison operation between the element values of two data objects. The way to perform this comparison is shown in the following statement.
 
 *mat3 = mat1 < mat2;*
 
-In the statement above, elements of **mat1 are** compared with elements of mat2 for **lower than** operation with use of **<** operator. The resultant data object **mat3** contains **'1'** at the postions where the element values in data object mat1 are lower than those of mat2 at respective positions, otherwise it containes **'0'** where this condition doesn't satisfy.
+In the statement above, elements of **mat1 are** compared with elements of mat2 for **lower than** operation with use of **<** operator. The resultant data object **mat3** contains **'1'** at the positions where the element values in data object mat1 are lower than those of mat2 at respective positions, otherwise it contains **'0'** where this condition doesn't satisfy.
 Sizes of all three data objects mat1, mat2 and mat3 should be the same.
 
 **<= (lower or equal to) (Elementwise operator)** 
@@ -786,8 +786,8 @@ With the use of this over loaded operator, one can easily find out at which posi
 
 *mat3 = mat1 > mat2;*
 
-Here in the above statement, comparision operation between **mat1** and **mat2** is done with **">"** operator and the final result is stored in data object **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are bigger than the element values on the respective postions in **mat2**.
-Data sizes of mat1, mat2 and mat3 should be the same for the successful comparision with this operator.
+Here in the above statement, comparison operation between **mat1** and **mat2** is done with **">"** operator and the final result is stored in data object **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are bigger than the element values on the respective positions in **mat2**.
+Data sizes of mat1, mat2 and mat3 should be the same for the successful comparison with this operator.
 
 **>= (bigger or equal to) (Elementwise operator)**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -804,7 +804,7 @@ Sizes of mat1, mat2 and mat3 should be equal.
 **Shift Operators**
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Shift operators play a significant role during some arithmatic operations (i.e. division/multiplication by 2), bit level calculations, etc. With the over loading of some shift operators to let them be used for data objects, many matrix calculations can be made much easier. 
+Shift operators play a significant role during some arithmetic operations (i.e. division/multiplication by 2), bit level calculations, etc. With the over loading of some shift operators to let them be used for data objects, many matrix calculations can be made much easier. 
 We will go through such over loaded shift operators in this section.
 
 **<< (shift left)**
@@ -863,7 +863,7 @@ Bitwise operators play important role in logical operations such as AND, OR and 
 **'&' (Bitwise AND) Operator**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This operator performs a **bitwise AND** opearation between the elements of two data objects. 
+This operator performs a **bitwise AND** operation between the elements of two data objects. 
 
 Syntax to use this operator with data objects is shown below.
 
