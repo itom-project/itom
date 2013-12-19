@@ -33,6 +33,7 @@
 #include "pythonSharedPointerGuard.h"
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class PythonQtConversion
     \brief Conversion class with mainly static methods, which convert values between Qt and standard C++ data types
@@ -40,11 +41,11 @@
 
         Parts of this class are taken from the project PythonQt (http://pythonqt.sourceforge.net/)
 */
-
 PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
 QByteArray PythonQtConversion::textEncodingName = "utf8";
-QHash<void*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<void*,PyObject*>();
+QHash<void*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<void*, PyObject*>();
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QStringList
 /*!
     tries to interprete given PyObject* as list of strings and converts it to QStringList.
@@ -71,10 +72,10 @@ QStringList PythonQtConversion::PyObjToStringList(PyObject* val, bool strict, bo
     {
         int count = PySequence_Size(val);
         PyObject *value = NULL;
-        for (int i = 0;i<count;i++) 
+        for (int i = 0; i < count; i++) 
         {
-            value = PySequence_GetItem(val,i); //new reference
-            v.append(PyObjGetString(value,false,ok));
+            value = PySequence_GetItem(val, i); //new reference
+            v.append(PyObjGetString(value, false, ok));
             Py_XDECREF(value);
         }
         ok = true;
@@ -82,6 +83,7 @@ QStringList PythonQtConversion::PyObjToStringList(PyObject* val, bool strict, bo
     return v;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! string representation of PyObject*
 /*!
     returns a string or a string-like interpretation of the given PyObject*. If this object is no byte- or unicode-object,
@@ -103,6 +105,7 @@ QString PythonQtConversion::PyObjGetRepresentation(PyObject* val)
     return r;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QString
 /*!
     If val is a byte-object, it is directly converted into a QString. If val is an unicode-object,
@@ -118,14 +121,14 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
 {
     QString r;
     ok = true;
-    if(PyBytes_Check(val))
+    if (PyBytes_Check(val))
     {
         r = QString(PyObjGetBytes(val, strict, ok));
     }
-    else if(PyUnicode_Check(val))
+    else if (PyUnicode_Check(val))
     {
         PyObject *repr2 = PyUnicodeToPyByteObject(val);
-        if(repr2 != NULL)
+        if (repr2 != NULL)
         {
             r = QString(PyObjGetBytes(repr2, strict, ok));
             Py_XDECREF(repr2);
@@ -152,6 +155,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     return r;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QString
 /*!
     If val is a byte-object, it is directly converted into a QString. If val is an unicode-object,
@@ -173,16 +177,16 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
         Py_ssize_t size = PyBytes_GET_SIZE(val);
         r = QByteArray(PyBytes_AS_STRING(val), size);
     } 
-    else if(strict)
+    else if (strict)
     {
         ok = false;
     }
     else
     {
-        if(PyUnicode_Check(val))
+        if (PyUnicode_Check(val))
         {
             PyObject *repr2 = PyUnicodeToPyByteObject(val);
-            if(repr2 != NULL)
+            if (repr2 != NULL)
             {
                 r = PyObjGetBytes(repr2, strict, ok);
                 Py_DECREF(repr2);
@@ -210,6 +214,7 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
     return r;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to bool
 /*!
     tries to convert the given PyObject* val as boolean variable and returns its value. If val is no
@@ -237,12 +242,13 @@ bool PythonQtConversion::PyObjGetBool(PyObject* val, bool strict, bool &ok)
     } 
     else if (!strict) 
     {
-        d = PyObjGetInt(val, false, ok)!=0;
+        d = PyObjGetInt(val, false, ok) != 0;
         ok = true;
     }
     return d;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to integer
 /*!
     If val is a fixed-point object, it is directly converted into an integer variable. Otherwise, the output depends
@@ -293,6 +299,7 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
     return d;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to long long (64bit, if possible)
 /*!
     If val is a fixed-point object, it is directly converted into an qint64 variable. Otherwise, the output depends
@@ -343,6 +350,7 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
     return d;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to unsigned integer 64bit
 /*!
     If val is a fixed-point object, it is directly converted into an quint64 variable. Otherwise, the output depends
@@ -360,7 +368,7 @@ quint64 PythonQtConversion::PyObjGetULongLong(PyObject* val, bool strict, bool &
     ok = true;
     if (PyLong_Check(val)) {
         d = PyLong_AsUnsignedLongLong(val);
-        if(PyErr_Occurred())
+        if (PyErr_Occurred())
         {
             ok = false;
             PyErr_Clear();
@@ -392,6 +400,7 @@ quint64 PythonQtConversion::PyObjGetULongLong(PyObject* val, bool strict, bool &
     return d;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to double
 /*!
     If val is a floating-point object, it is directly converted into a double variable. Otherwise, the output depends
@@ -442,12 +451,13 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
     return d;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! get double-array from py object
 QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool strict, bool &ok)
 {
     ok = true;
     QVector<double> v;
-    if(PySequence_Check(val) == false)
+    if (PySequence_Check(val) == false)
     {
         ok = false;
         return v;
@@ -458,12 +468,12 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
 
     if (strict)
     {
-        for(Py_ssize_t i = 0 ; i < len ; i++)
+        for (Py_ssize_t i = 0; i < len; i++)
         {
-            t = PySequence_GetItem(val,i); //new reference
-            if( PyFloat_Check(t) )
+            t = PySequence_GetItem(val, i); //new reference
+            if (PyFloat_Check(t))
             {
-                v.append( PyFloat_AS_DOUBLE(t) );
+                v.append(PyFloat_AS_DOUBLE(t));
             }
             else
             {
@@ -477,15 +487,15 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     else
     {
         int overflow;
-        for(Py_ssize_t i = 0 ; i < len ; i++)
+        for (Py_ssize_t i = 0; i < len; i++)
         {
-            t = PySequence_GetItem(val,i); //new reference
+            t = PySequence_GetItem(val, i); //new reference
             
             if (PyFloat_Check(t)) 
             {
-                v.append( PyFloat_AS_DOUBLE(t) );
+                v.append(PyFloat_AS_DOUBLE(t));
             } 
-            else if( PyLong_Check(t) )
+            else if (PyLong_Check(t))
             {
                 qreal v2 = PyLong_AsLongAndOverflow(t, &overflow);
                 if (overflow)
@@ -498,7 +508,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
                         break;
                     }
                 }
-                v.append( v2 );
+                v.append(v2);
             }
             else if (t == Py_False) 
             {
@@ -518,7 +528,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
         }
     }
 
-    if(!ok)
+    if (!ok)
     {
         v.clear();
     }
@@ -526,6 +536,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     return v;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! get int-array from py object
 QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bool &ok)
 {
@@ -533,7 +544,7 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     int overflow;
     ok = true;
 
-    if(PySequence_Check(val) == false)
+    if (PySequence_Check(val) == false)
     {
         ok = false;
         return v;
@@ -544,12 +555,12 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
 
     if (strict)
     {
-        for(Py_ssize_t i = 0 ; i < len ; i++)
+        for (Py_ssize_t i = 0; i < len; i++)
         {
             t = PySequence_GetItem(val,i); //new reference
-            if( PyLong_Check(t) )
+            if (PyLong_Check(t))
             {
-                v.append( PyLong_AsLongAndOverflow(t, &overflow) );
+                v.append(PyLong_AsLongAndOverflow(t, &overflow));
                 if (overflow)
                 {
                     ok = false;
@@ -568,12 +579,12 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     }
     else
     {
-        for(Py_ssize_t i = 0 ; i < len ; i++)
+        for (Py_ssize_t i = 0; i < len; i++)
         {
             t = PySequence_GetItem(val,i); //new reference
-            if( PyLong_Check(t) )
+            if (PyLong_Check(t))
             {
-                v.append( PyLong_AsLongAndOverflow(t, &overflow) );
+                v.append(PyLong_AsLongAndOverflow(t, &overflow));
                 if (overflow)
                 {
                     ok = false;
@@ -583,7 +594,7 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
             }
             else if (PyFloat_Check(t)) 
             {
-                v.append( floor(PyFloat_AS_DOUBLE(t)) );
+                v.append(floor(PyFloat_AS_DOUBLE(t)));
             } 
             else if (t == Py_False) 
             {
@@ -603,7 +614,7 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
         }
     }
 
-    if(!ok)
+    if (!ok)
     {
         v.clear();
     }
@@ -612,6 +623,7 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
 }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to ito::PCLPointCloud
 /*!
     If val is of type pointCloud (Python class), the containing ito::PCLPointCloud is returned, otherwise an empty
@@ -624,10 +636,10 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
 */
 ito::PCLPointCloud PythonQtConversion::PyObjGetPointCloud(PyObject *val, bool /*strict*/, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
+    if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
     {
         ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
-        if(pyPlc->data)
+        if (pyPlc->data)
         {
             ok = true;
             return *(pyPlc->data);
@@ -642,6 +654,7 @@ ito::PCLPointCloud PythonQtConversion::PyObjGetPointCloud(PyObject *val, bool /*
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to ito::PCLPoint
 /*!
     If val is of type point (Python class), the containing ito::PCLPoint is returned, otherwise an empty
@@ -654,10 +667,10 @@ ito::PCLPointCloud PythonQtConversion::PyObjGetPointCloud(PyObject *val, bool /*
 */
 ito::PCLPoint PythonQtConversion::PyObjGetPoint(PyObject *val, bool /*strict*/, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonPCL::PyPointType)
+    if (Py_TYPE(val) == &ito::PythonPCL::PyPointType)
     {
         ito::PythonPCL::PyPoint* pyPt = (ito::PythonPCL::PyPoint*)val;
-        if(pyPt->point)
+        if (pyPt->point)
         {
             ok = true;
             return *(pyPt->point);
@@ -672,6 +685,7 @@ ito::PCLPoint PythonQtConversion::PyObjGetPoint(PyObject *val, bool /*strict*/, 
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to ito::PCLPolygonMesh
 /*!
     If val is of type polygonMesh (Python class), the containing ito::PCLPolygonMesh is returned, otherwise an empty
@@ -684,10 +698,10 @@ ito::PCLPoint PythonQtConversion::PyObjGetPoint(PyObject *val, bool /*strict*/, 
 */
 ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool /*strict*/, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
+    if (Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
     {
         ito::PythonPCL::PyPolygonMesh* pyMesh = (ito::PythonPCL::PyPolygonMesh*)val;
-        if(pyMesh->polygonMesh)
+        if (pyMesh->polygonMesh)
         {
             ok = true;
             return *(pyMesh->polygonMesh);
@@ -701,23 +715,25 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         return ito::PCLPolygonMesh();
     }
 }
+
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
+    if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
-        if(dObj->dataObject && dObj->base == NULL)
+        if (dObj->dataObject && dObj->base == NULL)
         {
             ok = true;
             return (new ito::DataObject(*(dObj->dataObject)));
         }
-        else if(dObj->dataObject && dObj->base != NULL) //make deep copy since ref of base cannot be incremented (it can, but nobody will decrement it if the dataObject is deleted)
+        else if (dObj->dataObject && dObj->base != NULL) //make deep copy since ref of base cannot be incremented (it can, but nobody will decrement it if the dataObject is deleted)
         {
             ok = true;
             ito::DataObject *dObj2 = new ito::DataObject();
-            if(dObj->dataObject->copyTo(*dObj2,true) == ito::retOk)
+            if (dObj->dataObject->copyTo(*dObj2, true) == ito::retOk)
             {
                 return dObj2;
             }
@@ -731,7 +747,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         ok = false;
         return NULL;
     }
-    else if(strict == false) //try to convert to dataObject
+    else if (strict == false) //try to convert to dataObject
     {
         PyObject *args = Py_BuildValue("(O)", val);
         ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
@@ -739,7 +755,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         Py_DECREF(args);
         if (result)
         {
-            dObj = PyObjGetDataObjectNewPtr( (PyObject*)result, true, ok );
+            dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok);
             Py_XDECREF(result);
             return dObj;
         }
@@ -757,9 +773,10 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ QSharedPointer<ito::DataObject> PythonQtConversion::PyObjGetSharedDataObject(PyObject *val, bool &ok) //is always strict, only dataobjects are allowed
 {
-    if(Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
+    if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
         if (dObj->dataObject)
@@ -773,12 +790,13 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
 }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::PCLPointCloud* PythonQtConversion::PyObjGetPointCloudNewPtr(PyObject *val, bool /*strict*/, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
+    if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
     {
         ito::PythonPCL::PyPointCloud* pyPointCloud = (ito::PythonPCL::PyPointCloud*)val;
-        if(pyPointCloud->data)
+        if (pyPointCloud->data)
         {
             ok = true;
             return (new ito::PCLPointCloud(*(pyPointCloud->data)));
@@ -793,12 +811,13 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::PCLPolygonMesh* PythonQtConversion::PyObjGetPolygonMeshNewPtr(PyObject *val, bool /*strict*/, bool &ok)
 {
-    if(Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
+    if (Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
     {
         ito::PythonPCL::PyPolygonMesh* pyMesh = (ito::PythonPCL::PyPolygonMesh*)val;
-        if(pyMesh->polygonMesh)
+        if (pyMesh->polygonMesh)
         {
             ok = true;
             return (new ito::PCLPolygonMesh(*(pyMesh->polygonMesh)));
@@ -812,8 +831,10 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         return NULL;
     }
 }
+
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QVariant
 /*!
     methods tries to convert PyObject* to QVariant. Type indicates the desired type of QVariant, given by the type-number of QMetaType.
@@ -831,19 +852,19 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     if (type==-1) 
     {
         //guess type by PyObject's type
-        if(PyBytes_Check(val) || PyUnicode_Check(val))
+        if (PyBytes_Check(val) || PyUnicode_Check(val))
         {
             type = QVariant::String;
         }
-        else if(PyLong_Check(val))
+        else if (PyLong_Check(val))
         {
             int overflow = 0;
             long value = PyLong_AsLongAndOverflow(val, &overflow);
-            if(overflow)
+            if (overflow)
             {
                 type = QVariant::LongLong;
             }
-            else if(value < std::numeric_limits<int>::max() && value > std::numeric_limits<int>::min())
+            else if (value < std::numeric_limits<int>::max() && value > std::numeric_limits<int>::min())
             {
                 type = QVariant::Int;
             }
@@ -852,55 +873,55 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 type = QVariant::LongLong;
             }
         }
-        else if(PyFloat_Check(val))
+        else if (PyFloat_Check(val))
         {
             type = QVariant::Double;
         }
-        else if(val == Py_False || val == Py_True)
+        else if (val == Py_False || val == Py_True)
         {
             type = QVariant::Bool;
         }
-        else if(PyDict_Check(val))
+        else if (PyDict_Check(val))
         {
             type = QVariant::Map;
         }
-        else if(PyList_Check(val) || PyTuple_Check(val) || PySequence_Check(val))
+        else if (PyList_Check(val) || PyTuple_Check(val) || PySequence_Check(val))
         {
             type = QVariant::List;
         }
-        else if(val == Py_None)
+        else if (val == Py_None)
         {
             // none is invalid
             type = QVariant::Invalid;
         }
-        else if(Py_TYPE(val) == &ito::PythonRegion::PyRegionType)
+        else if (Py_TYPE(val) == &ito::PythonRegion::PyRegionType)
         {
             type = QVariant::Region;
         }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-        else if(Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
+        else if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
         {
             type = QMetaType::type("ito::PCLPointCloud");
         }
-        else if(Py_TYPE(val) == &ito::PythonPCL::PyPointType)
+        else if (Py_TYPE(val) == &ito::PythonPCL::PyPointType)
         {
             type = QMetaType::type("ito::PCLPoint");
         }
-        else if(Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
+        else if (Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
         {
             type = QMetaType::type("ito::PCLPolygonMesh");
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
-        else if(Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
+        else if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
         {
             type = QMetaType::type("QSharedPointer<ito::DataObject>");
         }
-        else if(Py_TYPE(val) == &ito::PythonPlugins::PyActuatorPluginType)
+        else if (Py_TYPE(val) == &ito::PythonPlugins::PyActuatorPluginType)
         {
             type = QMetaType::type("QPointer<ito::AddInActuator>");
         }
-        else if(Py_TYPE(val) == &ito::PythonPlugins::PyDataIOPluginType)
+        else if (Py_TYPE(val) == &ito::PythonPlugins::PyDataIOPluginType)
         {
             type = QMetaType::type("QPointer<ito::AddInDataIO>");
         }
@@ -920,37 +941,37 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     break;
     case QVariant::UInt:
     {
-        int d = PyObjGetInt(val, false,ok);
+        int d = PyObjGetInt(val, false, ok);
         if (ok) v = QVariant((unsigned int)d);
     }
     break;
     case QVariant::Bool:
     {
-        int d = PyObjGetBool(val,false,ok);
+        int d = PyObjGetBool(val, false, ok);
         if (ok) v =  QVariant((bool)(d!=0));
     }
     break;
     case QVariant::Double:
     {
-        double d = PyObjGetDouble(val,false,ok);
+        double d = PyObjGetDouble(val, false, ok);
         if (ok) v =  QVariant(d);
         break;
     }
     case QMetaType::Float:
     {
-        float d = (float) PyObjGetDouble(val,false,ok);
+        float d = (float) PyObjGetDouble(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
     case QMetaType::Long:
     {
-        long d = (long) PyObjGetLongLong(val,false,ok);
+        long d = (long) PyObjGetLongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
     case QMetaType::ULong:
     {
-        unsigned long d = (unsigned long) PyObjGetLongLong(val,false,ok);
+        unsigned long d = (unsigned long) PyObjGetLongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
@@ -968,33 +989,33 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     break;
     case QMetaType::Short:
     {
-        short d = (short) PyObjGetInt(val,false,ok);
+        short d = (short) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
     case QMetaType::UShort:
     {
-        unsigned short d = (unsigned short) PyObjGetInt(val,false,ok);
+        unsigned short d = (unsigned short) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
     case QMetaType::Char:
     {
-        char d = (char) PyObjGetInt(val,false,ok);
+        char d = (char) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
     case QMetaType::UChar:
     {
-        unsigned char d = (unsigned char) PyObjGetInt(val,false,ok);
+        unsigned char d = (unsigned char) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
         break;
     }
 
     case QVariant::ByteArray:
     {
-        QByteArray ba = PyObjGetBytes(val,true,ok);
-        if(ok) v = qVariantFromValue(ba);
+        QByteArray ba = PyObjGetBytes(val, true, ok);
+        if (ok) v = qVariantFromValue(ba);
         break;
     }
        
@@ -1022,7 +1043,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     tuple = PyList_GetItem(items,i);
                     key = PyTuple_GetItem(tuple, 0);
                     value = PyTuple_GetItem(tuple, 1);
-                    map.insert(PyObjGetString(key), PyObjToQVariant(value,-1));
+                    map.insert(PyObjGetString(key), PyObjToQVariant(value, -1));
                 }
                 Py_DECREF(items);
                 v = map;
@@ -1058,7 +1079,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     case QVariant::Region:
     {
         ito::PythonRegion::PyRegion *pyReg = (ito::PythonRegion::PyRegion*)val;
-        if(pyReg && pyReg->r)
+        if (pyReg && pyReg->r)
         {
             v = *(pyReg->r);
         }
@@ -1067,16 +1088,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     default:
     {
-		if(type == QMetaType::type("QSharedPointer<ito::DataObject>"))
+		if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
         {
             ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)val;
-            if(dataObj)
+            if (dataObj)
             {
-                if(dataObj->dataObject == NULL)
+                if (dataObj->dataObject == NULL)
                 {
                     v = QVariant();
                 }
-                else if(dataObj->base != NULL) //if the python-dataObject shares memory with other arrays (like a numpy array, we need to make a deep copy here, since we cannot increment the reference of 
+                else if (dataObj->base != NULL) //if the python-dataObject shares memory with other arrays (like a numpy array, we need to make a deep copy here, since we cannot increment the reference of 
                 {
                     //QSharedPointer<ito::DataObject> value(new ito::DataObject());
                     //dataObj->dataObject->copyTo(*value);
@@ -1085,14 +1106,13 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     //baseObjectDeleter
                     Py_XINCREF(dataObj->base);
                     ito::DataObject *copy = new ito::DataObject(*dataObj->dataObject);
-                    m_pyBaseObjectStorage.insert( (void*)copy, dataObj->base); //unique
+                    m_pyBaseObjectStorage.insert((void*)copy, dataObj->base); //unique
                     QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
                     v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
-
                 }
                 else
                 {
-                    QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject) );
+                    QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
                     v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
                 }
             }
@@ -1102,52 +1122,52 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             }
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
-        else if(type == QMetaType::type("ito::PCLPointCloud"))
+        else if (type == QMetaType::type("ito::PCLPointCloud"))
         {
 			bool ok;
             ito::PCLPointCloud pcl = PyObjGetPointCloud(val, true, ok);
-            if(ok)
+            if (ok)
             {
                 v = qVariantFromValue<ito::PCLPointCloud >(pcl);
             }
         }
-        else if(type == QMetaType::type("ito::PCLPoint"))
+        else if (type == QMetaType::type("ito::PCLPoint"))
         {
 			bool ok;
             ito::PCLPoint pcl = PyObjGetPoint(val, true, ok);
-            if(ok)
+            if (ok)
             {
                 v = qVariantFromValue<ito::PCLPoint>(pcl);
             }
         }
-        else if(type == QMetaType::type("ito::PCLPolygonMesh"))
+        else if (type == QMetaType::type("ito::PCLPolygonMesh"))
         {
 			bool ok;
             ito::PCLPolygonMesh pcl = PyObjGetPolygonMesh(val, true, ok);
-            if(ok)
+            if (ok)
             {
                 v = qVariantFromValue<ito::PCLPolygonMesh >(pcl);
             }
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0        
-        else if(type == QMetaType::type("QPointer<ito::AddInDataIO>"))
+        else if (type == QMetaType::type("QPointer<ito::AddInDataIO>"))
         {
             ito::PythonPlugins::PyDataIOPlugin *plugin = (ito::PythonPlugins::PyDataIOPlugin*)val;
-            if(plugin)
+            if (plugin)
             {
-                v = qVariantFromValue<QPointer<ito::AddInDataIO> >( QPointer<ito::AddInDataIO>( plugin->dataIOObj ) );
+                v = qVariantFromValue<QPointer<ito::AddInDataIO> >(QPointer<ito::AddInDataIO>(plugin->dataIOObj));
             }
             else
             {
                 v = QVariant();
             }
         }
-        else if(type == QMetaType::type("QPointer<ito::AddInActuator>"))
+        else if (type == QMetaType::type("QPointer<ito::AddInActuator>"))
         {
             ito::PythonPlugins::PyActuatorPlugin *plugin = (ito::PythonPlugins::PyActuatorPlugin*)val;
-            if(plugin)
+            if (plugin)
             {
-                v = qVariantFromValue<QPointer<ito::AddInActuator> >( QPointer<ito::AddInActuator>( plugin->actuatorObj ) );
+                v = qVariantFromValue<QPointer<ito::AddInActuator> >(QPointer<ito::AddInActuator>(plugin->actuatorObj));
             }
             else
             {
@@ -1165,7 +1185,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     return v;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval)
 {
 	if (item.type() == destType)
@@ -1190,12 +1210,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError,0,"transformation error to PointF: at least one value could not be transformed to float.");
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to PointF: at least one value could not be transformed to float.");
                 }
 		    }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"transformation error to PointF: 2 values required.");
+                retval += ito::RetVal(ito::retError, 0, "transformation error to PointF: 2 values required.");
             }
 	    }
 	    else if (destType == QVariant::Point)
@@ -1209,12 +1229,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError,0,"transformation error to Point: at least one value could not be transformed to integer.");
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Point: at least one value could not be transformed to integer.");
                 }
 		    }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"transformation error to Point: 2 values required.");
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Point: 2 values required.");
             }
 	    }
         else if (destType == QVariant::Rect)
@@ -1230,12 +1250,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError,0,"transformation error to Rect: at least one value could not be transformed to integer.");
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Rect: at least one value could not be transformed to integer.");
                 }
 		    }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"transformation error to Rect: 4 values required.");
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Rect: 4 values required.");
             }
         }
         else if (destType == QVariant::RectF)
@@ -1251,12 +1271,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError,0,"transformation error to RectF: at least one value could not be transformed to float.");
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: at least one value could not be transformed to float.");
                 }
 		    }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"transformation error to RectF: 4 values required.");
+                retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: 4 values required.");
             }
         }
         else if (destType == QVariant::Size)
@@ -1270,12 +1290,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError,0,"transformation error to Size: at least one value could not be transformed to integer.");
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Size: at least one value could not be transformed to integer.");
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"transformation error to Size: 2 values required.");
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Size: 2 values required.");
             }
         }
     } //end item.type() == QVariant::List
@@ -1291,7 +1311,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError,0,"no conversion from QVariant type %i to %i is possible", item.type(), destType);
+            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %i to %i is possible", item.type(), destType);
         }
     }
 
@@ -1302,6 +1322,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 	return item;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ QVariant PythonQtConversion::QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval)
 {
     int val;
@@ -1318,7 +1339,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError,0,"The value %i does not exist in the enumeration %s::%s",val,enumerator.scope(),enumerator.name());
+            retval += ito::RetVal::format(ito::retError, 0, "The value %i does not exist in the enumeration %s::%s", val,enumerator.scope(), enumerator.name());
             return result;
         }
     }
@@ -1334,13 +1355,13 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError,0,"The key %s does not exist in the enumeration %s::%s",str.toAscii().data(),enumerator.scope(),enumerator.name());
+                retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s",str.toAscii().data(), enumerator.scope(), enumerator.name());
                 return result;
             }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError,0,"Use an integer or a string to for a value of the enumeration %s::%s",enumerator.scope(),enumerator.name());
+            retval += ito::RetVal::format(ito::retError, 0, "Use an integer or a string to for a value of the enumeration %s::%s", enumerator.scope(), enumerator.name());
             return result;
         }
     }
@@ -1348,6 +1369,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! tries to convert PyObject* to known data type and returns deep-copy of the value, given as void*
 /*!
     methods tries to convert PyObject* to QVariant. Type indicates the desired type of QVariant, given by the type-number of QMetaType.
@@ -1370,7 +1392,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
     bool qvariant = false;
 
     //check for variant type
-    if( type == QMetaType::QVariant )
+    if (type == QMetaType::QVariant)
     {
         qvariant = true;
         type = -1; //let guess the type and finally transform to QVariant
@@ -1379,19 +1401,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
     if (type==-1) 
     {
         //guess type by PyObject's type
-        if(PyBytes_Check(val) || PyUnicode_Check(val))
+        if (PyBytes_Check(val) || PyUnicode_Check(val))
         {
             type = QMetaType::QString;
         }
-        else if(PyLong_Check(val))
+        else if (PyLong_Check(val))
         {
             int overflow = 0;
             long value = PyLong_AsLongAndOverflow(val, &overflow);
-            if(overflow)
+            if (overflow)
             {
                 type = QMetaType::LongLong;
             }
-            else if(value < std::numeric_limits<int>::max() && value > std::numeric_limits<int>::min())
+            else if (value < std::numeric_limits<int>::max() && value > std::numeric_limits<int>::min())
             {
                 type = QMetaType::Int;
             }
@@ -1400,42 +1422,42 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 type = QMetaType::LongLong;
             }
         }
-        else if(PyFloat_Check(val))
+        else if (PyFloat_Check(val))
         {
             type = QVariant::Double;
         }
-        else if(val == Py_False || val == Py_True)
+        else if (val == Py_False || val == Py_True)
         {
             type = QMetaType::Bool;
         }
-        else if(PyDict_Check(val))
+        else if (PyDict_Check(val))
         {
             type = QMetaType::QVariantMap;
         }
-        else if(PyList_Check(val) || PyTuple_Check(val) || PySequence_Check(val))
+        else if (PyList_Check(val) || PyTuple_Check(val) || PySequence_Check(val))
         {
             type = QMetaType::QVariantList;
         }
-        else if(val == Py_None)
+        else if (val == Py_None)
         {
             // none is invalid
             type = QMetaType::Void;
         }
-        else if(PyUiItem_Check(val))
+        else if (PyUiItem_Check(val))
         {
             type = QMetaType::type("ito::PythonQObjectMarshal");
         }
-        else if(PyRegion_Check(val))
+        else if (PyRegion_Check(val))
         {
             type = QMetaType::QRegion;
         }
-        else if(PyRgba_Check(val))
+        else if (PyRgba_Check(val))
         {
             type = QMetaType::QColor;
         }
     }
 
-    if(QMetaType::isRegistered(type))
+    if (QMetaType::isRegistered(type))
     {
         // special type request:
         switch (type) 
@@ -1448,7 +1470,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             int d = PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1457,7 +1479,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned int d = (unsigned int)PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1467,7 +1489,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (ok)
             {
                 bool d2 = (d != 0);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d2) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d2));
             }
             break;
         }
@@ -1476,7 +1498,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             double d = PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }  
             break;
         }
@@ -1485,7 +1507,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             float d = (float) PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1494,7 +1516,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             long d = (long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1503,7 +1525,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned long d = (unsigned long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1512,7 +1534,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             qint64 d = (qint64) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1521,7 +1543,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             quint64 d = (quint64) PyObjGetULongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1530,7 +1552,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             short d = (short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1539,7 +1561,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned short d = (unsigned short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1548,7 +1570,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             char d = (char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1557,7 +1579,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned char d = (unsigned char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
             }
             break;
         }
@@ -1565,28 +1587,28 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         case QMetaType::QByteArray:
         {
             QByteArray text = PyObjGetBytes(val, strict, ok);
-            if(ok)
+            if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text));
             }
             break;
         }
         case QMetaType::QString:
         {
             QString text = PyObjGetString(val, strict, ok);
-            if(ok)
+            if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text));
             }
             break;
         }
         case QMetaType::QUrl:
         {
             QString text = PyObjGetString(val, strict, ok);
-            if(ok)
+            if (ok)
             {
                 QUrl url = QUrl(text);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&url) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&url));
             }
             break;
         }
@@ -1602,16 +1624,16 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     PyObject* value;
                     PyObject* key;
                     PyObject* tuple;
-                    for (int i = 0;i<count;i++) 
+                    for (int i = 0; i < count; i++) 
                     {
                         tuple = PyList_GetItem(items,i);
                         key = PyTuple_GetItem(tuple, 0);
                         value = PyTuple_GetItem(tuple, 1);
-                        map.insert(PyObjGetString(key), PyObjToQVariant(value,-1));
+                        map.insert(PyObjGetString(key), PyObjToQVariant(value, -1));
                     }
                     Py_DECREF(items);
                 }
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&map) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&map));
             }
             break;
         }
@@ -1622,13 +1644,13 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QVariantList list;
             int count = PySequence_Size(val);
             PyObject* value = NULL;
-            for (int i = 0;i<count;i++) 
+            for (int i = 0; i < count; i++) 
             {
-                value = PySequence_GetItem(val,i); //new reference
+                value = PySequence_GetItem(val, i); //new reference
                 list.append(PyObjToQVariant(value, -1));
                 Py_XDECREF(value);
             }
-            *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&list) );
+            *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&list));
             break;
         }
         
@@ -1638,7 +1660,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QStringList l = PyObjToStringList(val, strict, ok);
             if (ok) 
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&l) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&l));
             }
             break;
         }
@@ -1646,10 +1668,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         case QMetaType::QRegion:
         {
             ito::PythonRegion::PyRegion *reg = (ito::PythonRegion::PyRegion*)val;
-            if(reg && reg->r)
+            if (reg && reg->r)
             {
                 QRegion r = *(reg->r);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&r) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&r));
             }
             break;
         }
@@ -1663,26 +1685,25 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 {
                     //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
                     QColor c(rgba->rgba.argb());
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c));
                 }
             }
             else
             {
                 QString text = PyObjGetString(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
                     QColor c(text);
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c));
                 }
             }
             break;
         }
-        
 
         default:
         //check user defined types
         {
-			if(type == QMetaType::type("ito::PythonQObjectMarshal"))
+			if (type == QMetaType::type("ito::PythonQObjectMarshal"))
             {
                 ito::PythonUi::PyUiItem *val2 = (ito::PythonUi::PyUiItem*)val;
                 
@@ -1691,69 +1712,69 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 m.m_object = NULL;
                 m.m_objName = val2->objName;
                 m.m_className = val2->widgetClassName;
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&m) );
+                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&m));
             }
-            else if(type == QMetaType::type("QSharedPointer<ito::DataObject>"))
+            else if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
             {
                 ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
                 if (val2 && val2->dataObject)
                 {
                     QSharedPointer<ito::DataObject> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(val2->dataObject, val);
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer));
                 }
             }
-			else if(type == QMetaType::type("ito::DataObject"))
+			else if (type == QMetaType::type("ito::DataObject"))
 			{
 				ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
                 if (val2 && val2->dataObject)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(val2->dataObject) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(val2->dataObject));
                 }
 			}
 #if ITOM_POINTCLOUDLIBRARY > 0
-            else if(type == QMetaType::type("ito::PCLPointCloud"))
+            else if (type == QMetaType::type("ito::PCLPointCloud"))
             {
 				bool ok;
                 ito::PCLPointCloud pcl = PyObjGetPointCloud(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pcl) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pcl));
                 }
             }
-            else if(type == QMetaType::type("ito::PCLPoint"))
+            else if (type == QMetaType::type("ito::PCLPoint"))
             {
 				bool ok;
                 ito::PCLPoint pt = PyObjGetPoint(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pt) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pt));
                 }
             }
-            else if(type == QMetaType::type("ito::PCLPolygonMesh"))
+            else if (type == QMetaType::type("ito::PCLPolygonMesh"))
             {
 				bool ok;
                 ito::PCLPolygonMesh mesh = PyObjGetPolygonMesh(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&mesh) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&mesh));
                 }
             }
-            else if(type == QMetaType::type("QVector<double>"))
+            else if (type == QMetaType::type("QVector<double>"))
             {
                 bool ok;
                 QVector<double> arr = PyObjGetDoubleArray(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr));
                 }
             }
-            else if(type == QMetaType::type("QVector<int>"))
+            else if (type == QMetaType::type("QVector<int>"))
             {
                 bool ok;
                 QVector<int> arr = PyObjGetIntArray(val, strict, ok);
-                if(ok)
+                if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr) );
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr));
                 }
             }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
@@ -1767,7 +1788,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         } //end switch case
 
         //now check if qvariant is true, then retPtr and retType needs to be retransformed to QVariant
-        if(qvariant && *retPtr)
+        if (qvariant && *retPtr)
         {
             void *ptrToOriginalValue = *retPtr;
 
@@ -1806,6 +1827,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
     return (*retPtr != NULL);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from bool to python boolean type
 /*!
     Returns new reference to Py_True or Py_False depending on input val.
@@ -1820,6 +1842,7 @@ PyObject* PythonQtConversion::GetPyBool(bool val)
     return r;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QString to PyObject*
 /*!
     returns new reference to Python-unicode object, containing the content of given QString. If str is empty or null, 
@@ -1836,10 +1859,11 @@ PyObject* PythonQtConversion::QStringToPyObject(const QString& str)
     } 
     else 
     {
-        return QByteArrayToPyUnicode( str.toAscii() ); //str.toAscii() decodes with current encoding and then it is transformed to PyObject with the same encoding
+        return QByteArrayToPyUnicode(str.toAscii()); //str.toAscii() decodes with current encoding and then it is transformed to PyObject with the same encoding
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QStringList to tuple of python-unicode objects
 /*!
     returns new reference to tuple of Python-unicode objects, containing the content of given QStringList. Every single string is converted
@@ -1863,6 +1887,7 @@ PyObject* PythonQtConversion::QStringListToPyObject(const QStringList& list)
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QStringList to list of python-unicode objects
 /*!
     returns new reference to list of Python-unicode objects, containing the content of given QStringList. Every single string is converted
@@ -1875,7 +1900,7 @@ PyObject* PythonQtConversion::QStringListToPyList(const QStringList& list)
 {
     PyObject* result = PyList_New(list.count());
     int i = 0;
-    for (QStringList::ConstIterator it = list.begin(); it!=list.end(); ++it) 
+    for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) 
     {
         PyList_SET_ITEM(result, i, PythonQtConversion::QStringToPyObject(*it));
         i++;
@@ -1883,6 +1908,7 @@ PyObject* PythonQtConversion::QStringListToPyList(const QStringList& list)
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QVariant to appropriate PyObject*
 /*!
     returns new reference to PyObject*, which contains the conversion from given QVariant-variable.
@@ -1896,6 +1922,7 @@ PyObject* PythonQtConversion::QVariantToPyObject(const QVariant& v)
     return ConvertQtValueToPythonInternal(v.userType(), (void*)v.constData());
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QVariantMap to python-dictionary.
 /*!
     returns new reference to python-dictionary type. Each key of QVariantMap is one element in dictionary. The values are converted
@@ -1911,7 +1938,7 @@ PyObject* PythonQtConversion::QVariantMapToPyObject(const QVariantMap& m)
     QVariantMap::const_iterator t = m.constBegin();
     PyObject* key;
     PyObject* val;
-    for (;t!=m.constEnd();t++) 
+    for (; t != m.constEnd(); t++) 
     {
         key = PythonQtConversion::QStringToPyObject(t.key());
         val = PythonQtConversion::QVariantToPyObject(t.value());
@@ -1923,12 +1950,13 @@ PyObject* PythonQtConversion::QVariantMapToPyObject(const QVariantMap& m)
 }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonQtConversion::PCLPointCloudToPyObject(const ito::PCLPointCloud& c)
 {
     PyObject *args = Py_BuildValue("(i)", c.getType());
     ito::PythonPCL::PyPointCloud *result = (ito::PythonPCL::PyPointCloud*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPointCloudType), args, NULL);
     Py_DECREF(args);
-    if(result)
+    if (result)
     {
         *result->data = c;
         return (PyObject*)result;
@@ -1937,12 +1965,13 @@ PyObject* PythonQtConversion::PCLPointCloudToPyObject(const ito::PCLPointCloud& 
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonQtConversion::PCLPointToPyObject(const ito::PCLPoint& c)
 {
     ito::PythonPCL::PyPoint *result = (ito::PythonPCL::PyPoint*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPointType), NULL, NULL);
-    if(result)
+    if (result)
     {
-        if(result->point)
+        if (result->point)
         {
             delete result->point;
             result->point = NULL;
@@ -1954,12 +1983,13 @@ PyObject* PythonQtConversion::PCLPointToPyObject(const ito::PCLPoint& c)
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonQtConversion::PCLPolygonMeshToPyObject(const ito::PCLPolygonMesh& c)
 {
     ito::PythonPCL::PyPolygonMesh *result = (ito::PythonPCL::PyPolygonMesh*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPolygonMeshType), NULL, NULL);
-    if(result)
+    if (result)
     {
-        if(result->polygonMesh)
+        if (result->polygonMesh)
         {
             delete result->polygonMesh;
             result->polygonMesh = NULL;
@@ -1971,12 +2001,14 @@ PyObject* PythonQtConversion::PCLPolygonMeshToPyObject(const ito::PCLPolygonMesh
     PyErr_SetString(PyExc_RuntimeError, "could not create instance of pclPolygonMesh");
     return NULL;
 }
+
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonQtConversion::DataObjectToPyObject(const ito::DataObject& dObj)
 {
     ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
-    if(pyDataObj)
+    if (pyDataObj)
     {
         pyDataObj->dataObject = new ito::DataObject(dObj);
         return (PyObject*)pyDataObj;
@@ -1984,9 +2016,9 @@ PyObject* PythonQtConversion::DataObjectToPyObject(const ito::DataObject& dObj)
 
     PyErr_SetString(PyExc_RuntimeError, "could not create instance of dataObject");
     return NULL;
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QVariantList to python-tuple.
 /*!
     returns new reference to python-tuple type. Each item of QVariantList is one element in tuple. The values are converted
@@ -2011,8 +2043,7 @@ PyObject* PythonQtConversion::QVariantListToPyObject(const QVariantList& l)
     return result;
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method internally used for conversion from given type-id (QMetaType) and corresponding void*-pointer to PyObject*
 /*!
     This method is the opposite from \a PyObjToVoidPtr and converts a pair given by type-id (see QMetaType) and corresponding void*-pointer,
@@ -2078,39 +2109,39 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         {
             PyObject *temp = PyList_New(2);
             QSize *temp2 = (QSize*)data;
-            PyList_SetItem(temp,0,PyLong_FromLong(temp2->width()));
-            PyList_SetItem(temp,1,PyLong_FromLong(temp2->height()));
+            PyList_SetItem(temp, 0, PyLong_FromLong(temp2->width()));
+            PyList_SetItem(temp, 1, PyLong_FromLong(temp2->height()));
             return temp;
         }
     case QMetaType::QRect:
         {
             PyObject *temp = PyList_New(4);
             QRect *temp2 = (QRect*)data;
-            PyList_SetItem(temp,0,PyLong_FromLong(temp2->x()));
-            PyList_SetItem(temp,1,PyLong_FromLong(temp2->y()));
-            PyList_SetItem(temp,2,PyLong_FromLong(temp2->width()));
-            PyList_SetItem(temp,3,PyLong_FromLong(temp2->height()));
+            PyList_SetItem(temp, 0, PyLong_FromLong(temp2->x()));
+            PyList_SetItem(temp, 1, PyLong_FromLong(temp2->y()));
+            PyList_SetItem(temp, 2, PyLong_FromLong(temp2->width()));
+            PyList_SetItem(temp, 3, PyLong_FromLong(temp2->height()));
             return temp;
         }
 	case QMetaType::QPointF:
 		{
 			PyObject *temp = PyList_New(2);
             QPointF *temp2 = (QPointF*)data;
-            PyList_SetItem(temp,0,PyFloat_FromDouble(temp2->x()));
-            PyList_SetItem(temp,1,PyFloat_FromDouble(temp2->y()));
+            PyList_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyList_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
             return temp;
 		}
 	case QMetaType::QPoint:
 		{
 			PyObject *temp = PyList_New(2);
             QPoint *temp2 = (QPoint*)data;
-            PyList_SetItem(temp,0,PyLong_FromLong(temp2->x()));
-            PyList_SetItem(temp,1,PyLong_FromLong(temp2->y()));
+            PyList_SetItem(temp, 0, PyLong_FromLong(temp2->x()));
+            PyList_SetItem(temp, 1, PyLong_FromLong(temp2->y()));
             return temp;
 		}
     case QMetaType::QRegion:
         {
-            return ito::PythonRegion::createPyRegion( *( (QRegion*)data ) );
+            return ito::PythonRegion::createPyRegion(*((QRegion*)data));
         }
     case QMetaType::QColor:
         {
@@ -2128,56 +2159,55 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case QMetaType::QVariant:
         {
             QVariant temp = *(QVariant*)data;
-            return PythonQtConversion::QVariantToPyObject( temp );
+            return PythonQtConversion::QVariantToPyObject(temp);
         }
-
     }
 
     //until now, type did not fit
-    if(QMetaType::isRegistered(type))
+    if (QMetaType::isRegistered(type))
     {
         const char *name = QMetaType::typeName(type);
-        if(strcmp(name, "ito::RetVal") == 0)
+        if (strcmp(name, "ito::RetVal") == 0)
         {
             ito::RetVal *v = (ito::RetVal*)data;
-            if(ito::PythonCommon::transformRetValToPyException(*v))
+            if (ito::PythonCommon::transformRetValToPyException(*v))
             {
                 Py_RETURN_NONE;
             }
             return NULL;
         }
-		if(strcmp(name, "ito::DataObject") == 0)
+		if (strcmp(name, "ito::DataObject") == 0)
         {
-            return DataObjectToPyObject( *((ito::DataObject*)data) );
+            return DataObjectToPyObject(*((ito::DataObject*)data));
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
-		else if(strcmp(name, "ito::PCLPointCloud") == 0)
+		else if (strcmp(name, "ito::PCLPointCloud") == 0)
         {
-            return PCLPointCloudToPyObject( *((ito::PCLPointCloud*)data) );
+            return PCLPointCloudToPyObject(*((ito::PCLPointCloud*)data));
         }
-        else if(strcmp(name, "ito::PCLPoint") == 0)
+        else if (strcmp(name, "ito::PCLPoint") == 0)
         {
-            return PCLPointToPyObject( *((ito::PCLPoint*)data) );
+            return PCLPointToPyObject(*((ito::PCLPoint*)data));
         }
         
-        else if(strcmp(name, "ito::PCLPolygonMesh") == 0)
+        else if (strcmp(name, "ito::PCLPolygonMesh") == 0)
         {
-            return PCLPolygonMeshToPyObject( *((ito::PCLPolygonMesh*)data) );
+            return PCLPolygonMeshToPyObject(*((ito::PCLPolygonMesh*)data));
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
-        else if(strcmp(name, "QSharedPointer<ito::DataObject>") == 0)
+        else if (strcmp(name, "QSharedPointer<ito::DataObject>") == 0)
         {
             QSharedPointer<ito::DataObject> *sharedPtr = (QSharedPointer<ito::DataObject>*)data;
-            if(sharedPtr == NULL)
+            if (sharedPtr == NULL)
             {
                 return PyErr_Format(PyExc_TypeError, "The given QSharedPointer is NULL");
             }
-            if(sharedPtr->data() == NULL)
+            if (sharedPtr->data() == NULL)
             {
                 Py_RETURN_NONE;
                 //return PyErr_Format(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
             }
-            return DataObjectToPyObject( *(sharedPtr->data()) );
+            return DataObjectToPyObject(*(sharedPtr->data()));
         }
     }
     else
@@ -2188,7 +2218,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     return PyErr_Format(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg)
 {
@@ -2197,7 +2226,7 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
         PyObject* tempArg = NULL;
         PyObject* retValue = NULL;
         QVariantList list;
-        for ( Py_ssize_t i = 0 ; i < PyList_Size(argument) ; i++)
+        for (Py_ssize_t i = 0; i < PyList_Size(argument); i++)
         {
             tempArg = PyList_GetItem(argument, i);
             list.append(QVariant());
@@ -2219,7 +2248,7 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     char* textArg;
     if (PyLong_Check(argument))
     {
-        qVarArg = (int)PyLong_AsLong(argument) ; //overflow error is checked here and returned as error.
+        qVarArg = (int)PyLong_AsLong(argument); //overflow error is checked here and returned as error.
     }
     else if (PyFloat_Check(argument))
     {
@@ -2229,20 +2258,20 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     {
         qVarArg = QString(textArg);
     }
-    else if((Py_TYPE(argument) == &ito::PythonDataObject::PyDataObjectType))
+    else if ((Py_TYPE(argument) == &ito::PythonDataObject::PyDataObjectType))
     {
         ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)argument;
-        if(dataObj)
+        if (dataObj)
         {
-            if(dataObj->dataObject == NULL)
+            if (dataObj->dataObject == NULL)
             {
                 PyErr_Format(PyExc_ValueError, "internal dataObject is NULL");
             }
             else
             {
-                QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject) );
+                QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
                 qVarArg = QVariant::fromValue(value);
-                if(qVarArg.isNull())
+                if (qVarArg.isNull())
                 {
                     PyErr_Format(PyExc_ValueError, "dataObject could not be converted to QVariant (QSharedPointer<ito::DataObject>)");
                 }
@@ -2252,8 +2281,6 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
         {
             PyErr_Format(PyExc_ValueError, "Cannot cast to python dataObject instance");
         }
-
-        
     }
     else
     {
@@ -2267,7 +2294,6 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     }
 
     Py_RETURN_NONE;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2280,7 +2306,7 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
 /*static*/ PyObject* PythonQtConversion::QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors /*= "replace"*/)
 {
     PyObject *temp = ByteArrayToPyUnicode(ba.data(), ba.length(), errors);
-    if(temp == NULL)
+    if (temp == NULL)
     {
         PyErr_Clear();
         temp = ByteArrayToPyUnicode("<encoding error>");
@@ -2288,13 +2314,12 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     return temp;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonQtConversion::ByteArrayToPyUnicode(const char* byteArray, Py_ssize_t len, const char *errors)
 {
     int bo;
 
-    if(len <= 0)
+    if (len <= 0)
     {
         len = strlen(byteArray);
     }
@@ -2386,7 +2411,6 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
     }
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class MethodDescription
@@ -2432,14 +2456,14 @@ MethodDescription::MethodDescription(QMetaMethod &method) :
     m_name = sig.left(beginArgs);
     m_type = method.methodType();
     m_access = method.access();
-    m_retType = QMetaType::type( method.typeName() );
+    m_retType = QMetaType::type(method.typeName());
     QList<QByteArray> types = method.parameterTypes();
     m_nrOfArgs = types.size();
     m_argTypes = new int[m_nrOfArgs];
 
-    for(int i=0; i<m_nrOfArgs;i++)
+    for (int i = 0; i < m_nrOfArgs; i++)
     {
-        m_argTypes[i] = QMetaType::type( types[i].data() );
+        m_argTypes[i] = QMetaType::type(types[i].data());
     } 
 }
 

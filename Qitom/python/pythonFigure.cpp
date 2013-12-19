@@ -93,7 +93,6 @@ rows : {int, default: 1} \n\
     number of rows this figure should have (defines the size of the subplot-grid) \n\
 cols : {int, default: 1} \n\
     number of columns this figure should have (defines the size of the subplot-grid)");
-
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -189,7 +188,6 @@ areaIndex: {int}, optional \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
 ");
-
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"data", "areaIndex", "className", NULL};
@@ -269,7 +267,6 @@ areaIndex: {int}, optional \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
 ");
-
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"cam", "areaIndex", "className", NULL};
@@ -334,7 +331,6 @@ PyDoc_STRVAR(pyFigureShow_doc,"show() -> shows figure \n\
 \n\
 \n\
 ");
-
 PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
 {
     int modalLevel = 0; //no modal
@@ -391,7 +387,6 @@ PyDoc_STRVAR(pyFigureHide_doc, "hide() -> hides figure without deleting it\n\
 \n\
 \n\
 ");
-
 PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -436,7 +431,6 @@ Parameters \n\
 ----------- \n\
 index : {unsigned int} \n\
     index to desired subplot. The subplot at the top, left position has the index 0 whereas the index is incremented row-wise.");
-
 /*static*/ PyObject* PythonFigure::PyFigure_getSubplot(PyFigure *self, PyObject *args)
 {
     unsigned int index = 0;
@@ -491,7 +485,6 @@ PyDoc_STRVAR(pyFigure_docked_doc, "dock status of figure (True|False) \n\
 this attribute controls the dock appearance of this figure. If it is docked, the figure is integrated into the main window \n\
 of itom, else it is a independent window. \n\
 ");
-
 /*static*/ PyObject* PythonFigure::PyFigure_getDocked(PyFigure *self, void *closure)
 {
     ito::RetVal retValue = retOk;
@@ -594,7 +587,6 @@ handle : {dataIO-Instance} \n\
 Notes \n\
 ------- \n\
 If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too.");
-
 /*static*/ PyObject* PythonFigure::PyFigure_close(PyFigure * /*self*/, PyObject *args)
 {
     PyObject *arg = NULL;

@@ -28,6 +28,7 @@
 
 #include <qmetaobject.h>
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class PythonQtSignalMapper
     \brief This class provides the possibility to redirect any signal emitted in an user-defined GUI to different python methods
@@ -55,6 +56,7 @@
 */
 PythonQtSignalMapper::PythonQtSignalMapper(unsigned int initSlotCount) : m_slotCount(initSlotCount) {}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
 	Destroys this signal mapper and deletes the managed targets (virtual slots). 
@@ -65,6 +67,7 @@ PythonQtSignalMapper::~PythonQtSignalMapper()
     m_targets.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! creates signal-slot connection between the signal of any widget and a python method as slot
 /*!
 	The connection is established as follows:
@@ -88,7 +91,7 @@ bool PythonQtSignalMapper::addSignalHandler(QObject *obj, const char* signal, in
         PythonQtSignalTarget t(argTypeList, m_slotCount, sigId, callable, signal);
         m_targets.append(t);
         // now connect to ourselves with the new slot id
-        if(QMetaObject::connect(obj, sigId, this, m_slotCount, Qt::AutoConnection, 0))
+        if (QMetaObject::connect(obj, sigId, this, m_slotCount, Qt::AutoConnection, 0))
         {
             m_slotCount++;
             flag = true;
@@ -97,6 +100,7 @@ bool PythonQtSignalMapper::addSignalHandler(QObject *obj, const char* signal, in
     return flag;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! disconnects a certain connection
 /*!
 	Disconnects a certain signal-slot connection, that has previously been connected.
@@ -129,6 +133,7 @@ bool PythonQtSignalMapper::removeSignalHandler(QObject *obj, const char* /*signa
     return found;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! disconnects all signal-slot connections managed by this instane of PythonQtSignalMapper
 /*!
 	This disconnection is easily done by deleting the list of targets.
@@ -138,6 +143,7 @@ void PythonQtSignalMapper::removeSignalHandlers()
     m_targets.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method invoked by Qt if a connected signal is emitted
 /*!
 	This method is overwritten from the method created by the Qt-moc process. It is called
@@ -173,7 +179,7 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
   return 0;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 //! invokes the python method or function
 /*!
     If the slot is invoked, the python method or function is executed by this function.
@@ -195,7 +201,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-    if(Py_IsInitialized() == 0)
+    if (Py_IsInitialized() == 0)
     {
         qDebug("python is not available any more");
         return;
@@ -203,7 +209,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
 //    PyGILState_STATE state = PyGILState_Ensure();
 
     bool debug = false;
-    if(pyEngine)
+    if (pyEngine)
     {
         debug = pyEngine->execInternalCodeByDebugger();
     }
@@ -213,22 +219,22 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
     //arguments[0] is return argument
 
-    for(int i=0;i<m_argTypeList.size();i++)
+    for (int i=0;i<m_argTypeList.size();i++)
     {
         temp = PythonQtConversion::ConvertQtValueToPythonInternal(m_argTypeList[i],arguments[i+1]); //new reference
-        if(temp)
+        if (temp)
         {
             PyTuple_SetItem(argTuple,i,temp); //steals reference
         }
     }
 
     //qDebug() << m_signalName.toAscii().data() << endl;
-    if(m_boundedMethod == false)
+    if (m_boundedMethod == false)
     {
         PyObject *func = PyWeakref_GetObject(m_function);
-        if(func != Py_None)
+        if (func != Py_None)
         {
-            if(debug)
+            if (debug)
             {
                 pyEngine->pythonDebugFunction(func, argTuple);
             }
@@ -249,7 +255,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
         PyObject *func = PyWeakref_GetObject(m_function);
         PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
 
-        if(func == Py_None || inst == Py_None)
+        if (func == Py_None || inst == Py_None)
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
             PyErr_Print();
@@ -257,10 +263,9 @@ void PythonQtSignalTarget::call(void ** arguments) const
         }
         else
         {
-
             PyObject *method = PyMethod_New(func, inst); //new ref
 
-            if(debug)
+            if (debug)
             {
                 pyEngine->pythonDebugFunction(method, argTuple);
             }
