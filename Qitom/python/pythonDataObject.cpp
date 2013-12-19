@@ -330,18 +330,20 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 {
                     data = (uchar*)PyArray_DATA(ndArray);
                     npy_intp* npsizes = PyArray_DIMS(ndArray);
-                    int *steps = (int *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
+                    npy_intp *npsteps = (npy_intp *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
 
                     int *sizes = new int[dimensions];
+                    int *steps = new int[dimensions];
                     for (int n = 0; n < dimensions; n++)
                     {
                         sizes[n] = npsizes[n];
+                        steps[n] = npsteps[n];
                     }
 
                     //here size of steps is equal to size of sizes, DataObject only requires the first dimensions-1 elements of steps
 
                     //verify that last dimension has steps size equal to itemsize
-                    if (steps[dimensions-1] == PyArray_ITEMSIZE(ndArray))
+                    if(steps[dimensions-1] == PyArray_ITEMSIZE(ndArray))
                     {
                         self->dataObject = new ito::DataObject(dimensions, sizes, typeno, data, steps);
                     }
@@ -349,10 +351,10 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     {
                         //increase dimension by one and add last dimension with size 1 in order to realize a last step size equal to itemsize
                         dimensions = dimensions + 1;
-                        int* sizes_inc = new int[dimensions];
+                        int *sizes_inc = new int[dimensions];
                         int *steps_inc = new int[dimensions];
 
-                        for (uchar i = 0; i < dimensions - 1; i++)
+                        for(uchar i = 0 ; i < dimensions - 1 ; i++)
                         {
                             sizes_inc[i] = sizes[i];
                             steps_inc[i] = steps[i];
@@ -368,6 +370,10 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     if (sizes)
                     {
                         delete sizes;
+                    }
+                    if (steps)
+                    {
+                        delete steps;
                     }
 
                     int retCode = copyNpDataObjTags2DataObj(copyObject, self->dataObject);
