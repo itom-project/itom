@@ -742,6 +742,9 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
             }
             else //dock widget
             {
+                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+                setApiPointersToWidgetAndChildren(wid);
+
 				if (wid->inherits("QDialog"))
 				{
 					retValue += RetVal(retError, 0, "A widget inherited from QDialog cannot be docked into the main window");
