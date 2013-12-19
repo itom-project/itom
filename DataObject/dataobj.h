@@ -526,7 +526,6 @@ class DataObject
 
             if(dimensions > 0)
             {
-
                 if (m_roi.m_p)
                 {
                     if (*(m_roi.m_p-1) != dimensions)
@@ -564,11 +563,15 @@ class DataObject
                     }
                     else if(n == dimensions - 1) //last element
                     {
+                        if (elemSize == 0)
+                            cv::Exception(CV_StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
                         m_osize.m_p[n] = steps[n-1] / elemSize;
                     }
                     else /*if(n < dimensions -1)*/
                     {
-                        m_osize.m_p[n] = steps[n-1] / steps[n];
+                        if (steps[n] == 0)
+                            cv::Exception(CV_StsAssert, "step size is zero", "", __FILE__, __LINE__);
+                        m_osize.m_p[n] = steps[n - 1] / steps[n];
                     }
                 }
             }
