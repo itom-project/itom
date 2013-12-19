@@ -446,7 +446,7 @@ int ScriptEditorWidget::getMarginNumber(int xPos)
 {
     int tempWidth = 0;
     int nr = 1;
-    while(nr <= 4)
+    while (nr <= 4)
     {
         tempWidth += marginWidth(nr);
         if (xPos <= tempWidth)
@@ -461,7 +461,7 @@ int ScriptEditorWidget::getMarginNumber(int xPos)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::copyAvailable(bool yes)
 {
-    canCopy=yes;
+    canCopy = yes;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -658,8 +658,14 @@ void ScriptEditorWidget::menuComment()
             if (searchIndex >= 0)
             {
                 insertAt(QString("#"), i, searchIndex);
-                if (i== lineFrom) indexFrom++;
-                if (i == lineTo) indexTo++;
+                if (i == lineFrom)
+                {
+                    indexFrom++;
+                }
+                if (i == lineTo)
+                {
+                    indexTo++;
+                }
             }
         }
 
@@ -1011,8 +1017,6 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoNextBookmark()
 {
-
-
     int line, index;
     int bookmarkLine;
     getCursorPosition(&line, &index);
@@ -1186,7 +1190,6 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::gotoNextBreakPoint()
 {
-
     int line, index;
     int breakPointLine;
     getCursorPosition(&line, &index);
@@ -1246,7 +1249,6 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::marginClicked(int margin, int line, Qt::KeyboardModifiers /*state*/)
 {
-
     if (margin == 1) //!< bookmarks
     {
         toggleBookmark(line);
@@ -1384,6 +1386,7 @@ void ScriptEditorWidget::print()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
 {
     ItomQsciPrinter *p = static_cast<ItomQsciPrinter*>(printer);
@@ -1486,7 +1489,6 @@ void ScriptEditorWidget::nrOfLinesChanged()
         {
             ++it;
         }
-
     }
 }
 
@@ -1555,7 +1557,6 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this 
         QMessageBox msgBox(this);
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);
-
 
         if (path == getFilename())
         {
@@ -1637,6 +1638,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this 
 //
 //}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ItomQsciPrinter::formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr )
 {
     QString filename = this->docName();

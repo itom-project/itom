@@ -39,17 +39,29 @@ int DialogUserManagement::getFlags()
 {
     int flags = 0;
     if (ui.checkBox_fileSystem->isChecked())
+    {
         flags |= featFileSystem;
+    }
     if (ui.checkBox_devTools->isChecked())
+    {
         flags |= featDeveloper;
+    }
     if (ui.checkBox_editProperties->isChecked())
+    {
         flags |= featUserManag;
+    }
     if (ui.checkBox_addInManager->isChecked())
+    {
         flags |= featPlugins;
+    }
     if (ui.radioButton_consoleNormal->isChecked())
+    {
         flags |= featConsole | featConsoleRW;
+    }
     if (ui.radioButton_consoleNormal->isChecked())
+    {
         flags |= featConsole;
+    }
 
     return flags;
 }
@@ -60,7 +72,9 @@ void DialogUserManagement::loadUserList()
     QItemSelectionModel *selModel = ui.userList->selectionModel();
     QObject::disconnect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
     if (m_userModel)
+    {
         m_userModel->deleteLater();
+    }
 
     m_userModel = new UserModel();
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
@@ -173,24 +187,40 @@ void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, co
         long flags = uio->getFlagsFromFile(midx.data().toString());
 
         if (flags & featFileSystem)
+        {
             ui.checkBox_fileSystem->setChecked(1);
+        }
         else
+        {
             ui.checkBox_fileSystem->setChecked(0);
+        }
 
         if (flags & featDeveloper)
+        {
             ui.checkBox_devTools->setChecked(1);
+        }
         else
+        {
             ui.checkBox_devTools->setChecked(0);
+        }
 
         if (flags & featUserManag)
+        {
             ui.checkBox_editProperties->setChecked(1);
+        }
         else
+        {
             ui.checkBox_editProperties->setChecked(0);
+        }
 
         if (flags & featPlugins)
+        {
             ui.checkBox_addInManager->setChecked(1);
+        }
         else
+        {
             ui.checkBox_addInManager->setChecked(0);
+        }
 
         if ((flags & featConsole) && (flags & featConsoleRW))
         {
@@ -230,11 +260,17 @@ void DialogUserManagement::on_pushButton_newUser_clicked()
     }
 
     if (ui.comboBox_group->currentText() == "developer")
+    {
         group = "developer";
+    }
     else if (ui.comboBox_group->currentText() == "admin")
+    {
         group = "admin";
+    }
     else if (ui.comboBox_group->currentText() == "user")
+    {
         group = "user";
+    }
     else
     {
         QMessageBox::warning(this, tr("Warning"), tr("No or invalid group entered, setting to developer!"), QMessageBox::Ok);
