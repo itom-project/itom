@@ -1302,7 +1302,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 	return item;
 }
 
-/*static*/ QVariant PythonQtConversion::QVariantToEnumCast(const QVariant &item, QMetaEnum &enumerator, ito::RetVal &retval)
+/*static*/ QVariant PythonQtConversion::QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval)
 {
     int val;
     bool ok;
