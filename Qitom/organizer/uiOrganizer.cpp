@@ -774,15 +774,10 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 						*objectID = addObjectToList(wid);
 						*className = wid->metaObject()->className();
 					}
-
 				}
             }
-        }
-
-        
+        }   
     }
-
-
 
     if(semaphore)
     {
