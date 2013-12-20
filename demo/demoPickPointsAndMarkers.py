@@ -2,7 +2,7 @@
 obj = dataObject.randN([1024,1024],'int16')
 
 [nr,h] = plot(obj, "itom2dqwtplot")
-
+h["title"] = "Showcase: pick marker"
 #pick point demo
 #------------------
 
@@ -19,6 +19,7 @@ pickedPoints.data()
 '''the marker syntax may change in some future releases'''
 markers = dataObject([2,3],'float32', data = [10.1, 20.2, 30.3, 7, 100, 500])
 [nr,h] = plot(obj, "itom2dqwtplot")
+h["title"] = "Showcase: plot marker"
 h.call("plotMarkers", markers, "b+10", "setName") #'setName' is the name for this set of markers (optional)
 
 
@@ -34,6 +35,7 @@ h.call("plotMarkers", markers, "b+10", "setName") #'setName' is the name for thi
 
 obj = dataObject.randN([1024,1024],'int16')
 [nr,h] = plot(obj, "itom2dqwtplot")
+h["title"] = "Showcase: paint 4 ellipses"
 
 #pick point demo
 #------------------
@@ -45,3 +47,6 @@ h.drawAndPickElements(105, pickedPoints, 4)
 print("selected points")
 pickedPoints.data()
 
+[nr, hDrawInto] = plot(obj, "itom2dqwtplot")
+hDrawInto["title"] = "Showcase: plot painted ellipses"
+hDrawInto.call("plotMarkers", pickedPoints, "b", "") #"b" and "setname" will be ignored anyway
