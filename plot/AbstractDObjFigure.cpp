@@ -106,7 +106,12 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
     ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
     retval += updateParam(&thisParam, 1);
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
+{
+    return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toAscii().data());
 
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {

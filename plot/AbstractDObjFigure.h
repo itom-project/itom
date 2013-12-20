@@ -105,6 +105,9 @@ signals:
 public slots:
     //this source is invoked by any connected camera
     virtual void setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond);
+
+    //this can be invoked by python to trigger a lineplot
+    virtual ito::RetVal setLinePlot(const double x0, const double y0, const double x1, const double y1, const int destID = -1);
 };
 
 } // namespace ito
