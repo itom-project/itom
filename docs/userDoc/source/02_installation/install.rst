@@ -17,7 +17,7 @@ Before installation, please review the minimum system requirements.
     * Windows 8 (not tested yet) *or*
     * Linux based OS (tested with Debian)
 
-* 32 or 64bit processor architecture
+* 32 or 64bit processor architecture, SSE and SSE2 support
 * 800MHz processor (dual-core recommended)
 * 512MB of RAM
 * 1024 x 768 screen resolution

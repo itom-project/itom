@@ -25,6 +25,7 @@ Content:
    pointCloud.rst
    polygonMesh.rst
    region.rst
+   rgba.rst
 
 For an alphabetic index see:
 

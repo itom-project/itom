@@ -10,7 +10,7 @@ it is also possible to create own user interfaces. These interfaces are designed
 The logic behind the surfaces is then scripted using |python|. Therefore it is possible to change the appearance of control elements at runtime or to connect
 a signal, emitted when for instance clicking on a button, with a user-defined python method.
 
-In this chaper, the creation of such user interfaces is explained.
+In this chapter, the creation of such user interfaces is explained.
 
 Qt Designer
 ==============
@@ -181,6 +181,12 @@ Then, the window is shown on top of the main window of |itom|, since it is consi
 Here, you need to use the keyword, since the parameters *dialogButtonBar* and *dialogButtons* (used for TYPEDIALOG) are not given in this case, since they are useless in case of
 *TYPEWINDOW*. If your window is no child of |itom|, it gets its own icon in the Windows tray bar and does not stay on top of |itom|.
 
+Main window or widget as dockable toolbox (TYPEDOCKWIDGET)
+-----------------------------------------------------------
+
+It is also possible to integrate user-defined main windows or widgets as dockable toolbox in the main window of |itom|. This is done using the type value **ui.TYPEDOCKWIDGET**. Then the
+widget is registered as dockwidget in the main window of |itom| and once it becomes visible, its startup position is at the top-center position.
+
 
 Accessing control elements
 ==========================
@@ -283,9 +289,11 @@ QVariant          any of the types above can be transformed to QVariant
 QVariantMap       a dictionary where keys are strings and values are generally convertable.
 QVariantList      any sequence whose items can be convertable.
 QRegion           :py:class:`~itom.region`
+QColor            string with color name or hex-value or :py:class:`~itom.rgba`
+Enumeration       integer with value or string with key (setter only)
 ================= ===========================================================================
 
-If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converted for them. It only becomes a little bit more difficult for pointers to
+If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converter for them. It only becomes a little bit more difficult for pointers to
 extended C++ or |Qt| classes. The conversion is mainly done in the |itom| class **PythonQtConversion**.
 
 Connecting signals
