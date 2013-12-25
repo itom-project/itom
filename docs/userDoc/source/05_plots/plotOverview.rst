@@ -62,7 +62,7 @@ should be created, the following process is started:
 1. The camera is asked for its parameters *sizex* and *sizey*. If one of these dimensions is equal to one, a live line image is opened, else a two-dimensional live image is opened.
 2. The command :py:meth:`~itom.dataIO.startDevice` of the camera is called (idle command if the camera is already started)
 3. A timer continuously triggers the image acquisition of the camera and sends the result to all currently connected live images. However the timer is not started or stopped whenever the auto-grabbing property of the camera is disabled. This is useful, if you are in the middle of measurement process. Then you don't want the timer to force the image acquisition but your process. Therefore, disable to auto-grabbing property before starting your measurement and reset it to its previous status afterwards. In any case, whenever any prcoess triggers an image acquisition, all results will always be sent to connected live images.
-4. When the live plot is closed or deconnected, the command :py:meth:ìtom.dataIO.stopDevice` is called (this is again an idle command if the camera is still used by other live images or has been started by any python script and not stopped yet).
+4. When the live plot is closed or deconnected, the command :py:meth:`itom.dataIO.stopDevice` is called (this is again an idle command if the camera is still used by other live images or has been started by any python script and not stopped yet).
 
 In the following example, the dummy grabber camera is started and the live image is opened using the command :py:meth:`~itom.liveImage`. The auto-grabbing property
 is set to True (which is also the default case):

@@ -14,6 +14,7 @@ import subprocess
 import itom
 import __main__
 import shutil
+import glob
 import modify_doc
 
 def process_docstring(app, what, name, obj, options, lines):
@@ -37,8 +38,8 @@ __main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/
 buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
 
 for buildername in buildernames:
-    outdir = basedir + "\\build\\" + buildername
-    doctreedir = basedir + "\\build\\doctrees"
+    outdir = basedir + "/build/" + buildername
+    doctreedir = basedir + "/build/doctrees"
     
     # for html-builder use another config-file
     if (buildername == "html"):
@@ -69,7 +70,10 @@ for buildername in buildernames:
         app.builder.build_update()
 
     if(buildername == "qthelp"):
-        ret = subprocess.call(["qcollectiongenerator", "build\\qthelp\\ITOMDocumentation.qhcp"],shell=True)
+        #search for relative name to case insensitive document itomdocumentation.qhcp (linux is case-sensitive)
+        #[iI] is a regexp for case insensitive letter i e.g.
+        filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp") 
+        ret = subprocess.call(["qcollectiongenerator", filenames[0]],shell=True)
         if(ret == -1):
             raise RuntimeError("qcollectiongenerator failed")
         else:
@@ -77,20 +81,20 @@ for buildername in buildernames:
             
         ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
         if(ret[0] == ui.MsgBoxYes):
-            #subprocess.call( ["assistant", "-collectionFile", "build\qthelp\itom.qhc"] )
-            subprocess.check_call(["assistant", "-collectionFile", "build\qthelp\ITOMDocumentation.qhc"])
+            filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhc") 
+            subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
             
     elif(buildername == "htmlhelp"):
-        hhc = "${HTML_HELP_COMPILER}" #"C:\\Program Files (x86)\\HTML Help Workshop\\hhc.exe"
+        hhc = "${HTML_HELP_COMPILER}" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"
         
         if( os.path.exists( hhc )):
             print("Compile chm with", hhc, "...")
-            ret = subprocess.call([hhc, "build\htmlhelp\itom_doc.hhp"])
+            ret = subprocess.call([hhc, "build/htmlhelp/itom_doc.hhp"])
             if(ret != 1):
                 raise RuntimeError("html help workshop failed")
             else:
                 print("html help workshop successfully executed")
-                shutil.copy2("build\htmlhelp\itom_doc.chm","..")
+                shutil.copy2("build/htmlhelp/itom_doc.chm","..")
         else:
             print("HTML Help Workshop (hhc.exe) could not be found.")
             print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")

@@ -48,7 +48,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-source_encoding = 'iso-8859-15 ' #'utf-8-sig'
+source_encoding = 'iso-8859-15' #'iso-8859-15' #'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
@@ -243,9 +243,9 @@ latex_documents = [
 ]
 
 #latex_documents = [
-#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
+#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
 #]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -278,7 +278,7 @@ latex_logo = 'ITO_Logo.pdf'
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'itom', 'itom Documentation',
-     ['Institut für Technische Optik (ITO), Universität Stuttgart'], 1)
+     ['Institut fuer Technische Optik (ITO), Universitaet Stuttgart'], 1)
 ]
 
 # If true, show URL addresses after external links.

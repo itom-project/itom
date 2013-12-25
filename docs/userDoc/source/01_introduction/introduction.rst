@@ -47,8 +47,8 @@ To learn more about how to control |itom| via script language or the GUI proceed
 About us
 ===================
 
-| Institut für Technische Optik
-| Universität Stuttgart
+| Institut fuer Technische Optik
+| Universitaet Stuttgart
 | Pfaffenwaldring 9
 | 70569 Stuttgart
 |

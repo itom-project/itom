@@ -507,7 +507,7 @@ Following example code explains both of these methods.
 	
 	ito::DataObject d8(6,7,ito::tFloat32);
 	bool vop1, vop2 = 0;
-	d8.setAxisUnit(0,"µm");
+        d8.setAxisUnit(0,"cm");
 	d8.setAxisUnit(1,"cm");
 	std::string AxisUnit1 =d8.getAxisUnit(0,vop1); //Getting axis unit of 1st dimension of data object d8
 	std::string AxisUnit2 =d8.getAxisUnit(1,vop2); //Getting axis unit of 2nd dimension of data object d8
