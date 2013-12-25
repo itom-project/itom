@@ -15,7 +15,7 @@ Before installation, please review the minimum system requirements.
     * Windows Vista SP1 (SP2 and platform update recommended) *or*
     * Windows 7 *or*
     * Windows 8 (not tested yet) *or*
-    * Linux based OS (tested with Debian)
+    * Linux based OS (tested with Debian and Ubuntu)
 
 * 32 or 64bit processor architecture, SSE and SSE2 support
 * 800MHz processor (dual-core recommended)
@@ -40,7 +40,7 @@ Build from Sources
 ************************ 
 
 Alternatively, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
-compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and required of linux users. Before getting the source files,
+compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and required for linux users. Before getting the source files,
 check the build dependencies below which contain software packages and libraries necessary to build and |itom|.
 
 .. toctree::
@@ -49,6 +49,13 @@ check the build dependencies below which contain software packages and libraries
     build_dependencies.rst
     git_clone.rst
     build_cmake.rst
+
+For linux, a short description of the installation that contains more specific information than the sections above, is available here:
+
+.. toctree::
+    :maxdepth: 1
+    
+    build_linux.rst
 
 
 Plugins, Designer-Plugins

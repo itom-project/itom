@@ -73,8 +73,8 @@ for buildername in buildernames:
         #search for relative name to case insensitive document itomdocumentation.qhcp (linux is case-sensitive)
         #[iI] is a regexp for case insensitive letter i e.g.
         filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp") 
-        ret = subprocess.call(["qcollectiongenerator", filenames[0]],shell=True)
-        if(ret == -1):
+        ret = subprocess.call(["qcollectiongenerator", filenames[0]])
+        if(ret != 0):
             raise RuntimeError("qcollectiongenerator failed")
         else:
             print("qcollectiongenerator successfully executed")
