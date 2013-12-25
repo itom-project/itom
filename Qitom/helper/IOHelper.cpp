@@ -22,7 +22,10 @@
 
 #include "../python/pythonEngineInc.h"
 #include "../python/pythonEngine.h"
-#include "../../PointCloud/pclStructures.h"
+
+#if ITOM_POINTCLOUDLIBRARY > 0
+    #include "../../PointCloud/pclStructures.h"
+#endif
 
 #include "../organizer/scriptEditorOrganizer.h"
 #include "../organizer/processOrganizer.h"
@@ -613,8 +616,10 @@ end:
     QVector<SharedParamBasePointer> values;
 
     ito::DataObject dObj;
+#if ITOM_POINTCLOUDLIBRARY > 0
     ito::PCLPointCloud pointCloud;
     ito::PCLPolygonMesh polygonMesh;
+#endif
 
     if (AIM && pyEng)
     {
@@ -655,6 +660,7 @@ end:
                     }
                 }
                 break;
+#if ITOM_POINTCLOUDLIBRARY > 0
             case ito::AddInAlgo::iReadPointCloud:
                 {
                     //1. pointCloud
@@ -699,6 +705,12 @@ end:
                     }
                 }
                 break;
+#else
+            case ito::AddInAlgo::iReadPointCloud:
+            case ito::AddInAlgo::iReadPolygonMesh:
+                retval += ito::RetVal(ito::retError, 0, tr("PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.").toAscii().data());
+                break;
+#endif
             default:
                 retval += ito::RetVal(ito::retError, 0, tr("The algorithm interface is not supported").toAscii().data());
             }

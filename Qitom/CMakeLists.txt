@@ -5,6 +5,8 @@ project(${target_name})
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
 OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
@@ -20,7 +22,9 @@ find_package(Qt4 REQUIRED)
 find_package(PythonLibs 3 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV REQUIRED COMPONENTS core)
-find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+IF (BUILD_WITH_PCL)
+	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+ENDIF (BUILD_WITH_PCL)
 find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
@@ -32,6 +36,10 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE) 
 	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
+
+IF (BUILD_WITH_PCL)
+	ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
+ENDIF (BUILD_WITH_PCL)
 
 ADD_DEFINITIONS(-DCMAKE -DITOM_CORE)
 
@@ -69,50 +77,50 @@ INCLUDE_DIRECTORIES(
     ${PCL_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
-	../PointCloud/
+    ../PointCloud/
 )
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
-	${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
+    ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${OpenCV_DIR}/lib
 )
 
 INCLUDE(${QT_USE_FILE})
 
 set(qitom_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
-	${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
-	${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
-	${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
-	${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
-	${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
@@ -489,13 +497,21 @@ elseif(PYTHON_LIBRARY_DEBUG)
 #only release
 elseif(PYTHON_LIBRARY_RELEASE)
         set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
+elseif(PYTHON_LIBRARY)
+	set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY} CACHE STRING "" FORCE)
 #no library found
 else()
         message(STATUS "Python could not be found")
 endif()
 
+IF(BUILD_WITH_PCL)
+    SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+ELSE(BUILD_WITH_PCL)
+    SET(POINTCLOUD_LIBRARIES "")
+ENDIF(BUILD_WITH_PCL)
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject pointcloud)
+
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject)
  
 BUILD_PARALLEL_LINUX(${target_name})
 

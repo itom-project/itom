@@ -25,8 +25,18 @@ else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
-IF(EXISTS "${ITOM_SDK_DIR}")
-    #message(FATAL_ERROR "blub - ${ITOM_SDK_INCLUDE_DIRS} - ${ITOM_SDK_DIR}")
+IF(EXISTS ${ITOM_SDK_DIR})
+    #find itom_sdk.cmake configuration file
+    FIND_FILE(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR} DOC "")
+ELSE(EXISTS ${ITOM_SDK_DIR})
+    SET(ITOM_SDK_CONFIG_FILE "")
+    SET(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
+ENDIF(EXISTS ${ITOM_SDK_DIR})
+
+IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
+    
+    INCLUDE(${ITOM_SDK_CONFIG_FILE})
+
     #find include directory
     FIND_PATH(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
 
@@ -37,7 +47,7 @@ IF(EXISTS "${ITOM_SDK_DIR}")
     FIND_PATH(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
     get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
     
-    set(ITOM_SDK_LIB_COMPONENTS dataobject pointcloud qpropertyeditor)
+    #set(ITOM_SDK_LIB_COMPONENTS dataobject pointcloud qpropertyeditor)
         
     if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x86")
@@ -103,9 +113,9 @@ IF(EXISTS "${ITOM_SDK_DIR}")
     set(ITOM_SDK_FOUND ${ITOM_SDK_FOUND_TMP} CACHE BOOL "" FORCE)
     
     
-ELSE(EXISTS "${ITOM_SDK_DIR}")
-    SET(ERR_MSG "Please specify itom SDK directory using ITOM_SDK_DIR env. variable")
-ENDIF(EXISTS "${ITOM_SDK_DIR}")
+ELSE(EXISTS ${ITOM_SDK_CONFIG_FILE})
+    SET(ERR_MSG "File itom_sdk.cmake could not be found in ITOM_SDK_DIR")
+ENDIF(EXISTS ${ITOM_SDK_CONFIG_FILE})
 #====================================================
 
 

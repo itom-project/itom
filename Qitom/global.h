@@ -47,7 +47,11 @@
 #define ITOM_VERSION        CREATEVERSION(ITOM_VERSION_MAJOR,ITOM_VERSION_MINOR,ITOM_VERSION_PATCH) //ITOM_VERSION is (major << 16) + (minor << 8) + patch
 #define ITOM_VERSION_STR    "1.0.14"
 
-#define ITOM_POINTCLOUDLIBRARY 1
+#ifdef USEPCL
+	#define ITOM_POINTCLOUDLIBRARY 1
+#else
+	#define ITOM_POINTCLOUDLIBRARY 0
+#endif
 #define ITOM_PYTHONMATLAB 0
 
 #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};

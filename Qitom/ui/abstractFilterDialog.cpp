@@ -23,7 +23,10 @@
 #include "abstractFilterDialog.h"
 
 #include "../../DataObject/dataobj.h"
-#include "../../PointCloud/pclStructures.h"
+
+#if ITOM_POINTCLOUDLIBRARY > 0
+    #include "../../PointCloud/pclStructures.h"
+#endif
 
 namespace ito {
 
@@ -172,21 +175,31 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         }
         break;
 
+
     case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
         {
+#if ITOM_POINTCLOUDLIBRARY > 0
             ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(p.getVal<void*>());
             root->setData(0, Qt::DisplayRole, "PointCloud");
             l.clear();
             l << tr("size") << QString::number(pointCloud->size());
             item = new QTreeWidgetItem( l );
             root->addChild( item );
+#else
+            root->setData(0, Qt::DisplayRole, "PointCloudLibrary not available.");
+#endif
         }
         break;
+
 
     case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
         {
             //ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(p.getVal<void*>());
+#if ITOM_POINTCLOUDLIBRARY > 0
             root->setData(0, Qt::DisplayRole, "PolygonMesh");
+#else
+            root->setData(0, Qt::DisplayRole, "PointCloudLibrary not available.");
+#endif
         }
         break;
 

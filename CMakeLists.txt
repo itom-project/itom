@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -23,7 +24,14 @@ endif (BUILD_TARGET64)
 #endif()
 
 ADD_SUBDIRECTORY(DataObject) 
-ADD_SUBDIRECTORY(PointCloud)
+
+IF(BUILD_WITH_PCL)
+	ADD_SUBDIRECTORY(PointCloud)
+	SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor")
+ELSE(BUILD_WITH_PCL)
+	SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor")
+ENDIF(BUILD_WITH_PCL)
+
 ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(Qitom)  
 
@@ -86,5 +94,4 @@ ENDIF(MSVC10)
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/itom.bat )
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt )
 
-#ADD_SUBDIRECTORY(designerPluginSource)
-#ADD_SUBDIRECTORY(pluginSource)
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/SDK/itom_sdk.cmake )
