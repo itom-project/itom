@@ -132,7 +132,7 @@ void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
 	
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("HelpScriptReference"); //not objectName() but HelpScriptReference!!!
 	// Read the other Options
 	m_openLinks = settings.value("OpenExtLinks", true).toBool();
 	m_plaintext = settings.value("Plaintext", false).toBool();
