@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -25,7 +25,7 @@
 
 #if ITOM_PYTHONMATLAB == 1
 /* * *
- * Copyright 2010 Joakim Möller
+ * Copyright 2010 Joakim Mller
  *
  * This file is part of pymatlab.
  * 
@@ -46,7 +46,7 @@
 //#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
 
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#ifdef _DEBUG
+#if (defined _DEBUG) && (!defined linux)
     #undef _DEBUG
     #if (defined linux) | (defined CMAKE)
         #include "Python.h"

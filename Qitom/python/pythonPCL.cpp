@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -28,7 +28,7 @@
 #if ITOM_POINTCLOUDLIBRARY > 0
 
 #ifndef CMAKE
-    #ifdef _DEBUG
+    #if (defined _DEBUG) && (!defined linux)
 	    #pragma comment(lib, "PointCloudd.lib")
 	    #pragma comment(lib, "pcl_common_debug.lib")
     #else
@@ -36,7 +36,7 @@
 	    #pragma comment(lib, "pcl_common_release.lib")
     #endif
 #else
-    /*#ifdef _DEBUG
+    /*#if (defined _DEBUG) && (!defined linux)
 	    #pragma comment(lib, "PointCloud.lib")
 	    #pragma comment(lib, "pcl_common_debug.lib")
     #else

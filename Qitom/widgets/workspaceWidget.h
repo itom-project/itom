@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -25,20 +25,12 @@
 
 //python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#ifdef _DEBUG
+#if (defined _DEBUG) && (!defined linux)
     #undef _DEBUG
-    #if (defined linux) | (defined CMAKE)
-        #include "Python.h"
-    #else
-        #include "Python.h"
-    #endif
+    #include "Python.h"
     #define _DEBUG
 #else
-    #ifdef linux
-        #include "Python.h"
-    #else
-        #include "Python.h"
-    #endif
+    #include "Python.h"
 #endif
 
 #include "../global.h"

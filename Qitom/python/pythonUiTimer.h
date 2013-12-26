@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -23,33 +23,11 @@
 #ifndef PYTHONUITIMER_H
 #define PYTHONUITIMER_H
 
-////python
-//// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-//#ifdef _DEBUG
-//    #undef _DEBUG
-//    #ifdef linux
-//        #include "Python.h"
-//    #else
-//        #include "include\Python.h"
-//    #endif
-//    #define _DEBUG
-//#else
-//    #ifdef linux
-//        #include "Python.h"
-//    #else
-//        #include "include\Python.h"
-//    #endif
-//#endif
-
 #include "pythonCommon.h"
-//#include "pythonQtConversion.h"
-//#include "pythonQtSignalMapper.h"
 
 #include <qstring.h>
 #include <qvariant.h>
 #include <qobject.h>
-//#include <qhash.h>
-
 
 namespace ito 
 {

@@ -33,7 +33,7 @@
 
 //python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#ifdef _DEBUG
+#if (defined _DEBUG) && (!defined linux)
     #undef _DEBUG
     #include "patchlevel.h"
     #define _DEBUG
@@ -67,7 +67,7 @@
 //    #else
 //        newPair.second = "Windows 32-Bit";
 //    #endif
-//    #ifdef _DEBUG
+//    #if (defined _DEBUG) && (!defined linux)
 //        newPair.second.append(" DEBUG");
 //    #endif
 //#else
@@ -187,7 +187,7 @@ QMap<QString, QString> ito::getItomVersionMap()
     #else
         items["itom_SysType"] = "Windows 32-Bit";
     #endif
-    #ifdef _DEBUG
+    #if (defined _DEBUG) && (!defined linux)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #else

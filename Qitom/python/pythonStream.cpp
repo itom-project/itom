@@ -52,7 +52,7 @@ void PyStream::PythonStream_dealloc(PythonStream* self)
 //! static init method, which is called if any variable of type PyStream is initialized. This method extracts type value from args.
 int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds)
 {
-    static char *kwlist[] = {"type", NULL};
+    const char *kwlist[] = {"type", NULL};
 
     if(args==NULL)
     {
@@ -60,7 +60,7 @@ int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kw
         return 0;
     }
 
-    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &self->type))
+    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", const_cast<char**>(kwlist), &self->type))
     {
         return -1; 
     }

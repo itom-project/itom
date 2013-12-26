@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fr Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -34,7 +34,7 @@ namespace ito
         int newSize = 64;
         int cols = 11;
 
-#ifdef _DEBUG
+#if (defined _DEBUG) && (!defined linux)
         if(primitives.getDims() != 0 && primitives.getSize(primitives.getDims()-1) < 11)
         {
             cv::error(cv::Exception(CV_StsAssert, "Error, primitives object not valid.", "", __FILE__, __LINE__));
