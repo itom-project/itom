@@ -59,7 +59,7 @@ r : {uint8} \n\
 	red component [0,255] \n\
 g : {uint8}, \n\
 	green component [0,255] \n\
-b : {uint8}, optional \n\
+b : {uint8} \n\
 	blue component [0,255] \n\
 alpha : {uint8}, optional \n\
 	alpha component [0,255], default: 255 (no transparancy) \n\
