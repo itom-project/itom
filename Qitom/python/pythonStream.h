@@ -31,18 +31,10 @@
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #ifdef _DEBUG
     #undef _DEBUG
-    #if (defined linux) | (defined CMAKE)
-        #include "Python.h"
-    #else
-        #include "Python.h"
-    #endif
+    #include "Python.h"
     #define _DEBUG
 #else
-    #ifdef linux
-        #include "Python.h"
-    #else
-        #include "Python.h"
-    #endif
+    #include "Python.h"
 #endif
 
 
@@ -68,6 +60,7 @@ public:
     static int PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds);
 
     static PyObject *PythonStream_name(PythonStream* self);
+    static PyObject *PythonStream_fileno(PythonStream* self);
     static PyObject *PythonStream_write(PythonStream* self, PyObject *args);
     static PyObject *PythonStream_flush(PythonStream* self, PyObject *args);
     

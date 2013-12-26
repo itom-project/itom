@@ -22,11 +22,7 @@
 
 #include <iostream>
 #include "pythonStream.h"
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
+#include "structmember.h"
 
 /*!
     \class PyStream
@@ -38,7 +34,7 @@
 void PyStream::PythonStream_dealloc(PythonStream* self)
 {
     Py_TYPE(self)->tp_free((PyObject*)self);
-};
+}
 
 //PyObject* PyStream::PythonStream_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 //{
@@ -51,7 +47,7 @@ void PyStream::PythonStream_dealloc(PythonStream* self)
 //    }
 //
 //    return (PyObject *)self;
-//};
+//}
 
 //! static init method, which is called if any variable of type PyStream is initialized. This method extracts type value from args.
 int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds)
@@ -70,39 +66,43 @@ int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kw
     }
 
     return 0;
-};
+}
 
 //! static PyMemberDef table which describes every member of PyStream type
 PyMemberDef PyStream::PythonStream_members[] = {
-        {"type", T_INT, offsetof(PyStream::PythonStream, type), 0,
-         "PythonStream type"},
-        {NULL}  /* Sentinel */
-    };
+    {"type", T_INT, offsetof(PyStream::PythonStream, type), 0,
+     "PythonStream type"},
+    {NULL}  /* Sentinel */
+};
 
 //! static method returning name representation of this type
 PyObject* PyStream::PythonStream_name(PythonStream* /*self*/)
 {
-    PyObject *result;
-    result = PyUnicode_FromString("pythonStream"); 
-    return result;
-};
+    return PyUnicode_FromString("pythonStream");
+}
+
+PyObject* PyStream::PythonStream_fileno(PythonStream* self)
+{
+    return PyLong_FromLong( self->type ); //0: in, 1: out, 2: err
+}
 
 //! static table of type PyMethodDef which contains function pointers and descriptions to all methods, belonging to this type
 PyMethodDef PyStream::PythonStream_methods[] = {
-        {"name", (PyCFunction)PyStream::PythonStream_name, METH_NOARGS, "name"},
-        {"write", (PyCFunction)PyStream::PythonStream_write, METH_VARARGS, "write function"},
-        {"flush", (PyCFunction)PyStream::PythonStream_flush, METH_VARARGS, "flush function"},
-        {NULL}  /* Sentinel */
-    };
+    {"name", (PyCFunction)PyStream::PythonStream_name, METH_NOARGS, "name"},
+    {"write", (PyCFunction)PyStream::PythonStream_write, METH_VARARGS, "write function"},
+    {"flush", (PyCFunction)PyStream::PythonStream_flush, METH_VARARGS, "flush function"},
+    {"fileno", (PyCFunction)PyStream::PythonStream_fileno, METH_NOARGS, "returns the virtual file number of this stream (0: in [not supported yet], 1: out, 2: err)"},
+    {NULL}  /* Sentinel */
+};
 
 //! PyModuleDef table, containing description for PyStream type
 PyModuleDef PyStream::pythonStreamModule = {
-        PyModuleDef_HEAD_INIT,
-        "pythonStream",
-        "Example module that creates an extension type.",
-        -1,
-        NULL, NULL, NULL, NULL, NULL
-    };
+    PyModuleDef_HEAD_INIT,
+    "pythonStream",
+    "Example module that creates an extension type.",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
+};
 
 //! static PyTypeObject for type PyStream with function pointers to all required static methods.
 PyTypeObject PyStream::PythonStreamType = {
@@ -206,9 +206,9 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         Py_DECREF(v);
         text = NULL;
     }
-    Py_INCREF(Py_None);
-    return Py_None; //Py_BuildValue("i", 1);
-};
+
+    Py_RETURN_NONE;
+}
 
 //! static method is invoked if stream has been flushed
 /*!
@@ -218,6 +218,5 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
 */
 PyObject* PyStream::PythonStream_flush(PythonStream* /*self*/, PyObject * /*args*/)
 {
-    Py_INCREF(Py_None);
-    return Py_None; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occure
-};
+    Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occure
+}
