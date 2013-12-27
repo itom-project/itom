@@ -144,8 +144,8 @@ namespace ito
             bool isEnabled() const;
             bool isVisible() const;
 
-            void saveState() const;
-            void restoreState() const;
+            void saveState(const QString &iniName) const;
+            void restoreState(const QString &iniName) const;
 
         public Q_SLOTS:
             void setEnabled(bool);

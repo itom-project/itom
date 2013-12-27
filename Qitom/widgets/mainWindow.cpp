@@ -294,7 +294,7 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    m_fileSystemDock->saveState();
+    m_fileSystemDock->saveState("itomFileSystemDockWidget");
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 

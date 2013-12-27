@@ -351,24 +351,24 @@ void AbstractDockWidget::setVisible(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDockWidget::saveState() const 
+void AbstractDockWidget::saveState(const QString &iniName) const 
 {
     if (objectName() != "")
     {
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup(objectName());
+        settings.beginGroup(iniName);
         settings.setValue("state", this->m_pWindow->saveState());
         settings.endGroup();
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDockWidget::restoreState() const
+void AbstractDockWidget::restoreState(const QString &iniName) const
 {
     if (objectName() != "")
     {
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup(objectName());
+        settings.beginGroup(iniName);
         m_pWindow->restoreState(settings.value("state").toByteArray());
         settings.endGroup();
     }

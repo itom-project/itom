@@ -89,7 +89,7 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
     connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
     m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();
@@ -143,7 +143,7 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
 LastCommandDockWidget::~LastCommandDockWidget()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomLastCommandDockWidget");
     int commandNumbers = settings.value("lastCommandCommandNumbers", "100").toInt();
 
     QString date = "";
@@ -263,7 +263,7 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
 void LastCommandDockWidget::propertiesChanged()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
     m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();

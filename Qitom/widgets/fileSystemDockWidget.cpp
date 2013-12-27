@@ -90,7 +90,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pShowDirListMenu->installEventFilter(this);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomFileSystemDockWidget");
     size = settings.beginReadArray("lastUsedDirs");
     for (int i = 0; i < size; ++i) 
     {
@@ -235,7 +235,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     QStringList files;
 
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomFileSystemDockWidget");
     settings.beginWriteArray("lastUsedDirs");
     for (int i = 0; i < m_pShowDirListMenu->actions().count(); i++)
     {

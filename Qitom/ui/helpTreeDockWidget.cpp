@@ -109,7 +109,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 void HelpTreeDockWidget::saveIni()
 {
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomHelpTreeDockWidget");
 	settings.setValue("percWidthVi", m_percWidthVi);
 	settings.setValue("percWidthUn", m_percWidthUn);
 	settings.endGroup();
@@ -120,7 +120,7 @@ void HelpTreeDockWidget::saveIni()
 void HelpTreeDockWidget::loadIni()
 {
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomHelpTreeDockWidget");
 	m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
     m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
 	settings.endGroup();

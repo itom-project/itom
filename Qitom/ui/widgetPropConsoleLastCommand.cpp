@@ -43,7 +43,7 @@ WidgetPropConsoleLastCommand::~WidgetPropConsoleLastCommand()
 void WidgetPropConsoleLastCommand::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomLastCommandDockWidget");
     ui.groupLastCommand->setChecked(settings.value("lastCommandEnabled", "true").toBool());
     QString dateColor = settings.value("lastCommandDateColor", "green").toString();
     ui.checkShowTimeStamp->setChecked(settings.value("lastCommandTimeStamp", "false").toBool());
@@ -71,7 +71,7 @@ void WidgetPropConsoleLastCommand::writeSettings()
     QString dateColor = ui.comboBoxColor->itemText(ui.comboBoxColor->currentIndex());
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup(objectName());
+    settings.beginGroup("itomLastCommandDockWidget");
 
     settings.setValue("lastCommandEnabled", ui.groupLastCommand->isChecked());
     settings.setValue("lastCommandDateColor", dateColor);

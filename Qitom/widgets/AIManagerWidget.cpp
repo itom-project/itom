@@ -139,7 +139,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     }
     
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings->beginGroup(objectName());
+    settings->beginGroup("itomPluginsDockWidget");
     size = settings->beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i)
     {
@@ -200,7 +200,7 @@ AIManagerWidget::~AIManagerWidget()
     QString setFile(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
-    settings->beginGroup(objectName());
+    settings->beginGroup("itomPluginsDockWidget");
 
 //    QByteArray state = m_pMainToolbar->saveGeometry();
 //    settings->setValue("stateToolBar", state);
