@@ -194,6 +194,10 @@ QMap<QString, QString> ito::getItomVersionMap()
     items["itom_SysType"] = "undefined system";
 #endif
      
+    items["itom_compileDate"] = __DATE__;
+    items["itom_compileDate"].append(", ");
+    items["itom_compileDate"].append( __TIME__);
+
     items["itom_SVN_Rev"] = "";
     items["itom_SVN_Date"] = "";
     items["itom_SVN_URL"] = "";
