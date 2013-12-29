@@ -21,6 +21,9 @@
 *********************************************************************** */
 
 #include "dialogAbout.h" 
+
+#include "../global.h"
+
 #include <QClipboard>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -91,6 +94,16 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
         tabText.remove(x0, 10);
         tabText.remove(x1 - 10, 10);    
     }
+
+	x0 = tabText.indexOf("$WITHPCL$");
+	x1 = tabText.lastIndexOf("$WITHPCL$");
+#if ITOM_POINTCLOUDLIBRARY > 0
+	tabText.remove(x0, 9);
+	tabText.remove(x1 - 9, 9);
+#else
+	tabText.remove(x0, x1 - x0 + 9);
+#endif
+
 
     ui.txtBasic->setHtml(tabText);
 
