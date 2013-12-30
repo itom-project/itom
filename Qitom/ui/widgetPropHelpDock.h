@@ -45,7 +45,6 @@ protected:
 
 private:
     Ui::WidgetPropHelpDock ui;
-    QStringList *m_pDBFiles;
 	QString m_pdbPath;
 	bool m_plistChanged;
 

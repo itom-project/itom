@@ -30,11 +30,9 @@
 
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
-	m_pDBFiles(NULL),
 	m_pdbPath(qApp->applicationDirPath()+"/help/")
 {
     ui.setupUi(this);
-	m_pDBFiles = new QStringList();
 	m_plistChanged = false;
 	ui.label->hide();
 }

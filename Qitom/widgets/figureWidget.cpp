@@ -67,7 +67,7 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
         {
             temp = new QWidget(m_pCenterWidget);
             temp->setObjectName(QString("emptyWidget%1").arg(m_cols * r + c));
-            m_widgets[idx] = new QWidget(m_pCenterWidget);
+            m_widgets[idx] = temp;
             m_pGrid->addWidget(m_widgets[idx], r, c);
             idx++;
         }
@@ -176,7 +176,6 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
     QString plotClassName;
-    bool exists = false;
     int idx = areaCol + areaRow * m_cols;
 
     *canvasWidget = NULL;
@@ -211,12 +210,17 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
             else
             {
                 retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toAscii().data(), plotClassName.toAscii().data());
+                DELETE_AND_SET_NULL(destWidget);
             }
 
             if (idx == m_curIdx)
             {
                 changeCurrentSubplot(idx);
             }
+        }
+        else if (retval.containsError())
+        {
+            DELETE_AND_SET_NULL(destWidget);
         }
     }
     else
@@ -322,12 +326,17 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             else
             {
                 retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toAscii().data(), plotClassName.toAscii().data());
+                DELETE_AND_SET_NULL(destWidget);
             }
             
             if (idx == m_curIdx)
             {
                 changeCurrentSubplot(idx);
             }
+        }
+        else if (retval.containsError())
+        {
+            DELETE_AND_SET_NULL(destWidget);
         }
     }
 
