@@ -274,8 +274,7 @@ namespace dObjHelper
     */
     template<typename _Tp> inline void GetHLineC(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
     {
-        _Tp* resRowPtr;
-        resRowPtr = (_Tp*)(srcPlane->ptr(y));
+        const _Tp* resRowPtr = srcPlane->ptr<_Tp>(y);
 
         int x = x0;
         for(int i = 0; i < length; i++, x++)
@@ -297,8 +296,7 @@ namespace dObjHelper
     */
     template<> inline void GetHLineC<complex64>(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
     {
-        complex64* resRowPtr;
-        resRowPtr = (complex64*)(srcPlane->ptr(y));
+        const complex64* resRowPtr = srcPlane->ptr<complex64>(y);
 
         int x = x0;
         for(int i = 0; i < length; i++, x++)
@@ -320,8 +318,7 @@ namespace dObjHelper
     */
     template<> inline void GetHLineC<complex128>(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
     {
-        complex128* resRowPtr;
-        resRowPtr = (complex128*)(srcPlane->ptr(y));
+        const complex128* resRowPtr = srcPlane->ptr<complex128>(y);
         memcpy(pData, &resRowPtr[x0], length *sizeof(complex128));
     }
 
