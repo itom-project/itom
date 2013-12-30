@@ -1789,36 +1789,45 @@ namespace dObjHelper
         dObjIO->addToProtocol(protocol);
         
         bool test;
-        std::string axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-1, test));
-        dObjIO->setAxisUnit(dObjIO->getDims()-1, axisUnit);
-        dObjIO->setAxisOffset(dObjIO->getDims()-1, 0.0);
-
-        float64 newScale = dObjIO->getAxisScale(dObjIO->getDims()-1);
+        int curDim = dObjIO->getDims()-1;
+        std::string axisUnit;
+        
+        float64 newScale = dObjIO->getAxisScale(curDim);
         if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
         {
-            newScale = 1/newScale;
+            
+            newScale = 1/newScale / dObjOut->getSize(curDim);
+            axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
+            dObjIO->setAxisUnit(curDim, axisUnit);
         }
         else
         {
             newScale = 1.0;
+            dObjIO->setAxisUnit(curDim, "");
         }
-        dObjIO->setAxisScale(dObjIO->getDims()-1, newScale );
+        dObjIO->setAxisScale(curDim, newScale );
+        dObjIO->setAxisOffset(curDim, 0.0);
+
+        
 
         if(!lineWise)
         {
-            newScale = dObjIO->getAxisScale(dObjIO->getDims()-2);
+            curDim--;
+            newScale = dObjIO->getAxisScale(curDim);
             if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
             {
-                newScale = 1/newScale;
+                
+                dObjIO->setAxisUnit(curDim, axisUnit);
+                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
+                newScale = 1/newScale / dObjOut->getSize(curDim);
             }
             else
             {
                 newScale = 1.0;
+                dObjIO->setAxisUnit(curDim, "");
             }
-            dObjIO->setAxisScale(dObjIO->getDims()-2, newScale );
+            dObjIO->setAxisScale(curDim, newScale );
 
-            axisUnit = invertUnit(dObjIO->getAxisUnit(dObjIO->getDims()-2, test));
-            dObjIO->setAxisUnit(dObjIO->getDims()-2, axisUnit);
         }
 
         return retval;

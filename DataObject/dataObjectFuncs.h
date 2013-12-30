@@ -96,6 +96,7 @@ namespace dObjHelper
         {
             std::string newString;
             newString.reserve(oldUnit.length()+2);
+            newString.append("1/");
             newString.append(oldUnit);
             return newString;    
         }
