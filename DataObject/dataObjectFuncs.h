@@ -167,6 +167,9 @@ namespace dObjHelper
     //! Copy a line from cv::Mat to float64 linebuffer
     template<typename _Tp> void GetHLineD(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
 
+    //! Copy a line from cv::Mat to float64 linebuffer
+    template<typename _Tp> void GetHLineC(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData);
+
     //! Copy a line from int32 linebuffer to cv::Mat
     template<typename _Tp> void SetHLineL(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
 
@@ -255,6 +258,71 @@ namespace dObjHelper
         float64* resRowPtr;
         resRowPtr = (float64*)(srcPlane->ptr(y));
         memcpy(pData, &resRowPtr[x0], length *sizeof(float64));
+    }
+
+        //-----------------------------------------------------------------------------------------------
+    /*! \fn GetHLineComplex
+       \brief Helper function which copies Data from a row of a cv:mat to a complex128-buffer
+       \param[in] srcPlane  Source for the copy-action
+       \param[in] x0    Startpixel
+       \param[in] y     linenumber
+       \param[in] length    number of elements to copy
+       \param[in|out] pData Pointer to allocated complex128-buffer of size elements
+       \author ITO
+       \sa GetL, DoGenericFilter
+       \date 12.2011
+    */
+    template<typename _Tp> inline void GetHLineC(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
+    {
+        _Tp* resRowPtr;
+        resRowPtr = (_Tp*)(srcPlane->ptr(y));
+
+        int x = x0;
+        for(int i = 0; i < length; i++, x++)
+        {
+            pData[i] = complex128(cv::saturate_cast<ito::float64>(resRowPtr[x]), 0.0);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------
+    /*! \brief Helper function which copies Data from a row of a cv:mat<complex128> to a complex128-buffer using memcopy
+       \param[in] srcPlane  Source for the copy-action
+       \param[in] x0    Startpixel
+       \param[in] y     linenumber
+       \param[in] length    number of elements to copy
+       \param[in|out] pData Pointer to allocated complex128-buffer of size elements
+       \author ITO
+       \sa GetL, DoGenericFilter
+       \date 12.2011
+    */
+    template<> inline void GetHLineC<complex64>(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
+    {
+        complex64* resRowPtr;
+        resRowPtr = (complex64*)(srcPlane->ptr(y));
+
+        int x = x0;
+        for(int i = 0; i < length; i++, x++)
+        {
+            pData[i] = complex128(resRowPtr[x].real(), resRowPtr[x].imag());
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------
+    /*! \brief Helper function which copies Data from a row of a cv:mat<complex128> to a complex128-buffer using memcopy
+       \param[in] srcPlane  Source for the copy-action
+       \param[in] x0    Startpixel
+       \param[in] y     linenumber
+       \param[in] length    number of elements to copy
+       \param[in|out] pData Pointer to allocated complex128-buffer of size elements
+       \author ITO
+       \sa GetL, DoGenericFilter
+       \date 12.2011
+    */
+    template<> inline void GetHLineC<complex128>(const cv::Mat *srcPlane, const int x0, const int y, const int length, complex128 * pData)
+    {
+        complex128* resRowPtr;
+        resRowPtr = (complex128*)(srcPlane->ptr(y));
+        memcpy(pData, &resRowPtr[x0], length *sizeof(complex128));
     }
 
     //-----------------------------------------------------------------------------------------------
