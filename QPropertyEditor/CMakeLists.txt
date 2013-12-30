@@ -3,7 +3,7 @@ SET (target_name qpropertyeditor)
 project(${target_name})
 
 cmake_minimum_required(VERSION 2.8)
-
+ 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -48,25 +48,27 @@ INCLUDE_DIRECTORIES( ${QT_QTCORE_INCLUDE_DIR}
 INCLUDE(${QT_USE_FILE})
 
 set(qpropertyeditor_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/ColorCombo.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/BooleanCombo.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/EnumProperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/Property.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyEditorWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QVariantDelegate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Property.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
 )
 
 QT4_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
 
 set(qpropertyeditor_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/ColorCombo.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/BooleanCombo.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/EnumProperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/Property.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyEditorWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QPropertyModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/QPropertyEditor/QVariantDelegate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Property.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.cpp
 )
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC})
@@ -74,9 +76,10 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES})
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
-SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor/src/QPropertyEditor)
+SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/ColorCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/BooleanCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+FILE(COPY ${SOURCEFILE}/FontEditor.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/EnumProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/Property.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/QPropertyEditorWidget.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)

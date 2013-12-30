@@ -40,14 +40,14 @@ namespace ito {
 class AbstractDObjFigure : public AbstractFigure
 {
     Q_OBJECT
-    Q_PROPERTY(QSharedPointer<ito::DataObject> source READ getSource WRITE setSource DESIGNABLE false)
-    Q_PROPERTY(QSharedPointer<ito::DataObject> displayed READ getDisplayed DESIGNABLE false)
-    Q_PROPERTY(QPointer<ito::AddInDataIO> camera READ getCamera WRITE setCamera DESIGNABLE false)
+    Q_PROPERTY(QSharedPointer<ito::DataObject> source READ getSource WRITE setSource DESIGNABLE false USER false)
+    Q_PROPERTY(QSharedPointer<ito::DataObject> displayed READ getDisplayed DESIGNABLE false USER false)
+    Q_PROPERTY(QPointer<ito::AddInDataIO> camera READ getCamera WRITE setCamera DESIGNABLE false USER false)
 
-    Q_PROPERTY(QPointF xAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QPointF yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QPointF zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true)
-    Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true)
+    Q_PROPERTY(QPointF xAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(QPointF yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(QPointF zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true USER true)
 
     Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
     Q_CLASSINFO("prop://displayed", "This returns the currently displayed data object [read only].")

@@ -118,15 +118,6 @@ UiOrganizer::UiOrganizer() :
 	m_objectList.clear();
 
     m_widgetWrapper = new WidgetWrapper();
-
-    /*QUiLoader loader;
-    ito::RetVal retval = scanPlugins(qApp->applicationDirPath().append("/designer"), m_pluginInfoList);*/
-    /*QSharedPointer<unsigned int> test3;
-    {
-        QSharedPointer<unsigned int> test(new unsigned int, threadSafeDeleteUi);
-        QWeakPointer<unsigned int> test2 = test;
-        test3 = test2;
-    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -247,46 +238,6 @@ void UiOrganizer::timerEvent(QTimerEvent * /*event*/)
 {
     execGarbageCollection();
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal UiOrganizer::scanPlugins(QString pluginPath, QHash<QString, PluginInfo> &pluginInfoList)
-//{
-////    foreach (const QString &path, pluginPath) 
-//    {
-//        const QDir dir(pluginPath);
-//        const QStringList candidates = dir.entryList(QDir::Files);
-//
-//        foreach (const QString &plugin, candidates) 
-//        {
-//            if (!QLibrary::isLibrary(plugin))
-//                continue;
-//
-//            QString loaderPath = pluginPath;
-//            loaderPath += QLatin1Char('/');
-//            loaderPath += plugin;
-//
-//            QPluginLoader loader(loaderPath);
-//            if (loader.load())
-//            {
-//                QDesignerCustomWidgetInterface *iface = NULL;
-//                // try with a normal plugin, we do not support collections
-//                if ((iface = qobject_cast<QDesignerCustomWidgetInterface *>(loader.instance())) && 
-//                    ((loader.instance())->inherits("ito::AbstractItomDesignerPlugin")))
-//                {
-//                    ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)loader.instance();
-//                    pluginInfoList.insert(iface->name(), PluginInfo(absIDP->getPlotDataTypes(), absIDP->getPlotDataFormats(), absIDP->getPlotFeatures()));
-//                }
-//            }
-//            else
-//            {
-//                QString err = loader.errorString();
-//            }
-//
-//        }
-//    }
-//
-//    return ito::retOk;
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)

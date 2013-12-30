@@ -38,6 +38,7 @@
 #include "../common/typeDefs.h"
 #include "../common/addInInterface.h"
 #include "../common/apiFunctionsInc.h"
+#include "QPropertyEditor/QPropertyEditorWidget.h"
 
 namespace ito 
 {
@@ -52,7 +53,10 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_apiFunctionsBasePtr(NULL),
     m_mainParent(parent),
 	m_toolbarsVisible(true),
-    m_windowMode(windowMode)
+    m_windowMode(windowMode),
+	m_propertyDock(NULL),
+	m_propertyEditorWidget(NULL),
+	m_propertyObservedObject(NULL)
 {
     //itom_PLOTAPI = NULL;
     //importItomPlotApi(NULL);
@@ -87,6 +91,90 @@ AbstractFigure::~AbstractFigure()
         }
     }
     m_toolbars.clear();
+
+	if (m_propertyDock)
+	{
+		m_propertyDock->deleteLater();
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal AbstractFigure::initialize()
+{
+    //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
+    switch (m_windowMode)
+    {
+		case AbstractFigure::ModeInItomFigure:
+		case AbstractFigure::ModeStandaloneInUi:
+			setWindowFlags(Qt::Widget);
+			setAttribute(Qt::WA_DeleteOnClose, false);
+			menuBar()->setVisible(false);
+			break;
+		case AbstractFigure::ModeStandaloneWindow:
+			setWindowFlags(Qt::Window);
+			setAttribute(Qt::WA_DeleteOnClose, true);
+			menuBar()->setVisible(true);
+			break;
+    }
+
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    {
+        foreach(const ToolBarItem &item, m_toolbars)
+        {
+            if (item.toolbar)
+            {
+                QMainWindow::addToolBar(item.area, item.toolbar);
+            }
+            else
+            {
+                QMainWindow::addToolBarBreak(item.area);
+            }
+        }
+    }
+
+	m_propertyDock = new QDockWidget(tr("Properties"), this);
+	m_propertyDock->setVisible(false);
+	m_propertyDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
+
+	m_propertyEditorWidget = new QPropertyEditorWidget(m_propertyDock);
+	m_propertyDock->setWidget(m_propertyEditorWidget);
+
+	switch (m_windowMode)
+    {
+		case AbstractFigure::ModeInItomFigure:
+			/*default if figure is used for plotting data in itom, may also be part of a subfigure area.
+			Then, the created DockWidget should be used by the outer window and managed/displayed by it */
+			break;
+		case AbstractFigure::ModeStandaloneInUi:
+			/*figure is contained in an user interface. Then the dock widget is dock with floating mode (default) */
+			addDockWidget(Qt::NoDockWidgetArea, m_propertyDock);
+			break;
+
+		case AbstractFigure::ModeStandaloneWindow:
+			addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
+			break;
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::setPropertyObservedObject(QObject* obj)
+{
+	m_propertyObservedObject = obj;
+	if (m_propertyEditorWidget)
+	{
+		m_propertyEditorWidget->setObject(obj);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::updatePropertyDock()
+{
+	if (m_propertyEditorWidget && m_propertyObservedObject)
+	{
+		m_propertyEditorWidget->updateObject(m_propertyObservedObject);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -225,42 +313,7 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractFigure::initialize()
-{
-    //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
-    switch (m_windowMode)
-    {
-    case AbstractFigure::ModeInItomFigure:
-    case AbstractFigure::ModeStandaloneInUi:
-        setWindowFlags(Qt::Widget);
-        setAttribute(Qt::WA_DeleteOnClose, false);
-        menuBar()->setVisible(false);
-        break;
-    case AbstractFigure::ModeStandaloneWindow:
-        setWindowFlags(Qt::Window);
-        setAttribute(Qt::WA_DeleteOnClose, true);
-        menuBar()->setVisible(true);
-        break;
-    }
 
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
-    {
-        foreach(const ToolBarItem &item, m_toolbars)
-        {
-            if (item.toolbar)
-            {
-                QMainWindow::addToolBar(item.area, item.toolbar);
-            }
-            else
-            {
-                QMainWindow::addToolBarBreak(item.area);
-            }
-        }
-    }
-
-    return ito::retOk;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addMenu(QMenu *menu)
@@ -434,6 +487,7 @@ void AbstractFigure::setToolbarVisible(bool visible)
 	}
 
 	m_toolbarsVisible = visible;
+	updatePropertyDock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

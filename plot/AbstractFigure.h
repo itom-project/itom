@@ -37,17 +37,21 @@
 #include <qlabel.h>
 #include <qtoolbar.h>
 #include <qevent.h>
+#include <qdockwidget.h>
+
+class QPropertyEditorWidget; //forward declaration
 
 namespace ito {
 
 class AbstractFigure;
+
 void initialize(AbstractFigure *fig);
 
 class AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
     Q_ENUMS(WindowMode)
-    Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true)
+    Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
 
     Q_CLASSINFO("prop://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
@@ -87,7 +91,7 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         virtual void setContextMenuEnabled(bool show) = 0; 
         virtual bool getContextMenuEnabled() const = 0;
 
-        
+		virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
@@ -104,6 +108,9 @@ class AbstractFigure : public QMainWindow, public AbstractNode
 		void hideToolBar(const QString &key);
 
         void addMenu(QMenu *menu);
+
+		void updatePropertyDock();
+		void setPropertyObservedObject(QObject* obj);
 
         RetVal initialize();
 
@@ -122,11 +129,16 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         QList<QMenu*> m_menus;
         QList<ToolBarItem> m_toolbars;
 
+		QDockWidget *m_propertyDock;
+		QPropertyEditorWidget *m_propertyEditorWidget;
+		QObject *m_propertyObservedObject;
+
     signals:
         
     private slots:
 
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
+		inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
 
     public slots:
         void refreshPlot() { update(); }

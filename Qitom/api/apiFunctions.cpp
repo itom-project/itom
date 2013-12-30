@@ -456,7 +456,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 		}
 	}
 
-	if (ret.containsError() && output)
+	if (ret.containsError())
 	{
 		DELETE_AND_SET_NULL(output);
 	}

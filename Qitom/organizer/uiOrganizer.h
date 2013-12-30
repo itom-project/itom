@@ -301,7 +301,6 @@ private:
 
     static unsigned int autoIncUiDialogCounter;		/*!< auto incrementing counter for elements in m_dialogList */
     static unsigned int autoIncObjectCounter;		/*!< auto incrementing counter for elements in m_objectList */
-    ito::RetVal scanPlugins(QString path, QHash<QString, PluginInfo> &pluginInfoList);
 
     void setApiPointersToWidgetAndChildren(QWidget *widget);
     //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according

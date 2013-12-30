@@ -394,7 +394,7 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
 
                         QList<QMenu*> menus = figWidget->getMenus();
                         menusActions.clear();
-                        
+
                         foreach(QMenu* m, menus)
                         {
                             insertAction = menubar->insertMenu(m_firstSysAction, m);
@@ -406,6 +406,12 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                         {
                             t.toolbar->setVisible(false);
                         }
+
+						QDockWidget *propertyDock = figWidget->getPropertyDockWidget();
+						if (propertyDock && getCanvas())
+						{
+							getCanvas()->addDockWidget(Qt::RightDockWidgetArea, propertyDock);
+						}
                     }
 
                     if (m_pSubplotActions)
