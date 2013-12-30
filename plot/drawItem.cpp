@@ -46,6 +46,8 @@ DrawItem::DrawItem(QwtPlot *parent, char type, int id, const QString &title) : m
         m_idx = id;
         idxVec.append(id);
     }
+
+	setRenderHint( QwtPlotItem::RenderAntialiased, true); //set AntiAliasing of geometric objects to true in order to plot them smoother
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
