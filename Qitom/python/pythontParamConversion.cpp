@@ -465,20 +465,20 @@ namespace ito
         case ito::ParamBase::DObjPtr & ito::paramTypeMask:
             {
                 ito::DataObject *d = (ito::DataObject*)param->getVal<void*>();
-                if(d) delete d;
+				DELETE_AND_SET_NULL(d);
             }
             break;
 #if ITOM_POINTCLOUDLIBRARY > 0
          case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
             {
                 ito::PCLPointCloud *d = (ito::PCLPointCloud*)param->getVal<void*>();
-                if(d) delete d;
+                DELETE_AND_SET_NULL(d);
             }
             break;
          case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
             {
                 ito::PCLPolygonMesh *d = (ito::PCLPolygonMesh*)param->getVal<void*>();
-                if(d) delete d;
+                DELETE_AND_SET_NULL(d);
             }
             break;
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
@@ -486,8 +486,7 @@ namespace ito
             //do nothing
             break;
         }
-        delete param;
-        param = NULL;
+        DELETE_AND_SET_NULL(param);
     }
 }
 

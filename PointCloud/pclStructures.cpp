@@ -126,9 +126,33 @@ void PCLPoint::copyFromVoidPtrAndType(void* ptr, ito::tPCLPointType type)
 {
     if(m_genericPoint)
     {
-        delete m_genericPoint; //TODO: gcc warning delete void* is undefined
+		//delete old point
+		switch(m_type)
+		{
+			case ito::pclInvalid:
+				break;
+			case ito::pclXYZ:
+				delete reinterpret_cast<pcl::PointXYZ*>(m_genericPoint);
+				break;
+			case ito::pclXYZI:
+				delete reinterpret_cast<pcl::PointXYZI*>(m_genericPoint);
+				break;
+			case ito::pclXYZRGBA:
+				delete reinterpret_cast<pcl::PointXYZRGBA*>(m_genericPoint);
+				break;
+			case ito::pclXYZNormal:
+				delete reinterpret_cast<pcl::PointNormal*>(m_genericPoint);
+				break;
+			case ito::pclXYZINormal:
+				delete reinterpret_cast<pcl::PointXYZINormal*>(m_genericPoint);
+				break;
+			case ito::pclXYZRGBNormal:
+				delete reinterpret_cast<pcl::PointXYZRGBNormal*>(m_genericPoint);
+				break;
+		}
         m_genericPoint = NULL;
     }
+
     m_type = type;
     switch(type)
     {

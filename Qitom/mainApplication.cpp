@@ -470,7 +470,7 @@ void MainApplication::mainWindowCloseRequest()
             if (ret == QMessageBox::Cancel)
             {
                 settings->endGroup();
-		delete settings;
+				delete settings;
                 return;
             }  
     }

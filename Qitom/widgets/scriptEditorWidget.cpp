@@ -1155,8 +1155,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                 bpModel->changeBreakPoint(index, item);
             }
 
-            delete dlg;
-            dlg = NULL;
+			DELETE_AND_SET_NULL(dlg);
 
             return RetVal(retOk);
         }

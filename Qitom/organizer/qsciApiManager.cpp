@@ -82,10 +82,8 @@ QsciApiManager::QsciApiManager() :
 
 QsciApiManager::~QsciApiManager()
 {
-    delete m_pApi;
-    m_pApi = NULL;
-    delete m_qSciLex;
-    m_qSciLex = NULL;
+	DELETE_AND_SET_NULL(m_pApi);
+	DELETE_AND_SET_NULL(m_qSciLex);
 }
 
 

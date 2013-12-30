@@ -48,8 +48,7 @@ void PythonDataObject::PyDataObject_dealloc(PyDataObject* self)
     {
         self->dataObject->lockWrite(); //will be unlocked automatically
         self->dataObject->unlock();
-        delete self->dataObject;
-        self->dataObject = NULL;
+        DELETE_AND_SET_NULL(self->dataObject);
     }
 
     Py_XDECREF(self->base); //this will free another pyobject (e.g. numpy array), with which this data object shared its data (base != NULL if owndata=0)
@@ -366,14 +365,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         DELETE_AND_SET_NULL_ARRAY(steps_inc);
 
                     }
-                    if (sizes)
-                    {
-                        delete sizes;
-                    }
-                    if (steps)
-                    {
-                        delete steps;
-                    }
+
+                    DELETE_AND_SET_NULL(sizes);
+					DELETE_AND_SET_NULL(steps);
 
                     int retCode = copyNpDataObjTags2DataObj(copyObject, self->dataObject);
 

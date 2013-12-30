@@ -256,8 +256,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 
     if (retValue.containsError())
     {
-        delete sew;
-        sew = NULL;
+        DELETE_AND_SET_NULL(sew);
     }
     else
     {

@@ -1802,8 +1802,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             {
                 *retType = -1;
                 *retPtr = NULL;
-                delete variantValue;
-                variantValue = NULL;
+                DELETE_AND_SET_NULL(variantValue);
             }
 
             QMetaType::destroy(type, ptrToOriginalValue); //type is type-number of original value
@@ -1971,12 +1970,8 @@ PyObject* PythonQtConversion::PCLPointToPyObject(const ito::PCLPoint& c)
     ito::PythonPCL::PyPoint *result = (ito::PythonPCL::PyPoint*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPointType), NULL, NULL);
     if (result)
     {
-        if (result->point)
-        {
-            delete result->point;
-            result->point = NULL;
-        }
-        *result->point = c;
+        DELETE_AND_SET_NULL(result->point);
+        *(result->point) = c;
         return (PyObject*)result;
     }
     PyErr_SetString(PyExc_RuntimeError, "could not create instance of pclPoint");
@@ -1989,11 +1984,7 @@ PyObject* PythonQtConversion::PCLPolygonMeshToPyObject(const ito::PCLPolygonMesh
     ito::PythonPCL::PyPolygonMesh *result = (ito::PythonPCL::PyPolygonMesh*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPolygonMeshType), NULL, NULL);
     if (result)
     {
-        if (result->polygonMesh)
-        {
-            delete result->polygonMesh;
-            result->polygonMesh = NULL;
-        }
+		DELETE_AND_SET_NULL(result->polygonMesh);
         result->polygonMesh = new ito::PCLPolygonMesh(c);
         //*result->polygonMesh = c;
         return (PyObject*)result;

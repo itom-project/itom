@@ -75,11 +75,7 @@ void PythonPCL::PyPointCloud_addTpDict(PyObject * /*tp_dict*/)
 //------------------------------------------------------------------------------------------------------
 void PythonPCL::PyPointCloud_dealloc(PyPointCloud* self)
 {
-    if (self->data)
-    {
-        delete self->data;
-        self->data = NULL;
-    }
+    DELETE_AND_SET_NULL(self->data);
     Py_XDECREF(self->base);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
@@ -2250,11 +2246,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
 void PythonPCL::PyPoint_dealloc(PyPoint* self)
 {
     Py_XDECREF(self->base);
-    if (self->point)
-    {
-        delete self->point;
-        self->point = NULL;
-    }
+    DELETE_AND_SET_NULL(self->point);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
@@ -3314,11 +3306,7 @@ void PythonPCL::PyPoint_addTpDict(PyObject *tp_dict)
 void PythonPCL::PyPolygonMesh_dealloc(PyPolygonMesh* self)
 {
     Py_XDECREF(self->base);
-    if (self->polygonMesh)
-    {
-        delete self->polygonMesh;
-        self->polygonMesh = NULL;
-    }
+    DELETE_AND_SET_NULL(self->polygonMesh);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 

@@ -23,6 +23,7 @@
 #include "pythonRegion.h"
 
 #include "pythonDataObject.h"
+#include "../global.h"
 
 #include <qvector.h>
 #include <qrect.h>
@@ -50,11 +51,7 @@ void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
 //------------------------------------------------------------------------------------------------------
 void PythonRegion::PyRegion_dealloc(PyRegion* self)
 {
-    if(self->r)
-    {
-        delete self->r;
-        self->r = NULL;
-    }
+    DELETE_AND_SET_NULL(self->r);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
@@ -103,12 +100,12 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 
     if(PyTuple_Size(args) == 0)
     {
-        if(self->r) delete self->r;
+        DELETE_AND_SET_NULL(self->r);
         self->r = new QRegion();
     }
     else if(PyArg_ParseTuple(args,"O!",&PyRegionType,other))
     {
-        if(self->r) delete self->r;
+        DELETE_AND_SET_NULL(self->r);
         PyRegion *otherRegion = (PyRegion*)other;
         if(otherRegion->r == NULL)
         {
@@ -121,12 +118,12 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     {
         if(t == QRegion::Rectangle)
         {
-            if(self->r) delete self->r;
+            DELETE_AND_SET_NULL(self->r);
             self->r = new QRegion(x,y,w,h, QRegion::Rectangle);
         }
         else if(t == QRegion::Ellipse)
         {
-            if(self->r) delete self->r;
+            DELETE_AND_SET_NULL(self->r);
             self->r = new QRegion(x,y,w,h, QRegion::Ellipse);
         }
     }
