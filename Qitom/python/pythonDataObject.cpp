@@ -204,6 +204,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     //1. check for call without arguments
     if ((length + lengthKwds) == 0 && !done)
     {
+        DELETE_AND_SET_NULL(self->dataObject);
         self->dataObject = new ito::DataObject();
         self->base = NULL;
         retValue += RetVal(retOk);
@@ -215,10 +216,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     if (!done && PyArg_ParseTuple(args, "O!", &PyDataObjectType, &copyObject))
     {
         PyDataObject* tempObject = (PyDataObject*)(copyObject);
-        if (self->dataObject)
-        {
-            DELETE_AND_SET_NULL(self->dataObject);
-        }
+        DELETE_AND_SET_NULL(self->dataObject);
         tempObject->dataObject->lockRead(); //lock
         self->dataObject = new ito::DataObject(*tempObject->dataObject);
         self->dataObject->unlock();
@@ -320,6 +318,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
             {
                 if (dimensions <= 0 || PyArray_SIZE(ndArray) <= 0)
                 {
+                    DELETE_AND_SET_NULL(self->dataObject);
                     self->dataObject = new ito::DataObject();
                     Py_XDECREF((PyObject*)ndArray);
                     done = true;
@@ -343,6 +342,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     //verify that last dimension has steps size equal to itemsize
                     if(steps[dimensions-1] == PyArray_ITEMSIZE(ndArray))
                     {
+                        DELETE_AND_SET_NULL(self->dataObject);
                         self->dataObject = new ito::DataObject(dimensions, sizes, typeno, data, steps);
                     }
                     else
@@ -359,6 +359,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         }
                         sizes_inc[dimensions - 1] = 1;
                         steps_inc[dimensions - 1] = PyArray_ITEMSIZE(ndArray);
+                        DELETE_AND_SET_NULL(self->dataObject);
                         self->dataObject = new ito::DataObject(dimensions, sizes_inc, typeno, data, steps_inc);
 
                         DELETE_AND_SET_NULL_ARRAY(sizes_inc);
@@ -431,7 +432,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         dimListItem = PySequence_GetItem(dimList,i); //new reference
                         if (!PyArg_Parse(dimListItem , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
                         {
-                            Py_XDECREF(dimListItem);
                             PyErr_Print();
                             PyErr_Clear();
                             PyErr_Format(PyExc_TypeError,"Element %d of dimension-list is no integer number", i+1);
@@ -440,7 +440,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         }
                         else if (tempSizes <= 0)
                         {
-                            Py_XDECREF(dimListItem);
                             PyErr_Format(PyExc_TypeError,"Element %d must be bigger than 1");
                             retValue += RetVal(retError);
                             break;
@@ -468,6 +467,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                     if (!retValue.containsError())
                     {
+                        DELETE_AND_SET_NULL(self->dataObject);
                         try
                         {
                             self->dataObject = new ito::DataObject(dimensions, sizes, typeno, continuous);
