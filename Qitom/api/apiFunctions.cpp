@@ -436,7 +436,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 				int s = dObj->getSize(i);
 				if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
 				{
-					ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+					ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
 					break;
 				}
 			}
