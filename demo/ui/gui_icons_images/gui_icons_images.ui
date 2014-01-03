@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>514</width>
-    <height>432</height>
+    <height>449</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>For menus, create the menus and submenus by simply typing the captions into this GUI in QtDesigner. Then set the icons to icon-files (no resources) located in the same folder than this ui-file. Usually it is sufficient to only set the normal version of the icon</string>
+       <string>For menus, create the menus and submenus by simply typing the captions into this GUI in QtDesigner. Then set the icons to icon-files (no resources) located in the same folder than this ui-file or a subfolder. Usually it is sufficient to only set the normal version of the icon</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -40,7 +40,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>2leftarrow.png</normaloff>2leftarrow.png</iconset>
+             <normaloff>icons/2leftarrow.png</normaloff>icons/2leftarrow.png</iconset>
            </property>
           </widget>
          </item>
@@ -51,7 +51,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>1leftarrow.png</normaloff>1leftarrow.png</iconset>
+             <normaloff>icons/1leftarrow.png</normaloff>icons/1leftarrow.png</iconset>
            </property>
           </widget>
          </item>
@@ -62,7 +62,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>1rightarrow.png</normaloff>1rightarrow.png</iconset>
+             <normaloff>icons/1rightarrow.png</normaloff>icons/1rightarrow.png</iconset>
            </property>
           </widget>
          </item>
@@ -73,7 +73,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>2rightarrow.png</normaloff>2rightarrow.png</iconset>
+             <normaloff>icons/2rightarrow.png</normaloff>icons/2rightarrow.png</iconset>
            </property>
           </widget>
          </item>
@@ -82,7 +82,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>The icons for the buttons in this group box are png-files located in the same folder than this ui-file. Then set the icon-property of each button to the corresponding file. </string>
+          <string>The icons for the buttons in this group box are png-files located in the same folder than this ui-file (or a subfolder). Then set the icon-property of each button to the corresponding file. </string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -132,7 +132,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>For an image use a QLabel and set its pixmap property to the image file, that should also be located in the same directory than this ui-file.</string>
+          <string>For an image use a QLabel and set its pixmap property to the image file, that should also be located in the same directory than this ui-file or any subfolder.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -165,7 +165,7 @@
   <action name="actionClose">
    <property name="icon">
     <iconset>
-     <normalon>close.png</normalon>
+     <normalon>icons/close.png</normalon>
     </iconset>
    </property>
    <property name="text">
