@@ -345,6 +345,8 @@ void FileSystemDockWidget::createToolBars()
     spacerWidget->setLayout(spacerLayout);
 
     m_pMainToolbar = new QToolBar(tr("file system"), this);
+    m_pMainToolbar->setObjectName("toolbarFileSystem");
+    m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 

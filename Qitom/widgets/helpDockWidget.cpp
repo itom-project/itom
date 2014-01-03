@@ -92,6 +92,8 @@ void HelpDockWidget::createMenus()
 void HelpDockWidget::createToolBars()
 {		
 	m_pMainToolbar = new QToolBar(tr("navigation"), this);
+    m_pMainToolbar->setObjectName("toolbarHelp");
+    m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
 	m_pMainToolbar->addAction(m_pActBackward);
 	m_pMainToolbar->addAction(m_pActForward);

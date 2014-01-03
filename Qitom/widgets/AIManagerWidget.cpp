@@ -277,6 +277,8 @@ void AIManagerWidget::createToolBars()
     spacerWidget->setLayout(spacerLayout);
 
     m_pMainToolbar = new QToolBar(tr("plugins"), this);
+    m_pMainToolbar->setObjectName("toolbarPlugins");
+    m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 

@@ -146,7 +146,9 @@ void WorkspaceDockWidget::createActions()
 */
 void WorkspaceDockWidget::createToolBars()
 {
-    m_pMainToolBar = new QToolBar(tr("script editor"), this);
+    m_pMainToolBar = new QToolBar(tr("Workspace"), this);
+    m_pMainToolBar->setObjectName("toolbarWorkspace");
+    m_pMainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolBar->setFloatable(false);
 //    m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
     addToolBar(m_pMainToolBar, "mainToolBar");

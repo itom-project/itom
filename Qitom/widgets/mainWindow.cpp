@@ -131,9 +131,9 @@ MainWindow::MainWindow() :
     {
         // FileDir-Dock
         m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
-//        m_fileSystemDock->restoreState();
-	    m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+//        m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
+        m_fileSystemDock->restoreState("itomFileSystemDockWidget");
+        m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
@@ -142,43 +142,46 @@ MainWindow::MainWindow() :
     {
         // breakPointDock
         m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_breakPointDock->setObjectName("itomBreakPointDockWidget");
+//        m_breakPointDock->setObjectName("itomBreakPointDockWidget");
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
         // lastCommandDock
         m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), "itomLastCommandDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
+//        m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
         m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
-
+        
         // helpDock
         m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_helpDock->setObjectName("itomHelpDockWidget");
+//        m_helpDock->setObjectName("itomHelpDockWidget");
+//        m_helpDock->restoreState("itomHelpDockWidget");
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
-	    // CallStack-Dock
-	    m_callStackDock = new CallStackDockWidget(tr("Call Stack"), "itomCallStackDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_callStackDock->setObjectName("itomCallStackDockWidget");
-	    m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-	    addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
+        // CallStack-Dock
+        m_callStackDock = new CallStackDockWidget(tr("Call Stack"), "itomCallStackDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+//        m_callStackDock->setObjectName("itomCallStackDockWidget");
+        m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
         // tabify file-directory and breakpoints
-	    tabifyDockWidget(m_callStackDock, m_fileSystemDock);
+        tabifyDockWidget(m_callStackDock, m_fileSystemDock);
         tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
         m_fileSystemDock->raise();
 
         // global workspace widget (Python)
         m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), "itomGlobalWorkspaceDockWidget", true, this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
+//        m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
+//        m_globalWorkspaceDock->restoreState("itomGlobalWorkspaceDockWidget");
         m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
         connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
         // local workspace widget (Python)
         m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), "itomLocalWorkspaceDockWidget", false, this, true, true, AbstractDockWidget::floatingStandard);
-//	    m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
+//        m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
+//        m_localWorkspaceDock->restoreState("itomLocalWorkspaceDockWidget");
         m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
         connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString, int)), this, SLOT(setStatusText(QString, int)));
@@ -192,18 +195,19 @@ MainWindow::MainWindow() :
     if (uOrg->hasFeature(featPlugins))
     {
         // AddIn-Manager
-    //    m_pAIManagerWidget = new AIManagerWidget();
+//        m_pAIManagerWidget = new AIManagerWidget();
         m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
-//	    m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
+//        m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
+//        m_pAIManagerWidget->restoreState("itomPluginsDockWidget");
         qDebug(".. plugin manager widget loaded");
 
         addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
 
-		if (m_helpDock)
-		{
-			tabifyDockWidget(m_pAIManagerWidget, m_helpDock);
-			m_pAIManagerWidget->raise();
-		}
+        if (m_helpDock)
+        {
+	        tabifyDockWidget(m_pAIManagerWidget, m_helpDock);
+	        m_pAIManagerWidget->raise();
+        }
     }
 
     // connections
@@ -295,6 +299,10 @@ MainWindow::MainWindow() :
 MainWindow::~MainWindow()
 {
     m_fileSystemDock->saveState("itomFileSystemDockWidget");
+    m_helpDock->saveState("itomHelpDockWidget");
+    m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
+    m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
+    m_pAIManagerWidget->saveState("itomPluginsDockWidget");
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -527,7 +535,6 @@ void MainWindow::createActions()
         m_actions["python_stepOutAction"]->setShortcut(tr("Shift+F11"));
         m_actions["python_stepOutAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(m_actions["python_stepOutAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
-
 
         m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
         connect(m_actions["python_reloadModules"], SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
@@ -891,7 +898,6 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     QToolBar *toolbar = NULL;
     QAction *action = NULL;
     
-
     if (it == m_userDefinedToolBars.constEnd())
     {
         m_userDefinedToolBars[toolbarName] = toolbar = new QToolBar(toolbarName, this);
