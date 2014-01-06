@@ -110,7 +110,7 @@ class abstractObjInteractionToolBar():
             elif objType == 'line':
                 dimsTestString = '{}.shape[{}.dims-1] == 1 or {}.shape[{}.dims-2] == 1'
             elif objType == 'lineORplane':
-                dimsNPTestString = '{}.ndim > 0 and ({}.ndim < 3 or (({}.ndim < 4) and ({}.shape[0] == 1)))'
+                dimsTestString = '{}.ndim > 0 and ({}.ndim < 3 or (({}.ndim < 4) and ({}.shape[0] == 1)))'
             else:
                 dimsTestString = '{}.dims > 0'
                 
