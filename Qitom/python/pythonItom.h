@@ -79,8 +79,8 @@ public:
     static PyObject* PyGetFigParam(PyObject *pSelf, PyObject *pArgs);*/
 
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
-    static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs);
-    static PyObject* PyWidgetHelp(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+    static PyObject* PyWidgetHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyPluginHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyITOMVersion(PyObject* pSelf, PyObject* pArgs);
 

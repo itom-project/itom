@@ -43,7 +43,7 @@ More information about the module :py:mod:`itom` can be found under:
     pymod-itom.rst
     glossary.rst
 
-The full script reference of the module :py:mod:`itom`can be found under :ref:`itom-Script-Reference`.
+The full script reference of the module :py:mod:`itom` can be found under :ref:`itom-Script-Reference`.
     
 Further python packages
 ========================   

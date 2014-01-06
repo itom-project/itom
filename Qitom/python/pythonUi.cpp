@@ -789,7 +789,7 @@ If the property names are passed as sequence, a sequence of same size is returne
 Parameters \n\
 ----------- \n\
 property : {string, string-list} \n\
-	Name of one property or sequence (tuple,list...) of property names \n\
+    Name of one property or sequence (tuple,list...) of property names \n\
 \n\
 Returns \n\
 ------- \n\
@@ -808,7 +808,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     PyObject *propertyNames = NULL;
     QStringList propNames;
     bool ok = false;
-	bool returnTuple = true;
+    bool returnTuple = true;
 
     if(!PyArg_ParseTuple(args, "O", &propertyNames))
     {

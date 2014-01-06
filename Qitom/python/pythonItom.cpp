@@ -822,63 +822,39 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //	return PyArray_Return(a);
 //};
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
+PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pKwds)
 {
-    Py_ssize_t length = PyTuple_Size(pArgs);
-    int output = 0;
-    int listonly = 1;
-    int userwithinfos = 0;
-    int longest_name = 0;
+	const char *kwlistFilter[] = {"filterName", "dictionary", "furtherInfos", NULL};
+	const char *kwlistWidget[] = {"widgetName", "dictionary", "furtherInfos", NULL};
 
-    QString namefilter;
-    const char* filterstring;
+	char **kwlist = getWidgetHelp ? const_cast<char**>(kwlistWidget) : const_cast<char**>(kwlistFilter);
 
-    switch(length)
+    const char *filterstring = NULL;
+	int output = 0; //dictionary
+	int userwithinfos = 0; //furtherInfos
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds,"|sii", kwlist, &filterstring, &output, &userwithinfos))
     {
-    case 0:
-        namefilter.fromAscii(0);
-        break;
-    case 1: //!< copy filterstring only
-        if (!PyArg_ParseTuple(pArgs, "s", &filterstring))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        namefilter.sprintf("%s",filterstring);
-
-        if (namefilter.length())
-        {
-            listonly = 0;
-        }
-        break;
-    case 2: //!< copy filterstring and toggle output
-        if (!PyArg_ParseTuple(pArgs, "si", &filterstring, &output))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        namefilter.sprintf("%s", filterstring);
-
-        if (namefilter.length())
-        {
-            listonly = 0;
-        }
-        break;
-    case 3: //!< Valid input are filterstring, toggle output and listonlyflag
-        if (!PyArg_ParseTuple(pArgs, "sii", &filterstring, &output, &userwithinfos))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        namefilter.sprintf("%s",filterstring);
-
-        if (namefilter.length())
-        {
-            listonly = 0;
-        }
-        break;
-
-    default://!< Valid input are filterstring, toggle output and listonlyflag only
-        return PyErr_Format(PyExc_ValueError, "to many arguments");
-        break;
+        return NULL;
     }
+
+    int longest_name = 0;
+    int listonly = 1;
+	QString namefilter;
+
+	if (filterstring == NULL)
+	{
+		namefilter.fromAscii(0);
+	}
+	else
+	{
+		namefilter.sprintf("%s",filterstring);
+
+        if (namefilter.length())
+        {
+            listonly = 0;
+        }
+	}
 
     if (namefilter.contains("*") && ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0)))
     {
@@ -888,9 +864,6 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
     }
 
     PyErr_Clear();
-
-//    QVector<ito::tParam> *paramsMand = NULL;
-//    QVector<ito::tParam> *paramsOpt = NULL;
 
     ito::RetVal retval = 0;
     PyObject *result = NULL;
@@ -1198,59 +1171,69 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs)
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s). \n \
-                               Generates an online help for the given widget or returns a list of available filter.\n\
+PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s). \n\
+\n\
+This method prints information about one specific filter (algorithm) or a list of filters to the console output. If one specific filter, defined \
+in an algorithm plugin can be found that case-sensitively fits the given filterName its full documentation is printed. Else, a list of filters \
+is printed whose name contains the given filterName.\n\
 \n\
 Parameters \n\
 ----------- \n\
 filterName : {str}, optional \n\
     is the fullname or a part of any filter-name which should be displayed. \n\
-    If filterName is none or no filter matches filterName casesensitiv a list with all suitable filters is given. \n\
+    If filterName is empty or no filter matches filterName (case sensitive) a list with all suitable filters is given. \n\
 dictionary : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
+    if dictionary == 1, a dictionary with all relevant components of the filter's documentation is returned [default: 0] \n\
 furtherInfos : {int}, optional \n\
-    defines if a complete parameter-list of name-related filters to the given filterName should be displayed (1) \n\
+    Usually, filters or algorithms whose name only contains the given filterName are only listed at the end of the information text. \n\
+    If this parameter is set to 1 [default: 0], the full information for all these filters is printed as well. \n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of dictionary.");
+{None} or {dict} \n\
+    In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
+    returns a dictionary with the single components of the information text.");
 
-PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs)
+PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
-    return PyWidgetOrFilterHelp(false, pArgs);
+    return PyWidgetOrFilterHelp(false, pArgs, pKwds);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s). \n \
-Generates an online help for the given widget or returns a list of available widgets. \n\
+PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s). \n\
+\n\
+This method prints information about one specific widget or a list of widgets to the console output. If one specific widget, defined \
+in an algorithm plugin can be found that case-sensitively fits the given widgetName its full documentation is printed. Else, a list of widgets \
+is printed whose name contains the given widgetName.\n\
 \n\
 Parameters \n\
 ----------- \n\
 widgetName : {str}, optional \n\
     is the fullname or a part of any widget-name which should be displayed. \n\
-    If widgetName is none or no widget matches widgetName casesensitiv a list with all suitable widgets is given. \n\
+    If widgetName is empty or no widget matches widgetName (case sensitive) a list with all suitable widgets is given. \n\
 dictionary : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
+    if dictionary == 1, a dictionary with all relevant components of the widget's documentation is returned [default: 0] \n\
 furtherInfos : {int}, optional \n\
-    defines if a complete parameter-list of name-related widgets to the given widgetName should be displayed (1) \n\
+    Usually, widgets whose name only contains the given widgetName are only listed at the end of the information text. \n\
+    If this parameter is set to 1 [default: 0], the full information for all these widgets is printed as well. \n\
 \n\
 Returns \n\
 ------- \n\
-Returns none or a PyDictionary depending on the value of dictionary.");
-PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs)
+{None} or {dict} \n\
+    In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
+    returns a dictionary with the single components of the information text.");
+PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
-    return PyWidgetOrFilterHelp(true, pArgs);
+    return PyWidgetOrFilterHelp(true, pArgs, pKwds);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginname) -> checks if a certain plugin was loaded.\n\
+PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> checks if a certain plugin was loaded.\n\
 Checks if a specified plugin is loaded and returns the result as a boolean expression. \n\
 \n\
 Parameters \n\
 ----------- \n\
-pluginname :  {str} \n\
+pluginName :  {str} \n\
     The name of a specified plugin as usually displayed in the plugin window.\n\
 \n\
 Returns \n\
@@ -3541,8 +3524,8 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"setFigParam", (PyCFunction)PythonItom::PySetFigParam, METH_VARARGS, pySetFigParam_doc},
     {"getFigParam", (PyCFunction)PythonItom::PyGetFigParam, METH_VARARGS, pyGetFigParam_doc},*/
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
-    {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS, pyFilterHelp_doc},
-    {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS, pyWidgetHelp_doc},
+    {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS | METH_KEYWORDS, pyFilterHelp_doc},
+    {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS | METH_KEYWORDS, pyWidgetHelp_doc},
     {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
     {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
