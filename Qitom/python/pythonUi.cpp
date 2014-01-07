@@ -396,45 +396,53 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     QByteArray possibleSignatures = "";
     const MethodDescription *foundMethod = NULL;
 
-    foreach(const MethodDescription *method, possibleMethods)
+    if (possibleMethods.count() > 1) //if more than one possible method is availabe, at first, try to strictly cast all parameters...
     {
-        ok = true;
-        if(method->checkMethod(slotName, nrOfParams))
+        foreach(const MethodDescription *method, possibleMethods)
         {
-            for(int j=0;j<nrOfParams;j++)
+            ok = true;
+            if(method->checkMethod(slotName, nrOfParams))
             {
-                //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
+                for(int j=0;j<nrOfParams;j++)
                 {
-                    paramContainer->setParamArg(j, ptr, typeNr);
+                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
+                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
+                    {
+                        paramContainer->setParamArg(j, ptr, typeNr);
+                    }
+                    else
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+
+                if(ok)
+                {
+                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+
+                    found = true;
+                    foundMethod = method;
+                    break; //everything ok, we found the method and could convert all given parameters
                 }
                 else
                 {
-                    ok = false;
-                    break;
+                    possibleSignatures += QByteArray("'" + method->signature() + "', ");
                 }
-            }
 
-            if(ok)
-            {
-                paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
-
-                found = true;
-                foundMethod = method;
-                break; //everything ok, we found the method and could convert all given parameters
             }
             else
             {
                 possibleSignatures += QByteArray("'" + method->signature() + "', ");
             }
-
-        }
-        else
-        {
-            possibleSignatures += QByteArray("'" + method->signature() + "', ");
         }
     }
-    if (!ok)
+    else //... directly allow the non-strict conversion of all parameters (ok = false enters the next if case ;) )
+    {
+        ok = false;
+    }
+
+    if (!ok) //until now, there is no possibility to directly, strictly cast all parameters to available signatures. Therefore try now also to not-strictly cast
     {
         foreach(const MethodDescription *method, possibleMethods)
         {
