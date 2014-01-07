@@ -1457,6 +1457,8 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         }
     }
 
+    *retPtr = NULL; //invalidate it first
+
     if (QMetaType::isRegistered(type))
     {
         // special type request:
