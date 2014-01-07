@@ -37,6 +37,7 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 #include <qsplashscreen.h>
+#include <qstylefactory.h>
 
 /*!
     \class MainApplication
@@ -189,11 +190,35 @@ void MainApplication::setupApplication()
         settings->beginGroup("ApplicationStyle");
         QString styleName = settings->value("style", "").toString();
         QString cssFile = settings->value("cssFile", "").toString();
+        QString rccFile = settings->value("rccFile", "").toString();
         settings->endGroup();
 
         if (styleName != "")
         {
-            QApplication::setStyle(styleName);
+            QStringList styles = QStyleFactory::keys();
+
+            if (styles.contains(styleName, Qt::CaseInsensitive))
+            {
+                QApplication::setStyle(styleName);
+            }
+            else
+            {
+                qDebug() << "style " << styleName << "is not available. Available styles are " << styles;
+            }
+        }
+
+        if (rccFile != "")
+        {
+            QDir styleFolder = QCoreApplication::applicationDirPath();
+            if (styleFolder.exists(rccFile))
+            {
+                QResource::registerResource(rccFile);
+            }
+            else
+            {
+                qDebug() << "resource-file " << rccFile << " does not exist";
+            }
+            
         }
 
         if (cssFile != "")
@@ -208,6 +233,10 @@ void MainApplication::setupApplication()
                     qApp->setStyleSheet(cssContent);
                     css.close();
                 }
+            }
+            else
+            {
+                qDebug() << "style-file " << cssFile << " does not exist";
             }
         }
     }
