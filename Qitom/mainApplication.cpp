@@ -146,6 +146,12 @@ void MainApplication::setupApplication()
     settings->endGroup();
     settings->sync();
 
+    //load timeouts
+    settings->beginGroup("Application");
+    AppManagement::timeouts.pluginInitClose = settings->value("timeoutInitClose", 10000).toInt();
+    AppManagement::timeouts.pluginGeneral = settings->value("timeoutGeneral", 5000).toInt();
+    settings->endGroup();
+
     QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
@@ -473,6 +479,13 @@ void MainApplication::finalizeApplication()
     settings->beginGroup("CurrentStatus");
     settings->setValue("currentDir",QDir::currentPath());
     settings->endGroup();
+
+    //save timeouts
+    settings->beginGroup("Application");
+    settings->setValue("timeoutInitClose", AppManagement::timeouts.pluginInitClose);
+    settings->setValue("timeoutGeneral", AppManagement::timeouts.pluginGeneral);
+    settings->endGroup();
+
     delete settings;
 }
 

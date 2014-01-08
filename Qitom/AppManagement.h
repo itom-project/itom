@@ -104,6 +104,14 @@ class AppManagement
             m_userOrganizer = userOrganizer;
         }
 
+        struct Timeouts
+        {
+            int pluginInitClose;
+            int pluginGeneral;
+        };
+
+        static Timeouts timeouts;
+
     private:
         static QObject* m_sew;  /*!< static pointer to ScriptEditorOrganizer (default: NULL) */
         static QObject* m_pe;   /*!< static pointer to PythonEngine (default: NULL) */

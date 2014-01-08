@@ -982,8 +982,7 @@ namespace ito
 
         QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(ItomSharedSemaphore *, waitCond));
 
-//        waitCond->wait(PLUGINWAIT * 2);
-        while (!waitCond->wait(PLUGINWAIT * 2))
+        while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
         {
             if (!(*addIn)->isAlive())
             {
@@ -1118,7 +1117,7 @@ end:
 
         QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(ItomSharedSemaphore *, waitCond));
 
-        while (!waitCond->wait(PLUGINWAIT * 2))
+        while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
         {
             if (!(*addIn)->isAlive())
             {
@@ -1295,7 +1294,7 @@ end:
         {
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore *, waitCond));
-            waitCond->wait(PLUGINWAIT); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
+            waitCond->wait(AppManagement::timeouts.pluginInitClose); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
             retval += waitCond->returnValue;
             waitCond->deleteSemaphore();
             waitCond = NULL;
@@ -1489,7 +1488,7 @@ end:
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
             ret += waitCond->returnValue;
-            waitCond->wait(PLUGINWAIT);
+            waitCond->wait(AppManagement::timeouts.pluginGeneral);
             waitCond->deleteSemaphore();
             waitCond = NULL;
         }
@@ -1548,7 +1547,6 @@ end:
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
 
         m_algoInterfaceValidator = new AlgoInterfaceValidator(retValue);
-
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

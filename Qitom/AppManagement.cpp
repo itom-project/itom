@@ -42,6 +42,7 @@ QObject* AppManagement::m_uiOrganizer = NULL;
 QObject* AppManagement::m_processOrganizer = NULL;
 QObject* AppManagement::m_userOrganizer = NULL;
 QMutex AppManagement::m_mutex;
+AppManagement::Timeouts AppManagement::timeouts;
 
 
 QObject* AppManagement::getAddinManager() 

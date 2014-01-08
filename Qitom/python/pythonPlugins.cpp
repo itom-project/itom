@@ -31,6 +31,7 @@
     #include "structmember.h"   //python structmember
 #endif
 #include "../organizer/addInManager.h"
+#include "../AppManagement.h"
 #include <qlist.h>
 #include <qmap.h>
 #include <qobject.h>
@@ -60,11 +61,11 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
     {
 		if (retval.errorMessage())
 		{
-			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toAscii().data(), retval.errorMessage());
 		}
 		else
 		{
-			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.\n", pluginName.toAscii().data());
+			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toAscii().data());
 		}
         return false;
     }
@@ -492,7 +493,7 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
     QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String));
     QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
 
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!addInObj->isAlive())
         {
@@ -566,7 +567,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                 QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
 
-                while (!locker.getSemaphore()->wait(PLUGINWAIT))
+                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
                 {
                     if (!aib->isAlive())
                     {
@@ -691,7 +692,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     QSharedPointer<ito::Param> qsParam(new ito::Param(paramName)); //here it is sufficient to provide an empty param container with name only, the content will be filled by the plugin (including type)
     
     QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!addInObj->isAlive())
         {
@@ -807,7 +808,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         bool timeout = false;
         waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
-        while (!waitCond->wait(PLUGINWAIT))
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!addInObj->isAlive())
             {
@@ -1034,7 +1035,6 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-        //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
         waitCond->wait(-1);
         retval += waitCond->returnValue;
          waitCond->deleteSemaphore();
@@ -1325,7 +1325,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -1433,7 +1433,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -1500,7 +1500,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     }
 
     QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -1629,7 +1629,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -2005,7 +2005,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     {
         QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -2085,7 +2085,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->actuatorObj->isAlive())
         {
@@ -2187,455 +2187,6 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    PyActuatorPlugin_new                     /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/** desctructor for axis object in python
-*   @param [in] self
-*
-*   Destructs an actuator object (plugin), i.e. deletes the according python variable and invokes
-*   the closeAddIn function. The object itself is only deleted if the object's reference
-*   counter is zero.
-*/
-/*
-void PythonPlugins::PyActuatorAxis_dealloc(PyActuatorAxis* self)
-{
-    if (self->axisObj)
-    {
-        if (self->axisObj->getInstNum() == 0)
-        {
-            delete self->axisObj;
-        }
-        else
-        {
-            self->axisObj->decRef();
-        }
-    }
-
-    Py_TYPE(self)->tp_free((PyObject*)self);
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/** constructor for actuatorAxis object in python
-*   @param [in] type
-*   @return     new python actuatorAxis object
-*
-*   Creates a new pythonActuatorAxis object. The actual actuatorAxis object (itom) is only created later.
-*/
-/*
-PyObject* PythonPlugins::PyActuatorAxis_new(PyTypeObject *type, PyObject* args, PyObject* kwds)
-{
-   PyActuatorAxis *self = NULL;
-
-   self = (PyActuatorAxis *)type->tp_alloc(type, 0);
-   if (self != NULL)
-   {
-      self->axisObj = NULL;
-      self->base = NULL;
-   }
-
-   return (PyObject *)self;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyDoc_STRVAR(pyActuatorAxisInit_doc, "axis(actuator, number) -> constructor\n\
-                                Parameters: \n\
-                                - 'actuator' actuator object from which an axis object should be retrieved \
-                                - 'number'  number of the axis of the actuator");
-*/
-/** constructor for actuator axis object
-*   @param [in] self    the according actuatorAxis object
-*   @param [in] args    unnamed arguments passed to the constructor in python
-*   @return             -1 in case an error occured, else 0
-*
-*   The actuator passed must be a valid actuator object and the axis number must exist.
-*/
-/*
-int PythonPlugins::PyActuatorAxis_init(PyActuatorAxis *self, PyObject *args, PyObject * kwds)
-{
-    self->axisObj = NULL;
-
-    int length = PyTuple_Size(args);
-
-    if (length == 0)
-    {
-        PyErr_Format(PyExc_ValueError, "insufficient number of parameters");
-        return -1;
-    }
-    else if (length == 1) //!< copy constructor or name only
-    {
-        PyActuatorAxis* copyPlugin = NULL;
-
-        if (PyArg_ParseTuple(args, "O!", &PyActuatorAxisType, &copyPlugin))
-        {
-            self->axisObj = copyPlugin->axisObj;
-            self->base = copyPlugin->base;
-            return 0;
-        }
-    }
-
-    PyErr_Clear();
-
-    ito::RetVal retval = 0;
-    int axisNum = -1;
-    PyObject *tempPyObj = NULL;
-    ito::AddInActuator *actObj = NULL;
-
-    tempPyObj = PyTuple_GetItem(args, 0);
-    if (Py_TYPE(tempPyObj) == &PythonPlugins::PyActuatorPluginType)
-    {
-       actObj = (ito::AddInActuator *)(((PythonPlugins::PyActuatorPlugin *)tempPyObj)->actuatorObj);
-    }
-    else
-    {
-        PyErr_Format(PyExc_RuntimeError, "invalid actuator object passed");
-        return -1;
-    }
-    tempPyObj = PyTuple_GetItem(args, 1);
-    if (PyLong_CheckExact(tempPyObj))
-    {
-       axisNum = PyLong_AsLong(tempPyObj);
-    }
-    else
-    {
-        PyErr_Format(PyExc_RuntimeError, "axis number must be an integer value");
-        return -1;
-    }
-
-    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(actObj, "getAxis", Q_ARG(const int, axisNum), Q_ARG(ito::ActuatorAxis**, &self->axisObj), Q_ARG(ItomSharedSemaphore*, waitCond));
-    waitCond->wait(PLUGINWAIT);
-    retval += waitCond->returnValue;
-      waitCond->deleteSemaphore();
-      waitCond = NULL;
-
-    if (!SetLoadPluginReturnValueMessage(retval, "axis"))
-    {
-        return -1;
-    }
-
-    return 0;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyMemberDef PythonPlugins::PyActuatorAxis_members[] = {
-    {NULL}  // Sentinel
-};
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-//PyDoc_STRVAR(pyActuatorAxisGetStatus_doc, "getStatus() -> retrieve the axis status");
-
-/** get the status of an axis
-*   @param [in] self    the axis object (python)
-*   @return             an error if the parameter wasn't found or the passed value is out of the limits
-*
-*   Returns the status of the axis passed as parameter.
-*/
-/*
-PyObject* PythonPlugins::PyActuatorAxis_getStatus(PyActuatorAxis* self, PyObject * args)
-{
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    ito::RetVal ret = ito::retOk;
-    int length = PyTuple_Size(args);
-
-    QSharedPointer<QVector<int> > status(new QVector<int>());
-
-    PyObject *result = NULL;
-
-    if (length != 0)
-    {
-        PyErr_Format(PyExc_ValueError, "too many parameters");
-        return NULL;
-    }
-
-    QMetaObject::invokeMethod(self->axisObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-    {
-        if (!self->axisObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toAscii().data());
-            break;
-        }
-    }
-
-    ret += locker.getSemaphore()->returnValue;
-
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, "error invoking getStatus with error message: \n%s\n", ret.errorMessage());
-        return NULL;
-    }
-
-    int size = status->size();
-    if (size>0)
-    {
-        PyObject *result = PyList_New(size); //new ref
-        for (int i=0;i<size;i++)
-        {
-            PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
-        }
-    }
-    else
-    {
-        Py_INCREF(Py_None);
-        result = Py_None;
-    }
-    //result = PyLong_FromLong(*status);
-
-    return result;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-//PyDoc_STRVAR(pyActuatorAxisGetPos_doc, "getPos() \n");
-/** get the position of the axis
-*   @param [in] self    the axis object (python)
-*   @return             the axis positions
-*
-*   Reads the position of the axis
-*/
-/*
-PyObject* PythonPlugins::PyActuatorAxis_getPos(PyActuatorAxis* self, PyObject *args)
-{
-    ito::RetVal ret = ito::retOk;
-    PyObject *result = NULL;
-
-    QSharedPointer<double> pos(new double);
-    *pos = 0.0;
-
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    QMetaObject::invokeMethod(self->axisObj, "getPos", Q_ARG(QSharedPointer<double>, pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-    {
-        if (!self->axisObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting position values").toAscii().data());
-            break;
-        }
-    }
-
-    ret += locker.getSemaphore()->returnValue;
-
-    result = PyFloat_FromDouble(*pos);
-
-    if (!SetReturnValueMessage(ret, "getPos"))
-    {
-        return NULL;
-    }
-
-//    if (ret != ito::retOk)
-//    {
-//        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-//        return NULL;
-//    }
-
-    return result;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyDoc_STRVAR(pyActuatorAxisSetPosAbs_doc,"setPosAbs(pos) \n\
-                                Parameters: \n\
-                                - 'pos' new position for axis");
-*/
-/** set axis to new absolute position
-*   @param [in] self    the axis object (python)
-*   @param [in] args    the new position
-*   @return             status of positioning command
-*
-*   The setPosAbs method of the axis object is invoked and their return value returned
-*/
-/*
-PyObject* PythonPlugins::PyActuatorAxis_setPosAbs(PyActuatorAxis* self, PyObject * args)
-{
-    ito::RetVal ret = ito::retOk;
-    int length = PyTuple_Size(args);
-    double pos;
-
-    if (length != 1)
-    {
-        PyErr_Format(PyExc_RuntimeError, "invalid number of parameters");
-        return NULL;
-    }
-
-    PyObject * tempPyObj = PyTuple_GetItem(args, 0);
-    if (PyLong_CheckExact(tempPyObj))
-    {
-       pos = (double)PyLong_AsLong(tempPyObj);
-    }
-    else if (PyFloat_CheckExact(tempPyObj))
-    {
-       pos = PyFloat_AsDouble(tempPyObj);
-    }
-
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QMetaObject::invokeMethod(self->axisObj, "setPosAbs", Q_ARG(const double, (const double)pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-    {
-        if (!self->axisObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting absolute position").toAscii().data());
-            break;
-        }
-    }
-
-    ret += locker.getSemaphore()->returnValue;
-
-    if (!SetReturnValueMessage(ret, "setPosAbs"))
-    {
-        return NULL;
-    }
-
-//    if (ret != ito::retOk)
-//    {
-//        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-//        return NULL;
-//    }
-
-    Py_RETURN_NONE;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyDoc_STRVAR(pyActuatorAxisSetPosRel_doc,"setPosRel(pos) \n\
-                                Parameters: \n\
-                                - 'pos' position increment/decrement for axis");
-*/
-/** set axis to new relative position
-*   @param [in] self    the axis object (python)
-*   @param [in] args    new position
-*   @return             status of positioning command
-*
-*   The setPosRel method of the actuator object is invoked and their return value is returned.
-*/
-/*
-PyObject* PythonPlugins::PyActuatorAxis_setPosRel(PyActuatorAxis* self, PyObject * args)
-{
-    ito::RetVal ret = ito::retOk;
-    int length = PyTuple_Size(args);
-    double pos;
-
-    if (length != 1)
-    {
-        PyErr_Format(PyExc_RuntimeError, "invalid number of parameters");
-        return NULL;
-    }
-
-    PyObject * tempPyObj = PyTuple_GetItem(args, 0);
-    if (PyLong_CheckExact(tempPyObj))
-    {
-       pos = (double)PyLong_AsLong(tempPyObj);
-    }
-    else if (PyFloat_CheckExact(tempPyObj))
-    {
-       pos = PyFloat_AsDouble(tempPyObj);
-    }
-
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QMetaObject::invokeMethod(self->axisObj, "setPosRel", Q_ARG(const double, (const double)pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
-    {
-        if (!self->axisObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting relative position").toAscii().data());
-            break;
-        }
-    }
-
-    ret += locker.getSemaphore()->returnValue;
-
-    if (!SetReturnValueMessage(ret, "setPosRel"))
-    {
-        return NULL;
-    }
-
-//    if (ret != ito::retOk)
-//    {
-//        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-//        return NULL;
-//    }
-
-    Py_RETURN_NONE;
-}
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
- PyMethodDef PythonPlugins::PyActuatorAxis_methods[] = {
-//       {"getParamList", (PyCFunction)PythonPlugins::PyActuatorAxis_getParamList, METH_NOARGS, pyActuatorAxisGetParamList_doc},
-//       {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorAxis_getParamListInfo, METH_VARARGS, pyActuatorAxisGetParamListInfo_doc},
-   {"getStatus", (PyCFunction)PythonPlugins::PyActuatorAxis_getStatus, METH_VARARGS, pyActuatorAxisGetStatus_doc},
-   {"getPos", (PyCFunction)PythonPlugins::PyActuatorAxis_getPos, METH_VARARGS, pyActuatorAxisGetPos_doc},
-   {"setPosAbs", (PyCFunction)PythonPlugins::PyActuatorAxis_setPosAbs, METH_VARARGS, pyActuatorAxisSetPosAbs_doc},
-   {"setPosRel", (PyCFunction)PythonPlugins::PyActuatorAxis_setPosRel, METH_VARARGS, pyActuatorAxisSetPosRel_doc},
-   {NULL}  // Sentinel
-};
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyModuleDef PythonPlugins::PyActuatorAxisModule = {
-   PyModuleDef_HEAD_INIT,
-   "actuatorAxis",
-   QObject::tr("Itom ActuatorAxis type in python").toAscii().data(),
-   -1,
-   NULL, NULL, NULL, NULL, NULL
-};
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-// pending for deletion
-/*
-PyTypeObject PythonPlugins::PyActuatorAxisType = {
-   PyVarObject_HEAD_INIT(NULL, 0)
-   "itom.axis",            // tp_name 
-   sizeof(PyActuatorAxis),             // tp_basicsize
-   0,                         // tp_itemsize 
-   (destructor)PyActuatorAxis_dealloc, // tp_dealloc 
-   0,                         // tp_print 
-   0,                         // tp_getattr 
-   0,                         // tp_setattr 
-   0,                         // tp_reserved 
-   0,                         // tp_repr 
-   0,                         // tp_as_number 
-   0,                         // tp_as_sequence 
-   0,                         // tp_as_mapping 
-   0,                         // tp_hash
-   0,                         // tp_call
-   0,                         // tp_str 
-   0,                         // tp_getattro 
-   0,                         // tp_setattro 
-   0,                         // tp_as_buffer
-   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   // tp_flags 
-   pyActuatorAxisInit_doc,           // tp_doc 
-   0,		               // tp_traverse 
-   0,		               // tp_clear 
-   0,		               // tp_richcompare 
-   0,		               // tp_weaklistoffset 
-   0,		               // tp_iter 
-   0,		               // tp_iternext 
-   PyActuatorAxis_methods,             // tp_methods 
-   PyActuatorAxis_members,             // tp_members 
-   0,                         // tp_getset 
-   0,                         // tp_base 
-   0,                         // tp_dict 
-   0,                         // tp_descr_get 
-   0,                         // tp_descr_set 
-   0,                         // tp_dictoffset 
-   (initproc)PythonPlugins::PyActuatorAxis_init,      // tp_init 
-   0,                         // tp_alloc 
-   PyActuatorAxis_new //PyType_GenericNew
-   PythonStream_new,                  // tp_new 
-};
-*/
 //----------------------------------------------------------------------------------------------------------------------------------
 /** desctructor for dataIO object in python
 *   @param [in] self
@@ -3097,7 +2648,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
         waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
 
-        while (!waitCond->wait(PLUGINWAIT))
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!self->dataIOObj->isAlive())
             {
@@ -3160,7 +2711,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
 
-            while (!waitCond->wait(PLUGINWAIT))
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
                 if (!self->dataIOObj->isAlive())
                 {
@@ -3191,7 +2742,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             waitCond = new ItomSharedSemaphore();
             QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
 
-            while (!waitCond->wait(PLUGINWAIT))
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
                 if (!self->dataIOObj->isAlive())
                 {
@@ -3259,7 +2810,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(self->dataIOObj, "acquire", Q_ARG(const int, trigger), Q_ARG(ItomSharedSemaphore *, waitCond));
 
-    while (!waitCond->wait(PLUGINWAIT))
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
@@ -3388,7 +2939,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         return NULL;
     }
 
-    while (!locker.getSemaphore()->wait(PLUGINWAIT))
+    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
@@ -3476,7 +3027,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 
         QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
 
-        while (!locker.getSemaphore()->wait(PLUGINWAIT))
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!self->dataIOObj->isAlive())
             {
@@ -3506,7 +3057,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
 
-        while (!locker.getSemaphore()->wait(PLUGINWAIT))
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!self->dataIOObj->isAlive())
             {
@@ -3590,7 +3141,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond));
 
-        while (!waitCond->wait(PLUGINWAIT))
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!self->dataIOObj->isAlive())
             {
@@ -3684,7 +3235,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond));
 
-        while (!waitCond->wait(PLUGINWAIT))
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
             if (!self->dataIOObj->isAlive())
             {
@@ -3733,7 +3284,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
 
-    while (!waitCond->wait(PLUGINWAIT))
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
@@ -3788,7 +3339,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
 
-    while (!waitCond->wait(PLUGINWAIT))
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
@@ -3846,7 +3397,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
         QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
     }
 
-    while (!waitCond->wait(PLUGINWAIT))
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
