@@ -135,45 +135,6 @@ bool SetReturnValueMessage(ito::RetVal &retval, const char *functionName)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** Helper function used to check the type of a dataObject
-*   @param [in] bpp     expected bit depth of the framegrabber
-*   @param [in] type    dataObject data type
-*   @return     0 if bpp and type are compatible, else -1
-*
-*   This function is used within the getVal method of the dataIO plugin. It checks if the data type of the dataObject passed
-*   and the data type of the framegrabber are "compatible".
-*/
-int checkDObjBppComp(const int bpp, const int type)
-{
-    int ret = -1;
-
-    if (bpp <= 8)
-    {
-        if ((type == ito::tUInt8) || (type ==ito::tUInt16) || (type == ito::tUInt32)
-            || (type == ito::tInt16) || (type == ito::tInt32))
-        {
-            ret = 0;
-        }
-    }
-    else if (bpp <= 16)
-    {
-        if ((type ==ito::tUInt16) || (type == ito::tUInt32) || (type == ito::tInt32))
-        {
-            ret = 0;
-        }
-    }
-    else if (bpp <= 32)
-    {
-        if (type == ito::tUInt32)
-        {
-            ret = 0;
-        }
-    }
-
-    return ret;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 /** Helper function that accepts a python parameter list and returns pointers to the parameters' values and a list with their types
 *   @param [in]   args      list with python parameters
 *   @param [in]   length    number of parameters passed
@@ -236,14 +197,6 @@ int parseParams(PyObject *args, int length, char **&cargs, char *&cargt)
          cargt[n] = 'o';
          cargs[n] = (char*)(((PythonPlugins::PyAlgoPlugin *)tempPyObj)->algoObj);
       }
-// Pending for deletion
-/*
-      else if (Py_TYPE(tempPyObj) == &PythonPlugins::PyActuatorAxisType)
-      {
-         cargt[n] = 'o';
-         cargs[n] = (char*)(((PythonPlugins::PyActuatorAxis *)tempPyObj)->axisObj);
-      }
-*/
       else
       {
           PyErr_Format(PyExc_TypeError, "type of parameter %i cannot be parsed: %s", n+1, tempPyObj->ob_type->tp_name);
@@ -363,7 +316,10 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description to the specified execFunc. \n\
+PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc. \n\
+\n\
+Every plugin can define further functions, that are called by plugin.exec('funcName' [,param1, param2...]). This can for instance be used in order to call specific calibration \
+routines of cameras or actuators. This method allows printing information about available functions of this type. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -376,7 +332,7 @@ detailLevel : {dict}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-None or Dict\n\
+None or dict\n\
     depending on the value of *detailLevel*.\n\
 \n\
 Notes \n\
@@ -390,33 +346,17 @@ Generates an online help with all execFuncs for this plugIn or returns a list of
 *   @param [in] args    2 Item-Vector with integer request for additional dictionary return
 *   @return             python dictionary with list of functions or specific dictionary for one execFunc with the parameters' names, min, max, current value, (infostring)
 */
-PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
+PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 {
-    PyObject *result = NULL;
-    int length = PyTuple_Size(args);
+    const char *kwlist[] = {"funcName", "detailLevel", NULL};
+    char* funcName = NULL;
     int detailLevel = 0;
-    const char* funcName = NULL;
+
+    PyObject *result = NULL;
     QString funcNameString("");
 
-    if (length == 1)
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si", const_cast<char**>(kwlist), &funcName, &detailLevel))
     {
-        if (!PyArg_ParseTuple(args, "s", &funcName))
-        {
-            PyErr_Format(PyExc_ValueError, "wrong input parameter, must be [string[, integer]]");
-            return NULL;
-        }
-    }
-    if (length == 2)
-    {
-        if (!PyArg_ParseTuple(args, "si", &funcName, &detailLevel))
-        {
-            PyErr_Format(PyExc_ValueError, "wrong input parameter, must be [string[, integer]]");
-            return NULL;
-        }
-    }
-    else if (length > 2)
-    {
-        PyErr_Format(PyExc_ValueError, "wrong number of input arguments");
         return NULL;
     }
 
@@ -428,15 +368,15 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
     if (funcList && funcList->size() > 0)
     {
         if (funcName != NULL)
+        {
             funcNameString = QString(funcName);
+        }
 
         QStringList execFuncs = funcList->keys();
         PyObject *execFuncslist = NULL;
 
         if (execFuncs.size() > 0)
         {
-            
-            
             if (!funcNameString.isEmpty() && execFuncs.contains(funcNameString))    // got an exect match
             {
                 (*funcList)[funcNameString].infoString;
@@ -529,7 +469,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args)
 
     std::cout << "\n";
 
-    if ((length == 0) || (detailLevel < 1))
+    if ((funcName == NULL) || (detailLevel < 1))
     {
         Py_DECREF(result);
         Py_RETURN_NONE;
@@ -772,6 +712,18 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     return result;
 }
 
+
+//general docstrings
+PyDoc_STRVAR(pyPluginName_doc, "name() -> returns the plugin name\n\
+\n\
+Returns the name of the plugin, which corresponds to getParam('name')\n\
+\n\
+See Also \n\
+--------- \n\
+getParam");
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** set a parameter value
 *   @param [in] addInObj    the addIn whoes parameter is requested
@@ -880,230 +832,6 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     }
     
     Py_RETURN_NONE;
-
-
-
-
-    //if (length == 0)
-    //{
-    //    PyErr_Format(PyExc_ValueError, "no parameter name specified");
-    //    return NULL;
-    //}
-    //else if (length == 1)
-    //{
-    //    PyErr_Format(PyExc_ValueError, "no parameter supplied");
-    //    return NULL;
-    //}
-    //else if (length > 2)
-    //{
-    //    PyErr_Format(PyExc_ValueError, "too many parameters supplied");
-    //    return NULL;
-    //}
-
-    //if (PyArg_ParseTuple(args, "ss", &paramName, &cVal))
-    //{
-    //    param = aib->getParamRec(paramName,&paramNameCheck);
-    //    if (!paramNameCheck)
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['[index]'][:additionalTag]");
-    //        return NULL;
-    //    }
-    //    else if (param.isValid() == false)
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin.", paramName);
-    //        return NULL;
-    //    }
-
-    //    if ((param.getType() != (ito::ParamBase::Char & ito::paramTypeMask)) && (param.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "wrong parameter type");
-    //        return NULL;
-    //    }
-    //    param.setVal<char*>(const_cast<char*>(cVal), strlen(cVal));
-    //}
-    //else if (PyErr_Clear(), PyArg_ParseTuple(args, "sd", &paramName, &dval))
-    //{
-    //    
-
-    //    param = aib->getParamRec(paramName,&paramNameCheck);
-    //    if (param.isValid() == false)
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
-    //        return NULL;
-    //    }
-    //    
-    //    if (((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Double & ito::paramTypeMask)) 
-    //        && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Int & ito::paramTypeMask)) 
-    //        && ((param.getType() & ~ito::ParamBase::Pointer) != (ito::ParamBase::Char & ito::paramTypeMask)))
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "wrong parameter type");
-    //        return NULL;
-    //    }
-
-    //    if(!hasIndex)
-    //    {
-    //        if (ito::checkNumericParamRange(param,dval,NULL) == false)
-    //        {
-    //            PyErr_Format(PyExc_ValueError, "out of parameter range");
-    //            return NULL;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if(param.getType() != ito::ParamBase::CharArray && param.getType() != ito::ParamBase::IntArray && param.getType() != ito::ParamBase::DoubleArray)
-    //        {
-    //            PyErr_Format(PyExc_ValueError, "for index-based parameter names an array-like parameter is required");
-    //            return NULL;
-    //        }
-    //    }
-    //    if (param.getType() & ito::ParamBase::Pointer)
-    //        param = ito::Param(paramName, param.getType() & ~ito::ParamBase::Pointer, dval, NULL, NULL);
-    //        //param = ito::tParam(paramName, param.getType() & ~ito::ParamBase::Pointer, param.getMin(), param.getMax(), dval, param.getInfo());
-    //    else
-    //        param.setVal<double>(dval);
-    //}
-    //else if (length == 2)
-    //{
-    //    PyObject *tempObj = PyTuple_GetItem(args, 0);
-    //    //char *paramname = NULL;
-
-    //    int listlen = 0;
-
-    //    if (PyErr_Clear(), !PyUnicode_Check(tempObj))
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "missing parameter name");
-    //        return NULL;
-    //    }
-    //    //paramname = PyBytes_AsString(PyUnicode_AsASCIIString(tempObj));
-    //    param = aib->getParamRec(paramName, &paramNameCheck);
-    //    if (!paramNameCheck)
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: 'paramName['['index']'][:additionalTag]");
-    //        return NULL;
-    //    }
-    //    else if (param.isValid() == false)
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "parameter '%s' not available in plugin", paramName);
-    //        return NULL;
-    //    }
-
-    //    tempObj = PyTuple_GetItem(args, 1);
-
-    //    if (PyErr_Clear(), PySequence_Check(tempObj))
-    //    {
-    //        PyObject *listElem = NULL;
-    //        int listType = 0;
-    //        listlen = PySequence_Size(tempObj);
-
-    //        if (PyByteArray_Check(tempObj))
-    //        {
-    //            //! byte type lists
-    //            if (param.getType() == (ito::ParamBase::CharArray & ito::paramTypeMask))
-    //            {
-    //                char *buf  = (char *)PyByteArray_AsString(tempObj);
-    //                listlen = PyByteArray_Size(tempObj);
-    //                param.setVal<char*>(buf, listlen);
-    //            }
-    //            else
-    //            {
-    //                ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
-    //            }
-    //        }
-    //        else
-    //        {
-    //            for (int n = 0; n < listlen; n++)
-    //            {
-    //                listElem = PySequence_GetItem(tempObj, n); //new reference
-    //                if (PyErr_Clear(), PyLong_Check(listElem))
-    //                {
-    //                    listType |= 2;
-    //                }
-    //                else if (PyErr_Clear(), PyFloat_Check(listElem))
-    //                {
-    //                    listType |= 4;
-    //                }
-    //                else
-    //                {
-    //                    Py_XDECREF(listElem);
-    //                    PyErr_Format(PyExc_TypeError, "invalid paramter format, invalid array item");
-    //                    return NULL;
-    //                }
-    //                Py_XDECREF(listElem);
-    //            }
-
-    //            //! integer type lists
-    //            if ((param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask)) && listType <= 3)
-    //            {
-    //                int *buf;
-    //                buf = (int*)malloc(listlen * sizeof(int));
-    //                for (int n = 0; n < listlen; n++)
-    //                {
-    //                    listElem = PySequence_GetItem(tempObj, n); //new reference
-    //                    ((int *)buf)[n] = PyLong_AsLong(listElem);
-    //                    Py_XDECREF(listElem);
-    //                }
-    //                param.setVal<int*>(buf, listlen);
-    //                free(buf);
-    //                buf = NULL;
-    //            }
-    //            else if ((param.getType() == (ito::ParamBase::DoubleArray & ito::paramTypeMask)) && listType <= 7)
-    //            {
-    //                double *buf;
-    //                buf = (double*)malloc(listlen * sizeof(double));
-    //                for (int n = 0; n < listlen; n++)
-    //                {
-    //                    listElem = PySequence_GetItem(tempObj, n); //new reference
-    //                    ((double *)buf)[n] = PyFloat_AsDouble(listElem);
-    //                    Py_XDECREF(listElem);
-    //                }
-    //                param.setVal<double*>(buf, listlen);
-    //                free(buf);
-    //                buf = NULL;
-    //            }
-    //            else
-    //            {
-    //                ret = ito::RetVal(ito::retError, 0, QObject::tr("parameter list type and passed list type are incompatible").toAscii().data());
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        PyErr_Format(PyExc_TypeError, "invalid parameter format, parameter #2 must be either byte, int or double array");
-    //        return NULL;
-    //    }
-    //}
-
-    //if (!ret.containsError())
-    //{
-    //    QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param));
-    //    bool timeout = false;
-    //    waitCond = new ItomSharedSemaphore();
-    //    QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
-    //    while (!waitCond->wait(PLUGINWAIT))
-    //    {
-    //        if (!addInObj->isAlive())
-    //        {
-    //            ret += ito::RetVal(ito::retError, 0, "timeout.");
-    //            timeout = true;
-    //            break;
-    //        }
-    //    }
-
-    //    if (!timeout)
-    //    {
-    //        ret += waitCond->returnValue;
-    //    }
-
-    //     waitCond->deleteSemaphore();
-    //     waitCond = NULL;
-    //}
-
-    //if (!SetReturnValueMessage(ret, "setParam"))
-    //{
-    //    return NULL;
-    //}
-    //
-    //Py_RETURN_NONE;
 }
 
 
@@ -1139,10 +867,6 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
              waitCond = NULL;
             
 			PythonCommon::transformRetValToPyException(retval);
-            /*if (retval != ito::retOk)
-            {
-                PyErr_Format(PyExc_RuntimeError, "error closing plugin");
-            }*/
         }
     }
 
@@ -1173,25 +897,18 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name[, mandparams, optparams]) -> constructor \n\
 \n\
+This is the constructor for a actuator-type plugins. It initializes an new instance\
+if the plugin specified by 'name'. The initialisation parameters are parsed and unnamed parameters are used in their \
+incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
+with name as well but after the first named parameter no more unnamed parameters are allowed.\
+See pluginHelp(name) for detail information about the specific initialisation parameters.\n\
+\n\
 Parameters \n\
 ----------- \n\
 name : {str} \n\
-    is the fullname (case sensitive) of a 'actuator'-plugin as specified in the plugin-window. \n\
+    is the fullname (case sensitive) of an 'actuator'-plugin as specified in the plugin-window. \n\
 initParameters : {variant}, mandatory & optional \n\
-    Parameters to pass to the plugin, content and type depend on the specific plugin.\n\
-\n\
-Returns \n\
-------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This is the constructor for a actuator-type plugins. It initializes an new instance\n\
-if the plugin specified by 'name'. The initialisation parameters are parsed and unnamed parameters are used in their \n\
-incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \n\
-with name as well but after the first named parameter no more unnamed parameters are allowed.\n\
-See pluginHelp(name) for detail information about the specific initialisation parameters.");
+    Parameters to pass to the plugin, content and type depend on the specific plugin.");
 
 /** constructor for actuator object (plugin) accessible from python
 *   @param [in] self    the according pythonActuator object
@@ -1331,27 +1048,6 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     {
         return -1;
     }
-    /*
-    if ((retval == ito::retError) || (self->actuatorObj == NULL))
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not load plugin: %s with error message: \n%s\n").toAscii(), pluginName.toAscii().data(), QObject::tr(retval.errorMessage()).toAscii().data());
-        return -1;
-    }
-
-    if (retval == ito::retWarning)
-    {
-        std::cerr << "Warning while loading plugin: " << pluginName.toAscii().data() << "\n" << std::endl;
-
-        if (retval.errorMessage() != NULL)
-        {
-            std::cerr << " Message: " << QObject::tr(retval.errorMessage()).toAscii().data() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated. \n" << std::endl;
-        }
-    }
-    */
 
     return 0;
 }
@@ -1392,21 +1088,7 @@ PyMemberDef PythonPlugins::PyActuatorPlugin_members[] = {
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorName_doc, "name() -> returns the plugin name\n\
-\n\
-Returns \n\
-------- \n\
-name of the Plugin\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
+//PyDoc_STRVAR(pyActuatorName_doc, -> see pyPluginName_doc);
 /** Returns the plugin's name
 *   @param [in] self    the plugin object
 *   @return             the name of the plugin
@@ -1488,10 +1170,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_getParamListInfo(PyActuatorPlugin* sel
 *   This can be useful as there are only few standard parameters for an actuator. The majority is
 *   depending on the actual hardware and accordingly is different for each plugin.
 */
-PyObject* PythonPlugins::PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args)
+PyObject* PythonPlugins::PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args, PyObject *kwds)
 {
     ito::AddInBase *aib = self->actuatorObj;
-    return getExecFuncsInfo(aib, args);
+    return getExecFuncsInfo(aib, args, kwds);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2436,8 +2118,8 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
 PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyActuatorGetParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyActuatorGetParamListInfo_doc},
-   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
-   {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyActuatorName_doc},
+   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
+   {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyPluginName_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParam, METH_VARARGS, pyActuatorGetParam_doc},
    {"setParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_setParam, METH_VARARGS, pyActuatorSetParam_doc},
    {"calib", (PyCFunction)PythonPlugins::PyActuatorPlugin_calib, METH_VARARGS, pyActuatorCalib_doc},
@@ -3180,18 +2862,8 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_name_doc, "name() -> returns name of plugin.\n\
-\n\
-Returns \n\
-------- \n\
-Name of the Plugin : {str}\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-");    
+//----------------------------------------------------------------------------------------------------------------------------------   
+//PyDoc_STRVAR(PyDataIOPlugin_name_doc, -> see pyPluginName_doc);
 
 /** Returns the plugin's name
 *   @param [in] self    the plugin object
@@ -3301,10 +2973,10 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParamListInfo(PyDataIOPlugin* self, P
 *   This can be useful as there are only few standard parameters for an dataIO. The majority is
 *   depending on the actual hardware and accordingly is different for each plugin.
 */
-PyObject* PythonPlugins::PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args)
+PyObject* PythonPlugins::PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args, PyObject *kwds)
 {
     ito::AddInBase *aib = self->dataIOObj;
-    return getExecFuncsInfo(aib, args);
+    return getExecFuncsInfo(aib, args, kwds);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4435,8 +4107,8 @@ PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
 PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, PyDataIOPlugin_getParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, PyDataIOPlugin_getParamListInfo_doc},
-   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
-   {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, PyDataIOPlugin_name_doc},
+   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
+   {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, pyPluginName_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParam, METH_VARARGS, PyDataIOPlugin_getParam_doc},
    {"setParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_setParam, METH_VARARGS, PyDataIOPlugin_setParam_doc},
    {"startDevice", (PyCFunction)PythonPlugins::PyDataIOPlugin_startDevice, METH_VARARGS, PyDataIOPlugin_startDevice_doc},
@@ -4788,10 +4460,10 @@ PyObject* PythonPlugins::PyAlgoPlugin_getParamListInfo(PyAlgoPlugin* self, PyObj
 *
 *   This function os obsolet because currently no algo has an living instance in python
 */
-PyObject* PythonPlugins::PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args)
+PyObject* PythonPlugins::PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args, PyObject *kwds)
 {
     ito::AddInBase *aib = self->algoObj;
-    return getExecFuncsInfo(aib, args);
+    return getExecFuncsInfo(aib, args, kwds);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4860,7 +4532,7 @@ PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
 PyMethodDef PythonPlugins::PyAlgoPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamList, METH_NOARGS, PyAlgoPlugin_getParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamListInfo, METH_VARARGS, PyAlgoPlugin_getParamListInfo_doc},
-   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS, pyPlugInGetExecFuncsInfo_doc},
+   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyAlgoPlugin_name, METH_NOARGS, "name() -> returns name of algorithm plugin"},
    {"getParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParam, METH_VARARGS, "getParam(name) -> returns value of given parameter"},
    {"setParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_setParam, METH_VARARGS, "setParam(name,value) -> sets value of given parameter"},

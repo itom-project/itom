@@ -96,7 +96,7 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_name(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_getParamList(PyActuatorPlugin *self);
 	   static PyObject *PyActuatorPlugin_getParamListInfo(PyActuatorPlugin *self,  PyObject *args);
-       static PyObject* PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args);
+       static PyObject* PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyActuatorPlugin_getParam(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setParam(PyActuatorPlugin *self, PyObject *args);
 	   static PyObject *PyActuatorPlugin_getType(PyActuatorPlugin *self);
@@ -143,7 +143,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_name(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_getParamList(PyDataIOPlugin *self);
        static PyObject* PyDataIOPlugin_getParamListInfo(PyDataIOPlugin* self,  PyObject *args);
-       static PyObject* PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args);
+       static PyObject* PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject *args);
 	   static PyObject *PyDataIOPlugin_getType(PyDataIOPlugin *self);
@@ -177,7 +177,7 @@ class PythonPlugins
        static PyObject *PyAlgoPlugin_name(PyAlgoPlugin *self);
        static PyObject *PyAlgoPlugin_getParamList(PyAlgoPlugin *self);
        static PyObject *PyAlgoPlugin_getParamListInfo(PyAlgoPlugin *self, PyObject *args);
-       static PyObject* PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args);
+       static PyObject* PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyAlgoPlugin_getParam(PyAlgoPlugin *self, PyObject *args);
        static PyObject *PyAlgoPlugin_setParam(PyAlgoPlugin *self, PyObject *args);
 	   static PyObject *PyAlgoPlugin_getType(PyAlgoPlugin *self);
