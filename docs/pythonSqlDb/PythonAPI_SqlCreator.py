@@ -50,14 +50,15 @@ reportFile = open("HelpReport.txt","w")
 
 reportE = 0
 reportW = 0
-oldPercentage = 0
+oldPercentage = -1
 
 def printPercent(value, maxim):
     global oldPercentage
     percentage = value/maxim*100
-    if percentage > oldPercentage:
+    if round(percentage) > round(oldPercentage):
         str1 = format(percentage)+'%'
         print("Writing to DB progress: %d%%   \r" % (percentage))
+        oldPercentage = percentage
     return
 
 
@@ -95,57 +96,57 @@ def ispackage(obj):
 def getPyType(path, ns):
     exec('testFunc = '+path,ns)
     if ispackage(ns['testFunc']):
-        return('package')
+        return('2')
     if inspect.ismodule(ns['testFunc']):
-        return('module')
+        return('3')
     if inspect.isclass(ns['testFunc']):
-        return('class')
+        return('4')
     if inspect.ismethod(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('method')
     if inspect.isfunction(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('function')
     if inspect.isgeneratorfunction(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('generatorfunction')
     if inspect.isgenerator(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('generator')
     if inspect.istraceback(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('traceback')
     if inspect.isframe(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('frame')
     if inspect.iscode(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('code')
     if inspect.isbuiltin(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('builtin')
     if inspect.isroutine(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('routine')
     if inspect.isabstract(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('abstract')
     if inspect.ismethoddescriptor(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('methoddescriptor')
     if inspect.isdatadescriptor(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('datadescripor')
     if inspect.isgetsetdescriptor(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('getsetdescriptor')
     if inspect.ismemberdescriptor(ns['testFunc']):
-        return('routine')
+        return('5')
         #return('memberdescriptor')
     if isinstance(ns['testFunc'], numpy.ufunc):
         # This only exists in Numpy
-        return('routine')
-    return 'const'
+        return('5')
+    return '6'
 
 
 def getAllModules(ns):
@@ -246,16 +247,16 @@ def processName(moduleP, ns, recLevel = 0):
             exec('hasdoc = hasattr('+prefix+module+', "__doc__")', ns)
             if ns['hasdoc']:
                 exec('doc = '+prefix+module+'.__doc__', ns)
-                if (nametype == 'const'):
+                if (nametype == '6'): # '6' = const
                     exec('doc = str('+prefix+module+')', ns)
-                    createSQLEntry(ns['doc'], prefix, module, nametype,ns['mID'])
+                    createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
                 else:
-                    createSQLEntry(ns['doc'], prefix, module, nametype,ns['mID'])
+                    createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
         except:
             reportMessage(prefix+module, 'e')
         try:
             #this object can only have 'childs' if it is either a class, module or package
-            if (nametype == 'package' or nametype == 'module' or nametype == 'class'):
+            if (nametype == '2' or nametype == '3' or nametype == '4'):
                 exec('sublist = inspect.getmembers('+prefix+module+')', ns)
                 stackList += [prefix+module+'.'+ s[0] for s in ns['sublist']]
                 # remove the processed items
@@ -277,7 +278,7 @@ def processName(moduleP, ns, recLevel = 0):
             else:
                 prefixL = ''
             doclink = '<a id=\"HiLink\" href=\"itom://'+prefixL+moduleL+'\">'+prefixL+moduleL+'</a>'
-            createSQLEntry(doclink, prefix, module, 'link_'+nametype, 0)
+            createSQLEntry(doclink, prefix, module, '1'+nametype, 0)
         except:
             reportMessage('Error in: '+prefix+module,'e')
         return
@@ -311,7 +312,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     if (name != ''):
         line[4] = name
     else:
-        line[4] = '-'
+        line[4] = ''
         
     # 5. Parameter
     # Falls ein Befehl länger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
@@ -330,14 +331,14 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             s = docstr[m.start()+3:m.end()-2]
             line[6] = s
         else:
-            line[6] = '-'
+            line[6] = ''
     else:
         line.append('This Package is only referenced here. It´s original position is: \n')
         
     # 7. Doc
     if (id != 0):
         m = re.search(r'.*?\n',docstr,re.DOTALL)
-        if (m != None and nametype != 'const'):
+        if (m != None and nametype != '06'):
             # Shortdescription extrahieren (Enposition der S.Desc finden)
             s = docstr[m.end():]
             try:
@@ -347,7 +348,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
                 sout = s
                 line[8] = '1'
             line[7] = itom.compressData(sout)
-        elif (nametype == 'const'):
+        elif (nametype == '06'):
             line[7] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
             line[8] = '4'
         else:
