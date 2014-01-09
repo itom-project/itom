@@ -27,30 +27,30 @@
 
 namespace ito
 {
-	/*!
-		\class AlgoInterfaceValidator
-		\brief The class AlgoInterfaceValidator provides validators and checks in order to verify that
-			a certain filter or algoWidget that pretends to implement a certain interface really fits
-			to the requirements and conditions of this interface.
+    /*!
+        \class AlgoInterfaceValidator
+        \brief The class AlgoInterfaceValidator provides validators and checks in order to verify that
+            a certain filter or algoWidget that pretends to implement a certain interface really fits
+            to the requirements and conditions of this interface.
 
-		In the current implementation this class is instatiated once by the class AddInManager, hence,
-		it can be considered as singleton class.
+        In the current implementation this class is instatiated once by the class AddInManager, hence,
+        it can be considered as singleton class.
 
-		\sa AddInManager, AddInAlgo::tAlgoInterface, AddInAlgo::FilterDef, AddInAlgo::AlgoWidgetDef
-	*/
+        \sa AddInManager, AddInAlgo::tAlgoInterface, AddInAlgo::FilterDef, AddInAlgo::AlgoWidgetDef
+    */
 
-	//! constructor
-	/*!
-		Calls method init in order to load the requirements and conditions for each interface, defined
-		in the enumeration tAlgoInterface
-		\sa AddInAlgo::tAlgoInterface
-	*/
+    //! constructor
+    /*!
+        Calls method init in order to load the requirements and conditions for each interface, defined
+        in the enumeration tAlgoInterface
+        \sa AddInAlgo::tAlgoInterface
+    */
     AlgoInterfaceValidator::AlgoInterfaceValidator(ito::RetVal &retValue) : QObject()
     {
         retValue += init();
     }
 
-	//! destructor
+    //! destructor
     AlgoInterfaceValidator::~AlgoInterfaceValidator()
     {
         m_interfaces.clear();
@@ -80,27 +80,27 @@ namespace ito
         return ito::RetVal(ito::retError,0,tr("interface not found").toAscii().data());
     }
 
-	//! loads the requirements for every interface defined in the enumeration AddInAlgo::tAlgoInterface
-	/*!
-		The requirements of every interface can be given by several things:
-		- You can indicate the first n mandatory parameters. This is done by filling a vector of class ito::Param.
-		- You can define the first m output parameters.
-		- You can indicate a maximum number of mandatory, optional and output parameters.
-		must be greater or equal than the previously indicated vectors.
+    //! loads the requirements for every interface defined in the enumeration AddInAlgo::tAlgoInterface
+    /*!
+        The requirements of every interface can be given by several things:
+        - You can indicate the first n mandatory parameters. This is done by filling a vector of class ito::Param.
+        - You can define the first m output parameters.
+        - You can indicate a maximum number of mandatory, optional and output parameters.
+        must be greater or equal than the previously indicated vectors.
 
-		If any mandatory, optional or output parameters are defined, the corresponding filter, that pretends
-		to fit to this interface, must have a parameter at the same position whose type is equal to the given parameter
-		and if the indicated parameter of the interface has any restricitions given in form of a meta information instance,
-		the corresponding parameter of the filter must have a restriction which is equal or "stricter" than the restriction
-		defined in this method.
+        If any mandatory, optional or output parameters are defined, the corresponding filter, that pretends
+        to fit to this interface, must have a parameter at the same position whose type is equal to the given parameter
+        and if the indicated parameter of the interface has any restricitions given in form of a meta information instance,
+        the corresponding parameter of the filter must have a restriction which is equal or "stricter" than the restriction
+        defined in this method.
 
-		For every interface defined in the enumeration AddInAlgo::tAlgoInterface, you should call the method addInInterface
-		in this method in order to create the requirements. The last requirement of every interface is the possible structure
-		or content of the meta information string, that can or sometimes must be appended when creating the FilterDef-instance
-		in any plugin. This meta information string is checked and parsed in the method getTags.
+        For every interface defined in the enumeration AddInAlgo::tAlgoInterface, you should call the method addInInterface
+        in this method in order to create the requirements. The last requirement of every interface is the possible structure
+        or content of the meta information string, that can or sometimes must be appended when creating the FilterDef-instance
+        in any plugin. This meta information string is checked and parsed in the method getTags.
 
-		\sa AddInAlgo::tAlgoInterface, ito::Param, addInterface, getTags
-	*/
+        \sa AddInAlgo::tAlgoInterface, ito::Param, addInterface, getTags
+    */
     ito::RetVal AlgoInterfaceValidator::init(void)
     {
         ito::RetVal retVal;
@@ -159,23 +159,23 @@ namespace ito
         return retVal;
     }
 
-	//! verifies and parses the meta information string of any filter or algoWidget
-	/*!
-		Sometimes a certain algorithm interface needs that the user gives additional information about the 
-		filter when creating this filter in the plugin. This additional information can be given by the meta information
-		string in the structs FilterDef and AlgoWidgetDef. In the filter or algoWidget pretends to fit to a certain
-		algorithm interface, this method is called with the interface number and the meta information string. Then, this
-		string is checked if it fits the requirements of the interface and if so it can be parsed. The parsed elements
-		are then returned in form of a string list. The meaning and definition of the content of this string list must
-		be interpreted by the method which wishes to use filters of a certain interface type.
+    //! verifies and parses the meta information string of any filter or algoWidget
+    /*!
+        Sometimes a certain algorithm interface needs that the user gives additional information about the 
+        filter when creating this filter in the plugin. This additional information can be given by the meta information
+        string in the structs FilterDef and AlgoWidgetDef. In the filter or algoWidget pretends to fit to a certain
+        algorithm interface, this method is called with the interface number and the meta information string. Then, this
+        string is checked if it fits the requirements of the interface and if so it can be parsed. The parsed elements
+        are then returned in form of a string list. The meaning and definition of the content of this string list must
+        be interpreted by the method which wishes to use filters of a certain interface type.
 
-		\param [in] iface is the interface number
-		\param [in] metaInformation is the meta information string connected to the filter in any plugin
-		\param [out] tags is the parsed string list (or empty in case of an error)
-		\return true if the meta information string has been valid and could be parsed, else false
+        \param [in] iface is the interface number
+        \param [in] metaInformation is the meta information string connected to the filter in any plugin
+        \param [out] tags is the parsed string list (or empty in case of an error)
+        \return true if the meta information string has been valid and could be parsed, else false
 
-		\sa AddInAlgo::tAlgoInterface
-	*/
+        \sa AddInAlgo::tAlgoInterface
+    */
     bool AlgoInterfaceValidator::getTags(const ito::AddInAlgo::tAlgoInterface iface, const QString &metaInformation, QStringList &tags) const
     {
         tags.clear();
@@ -220,20 +220,20 @@ namespace ito
         }
     }
 
-	//! addInterface
-	/*!
-		Registers the requirements for any interface given by the enumeration value AddInAlgo::tAlgoInterface.
+    //! addInterface
+    /*!
+        Registers the requirements for any interface given by the enumeration value AddInAlgo::tAlgoInterface.
 
-		\param [in] iface is the interface enumeration value whose requirements should be registered
-		\param [in] mandParams is a vector indicating the first m mandatory parameters every filter that implements this interface must provide, too.
-		\param [in] outParams is a vector indicating the fist n output parameters every filter that implements this interface must provide, too. 
-					Remember that every parameter in this vector must have the Out-flag set and no In-flag.
-		\param [in] maxNumMand is the maximum number of mandatory parameters
-		\param [in] maxNumOpt is the maximum number of optional parameters
-		\param [in] maxNumOut is the maximum number of output parameters
+        \param [in] iface is the interface enumeration value whose requirements should be registered
+        \param [in] mandParams is a vector indicating the first m mandatory parameters every filter that implements this interface must provide, too.
+        \param [in] outParams is a vector indicating the fist n output parameters every filter that implements this interface must provide, too. 
+                    Remember that every parameter in this vector must have the Out-flag set and no In-flag.
+        \param [in] maxNumMand is the maximum number of mandatory parameters
+        \param [in] maxNumOpt is the maximum number of optional parameters
+        \param [in] maxNumOut is the maximum number of output parameters
 
-		\sa AddInAlgo::tAlgoInterface
-	*/
+        \sa AddInAlgo::tAlgoInterface
+    */
     ito::RetVal AlgoInterfaceValidator::addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, int maxNumMand, int maxNumOpt, int maxNumOut)
     {
         QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind( (int)iface );
@@ -255,19 +255,19 @@ namespace ito
     }
 
 
-	//! verifies a given filter with respect to its indicated interface
-	/*!
-		If the given filter pretends to implement a certain interface, the parameters of the filter are
-		checked with respect to the requirements of the interface and the additional meta information string is checked
-		and parsed.
+    //! verifies a given filter with respect to its indicated interface
+    /*!
+        If the given filter pretends to implement a certain interface, the parameters of the filter are
+        checked with respect to the requirements of the interface and the additional meta information string is checked
+        and parsed.
 
-		\param [in] filter is the filter-definition struct of the filter to check
-		\param [in/out] ret is the result of the check
-		\param [out] tags are an optional string list containing tags extracted from the meta information string
-		\return true if filter is valid with respect to the interface
+        \param [in] filter is the filter-definition struct of the filter to check
+        \param [in/out] ret is the result of the check
+        \param [out] tags are an optional string list containing tags extracted from the meta information string
+        \return true if filter is valid with respect to the interface
 
-		\sa isValid, getTags
-	*/
+        \sa isValid, getTags
+    */
     bool AlgoInterfaceValidator::isValidFilter(const ito::AddInAlgo::FilterDef &filter, ito::RetVal &ret, QStringList &tags) const
     {
         bool valid = isValid(filter.m_interface, filter.m_paramFunc, ret);
@@ -285,19 +285,19 @@ namespace ito
         return valid && valid2;
     }
 
-	//! verifies a given algo-widget with respect to its indicated interface
-	/*!
-		If the given algo-widget pretends to implement a certain interface, the parameters of the algo-widget are
-		checked with respect to the requirements of the interface and the additional meta information string is checked
-		and parsed.
+    //! verifies a given algo-widget with respect to its indicated interface
+    /*!
+        If the given algo-widget pretends to implement a certain interface, the parameters of the algo-widget are
+        checked with respect to the requirements of the interface and the additional meta information string is checked
+        and parsed.
 
-		\param [in] widget is the algo-widget-definition struct of the algo-widget to check
-		\param [in/out] ret is the result of the check
-		\param [out] tags are an optional string list containing tags extracted from the meta information string
-		\return true if the algo-widget is valid with respect to the interface
+        \param [in] widget is the algo-widget-definition struct of the algo-widget to check
+        \param [in/out] ret is the result of the check
+        \param [out] tags are an optional string list containing tags extracted from the meta information string
+        \return true if the algo-widget is valid with respect to the interface
 
-		\sa isValid, getTags
-	*/
+        \sa isValid, getTags
+    */
     bool AlgoInterfaceValidator::isValidWidget(const ito::AddInAlgo::AlgoWidgetDef &widget, ito::RetVal &ret, QStringList &tags) const
     {
         bool valid = isValid(widget.m_interface, widget.m_paramFunc, ret);

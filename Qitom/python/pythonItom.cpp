@@ -757,47 +757,47 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //   // Py_RETURN_NONE;
 //
 //
-//	PyArrayObject* input;
-//	int x,y;
+//    PyArrayObject* input;
+//    int x,y;
 //
-//	if (!PyArg_ParseTuple(pArgs, "O!ii:arrayManipulation",  &PyArray_Type, &input, &x, &y))
-//	{
-//		//printPythonError(std::cout);
-//		return NULL; /* PyArg_ParseTuple raised an exception */
-//	}
+//    if (!PyArg_ParseTuple(pArgs, "O!ii:arrayManipulation",  &PyArray_Type, &input, &x, &y))
+//    {
+//        //printPythonError(std::cout);
+//        return NULL; /* PyArg_ParseTuple raised an exception */
+//    }
 //
-//	int nx = PyArray_DIM(input,0);
-//	int ny = PyArray_DIM(input,1);
+//    int nx = PyArray_DIM(input,0);
+//    int ny = PyArray_DIM(input,1);
 //
-//	double *value;
+//    double *value;
 //
-//	for (int i = 0; i < nx; i++)
-//	{
-//		for (int j = 0; j < ny; j++)
-//		{
-//			value = (double *) PyArray_GETPTR2(input,i,j);
-//			*value = i*j;
-//		}
-//	}
-//
-//
-//	PyArrayObject* a;
+//    for (int i = 0; i < nx; i++)
+//    {
+//        for (int j = 0; j < ny; j++)
+//        {
+//            value = (double *) PyArray_GETPTR2(input,i,j);
+//            *value = i*j;
+//        }
+//    }
 //
 //
+//    PyArrayObject* a;
 //
-//	npy_intp a_dims[2];
-//	a_dims[0] = x;
-//	a_dims[1] = y;
 //
-//	if (0)
-//	{
-//	//version 1:
-//		//a = (PyArrayObject*) (PyArray_SimpleNew(2,a_dims,NPY_INT));
-//		a = (PyArrayObject*) (PyArray_ZEROS(2,a_dims,NPY_DOUBLE,0));
-//	}else{
-//	//version 2:
-//		double* dataPtr = new double[x*y];
-//		for (int i = 0; i < x * y; i++) dataPtr[i]=0.0;
+//
+//    npy_intp a_dims[2];
+//    a_dims[0] = x;
+//    a_dims[1] = y;
+//
+//    if (0)
+//    {
+//    //version 1:
+//        //a = (PyArrayObject*) (PyArray_SimpleNew(2,a_dims,NPY_INT));
+//        a = (PyArrayObject*) (PyArray_ZEROS(2,a_dims,NPY_DOUBLE,0));
+//    }else{
+//    //version 2:
+//        double* dataPtr = new double[x*y];
+//        for (int i = 0; i < x * y; i++) dataPtr[i]=0.0;
 //
 //        //if (1)
 //        //{
@@ -807,7 +807,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //        //else
 //        //{
 //            //!< owndata-flag not set
-//		    a = (PyArrayObject*) (PyArray_SimpleNewFromData(2,a_dims,NPY_DOUBLE,(void *) dataPtr));
+//            a = (PyArrayObject*) (PyArray_SimpleNewFromData(2,a_dims,NPY_DOUBLE,(void *) dataPtr));
 //
 //            //PythonItom::getInstance()->attachPyArrayToGarbageCollector(*a, pyGarbageDeleteIfUnused);
 //
@@ -817,21 +817,21 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //            //PyArray_BASE(a) = capsule;
 //            //Py_DECREF(capsule); //darf hier nicht geschehen
 //        //}
-//	}
+//    }
 //
-//	return PyArray_Return(a);
+//    return PyArray_Return(a);
 //};
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pKwds)
 {
-	const char *kwlistFilter[] = {"filterName", "dictionary", "furtherInfos", NULL};
-	const char *kwlistWidget[] = {"widgetName", "dictionary", "furtherInfos", NULL};
+    const char *kwlistFilter[] = {"filterName", "dictionary", "furtherInfos", NULL};
+    const char *kwlistWidget[] = {"widgetName", "dictionary", "furtherInfos", NULL};
 
-	char **kwlist = getWidgetHelp ? const_cast<char**>(kwlistWidget) : const_cast<char**>(kwlistFilter);
+    char **kwlist = getWidgetHelp ? const_cast<char**>(kwlistWidget) : const_cast<char**>(kwlistFilter);
 
     const char *filterstring = NULL;
-	int output = 0; //dictionary
-	int userwithinfos = 0; //furtherInfos
+    int output = 0; //dictionary
+    int userwithinfos = 0; //furtherInfos
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds,"|sii", kwlist, &filterstring, &output, &userwithinfos))
     {
@@ -840,21 +840,21 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
     int longest_name = 0;
     int listonly = 1;
-	QString namefilter;
+    QString namefilter;
 
-	if (filterstring == NULL)
-	{
-		namefilter.fromAscii(0);
-	}
-	else
-	{
-		namefilter.sprintf("%s",filterstring);
+    if (filterstring == NULL)
+    {
+        namefilter.fromAscii(0);
+    }
+    else
+    {
+        namefilter.sprintf("%s",filterstring);
 
         if (namefilter.length())
         {
             listonly = 0;
         }
-	}
+    }
 
     if (namefilter.contains("*") && ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0)))
     {
@@ -1017,7 +1017,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
             std::cout << "Complete "<< contextName.toAscii().data() << "list\n";
         }
 
-        for (int n = 0; n < keyList.size(); n++)	// get the longest name in this list
+        for (int n = 0; n < keyList.size(); n++)    // get the longest name in this list
         {
             filteredKey = keyList.value(n);
             if (filteredKey.contains(namefilter, Qt::CaseInsensitive))
@@ -1243,11 +1243,11 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* pluginName = NULL;
     ito::RetVal retval = ito::retOk;
-	
-	if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
-	{
-		return NULL;
-	}
+    
+    if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
+    {
+        return NULL;
+    }
 
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
@@ -1292,24 +1292,24 @@ Parameters \n\
 pluginName : {str} \n\
     is the fullname of a plugin as specified in the plugin window.\n\
 dictionary : {bool}, optional \n\
-	if dictionary == True, function returns an dict with plugin parameters (default: False)\n\
+    if dictionary == True, function returns an dict with plugin parameters (default: False)\n\
 \n\
 Returns \n\
 ------- \n\
 Returns None or a dict depending on the value of parameter dictionary.");
 PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
-	const char *kwlist[] = {"pluginName", "dictionary", NULL};
+    const char *kwlist[] = {"pluginName", "dictionary", NULL};
     const char* pluginName = NULL;
 #if PY_VERSION_HEX < 0x03030000
-	unsigned char output = 0;
+    unsigned char output = 0;
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &output))
     {
         return NULL;
     }
 #else //only python 3.3 or higher has the 'p' (bool, int) type string
-	int output = 0; //this must be int, not bool!!! (else crash)
+    int output = 0; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &output))
     {
@@ -2820,7 +2820,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     Py_DECREF(params);
 
-	try
+    try
     {
         ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
     }
@@ -2828,7 +2828,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         const char* errorStr = cvErrorStr(exc.code);
 
-		ret += ito::RetVal::format(ito::retError,0,"OpenCV Error: %s (%s) in %s, file %s, line %d",
+        ret += ito::RetVal::format(ito::retError,0,"OpenCV Error: %s (%s) in %s, file %s, line %d",
             errorStr, exc.err.c_str(), exc.func.size() > 0 ?
             exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line );
         //see also cv::setBreakOnError(true) -> then cv::error(...) forces an access to 0x0000 (throws access error, the debugger stops and you can debug it)
@@ -2842,13 +2842,13 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     catch(std::exception exc)
     {
         if (exc.what())
-		{
-			ret += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown", exc.what()); 
-		}
-		else
-		{
-			ret += ito::RetVal::format(ito::retError,0,"The exception '<unknown>' has been thrown", exc.what()); 
-		}
+        {
+            ret += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown", exc.what()); 
+        }
+        else
+        {
+            ret += ito::RetVal::format(ito::retError,0,"The exception '<unknown>' has been thrown", exc.what()); 
+        }
 #if defined _DEBUG
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
         *p = 0;
@@ -2856,7 +2856,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     catch (...)
     {
-		ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");  
+        ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");  
 #if defined _DEBUG
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
         *p = 0;
@@ -3272,38 +3272,38 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonItom::compressData(PyObject* pSelf, PyObject* pArgs)
 {
-	int level = -1;
-	const char *data = NULL;
-	int dataLength = 0;
+    int level = -1;
+    const char *data = NULL;
+    int dataLength = 0;
 
-	if (!PyArg_ParseTuple(pArgs, "s#|i", &data, &dataLength, &level))
-	{
-		return NULL;
-	}
+    if (!PyArg_ParseTuple(pArgs, "s#|i", &data, &dataLength, &level))
+    {
+        return NULL;
+    }
 
-	if ( level < -1 || level > 9)
-	{
-		return PyErr_Format(PyExc_RuntimeError, "compression level must be -1 (default: level 6) or between 0 and 9");
-	}
+    if ( level < -1 || level > 9)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "compression level must be -1 (default: level 6) or between 0 and 9");
+    }
 
-	QByteArray uncompressed(data, dataLength);
-	QByteArray compressed = qCompress(uncompressed, level);
-	return PyBytes_FromStringAndSize(compressed.data(), compressed.size());
+    QByteArray uncompressed(data, dataLength);
+    QByteArray compressed = qCompress(uncompressed, level);
+    return PyBytes_FromStringAndSize(compressed.data(), compressed.size());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonItom::uncompressData(PyObject* pSelf, PyObject* pArgs)
 {
-	PyObject *byteObj = NULL;
+    PyObject *byteObj = NULL;
 
-	if (!PyArg_ParseTuple(pArgs, "O!", &PyBytes_Type, &byteObj))
-	{
-		return NULL;
-	}
+    if (!PyArg_ParseTuple(pArgs, "O!", &PyBytes_Type, &byteObj))
+    {
+        return NULL;
+    }
 
-	QByteArray compressed(PyBytes_AsString(byteObj), PyBytes_Size(byteObj));
-	QByteArray uncompressed = qUncompress(compressed);
-	return PyBytes_FromStringAndSize(uncompressed.data(), uncompressed.size());
+    QByteArray compressed(PyBytes_AsString(byteObj), PyBytes_Size(byteObj));
+    QByteArray uncompressed = qUncompress(compressed);
+    return PyBytes_FromStringAndSize(uncompressed.data(), uncompressed.size());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3336,23 +3336,23 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 
 ///*static*/ PyObject* PythonItom::PyGetGlobalDict(PyObject* /*pSelf*/)
 //{
-//	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-//	if (pyEngine)
-//	{
-//		PyObject *dict = pyEngine->getMainDictionary();
-//		if (dict)
-//		{
-//			Py_INCREF(dict);
-//			return dict;
-//		}
-//		PyErr_Format(PyExc_RuntimeError, "The global dictionary is not available.");
+//    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+//    if (pyEngine)
+//    {
+//        PyObject *dict = pyEngine->getMainDictionary();
+//        if (dict)
+//        {
+//            Py_INCREF(dict);
+//            return dict;
+//        }
+//        PyErr_Format(PyExc_RuntimeError, "The global dictionary is not available.");
 //        return NULL;
-//	}
-//	else
-//	{
-//		PyErr_Format(PyExc_RuntimeError, "Python Engine is not available.");
+//    }
+//    else
+//    {
+//        PyErr_Format(PyExc_RuntimeError, "Python Engine is not available.");
 //        return NULL;
-//	}
+//    }
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3453,14 +3453,14 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     PyObject *dict = NULL;
 
 #if PY_VERSION_HEX < 0x03030000
-	unsigned char overwriteIfExists = 1;
+    unsigned char overwriteIfExists = 1;
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|b", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
     {
         return NULL;
     }
 #else //only python 3.3 or higher has the 'p' (bool, int) type string
-	int overwriteIfExists = 1; //this must be int, not bool!!! (else crash)
+    int overwriteIfExists = 1; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|p", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
     {
@@ -3518,7 +3518,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
-	{"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
+    {"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
     /*{"liveLine", (PyCFunction)PythonItom::PyLiveLine, METH_VARARGS, pyLiveLine_doc},
     {"closeFigure", (PyCFunction)PythonItom::PyCloseFigure, METH_VARARGS, pyCloseFigure_doc},
     {"setFigParam", (PyCFunction)PythonItom::PySetFigParam, METH_VARARGS, pySetFigParam_doc},
@@ -3547,13 +3547,13 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getDebugger", (PyCFunction)PythonItom::PyGetDebugger, METH_NOARGS, "getDebugger() -> returns new reference to debugger instance"},
     {"gcStartTracking", (PyCFunction)PythonItom::PyGCStartTracking, METH_NOARGS, "gcStartTracking() -> stores the current object list of the garbage collector."},
     {"gcEndTracking", (PyCFunction)PythonItom::PyGCEndTracking, METH_NOARGS, "gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list."},
-	//{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
+    //{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
     {"getScreenInfo", (PyCFunction)PythonItom::PyGetScreenInfo, METH_NOARGS, getScreenInfo_doc},
     {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, NULL},
     {"loadIDC", (PyCFunction)PythonItom::PyLoadIDC, METH_VARARGS | METH_KEYWORDS, pyLoadIDC_doc},
     {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
-	{"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compresses the given string using the method qCompress"},
-	{"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompresses the given string using the method qUncompress"},
+    {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compresses the given string using the method qCompress"},
+    {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompresses the given string using the method qUncompress"},
     {NULL, NULL, 0, NULL}
 };
 

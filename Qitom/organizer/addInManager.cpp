@@ -220,7 +220,7 @@ namespace ito
     {
         RetVal retValue = retOk;
         bool firstStart = false;
-		bool pluginsFolderExists = true;
+        bool pluginsFolderExists = true;
         QDir pluginsDir;
         if (path.isEmpty() || path == "")
         {
@@ -244,10 +244,10 @@ namespace ito
             }
 #endif
             if (!pluginsDir.cd("plugins"))
-			{
-				//plugins-folder could not be found.
-				pluginsFolderExists = false;
-			}
+            {
+                //plugins-folder could not be found.
+                pluginsFolderExists = false;
+            }
         }
         else
         {
@@ -259,10 +259,10 @@ namespace ito
             QString dirErr = QObject::tr("directory '%1' could not be found").arg(pluginsDir.canonicalPath());
             retValue += RetVal(retError, 0, dirErr.toAscii().data());
         }
-		else if (!pluginsFolderExists)
-		{
-			retValue += RetVal(retWarning, 0, QObject::tr("plugins folder could not be found").toAscii().data());
-		}
+        else if (!pluginsFolderExists)
+        {
+            retValue += RetVal(retWarning, 0, QObject::tr("plugins folder could not be found").toAscii().data());
+        }
         else
         {
 
@@ -364,7 +364,7 @@ namespace ito
                 if (ain)
                 {
                     ain->setFilename(filename);
-					ain->setApiFunctions(ITOM_API_FUNCS);
+                    ain->setApiFunctions(ITOM_API_FUNCS);
                     ain->setApiFunctionsGraph(ITOM_API_FUNCS_GRAPH);
                     ain->setLoader(loader);
                     //the event User+123 is emitted by AddInManager, if the API has been prepared and can
@@ -781,7 +781,7 @@ namespace ito
     *
     *   The getPlugInInfo method searchs in all three plugin lists for a plugin with the name 'name'. In case the according
     *   plugin is found its information about number, name ... returned. For all parameters of type char** provide the address to a char*-variable.
-	*   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
+    *   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
     */
     const RetVal AddInManager::getPlugInInfo(const QString &name, int *pluginType, int *pluginNum, char **pluginTypeString, char ** author, char ** description, char ** detaildescription, int *version)
     {
@@ -899,7 +899,7 @@ namespace ito
     */
     ito::RetVal AddInManager::initDockWidget(const ito::AddInBase *addIn)
     {
-		QMainWindow *win = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+        QMainWindow *win = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
         if (addIn->getDockWidget() && win)
         {
             QDockWidget* dockWidget = addIn->getDockWidget();
@@ -911,7 +911,7 @@ namespace ito
             dockWidget->setFloating(floating);
             dockWidget->setVisible(visible);
 
-			/*bool restored =*/ win->restoreDockWidget(dockWidget);
+            /*bool restored =*/ win->restoreDockWidget(dockWidget);
         }
 
         return ito::retOk;
@@ -1480,7 +1480,7 @@ end:
 
             QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param1));
 
-//			if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)) && (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
+//            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)) && (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
 //            {
 //                ret += ito::RetVal(ito::retWarning, 0, "Paramtype not loadable yet");
 //                continue;
@@ -1500,7 +1500,7 @@ end:
         return ret;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     AddInManager::AddInManager(void) :
         m_algoInterfaceValidator(NULL)
     {
@@ -1797,7 +1797,7 @@ end:
         return retval;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString algoWidgetName, QString algoPluginName)
     {
         //at the moment algoPluginName do not really influence the search, but maybe it might become necessary to also search for plugin-widgets by "pluginName.widgetName"
@@ -1824,7 +1824,7 @@ end:
         return NULL;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const
     {
         QHash<void*,ito::FilterParams*>::ConstIterator it = AddInManager::filterParamHash.constFind((void*)filterParam);
@@ -1835,7 +1835,7 @@ end:
         return NULL;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::closeDeadPlugins()
     {
         RetVal retval(retOk);
@@ -1869,7 +1869,7 @@ end:
         return retval;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::registerPluginAsDeadPlugin(ito::AddInBase *addIn)
     {
         QWeakPointer< ito::AddInBase > ptr(addIn);
@@ -1895,7 +1895,7 @@ end:
         return false;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag) const
     {
         if (tag.isNull())
@@ -1916,7 +1916,7 @@ end:
         }
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const
     {
         QList<ito::AddInAlgo::FilterDef *> res;
@@ -1929,7 +1929,7 @@ end:
         return res;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag) const
     {
         QList<ito::AddInAlgo::FilterDef *> res = getFilterByInterface(iface,tag);

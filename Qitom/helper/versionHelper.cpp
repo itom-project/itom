@@ -42,7 +42,7 @@
 #endif
 
 #ifndef PCL_REVISION_VERSION
-	#define PCL_REVISION_VERSION 0
+    #define PCL_REVISION_VERSION 0
 #endif
 
 //QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
@@ -145,8 +145,8 @@
 //    newPair.first = "PCL_Version";
 //    newPair.second = buf;
 //#else
-//	newPair.first = "PCL_Version";
-//	newPiar.second = "not compiled";
+//    newPair.first = "PCL_Version";
+//    newPiar.second = "not compiled";
 //#endif
 //    newList.append(newPair);
 //    
@@ -247,7 +247,7 @@ QMap<QString, QString> ito::getItomVersionMap()
 #if ITOM_POINTCLOUDLIBRARY > 0
     items["PCL_Version"] = QString("%1.%2.%3").arg(PCL_MAJOR_VERSION).arg(PCL_MINOR_VERSION).arg(PCL_REVISION_VERSION);
 #else
-	items["PCL_Version"] = "not used";
+    items["PCL_Version"] = "not used";
 #endif
 
     //Qt-Stuff

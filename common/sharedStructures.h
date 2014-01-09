@@ -533,11 +533,11 @@ namespace ito
 
     };
 
-	/*!
+    /*!
     \class ParamMeta
     \brief Base class for all meta-information classes
-	\sa IntMeta, DoubleMeta, CharMeta, StringMeta, HWMeta, DObjMeta
-	*/
+    \sa IntMeta, DoubleMeta, CharMeta, StringMeta, HWMeta, DObjMeta
+    */
     class ParamMeta
     {
     public:
@@ -549,101 +549,101 @@ namespace ito
         uint32 m_type;
     };
 
-	/*!
+    /*!
     \class CharMeta
     \brief Meta-information for Param of type Char or CharArray.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class CharMeta : public ParamMeta
     {
     public:
-		//! constructor with minimum and maximum value
+        //! constructor with minimum and maximum value
         explicit CharMeta(char minVal, char maxVal) : ParamMeta(ParamBase::Char), m_minVal(minVal), m_maxVal(maxVal) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
         static CharMeta* all() { return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max() ); } //!< returns a new instance of CharMeta, where the min and max are set to the full range available for char.
         inline char getMin() const { return m_minVal; } //!< returns minimum value
         inline char getMax() const { return m_maxVal; } //!< returns maximum value
 
-		//! sets the minimum value
-		/*!
-			\param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-		*/
+        //! sets the minimum value
+        /*!
+            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
+        */
         inline void setMin(char val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
         
-		//! sets the maximum value
-		/*!
-			\param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-		*/
-		inline void setMax(char val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
+        //! sets the maximum value
+        /*!
+            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
+        */
+        inline void setMax(char val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
     private:
         char m_minVal;
         char m_maxVal;
     };
 
-	/*!
+    /*!
     \class IntMeta
     \brief Meta-information for Param of type Int or IntArray.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class IntMeta : public ParamMeta
     {
     public:
-		//! constructor with minimum and maximum value
+        //! constructor with minimum and maximum value
         explicit IntMeta(int minVal, int maxVal) : ParamMeta(ParamBase::Int), m_minVal(minVal), m_maxVal(maxVal) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
         static IntMeta* all() { return new IntMeta(std::numeric_limits<int>::min(), std::numeric_limits<int>::max() ); } //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers.
         inline int getMin() const { return m_minVal; } //!< returns minimum value
         inline int getMax() const { return m_maxVal; } //!< returns maximum value
         
-		//! sets the minimum value
-		/*!
-			\param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-		*/
-		inline void setMin(int val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
+        //! sets the minimum value
+        /*!
+            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
+        */
+        inline void setMin(int val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
         
-		//! sets the maximum value
-		/*!
-			\param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-		*/
-		inline void setMax(int val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
+        //! sets the maximum value
+        /*!
+            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
+        */
+        inline void setMax(int val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
     private:
         int m_minVal;
         int m_maxVal;
     };
 
-	/*!
+    /*!
     \class DoubleMeta
     \brief Meta-information for Param of type Double or DoubleArray.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class DoubleMeta : public ParamMeta
     {
     public:
-		//! constructor with minimum and maximum value
+        //! constructor with minimum and maximum value
         explicit DoubleMeta(double minVal, double maxVal) : ParamMeta(ParamBase::Double), m_minVal(minVal), m_maxVal(maxVal) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
         static DoubleMeta* all() { return new DoubleMeta(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max() ); } //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double.
         inline double getMin() const { return m_minVal; } //!< returns minimum value
         inline double getMax() const { return m_maxVal; } //!< returns maximum value
         
-		//! sets the minimum value
-		/*!
-			\param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-		*/
-		inline void setMin(double val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
+        //! sets the minimum value
+        /*!
+            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
+        */
+        inline void setMin(double val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
         
-		//! sets the maximum value
-		/*!
-			\param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-		*/
-		inline void setMax(double val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
+        //! sets the maximum value
+        /*!
+            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
+        */
+        inline void setMax(double val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
     private:
         double m_minVal;
         double m_maxVal;
     };
 
-	/*!
+    /*!
     \class HWMeta
     \brief Meta-information for Param of type HWPtr.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class HWMeta : public ParamMeta
     {
         public:
@@ -670,19 +670,19 @@ namespace ito
             {
                 if(cpy.m_pHWAddInName) m_pHWAddInName = _strdup(cpy.m_pHWAddInName);
             }
-            ~HWMeta() { if(m_pHWAddInName) free(m_pHWAddInName); }			//!< destructor
-            inline uint32 getMinType() const { return m_minType; }				//!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
+            ~HWMeta() { if(m_pHWAddInName) free(m_pHWAddInName); }            //!< destructor
+            inline uint32 getMinType() const { return m_minType; }                //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
             inline char * getHWAddInName() const { return m_pHWAddInName; } //!< returns zero-terminated name of specific plugin-name or NULL if not specified.
         private:
-            uint32 m_minType;			//!< type-bitmask which is minimally required. default: 0
-            char *m_pHWAddInName;	//!< zero-terminated name of specific plugin-name of NULL if not specified.
+            uint32 m_minType;            //!< type-bitmask which is minimally required. default: 0
+            char *m_pHWAddInName;    //!< zero-terminated name of specific plugin-name of NULL if not specified.
     };
 
-	/*!
+    /*!
     \class StringMeta
     \brief Meta-information for Param of type String.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class StringMeta : public ParamMeta
     {
         public:
@@ -765,11 +765,11 @@ namespace ito
             char **m_val;
     };
 
-	/*!
+    /*!
     \class DObjMeta
     \brief Meta-information for Param of type DObjPtr.
-	\sa ito::Param
-	*/
+    \sa ito::Param
+    */
     class DObjMeta : public ParamMeta
     {
         public:
@@ -821,7 +821,7 @@ namespace ito
             Param(const char *name, const uint32 type, const unsigned int size, const double *values, ParamMeta *meta, const char *info);
             Param(const char *name, const uint32 type, const unsigned int size, const int *values, ParamMeta *meta, const char *info);
             Param(const char *name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info);
-            ~Param();						//!< Destructor
+            ~Param();                        //!< Destructor
             Param(const Param &copyConstr); //!< Copy-Constructor
 
             //--------------------------------------------------------------------------------------------
@@ -855,7 +855,7 @@ namespace ito
             }
 
             inline const ParamMeta* getMeta(void) const { return m_pMeta; } //!< returns const-pointer to meta-information instance or NULL if not available
-            inline ParamMeta* getMeta(void) { return m_pMeta; }				//!< returns pointer to meta-information instance or NULL if not available
+            inline ParamMeta* getMeta(void) { return m_pMeta; }                //!< returns pointer to meta-information instance or NULL if not available
 
             //! sets a new ParamMeta-instance as meta information for this Param
             /*!

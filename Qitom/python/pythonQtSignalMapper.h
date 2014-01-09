@@ -47,7 +47,7 @@ class PythonQtSignalTarget
 {
 public:
 
-	//! empty constructor
+    //! empty constructor
     PythonQtSignalTarget() :
         m_slotId(-1),
         m_signalId(-1),
@@ -58,19 +58,19 @@ public:
     {
     };
 
-	//! constructor
-	/*!
-		Constructs the virtual slot as target for any signal. If this slot is invoked, the given python method is executed.
+    //! constructor
+    /*!
+        Constructs the virtual slot as target for any signal. If this slot is invoked, the given python method is executed.
 
-		If the python method is a method (hence bounded), both a weak reference of the method and its containing instance is
-		stored. If it is an unbounded function, only the weak reference to the function is saved.
+        If the python method is a method (hence bounded), both a weak reference of the method and its containing instance is
+        stored. If it is an unbounded function, only the weak reference to the function is saved.
 
-		\param [in] argTypeList is a list of integer-based type number, describing the type of each argument as given by QMetaType
-		\param [in] slotId is the assigned index for this slot (must be unique)
-		\param [in] signalId is the index of the emitting signal
-		\param [in] callabel is a python method or function (bounded or unbounded) that should be called if the slot is invoked
-		\param [in] signal is the signature of the signal (for debugging reasons)
-	*/
+        \param [in] argTypeList is a list of integer-based type number, describing the type of each argument as given by QMetaType
+        \param [in] slotId is the assigned index for this slot (must be unique)
+        \param [in] signalId is the index of the emitting signal
+        \param [in] callabel is a python method or function (bounded or unbounded) that should be called if the slot is invoked
+        \param [in] signal is the signature of the signal (for debugging reasons)
+    */
     PythonQtSignalTarget(IntList &argTypeList, int slotId, int signalId, PyObject* callable, const char *signal) :
             m_slotId(slotId),
             m_signalId(signalId),
@@ -100,8 +100,8 @@ public:
             m_function = PyWeakref_NewRef(callable, NULL); //new ref
         }
     };
-	
-	//! copy constructor
+    
+    //! copy constructor
     PythonQtSignalTarget(const PythonQtSignalTarget &copy) :
         m_slotId(-1),
         m_signalId(-1),
@@ -122,8 +122,8 @@ public:
         m_boundedInstance = copy.m_boundedInstance;
         Py_XINCREF(m_boundedInstance);
     }
-	
-	//! destructor
+    
+    //! destructor
     ~PythonQtSignalTarget()
     {
         Py_XDECREF(m_boundedInstance);
@@ -140,17 +140,17 @@ public:
     // call the python callable with the given arguments (docs see source file)
     void call(void ** arguments) const;
 
-	//! returns list of type-numbers of arguments
+    //! returns list of type-numbers of arguments
     inline IntList argTypeList() const { return m_argTypeList; };
 
     //! Compares this signal target with given values
-	/*! checks whether the given signal index and the reference to the python method
-		is the same than the values of this instance of PythonQtSignalTarget
+    /*! checks whether the given signal index and the reference to the python method
+        is the same than the values of this instance of PythonQtSignalTarget
 
-		\param [in] signalId is the signal index (source of the signal-slot connection)
-		\param [in] callable is the python slot method (slot, destination of the signal-slot connection)
-		\return true if they are equal, else false.
-	*/
+        \param [in] signalId is the signal index (source of the signal-slot connection)
+        \param [in] callable is the python slot method (slot, destination of the signal-slot connection)
+        \return true if they are equal, else false.
+    */
     bool isSame(int signalId, PyObject* callable) const 
     { 
         if(signalId == m_signalId)
@@ -165,36 +165,36 @@ public:
     }
 
 private:
-    int m_slotId;				//!< index of this slot
-    int m_signalId;				//!< index of the connected signal
-    IntList m_argTypeList;		//!< type id's from QMetaType::type("..."), describing the arguments of the function-call
-    PyObject *m_function;		//!< weak reference to the python-function, that acts as slot
+    int m_slotId;                //!< index of this slot
+    int m_signalId;                //!< index of the connected signal
+    IntList m_argTypeList;        //!< type id's from QMetaType::type("..."), describing the arguments of the function-call
+    PyObject *m_function;        //!< weak reference to the python-function, that acts as slot
     PyObject *m_boundedInstance; //!< weak reference to the python-class instance of the function (if the function is bounded) or NULL if the function is unbounded
-    bool m_boundedMethod;		//!< true if the python function is bounded (non-static member of a class), else false
-    QString m_signalName;		//!< signature of the signal (mainly used for debugging reasons)
+    bool m_boundedMethod;        //!< true if the python function is bounded (non-static member of a class), else false
+    QString m_signalName;        //!< signature of the signal (mainly used for debugging reasons)
 };
 
 /*! \class PythonQtSignalMapperBase
-	\brief base class for PythonQtSignalMapper
+    \brief base class for PythonQtSignalMapper
 
     Since the class PythonQtSignalMapper needs to overwrite the method
-	qt_metacall, which is automatically defined in the moc-file of any class having
-	the Q_OBJECT macro, PythonQtSignalMapperBase has the Q_OBJECT macro defined such that
-	the method qt_metacall is defined in its moc-file. The class PythonQtSignalMapper is then
-	derived from PythonQtSignalMapperBase but has no Q_OBJECT macro defined. Then, no second
-	moc-file is created and PythonQtSignalMapper can overwrite the method qt_metacall from
-	PythonQtSignalMapperBase.
+    qt_metacall, which is automatically defined in the moc-file of any class having
+    the Q_OBJECT macro, PythonQtSignalMapperBase has the Q_OBJECT macro defined such that
+    the method qt_metacall is defined in its moc-file. The class PythonQtSignalMapper is then
+    derived from PythonQtSignalMapperBase but has no Q_OBJECT macro defined. Then, no second
+    moc-file is created and PythonQtSignalMapper can overwrite the method qt_metacall from
+    PythonQtSignalMapperBase.
 
-	The base idea of this class has been taken from the project PythonQt,
-	MeVis Medical Solutions AG, 28359 Bremen.
+    The base idea of this class has been taken from the project PythonQt,
+    MeVis Medical Solutions AG, 28359 Bremen.
 
-	\sa PythonQtSignalMapper
+    \sa PythonQtSignalMapper
 */
 class PythonQtSignalMapperBase : public QObject 
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	PythonQtSignalMapperBase() {}; //!< constructor (no further functionality)
+    PythonQtSignalMapperBase() {}; //!< constructor (no further functionality)
 };
 
 
@@ -211,8 +211,8 @@ public:
     virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
    
 private:
-    QList<PythonQtSignalTarget> m_targets;	//!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
-    int m_slotCount;						//!< index of the last virtual slot managed by this instance (auto-incremented)
+    QList<PythonQtSignalTarget> m_targets;    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
+    int m_slotCount;                        //!< index of the last virtual slot managed by this instance (auto-incremented)
 };
 
 #endif

@@ -109,7 +109,7 @@ namespace cv
    template<> inline ito::Rgba32 saturate_cast(ito::int32 v)
    {
        ito::Rgba32 temp;
-	   temp.rgba = static_cast<ito::uint32>(v);
+       temp.rgba = static_cast<ito::uint32>(v);
        return temp;
    }
    template<> inline ito::Rgba32 saturate_cast(ito::float32 v){return ito::Rgba32(saturate_cast<ito::uint8>(v));}
@@ -323,8 +323,8 @@ class DataObjectTagType
             }
             else
             {
-				if (cvIsNaN(m_dVal)) return std::string("NaN");
-				if (cvIsInf(m_dVal)) return std::string("Inf");
+                if (cvIsNaN(m_dVal)) return std::string("NaN");
+                if (cvIsInf(m_dVal)) return std::string("Inf");
                 /*if(m_dVal == std::numeric_limits<double>::quiet_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::signaling_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::infinity()) return std::string("Inf");*/
@@ -836,7 +836,7 @@ class DataObject
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
         template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
-		template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
+        template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
 
         // more friends due to change of std::vector to int ** for m_data ...
         template<typename _Tp> friend RetVal GetRangeFunc(DataObject *dObj, const int dtop, const int dbottom, const int dleft, const int dright);
@@ -906,7 +906,7 @@ class DataObject
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
-				validOperation = false;
+                validOperation = false;
                 cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
             }
             if(!m_pDataObjectTags)
@@ -923,7 +923,7 @@ class DataObject
         {
             if(axisNum < 0 || axisNum >= m_dims)
             {
-				validOperation = false;
+                validOperation = false;
                 cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
             }
             if(!m_pDataObjectTags)
@@ -1547,7 +1547,7 @@ class DataObject
         DataObject & operator = (const float64 value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex64 value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex128 value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-		DataObject & operator = (const ito::Rgba32 value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::Rgba32 value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
 
 
         DataObject & operator += (const DataObject &rhs);
@@ -1920,44 +1920,44 @@ template<typename _Tp> static std::ostream& coutFunc(std::ostream& out, const Da
     int numMats = dObj.calcNumMats();
     int tMat = 0;
 
-	if (dObj.getDims() == 0)
-	{
-		std::cout << "DataObject()\n" << std::endl;
-	}
-	else
-	{
-		std::cout << "DataObject(size=[" << dObj.getSize(0);
-		for (int dim = 1; dim < dObj.getDims(); ++dim)
-		{
-			std::cout << "x" << dObj.getSize(dim);
-		}
-		std::cout << "]\n" << std::endl;
+    if (dObj.getDims() == 0)
+    {
+        std::cout << "DataObject()\n" << std::endl;
+    }
+    else
+    {
+        std::cout << "DataObject(size=[" << dObj.getSize(0);
+        for (int dim = 1; dim < dObj.getDims(); ++dim)
+        {
+            std::cout << "x" << dObj.getSize(dim);
+        }
+        std::cout << "]\n" << std::endl;
 
-		int *idx = new int[dObj.getDims()];
-		 
+        int *idx = new int[dObj.getDims()];
+         
 
-		for (int nMat = 0; nMat < numMats; nMat++)
-		{
-			tMat = dObj.seekMat(nMat, numMats);
-			//std::cout <<  tMat + 1 << "->(";
+        for (int nMat = 0; nMat < numMats; nMat++)
+        {
+            tMat = dObj.seekMat(nMat, numMats);
+            //std::cout <<  tMat + 1 << "->(";
 
-			dObj.matNumToIdx(tMat, idx);
-			std::cout << "[";
-			for (int i = 0; i < dObj.getDims() - 2; ++i)
-			{
-				std::cout << idx[i] << ",";
-			}
-			std::cout << ":,:]->(";
+            dObj.matNumToIdx(tMat, idx);
+            std::cout << "[";
+            for (int i = 0; i < dObj.getDims() - 2; ++i)
+            {
+                std::cout << idx[i] << ",";
+            }
+            std::cout << ":,:]->(";
 
-			std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
+            std::cout << cv::format( (*((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))) , "numpy" ) << std::endl << std::endl;        
 
-			std::cout << ")" << "\n" << std::endl;
-		}
+            std::cout << ")" << "\n" << std::endl;
+        }
 
-		delete[] idx;
+        delete[] idx;
 
-		std::cout << ")" << "\n" << std::endl;
-	}
+        std::cout << ")" << "\n" << std::endl;
+    }
     return out;
 
 }

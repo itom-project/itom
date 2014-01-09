@@ -44,7 +44,7 @@ class AppManagement
     
         inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; }
         static QObject* getAddinManager();
-	    inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
+        inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
@@ -84,7 +84,7 @@ class AppManagement
         {
             QMutexLocker locker(&m_mutex);
             m_mainWin = mainWindow;
-        }	
+        }    
 
         static void setUiOrganizer(QObject* uiOrganizer)
         {
@@ -118,7 +118,7 @@ class AppManagement
         static QObject* m_dwo;   /*!< static pointer to DesignerWidgetOrganizer (default: NULL) */
         static QObject* m_plo;   /*!< static pointer to FigureOrganizer (default: NULL) */
         static QObject* m_app;  /*!< static pointer to MainApplication (default: NULL) */
-	    static QObject* m_mainWin;
+        static QObject* m_mainWin;
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */

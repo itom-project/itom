@@ -38,7 +38,7 @@ namespace ito
 {
     void **ITOM_API_FUNCS_GRAPH;
 
-	void *ITOM_API_FUNCS_GRAPH_ARR[] = {
+    void *ITOM_API_FUNCS_GRAPH_ARR[] = {
         (void*)&singleApiFunctionsGraph.mnumberOfColorBars,     /* [0] */
         (void*)&singleApiFunctionsGraph.mgetColorBarName,       /* [1] */
         (void*)&singleApiFunctionsGraph.mgetColorBarIdx,        /* [2] */
@@ -50,13 +50,13 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mdisconnectLiveData,    /* [8] */
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
         (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
-		NULL
-	};
+        NULL
+    };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 apiFunctionsGraph::apiFunctionsGraph()
 { 
-	ITOM_API_FUNCS_GRAPH = ITOM_API_FUNCS_GRAPH_ARR;
+    ITOM_API_FUNCS_GRAPH = ITOM_API_FUNCS_GRAPH_ARR;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

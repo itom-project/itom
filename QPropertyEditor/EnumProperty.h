@@ -32,35 +32,35 @@
 #include "Property.h"
 
 /**
-	The Enum Property Class extends a Property to add enum functionality to the 
-	QPropertyEditor.
-	Enum Properties are automatically created in the QPropertyModel for objects that 
-	have an enum as property value.
+    The Enum Property Class extends a Property to add enum functionality to the 
+    QPropertyEditor.
+    Enum Properties are automatically created in the QPropertyModel for objects that 
+    have an enum as property value.
 
-	@author Roman Schmid
+    @author Roman Schmid
 */
 class EnumProperty : public Property
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	EnumProperty(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
+    EnumProperty(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
 
-	/** @see Property::value */
-	virtual QVariant value(int role = Qt::UserRole) const;
-	/** @see Property::createEditor */
-	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
-	/** @see Property::setEditorData */
-	virtual bool setEditorData(QWidget *editor, const QVariant& data);
-	/** @see Property::editorData */
-	virtual QVariant editorData(QWidget *editor);
+    /** @see Property::value */
+    virtual QVariant value(int role = Qt::UserRole) const;
+    /** @see Property::createEditor */
+    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
+    /** @see Property::setEditorData */
+    virtual bool setEditorData(QWidget *editor, const QVariant& data);
+    /** @see Property::editorData */
+    virtual QVariant editorData(QWidget *editor);
 
 private slots:
-	/** slot that is being called by the editor widget */
-	void valueChanged(const QString item);
+    /** slot that is being called by the editor widget */
+    void valueChanged(const QString item);
 
 private:
-	/** QStringList with possible enum values */
-	QStringList m_enum;
+    /** QStringList with possible enum values */
+    QStringList m_enum;
 };
 #endif

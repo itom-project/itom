@@ -62,7 +62,7 @@ class ConsoleWidget : public AbstractPyScintillaWidget
 
 public:
 
-	ConsoleWidget(QWidget* parent = NULL);
+    ConsoleWidget(QWidget* parent = NULL);
     ~ConsoleWidget();
     
     RetVal printMessage(QStringList msg, ito::tMsgType type = msgTextInfo);
@@ -82,7 +82,7 @@ public slots:
 
 signals:
     void wantToCopy();
-	void pythonExecuteString(QString cmd);
+    void pythonExecuteString(QString cmd);
     void sendToLastCommand(QString cmd);
 
 

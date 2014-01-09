@@ -26,19 +26,19 @@ endif (BUILD_TARGET64)
 ADD_SUBDIRECTORY(DataObject) 
 
 IF(BUILD_WITH_PCL)
-	ADD_SUBDIRECTORY(PointCloud)
-	SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor")
+    ADD_SUBDIRECTORY(PointCloud)
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor")
 ELSE(BUILD_WITH_PCL)
-	SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor")
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor")
 ENDIF(BUILD_WITH_PCL)
 
 ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(Qitom)  
 
 IF(BUILD_UNITTEST)
-	#put this as last, since gtest is globally changing many compiler flags
-	ADD_SUBDIRECTORY(gtest-1.6.0)
-	ADD_SUBDIRECTORY(itom_unittests)
+    #put this as last, since gtest is globally changing many compiler flags
+    ADD_SUBDIRECTORY(gtest-1.6.0)
+    ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)  
     
 #find current itom version from qitom/global.h

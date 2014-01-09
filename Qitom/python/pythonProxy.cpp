@@ -239,12 +239,12 @@ PyTypeObject PythonProxy::PyProxyType = {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
     0,           /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    PythonProxy::PyProxy_richcompare,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    PythonProxy::PyProxy_richcompare,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
     0,             /* tp_methods */
     0, /*PyNpDataObject_members,*/             /* tp_members */
     0,                         /* tp_getset */

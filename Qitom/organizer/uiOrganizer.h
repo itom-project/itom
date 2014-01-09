@@ -59,12 +59,12 @@ class WidgetWrapper; //forward declaration
 /*!
     \class UiContainer
     \brief Every instance of this class contains information about one user interface (main window, dialog, dock widget...)
-		which is organized by UiOrganizer.
+        which is organized by UiOrganizer.
 */
 struct UiContainer
 {
 public:
-    enum tUiType	 /*!< type of the user interface */
+    enum tUiType     /*!< type of the user interface */
     {
         uiTypeUiDialog    = 0x0001,
         uiTypeQDialog     = 0x0002,
@@ -73,36 +73,36 @@ public:
         uiTypeFigure      = 0x0005
     };
 
-	//! creates new UiContainer from instance of dialog-widget UserUiDialog
-	/*!
-		The weak reference to uiDialog together with the type uiTypeUiDialog is saved as member variable in UiDialogSet.
+    //! creates new UiContainer from instance of dialog-widget UserUiDialog
+    /*!
+        The weak reference to uiDialog together with the type uiTypeUiDialog is saved as member variable in UiDialogSet.
 
-		\param uiDialog is the dialog-instance which should be guarded by the instance of UiDialogSet
-	*/
+        \param uiDialog is the dialog-instance which should be guarded by the instance of UiDialogSet
+    */
     UiContainer(UserUiDialog *uiDialog) : 
         m_type(uiTypeUiDialog) 
     {
         m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(uiDialog));
     }
 
-	//! creates new UiContainer from instance of QDialog
-	/*!
-		The weak reference to dialog together with the type uiTypeQDialog is saved as member variable in UiDialogSet.
+    //! creates new UiContainer from instance of QDialog
+    /*!
+        The weak reference to dialog together with the type uiTypeQDialog is saved as member variable in UiDialogSet.
 
-		\param dialog is an instance of QDialog or inherited from it which should be guarded by the instance of UiDialogSet
-	*/
+        \param dialog is an instance of QDialog or inherited from it which should be guarded by the instance of UiDialogSet
+    */
     UiContainer(QDialog *dialog) : 
         m_type(uiTypeQDialog) 
     {
         m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(dialog));
     }
-	
-	//! creates new UiContainer from instance of QMainWindow
-	/*!
-		The weak reference to mainWindow together with the type uiTypeMainWindow is saved as member variable in UiDialogSet.
+    
+    //! creates new UiContainer from instance of QMainWindow
+    /*!
+        The weak reference to mainWindow together with the type uiTypeMainWindow is saved as member variable in UiDialogSet.
 
-		\param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
-	*/
+        \param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
+    */
     UiContainer(QMainWindow *mainWindow) : 
         m_type(uiTypeQMainWindow) 
     {
@@ -110,43 +110,43 @@ public:
     }
 
     //! creates new UiContainer from instance of QMainWindow
-	/*!
-		The weak reference to mainWindow together with the type uiTypeMainWindow is saved as member variable in UiDialogSet.
+    /*!
+        The weak reference to mainWindow together with the type uiTypeMainWindow is saved as member variable in UiDialogSet.
 
-		\param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
-	*/
+        \param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
+    */
     UiContainer(FigureWidget *figureWidget) : 
         m_type(uiTypeFigure) 
     {
         m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(figureWidget));
     }
 
-	//! creates new UiContainer from instance of QDockWidget
-	/*!
-		The weak reference to dockWidget together with the type uiTypeQDockWidget is saved as member variable in UiDialogSet.
+    //! creates new UiContainer from instance of QDockWidget
+    /*!
+        The weak reference to dockWidget together with the type uiTypeQDockWidget is saved as member variable in UiDialogSet.
 
-		\param dockWidget is the dockWidget-instance which should be guarded by the instance of UiDialogSet
-	*/
+        \param dockWidget is the dockWidget-instance which should be guarded by the instance of UiDialogSet
+    */
     UiContainer(QDockWidget *dockWidget) : 
         m_type(uiTypeQDockWidget) 
     {
         m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(dockWidget));
     }
-	
-	//! general constructor to create an instance of UiContainer from given QWidget*-pointer and type
-	/*!
-		The weak reference to widget together with the type-parameter is saved as member variable in this instance of UiDialogSet
+    
+    //! general constructor to create an instance of UiContainer from given QWidget*-pointer and type
+    /*!
+        The weak reference to widget together with the type-parameter is saved as member variable in this instance of UiDialogSet
 
-		\param widget is the pointer to QWidget
-		\param type is the corresponding type of widget \sa tUiType
-	*/
+        \param widget is the pointer to QWidget
+        \param type is the corresponding type of widget \sa tUiType
+    */
     UiContainer(QWidget *widget, tUiType type) : 
         m_type(type)
     {
         m_weakDialog = QWeakPointer<QWidget>(widget);
     }
     
-	//! copy constructor
+    //! copy constructor
     UiContainer(const UiContainer &cpy)
     {
         m_weakDialog = QWeakPointer<QWidget>(cpy.getUiWidget());
@@ -157,7 +157,7 @@ public:
     ~UiContainer(); //comment in source file
 
 
-	//! returns instance of UiDialog or NULL, if the widget is not longer available of the type is not uiTypeUiDialog
+    //! returns instance of UiDialog or NULL, if the widget is not longer available of the type is not uiTypeUiDialog
     inline UserUiDialog *getUiDialog() const 
     { 
         if(m_type == uiTypeUiDialog)
@@ -168,23 +168,23 @@ public:
         return NULL;
     }
 
-	//! returns instance of Widget or NULL, if the widget is not longer available.
-	/*!
-		Internally, even a dialog or main windows are casted to QWidget. Therefore, this getter method always
-		returns this casted QWidget and NULL, if the QWidget has been deleted before.
-	*/
+    //! returns instance of Widget or NULL, if the widget is not longer available.
+    /*!
+        Internally, even a dialog or main windows are casted to QWidget. Therefore, this getter method always
+        returns this casted QWidget and NULL, if the QWidget has been deleted before.
+    */
     inline QWidget *getUiWidget() const 
     { 
         if(m_weakDialog.isNull()) return NULL;
         return m_weakDialog.data();
     }
-	
-	//! returns type of the guarded user interface
+    
+    //! returns type of the guarded user interface
     inline tUiType getType() const { return m_type; }
 
 private:
-    QWeakPointer<QWidget> m_weakDialog;		/*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then savely considered. */
-    tUiType m_type;							/*!< type of the user interface which is covered by this instance. \sa tUiType */
+    QWeakPointer<QWidget> m_weakDialog;        /*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then savely considered. */
+    tUiType m_type;                            /*!< type of the user interface which is covered by this instance. \sa tUiType */
 };
 
 struct UiContainerItem
@@ -243,8 +243,8 @@ public:
 
     enum tObjectInfo
     {
-		infoShowNoInheritance = 0x0001,
-		infoShowItomInheritance = 0x0002,
+        infoShowNoInheritance = 0x0001,
+        infoShowItomInheritance = 0x0002,
         infoShowAllInheritance =0x0004 | infoShowItomInheritance
     };
 
@@ -291,16 +291,16 @@ private:
 
     void timerEvent(QTimerEvent *event);
 
-	WidgetWrapper *m_widgetWrapper;					/*!< singleton instance to WidgetWrapper in order to access some public methods of several widgets by python */
+    WidgetWrapper *m_widgetWrapper;                    /*!< singleton instance to WidgetWrapper in order to access some public methods of several widgets by python */
     //QHash<QString, PluginInfo> m_pluginInfoList;
 
     QHash<unsigned int, UiContainerItem> m_dialogList; /*!< Hash-Table mapping a handle to an user interface to its corresponding instance of UiDialogSet */
     QHash<unsigned int, QWeakPointer<QObject> > m_objectList;  /*!< Hash-Table containing weak references to child-objects of any user interface which have recently been accessed. This hash-table helps for faster access to these objects */
-    int m_garbageCollectorTimer;					/*!< ID of the garbage collection timer. This timer regularly calls timerEvent in order to check m_dialogList and m_objectList for objects, which already have been destroyed. */
+    int m_garbageCollectorTimer;                    /*!< ID of the garbage collection timer. This timer regularly calls timerEvent in order to check m_dialogList and m_objectList for objects, which already have been destroyed. */
     QMap<QObject*, QThread*> m_watcherThreads;   /*!< map with opened watcher threads and their containing objects (e.g. UserInteractionWatcher) */
 
-    static unsigned int autoIncUiDialogCounter;		/*!< auto incrementing counter for elements in m_dialogList */
-    static unsigned int autoIncObjectCounter;		/*!< auto incrementing counter for elements in m_objectList */
+    static unsigned int autoIncUiDialogCounter;        /*!< auto incrementing counter for elements in m_dialogList */
+    static unsigned int autoIncObjectCounter;        /*!< auto incrementing counter for elements in m_objectList */
 
     void setApiPointersToWidgetAndChildren(QWidget *widget);
     //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according

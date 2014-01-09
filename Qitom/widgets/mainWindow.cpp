@@ -57,12 +57,12 @@ namespace ito {
 MainWindow::MainWindow() :
     m_console(NULL),
     m_contentLayout(NULL),
-	m_breakPointDock(NULL),
+    m_breakPointDock(NULL),
     m_lastCommandDock(NULL),
     m_helpDock(NULL),
     m_globalWorkspaceDock(NULL),
     m_localWorkspaceDock(NULL),
-	m_callStackDock(NULL),
+    m_callStackDock(NULL),
     m_fileSystemDock(NULL),
     m_pAIManagerWidget(NULL),
     m_aboutToolBar(NULL),
@@ -77,7 +77,7 @@ MainWindow::MainWindow() :
     m_pMenuHelp(NULL),
     m_pMenuFile(NULL),
     m_pMenuPython(NULL),
-	m_pMenuView(NULL),
+    m_pMenuView(NULL),
     m_pHelpSystem(NULL),
     m_statusLblCurrentDir(NULL),
     m_pythonBusy(false),
@@ -205,8 +205,8 @@ MainWindow::MainWindow() :
 
         if (m_helpDock)
         {
-	        tabifyDockWidget(m_pAIManagerWidget, m_helpDock);
-	        m_pAIManagerWidget->raise();
+            tabifyDockWidget(m_pAIManagerWidget, m_helpDock);
+            m_pAIManagerWidget->raise();
         }
     }
 
@@ -228,18 +228,18 @@ MainWindow::MainWindow() :
         connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
         connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
     }
-	else
-	{
-		showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way."));
-		m_console->setReadOnly(true);
-	}
+    else
+    {
+        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way."));
+        m_console->setReadOnly(true);
+    }
 
     // signal mapper for user defined actions
     m_userDefinedSignalMapper = new QSignalMapper(this);
     connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
 
-	connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-	connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+    connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
+    connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
     //
     createActions();
@@ -274,7 +274,7 @@ MainWindow::MainWindow() :
         }
     }
 
-	restoreState(settings.value("state", "").toByteArray());
+    restoreState(settings.value("state", "").toByteArray());
 
     settings.endGroup();
 
@@ -317,7 +317,7 @@ MainWindow::~MainWindow()
 
     delete settings;
 
-	//QByteArray ba = storeDockWidgetStatus();
+    //QByteArray ba = storeDockWidgetStatus();
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
@@ -332,8 +332,8 @@ MainWindow::~MainWindow()
     if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
     if (m_localWorkspaceDock)  disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
-	disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-	disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+    disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
+    disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
 //    delete m_pAIManagerView;
 //    delete m_pAIManagerDock;
@@ -375,7 +375,7 @@ MainWindow::~MainWindow()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be added to main window's dock widgets
 /*!
-	This method is also called to dock any figure to the main window.
+    This method is also called to dock any figure to the main window.
 
     \param dockWidget ScriptDockWidget to add to any docking area
     \param area docking area, where dockWidget should be shown
@@ -594,13 +594,13 @@ void MainWindow::createMenus()
     m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_actions["exit"]);
 
-	m_pMenuView = menuBar()->addMenu(tr("View"));
-	QMenu *dockWidgets = createPopupMenu();
+    m_pMenuView = menuBar()->addMenu(tr("View"));
+    QMenu *dockWidgets = createPopupMenu();
     if (dockWidgets)
     {
         dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
-	    dockWidgets->menuAction()->setText(tr("Toolboxes"));
-	    m_pMenuView->addMenu(dockWidgets);
+        dockWidgets->menuAction()->setText(tr("Toolboxes"));
+        m_pMenuView->addMenu(dockWidgets);
     }
 
     if (uOrg->hasFeature(featDeveloper))
@@ -806,16 +806,16 @@ void MainWindow::mnuShowAssistant()
         }
         else
         {
-			QString collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();            
-			QStringList args;
-			QFileInfo collectionFileInfo(collectionFile);
+            QString collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();            
+            QStringList args;
+            QFileInfo collectionFileInfo(collectionFile);
 
-			if (collectionFileInfo.exists() == false)
-			{
-				m_pHelpSystem->rebuildHelpIfNotUpToDate();
-				collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
-			}
-			
+            if (collectionFileInfo.exists() == false)
+            {
+                m_pHelpSystem->rebuildHelpIfNotUpToDate();
+                collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
+            }
+            
             args << QLatin1String("-collectionFile");
             args << QLatin1String(collectionFile.toAscii().data());
             args << QLatin1String("-enableRemoteControl");

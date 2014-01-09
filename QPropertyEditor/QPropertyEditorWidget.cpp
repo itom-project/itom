@@ -32,11 +32,11 @@
 
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
-	m_model = new QPropertyModel(this);	
+    m_model = new QPropertyModel(this);    
 
     setModel(m_model);
 
-	setItemDelegate(new QVariantDelegate(this));
+    setItemDelegate(new QVariantDelegate(this));
     //setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed /*QAbstractItemView::AllEditTriggers*/ );
     setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
     setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -50,36 +50,36 @@ QPropertyEditorWidget::~QPropertyEditorWidget()
 
 void QPropertyEditorWidget::addObject(QObject* propertyObject)
 {
-	m_model->addItem(propertyObject);
+    m_model->addItem(propertyObject);
     if(!m_model->sorted())
     {
-	    expandToDepth(0);
+        expandToDepth(0);
     }
 }
 
 void QPropertyEditorWidget::setObject(QObject* propertyObject)
 {
-	m_model->clear();
-	if (propertyObject)
+    m_model->clear();
+    if (propertyObject)
     {
-		addObject(propertyObject);
+        addObject(propertyObject);
     }
 }
 
 void QPropertyEditorWidget::updateObject(QObject* propertyObject)
 {
-	if (propertyObject)
-		m_model->updateItem(propertyObject);	
+    if (propertyObject)
+        m_model->updateItem(propertyObject);    
 }
 
 void QPropertyEditorWidget::registerCustomPropertyCB(UserTypeCB callback)
 {
-	m_model->registerCustomPropertyCB(callback);
+    m_model->registerCustomPropertyCB(callback);
 }
 
 void QPropertyEditorWidget::unregisterCustomPropertyCB(UserTypeCB callback)
 {
-	m_model->unregisterCustomPropertyCB(callback);
+    m_model->unregisterCustomPropertyCB(callback);
 }
 
 

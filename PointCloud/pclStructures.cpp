@@ -126,30 +126,30 @@ void PCLPoint::copyFromVoidPtrAndType(void* ptr, ito::tPCLPointType type)
 {
     if(m_genericPoint)
     {
-		//delete old point
-		switch(m_type)
-		{
-			case ito::pclInvalid:
-				break;
-			case ito::pclXYZ:
-				delete reinterpret_cast<pcl::PointXYZ*>(m_genericPoint);
-				break;
-			case ito::pclXYZI:
-				delete reinterpret_cast<pcl::PointXYZI*>(m_genericPoint);
-				break;
-			case ito::pclXYZRGBA:
-				delete reinterpret_cast<pcl::PointXYZRGBA*>(m_genericPoint);
-				break;
-			case ito::pclXYZNormal:
-				delete reinterpret_cast<pcl::PointNormal*>(m_genericPoint);
-				break;
-			case ito::pclXYZINormal:
-				delete reinterpret_cast<pcl::PointXYZINormal*>(m_genericPoint);
-				break;
-			case ito::pclXYZRGBNormal:
-				delete reinterpret_cast<pcl::PointXYZRGBNormal*>(m_genericPoint);
-				break;
-		}
+        //delete old point
+        switch(m_type)
+        {
+            case ito::pclInvalid:
+                break;
+            case ito::pclXYZ:
+                delete reinterpret_cast<pcl::PointXYZ*>(m_genericPoint);
+                break;
+            case ito::pclXYZI:
+                delete reinterpret_cast<pcl::PointXYZI*>(m_genericPoint);
+                break;
+            case ito::pclXYZRGBA:
+                delete reinterpret_cast<pcl::PointXYZRGBA*>(m_genericPoint);
+                break;
+            case ito::pclXYZNormal:
+                delete reinterpret_cast<pcl::PointNormal*>(m_genericPoint);
+                break;
+            case ito::pclXYZINormal:
+                delete reinterpret_cast<pcl::PointXYZINormal*>(m_genericPoint);
+                break;
+            case ito::pclXYZRGBNormal:
+                delete reinterpret_cast<pcl::PointXYZRGBNormal*>(m_genericPoint);
+                break;
+        }
         m_genericPoint = NULL;
     }
 
@@ -797,47 +797,47 @@ void PCLPointCloud::set_dense(bool dense)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc)
-	{
-	   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
-	   if(temp)
-	   {
-		   return temp->header;
-	   }
-	   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
-	}
+    template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc)
+    {
+       const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+       if(temp)
+       {
+           return temp->header;
+       }
+       throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+    }
 
-	typedef pcl::PCLHeader (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
+    typedef pcl::PCLHeader (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
 
-	PCLMAKEFUNCLIST(GetHeaderFunc)
+    PCLMAKEFUNCLIST(GetHeaderFunc)
 
-	pcl::PCLHeader PCLPointCloud::header() const
-	{
-		int idx = getFuncListIndex();
-		if(idx >= 0)    return fListGetHeaderFunc[idx](this);
-		throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
-	}
+    pcl::PCLHeader PCLPointCloud::header() const
+    {
+        int idx = getFuncListIndex();
+        if(idx >= 0)    return fListGetHeaderFunc[idx](this);
+        throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+    }
 #else
     template<typename _Tp> std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc)
-	{
-	   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
-	   if(temp)
-	   {
-		   return temp->header;
-	   }
-	   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
-	}
+    {
+       const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+       if(temp)
+       {
+           return temp->header;
+       }
+       throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+    }
 
-	typedef std_msgs::Header (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
+    typedef std_msgs::Header (*tGetHeaderFunc)(const ito::PCLPointCloud *pc);
 
-	PCLMAKEFUNCLIST(GetHeaderFunc)
+    PCLMAKEFUNCLIST(GetHeaderFunc)
 
-	std_msgs::Header PCLPointCloud::header() const
-	{
-		int idx = getFuncListIndex();
-		if(idx >= 0)    return fListGetHeaderFunc[idx](this);
-		throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
-	}
+    std_msgs::Header PCLPointCloud::header() const
+    {
+        int idx = getFuncListIndex();
+        if(idx >= 0)    return fListGetHeaderFunc[idx](this);
+        throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+    }
 #endif
 
 
@@ -1471,7 +1471,7 @@ PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl
     m_polygonMesh->header = cloud.header();
     m_polygonMesh->polygons = polygons;
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	pcl::PCLPointCloud2 msg;
+    pcl::PCLPointCloud2 msg;
 #else
     sensor_msgs::PointCloud2 msg;
 #endif
@@ -1520,7 +1520,7 @@ std::string PCLPolygonMesh::getFieldsList() const
         return "";
     }
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	std::vector< pcl::PCLPointField> fields = mesh->cloud.fields;
+    std::vector< pcl::PCLPointField> fields = mesh->cloud.fields;
 #else
     std::vector< ::sensor_msgs::PointField> fields = mesh->cloud.fields;
 #endif
@@ -1546,7 +1546,7 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
         /*out << "header: " << std::endl;
         out << mesh->header;*/
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-		pcl::PCLPointCloud2 *c = &(mesh->cloud);
+        pcl::PCLPointCloud2 *c = &(mesh->cloud);
         pcl::PCLPointField *f;
 #else
         sensor_msgs::PointCloud2 *c = &(mesh->cloud);

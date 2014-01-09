@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     
 
 #if defined _DEBUG
-	cv::redirectError(itomCvError);
+    cv::redirectError(itomCvError);
     QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
 #else
     QApplication a(argc, argv);

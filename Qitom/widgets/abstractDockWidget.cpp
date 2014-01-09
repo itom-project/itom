@@ -125,10 +125,10 @@ AbstractDockWidget::~AbstractDockWidget()
     }
     m_toolBars.clear();
 
-	if (PythonEngine::getInstance())
-	{
-		disconnect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-	}
+    if (PythonEngine::getInstance())
+    {
+        disconnect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,10 +187,10 @@ void AbstractDockWidget::init()
         m_pWindow->addToolBar(m_dockToolbar);
     }
 
-	if (PythonEngine::getInstance())
-	{
-		connect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-	}
+    if (PythonEngine::getInstance())
+    {
+        connect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+    }
 
     createActions();
     createMenus();
@@ -937,61 +937,61 @@ void AbstractDockWidget::raiseAndActivate()
 //hack from: http://qt-project.org/faq/answer/how_can_i_resize_a_qdockwidget_programatically
 void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
 {
-	if (m_docked)
-	{
-		m_oldMaxSize = maximumSize();
-		m_oldMinSize = minimumSize();
+    if (m_docked)
+    {
+        m_oldMaxSize = maximumSize();
+        m_oldMinSize = minimumSize();
  
-		if (newWidth >= 0)
-		{
-			if (width() < newWidth)
-			{
-				setMinimumWidth(newWidth);
-			}
-			else
-			{
-				setMaximumWidth(newWidth);
-			}
-		}
-		if (newHeight >= 0)
-		{
-			if (height() < newHeight)
-			{
-				setMinimumHeight(newHeight);
-			}
-			else
-			{
-				setMaximumHeight(newHeight);
-			}
-		}
+        if (newWidth >= 0)
+        {
+            if (width() < newWidth)
+            {
+                setMinimumWidth(newWidth);
+            }
+            else
+            {
+                setMaximumWidth(newWidth);
+            }
+        }
+        if (newHeight >= 0)
+        {
+            if (height() < newHeight)
+            {
+                setMinimumHeight(newHeight);
+            }
+            else
+            {
+                setMaximumHeight(newHeight);
+            }
+        }
  
-		QTimer::singleShot(1, this, SLOT(returnToOldMinMaxSizes()));
-	}
-	else
-	{
-		if (newHeight > 0 && newWidth > 0)
-		{
-			m_pWindow->resize(newWidth, newHeight);
-		}
-		else if (newHeight > 0)
-		{
-			m_pWindow->resize(m_pWindow->width(), newHeight);
-		}
-		else if (newWidth > 0)
-		{
-			m_pWindow->resize(newWidth, m_pWindow->height());
-		}
-	}
+        QTimer::singleShot(1, this, SLOT(returnToOldMinMaxSizes()));
+    }
+    else
+    {
+        if (newHeight > 0 && newWidth > 0)
+        {
+            m_pWindow->resize(newWidth, newHeight);
+        }
+        else if (newHeight > 0)
+        {
+            m_pWindow->resize(m_pWindow->width(), newHeight);
+        }
+        else if (newWidth > 0)
+        {
+            m_pWindow->resize(newWidth, m_pWindow->height());
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::returnToOldMinMaxSizes()
 {
-	if (m_docked)
-	{
-		setMinimumSize(m_oldMinSize);
-		setMaximumSize(m_oldMaxSize);
-	}
+    if (m_docked)
+    {
+        setMinimumSize(m_oldMinSize);
+        setMaximumSize(m_oldMaxSize);
+    }
 }
 
 } //end namespace ito

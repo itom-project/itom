@@ -41,9 +41,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     canCut(false),
     waitForCmdExecutionDone(false),
     pythonBusy(false),
-	cmdList(NULL),
-	qout(NULL),
-	qerr(NULL)
+    cmdList(NULL),
+    qout(NULL),
+    qerr(NULL)
 {
     qDebug("console widget start constructor");
     initEditor();
@@ -67,11 +67,11 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 
-	if (pyEngine)
-	{
-		connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
-		connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-	}
+    if (pyEngine)
+    {
+        connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
+        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+    }
 
     cmdList = new DequeCommandList(20);
     QString settingsName(AppManagement::getSettingsFile());
@@ -122,11 +122,11 @@ ConsoleWidget::~ConsoleWidget()
     delete settings;
 
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
-	if (pyEngine)
-	{
-		disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
-		disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-	}
+    if (pyEngine)
+    {
+        disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
+        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+    }
 
     DELETE_AND_SET_NULL(cmdList);
     DELETE_AND_SET_NULL(qout);
@@ -373,11 +373,11 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
     if (key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
     {
-		if (PythonEngine::getInstance())
-		{
-			//PyErr_SetInterrupt();
-			PythonEngine::getInstance()->pythonInterruptExecution();
-		}
+        if (PythonEngine::getInstance())
+        {
+            //PyErr_SetInterrupt();
+            PythonEngine::getInstance()->pythonInterruptExecution();
+        }
         acceptEvent = false; //!< no action necessary
         forwardEvent = false;
     }
@@ -455,21 +455,21 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_PageUp:
         case Qt::Key_PageDown:
         case Qt::Key_CapsLock:
-		//case Qt::Key_Escape:
-			acceptEvent = true;
+        //case Qt::Key_Escape:
+            acceptEvent = true;
             forwardEvent = true;
             break;
-		
-		// Löscht die aktuelle Eingabe
-		
+        
+        // Löscht die aktuelle Eingabe
+        
         case Qt::Key_Escape:
             if (isListActive() == false)
             {
-			    lineTo = lines()-1;
-			    indexTo = lineLength(lineTo);
+                lineTo = lines()-1;
+                indexTo = lineLength(lineTo);
 
-			    setSelection(startLineBeginCmd, 2, lineTo, indexTo);
-			    removeSelectedText();
+                setSelection(startLineBeginCmd, 2, lineTo, indexTo);
+                removeSelectedText();
 
                 if (isCallTipActive())
                 {
@@ -484,26 +484,26 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 forwardEvent = true;
             }
             break;
-		
+        
         case Qt::Key_Home: //Pos1
             getCursorPosition(&lineFrom, &indexFrom);
 
             if (lineFrom == startLineBeginCmd && indexFrom>=2)
             {
-				if (modifiers & Qt::ShiftModifier)
-					setSelection(startLineBeginCmd,2,lineFrom,indexFrom);
-				else
-					setCursorPosition(startLineBeginCmd, 2);
+                if (modifiers & Qt::ShiftModifier)
+                    setSelection(startLineBeginCmd,2,lineFrom,indexFrom);
+                else
+                    setCursorPosition(startLineBeginCmd, 2);
             }
             else
             {
-				if (modifiers & Qt::ShiftModifier)
-					setSelection(lineFrom,0,lineFrom,indexFrom);
-				else
-					setCursorPosition(lineFrom, 0);
+                if (modifiers & Qt::ShiftModifier)
+                    setSelection(lineFrom,0,lineFrom,indexFrom);
+                else
+                    setCursorPosition(lineFrom, 0);
             }
 
-			acceptEvent = true;
+            acceptEvent = true;
             forwardEvent = false;
 
             
@@ -761,14 +761,14 @@ RetVal ConsoleWidget::executeCmdQueue()
             //emit pythonExecuteString(value.singleLine);
 
             QObject *pyEngine = AppManagement::getPythonEngine(); //qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-			if (pyEngine)
-			{
-				QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
-			}
-			else
-			{
-				QMessageBox::critical(this, tr("script execution"), tr("Python is not available"));
-			}
+            if (pyEngine)
+            {
+                QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
+            }
+            else
+            {
+                QMessageBox::critical(this, tr("script execution"), tr("Python is not available"));
+            }
 
             //connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
 

@@ -125,12 +125,12 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     //!< setup signal/slot-connection to python thread
     qRegisterMetaType<ito::tPythonDbgCmd>("tPythonDbgCmd");
     
-	const PythonEngine *pyEngine = PythonEngine::getInstance();
-	if (pyEngine)
-	{
-		connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-		connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
-	}
+    const PythonEngine *pyEngine = PythonEngine::getInstance();
+    if (pyEngine)
+    {
+        connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+    }
 
     if (docked)
     {
@@ -163,12 +163,12 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 
     disconnect(widget,SIGNAL(openScriptRequest(QString,ScriptDockWidget*)), this, SLOT(openScriptRequested(QString,ScriptDockWidget*)));
 
-	const PythonEngine *pyEngine = PythonEngine::getInstance();
-	if (pyEngine)
-	{
-		disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-		disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
-	}
+    const PythonEngine *pyEngine = PythonEngine::getInstance();
+    if (pyEngine)
+    {
+        disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+    }
 
     emit(removeScriptDockWidgetFromMainWindow(widget));
 
@@ -489,14 +489,14 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
 /*!
     \param filename Filename of the python macro
     \param semaphore ItomSharedSemaphore which will be woken up if opening process is finished. Use NULL if nothing should happen
-	\param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
+    \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
     \return retOk if success, else retError
 */
 RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* semaphore, int visibleLineNr)
 {
     RetVal retValue(retOk);
 
-	bool exist = false;
+    bool exist = false;
 
     QList<ScriptDockWidget*>::iterator it;
 
@@ -508,45 +508,45 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
         {
             exist = true;
             (*it)->raiseAndActivate();
-			if (visibleLineNr >= 0)
-			{
-				(*it)->activeTabEnsureLineVisible(visibleLineNr);
-			}
+            if (visibleLineNr >= 0)
+            {
+                (*it)->activeTabEnsureLineVisible(visibleLineNr);
+            }
         }
     }
     m_scriptStackMutex.unlock();
 
     if (!exist)
     {
-		ScriptDockWidget* activeWidget = getActiveDockWidget();
-		if (activeWidget == NULL)
-		{
-			activeWidget = createEmptyScriptDock(false);
-		}
+        ScriptDockWidget* activeWidget = getActiveDockWidget();
+        if (activeWidget == NULL)
+        {
+            activeWidget = createEmptyScriptDock(false);
+        }
     
-		if (activeWidget != NULL) 
-		{
-			if (filename.isNull())
-			{
-				retValue += activeWidget->openScript();
-			}
-			else
-			{
-				retValue += activeWidget->openScript(filename, false);
-			}
+        if (activeWidget != NULL) 
+        {
+            if (filename.isNull())
+            {
+                retValue += activeWidget->openScript();
+            }
+            else
+            {
+                retValue += activeWidget->openScript(filename, false);
+            }
 
-			if (visibleLineNr >= 0)
-			{
-				activeWidget->activeTabEnsureLineVisible(visibleLineNr);
-			}
+            if (visibleLineNr >= 0)
+            {
+                activeWidget->activeTabEnsureLineVisible(visibleLineNr);
+            }
 
             activeWidget->raiseAndActivate();
-		}
-	}
+        }
+    }
 
     if (semaphore != NULL)
     {
-		semaphore->returnValue = retValue;
+        semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
         semaphore = NULL;

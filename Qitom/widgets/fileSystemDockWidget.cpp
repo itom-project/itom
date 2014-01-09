@@ -163,8 +163,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
-	m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(changeDir()));
+    m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(changeDir()));
 
     size = settings.beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i) 
@@ -1037,17 +1037,17 @@ void FileSystemDockWidget::mnuNewPyFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::changeDir()
 {
-	QModelIndexList currents = m_pTreeView->selectedIndexes();
-	QString currentDir = QDir::currentPath();
-	QModelIndex firstInd = currents.takeFirst();
-	Qt::ItemFlags itemFlag = firstInd.flags();
-	if (itemFlag == 47)
-	{
-		QVariant selectedDir = firstInd.data();
-		QString newDir = currentDir.append("/");
-		newDir = newDir.append(selectedDir.toString());
-		changeBaseDirectory(newDir);
-	}
+    QModelIndexList currents = m_pTreeView->selectedIndexes();
+    QString currentDir = QDir::currentPath();
+    QModelIndex firstInd = currents.takeFirst();
+    Qt::ItemFlags itemFlag = firstInd.flags();
+    if (itemFlag == 47)
+    {
+        QVariant selectedDir = firstInd.data();
+        QString newDir = currentDir.append("/");
+        newDir = newDir.append(selectedDir.toString());
+        changeBaseDirectory(newDir);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

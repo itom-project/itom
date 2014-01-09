@@ -39,22 +39,22 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 HelpDockWidget::HelpDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-	m_pHelpWidget(NULL),
-	m_pActBackward(NULL),
-	m_pActForward(NULL),
-	m_pActChanged(NULL),
-	m_pMainToolbar(NULL),
-	m_pFilterEdit(NULL),
-	m_pActExpand(NULL),
-	m_pActCollapse(NULL),
-	m_pActReload(NULL)
+    m_pHelpWidget(NULL),
+    m_pActBackward(NULL),
+    m_pActForward(NULL),
+    m_pActChanged(NULL),
+    m_pMainToolbar(NULL),
+    m_pFilterEdit(NULL),
+    m_pActExpand(NULL),
+    m_pActCollapse(NULL),
+    m_pActReload(NULL)
 {
-	//ito::AbstractDockWidget *dockParent = this;
+    //ito::AbstractDockWidget *dockParent = this;
     m_pHelpWidget = new HelpTreeDockWidget(this, this);
 
-	m_pFilterEdit = new QLineEdit(this);
+    m_pFilterEdit = new QLineEdit(this);
 
-	AbstractDockWidget::init();
+    AbstractDockWidget::init();
 
     setContentWidget(m_pHelpWidget);
 }
@@ -67,20 +67,20 @@ HelpDockWidget::~HelpDockWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::createActions()
 {
-	m_pActBackward = new QAction(QIcon(":/editor/icons/editUndo.png"), tr("backwards"), this);
-	connect(m_pActBackward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateBackwards()));
+    m_pActBackward = new QAction(QIcon(":/editor/icons/editUndo.png"), tr("backwards"), this);
+    connect(m_pActBackward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateBackwards()));
 
-	m_pActForward = new QAction(QIcon(":/editor/icons/editRedo.png"), tr("forwards"), this);
-	connect(m_pActForward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateForwards()));
+    m_pActForward = new QAction(QIcon(":/editor/icons/editRedo.png"), tr("forwards"), this);
+    connect(m_pActForward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateForwards()));
 
-	m_pActExpand = new QAction(QIcon(":/editor/icons/editSmartIndent.png"), tr("expand tree"), this);
-	connect(m_pActExpand, SIGNAL(triggered()), m_pHelpWidget, SLOT(expandTree()));
-	
-	m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
-	connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
+    m_pActExpand = new QAction(QIcon(":/editor/icons/editSmartIndent.png"), tr("expand tree"), this);
+    connect(m_pActExpand, SIGNAL(triggered()), m_pHelpWidget, SLOT(expandTree()));
+    
+    m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
+    connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
 
-	m_pActReload = new QAction(QIcon(":/application/icons/reload.png"), tr("reload database"), this);
-	connect(m_pActReload, SIGNAL(triggered()), m_pHelpWidget, SLOT(reloadDB()));
+    m_pActReload = new QAction(QIcon(":/application/icons/reload.png"), tr("reload database"), this);
+    connect(m_pActReload, SIGNAL(triggered()), m_pHelpWidget, SLOT(reloadDB()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -90,19 +90,19 @@ void HelpDockWidget::createMenus()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::createToolBars()
-{		
-	m_pMainToolbar = new QToolBar(tr("navigation"), this);
+{        
+    m_pMainToolbar = new QToolBar(tr("navigation"), this);
     m_pMainToolbar->setObjectName("toolbarHelp");
     m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
-	m_pMainToolbar->addAction(m_pActBackward);
-	m_pMainToolbar->addAction(m_pActForward);
-	m_pMainToolbar->addWidget(m_pFilterEdit);
+    m_pMainToolbar->addAction(m_pActBackward);
+    m_pMainToolbar->addAction(m_pActForward);
+    m_pMainToolbar->addWidget(m_pFilterEdit);
     m_pFilterEdit->setToolTip(tr("type text to filter the keywords in the tree"));
-	connect(m_pFilterEdit, SIGNAL(textChanged(QString)), m_pHelpWidget, SLOT(liveFilter(QString)));
-	m_pMainToolbar->addAction(m_pActExpand);
-	m_pMainToolbar->addAction(m_pActCollapse);
-	m_pMainToolbar->addAction(m_pActReload);
+    connect(m_pFilterEdit, SIGNAL(textChanged(QString)), m_pHelpWidget, SLOT(liveFilter(QString)));
+    m_pMainToolbar->addAction(m_pActExpand);
+    m_pMainToolbar->addAction(m_pActCollapse);
+    m_pMainToolbar->addAction(m_pActReload);
 
     addToolBar(m_pMainToolbar, "navigationToolbar");
 }

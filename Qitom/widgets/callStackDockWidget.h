@@ -54,15 +54,15 @@ protected:
     void updatePythonActions(){ updateActions(); }
 
 private:
-	QTableWidget *m_table;
-	QStringList m_headers;
+    QTableWidget *m_table;
+    QStringList m_headers;
 
 private slots:
-	void itemDoubleClicked(QTableWidgetItem *item);
+    void itemDoubleClicked(QTableWidgetItem *item);
 
 public slots:
-	void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
-	void deleteCallStack();
+    void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
+    void deleteCallStack();
     
 };
 

@@ -233,9 +233,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     // it doesn't seem to have an effect here, so we need to do it again in this place :-/
  //   if (_import_array() < 0)
     //{
-    //	PyErr_Print();
-    //	PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-    //	return -1;
+    //    PyErr_Print();
+    //    PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
+    //    return -1;
     //}
     // end fix
 
@@ -368,7 +368,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     }
 
                     DELETE_AND_SET_NULL(sizes);
-					DELETE_AND_SET_NULL(steps);
+                    DELETE_AND_SET_NULL(steps);
 
                     int retCode = copyNpDataObjTags2DataObj(copyObject, self->dataObject);
 
@@ -893,7 +893,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     //7. copy valueDescription
     retCode = parsePyObject2StdString(npDO->valueDescription, tempString);
     if (retCode == 0)
-    {	//Beim Dokumentieren ausversehen verändert. Stimmt die folgende Zeile???
+    {    //Beim Dokumentieren ausversehen verändert. Stimmt die folgende Zeile???
         dataObj->setValueDescription(tempString);
     }
     else
@@ -1507,11 +1507,11 @@ PyObject* PythonDataObject::PyDataObject_getAxisDescriptions(PyDataObject *self,
         temp = self->dataObject->getAxisDescription(i, valid);
         if (valid)
         {
-			PyObject *string = PyUnicode_FromString(temp.data());
-			if (string == NULL)
-			{
-				string = PyUnicode_FromString("<encoding error>"); //TODO
-			}
+            PyObject *string = PyUnicode_FromString(temp.data());
+            if (string == NULL)
+            {
+                string = PyUnicode_FromString("<encoding error>"); //TODO
+            }
             PyTuple_SetItem(ret, i, string); //steals reference from string
         }
         else
@@ -1697,12 +1697,12 @@ Notes \n\
 ");
 PyObject* PythonDataObject::PyDataObject_getValueDescription(PyDataObject *self, void * /*closure*/)
 {
-	PyObject *temp = PyUnicode_FromString(self->dataObject->getValueDescription().data());
-	if (temp)
-	{
-		return temp;
-	}
-	return PyUnicode_FromString("<encoding error>"); //TODO
+    PyObject *temp = PyUnicode_FromString(self->dataObject->getValueDescription().data());
+    if (temp)
+    {
+        return temp;
+    }
+    return PyUnicode_FromString("<encoding error>"); //TODO
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1764,10 +1764,10 @@ or its ROI, respectively. \n\
 \n\
 Example ::\n\
 \n\
-	b = dataObject[1,1:10,1,1].value\n\
-	# or for the first value \n\
-	b = dataObject[1,1:10,1,1].value[0]\n\
-	# The elements of the tuple are adressed with b[idx].");
+    b = dataObject[1,1:10,1,1].value\n\
+    # or for the first value \n\
+    b = dataObject[1,1:10,1,1].value[0]\n\
+    # The elements of the tuple are adressed with b[idx].");
 PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*closure*/)
 {
     PyObject *OutputTuple = NULL;
@@ -1823,7 +1823,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
                 for (; it < itEnd; ++it)
                 {
                     color = ito::PythonRgba::createEmptyPyRgba();
-			        if (color)
+                    if (color)
                     {
                         color->rgba = ((ito::Rgba32*)(*it))->rgba;
                         PyTuple_SetItem(OutputTuple, cnt++, (PyObject*)color);
@@ -1983,7 +1983,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         case ito::tRGBA32:
             for (; it < itEnd; ++it)
             {
-				((ito::Rgba32*)(*it))->rgba = *((ito::uint32*)(PyArray_GETPTR1(arr, cnt++)));
+                ((ito::Rgba32*)(*it))->rgba = *((ito::uint32*)(PyArray_GETPTR1(arr, cnt++)));
             }
             break;
         case ito::tFloat32:
@@ -3952,7 +3952,7 @@ PyDoc_STRVAR(pyDataObjectSize_doc,"size([index]) -> returns the size of this dat
 Parameters  \n\
 ------------\n\
 index : {int}, optional\n\
-	If index is given, only the size of the indicated dimension is returned as single number (0 <= index < number of dimensions) \n\
+    If index is given, only the size of the indicated dimension is returned as single number (0 <= index < number of dimensions) \n\
 \n\
 Returns \n\
 -------- \n\
@@ -4004,8 +4004,8 @@ PyDoc_STRVAR(pyDataObjectCopy_doc,"copy(regionOnly=0) -> returns a deep copy of 
 Parameters \n\
 ----------- \n\
 regionOnly : {bool}, optional \n\
-	If regionOnly is 1, only the current region of interest of this dataObject is copied, else the entire dataObject \
-	including the current settings concerning the region of interest are deeply copied [default].\n\
+    If regionOnly is 1, only the current region of interest of this dataObject is copied, else the entire dataObject \
+    including the current settings concerning the region of interest are deeply copied [default].\n\
 \n\
 Returns \n\
 ------- \n\
@@ -4070,7 +4070,7 @@ PyDoc_STRVAR(pyDataObjectMul_doc, "mul(obj) -> a.mul(b) returns element wise mul
 Parameters  \n\
 ------------\n\
 obj : {dataObject} \n\
-	dataObject whose values are element-wisely multiplied with the values in this dataObject. \n\
+    dataObject whose values are element-wisely multiplied with the values in this dataObject. \n\
 \n\
 Returns \n\
 -------- \n\
@@ -4116,7 +4116,7 @@ PyDoc_STRVAR(pyDataObjectDiv_doc, "div(obj) -> a.div(b) returns element wise div
 Parameters  \n\
 ------------\n\
 obj : {dataObject} \n\
-	Every value in this data object is divided by the corresponding value in obj. \n\
+    Every value in this data object is divided by the corresponding value in obj. \n\
 \n\
 Returns \n\
 -------- \n\
@@ -4178,7 +4178,7 @@ Converts this data object to a new data object with another type, given by the s
 Parameters \n\
 ----------- \n\
 typestring : {String} \n\
-	Type string indicating the new type ('uint8',...'float32',..,'complex64') \n\
+    Type string indicating the new type ('uint8',...'float32',..,'complex64') \n\
 Returns \n\
 -------- \n\
 Converted data object \n\
@@ -4192,7 +4192,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     const char* type;
     int typeno = 0;
 
-	const char *kwlist[] = {"typestring", NULL};
+    const char *kwlist[] = {"typestring", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds,"s",const_cast<char**>(kwlist), &type))
     {
@@ -4243,56 +4243,56 @@ possible to convert the resulting data object to another type (given by the para
 Parameters \n\
 ----------- \n\
 minValue : {double} \n\
-	minimum value of the normalized range \n\
+    minimum value of the normalized range \n\
 maxValue : {double} \n\
-	maximum value of the normalized range \n\
+    maximum value of the normalized range \n\
 typestring : {String} \n\
-	Type string indicating the new type ('uint8',...'float32',..,'complex64'), default: '' (no type conversion) \n\
+    Type string indicating the new type ('uint8',...'float32',..,'complex64'), default: '' (no type conversion) \n\
 Returns \n\
 -------- \n\
 Converted data object");
 PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject* args, PyObject* kwds)
 {
-	const char* type = NULL;
-	double minVal = 0.0;
-	double maxVal = 1.0;
+    const char* type = NULL;
+    double minVal = 0.0;
+    double maxVal = 1.0;
     int typeno = 0;
 
-	const char *kwlist[] = {"minValue", "maxValue", "typestring", NULL};
+    const char *kwlist[] = {"minValue", "maxValue", "typestring", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds,"|dds",const_cast<char**>(kwlist), &minVal, &maxVal, &type))
     {
         return NULL;
     }
 
-	if (type != NULL)
-	{
-		typeno = typeNameToNumber(type);
+    if (type != NULL)
+    {
+        typeno = typeNameToNumber(type);
 
-		if (typeno == -1)
-		{
-			PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
-			return NULL;
-		}
-	}
-	else
-	{
-		typeno = self->dataObject->getType();
-	}
+        if (typeno == -1)
+        {
+            PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
+            return NULL;
+        }
+    }
+    else
+    {
+        typeno = self->dataObject->getType();
+    }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     ito::DataObject dataObj;
 
     self->dataObject->lockRead();
-	double smin, smax;
-	ito::uint32 loc1[] = {0,0,0};
-	ito::uint32 loc2[] = {0,0,0};
-	ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
+    double smin, smax;
+    ito::uint32 loc1[] = {0,0,0};
+    ito::uint32 loc2[] = {0,0,0};
+    ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
 
-	double dmin = std::min(minVal, maxVal);
-	double dmax = std::max(minVal, maxVal);
-	double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./(smax-smin)) : 0.0);
-	double shift = dmin-smin*scale;
+    double dmin = std::min(minVal, maxVal);
+    double dmax = std::max(minVal, maxVal);
+    double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./(smax-smin)) : 0.0);
+    double shift = dmin-smin*scale;
     try
     {
         self->dataObject->convertTo(dataObj, typeno, scale, shift);
@@ -4366,19 +4366,19 @@ Use this command to adjust the current size and position of this region of inter
 integer numbers with twice the size than the number of dimensions. \n\
 \n\
 Example:: \n\
-	d = dataObject([5,4]) \n\
-	droi = d \n\
-	droi.adjustROI([-2,0,-1,-1]) \n\
-	\n\
+    d = dataObject([5,4]) \n\
+    droi = d \n\
+    droi.adjustROI([-2,0,-1,-1]) \n\
+    \n\
 Now droi is a region of interest of the original data object whose first value is equal to d[2,1] and its size is (3,2) \n\
 \n\
 Parameters \n\
 ----------- \n\
 offsetList : {list of integers} \n\
-	This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
-	current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
-	second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
-	shrink towards the center.");
+    This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
+    current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
+    second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
+    shrink towards the center.");
 PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args)
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.
@@ -4782,21 +4782,21 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         {
             if (PyLong_Check(value))
             {
-				int overflow;
-				long l = PyLong_AsLongAndOverflow(value, &overflow);
-				if (overflow == 0)
-				{
-					dataObj = (ito::int32)l;
-				}
-				else if (overflow == -1)
-				{
-					PyErr_SetString(PyExc_ValueError, "value exceeds the negative boundary of int32.");
-					error = true;
-				}
-				else //overflow = 1
-				{
-					dataObj = (ito::uint32)PyLong_AsUnsignedLong(value);
-				}
+                int overflow;
+                long l = PyLong_AsLongAndOverflow(value, &overflow);
+                if (overflow == 0)
+                {
+                    dataObj = (ito::int32)l;
+                }
+                else if (overflow == -1)
+                {
+                    PyErr_SetString(PyExc_ValueError, "value exceeds the negative boundary of int32.");
+                    error = true;
+                }
+                else //overflow = 1
+                {
+                    dataObj = (ito::uint32)PyLong_AsUnsignedLong(value);
+                }
             }
             else if (PyFloat_Check(value))
             {
@@ -4819,18 +4819,18 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     error = true;
                 }
             }
-			else if (Py_TYPE(value) == &(PythonRgba::PyRgbaType))
-			{
-				if (dataObj.getType() == ito::tRGBA32)
-				{
-					dataObj = ((PythonRgba::PyRgba*)value)->rgba;
-				}
-				else
-				{
-					PyErr_SetString(PyExc_TypeError, "An assignment of type itom.rgba is only possible for data objects of type rgba32");
-					error = true;
-				}
-			}
+            else if (Py_TYPE(value) == &(PythonRgba::PyRgbaType))
+            {
+                if (dataObj.getType() == ito::tRGBA32)
+                {
+                    dataObj = ((PythonRgba::PyRgba*)value)->rgba;
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "An assignment of type itom.rgba is only possible for data objects of type rgba32");
+                    error = true;
+                }
+            }
             else
             {
                 error = true;
@@ -6055,11 +6055,11 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, unsigned int 
     case ito::tInt32:
         return PyLong_FromLong(dataObj->at<int32>(idx));
     case ito::tRGBA32:
-		{
-			ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
-			if (color) color->rgba = dataObj->at<ito::Rgba32>(idx).rgba;
-			return (PyObject*)color;
-		}
+        {
+            ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
+            if (color) color->rgba = dataObj->at<ito::Rgba32>(idx).rgba;
+            return (PyObject*)color;
+        }
     case ito::tFloat32:
         return PyFloat_FromDouble(dataObj->at<float32>(idx));
     case ito::tFloat64:
@@ -6120,11 +6120,11 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
     case ito::tInt32:
         return PyLong_FromLong(m->at<int32>(row,col));
     case ito::tRGBA32:
-		{
-			ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
-			if (color) color->rgba = m->at<Rgba32>(row,col).rgba;
-			return (PyObject*)color;
-		}
+        {
+            ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
+            if (color) color->rgba = m->at<Rgba32>(row,col).rgba;
+            return (PyObject*)color;
+        }
     case ito::tFloat32:
         return PyFloat_FromDouble(m->at<float32>(row,col));
     case ito::tFloat64:
@@ -6496,22 +6496,22 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"existTag",(PyCFunction)PyDataObj_TagExists, METH_VARARGS, pyDataObjectTagExists_doc},
         {"getTagListSize",(PyCFunction)PyDataObj_GetTagListSize, METH_NOARGS, pyDataObjectGetTagListSize_doc},
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
-		
+        
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},
-		{"normalize", (PyCFunction)PythonDataObject::PyDataObject_normalize, METH_VARARGS | METH_KEYWORDS, pyDataObjectNormalize_doc},
+        {"normalize", (PyCFunction)PythonDataObject::PyDataObject_normalize, METH_VARARGS | METH_KEYWORDS, pyDataObjectNormalize_doc},
         {"locateROI", (PyCFunction)PythonDataObject::PyDataObject_locateROI, METH_NOARGS, pyDataObjectLocateROI_doc},
         {"adjustROI", (PyCFunction)PythonDataObject::PyDataObject_adjustROI, METH_VARARGS, pyDataObjectAdjustROI_doc},
         {"squeeze", (PyCFunction)PythonDataObject::PyDataObject_squeeze, METH_NOARGS, pyDataObjectSqueeze_doc},
         {"size", (PyCFunction)PythonDataObject::PyDataObject_size, METH_VARARGS, pyDataObjectSize_doc},
         {"conj", (PyCFunction)PythonDataObject::PyDataObject_conj, METH_NOARGS, pyDataObjectConj_doc},
         {"conjugate", (PyCFunction)PythonDataObject::PyDataObject_conjugate, METH_NOARGS, pyDataObjectConjugate_doc},
-		{"adj", (PyCFunction)PythonDataObject::PyDataObject_adj, METH_NOARGS, pyDataObjectAdj_doc},
-		{"adjugate", (PyCFunction)PyDataObject_adjugate, METH_NOARGS, pyDataObjectAdjugate_doc}, 
-		{"trans", (PyCFunction)PythonDataObject::PyDataObject_trans, METH_NOARGS, pyDataObjectTrans_doc},
-		{"div", (PyCFunction)PythonDataObject::PyDataObject_div, METH_VARARGS, pyDataObjectDiv_doc},
-		{"mul", (PyCFunction)PythonDataObject::PyDataObject_mul, METH_VARARGS, pyDataObjectMul_doc},
-		{"makeContinuous", (PyCFunction)PythonDataObject::PyDataObject_makeContinuous, METH_NOARGS, pyDataObjectMakeContinuous_doc},
+        {"adj", (PyCFunction)PythonDataObject::PyDataObject_adj, METH_NOARGS, pyDataObjectAdj_doc},
+        {"adjugate", (PyCFunction)PyDataObject_adjugate, METH_NOARGS, pyDataObjectAdjugate_doc}, 
+        {"trans", (PyCFunction)PythonDataObject::PyDataObject_trans, METH_NOARGS, pyDataObjectTrans_doc},
+        {"div", (PyCFunction)PythonDataObject::PyDataObject_div, METH_VARARGS, pyDataObjectDiv_doc},
+        {"mul", (PyCFunction)PythonDataObject::PyDataObject_mul, METH_VARARGS, pyDataObjectMul_doc},
+        {"makeContinuous", (PyCFunction)PythonDataObject::PyDataObject_makeContinuous, METH_NOARGS, pyDataObjectMakeContinuous_doc},
         {"reshape", (PyCFunction)PythonDataObject::PyDataObject_reshape, METH_VARARGS, pyDataObjectReshape_doc},
         {"zeros", (PyCFunction)PythonDataObject::PyDataObj_StaticZeros, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticZeros_doc},
         {"ones",(PyCFunction)PythonDataObject::PyDataObj_StaticOnes, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticOnes_doc},
@@ -6591,12 +6591,12 @@ PyTypeObject PythonDataObject::PyDataObjectType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         dataObjectInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         (richcmpfunc)PyDataObject_RichCompare,            /* tp_richcompare */
-        0,		               /* tp_weaklistoffset */
-        (getiterfunc)PyDataObj_getiter,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        0,                       /* tp_weaklistoffset */
+        (getiterfunc)PyDataObj_getiter,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyDataObject_methods,             /* tp_methods */
         PyDataObject_members,             /* tp_members */
         PyDataObject_getseters,            /* tp_getset */
@@ -6738,10 +6738,10 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             break;
         case ito::tRGBA32:
             {
-			    ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
-			    if (color) color->rgba = ((Rgba32*)(*(self->it)))->rgba;
-			    output = (PyObject*)color;
-		    }
+                ito::PythonRgba::PyRgba *color = ito::PythonRgba::createEmptyPyRgba();
+                if (color) color->rgba = ((Rgba32*)(*(self->it)))->rgba;
+                output = (PyObject*)color;
+            }
             break;
         case ito::tFloat32:
             output = PyFloat_FromDouble((double)(*((ito::float32*)(*(self->it)))));

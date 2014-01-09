@@ -53,7 +53,7 @@ namespace ito
             QToolBar* m_pMainToolbar;
 
             QAction *m_pShowConfDialog;
-			QAction *m_pActDockWidget;
+            QAction *m_pActDockWidget;
             QAction *m_pActDockWidgetToolbar;
             QAction *m_pActNewInstance;
             QAction *m_pActCloseInstance;
@@ -89,7 +89,7 @@ namespace ito
             void treeViewContextMenuRequested(const QPoint &pos);
             void selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
             void mnuShowConfdialog();
-			void mnuToggleDockWidget();
+            void mnuToggleDockWidget();
             void mnuCreateNewInstance();
             void mnuCloseInstance();
             void mnuCloseAllInstances();

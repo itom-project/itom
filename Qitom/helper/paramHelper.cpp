@@ -440,67 +440,67 @@ namespace ito {
             {
             case ito::ParamBase::Char:
                 {
-					retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
+                    retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
                 }
-				break;
-			case ito::ParamBase::Int:
+                break;
+            case ito::ParamBase::Int:
                 {
-					retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
+                    retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
                 }
-				break;
-			case ito::ParamBase::Double:
+                break;
+            case ito::ParamBase::Double:
                 {
-					retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
+                    retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
                 }
-				break;
-			case ito::ParamBase::CharArray:
-				{
-					const ito::CharMeta *meta = dynamic_cast<const ito::CharMeta*>(templateParam.getMeta());
-					char* vals = param.getVal<char*>();
-					if(meta)
-					{
-						for(int i = 0 ; i < param.getLen() ; i++)
-						{
-							retVal += validateCharMeta( meta, vals[i] );
-						}
-					}
-				}
-				break;
-			case ito::ParamBase::IntArray:
-				{
-					const ito::IntMeta *meta = dynamic_cast<const ito::IntMeta*>(templateParam.getMeta());
-					int* vals = param.getVal<int*>();
-					if(meta)
-					{
-						for(int i = 0 ; i < param.getLen() ; i++)
-						{
-							retVal += validateIntMeta( meta, vals[i] );
-						}
-					}
-				}
-				break;
-			case ito::ParamBase::DoubleArray:
-				{
-					const ito::DoubleMeta *meta = dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta());
-					double* vals = param.getVal<double*>();
-					if(meta)
-					{
-						for(int i = 0 ; i < param.getLen() ; i++)
-						{
-							retVal += validateDoubleMeta( meta, vals[i] );
-						}
-					}
-				}
-				break;
-			case ito::ParamBase::String:
+                break;
+            case ito::ParamBase::CharArray:
                 {
-					retVal += validateStringMeta( dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory ); 
+                    const ito::CharMeta *meta = dynamic_cast<const ito::CharMeta*>(templateParam.getMeta());
+                    char* vals = param.getVal<char*>();
+                    if(meta)
+                    {
+                        for(int i = 0 ; i < param.getLen() ; i++)
+                        {
+                            retVal += validateCharMeta( meta, vals[i] );
+                        }
+                    }
                 }
-				break;
-			case ito::ParamBase::HWRef & ito::paramTypeMask:
-				{
-					retVal += validateHWMeta( dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory );
-				}
+                break;
+            case ito::ParamBase::IntArray:
+                {
+                    const ito::IntMeta *meta = dynamic_cast<const ito::IntMeta*>(templateParam.getMeta());
+                    int* vals = param.getVal<int*>();
+                    if(meta)
+                    {
+                        for(int i = 0 ; i < param.getLen() ; i++)
+                        {
+                            retVal += validateIntMeta( meta, vals[i] );
+                        }
+                    }
+                }
+                break;
+            case ito::ParamBase::DoubleArray:
+                {
+                    const ito::DoubleMeta *meta = dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta());
+                    double* vals = param.getVal<double*>();
+                    if(meta)
+                    {
+                        for(int i = 0 ; i < param.getLen() ; i++)
+                        {
+                            retVal += validateDoubleMeta( meta, vals[i] );
+                        }
+                    }
+                }
+                break;
+            case ito::ParamBase::String:
+                {
+                    retVal += validateStringMeta( dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory ); 
+                }
+                break;
+            case ito::ParamBase::HWRef & ito::paramTypeMask:
+                {
+                    retVal += validateHWMeta( dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory );
+                }
                 break;
             }
         }
@@ -515,19 +515,19 @@ namespace ito {
             {
             case ito::ParamBase::CharArray:
                 {
-					retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
+                    retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
                 }
-				break;
-			case ito::ParamBase::IntArray:
+                break;
+            case ito::ParamBase::IntArray:
                 {
-					retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
+                    retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
                 }
-				break;
-			case ito::ParamBase::DoubleArray:
+                break;
+            case ito::ParamBase::DoubleArray:
                 {
-					retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
+                    retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
                 }
-				break;
+                break;
             default:
                 {
                     retVal += ito::RetVal(ito::retError,0,QObject::tr("Index-based parameter name requires an array-type parameter.").toAscii().data());

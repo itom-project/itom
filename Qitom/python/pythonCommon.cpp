@@ -431,8 +431,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         else
                         {
                             temp = tempbuf;
-							temp.replace("\n","\\n");
-							temp.replace("\r","\\r");
+                            temp.replace("\n","\\n");
+                            temp.replace("\r","\\r");
                             if (temp.size() > 20)
                             {
                                 temp = QString("\"%1...\"").arg(temp.left(20));
@@ -902,47 +902,47 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         }
     }
 
-	if(kwds)
-	{
-		// check if any key is given, which does not exist in kwds-dictionary
-		Py_ssize_t foundKwds = 0;
-		foreach(const ito::Param p, *defaultParamListMand)
-		{
-			if (PyDict_GetItemString(kwds, p.getName())) 
-			{
-				foundKwds++;
-			}
-		}
-		foreach(const ito::Param p, *defaultParamListOpt)
-		{
-			if (PyDict_GetItemString(kwds, p.getName())) 
-			{
-				foundKwds++;
-			}
-		}
+    if(kwds)
+    {
+        // check if any key is given, which does not exist in kwds-dictionary
+        Py_ssize_t foundKwds = 0;
+        foreach(const ito::Param p, *defaultParamListMand)
+        {
+            if (PyDict_GetItemString(kwds, p.getName())) 
+            {
+                foundKwds++;
+            }
+        }
+        foreach(const ito::Param p, *defaultParamListOpt)
+        {
+            if (PyDict_GetItemString(kwds, p.getName())) 
+            {
+                foundKwds++;
+            }
+        }
 
-		//this is a keyword-parameter, that can be passed without being part of the mandatory or optional parameters
-		if (PyDict_GetItemString(kwds, "autoLoadParams"))
-		{
-			foundKwds++;
-		}
+        //this is a keyword-parameter, that can be passed without being part of the mandatory or optional parameters
+        if (PyDict_GetItemString(kwds, "autoLoadParams"))
+        {
+            foundKwds++;
+        }
 
-		if (foundKwds != PyDict_Size(kwds))
-		{
-			if (mandPParsed) 
-			{
-				free(mandPParsed);
-			}
-			if (optPParsed)  
-			{
-				free(optPParsed);
-			}
-			std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
-			errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
-			errOutInitParams(defaultParamListOpt, -1, "Optional parameters are:");
-			return ito::RetVal(ito::retError, 0, "there are keyword arguments that does not exist in mandatory or optional parameters.");
-		}
-	}
+        if (foundKwds != PyDict_Size(kwds))
+        {
+            if (mandPParsed) 
+            {
+                free(mandPParsed);
+            }
+            if (optPParsed)  
+            {
+                free(optPParsed);
+            }
+            std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
+            errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
+            errOutInitParams(defaultParamListOpt, -1, "Optional parameters are:");
+            return ito::RetVal(ito::retError, 0, "there are keyword arguments that does not exist in mandatory or optional parameters.");
+        }
+    }
 
 
     // argsLen ist not sufficient for mandatory parameters so check if we can complete with keywords

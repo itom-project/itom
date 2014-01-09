@@ -2350,20 +2350,20 @@ template<typename _Tp> RetVal CopyMatFunc(uchar **src, uchar **&dst, bool transp
     (*reinterpret_cast<int *>(dst)) = size;
     dst += sizeofs;
 
-	if(transposed)
-	{
-		for( int i = 0 ; i < size ; i++)
-		{
-			dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( ((cv::Mat_<_Tp> *)(src[i]))->t() ) );
-		}
-	}
-	else
-	{
-		for( int i = 0 ; i < size ; i++)
-		{
-			dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( *((cv::Mat_<_Tp> *)(src[i])) ) );
-		}
-	}
+    if(transposed)
+    {
+        for( int i = 0 ; i < size ; i++)
+        {
+            dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( ((cv::Mat_<_Tp> *)(src[i]))->t() ) );
+        }
+    }
+    else
+    {
+        for( int i = 0 ; i < size ; i++)
+        {
+            dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( *((cv::Mat_<_Tp> *)(src[i])) ) );
+        }
+    }
 
    return RetVal(retOk);
 }
@@ -2534,100 +2534,100 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
 
 DataObject::DataObject(const DataObject& dObj, bool transposed)
 {
-	if(!transposed) //shallow copy of dataobject
-	{
-		createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
-		m_pRefCount = dObj.m_pRefCount;
-		m_objSharedDataLock = dObj.m_objSharedDataLock; //copies pointer
-		m_pDataObjectTags = dObj.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
+    if(!transposed) //shallow copy of dataobject
+    {
+        createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
+        m_pRefCount = dObj.m_pRefCount;
+        m_objSharedDataLock = dObj.m_objSharedDataLock; //copies pointer
+        m_pDataObjectTags = dObj.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
 
-		//header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
-		// only increment if data exists
-		if(m_pRefCount != NULL)
-		{
-			CV_XADD((m_pRefCount),1);//++;
-		}
+        //header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
+        // only increment if data exists
+        if(m_pRefCount != NULL)
+        {
+            CV_XADD((m_pRefCount),1);//++;
+        }
 
-		m_type = dObj.m_type;
-		m_continuous = dObj.m_continuous;
-		m_owndata = dObj.m_owndata;
+        m_type = dObj.m_type;
+        m_continuous = dObj.m_continuous;
+        m_owndata = dObj.m_owndata;
 
-		if(dObj.m_data != NULL)
-		{
-			mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
+        if(dObj.m_data != NULL)
+        {
+            mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
 
-			try
-			{
-				fListCopyMatFunc[m_type](dObj.m_data, m_data, false, m_sizeofs);
-			}
-			catch(cv::Exception exc) //memory error
-			{
-				secureFreeData();
-				throw; //rethrow exception
-			}
-		}
-	}
-	else //deep, transposed copy of dataObject
-	{
-		int dims = dObj.m_dims;
-		int *newSize = new int[dims];
-		int *newOSize = new int[dims];
-		int *newRoi = new int[dims];
-		memcpy(newSize, dObj.m_size.m_p, dims * sizeof(int));
-		memcpy(newOSize, dObj.m_osize.m_p, dims * sizeof(int));
-		memcpy(newRoi, dObj.m_roi.m_p, dims * sizeof(int));
+            try
+            {
+                fListCopyMatFunc[m_type](dObj.m_data, m_data, false, m_sizeofs);
+            }
+            catch(cv::Exception exc) //memory error
+            {
+                secureFreeData();
+                throw; //rethrow exception
+            }
+        }
+    }
+    else //deep, transposed copy of dataObject
+    {
+        int dims = dObj.m_dims;
+        int *newSize = new int[dims];
+        int *newOSize = new int[dims];
+        int *newRoi = new int[dims];
+        memcpy(newSize, dObj.m_size.m_p, dims * sizeof(int));
+        memcpy(newOSize, dObj.m_osize.m_p, dims * sizeof(int));
+        memcpy(newRoi, dObj.m_roi.m_p, dims * sizeof(int));
 
-		//flip the last two dimensions
-		if(dims >= 2)
-		{
-			std::swap( newSize[dims-1], newSize[dims-2] );
-			std::swap( newOSize[dims-1], newOSize[dims-2] );
-			std::swap( newRoi[dims-1], newRoi[dims-2] );
-		}
+        //flip the last two dimensions
+        if(dims >= 2)
+        {
+            std::swap( newSize[dims-1], newSize[dims-2] );
+            std::swap( newOSize[dims-1], newOSize[dims-2] );
+            std::swap( newRoi[dims-1], newRoi[dims-2] );
+        }
 
-		createHeaderWithROI(dims, newSize, newOSize, newRoi); 
-		delete[] newSize;
-		delete[] newOSize;
-		delete[] newRoi;
+        createHeaderWithROI(dims, newSize, newOSize, newRoi); 
+        delete[] newSize;
+        delete[] newOSize;
+        delete[] newRoi;
 
-		if (dims > 0)
-		{
-			m_pRefCount = new int(0);
-			m_objSharedDataLock = new ReadWriteLock(m_objHeaderLock.getLockStatus());
+        if (dims > 0)
+        {
+            m_pRefCount = new int(0);
+            m_objSharedDataLock = new ReadWriteLock(m_objHeaderLock.getLockStatus());
 
-			m_pDataObjectTags = new DataObjectTags( *dObj.m_pDataObjectTags ); //deep copy of tags
+            m_pDataObjectTags = new DataObjectTags( *dObj.m_pDataObjectTags ); //deep copy of tags
 
-			//flip last two elements of axisDescription, axisOffsets, axisScale, axisUnit
-			if(dims >= 2)
-			{
-				std::swap(m_pDataObjectTags->m_axisDescription[dims-1], m_pDataObjectTags->m_axisDescription[dims-2]);
-				std::swap(m_pDataObjectTags->m_axisOffsets[dims-1], m_pDataObjectTags->m_axisOffsets[dims-2]);
-				std::swap(m_pDataObjectTags->m_axisScales[dims-1], m_pDataObjectTags->m_axisScales[dims-2]);
-				std::swap(m_pDataObjectTags->m_axisUnit[dims-1], m_pDataObjectTags->m_axisUnit[dims-2]);
-			}
-		}
-		else
-		{
-			m_pRefCount = NULL;
-		}
+            //flip last two elements of axisDescription, axisOffsets, axisScale, axisUnit
+            if(dims >= 2)
+            {
+                std::swap(m_pDataObjectTags->m_axisDescription[dims-1], m_pDataObjectTags->m_axisDescription[dims-2]);
+                std::swap(m_pDataObjectTags->m_axisOffsets[dims-1], m_pDataObjectTags->m_axisOffsets[dims-2]);
+                std::swap(m_pDataObjectTags->m_axisScales[dims-1], m_pDataObjectTags->m_axisScales[dims-2]);
+                std::swap(m_pDataObjectTags->m_axisUnit[dims-1], m_pDataObjectTags->m_axisUnit[dims-2]);
+            }
+        }
+        else
+        {
+            m_pRefCount = NULL;
+        }
 
-		m_type = dObj.m_type;
-		m_continuous = dObj.m_continuous;
-		m_owndata = dObj.m_owndata;
+        m_type = dObj.m_type;
+        m_continuous = dObj.m_continuous;
+        m_owndata = dObj.m_owndata;
 
-		m_data = NULL;
-		mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
+        m_data = NULL;
+        mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
 
-		try
-		{
-			fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
-		}
-		catch(cv::Exception exc) //memory error
-		{
-			secureFreeData();
-			throw; //rethrow exception
-		}
-	}
+        try
+        {
+            fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
+        }
+        catch(cv::Exception exc) //memory error
+        {
+            secureFreeData();
+            throw; //rethrow exception
+        }
+    }
 }
 
 
@@ -2802,7 +2802,7 @@ DataObject & DataObject::operator = (const complex128 value)
 */
 DataObject & DataObject::operator = (const ito::Rgba32 value)
 {
-	fListAssignScalarFunc[m_type](this, ito::tRGBA32, static_cast<const void*>(&value));
+    fListAssignScalarFunc[m_type](this, ito::tRGBA32, static_cast<const void*>(&value));
     return *this;
 }
 
@@ -2832,13 +2832,13 @@ template<typename _Tp> RetVal AddFunc(const DataObject *dObj1, const DataObject 
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
-		dstTmat = dObjRes->seekMat(nmat, numMats);
-		srcTmat1 = dObj1->seekMat(nmat, numMats);
-		srcTmat2 = dObj2->seekMat(nmat, numMats);
-		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-		*cvDstTmat = *cvSrcTmat1 + *cvSrcTmat2;
+        dstTmat = dObjRes->seekMat(nmat, numMats);
+        srcTmat1 = dObj1->seekMat(nmat, numMats);
+        srcTmat2 = dObj2->seekMat(nmat, numMats);
+        cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+        cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+        cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+        *cvDstTmat = *cvSrcTmat1 + *cvSrcTmat2;
     }
 
    return RetVal(retOk);
@@ -2858,11 +2858,11 @@ template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-		dstTmat = dObjOut->seekMat(nmat, numMats);
-		srcTmat = dObjIn->seekMat(nmat, numMats);
-		cvSrc  = (cv::Mat_<_Tp> *) dObjIn->get_mdata()[srcTmat];
-		cvDest = (cv::Mat_<_Tp> *) dObjOut->get_mdata()[dstTmat];
-		*cvDest = *cvSrc + s;
+        dstTmat = dObjOut->seekMat(nmat, numMats);
+        srcTmat = dObjIn->seekMat(nmat, numMats);
+        cvSrc  = (cv::Mat_<_Tp> *) dObjIn->get_mdata()[srcTmat];
+        cvDest = (cv::Mat_<_Tp> *) dObjOut->get_mdata()[dstTmat];
+        *cvDest = *cvSrc + s;
     }
 
    return RetVal(retOk);
@@ -2885,11 +2885,11 @@ template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::floa
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-		dstTmat = dObjOut->seekMat(nmat, numMats);
-		srcTmat = dObjIn->seekMat(nmat, numMats);
-		cvSrc  = (cv::Mat_<ito::Rgba32> *) dObjIn->get_mdata()[srcTmat];
-		cvDest = (cv::Mat_<ito::Rgba32> *) dObjOut->get_mdata()[dstTmat];
-		*cvDest = *cvSrc + s;
+        dstTmat = dObjOut->seekMat(nmat, numMats);
+        srcTmat = dObjIn->seekMat(nmat, numMats);
+        cvSrc  = (cv::Mat_<ito::Rgba32> *) dObjIn->get_mdata()[srcTmat];
+        cvDest = (cv::Mat_<ito::Rgba32> *) dObjOut->get_mdata()[dstTmat];
+        *cvDest = *cvSrc + s;
     }
 
    return RetVal(retOk);
@@ -2982,16 +2982,16 @@ template<typename _Tp> RetVal SubFunc(const DataObject *dObj1, const DataObject 
    cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
    cv::Mat_<_Tp> *cvDstTmat = NULL;
 
-	for (nmat = 0; nmat < numMats; nmat++)
-	{
-		dstTmat = dObjRes->seekMat(nmat, numMats);
-		srcTmat1 = dObj1->seekMat(nmat, numMats);
-		srcTmat2 = dObj2->seekMat(nmat, numMats);
-		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-		*cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
-	}
+    for (nmat = 0; nmat < numMats; nmat++)
+    {
+        dstTmat = dObjRes->seekMat(nmat, numMats);
+        srcTmat1 = dObj1->seekMat(nmat, numMats);
+        srcTmat2 = dObj2->seekMat(nmat, numMats);
+        cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+        cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+        cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+        *cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
+    }
  
    return 0;
 }
@@ -3080,13 +3080,13 @@ template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObjec
   
     for (nmat = 0; nmat < numMats; nmat++)
     {
-		dstTmat = dObjRes->seekMat(nmat, numMats);
-		srcTmat1 = dObj1->seekMat(nmat, numMats);
-		srcTmat2 = dObj2->seekMat(nmat, numMats);
-		cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
-		cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
-		cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
-		*cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
+        dstTmat = dObjRes->seekMat(nmat, numMats);
+        srcTmat1 = dObj1->seekMat(nmat, numMats);
+        srcTmat2 = dObj2->seekMat(nmat, numMats);
+        cvSrcTmat1 = (cv::Mat_<_Tp> *) dObj1->get_mdata()[srcTmat1];
+        cvSrcTmat2 = (cv::Mat_<_Tp> *) dObj2->get_mdata()[srcTmat2];
+        cvDstTmat = (cv::Mat_<_Tp> *) dObjRes->get_mdata()[dstTmat];
+        *cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
     }
 
    cv::Size msize = ((cv::Mat_<_Tp> *)(dObjRes->get_mdata()[0]))->size(); //for dObjRes, the transpose flag is 0.
@@ -3292,8 +3292,8 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
       {
           cv::error(cv::Exception(CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
       }      
-	  (*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) =   src1mat < src2mat;
-	  cv::compare(*src1mat, *src2mat, *dest, cmpOp);
+      (*(cv::Mat_<char> *)((dst->get_mdata())[resMatNum])) =   src1mat < src2mat;
+      cv::compare(*src1mat, *src2mat, *dest, cmpOp);
    }
 
    return 0;
@@ -3715,7 +3715,7 @@ template<typename _Tp> RetVal BitAndFunc(const DataObject *dObj1, const DataObje
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) & (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));      
+      (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) & (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));      
    }
    return 0;
 }
@@ -3851,7 +3851,7 @@ template<typename _Tp> RetVal BitOrFunc(const DataObject *dObj1, const DataObjec
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) | (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
+      (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) | (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));
    }
    return 0;
 }
@@ -3984,7 +3984,7 @@ template<typename _Tp> RetVal BitXorFunc(const DataObject *dObj1, const DataObje
       lhsMatNum = dObj1->seekMat(nmat, numMats);
       rhsMatNum = dObj2->seekMat(nmat, numMats);
       resMatNum = dObjRes->seekMat(nmat, numMats);
-	  (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) ^ (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));   
+      (*((cv::Mat_<_Tp> *)(dObjRes->get_mdata())[resMatNum])) = (*((cv::Mat_<_Tp> *)(dObj1->get_mdata())[lhsMatNum])) ^ (*((cv::Mat_<_Tp> *)(dObj2->get_mdata())[rhsMatNum]));   
    }
    return 0;
 }
@@ -4165,7 +4165,7 @@ DataObject DataObject::at(ito::Range *ranges)
         if(ranges[n].start == INT_MIN) // range all
         {
             lims[ (n*2) ] = 0;
-        }		
+        }        
         size = m_size.m_p[n];
         if(ranges[n].end == INT_MAX) //range all
         {
@@ -4531,9 +4531,9 @@ RetVal DataObject::conj()
 */
 DataObject DataObject::adj() const
 {
-	DataObject newDataObj = trans();
-	newDataObj.conj();
-	return newDataObj;
+    DataObject newDataObj = trans();
+    newDataObj.conj();
+    return newDataObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4544,7 +4544,7 @@ DataObject DataObject::adj() const
 */
 DataObject DataObject::trans() const
 {
-	return DataObject(*this, true);
+    return DataObject(*this, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -5637,7 +5637,7 @@ int DataObject::setAxisUnit(const unsigned int axisNum, const std::string &unit)
     if (!m_pDataObjectTags) return 1; //error
 
     if (axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
-			           
+                       
     else
     {
         m_pDataObjectTags->m_axisUnit[axisNum] = unit;

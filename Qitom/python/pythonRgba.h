@@ -58,7 +58,7 @@ class PythonRgba
         typedef struct
         {
             PyObject_HEAD
-    		ito::Rgba32 rgba;
+            ito::Rgba32 rgba;
         }
         PyRgba;
 
@@ -74,8 +74,8 @@ class PythonRgba
         static PyObject *PyRgba_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
         static int PyRgba_init(PyRgba *self, PyObject *args, PyObject *kwds);
 
-		static PyRgba* createEmptyPyRgba();
-		static bool checkPyRgba(int number, PyObject* rgba1 = NULL, PyObject* rgba2 = NULL, PyObject* rgba3 = NULL);
+        static PyRgba* createEmptyPyRgba();
+        static bool checkPyRgba(int number, PyObject* rgba1 = NULL, PyObject* rgba2 = NULL, PyObject* rgba3 = NULL);
 
 
         //-------------------------------------------------------------------------------------------------

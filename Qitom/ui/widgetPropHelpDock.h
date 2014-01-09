@@ -38,22 +38,22 @@ public:
     ~WidgetPropHelpDock();
     void readSettings();
     void writeSettings();
-	void getHelpList();
-	void refreshDBs();
+    void getHelpList();
+    void refreshDBs();
 
 protected:
 
 private:
     Ui::WidgetPropHelpDock ui;
-	QString m_pdbPath;
-	bool m_plistChanged;
+    QString m_pdbPath;
+    bool m_plistChanged;
 
 signals:
 
 public slots:
 
 private slots:
-	void on_listWidget_itemChanged(QListWidgetItem * item);
+    void on_listWidget_itemChanged(QListWidgetItem * item);
 
 
 };

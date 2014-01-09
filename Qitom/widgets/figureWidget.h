@@ -57,9 +57,9 @@ public:
 
     RetVal changeCurrentSubplot(int newIndex);
 
-	//---------------------------------
-	// setter / getter
-	//---------------------------------
+    //---------------------------------
+    // setter / getter
+    //---------------------------------
     void setFigHandle(QSharedPointer<unsigned int> figHandle) { m_guardedFigHandle = figHandle; }
 
 

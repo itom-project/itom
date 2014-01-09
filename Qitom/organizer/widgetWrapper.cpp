@@ -38,20 +38,20 @@ namespace ito
 /*!
     \class WidgetWrapper
     \brief One instance of this class acts as wrapper for several import public methods of classes, derived from QObject,
-	which should be made available by the call-method in python. 
+    which should be made available by the call-method in python. 
 
-	Usually, the huge meta system, provided by QMetaObject, of Qt gives the possibility to call slots and changes properties
-	of all classes, derived from QObject, at runtime. Other public methods of these classes however can not be accessed by this
-	runtime-system. Since the python-bindings which are integrated in the python-class UiDialog and UiDialogMetaObject use the
-	Qt-meta system in order to access properties and connect to signals or call slots, it is also desirable to access other public
-	methods of Qt-based classes. Frameworks, like PythonQt or PyQt have an internal parsing system which automatically creates
-	wrappers for all public methods; here the class WidgetWrapper is a manually created wrapper for the most important methods.
+    Usually, the huge meta system, provided by QMetaObject, of Qt gives the possibility to call slots and changes properties
+    of all classes, derived from QObject, at runtime. Other public methods of these classes however can not be accessed by this
+    runtime-system. Since the python-bindings which are integrated in the python-class UiDialog and UiDialogMetaObject use the
+    Qt-meta system in order to access properties and connect to signals or call slots, it is also desirable to access other public
+    methods of Qt-based classes. Frameworks, like PythonQt or PyQt have an internal parsing system which automatically creates
+    wrappers for all public methods; here the class WidgetWrapper is a manually created wrapper for the most important methods.
 */
 
 //! constructor
 /*!
     initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed 
-	for instance from the python-method "call".
+    for instance from the python-method "call".
 
     \sa PythonUiDialog, UiOrganizer
 */
@@ -68,17 +68,17 @@ WidgetWrapper::~WidgetWrapper()
 //! initializes the hash table containing information about all methods which should be wrapped.
 /*!
     Every public method of a class derived from QObject can be made available for access by Python if some information
-	about this method are contained in a corresponding instance of the class MethodDescription. A list of such instances is linked
-	to its appropriate class and therefore stored in the hash table methodHash whose key is the Qt-internal name of the corresponding
-	class. Classes which are derived from that class also have access to the recently wrapped methods.
+    about this method are contained in a corresponding instance of the class MethodDescription. A list of such instances is linked
+    to its appropriate class and therefore stored in the hash table methodHash whose key is the Qt-internal name of the corresponding
+    class. Classes which are derived from that class also have access to the recently wrapped methods.
 
-	If you want to register new wrapper methods for an Qt-based class with name "newClass", you should at first create a temporary
-	variable of type MethodDescriptionList, which is nothing else but a QList<MethodDescription>. Then you can add elements to this list
-	for example using the helper-method \sa buildMethodDescription. This method returns a new value of class MethodDescription.
-	Finally you add this list of MethodDescription to methodHash with the key "newClass".
+    If you want to register new wrapper methods for an Qt-based class with name "newClass", you should at first create a temporary
+    variable of type MethodDescriptionList, which is nothing else but a QList<MethodDescription>. Then you can add elements to this list
+    for example using the helper-method \sa buildMethodDescription. This method returns a new value of class MethodDescription.
+    Finally you add this list of MethodDescription to methodHash with the key "newClass".
 
-	All wrapped methods can finally be called by the method \sa call, which needs the method's index and a pointer to the base class
-	QObject*. You must also adapt the method call, in order to successfully finish the wrapping process.
+    All wrapped methods can finally be called by the method \sa call, which needs the method's index and a pointer to the base class
+    QObject*. You must also adapt the method call, in order to successfully finish the wrapping process.
 
     \sa buildMethodDescription, MethodDescription, MethodDescriptionList
 */
@@ -163,12 +163,12 @@ MethodDescriptionList WidgetWrapper::getMethodList(QObject *object)
 //! creates an instance of MethodDescription which contains all necessary information in order to call the corresponding method at runtime using the method \sa call.
 /*!
     This method creates the neccesary input for the constructor of MethodDescription, which has pretty much the same functionality than
-	the call of slots in Qt at runtime using the signal/slot and Qt-meta system.
+    the call of slots in Qt at runtime using the signal/slot and Qt-meta system.
 
     \param [in] signature is the Qt-like signature string for the method to wrap (e.g. "methodName(argType1,argType2,argType3,...)" without argument names)
-	\param [in] typename of the return value or "void" if no return value. This return type must be known by QMetaType, which is the case for all standard types, else use \sa qRegisterMetaType.
-	\param [in] a self defined, unique ID for the method; this ID must only be unique within the corresponding Qt-class.
-	\param [out] ok returns whether the MethodDescription instance could successfully be built (true).
+    \param [in] typename of the return value or "void" if no return value. This return type must be known by QMetaType, which is the case for all standard types, else use \sa qRegisterMetaType.
+    \param [in] a self defined, unique ID for the method; this ID must only be unique within the corresponding Qt-class.
+    \param [out] ok returns whether the MethodDescription instance could successfully be built (true).
     \return instance of MethodDescription, empty MethodDescription in case of error
     \sa MethodDescription, call
 */
@@ -228,15 +228,15 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
 //! call method which calls a wrapped method of any class derived from QObject at runtime. This call is for exampled executed by UiOrganizer::callMethod.
 /*!
     This method uses the class-name of object and checks if there is an call-implementation for the given methodIndex. If so, the
-	call is executed (see switch-case inside of the method). If the method index does not fit, the class name of the base class
-	of object is iteratively checked until either an appropriate method call could be executed or no other base class is available.
+    call is executed (see switch-case inside of the method). If the method index does not fit, the class name of the base class
+    of object is iteratively checked until either an appropriate method call could be executed or no other base class is available.
 
-	Please adapt the switch case in order to check for wrapped methods of other classes. Use the void-array _a and a reinterpret_cast-
-	operation for accessing the necessary parameters and write back the return value of the "real" call to the wrapped public method.
+    Please adapt the switch case in order to check for wrapped methods of other classes. Use the void-array _a and a reinterpret_cast-
+    operation for accessing the necessary parameters and write back the return value of the "real" call to the wrapped public method.
 
     \param [in] object is the instance casted to its base class QObject, whose wrapped public method should be called
-	\param [in] methodIndex is the ID of the wrapped method to call
-	\param [in/out] _a is a void-array containing the value for the return value as first element and the content of all argument as following elements. (similar to qt_metacall)
+    \param [in] methodIndex is the ID of the wrapped method to call
+    \param [in/out] _a is a void-array containing the value for the return value as first element and the content of all argument as following elements. (similar to qt_metacall)
     \return true if call could successfully be executed (only if call itsself was successfull), false if method could not be found
     \sa UiOrganizer::callMethod
 */
@@ -429,8 +429,8 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     else an empty QMetaProperty is returned.
 
     \param [in] baseObject is the original input object
-	\param [in] fakePropertyName is the artificial property name
-	\param [out] destinationObject will be filled with a pointer to the new object, the new property is valid for (or NULL)
+    \param [in] fakePropertyName is the artificial property name
+    \param [out] destinationObject will be filled with a pointer to the new object, the new property is valid for (or NULL)
     \return instance of QMetaProperty (valid, if fakePropertyName could be converted to another property and object)
     \sa UiOrganizer::writeProperties, UiOrganizer::readProperties
 */

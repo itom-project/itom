@@ -91,12 +91,12 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
     }
     else
     {
-		//set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
+        //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
         file.open(QFile::ReadOnly);
-		QFileInfo fileinfo(filename);
-		QDir workingDirectory = fileinfo.absoluteDir();
-		loader.setWorkingDirectory(workingDirectory);
-		//qDebug() << "working dir of QLoader:" << loader.workingDirectory();
+        QFileInfo fileinfo(filename);
+        QDir workingDirectory = fileinfo.absoluteDir();
+        loader.setWorkingDirectory(workingDirectory);
+        //qDebug() << "working dir of QLoader:" << loader.workingDirectory();
 
         contentWidget = loader.load(&file, NULL);
         file.close();
@@ -106,7 +106,7 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
             retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toAscii().data());
         }
 
-		retValue += init(contentWidget, buttonBarType, dialogButtons);
+        retValue += init(contentWidget, buttonBarType, dialogButtons);
     }
 
     return retValue;
@@ -118,13 +118,13 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
     RetVal retValue(retOk);
 
     if(contentWidget->windowTitle() != "")
-	{
-		setWindowTitle(contentWidget->windowTitle());
-	}
-	else
-	{
-		setWindowTitle(tr("itom"));
-	}
+    {
+        setWindowTitle(contentWidget->windowTitle());
+    }
+    else
+    {
+        setWindowTitle(tr("itom"));
+    }
 
     QObject *child = NULL;
     foreach(child, contentWidget->children())

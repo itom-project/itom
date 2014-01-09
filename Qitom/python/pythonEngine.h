@@ -121,7 +121,7 @@ public:
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple);
 
-	inline PyObject *getGlobalDictionary()  { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
+    inline PyObject *getGlobalDictionary()  { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
 
     static const PythonEngine *getInstance();
 
@@ -192,7 +192,7 @@ private:
     PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
     PyObject* mainDictionary;      //!< main dictionary of python [borrowed]
     PyObject* localDictionary;     //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then globalDictionary is equal to the local dictionary of the current frame
-	PyObject* globalDictionary;    //!< global dictionary of python [borrowed], equals to mainDictionary unless if debugger is in "interaction-mode", then globalDictionary is equal to the global dictionary of the current frame
+    PyObject* globalDictionary;    //!< global dictionary of python [borrowed], equals to mainDictionary unless if debugger is in "interaction-mode", then globalDictionary is equal to the global dictionary of the current frame
     PyObject *itomDbgModule;       //!< debugger module
     PyObject *itomDbgInstance;     //!< debugger instance
     PyObject *itomModule;          //!< itom module [new ref]
@@ -238,8 +238,8 @@ signals:
     void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString icon);
     void pythonRemoveMenuElement(QString key);
     void pythonCurrentDirChanged();
-	void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
-	void deleteCallStack();
+    void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
+    void deleteCallStack();
 
     void pythonSetCursor(const Qt::CursorShape cursor);
     void pythonResetCursor();

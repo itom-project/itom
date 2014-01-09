@@ -74,13 +74,13 @@ namespace ito
     }
 
     //! set api function pointer
-	void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
+    void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
     { 
         m_apiFunctionsBasePtr = apiFunctions;
         importItomApi(apiFunctions);
     }
 
-	void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph) 
+    void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph) 
     { 
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
         importItomPlotApi(apiFunctionsGraph);
@@ -102,7 +102,7 @@ namespace ito
         return QObject::event(e);
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! Constructor.
     /*!
         This constructor is called by any constructor of classes AddInActuator, AddInDataIO or AddInAlgo.
@@ -114,19 +114,19 @@ namespace ito
         \param [in] uniqueID is the unique identifier of this plugin instance. This identifier can be changed in the constructor or
                     finally at the beginning of in the init-method. Afterwards it is used by different organizers and GUI components.
     */
-	AddInBase::AddInBase() :
-		m_pThread(NULL), 
-		m_pBasePlugin(NULL), 
-		m_uniqueID(++m_instCounter), 
-		m_refCount(0), 
+    AddInBase::AddInBase() :
+        m_pThread(NULL), 
+        m_pBasePlugin(NULL), 
+        m_uniqueID(++m_instCounter), 
+        m_refCount(0), 
         m_createdByGUI(0),
         m_dockWidget(NULL),
         m_alive(0),
         m_initialized(false)
-	{
-	}
+    {
+    }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! Destructor.
     /*!
         This destructor is automatically called if any plugin instance is destroyed. It does the following steps:
@@ -135,16 +135,16 @@ namespace ito
         - Clears the internal parameter-vector.
         - If the plugin instance is executed in its own thread, this thread is stopped and finally deleted.
     */
-	AddInBase::~AddInBase() //will be called from main thread
-	{
-		if (m_dockWidget)
-		{
-			//the dock widget has not been destroyed yet (by deconstructor of mainWindow, where it is attached)
-			m_dockWidget->deleteLater();
-			m_dockWidget = NULL;
-		}
+    AddInBase::~AddInBase() //will be called from main thread
+    {
+        if (m_dockWidget)
+        {
+            //the dock widget has not been destroyed yet (by deconstructor of mainWindow, where it is attached)
+            m_dockWidget->deleteLater();
+            m_dockWidget = NULL;
+        }
 
-		m_params.clear();
+        m_params.clear();
 
         //delete own thread if not already happened
         if (m_pThread != NULL)
@@ -157,15 +157,15 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-	//! method for setting various parameters in a sequence
-	/*!
-		Using this method, only one over-thread call needs to be executed in order to set various parameters
-		by calling setParam for each parameter.
+    //! method for setting various parameters in a sequence
+    /*!
+        Using this method, only one over-thread call needs to be executed in order to set various parameters
+        by calling setParam for each parameter.
 
-		\param values is a vector of parameters to set
-		\param waitCond is the locked semaphore that is released at the end of the method.
-		\sa setParam, ParamBase
-	*/
+        \param values is a vector of parameters to set
+        \param waitCond is the locked semaphore that is released at the end of the method.
+        \sa setParam, ParamBase
+    */
     ito::RetVal AddInBase::setParamVector(const QVector<QSharedPointer<ito::ParamBase> > values, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
@@ -187,21 +187,21 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-	//! this method can handle additional functions of your plugin.
-	/*!
-		Use registerExecFunc to register a specific function name and a set of mandatory and optional default parameters.
-		It one on those functions is called (for instance by a python-call), this method is executed. Implement a switch
-		case for the function name and start the execution. The mandatory and optional parameters are handled like it is
-		the case for the creation (init-method) of a plugin. Additionally define an optional vector of output parameters,
-		that are finally filled with a valid input during the execution of the function.
+    //! this method can handle additional functions of your plugin.
+    /*!
+        Use registerExecFunc to register a specific function name and a set of mandatory and optional default parameters.
+        It one on those functions is called (for instance by a python-call), this method is executed. Implement a switch
+        case for the function name and start the execution. The mandatory and optional parameters are handled like it is
+        the case for the creation (init-method) of a plugin. Additionally define an optional vector of output parameters,
+        that are finally filled with a valid input during the execution of the function.
 
-		\param funcName is the function name
-		\param paramsMand is the vector of mandatory parameters for the specific function name
-		\param paramsOpt is the vector of optional parameters for the specific function name
-		\param paramsOut is the vector of parameters (must have flag OUT, not IN), that are the return value(s) of the specific function call
-		\param waitCond is the semaphore in order guarantee, that the caller of this method waits until the function has been executed.
-		\sa registerExecFunc, init
-	*/
+        \param funcName is the function name
+        \param paramsMand is the vector of mandatory parameters for the specific function name
+        \param paramsOpt is the vector of optional parameters for the specific function name
+        \param paramsOut is the vector of parameters (must have flag OUT, not IN), that are the return value(s) of the specific function call
+        \param waitCond is the semaphore in order guarantee, that the caller of this method waits until the function has been executed.
+        \sa registerExecFunc, init
+    */
     ito::RetVal AddInBase::execFunc(const QString /*funcName*/, QSharedPointer<QVector<ito::ParamBase> > /*paramsMand*/, QSharedPointer<QVector<ito::ParamBase> > /*paramsOpt*/, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
@@ -216,52 +216,52 @@ namespace ito
         return retValue;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
-	//! Creates the dock-widget for this plugin
-	/*
-		Call this method ONLY in the constructor of your plugin, since it must be executed in the main thread.
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! Creates the dock-widget for this plugin
+    /*
+        Call this method ONLY in the constructor of your plugin, since it must be executed in the main thread.
 
-		By this method, the dock-widget for this plugin is created, where you can define the content-widget of the dock-widget,
-		some style-features of the dock-widget, the areas in the main window, where it is allowed to move the dock-widget...
+        By this method, the dock-widget for this plugin is created, where you can define the content-widget of the dock-widget,
+        some style-features of the dock-widget, the areas in the main window, where it is allowed to move the dock-widget...
 
-		\param [in] title is the dock-widget's title
-		\param [in] features is an OR-combination of QDockWidget::DockWidgetFeature
-		\param [in] allowedAreas indicate the allowed areas as OR-combination of Qt::DockWidgetArea
-		\param [in] content is the new content-widget for the dock-widget
+        \param [in] title is the dock-widget's title
+        \param [in] features is an OR-combination of QDockWidget::DockWidgetFeature
+        \param [in] allowedAreas indicate the allowed areas as OR-combination of Qt::DockWidgetArea
+        \param [in] content is the new content-widget for the dock-widget
 
-		\sa dockWidgetDefaultStyle
-	*/
-	void AddInBase::createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas, QWidget *content)
-	{
-		if (m_dockWidget == NULL)
-		{
-			m_dockWidget = new QDockWidget(title + " - " + tr("Toolbox"));
-			connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
+        \sa dockWidgetDefaultStyle
+    */
+    void AddInBase::createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas, QWidget *content)
+    {
+        if (m_dockWidget == NULL)
+        {
+            m_dockWidget = new QDockWidget(title + " - " + tr("Toolbox"));
+            connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
             connect(m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
-		}
-		m_dockWidget->setObjectName(title.simplified() + "_dockWidget#" + QString::number(m_uniqueID));
-		m_dockWidget->setFeatures(features);
-		m_dockWidget->setAllowedAreas(allowedAreas);
+        }
+        m_dockWidget->setObjectName(title.simplified() + "_dockWidget#" + QString::number(m_uniqueID));
+        m_dockWidget->setFeatures(features);
+        m_dockWidget->setAllowedAreas(allowedAreas);
 
-		if (content) m_dockWidget->setWidget(content);
-	}
+        if (content) m_dockWidget->setWidget(content);
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! Registers an additional function with specific name and default parameters
-	/*
-		After having registered the function, the method execFunc can be called with the specific function name
-		and a set of parameters, fitting to the given default ones. Then execFunc needs to be implemented, such
-		that the approparite function, depending on its name, is executed.
+    /*
+        After having registered the function, the method execFunc can be called with the specific function name
+        and a set of parameters, fitting to the given default ones. Then execFunc needs to be implemented, such
+        that the approparite function, depending on its name, is executed.
 
-		\param [in] funcName is the unique name of the additional function
-		\param [in] paramsMand is the vector with default mandatory parameters (must all have a set IN-flag)
-		\param [in] paramsOpt is the vector with default optional parameters (must all have a set IN-flag)
-		\param [in] paramsOut is the vector with default output parameters (must only have the OUT-flag, no IN-flag)
-		\param [in] infoString is a description of this additional function
+        \param [in] funcName is the unique name of the additional function
+        \param [in] paramsMand is the vector with default mandatory parameters (must all have a set IN-flag)
+        \param [in] paramsOpt is the vector with default optional parameters (must all have a set IN-flag)
+        \param [in] paramsOut is the vector with default output parameters (must only have the OUT-flag, no IN-flag)
+        \param [in] infoString is a description of this additional function
 
-		\sa execFunc
-	*/
-	ito::RetVal AddInBase::registerExecFunc(const QString funcName, const QVector<ito::Param> &paramsMand, const QVector<ito::Param> &paramsOpt, const QVector<ito::Param> &paramsOut, const QString infoString)
+        \sa execFunc
+    */
+    ito::RetVal AddInBase::registerExecFunc(const QString funcName, const QVector<ito::Param> &paramsMand, const QVector<ito::Param> &paramsOpt, const QVector<ito::Param> &paramsOut, const QString infoString)
     {
         QMap<QString, ExecFuncParams>::const_iterator it = m_execFuncList.constFind(funcName);
         ito::RetVal retValue = ito::retOk;
@@ -329,33 +329,33 @@ namespace ito
         return retValue;
     }
 
-	//----------------------------------------------------------------------------------------------------------------------------------
-	//! returns default style properties for dock-widget of plugin
-	/*
-		This method is called by the AddInManager at initialization of a plugin instance. Then,
-		the AddInManager gets informed about the default behaviour of the dock widget. Overwrite this
-		method if you want to create your own default behaviour.
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns default style properties for dock-widget of plugin
+    /*
+        This method is called by the AddInManager at initialization of a plugin instance. Then,
+        the AddInManager gets informed about the default behaviour of the dock widget. Overwrite this
+        method if you want to create your own default behaviour.
 
-		\param [out] floating defines whether the dock widget should per default be shown in floating mode (true) or docked (false, default)
-		\param [out] visible defines whether the dock widget should be visible at startup of plugin (true) or not (false, default)
-		\param [out] defaultArea defines the default area in the main window, where the dock widget is shown
-		\sa AddInManager::initDockWidget
-	*/
+        \param [out] floating defines whether the dock widget should per default be shown in floating mode (true) or docked (false, default)
+        \param [out] visible defines whether the dock widget should be visible at startup of plugin (true) or not (false, default)
+        \param [out] defaultArea defines the default area in the main window, where the dock widget is shown
+        \sa AddInManager::initDockWidget
+    */
      void AddInBase::dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const
-	 {
-		 if (m_dockWidget)
-		 {
-			 floating = false;
-			 visible = false;
-			 defaultArea = Qt::RightDockWidgetArea;
-		 }
-		 else
-		 {
-			 floating = false;
-			 visible = false;
-			 defaultArea = Qt::NoDockWidgetArea;
-		 }
-	 }
+     {
+         if (m_dockWidget)
+         {
+             floating = false;
+             visible = false;
+             defaultArea = Qt::RightDockWidgetArea;
+         }
+         else
+         {
+             floating = false;
+             visible = false;
+             defaultArea = Qt::NoDockWidgetArea;
+         }
+     }
 
 
     //----------------------------------------------------------------------------------------------------------------------------------

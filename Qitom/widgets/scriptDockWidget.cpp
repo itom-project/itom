@@ -385,7 +385,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     connect(editorWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
-	connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+    connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     updateEditorActions();
     updatePythonActions();
@@ -414,7 +414,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     disconnect(removedWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
-	disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+    disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     updateEditorActions();
     updatePythonActions();
@@ -969,12 +969,12 @@ void ScriptDockWidget::createMenus()
 
 //    m_viewMenu = getMenuBar()->addMenu(tr("&View"));
 //    m_viewMenu->addAction();
-/*	QMenu *dockWidgets = createPopupMenu();
+/*    QMenu *dockWidgets = createPopupMenu();
     if (dockWidgets)
     {
         dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
-	    dockWidgets->menuAction()->setText(tr("Toolboxes"));
-	    m_viewMenu->addMenu(dockWidgets);
+        dockWidgets->menuAction()->setText(tr("Toolboxes"));
+        m_viewMenu->addMenu(dockWidgets);
     }*/
 
     m_editMenu = getMenuBar()->addMenu(tr("&Edit"));
@@ -1133,16 +1133,16 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptDockWidget::activeTabEnsureLineVisible(int lineNr)
 {
-	if(m_actTabIndex >= 0)
-	{
-		ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
-		if(sew)
-		{
-			sew->setCursorPosAndEnsureVisible(lineNr);
-			return true;
-		}
-	}
-	return false;
+    if(m_actTabIndex >= 0)
+    {
+        ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
+        if(sew)
+        {
+            sew->setCursorPosAndEnsureVisible(lineNr);
+            return true;
+        }
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

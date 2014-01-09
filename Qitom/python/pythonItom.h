@@ -109,7 +109,7 @@ public:
     static PyObject* PyGetDebugger(PyObject* pSelf);
     static PyObject* PyGCStartTracking(PyObject *pSelf);
     static PyObject* PyGCEndTracking(PyObject *pSelf);
-	//static PyObject* PyGetGlobalDict(PyObject *pSelf);
+    //static PyObject* PyGetGlobalDict(PyObject *pSelf);
 
     static PyObject* PyGetScreenInfo(PyObject* pSelf);
 
@@ -120,8 +120,8 @@ public:
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
-	static PyObject* compressData(PyObject* pSelf, PyObject* pArgs);
-	static PyObject* uncompressData(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* compressData(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* uncompressData(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* setApplicationCursor(PyObject* pSelf, PyObject* pArgs);
 

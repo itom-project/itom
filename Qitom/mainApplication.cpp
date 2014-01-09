@@ -112,7 +112,7 @@ MainApplication::~MainApplication()
 void MainApplication::setupApplication()
 {
     RetVal retValue = retOk;
-	RetVal pyRetValue;
+    RetVal pyRetValue;
     QStringList startupScripts;
 
     QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
@@ -282,12 +282,12 @@ void MainApplication::setupApplication()
 
     qDebug("..python engine moved to new thread");
 
-	retValue += pyRetValue;
-	if (pyRetValue.containsError())
-	{
-		DELETE_AND_SET_NULL(m_pyEngine);
-		AppManagement::setPythonEngine(NULL);
-	}
+    retValue += pyRetValue;
+    if (pyRetValue.containsError())
+    {
+        DELETE_AND_SET_NULL(m_pyEngine);
+        AppManagement::setPythonEngine(NULL);
+    }
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -378,26 +378,26 @@ void MainApplication::setupApplication()
 
     if (retValue.containsError())
     {
-		if (retValue.errorMessage())
-		{
-			std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
-		}
-		else
-		{
-			std::cerr << "An unspecified error occurred when starting the application." << std::endl;
-		}
+        if (retValue.errorMessage())
+        {
+            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
+        }
+        else
+        {
+            std::cerr << "An unspecified error occurred when starting the application." << std::endl;
+        }
     }
-	else if (retValue.containsWarning())
-	{
-		if (retValue.errorMessage())
-		{
-			std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
-		}
-		else
-		{
-			std::cout << "An unspecified warning occurred when starting the application." << std::endl;
-		}
-	}
+    else if (retValue.containsWarning())
+    {
+        if (retValue.errorMessage())
+        {
+            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
+        }
+        else
+        {
+            std::cout << "An unspecified warning occurred when starting the application." << std::endl;
+        }
+    }
 
     qDebug("..load settings done");
     qDebug("MainApplication::setupApplication .. done");
@@ -442,16 +442,16 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_mainWin);
     AppManagement::setMainWindow(NULL);
 
-	if (m_pyEngine)
-	{
-		ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-		QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
-		waitCond->waitAndProcessEvents(-1);
+    if (m_pyEngine)
+    {
+        ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+        QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
+        waitCond->waitAndProcessEvents(-1);
 
-		//call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-		QCoreApplication::sendPostedEvents ();
-		QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-		QCoreApplication::processEvents();
+        //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
+        QCoreApplication::sendPostedEvents ();
+        QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+        QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
         waitCond = NULL;
@@ -512,7 +512,7 @@ void MainApplication::mainWindowCloseRequest()
             if (ret == QMessageBox::Cancel)
             {
                 settings->endGroup();
-				delete settings;
+                delete settings;
                 return;
             }  
     }

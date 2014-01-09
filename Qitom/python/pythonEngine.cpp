@@ -93,7 +93,7 @@ PythonEngine::PythonEngine() :
     mainModule(NULL),
     mainDictionary(NULL),
     localDictionary(NULL),
-	globalDictionary(NULL),
+    globalDictionary(NULL),
     itomDbgModule(NULL),
     itomDbgInstance(NULL),
     itomModule(NULL),
@@ -108,9 +108,9 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<BreakPointItem>("BreakPointItem");
     qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
     qRegisterMetaType<DataObject*>("DataObject*");
-	qRegisterMetaType<ito::DataObject>("ito::DataObject");
-	qRegisterMetaType<ito::DataObject*>("ito::DataObject*");
-	qRegisterMetaType<ito::DataObject>("ito::DataObject");
+    qRegisterMetaType<ito::DataObject>("ito::DataObject");
+    qRegisterMetaType<ito::DataObject*>("ito::DataObject*");
+    qRegisterMetaType<ito::DataObject>("ito::DataObject");
     qRegisterMetaType<QVariant*>("QVariant*");
     qRegisterMetaType<StringMap>("StringMap");
     qRegisterMetaType<AddInDataIO*>("AddInDataIO*");
@@ -119,8 +119,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QVariant> >("QSharedPointer<QVariant>");
     qRegisterMetaType<QSharedPointer<unsigned int> >("QSharedPointer<unsigned int>");
     qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
-	qRegisterMetaType<IntList >("IntList");
-	qRegisterMetaType<QStringList >("QStringList");
+    qRegisterMetaType<IntList >("IntList");
+    qRegisterMetaType<QStringList >("QStringList");
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
     qRegisterMetaType<QSharedPointer<bool> >("QSharedPointer<bool>");
     qRegisterMetaType<QSharedPointer<char> >("QSharedPointer<char>");
@@ -144,7 +144,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
     qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int>>");
 #if ITOM_POINTCLOUDLIBRARY > 0    
-	qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
+    qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
@@ -195,7 +195,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
-	bool numpyAvailable = true;
+    bool numpyAvailable = true;
 
     qDebug() << "python in thread: " << QThread::currentThreadId ();
 
@@ -206,11 +206,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         {
             dictUnicode = PyUnicode_FromString("__dict__");
 
-            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);				//!< add all static, known function calls to python-module itom
+            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
 
             PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
-            Py_Initialize();													    //!< must be called after any PyImport_AppendInittab-call
+            Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
 //            PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
             itomModule = PyImport_ImportModule("itom");
@@ -218,23 +218,23 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             pythonAddBuiltinMethods();
             mainModule = PyImport_AddModule("__main__"); // reference to the module __main__ , where code above has been evaluated
 
-			if (mainModule)
-			{
-				mainDictionary = PyModule_GetDict(mainModule); //borrowed
-			}
+            if (mainModule)
+            {
+                mainDictionary = PyModule_GetDict(mainModule); //borrowed
+            }
 
             setGlobalDictionary(mainDictionary);   // reference to string-list of available methods, member-variables... of module.
-			setLocalDictionary(NULL);
+            setLocalDictionary(NULL);
 
-			emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
 
             if (_import_array() < 0)
             {
-				numpyAvailable = false;
+                numpyAvailable = false;
                 PyErr_Print();
                 PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.");
                 (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n");
-				return;
+                return;
             }
 
             //!< start python-type pythonStream, in order to redirect stdout and stderr to std::cout and std::cerr (possibly redirected to qDebugStream)
@@ -244,38 +244,38 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "pythonStream", (PyObject *)&PyStream::PythonStreamType);
             }
 
-			// ck moved this here from below import numpy to print out early errors like missing numpy
-			if  ((tretVal = runString("import sys")) != ito::retOk)
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toAscii().data());
+            // ck moved this here from below import numpy to print out early errors like missing numpy
+            if  ((tretVal = runString("import sys")) != ito::retOk)
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toAscii().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toAscii().data());
-			if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toAscii().data());
+            if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toAscii().data());
             if ((tretVal = runString("sys.stderr = itom.pythonStream(2)")) != ito::retOk)
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toAscii().data());
 
 
             static wchar_t *wargv = L"";
             PySys_SetArgv(1, &wargv);
 
-			PythonDataObject::PyDataObjectType.tp_base = 0;
-			PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
-			PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
-			if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
-			{
-				Py_INCREF(&PythonDataObject::PyDataObjectType);
-				PyModule_AddObject(itomModule, "dataObject", (PyObject *)&PythonDataObject::PyDataObjectType);
-			}
+            PythonDataObject::PyDataObjectType.tp_base = 0;
+            PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
+            PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
+            if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
+            {
+                Py_INCREF(&PythonDataObject::PyDataObjectType);
+                PyModule_AddObject(itomModule, "dataObject", (PyObject *)&PythonDataObject::PyDataObjectType);
+            }
 
 
-			PythonDataObject::PyDataObjectIterType.tp_base =0;
-			PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
-			PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
-			if (PyType_Ready(&PythonDataObject::PyDataObjectIterType) >= 0)
-			{
-				Py_INCREF(&PythonDataObject::PyDataObjectIterType);
-				//PyModule_AddObject(itomModule, "dataObjectIter", (PyObject *)&PythonDataObject::PyDataObjectIterType);
-			}
+            PythonDataObject::PyDataObjectIterType.tp_base =0;
+            PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
+            PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
+            if (PyType_Ready(&PythonDataObject::PyDataObjectIterType) >= 0)
+            {
+                Py_INCREF(&PythonDataObject::PyDataObjectIterType);
+                //PyModule_AddObject(itomModule, "dataObjectIter", (PyObject *)&PythonDataObject::PyDataObjectIterType);
+            }
 
             if (PyType_Ready(&PythonPlugins::PyActuatorPluginType) >= 0)
             {
@@ -305,14 +305,14 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
             }
 
-			PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
-			PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
-			PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
-			if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
-			{
-				Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
-				PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
-			}
+            PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
+            PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
+            PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
+            if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
+            {
+                Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
+                PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
+            }
 
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
@@ -365,7 +365,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "region", (PyObject *)&PythonRegion::PyRegionType);
             }
 
-			if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
+            if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
             {
                 Py_INCREF(&PythonRgba::PyRgbaType);
                 //PythonRgba::PyRegion_addTpDict(PythonRegion::PyRgbaType.tp_dict);
@@ -439,7 +439,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
             if (itomFunctions == NULL)
             {
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toAscii().data());
                 std::cerr << "the module itoFunctions could not be loaded." << std::endl;
                 PyErr_Print();
                 PyErr_Clear();
@@ -449,7 +449,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomDbgModule = PyImport_ImportModule("itoDebugger"); // new reference
             if (itomDbgModule == NULL)
             {
-				(*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
                 std::cerr << "the module itoDebugger could not be loaded." <<std::endl;
                 PyErr_Print();
             }
@@ -460,7 +460,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 itomDbgDict = NULL;
                 if (itomDbgClass == NULL)
                 {
-				    (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
                     PyErr_Print();
                     //printPythonError(PySys_GetObject("stderr"));
                 }
@@ -489,15 +489,15 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= QString()*/)
 {
     //store current directory
-	QString currentDir;
-	if (currentDirAfterScan.isEmpty())
-	{
-		currentDir = QDir::current().canonicalPath();
-	}
-	else
-	{
-		currentDir = currentDirAfterScan;
-	}
+    QString currentDir;
+    if (currentDirAfterScan.isEmpty())
+    {
+        currentDir = QDir::current().canonicalPath();
+    }
+    else
+    {
+        currentDir = currentDirAfterScan;
+    }
     QStringList files;
     QStringList absoluteFilePaths;
     QDir folder;
@@ -524,8 +524,8 @@ RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= Q
     }
 
     //reset current directory if any autostart scripts have been loaded or if the currentDirAfterScan
-	//string is given, since then, the programmer wants this method to always set the currentDirAfterScan
-	//at the end.
+    //string is given, since then, the programmer wants this method to always set the currentDirAfterScan
+    //at the end.
     if (absoluteFilePaths.count() > 0 || !currentDirAfterScan.isEmpty())
     {
         QDir::setCurrent(currentDir);
@@ -578,7 +578,7 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         mainModule = NULL;
         mainDictionary = NULL;
         localDictionary = NULL;
-		globalDictionary = NULL;
+        globalDictionary = NULL;
 
         PythonEngine::instatiated.unlock();
 
@@ -1529,10 +1529,10 @@ void PythonEngine::setGlobalDictionary(PyObject* globalDict)
     {
         globalDictionary = globalDict;
     }
-	else
-	{
-		globalDictionary = mainDictionary;
-	}
+    else
+    {
+        globalDictionary = mainDictionary;
+    }
     /*else if (mainModule != NULL)
     {
         globalDictionary = PyModule_GetDict(mainModule);
@@ -1556,10 +1556,10 @@ void PythonEngine::setLocalDictionary(PyObject* localDict)
 void PythonEngine::pythonRunString(QString cmd)
 {
     QByteArray ba(cmd.toAscii());
-	if (ba.trimmed().startsWith("#"))
-	{
-		ba.prepend("pass"); //a single command line leads to an error while execution
-	}
+    if (ba.trimmed().startsWith("#"))
+    {
+        ba.prepend("pass"); //a single command line leads to an error while execution
+    }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
     switch (pythonState)
@@ -1638,11 +1638,11 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-	QByteArray ba = cmd.toAscii();
-	if (ba.trimmed().startsWith("#"))
-	{
-		ba.prepend("pass"); //a single comment while cause an error in python
-	}
+    QByteArray ba = cmd.toAscii();
+    if (ba.trimmed().startsWith("#"))
+    {
+        ba.prepend("pass"); //a single comment while cause an error in python
+    }
 
     switch (pythonState)
     {
@@ -1666,10 +1666,10 @@ void PythonEngine::pythonDebugString(QString cmd)
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
     QByteArray ba(cmd.toAscii());
-	if (ba.trimmed().startsWith("#"))
-	{
-		ba.prepend("pass"); //a single command line leads to an error while execution
-	}
+    if (ba.trimmed().startsWith("#"))
+    {
+        ba.prepend("pass"); //a single command line leads to an error while execution
+    }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
     switch (pythonState)
@@ -2400,7 +2400,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     PyObject *self = NULL;
     PyObject *frame = NULL;
-	PyObject *frame2 = NULL;
+    PyObject *frame2 = NULL;
     PyObject* temp;
     PyObject* temp2;
     PyObject* globalDict = NULL;
@@ -2411,7 +2411,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PythonEngine* pyEngine = PythonEngine::getInstanceInternal();
 
     long lineno;
-	bool ok;
+    bool ok;
     QString filename;
     Py_INCREF(pArgs);
 
@@ -2427,45 +2427,45 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     temp = PyObject_GetAttrString(frame, "f_code");
     temp2 = PyObject_GetAttrString(temp, "co_filename");
     filename = PythonQtConversion::PyObjGetString(temp2,false,ok);
-    Py_XDECREF(temp2);	
+    Py_XDECREF(temp2);    
 
-	QStringList stack_files;
-	IntList     stack_lines;
-	QStringList stack_methods;
+    QStringList stack_files;
+    IntList     stack_lines;
+    QStringList stack_methods;
 
-	stack_files.append(filename);
-	stack_lines.append(lineno);
+    stack_files.append(filename);
+    stack_lines.append(lineno);
 
-	temp2 = PyObject_GetAttrString(temp, "co_name");
+    temp2 = PyObject_GetAttrString(temp, "co_name");
     stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
     Py_XDECREF(temp2);
 
-	Py_XDECREF(temp);
+    Py_XDECREF(temp);
 
-	frame2 = PyObject_GetAttrString(frame, "f_back");
+    frame2 = PyObject_GetAttrString(frame, "f_back");
 
-	while(frame2 != NULL && frame2 != Py_None)
-	{
-		temp = PyObject_GetAttrString(frame2, "f_lineno");
-		stack_lines.append(PyLong_AsLong(temp));
-		Py_XDECREF(temp);
-		
-		temp = PyObject_GetAttrString(frame2, "f_code");
-		temp2 = PyObject_GetAttrString(temp, "co_filename");
-		stack_files.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-		Py_XDECREF(temp2);
-		temp2 = PyObject_GetAttrString(temp, "co_name");
-		stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-		Py_XDECREF(temp);
-		Py_XDECREF(temp2);
+    while(frame2 != NULL && frame2 != Py_None)
+    {
+        temp = PyObject_GetAttrString(frame2, "f_lineno");
+        stack_lines.append(PyLong_AsLong(temp));
+        Py_XDECREF(temp);
+        
+        temp = PyObject_GetAttrString(frame2, "f_code");
+        temp2 = PyObject_GetAttrString(temp, "co_filename");
+        stack_files.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
+        Py_XDECREF(temp2);
+        temp2 = PyObject_GetAttrString(temp, "co_name");
+        stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
+        Py_XDECREF(temp);
+        Py_XDECREF(temp2);
 
-		Py_XDECREF(frame2);
-		frame2 = PyObject_GetAttrString(frame2, "f_back");
-	}
+        Py_XDECREF(frame2);
+        frame2 = PyObject_GetAttrString(frame2, "f_back");
+    }
 
-	Py_XDECREF(frame2);
+    Py_XDECREF(frame2);
 
-	emit pyEngine->updateCallStack(stack_files, stack_lines, stack_methods);
+    emit pyEngine->updateCallStack(stack_files, stack_lines, stack_methods);
 
 
     //qDebug() << "Debug stop in file: " << filename << " at line " << lineno;
@@ -2487,7 +2487,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     localDict = PyObject_GetAttrString(frame, "f_locals"); //new ref
 
     pyEngine->setLocalDictionary(localDict);
-	pyEngine->setGlobalDictionary(globalDict);
+    pyEngine->setGlobalDictionary(globalDict);
 
     if (filename == "<string>") //indicates that an exception has been thrown while debugging, then let the debugger run and finish in order that the exception is printed out
     {
@@ -2569,7 +2569,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         }
     }
 
-	pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
+    pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
     Py_XDECREF(globalDict);
     globalDict = NULL;
 
@@ -2577,7 +2577,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     Py_XDECREF(localDict);
     localDict = NULL;
 
-	emit (pyEngine->deleteCallStack());
+    emit (pyEngine->deleteCallStack());
 
     //pyEngine->clearDbgCmdLoop();
     //emit(pyThread->pythonDebuggerContinued());

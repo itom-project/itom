@@ -465,7 +465,7 @@ namespace ito
         case ito::ParamBase::DObjPtr & ito::paramTypeMask:
             {
                 ito::DataObject *d = (ito::DataObject*)param->getVal<void*>();
-				DELETE_AND_SET_NULL(d);
+                DELETE_AND_SET_NULL(d);
             }
             break;
 #if ITOM_POINTCLOUDLIBRARY > 0

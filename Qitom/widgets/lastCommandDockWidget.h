@@ -64,7 +64,7 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-			LastCommandTreeWidget *m_lastCommandTreeWidget;
+            LastCommandTreeWidget *m_lastCommandTreeWidget;
             QMenu* m_pContextMenu;
             ShortcutAction* m_pActClearList;
             QTreeWidgetItem *m_lastTreeWidgetParent;

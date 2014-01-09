@@ -441,10 +441,10 @@ namespace dObjHelper
         const ito::complex64* rowPtr;
         float tempResultMin;
         float tempResultMax;
-	    float tmpVal;
+        float tmpVal;
 
         tempResultMin = std::numeric_limits<float>::max();
-	    tempResultMax = -tempResultMin;
+        tempResultMax = -tempResultMin;
 
         if(ignoreInf)   // Ignores inf
         {
@@ -454,20 +454,20 @@ namespace dObjHelper
                 mat = (cv::Mat_<ito::complex64> *)(dObj->get_mdata())[matIndex];
                 cols = (uint32)mat->cols;
                 rows = (uint32)mat->rows;
-			
-			    switch (specialDataTypeFlags)
-			    {
-				    default:	
-				    case CMPLX_ABS_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    if(isInf<complex64>(rowPtr[n].real())) continue;
-							    if(isInf<complex64>(rowPtr[n].imag())) continue;
-							    tmpVal = abs(rowPtr[n]);
-							    if(tmpVal < tempResultMin) 
+            
+                switch (specialDataTypeFlags)
+                {
+                    default:    
+                    case CMPLX_ABS_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                if(isInf<complex64>(rowPtr[n].real())) continue;
+                                if(isInf<complex64>(rowPtr[n].imag())) continue;
+                                tmpVal = abs(rowPtr[n]);
+                                if(tmpVal < tempResultMin) 
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
@@ -481,89 +481,89 @@ namespace dObjHelper
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_IMAGINARY_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    if(isInf<complex64>(rowPtr[n].imag())) continue;
-							    tmpVal = rowPtr[n].imag();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_IMAGINARY_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                if(isInf<complex64>(rowPtr[n].imag())) continue;
+                                tmpVal = rowPtr[n].imag();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax) 
+                                if(tmpVal > tempResultMax) 
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_REAL_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    if(isInf<complex64>(rowPtr[n].real())) continue;
-							    tmpVal = rowPtr[n].real();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_REAL_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                if(isInf<complex64>(rowPtr[n].real())) continue;
+                                tmpVal = rowPtr[n].real();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_ARGUMENT_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    if(isInf<complex64>(rowPtr[n].real())) continue;
-							    if(isInf<complex64>(rowPtr[n].imag())) continue;
-							    tmpVal = arg(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_ARGUMENT_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                if(isInf<complex64>(rowPtr[n].real())) continue;
+                                if(isInf<complex64>(rowPtr[n].imag())) continue;
+                                tmpVal = arg(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
-			    }
+                            }
+                        }
+                    break;
+                }
             }
         }
         else
@@ -575,67 +575,67 @@ namespace dObjHelper
                 cols = (uint32)mat->cols;
                 rows = (uint32)mat->rows;
 
-			    switch (specialDataTypeFlags)
-			    {
-				    default:	
-				    case CMPLX_ABS_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    tmpVal = abs(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                switch (specialDataTypeFlags)
+                {
+                    default:    
+                    case CMPLX_ABS_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                tmpVal = abs(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_IMAGINARY_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    tmpVal = rowPtr[n].imag();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_IMAGINARY_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                tmpVal = rowPtr[n].imag();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_REAL_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    tmpVal = rowPtr[n].real();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_REAL_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                tmpVal = rowPtr[n].real();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
@@ -649,35 +649,35 @@ namespace dObjHelper
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_ARGUMENT_VALUE:
-					    for(m = 0; m < rows; m++)
-					    {
-						    rowPtr = (ito::complex64*)mat->ptr(m);
-						    for(n = 0; n < cols; n++)
-						    {
-							    tmpVal = arg(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_ARGUMENT_VALUE:
+                        for(m = 0; m < rows; m++)
+                        {
+                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            for(n = 0; n < cols; n++)
+                            {
+                                tmpVal = arg(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMinLocation[0] = nmat;
                                     firstMinLocation[1] = m;
                                     firstMinLocation[2] = n;
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
-			    }
+                            }
+                        }
+                    break;
+                }
             }
         }
 
@@ -717,10 +717,10 @@ namespace dObjHelper
         const ito::complex128* rowPtr;
         float64 tempResultMin;
         float64 tempResultMax;
-	    float64 tmpVal;
+        float64 tmpVal;
 
         tempResultMin = std::numeric_limits<float64>::max();
-	    tempResultMax = -tempResultMin;
+        tempResultMax = -tempResultMin;
 
         if(ignoreInf)   // Ignores inf
         {
@@ -728,67 +728,20 @@ namespace dObjHelper
             {
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
-			
-			    switch (specialDataTypeFlags)
-			    {
-				    default:	
-				    case CMPLX_ABS_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    if(isInf<complex128>(rowPtr[n].real())) continue;
-							    if(isInf<complex128>(rowPtr[n].imag())) continue;
-							    tmpVal = abs(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
-                                {
-                                    tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
-                                }
-							    if(tmpVal > tempResultMax)
-                                {
-                                    tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
-                                    firstMaxLocation[0] = nmat;
-                                    firstMaxLocation[1] = m;
-                                    firstMaxLocation[2] = n;
-                                }
-						    }
-					    }
-				    break;
-
-				    case CMPLX_IMAGINARY_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    if(isInf<complex128>(rowPtr[n].imag())) continue;
-							    tmpVal = rowPtr[n].imag();
-							    if(tmpVal < tempResultMin)
-                                {
-                                    tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
-                                }
-							    if(tmpVal > tempResultMax)
-                                {
-                                    tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
-                                    firstMaxLocation[0] = nmat;
-                                    firstMaxLocation[1] = m;
-                                    firstMaxLocation[2] = n;
-                                }
-						    }
-					    }
-				    break;
-
-				    case CMPLX_REAL_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    if(isInf<complex128>(rowPtr[n].real())) continue;
-							    tmpVal = rowPtr[n].real();
-                                
-							    if(tmpVal < tempResultMin)
+            
+                switch (specialDataTypeFlags)
+                {
+                    default:    
+                    case CMPLX_ABS_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                if(isInf<complex128>(rowPtr[n].real())) continue;
+                                if(isInf<complex128>(rowPtr[n].imag())) continue;
+                                tmpVal = abs(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
@@ -799,34 +752,81 @@ namespace dObjHelper
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_ARGUMENT_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    if(isInf<complex128>(rowPtr[n].real())) continue;
-							    if(isInf<complex128>(rowPtr[n].imag())) continue;
-							    tmpVal = arg(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_IMAGINARY_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                if(isInf<complex128>(rowPtr[n].imag())) continue;
+                                tmpVal = rowPtr[n].imag();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
-			    }
+                            }
+                        }
+                    break;
+
+                    case CMPLX_REAL_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                if(isInf<complex128>(rowPtr[n].real())) continue;
+                                tmpVal = rowPtr[n].real();
+                                
+                                if(tmpVal < tempResultMin)
+                                {
+                                    tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                }
+                                if(tmpVal > tempResultMax)
+                                {
+                                    tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                    firstMaxLocation[0] = nmat;
+                                    firstMaxLocation[1] = m;
+                                    firstMaxLocation[2] = n;
+                                }
+                            }
+                        }
+                    break;
+
+                    case CMPLX_ARGUMENT_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                if(isInf<complex128>(rowPtr[n].real())) continue;
+                                if(isInf<complex128>(rowPtr[n].imag())) continue;
+                                tmpVal = arg(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
+                                {
+                                    tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                }
+                                if(tmpVal > tempResultMax)
+                                {
+                                    tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
+                                    firstMaxLocation[0] = nmat;
+                                    firstMaxLocation[1] = m;
+                                    firstMaxLocation[2] = n;
+                                }
+                            }
+                        }
+                    break;
+                }
             }
         }
         else
@@ -836,97 +836,97 @@ namespace dObjHelper
                 matIndex = dObj->seekMat(nmat, numMats);
                 mat = (cv::Mat_<ito::complex128> *)(dObj->get_mdata())[matIndex];
 
-			    switch (specialDataTypeFlags)
-			    {
-				    default:	
-				    case CMPLX_ABS_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    tmpVal = abs(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                switch (specialDataTypeFlags)
+                {
+                    default:    
+                    case CMPLX_ABS_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                tmpVal = abs(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_IMAGINARY_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    tmpVal = rowPtr[n].imag();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_IMAGINARY_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                tmpVal = rowPtr[n].imag();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_REAL_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    tmpVal = rowPtr[n].real();
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_REAL_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                tmpVal = rowPtr[n].real();
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
+                            }
+                        }
+                    break;
 
-				    case CMPLX_ARGUMENT_VALUE:
-					    for(m = 0; m < mat->rows; m++)
-					    {
-						    rowPtr = (ito::complex128*)mat->ptr(m);
-						    for(n = 0; n < mat->cols; n++)
-						    {
-							    tmpVal = arg(rowPtr[n]);
-							    if(tmpVal < tempResultMin)
+                    case CMPLX_ARGUMENT_VALUE:
+                        for(m = 0; m < mat->rows; m++)
+                        {
+                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            for(n = 0; n < mat->cols; n++)
+                            {
+                                tmpVal = arg(rowPtr[n]);
+                                if(tmpVal < tempResultMin)
                                 {
                                     tempResultMin = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                 }
-							    if(tmpVal > tempResultMax)
+                                if(tmpVal > tempResultMax)
                                 {
                                     tempResultMax = tmpVal; //NaN will be ignored by this comparison (that means if rowPtr[n]=NaN, the if-result is always false)
                                     firstMaxLocation[0] = nmat;
                                     firstMaxLocation[1] = m;
                                     firstMaxLocation[2] = n;
                                 }
-						    }
-					    }
-				    break;
-			    }
+                            }
+                        }
+                    break;
+                }
             }
         }
 

@@ -34,7 +34,7 @@
 #include <string.h>
 #include <stdexcept>
 #ifdef linux
-  #include <unistd.h>	// neede for usleep
+  #include <unistd.h>    // neede for usleep
 #endif
     
 //#include "opencv/cv.h"
@@ -104,8 +104,8 @@ namespace ito
         pyTransEndDebug = 8,
         pyTransDebugWaiting = 16,
         pyTransDebugContinue = 32,
-		pyTransDebugExecCmdBegin = 64,
-		pyTransDebugExecCmdEnd = 128
+        pyTransDebugExecCmdBegin = 64,
+        pyTransDebugExecCmdEnd = 128
     };
 
     enum tCompareResult 
@@ -121,7 +121,7 @@ namespace ito
         pyStateRunning = 2,
         pyStateDebugging = 4,
         pyStateDebuggingWaiting = 8,
-		pyStateDebuggingWaitingButBusy = 16
+        pyStateDebuggingWaitingButBusy = 16
     };
 
     /**
@@ -189,22 +189,22 @@ namespace ito
     typedef std::complex<ito::float32> complex64;
     typedef std::complex<ito::float64> complex128;
 
-	class RgbaBase32
-	{
-	public:
-		union
-		{
-			struct
-			{
-				ito::uint8 b;
-				ito::uint8 g;
-				ito::uint8 r;
-				ito::uint8 a;
-			};
-			ito::uint8  items[4];
-			ito::uint32 rgba;
-		};
-	};
+    class RgbaBase32
+    {
+    public:
+        union
+        {
+            struct
+            {
+                ito::uint8 b;
+                ito::uint8 g;
+                ito::uint8 r;
+                ito::uint8 a;
+            };
+            ito::uint8  items[4];
+            ito::uint32 rgba;
+        };
+    };
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 
@@ -220,7 +220,7 @@ namespace ito
     #define vsprintf_s(b,l,f,v) vsprintf(b,f,v);
     #define sprintf_s(b,l,f,v) sprintf(b,f,v);
     #define strcat_s(dest,len,source) strcat(dest,source);
-	#define strcpy_s(dest,len,source) strcpy(dest,source);
+    #define strcpy_s(dest,len,source) strcpy(dest,source);
 #endif
 
     

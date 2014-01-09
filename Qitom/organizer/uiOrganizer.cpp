@@ -60,7 +60,7 @@
 
 //! destructor
 /*!
-	If the widget, observed by the UiDialogSet-instance is still valid, it is registered for deletion by the Qt-system.
+    If the widget, observed by the UiDialogSet-instance is still valid, it is registered for deletion by the Qt-system.
 */
 UiContainer::~UiContainer()
 {
@@ -74,14 +74,14 @@ UiContainer::~UiContainer()
                 mainWin->removeAbstractDock( qobject_cast<ito::AbstractDockWidget*>(m_weakDialog.data()) );
             }
         }
-		else if(m_type == UiContainer::uiTypeQDockWidget)
-		{
-			MainWindow *mainWin = qobject_cast<MainWindow*>( AppManagement::getMainWindow() );
+        else if(m_type == UiContainer::uiTypeQDockWidget)
+        {
+            MainWindow *mainWin = qobject_cast<MainWindow*>( AppManagement::getMainWindow() );
             if(mainWin)
             {
                 mainWin->removeDockWidget( qobject_cast<QDockWidget*>(m_weakDialog.data()) );
             }
-		}
+        }
 
         m_weakDialog.data()->deleteLater();
         m_weakDialog.clear();
@@ -95,7 +95,7 @@ UiContainer::~UiContainer()
 /*!
     \class UiOrganizer
     \brief The UiOrganizer is started as singleton instance within itom and organizes all main windows, dialogs, widgets,...
-			which are currently loaded at runtime from any ui-file or from a widget, provided by any algorithm plugin
+            which are currently loaded at runtime from any ui-file or from a widget, provided by any algorithm plugin
 */
 
 
@@ -109,13 +109,13 @@ namespace ito
 //! constructor
 /*!
     creates the singleton instance of WidgetWrapper. The garbage collection timer is not started yet, since
-	this is done if the first user interface becomes being organized by this class.
+    this is done if the first user interface becomes being organized by this class.
 */
 UiOrganizer::UiOrganizer() :
     m_garbageCollectorTimer(0)
 {
     m_dialogList.clear();
-	m_objectList.clear();
+    m_objectList.clear();
 
     m_widgetWrapper = new WidgetWrapper();
 }
@@ -124,7 +124,7 @@ UiOrganizer::UiOrganizer() :
 //! destructor
 /*!
     Deletes all remaining user interfaces, by deleting the corresponding instances of UiDialogSet.
-	Stops a possible garbage collection timer.
+    Stops a possible garbage collection timer.
 */
 UiOrganizer::~UiOrganizer()
 {
@@ -151,13 +151,13 @@ UiOrganizer::~UiOrganizer()
 //! executes the garbage collection process
 /*!
     both m_dialogList and m_objectList contain weak references to dialog, main windows or even widgets, which are
-	contained in a dialog or something else. Since these widgets or windows can also be destroyed by the user, the 
-	UiOrganizer will not directly informed about this. Therefore, the garbage collection process will check both
-	m_dialogList and m_objectList for objects, which already have been destroyed and delete these entries. Of course,
-	we could also have established a connection to every widgets destroy-signal and delete the corresponding entry, when
-	the destroy event will be fired. But these needs lots of connections in the Qt system, which is slower than checking
-	for destroyed objects every 5 seconds or less. Due to the use of weak references, it is not dangerous to access an object
-	which already has been destroyed.
+    contained in a dialog or something else. Since these widgets or windows can also be destroyed by the user, the 
+    UiOrganizer will not directly informed about this. Therefore, the garbage collection process will check both
+    m_dialogList and m_objectList for objects, which already have been destroyed and delete these entries. Of course,
+    we could also have established a connection to every widgets destroy-signal and delete the corresponding entry, when
+    the destroy event will be fired. But these needs lots of connections in the Qt system, which is slower than checking
+    for destroyed objects every 5 seconds or less. Due to the use of weak references, it is not dangerous to access an object
+    which already has been destroyed.
 */
 void UiOrganizer::execGarbageCollection()
 {
@@ -195,9 +195,9 @@ void UiOrganizer::execGarbageCollection()
 //! adds a given QObject* pointer to m_objectList if not yet available.
 /*!
     If objPtr already exists in m_objectList, the existing key (handle) is returned, else objPtr is
-	added as new value in the hash table and an new, auto incremented handle is created and returned.
+    added as new value in the hash table and an new, auto incremented handle is created and returned.
 
-	The hash table m_objectList is available, in order to increase the access to objects, which already have been used.
+    The hash table m_objectList is available, in order to increase the access to objects, which already have been used.
 
     \param[in] objPtr is the pointer to an existing instance, which inherits QObject
     \return the handle (key) of this QObject* in m_objectList
@@ -559,8 +559,8 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
         {
             //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
             file.open(QFile::ReadOnly);
-		    QFileInfo fileinfo(filename);
-		    QDir workingDirectory = fileinfo.absoluteDir();
+            QFileInfo fileinfo(filename);
+            QDir workingDirectory = fileinfo.absoluteDir();
             m_uiLoader.setWorkingDirectory(workingDirectory);
             wid = m_uiLoader.load(&file, mainWin);
             file.close();
@@ -616,7 +616,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                     if(dialog == NULL)
                     {
                         retValue += RetVal(retError, 1020, tr("dialog could not be created").toAscii().data());
-						wid->deleteLater();
+                        wid->deleteLater();
                     }
                     else if(!retValue.containsError())
                     {
@@ -696,36 +696,36 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                 //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
                 setApiPointersToWidgetAndChildren(wid);
 
-				if (wid->inherits("QDialog"))
-				{
-					retValue += RetVal(retError, 0, "A widget inherited from QDialog cannot be docked into the main window");
-					wid->deleteLater();
-					wid = NULL;
-				}
-				else
-				{
-					QMainWindow *mainWin = qobject_cast<QMainWindow*>( AppManagement::getMainWindow() );
-					if (!mainWin)
-					{
-						retValue += RetVal(retError, 0, "Main window not available for docking the user interface.");
-						wid->deleteLater();
-						wid = NULL;
-					}
-					else
-					{
-						QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
-						dockWidget->setWidget(wid);
-						mainWin->addDockWidget(Qt::TopDockWidgetArea, dockWidget);
+                if (wid->inherits("QDialog"))
+                {
+                    retValue += RetVal(retError, 0, "A widget inherited from QDialog cannot be docked into the main window");
+                    wid->deleteLater();
+                    wid = NULL;
+                }
+                else
+                {
+                    QMainWindow *mainWin = qobject_cast<QMainWindow*>( AppManagement::getMainWindow() );
+                    if (!mainWin)
+                    {
+                        retValue += RetVal(retError, 0, "Main window not available for docking the user interface.");
+                        wid->deleteLater();
+                        wid = NULL;
+                    }
+                    else
+                    {
+                        QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
+                        dockWidget->setWidget(wid);
+                        mainWin->addDockWidget(Qt::TopDockWidgetArea, dockWidget);
 
-						set = new UiContainer(dockWidget);
-						*dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-						containerItem.container = set;
-						m_dialogList[*dialogHandle] = containerItem;
-						*initSlotCount = wid->metaObject()->methodOffset();
-						*objectID = addObjectToList(wid);
-						*className = wid->metaObject()->className();
-					}
-				}
+                        set = new UiContainer(dockWidget);
+                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                        containerItem.container = set;
+                        m_dialogList[*dialogHandle] = containerItem;
+                        *initSlotCount = wid->metaObject()->methodOffset();
+                        *objectID = addObjectToList(wid);
+                        *className = wid->metaObject()->className();
+                    }
+                }
             }
         }   
     }
@@ -940,15 +940,15 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
                 }
             }
             break;
-			case UiContainer::uiTypeQDockWidget:
-			{
-				QWidget *dockWidget = ptr->getUiWidget();
-				if (dockWidget)
-				{
-					dockWidget->show();
-				}
-			}
-			break;
+            case UiContainer::uiTypeQDockWidget:
+            {
+                QWidget *dockWidget = ptr->getUiWidget();
+                if (dockWidget)
+                {
+                    dockWidget->show();
+                }
+            }
+            break;
 
         }
     }
@@ -1009,11 +1009,11 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
             AbstractDockWidget *adw = (AbstractDockWidget*)widget;
             *docked = adw->docked();
         }
-		else if(widget->inherits("QDockWidget"))
-		{
-			QDockWidget *dw = (QDockWidget*)widget;
-			*docked = !dw->isFloating();
-		}
+        else if(widget->inherits("QDockWidget"))
+        {
+            QDockWidget *dw = (QDockWidget*)widget;
+            *docked = !dw->isFloating();
+        }
         else
         {
             retValue += RetVal(retError, 0, tr("dialog cannot be docked").toAscii().data());
@@ -1057,11 +1057,11 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
                 adw->undockWidget();
             }
         }
-		else if(widget->inherits("QDockWidget"))
-		{
-			QDockWidget *dw = (QDockWidget*)widget;
-			dw->setFloating(!docked);
-		}
+        else if(widget->inherits("QDockWidget"))
+        {
+            QDockWidget *dw = (QDockWidget*)widget;
+            dw->setFloating(!docked);
+        }
         else
         {
             retValue += RetVal(retError, 0, tr("dialog cannot be docked or undocked").toAscii().data());
@@ -1591,8 +1591,8 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 }
                 else
                 {
-					//check whether types need to be casted
-					//e.g. QVariantList can sometimes be casted to QPointF...
+                    //check whether types need to be casted
+                    //e.g. QVariantList can sometimes be casted to QPointF...
                     RetVal tempRet;
                     QVariant item;
 
@@ -1602,7 +1602,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                     }
                     else
                     {
-				        item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
+                        item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
                     }
 
                     if(tempRet.containsError())
@@ -1619,9 +1619,9 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
             {
                 prop = mo->property(index);
 
-				//check whether types need to be casted
-				//e.g. QVariantList can sometimes be casted to QPointF...
-				//bool ok;
+                //check whether types need to be casted
+                //e.g. QVariantList can sometimes be casted to QPointF...
+                //bool ok;
                 RetVal tempRet;
                 QVariant item;
 
@@ -1631,7 +1631,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
                 }
                 else
                 {
-				    item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
+                    item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
                 }
 
                 if(tempRet.containsError())
@@ -2218,23 +2218,23 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
     if(obj)
     {
-		QStringList classInfo;
-		QStringList properties;
-		QStringList signal;
-		QStringList slot;
-		QString className;
+        QStringList classInfo;
+        QStringList properties;
+        QStringList signal;
+        QStringList slot;
+        QString className;
 
         const QMetaObject *mo = obj->metaObject();
-		className = mo->className();
+        className = mo->className();
 
-		while (mo != NULL)
-		{
-			if ( QString(mo->className()).startsWith("Q") && (type & infoShowAllInheritance) != infoShowAllInheritance )
-			{
-				break;
-			}
+        while (mo != NULL)
+        {
+            if ( QString(mo->className()).startsWith("Q") && (type & infoShowAllInheritance) != infoShowAllInheritance )
+            {
+                break;
+            }
 
-			for(int i = mo->classInfoCount() - 1; i >= 0; i--)
+            for(int i = mo->classInfoCount() - 1; i >= 0; i--)
             {
                 QMetaClassInfo ci = mo->classInfo(i);
                 if(i >= mo->classInfoOffset())
@@ -2243,16 +2243,16 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 }
             }
 
-			for(int i = mo->propertyCount() - 1; i >= 0; i--)
+            for(int i = mo->propertyCount() - 1; i >= 0; i--)
             {
                 QMetaProperty prop = mo->property(i);
                 if(i >= mo->propertyOffset())
-				{
-					properties.append( QString("%1 : %2").arg( prop.name() ).arg( prop.typeName() ) );
+                {
+                    properties.append( QString("%1 : %2").arg( prop.name() ).arg( prop.typeName() ) );
                 }
             }
 
-			for(int i = mo->methodCount() - 1; i >= 0; i--)
+            for(int i = mo->methodCount() - 1; i >= 0; i--)
             {
                 QMetaMethod meth = mo->method(i);
 
@@ -2261,27 +2261,27 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                     if(i >= mo->methodOffset())
                     {
                         signal.append( meth.signature() );
-					}
+                    }
                 }
-				else if(meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
-				{
-					if(i >= mo->methodOffset())
+                else if(meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
+                {
+                    if(i >= mo->methodOffset())
                     {
                         slot.append( meth.signature() );
-					}
-				}
+                    }
+                }
             }
-			
+            
 
-			if (type & infoShowItomInheritance)
-			{
-				mo = mo->superClass();
-			}
-			else
-			{
-				mo = NULL;
-			}
-		}
+            if (type & infoShowItomInheritance)
+            {
+                mo = mo->superClass();
+            }
+            else
+            {
+                mo = NULL;
+            }
+        }
 
         std::cout << "WIDGET '" << className.toAscii().data() << "'\n--------------------------\n\n" << std::endl;
 
@@ -2289,10 +2289,10 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
         {
             std::cout << "Class Info\n---------------\n";
 
-			foreach(const QString &i, classInfo)
-			{
-				std::cout << " " << i.toAscii().data() << "\n";
-			}
+            foreach(const QString &i, classInfo)
+            {
+                std::cout << " " << i.toAscii().data() << "\n";
+            }
 
             std::cout << "\n" << std::endl;
         }
@@ -2301,10 +2301,10 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
         {
             std::cout << "Properties\n---------------\n";
 
-			foreach(const QString &i, properties)
-			{
-				std::cout << " " << i.toAscii().data() << "\n";
-			}
+            foreach(const QString &i, properties)
+            {
+                std::cout << " " << i.toAscii().data() << "\n";
+            }
 
             std::cout << "\n" << std::endl;
         }
@@ -2313,21 +2313,21 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
         {
             std::cout << "Signals\n---------------\n";
 
-			foreach(const QString &i, signal)
-			{
-				std::cout << " " << i.toAscii().data() << "\n";
-			}
+            foreach(const QString &i, signal)
+            {
+                std::cout << " " << i.toAscii().data() << "\n";
+            }
 
             std::cout << "\n" << std::endl;
         }
-		if(slot.size() > 0)
+        if(slot.size() > 0)
         {
             std::cout << "Slots\n---------------\n";
 
-			foreach(const QString &i, slot)
-			{
-				std::cout << " " << i.toAscii().data() << "\n";
-			}
+            foreach(const QString &i, slot)
+            {
+                std::cout << " " << i.toAscii().data() << "\n";
+            }
 
             std::cout << "\n" << std::endl;
         }
@@ -2949,7 +2949,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
         FigureWidget *fig;
         while (i.hasNext() ) 
         {
-			i.next();
+            i.next();
             fig = qobject_cast<FigureWidget*>( i.value().container->getUiWidget());
             if(fig)
             {

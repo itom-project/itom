@@ -1088,7 +1088,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     default:
     {
-		if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
+        if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
         {
             ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)val;
             if (dataObj)
@@ -1124,7 +1124,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if (type == QMetaType::type("ito::PCLPointCloud"))
         {
-			bool ok;
+            bool ok;
             ito::PCLPointCloud pcl = PyObjGetPointCloud(val, true, ok);
             if (ok)
             {
@@ -1133,7 +1133,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if (type == QMetaType::type("ito::PCLPoint"))
         {
-			bool ok;
+            bool ok;
             ito::PCLPoint pcl = PyObjGetPoint(val, true, ok);
             if (ok)
             {
@@ -1142,7 +1142,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if (type == QMetaType::type("ito::PCLPolygonMesh"))
         {
-			bool ok;
+            bool ok;
             ito::PCLPolygonMesh pcl = PyObjGetPolygonMesh(val, true, ok);
             if (ok)
             {
@@ -1188,63 +1188,63 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval)
 {
-	if (item.type() == destType)
-	{
-		retval += ito::retOk;
-		return item;
-	}
+    if (item.type() == destType)
+    {
+        retval += ito::retOk;
+        return item;
+    }
 
     bool ok = false;
-	QVariant result;
+    QVariant result;
 
     if (item.type() == QVariant::List)
     {
         if (destType == QVariant::PointF)
-	    {
-		    const QVariantList list = item.toList();
-		    if (list.size() == 2)
-		    {
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 2)
+            {
                 bool ok2;
-			    result = QPointF(list[0].toFloat(&ok), list[1].toFloat(&ok2));
-			    ok &= ok2;
+                result = QPointF(list[0].toFloat(&ok), list[1].toFloat(&ok2));
+                ok &= ok2;
 
                 if (!ok)
                 {
                     retval += ito::RetVal(ito::retError, 0, "transformation error to PointF: at least one value could not be transformed to float.");
                 }
-		    }
+            }
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to PointF: 2 values required.");
             }
-	    }
-	    else if (destType == QVariant::Point)
-	    {
-		    const QVariantList list = item.toList();
-		    if (list.size() == 2)
-		    {
-			    bool ok2;
-			    result = QPoint(list[0].toInt(&ok), list[1].toInt(&ok2));
-			    ok &= ok2;
+        }
+        else if (destType == QVariant::Point)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 2)
+            {
+                bool ok2;
+                result = QPoint(list[0].toInt(&ok), list[1].toInt(&ok2));
+                ok &= ok2;
             
                 if (!ok)
                 {
                     retval += ito::RetVal(ito::retError, 0, "transformation error to Point: at least one value could not be transformed to integer.");
                 }
-		    }
+            }
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Point: 2 values required.");
             }
-	    }
+        }
         else if (destType == QVariant::Rect)
         {
             const QVariantList list = item.toList();
-		    if (list.size() == 4)
-		    {
-			    bool ok2, ok3, ok4;
-			    result = QRect(list[0].toInt(&ok), list[1].toInt(&ok2), list[2].toInt(&ok3), list[3].toInt(&ok4));
-			    ok &= ok2;
+            if (list.size() == 4)
+            {
+                bool ok2, ok3, ok4;
+                result = QRect(list[0].toInt(&ok), list[1].toInt(&ok2), list[2].toInt(&ok3), list[3].toInt(&ok4));
+                ok &= ok2;
                 ok &= ok3;
                 ok &= ok4;
             
@@ -1252,7 +1252,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 {
                     retval += ito::RetVal(ito::retError, 0, "transformation error to Rect: at least one value could not be transformed to integer.");
                 }
-		    }
+            }
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Rect: 4 values required.");
@@ -1261,11 +1261,11 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (destType == QVariant::RectF)
         {
             const QVariantList list = item.toList();
-		    if (list.size() == 4)
-		    {
-			    bool ok2, ok3, ok4;
-			    result = QRectF(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3), list[3].toFloat(&ok4));
-			    ok &= ok2;
+            if (list.size() == 4)
+            {
+                bool ok2, ok3, ok4;
+                result = QRectF(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3), list[3].toFloat(&ok4));
+                ok &= ok2;
                 ok &= ok3;
                 ok &= ok4;
             
@@ -1273,7 +1273,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 {
                     retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: at least one value could not be transformed to float.");
                 }
-		    }
+            }
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: 4 values required.");
@@ -1315,11 +1315,11 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
     }
 
-	if (ok)
-	{
-		return result;
-	}
-	return item;
+    if (ok)
+    {
+        return result;
+    }
+    return item;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1705,7 +1705,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         default:
         //check user defined types
         {
-			if (type == QMetaType::type("ito::PythonQObjectMarshal"))
+            if (type == QMetaType::type("ito::PythonQObjectMarshal"))
             {
                 ito::PythonUi::PyUiItem *val2 = (ito::PythonUi::PyUiItem*)val;
                 
@@ -1725,18 +1725,18 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer));
                 }
             }
-			else if (type == QMetaType::type("ito::DataObject"))
-			{
-				ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
+            else if (type == QMetaType::type("ito::DataObject"))
+            {
+                ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
                 if (val2 && val2->dataObject)
                 {
                     *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(val2->dataObject));
                 }
-			}
+            }
 #if ITOM_POINTCLOUDLIBRARY > 0
             else if (type == QMetaType::type("ito::PCLPointCloud"))
             {
-				bool ok;
+                bool ok;
                 ito::PCLPointCloud pcl = PyObjGetPointCloud(val, strict, ok);
                 if (ok)
                 {
@@ -1745,7 +1745,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             else if (type == QMetaType::type("ito::PCLPoint"))
             {
-				bool ok;
+                bool ok;
                 ito::PCLPoint pt = PyObjGetPoint(val, strict, ok);
                 if (ok)
                 {
@@ -1754,7 +1754,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             else if (type == QMetaType::type("ito::PCLPolygonMesh"))
             {
-				bool ok;
+                bool ok;
                 ito::PCLPolygonMesh mesh = PyObjGetPolygonMesh(val, strict, ok);
                 if (ok)
                 {
@@ -1986,7 +1986,7 @@ PyObject* PythonQtConversion::PCLPolygonMeshToPyObject(const ito::PCLPolygonMesh
     ito::PythonPCL::PyPolygonMesh *result = (ito::PythonPCL::PyPolygonMesh*)PyObject_Call((PyObject*)&(ito::PythonPCL::PyPolygonMeshType), NULL, NULL);
     if (result)
     {
-		DELETE_AND_SET_NULL(result->polygonMesh);
+        DELETE_AND_SET_NULL(result->polygonMesh);
         result->polygonMesh = new ito::PCLPolygonMesh(c);
         //*result->polygonMesh = c;
         return (PyObject*)result;
@@ -2116,22 +2116,22 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             PyList_SetItem(temp, 3, PyLong_FromLong(temp2->height()));
             return temp;
         }
-	case QMetaType::QPointF:
-		{
-			PyObject *temp = PyList_New(2);
+    case QMetaType::QPointF:
+        {
+            PyObject *temp = PyList_New(2);
             QPointF *temp2 = (QPointF*)data;
             PyList_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
             PyList_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
             return temp;
-		}
-	case QMetaType::QPoint:
-		{
-			PyObject *temp = PyList_New(2);
+        }
+    case QMetaType::QPoint:
+        {
+            PyObject *temp = PyList_New(2);
             QPoint *temp2 = (QPoint*)data;
             PyList_SetItem(temp, 0, PyLong_FromLong(temp2->x()));
             PyList_SetItem(temp, 1, PyLong_FromLong(temp2->y()));
             return temp;
-		}
+        }
     case QMetaType::QRegion:
         {
             return ito::PythonRegion::createPyRegion(*((QRegion*)data));
@@ -2169,12 +2169,12 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return NULL;
         }
-		if (strcmp(name, "ito::DataObject") == 0)
+        if (strcmp(name, "ito::DataObject") == 0)
         {
             return DataObjectToPyObject(*((ito::DataObject*)data));
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
-		else if (strcmp(name, "ito::PCLPointCloud") == 0)
+        else if (strcmp(name, "ito::PCLPointCloud") == 0)
         {
             return PCLPointCloudToPyObject(*((ito::PCLPointCloud*)data));
         }

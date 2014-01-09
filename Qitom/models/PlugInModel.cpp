@@ -450,15 +450,15 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
 */
 QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
-	{
-		if (section >= 0 && section < m_headers.size())
-		{
-			return m_headers.at(section);
-		}
-		return QVariant();
-	}
-	return QVariant();
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
+    {
+        if (section >= 0 && section < m_headers.size())
+        {
+            return m_headers.at(section);
+        }
+        return QVariant();
+    }
+    return QVariant();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -972,16 +972,16 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
             }
             case 7: //description
             {
-				int firstLineBreak = description->indexOf('\n');
-				QString shortDesc;
-				if (firstLineBreak > 0)
-				{
-					shortDesc = description->left(firstLineBreak);
-				}
-				else
-				{
-					shortDesc = *description;
-				}
+                int firstLineBreak = description->indexOf('\n');
+                QString shortDesc;
+                if (firstLineBreak > 0)
+                {
+                    shortDesc = description->left(firstLineBreak);
+                }
+                else
+                {
+                    shortDesc = *description;
+                }
                 return shortDesc;
             }
             default:
@@ -1012,43 +1012,43 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
             case 0: //name
             case 7: //description
             {
-				QString text = *name;
-				if (description->size() > 0)
-				{
-					QString lb;
-					lb.fill('-', text.length() * 1.5);
+                QString text = *name;
+                if (description->size() > 0)
+                {
+                    QString lb;
+                    lb.fill('-', text.length() * 1.5);
 
-					QStringList desc = description->split('\n');
-					text += "\n" + lb;
+                    QStringList desc = description->split('\n');
+                    text += "\n" + lb;
 
-					foreach(const QString &s, desc)
-					{
-						if (s.size() < 200)
-						{
-							text += "\n" + s;
-						}
-						else
-						{
-							QStringList words = s.split(" ");
-							int curLen = 0;
-							text += "\n";
-							foreach (const QString &w, words)
-							{
-								curLen += w.size();
-								if (curLen < 200)
-								{
-									text += w + " ";
-									curLen++;
-								}
-								else
-								{
-									curLen = w.size()+1;
-									text += "\n" + w + " ";
-								}
-							}
-						}
-					}
-				}
+                    foreach(const QString &s, desc)
+                    {
+                        if (s.size() < 200)
+                        {
+                            text += "\n" + s;
+                        }
+                        else
+                        {
+                            QStringList words = s.split(" ");
+                            int curLen = 0;
+                            text += "\n";
+                            foreach (const QString &w, words)
+                            {
+                                curLen += w.size();
+                                if (curLen < 200)
+                                {
+                                    text += w + " ";
+                                    curLen++;
+                                }
+                                else
+                                {
+                                    curLen = w.size()+1;
+                                    text += "\n" + w + " ";
+                                }
+                            }
+                        }
+                    }
+                }
                 return text;
             }
             default:

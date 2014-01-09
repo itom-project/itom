@@ -53,12 +53,12 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-			QTableView *m_breakPointView;
+            QTableView *m_breakPointView;
 
         signals:
 
         private slots:
-	        void doubleClicked(const QModelIndex &index);
+            void doubleClicked(const QModelIndex &index);
 
     };
 

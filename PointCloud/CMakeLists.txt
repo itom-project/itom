@@ -23,7 +23,7 @@ find_package(OpenCV REQUIRED)
 find_package(PCL 1.5.1 REQUIRED)
 
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize

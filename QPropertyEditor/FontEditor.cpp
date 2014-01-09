@@ -29,25 +29,25 @@
 #include <qlayout.h>
 
 FontEditor::FontEditor(QWidget* parent /*= 0*/) : QWidget(parent)
-{	
-	m_textEdit = new QLineEdit(this);
-	m_textEdit->setReadOnly(true);
+{    
+    m_textEdit = new QLineEdit(this);
+    m_textEdit->setReadOnly(true);
 
-	m_toolBtn = new QToolButton(this);
-	connect(m_toolBtn, SIGNAL(clicked()), this, SLOT(btnClicked()));
+    m_toolBtn = new QToolButton(this);
+    connect(m_toolBtn, SIGNAL(clicked()), this, SLOT(btnClicked()));
 
-	QHBoxLayout *layout = new QHBoxLayout(this);
-	layout->addWidget(m_textEdit);
-	layout->addWidget(m_toolBtn);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->addWidget(m_textEdit);
+    layout->addWidget(m_toolBtn);
 
-	setLayout(layout);
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	setContentsMargins(0,0,0,0);
+    setLayout(layout);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    setContentsMargins(0,0,0,0);
 
-	setMinimumHeight(15);
-	setFocusProxy(m_toolBtn); //this is very important: see http://qt-project.org/forums/viewthread/3860/
-	
+    setMinimumHeight(15);
+    setFocusProxy(m_toolBtn); //this is very important: see http://qt-project.org/forums/viewthread/3860/
+    
 }
 
 
@@ -57,23 +57,23 @@ FontEditor::~FontEditor()
 
 QFont FontEditor::value() const
 {
-	return m_font;
+    return m_font;
 }
 
 void FontEditor::setValue(QFont font)
 {
-	m_font = font;
-	m_textEdit->setText( QString("[%1, %2]").arg(m_font.family()).arg(m_font.pointSize()) );
+    m_font = font;
+    m_textEdit->setText( QString("[%1, %2]").arg(m_font.family()).arg(m_font.pointSize()) );
 }
 
 void FontEditor::btnClicked()
 {
-	bool ok;
+    bool ok;
     QFont font = QFontDialog::getFont(&ok, m_font, this, "select font");
 
-	if (ok)
-	{
-		setValue(font);
-		emit fontChanged(font);
-	}
+    if (ok)
+    {
+        setValue(font);
+        emit fontChanged(font);
+    }
 }

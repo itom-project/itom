@@ -73,7 +73,7 @@ namespace ito
                 //    AbstractDockWidget *adw = qobject_cast<AbstractDockWidget*>(parent());
                 //    if(adw) adw->updateActions();
                 //}
-		
+        
                 //! catches the double click event
                 /*!
                     Since the read-only property of the QFileSystemModel is set to false (in order to guarantee rename, copy,... methods),
@@ -81,24 +81,24 @@ namespace ito
                     Therefore we've overwritten the mouseDoubleClickEvent-event, such that this event directly emits the activated signal. This
                     is the same behaviour than in the case, when the read-only property is set to true.
 
-			        => Not necessary anymore, by deactivating the editing trigger a double click do not lead to an edit-box. (2012-09-11 David Fleischle)
+                    => Not necessary anymore, by deactivating the editing trigger a double click do not lead to an edit-box. (2012-09-11 David Fleischle)
                 */
-		        /*
+                /*
                 void mouseDoubleClickEvent ( QMouseEvent * event )
                 {
                     QModelIndexList currents = selectedIndexes();
 
                     if(currents.size() > 0)
                     {
-				        emit activated(currents[0]);
-				        event->accept();
+                        emit activated(currents[0]);
+                        event->accept();
                     }
                     else
                     {
                         event->ignore();
                     }
                 }
-		        */
+                */
 
             };
 
@@ -179,7 +179,7 @@ namespace ito
             void treeViewContextMenuRequested(const QPoint &pos);
             void setTreeViewHideColumns(const bool &hide);
             void removeActionFromDirList(const int &pos);
-	        void changeDir();
+            void changeDir();
 
             void pathAnchorClicked(const QUrl &link);
 

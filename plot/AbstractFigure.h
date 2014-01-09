@@ -91,7 +91,7 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         virtual void setContextMenuEnabled(bool show) = 0; 
         virtual bool getContextMenuEnabled() const = 0;
 
-		virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
+        virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
@@ -101,16 +101,16 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
 
-		void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
+        void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
 
-		void showToolBar(const QString &key);
-		void hideToolBar(const QString &key);
+        void showToolBar(const QString &key);
+        void hideToolBar(const QString &key);
 
         void addMenu(QMenu *menu);
 
-		void updatePropertyDock();
-		void setPropertyObservedObject(QObject* obj);
+        void updatePropertyDock();
+        void setPropertyObservedObject(QObject* obj);
 
         RetVal initialize();
 
@@ -123,22 +123,22 @@ class AbstractFigure : public QMainWindow, public AbstractNode
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
         
-		bool m_toolbarsVisible;
+        bool m_toolbarsVisible;
 
     private:
         QList<QMenu*> m_menus;
         QList<ToolBarItem> m_toolbars;
 
-		QDockWidget *m_propertyDock;
-		QPropertyEditorWidget *m_propertyEditorWidget;
-		QObject *m_propertyObservedObject;
+        QDockWidget *m_propertyDock;
+        QPropertyEditorWidget *m_propertyEditorWidget;
+        QObject *m_propertyObservedObject;
 
     signals:
         
     private slots:
 
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
-		inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
+        inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
 
     public slots:
         void refreshPlot() { update(); }

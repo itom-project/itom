@@ -46,7 +46,7 @@ class AbstractPyScintillaWidget : public QsciScintilla
     Q_OBJECT //-> see: #define QSCINTILLA_DLL  //http://www.riverbankcomputing.com/pipermail/qscintilla/2007-March/000034.html in sharedStructures.h
 
 public:
-	AbstractPyScintillaWidget(QWidget* parent = NULL);
+    AbstractPyScintillaWidget(QWidget* parent = NULL);
     ~AbstractPyScintillaWidget();
 
     QString getWordAtPosition(const int &line, const int &index);

@@ -128,7 +128,7 @@ namespace dObjHelper
             return CV_32F;
         case ito::tFloat64:
             return CV_64F;
-        default:	//ito::tUInt32 and complextype
+        default:    //ito::tUInt32 and complextype
             return -1;
         }
     }
@@ -715,51 +715,51 @@ namespace dObjHelper
     inline ito::RetVal checkITOMType(ito::DataObject *dObj, bool allow_int8, bool allow_uint8, bool allow_int16, bool allow_uint16, bool allow_int32, bool allow_uint32, bool allow_float32, bool allow_float64, bool allow_complex64, bool allow_complex128)
     {
         int type = dObj->getType();
-	    switch(type)
-	    {
-	    case ito::tUInt8:
-		    if(allow_uint8)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "UInt8 not allowed");
-	    case ito::tUInt16:
-		    if(allow_uint16)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "UInt16 not allowed");
-	    case ito::tUInt32:
-		    if(allow_uint32)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "UInt32 not allowed");
-	    case ito::tInt8:
-		    if(allow_int8)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "Int8 not allowed");
-	    case ito::tInt16:
-		    if(allow_int16)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "Int16 not allowed");
-	    case ito::tInt32:
-		    if(allow_int32)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "Int32 not allowed");
-	    case ito::tFloat32:
-		    if(allow_float32)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "Float32 not allowed");
-	    case ito::tFloat64:
-		    if(allow_float64)
-			    return 0;
-		    else return ito::RetVal(ito::retError, 0, "Float64 not allowed");
-	    case ito::tComplex64:
-		    if(allow_complex64)
-			    return ito::retOk;
-		    else return ito::RetVal(ito::retError, 0, "Complex64 not allowed");
-	    case ito::tComplex128:
-		    if(allow_complex128)
-			    return 0;
-		    else return ito::RetVal(ito::retError, 0, "Complex128 not allowed");
-	    default:
-		    return ito::RetVal(ito::retError, 0, "Unknown type or type not implemented");
-	    }
+        switch(type)
+        {
+        case ito::tUInt8:
+            if(allow_uint8)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "UInt8 not allowed");
+        case ito::tUInt16:
+            if(allow_uint16)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "UInt16 not allowed");
+        case ito::tUInt32:
+            if(allow_uint32)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "UInt32 not allowed");
+        case ito::tInt8:
+            if(allow_int8)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "Int8 not allowed");
+        case ito::tInt16:
+            if(allow_int16)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "Int16 not allowed");
+        case ito::tInt32:
+            if(allow_int32)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "Int32 not allowed");
+        case ito::tFloat32:
+            if(allow_float32)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "Float32 not allowed");
+        case ito::tFloat64:
+            if(allow_float64)
+                return 0;
+            else return ito::RetVal(ito::retError, 0, "Float64 not allowed");
+        case ito::tComplex64:
+            if(allow_complex64)
+                return ito::retOk;
+            else return ito::RetVal(ito::retError, 0, "Complex64 not allowed");
+        case ito::tComplex128:
+            if(allow_complex128)
+                return 0;
+            else return ito::RetVal(ito::retError, 0, "Complex128 not allowed");
+        default:
+            return ito::RetVal(ito::retError, 0, "Unknown type or type not implemented");
+        }
     }
     */
  
@@ -774,8 +774,8 @@ namespace dObjHelper
     */
     inline bool isIntType(const int type, int *size)
     {
-	    if((type == ito::tInt8)||(type == ito::tUInt8))
-	    {
+        if((type == ito::tInt8)||(type == ito::tUInt8))
+        {
             *size = 1;
             return true;
         }
@@ -792,8 +792,8 @@ namespace dObjHelper
         else
         {
             *size = -1;
-		    return false;
-	    }
+            return false;
+        }
     }
 
     //-----------------------------------------------------------------------------------------------
@@ -820,8 +820,8 @@ namespace dObjHelper
         else
         {
             *size = -1;
-		    return false;
-	    }
+            return false;
+        }
     }
 
     //-----------------------------------------------------------------------------------------------
@@ -848,8 +848,8 @@ namespace dObjHelper
         else
         {
             *size = -1;
-		    return false;
-	    }
+            return false;
+        }
     }
 
     //-----------------------------------------------------------------------------------------------

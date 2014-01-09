@@ -59,14 +59,14 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
 {
     if (retval.containsError())
     {
-		if (retval.errorMessage())
-		{
-			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toAscii().data(), retval.errorMessage());
-		}
-		else
-		{
-			PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toAscii().data());
-		}
+        if (retval.errorMessage())
+        {
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toAscii().data(), retval.errorMessage());
+        }
+        else
+        {
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toAscii().data());
+        }
         return false;
     }
 
@@ -867,7 +867,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
              waitCond->deleteSemaphore();
              waitCond = NULL;
             
-			PythonCommon::transformRetValToPyException(retval);
+            PythonCommon::transformRetValToPyException(retval);
         }
     }
 
@@ -1696,23 +1696,23 @@ PyObject* PythonPlugins::PyActuatorPlugin_getType(PyActuatorPlugin *self)
     if (self == NULL || self->actuatorObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty actuator plugin");
-		return NULL;
-	}
+        return NULL;
+    }
     else
     {
-		ito::AddInInterfaceBase *aib = self->actuatorObj->getBasePlugin();
-		if (aib)
-		{
-			result = PyLong_FromLong(aib->getType());
-	    }
-		else
-		{
-			PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
-			return NULL;
-		}
-	}
+        ito::AddInInterfaceBase *aib = self->actuatorObj->getBasePlugin();
+        if (aib)
+        {
+            result = PyLong_FromLong(aib->getType());
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
+            return NULL;
+        }
+    }
     
-	return result;
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2168,12 +2168,12 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    0,                                       /* tp_as_buffer */
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
    pyActuatorInit_doc,                      /* tp_doc */
-   0,		                                /* tp_traverse */
-   0,		                                /* tp_clear */
-   0,		                                /* tp_richcompare */
-   0,		                                /* tp_weaklistoffset */
-   0,		                                /* tp_iter */
-   0,		                                /* tp_iternext */
+   0,                                        /* tp_traverse */
+   0,                                        /* tp_clear */
+   0,                                        /* tp_richcompare */
+   0,                                        /* tp_weaklistoffset */
+   0,                                        /* tp_iter */
+   0,                                        /* tp_iternext */
    PyActuatorPlugin_methods,                /* tp_methods */
    PyActuatorPlugin_members,                /* tp_members */
    0,                                       /* tp_getset */
@@ -2218,7 +2218,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             waitCond->deleteSemaphore();
             waitCond = NULL;
 
-			PythonCommon::transformRetValToPyException(retval);
+            PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
             {
                 PyErr_Format(PyExc_RuntimeError, "error closing plugin");
@@ -3480,23 +3480,23 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
     if (self == NULL || self->dataIOObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty dataIO plugin");
-		return NULL;
-	}
+        return NULL;
+    }
     else
     {
-		ito::AddInInterfaceBase *aib = self->dataIOObj->getBasePlugin();
-		if (aib)
-		{
-			result = PyLong_FromLong(aib->getType());
-	    }
-		else
-		{
-			PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
-			return NULL;
-		}
-	}
+        ito::AddInInterfaceBase *aib = self->dataIOObj->getBasePlugin();
+        if (aib)
+        {
+            result = PyLong_FromLong(aib->getType());
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
+            return NULL;
+        }
+    }
     
-	return result; 
+    return result; 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3712,12 +3712,12 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
    0,                                   /* tp_as_buffer */
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
    pyDataIOInit_doc,                    /* tp_doc */
-   0,		                            /* tp_traverse */
-   0,		                            /* tp_clear */
-   0,		                            /* tp_richcompare */
-   0,		                            /* tp_weaklistoffset */
-   0,		                            /* tp_iter */
-   0,		                            /* tp_iternext */
+   0,                                    /* tp_traverse */
+   0,                                    /* tp_clear */
+   0,                                    /* tp_richcompare */
+   0,                                    /* tp_weaklistoffset */
+   0,                                    /* tp_iter */
+   0,                                    /* tp_iternext */
    PyDataIOPlugin_methods,              /* tp_methods */
    PyDataIOPlugin_members,              /* tp_members */
    0,                                   /* tp_getset */
@@ -3776,7 +3776,7 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
 
 //            retval = aim->closeAddIn((ito::AddInBase**)&self->algoObj);
             
-			PythonCommon::transformRetValToPyException(retval);
+            PythonCommon::transformRetValToPyException(retval);
         }
     }
 
@@ -4060,23 +4060,23 @@ PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
     if (self == NULL || self->algoObj == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError,"empty Algo plugin");
-		return NULL;
-	}
+        return NULL;
+    }
     else
     {
-		ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
-		if (aib)
-		{
-			result = PyLong_FromLong(aib->getType());
-	    }
-		else
-		{
-			PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
-			return NULL;
-		}
-	}
+        ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
+        if (aib)
+        {
+            result = PyLong_FromLong(aib->getType());
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
+            return NULL;
+        }
+    }
     
-	return result; 
+    return result; 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4123,12 +4123,12 @@ PyTypeObject PythonPlugins::PyAlgoPluginType = {
    0,                         /* tp_as_buffer */
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
    "algo plugins",           /* tp_doc */
-   0,		               /* tp_traverse */
-   0,		               /* tp_clear */
-   0,		               /* tp_richcompare */
-   0,		               /* tp_weaklistoffset */
-   0,		               /* tp_iter */
-   0,		               /* tp_iternext */
+   0,                       /* tp_traverse */
+   0,                       /* tp_clear */
+   0,                       /* tp_richcompare */
+   0,                       /* tp_weaklistoffset */
+   0,                       /* tp_iter */
+   0,                       /* tp_iternext */
    PyAlgoPlugin_methods,             /* tp_methods */
    PyAlgoPlugin_members,             /* tp_members */
    0,                         /* tp_getset */

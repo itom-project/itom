@@ -34,9 +34,9 @@
 #include <pcl/io/pcd_io.h>
 
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	#include <pcl/conversions.h>
+    #include <pcl/conversions.h>
 #else
-	#include <pcl/ros/conversions.h>
+    #include <pcl/ros/conversions.h>
 #endif
 
 namespace ito 
@@ -49,7 +49,7 @@ namespace pclHelper
 //! converts pcl::PointXYZRGB to pcl::PointXYZRGBA
 /*!
     \param [in] in is the input point
-	\param [in/out] out is the converted output point, where alpha is set to 255 (no transparency)
+    \param [in/out] out is the converted output point, where alpha is set to 255 (no transparency)
     \sa PointXYZRGBAtoXYZRGB
 */
 void PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out)
@@ -62,7 +62,7 @@ void PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out)
 //! converts pcl::PointXYZRGBA to pcl::PointXYZRGB
 /*!
     \param [in] in is the input point
-	\param [in/out] out is the converted output point
+    \param [in/out] out is the converted output point
     \sa PointXYZRGBtoXYZRGBA
 */
 void PointXYZRGBAtoXYZRGB (const  pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out)

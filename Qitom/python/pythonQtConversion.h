@@ -106,7 +106,7 @@ public:
     static ito::PCLPolygonMesh* PyObjGetPolygonMeshNewPtr(PyObject *val, bool strict, bool &ok);
 #endif
 
-	static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok);
+    static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok);
 
     static QSharedPointer<ito::DataObject> PyObjGetSharedDataObject(PyObject *val, bool &ok); //is always strict, only dataobjects are allowed
 
@@ -118,7 +118,7 @@ public:
     //! it will guess from the python type
     static QVariant PyObjToQVariant(PyObject* val, int type = -1);
 
-	static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval);
+    static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval);
 
     static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
 

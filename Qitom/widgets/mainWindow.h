@@ -69,7 +69,7 @@ protected:
     inline bool pythonInWaitingMode() const { return m_pythonInWaitingMode; }  /*!<  returns if python is in waiting mode (true) \sa m_pythonInWaitingMode */
 
 private:
-	void createActions();
+    void createActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
@@ -79,13 +79,13 @@ private:
     ConsoleWidget *m_console;
 
     QVBoxLayout *m_contentLayout;
-	
+    
     BreakPointDockWidget  *m_breakPointDock;
     LastCommandDockWidget *m_lastCommandDock;
     HelpDockWidget        *m_helpDock;
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
-	CallStackDockWidget   *m_callStackDock;
+    CallStackDockWidget   *m_callStackDock;
     FileSystemDockWidget  *m_fileSystemDock;
 
     AIManagerWidget* m_pAIManagerWidget;
@@ -104,12 +104,12 @@ private:
     QAction *m_aboutQt;
     QAction *m_aboutQitom;
 
-	QMap<QString, QAction*> m_actions;
+    QMap<QString, QAction*> m_actions;
 
-	QMenu *m_pMenuHelp;
-	QMenu *m_pMenuFile;
+    QMenu *m_pMenuHelp;
+    QMenu *m_pMenuFile;
     QMenu *m_pMenuPython;
-	QMenu *m_pMenuView;
+    QMenu *m_pMenuView;
 
     HelpSystem *m_pHelpSystem;
 
@@ -156,7 +156,7 @@ private slots:
 
     void mnuNewScript();
     void mnuOpenFile();
-	void mnuShowAssistant();
+    void mnuShowAssistant();
     void mnuShowDesigner();
     void mnuShowProperties();
     void mnuShowUserManagement();
@@ -176,17 +176,17 @@ private slots:
         s->show();
     }*/
 
-	void helpAssistantError ( QProcess::ProcessError error );
+    void helpAssistantError ( QProcess::ProcessError error );
     void designerError ( QProcess::ProcessError error );
 
     void userDefinedActionTriggered(const QString &pythonCode);
 
-	//void mnuRestore()
-	//{
-	//	QSettings settings;
-	//	restoreGeometry(settings.value("geometry").toByteArray());
-	//	restoreState(settings.value("windowState").toByteArray());
-	//}
+    //void mnuRestore()
+    //{
+    //    QSettings settings;
+    //    restoreGeometry(settings.value("geometry").toByteArray());
+    //    restoreState(settings.value("windowState").toByteArray());
+    //}
 
 };
 

@@ -140,7 +140,7 @@ void FigureWidget::createMenus()
         m_firstSysAction = getMenuBar()->addMenu(m_menuSubplot);
     }
 
-	//create main menus
+    //create main menus
     m_menuWindow = new QMenu(tr("&Windows"), this);
     if (m_actStayOnTop)
     {
@@ -150,7 +150,7 @@ void FigureWidget::createMenus()
     {
         m_menuWindow->addAction(m_actStayOnTopOfApp);
     }
-	
+    
     QAction *act = getMenuBar()->addMenu(m_menuWindow);
     if (!m_firstSysAction) m_firstSysAction = act;
 }
@@ -407,11 +407,11 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                             t.toolbar->setVisible(false);
                         }
 
-						QDockWidget *propertyDock = figWidget->getPropertyDockWidget();
-						if (propertyDock && getCanvas())
-						{
-							getCanvas()->addDockWidget(Qt::RightDockWidgetArea, propertyDock);
-						}
+                        QDockWidget *propertyDock = figWidget->getPropertyDockWidget();
+                        if (propertyDock && getCanvas())
+                        {
+                            getCanvas()->addDockWidget(Qt::RightDockWidgetArea, propertyDock);
+                        }
                     }
 
                     if (m_pSubplotActions)

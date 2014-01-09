@@ -22,14 +22,14 @@ include("../ItomBuildMacros.cmake")
 find_package(OpenCV REQUIRED)
 
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ELSE(CMAKE_BUILD_TYPE)
-	SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 
@@ -42,10 +42,10 @@ LINK_DIRECTORIES(
 )
 
 set(libSrcs
-	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
 )
 
 add_library(dataobject ${LIBRARY_TYPE} ${libSrcs})

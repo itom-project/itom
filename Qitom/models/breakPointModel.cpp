@@ -60,7 +60,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
 {
     beginInsertRows(QModelIndex(), m_breakpoints.size(), m_breakpoints.size());
     m_breakpoints.append(bp);
-	emit(breakPointAdded(bp, m_breakpoints.size()-1));
+    emit(breakPointAdded(bp, m_breakpoints.size()-1));
     endInsertRows();
 
     return RetVal(retOk);
@@ -77,7 +77,7 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
 {
     if(index.isValid())
     {
-		BreakPointItem item = getBreakPoint(index);
+        BreakPointItem item = getBreakPoint(index);
         int row = index.row();
         beginRemoveRows(QModelIndex(), row, row);
         m_breakpoints.removeAt(row);
@@ -101,18 +101,18 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
 */
 RetVal BreakPointModel::deleteBreakPoints(QModelIndexList indizes)
 {
-	RetVal retValue(retOk);
+    RetVal retValue(retOk);
 
-	std::sort(indizes.begin(), indizes.end(), &BreakPointModel::compareRow);
-	
-	QModelIndexList::Iterator it;
+    std::sort(indizes.begin(), indizes.end(), &BreakPointModel::compareRow);
+    
+    QModelIndexList::Iterator it;
 
-	for(it = indizes.begin() ; it != indizes.end() ; ++it)
-	{
-		retValue += deleteBreakPoint(*it);
-	}
+    for(it = indizes.begin() ; it != indizes.end() ; ++it)
+    {
+        retValue += deleteBreakPoint(*it);
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //! counts number of breakpoints in this model
@@ -144,10 +144,10 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
 {
     const BreakPointItem& item = m_breakpoints.at(index.row());
 
-	if(!index.isValid())
-	{
-		return QVariant();
-	}
+    if(!index.isValid())
+    {
+        return QVariant();
+    }
  
     if(role == Qt::DisplayRole)
     {
@@ -164,10 +164,10 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             return item.conditioned ? item.condition : "";
         case 3: //temporary
             return item.temporary ? tr("yes") : tr("no");
-		case 4: //enabled
-			return item.enabled ? tr("yes") : tr("no");
-		case 5: //ignore count
-			return item.ignoreCount;
+        case 4: //enabled
+            return item.enabled ? tr("yes") : tr("no");
+        case 5: //ignore count
+            return item.ignoreCount;
         case 6: //pythonDbgBpNumber
             return item.pythonDbgBpNumber;
         }
@@ -192,10 +192,10 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             return Qt::AlignLeft;
         case 3: //temporary
             return Qt::AlignCenter;
-		case 4: //enabled
-			return Qt::AlignCenter;
-		case 5: //ignore count
-			return Qt::AlignCenter;
+        case 4: //enabled
+            return Qt::AlignCenter;
+        case 5: //ignore count
+            return Qt::AlignCenter;
         case 6: //pythonDbgBpNumber
             return Qt::AlignCenter;
         }
@@ -212,10 +212,10 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             return QSize(50,12);
         case 3: //temporary
             return QSize(20,12);
-		case 4: //enabled
-			return QSize(20,12);
-		case 5: //ignore count
-			return QSize(20,12);
+        case 4: //enabled
+            return QSize(20,12);
+        case 5: //ignore count
+            return QSize(20,12);
         case 6: //pythonDbgBpNumber
             return QSize(20,12);
         }
@@ -260,15 +260,15 @@ QModelIndex BreakPointModel::parent(const QModelIndex &/*index*/) const
 */
 QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if( role == Qt::DisplayRole && orientation == Qt::Horizontal )
-	{
-		if(section >= 0 && section < m_headers.size())
-		{
-			return m_headers.at(section);
-		}
-		return QVariant();
-	}
-	return QVariant();
+    if( role == Qt::DisplayRole && orientation == Qt::Horizontal )
+    {
+        if(section >= 0 && section < m_headers.size())
+        {
+            return m_headers.at(section);
+        }
+        return QVariant();
+    }
+    return QVariant();
 }
 
 //! returns QModelIndex for first breakpoint which is found in given filename and at given line number.
@@ -280,14 +280,14 @@ QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, i
 QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString filename, int lineNo) const
 {
 
-	for (int row = 0; row < m_breakpoints.size(); ++row)
-	{
-		if(m_breakpoints.at(row).filename == filename && m_breakpoints.at(row).lineno == lineNo)
-		{
-			return createIndex(row, 1);
-		}
-	}
-	return QModelIndex();
+    for (int row = 0; row < m_breakpoints.size(); ++row)
+    {
+        if(m_breakpoints.at(row).filename == filename && m_breakpoints.at(row).lineno == lineNo)
+        {
+            return createIndex(row, 1);
+        }
+    }
+    return QModelIndex();
 }
 
 //! returns a list of QModelIndex for all breakpoints, which are registered in given file and at given line number.
@@ -299,15 +299,15 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString filename, int
 */
 QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename, int lineNo) const
 {
-	QModelIndexList list;
-	for (int row = 0; row < m_breakpoints.size(); ++row)
-	{
-		if(m_breakpoints.at(row).filename == filename && m_breakpoints.at(row).lineno == lineNo)
-		{
-			list.push_back(createIndex(row, 1));
-		}
-	}
-	return list;
+    QModelIndexList list;
+    for (int row = 0; row < m_breakpoints.size(); ++row)
+    {
+        if(m_breakpoints.at(row).filename == filename && m_breakpoints.at(row).lineno == lineNo)
+        {
+            list.push_back(createIndex(row, 1));
+        }
+    }
+    return list;
 }
 
 //! returns BreakPointItem for breakpoint being in given file and at given line number
@@ -318,7 +318,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename, in
 */
 BreakPointItem BreakPointModel::getBreakPoint(const QString filename, int lineNo) const
 {
-	return getBreakPoint(getFirstBreakPointIndex(filename, lineNo));
+    return getBreakPoint(getFirstBreakPointIndex(filename, lineNo));
 }
 
 //! returns BreakPointItem for given QModelIndex
@@ -328,14 +328,14 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString filename, int lineNo
 */
 BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex index) const
 {
-	if(index.isValid() && index.row() < m_breakpoints.size() )
-	{
-		return m_breakpoints.at(index.row());
-	}
-	else
-	{
-		return BreakPointItem();
-	}
+    if(index.isValid() && index.row() < m_breakpoints.size() )
+    {
+        return m_breakpoints.at(index.row());
+    }
+    else
+    {
+        return BreakPointItem();
+    }
 }
 
 //! changes breakpoint, given by its QModelIndex to values, determined by BreakPointItem
@@ -349,20 +349,20 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex index) const
 */
 RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged)
 {
-	if(index.isValid()  && index.row() < m_breakpoints.size() )
-	{
-		BreakPointItem oldBp = m_breakpoints.at(index.row());
-		m_breakpoints.replace(index.row(),bp);
-		emit(dataChanged(index,index));
-		this->setData(index, QVariant(), Qt::DisplayRole);
-		emit(dataChanged(createIndex(index.row(),0),createIndex(index.row(),m_headers.size()-1)));
-		if(emitBreakPointChanged) //!< should be false, if filename or line-nr of editor has changed.
-		{
-			emit(breakPointChanged(oldBp, bp));
-		}
-		return RetVal(retOk);
-	}
-	return RetVal(retError);
+    if(index.isValid()  && index.row() < m_breakpoints.size() )
+    {
+        BreakPointItem oldBp = m_breakpoints.at(index.row());
+        m_breakpoints.replace(index.row(),bp);
+        emit(dataChanged(index,index));
+        this->setData(index, QVariant(), Qt::DisplayRole);
+        emit(dataChanged(createIndex(index.row(),0),createIndex(index.row(),m_headers.size()-1)));
+        if(emitBreakPointChanged) //!< should be false, if filename or line-nr of editor has changed.
+        {
+            emit(breakPointChanged(oldBp, bp));
+        }
+        return RetVal(retOk);
+    }
+    return RetVal(retError);
 
 }
 
@@ -373,16 +373,16 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
 */
 QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename) const
 {
-	QModelIndexList list;
+    QModelIndexList list;
 
-	for (int row = 0; row < m_breakpoints.size(); ++row)
-	{
-		if(m_breakpoints.at(row).filename == filename)
-		{
-			list.push_back(createIndex(row,1));
-		}
-	}
-	return list;
+    for (int row = 0; row < m_breakpoints.size(); ++row)
+    {
+        if(m_breakpoints.at(row).filename == filename)
+        {
+            list.push_back(createIndex(row,1));
+        }
+    }
+    return list;
 }
 
 //! returns list of BreakPointItem corresponding to given list of model indices
@@ -392,12 +392,12 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename) co
 */
 QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList indizes) const
 {
-	QList<BreakPointItem> bps;
-	for(int i=0; i<indizes.size(); ++i)
-	{
-		bps.push_back(getBreakPoint(indizes.at(i)));
-	}
-	return bps;
+    QList<BreakPointItem> bps;
+    for(int i=0; i<indizes.size(); ++i)
+    {
+        bps.push_back(getBreakPoint(indizes.at(i)));
+    }
+    return bps;
 }
 
 //! change multiple breakpoints to data, given by list of BreakPointItem
@@ -410,19 +410,19 @@ QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList indi
 */
 RetVal BreakPointModel::changeBreakPoints(const QModelIndexList indizes, QList<BreakPointItem> bps, bool emitBreakPointChanged)
 {
-	RetVal retValue(retOk);
-	if( indizes.size() == bps.size() )
-	{
-		for(int i=0; i<indizes.size() ; ++i)
-		{
-			retValue += changeBreakPoint(indizes.at(i), bps.at(i),emitBreakPointChanged);
-		}
-	}
-	else
-	{
-		retValue += RetVal(retError);
-	}
-	return retValue;
+    RetVal retValue(retOk);
+    if( indizes.size() == bps.size() )
+    {
+        for(int i=0; i<indizes.size() ; ++i)
+        {
+            retValue += changeBreakPoint(indizes.at(i), bps.at(i),emitBreakPointChanged);
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError);
+    }
+    return retValue;
 }
 
 //! resets all python breakpoint numbers to -1.

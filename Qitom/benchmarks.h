@@ -218,21 +218,21 @@ void benchmarkTest5()
 
 typedef struct
 {
-	union
-	{
-		union
-		{
-			struct
-			{
+    union
+    {
+        union
+        {
+            struct
+            {
                 ito::uint8 b;
                 ito::uint8 g;
                 ito::uint8 r;
                 ito::uint8 a;
-			};
-			float rgb;
-		};
-		ito::uint32 rgba;
-	};
+            };
+            float rgb;
+        };
+        ito::uint32 rgba;
+    };
     
 }
 rgba32_;

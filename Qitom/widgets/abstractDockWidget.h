@@ -320,8 +320,8 @@ namespace ito
             QWidget* m_overallParent;           /*!< parent given by constructor, which is the parent of both the dock widget and the main window in floating mode */
             tTopLevelStyle m_recentTopLevelStyle;
 
-			QSize m_oldMinSize;
-			QSize m_oldMaxSize;
+            QSize m_oldMinSize;
+            QSize m_oldMaxSize;
             QRect m_lastUndockedSize;
     
         //signals:
@@ -336,7 +336,7 @@ namespace ito
 
             void raiseAndActivate();  /*!< activates this dock widget or window and raises it on top of all opened windows (if possible) */
 
-			void setDockSize(int newWidth, int newHeight);
+            void setDockSize(int newWidth, int newHeight);
 
             void dockWidget();
             void undockWidget();
@@ -345,7 +345,7 @@ namespace ito
             void mnuStayOnTop(bool checked);
             void mnuStayOnTopOfApp(bool checked);
 
-			void returnToOldMinMaxSizes();
+            void returnToOldMinMaxSizes();
     
     };
 

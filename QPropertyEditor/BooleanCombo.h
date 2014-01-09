@@ -30,20 +30,20 @@
 
 class BooleanCombo : public QComboBox
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	BooleanCombo(QWidget* parent = 0);
-	virtual ~BooleanCombo();
+    BooleanCombo(QWidget* parent = 0);
+    virtual ~BooleanCombo();
 
     bool value() const;
     void setValue(bool c);
 
 signals:
     /** slot that is being called by the editor widget */
-	void boolChanged(bool c);
+    void boolChanged(bool c);
 
 private slots:
-	void currentChanged(int index);	
+    void currentChanged(int index);    
 
 };
 #endif

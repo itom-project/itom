@@ -267,7 +267,7 @@ public:
     static PyObject* PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args);
     static PyObject* PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args);
 
-	//-------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------
     // pickling
     //-------------------------------------------------------------------------------------------------
     static PyObject* PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject *args);

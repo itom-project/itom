@@ -171,7 +171,7 @@ namespace ito
             QPluginLoader *m_loader;
 
         public:
-			void **m_apiFunctionsBasePtr;
+            void **m_apiFunctionsBasePtr;
             void **m_apiFunctionsGraphBasePtr;
 
             virtual ~AddInInterfaceBase();
@@ -236,8 +236,8 @@ namespace ito
             int getRef(ito::AddInBase *addIn);
             //! get number instantiated plugins
             int getInstCount() { return m_InstList.length(); }
-			//! set api function pointer
-			void setApiFunctions(void **apiFunctions); 
+            //! set api function pointer
+            void setApiFunctions(void **apiFunctions); 
             void setApiFunctionsGraph(void ** apiFunctionsGraph);
             inline void setLoader(QPluginLoader *loader) { m_loader = loader; }
             inline QPluginLoader * getLoader(void) { return m_loader; }
@@ -281,18 +281,18 @@ namespace ito
                 returns parameter from m_params vector. If the parameter could not be found or if the given name is invalid an invalid Param is returned.
                 If you provide the nameCheckOk-pointer, you will return a boolean value describing whether your name matched the possible regular expression.
 
-				The parameter name, that is search can have the following form:
+                The parameter name, that is search can have the following form:
 
-				- Name (where Name consists of numbers, characters (a-z) or the symbols _-)
-				- Name[Idx] (where Idx is a fixed-point number
-				- Name[Idx]:suffix (where suffix is any string - suffix is ignored by this method)
-				- Name:suffix
+                - Name (where Name consists of numbers, characters (a-z) or the symbols _-)
+                - Name[Idx] (where Idx is a fixed-point number
+                - Name[Idx]:suffix (where suffix is any string - suffix is ignored by this method)
+                - Name:suffix
 
-				\warn until now, the Idx is ignored by this method.
+                \warn until now, the Idx is ignored by this method.
 
-				\param name is the name of the parameter
-				\param nameCheckOk returns true if name corresponds to the necessary syntax, else false
-				\return Param as copy of the internal m_params-map or empty Param, if name could not be resolved or found
+                \param name is the name of the parameter
+                \param nameCheckOk returns true if name corresponds to the necessary syntax, else false
+                \return Param as copy of the internal m_params-map or empty Param, if name could not be resolved or found
             */
             const Param getParamRec(const QString name, bool *nameCheckOk = NULL) const
             {
@@ -332,32 +332,32 @@ namespace ito
             }
 
             //! returns a map with the parameters of this plugin.
-			/*
-				Use the method setParam in order to change any parameter.
+            /*
+                Use the method setParam in order to change any parameter.
 
-				\param paramNames [out]. The pointer contains a pointer to the map after the call of this function
-				\return RetVal returns retOk.
-			*/
+                \param paramNames [out]. The pointer contains a pointer to the map after the call of this function
+                \return RetVal returns retOk.
+            */
             inline const ito::RetVal getParamList(QMap<QString, Param> **paramNames) { *paramNames = &m_params; return ito::retOk; }
 
-			//! returns list of registered additional functions
-			/*
-				\param [out] funcs is the pointer to a map, that points to the internal map of additional functions after the method-call.
-				\return retOk
-				\sa registerExecFunc
-			*/
+            //! returns list of registered additional functions
+            /*
+                \param [out] funcs is the pointer to a map, that points to the internal map of additional functions after the method-call.
+                \return retOk
+                \sa registerExecFunc
+            */
             inline const ito::RetVal getExecFuncList(QMap<QString, ExecFuncParams> **funcs) { *funcs = &m_execFuncList; return ito::retOk; }
             
-			//! retrieve the uniqueID of this instance
+            //! retrieve the uniqueID of this instance
             inline int getID() const { return m_uniqueID; }
 
             //! retrieve the unique identifier of this instance
             inline QString getIdentifier() const { return m_identifier; }
             
-			//! determine if a configuration dialog is available
+            //! determine if a configuration dialog is available
             virtual int hasConfDialog(void);
             
-			//! open configuration dialog
+            //! open configuration dialog
             virtual const ito::RetVal showConfDialog(void);
             
             //! returns true if this instance has firstly been created by the GUI
@@ -367,38 +367,38 @@ namespace ito
             inline void setCreatedByGUI(int value) { m_createdByGUI = value; }
 
             //! Returns the reference counter of this instance. 
-			/*
-				The reference counter is zero-based, hence, the value zero means that one reference is pointing to this instance
-			*/
+            /*
+                The reference counter is zero-based, hence, the value zero means that one reference is pointing to this instance
+            */
             inline int getRefCount(void) 
             { 
                 return m_refCount; 
             }
             
-			//! Returns true if this plugin provides a dock widget, that can be shown in the main window.
-			/*
-				\sa getDockWidget
-			*/
+            //! Returns true if this plugin provides a dock widget, that can be shown in the main window.
+            /*
+                \sa getDockWidget
+            */
             inline bool hasDockWidget(void) const { return m_dockWidget ? true : false; }
 
-			//! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
-			/*
-				\sa hasDockWidget
-			*/
+            //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
+            /*
+                \sa hasDockWidget
+            */
             inline QDockWidget* getDockWidget(void) const { return m_dockWidget; }
 
-			// doc in source
+            // doc in source
             virtual void dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const;
 
             //! returns the alive-flag of this plugin
-			/*
-				Any time-consuming operation of the plugin should regularly set the alive-flag to true
-				by calling setAlive. The state of this flag is returned by this method and afterwards
-				reset to 0. This method is thread-safe.
+            /*
+                Any time-consuming operation of the plugin should regularly set the alive-flag to true
+                by calling setAlive. The state of this flag is returned by this method and afterwards
+                reset to 0. This method is thread-safe.
 
-				\return current status of alive-flag (1 if "still alive", else 0)
-				\sa setAlive
-			*/
+                \return current status of alive-flag (1 if "still alive", else 0)
+                \sa setAlive
+            */
             int isAlive(void)
             {
 //                QMutexLocker locker(&m_atomicMutex);
@@ -408,11 +408,11 @@ namespace ito
             }
 
             //! sets the alive-flag to 1 ("still alive")
-			/*
-				This method is thread-safe.
+            /*
+                This method is thread-safe.
 
-				\sa isAlive
-			*/
+                \sa isAlive
+            */
             void setAlive(void)
             {
 //                QMutexLocker locker(&m_atomicMutex);
@@ -437,40 +437,40 @@ namespace ito
             }
 
             //! returns vector of AddInRef instances.
-			/*
-				This vector contains all plugin-instances, that have been passed to the init
-				method of this plugin. The reference counter of these plugin is incremented at
-				initialization of this plugin and decremented if this plugin will be destroyed.
+            /*
+                This vector contains all plugin-instances, that have been passed to the init
+                method of this plugin. The reference counter of these plugin is incremented at
+                initialization of this plugin and decremented if this plugin will be destroyed.
 
-				\sa AddInRef, init
-			*/
+                \sa AddInRef, init
+            */
             QVector<ito::AddInBase::AddInRef *> * getArgAddIns(void) { return &m_hwDecList; }
 
         protected:
-			// constructor (doc in source)
+            // constructor (doc in source)
             AddInBase();
 
-			// destructor (doc in source)
+            // destructor (doc in source)
             virtual ~AddInBase();
 
-			//doc in source
+            //doc in source
             void createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas = Qt::AllDockWidgetAreas, QWidget *content = NULL);
 
-			// doc in source
+            // doc in source
             ito::RetVal registerExecFunc(const QString funcName, const QVector<ito::Param> &paramsMand, const QVector<ito::Param> &paramsOpt, const QVector<ito::Param> &paramsOut, const QString infoString);
 
-			//! sets the interface of this instance to base. \sa AddInInterfaceBase
+            //! sets the interface of this instance to base. \sa AddInInterfaceBase
             inline void setBasePlugin(AddInInterfaceBase *base) { m_pBasePlugin = base; }
 
-            QThread *m_pThread;									//!< the instance's thread
-            AddInInterfaceBase *m_pBasePlugin;					//!< the AddInInterfaceBase instance of this plugin
-            QMap<QString, Param> m_params;						//!< map of the available parameters
+            QThread *m_pThread;                                    //!< the instance's thread
+            AddInInterfaceBase *m_pBasePlugin;                    //!< the AddInInterfaceBase instance of this plugin
+            QMap<QString, Param> m_params;                        //!< map of the available parameters
             
             QString m_identifier;                               //!< unique identifier (serial number, com-port...)
-            int m_refCount;										//!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
-            int m_createdByGUI;									//!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
-            QVector<ito::AddInBase::AddInRef *> m_hwDecList;	//!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
-            QMap<QString, ExecFuncParams> m_execFuncList;		//!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
+            int m_refCount;                                        //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
+            int m_createdByGUI;                                    //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
+            QVector<ito::AddInBase::AddInRef *> m_hwDecList;    //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
+            QMap<QString, ExecFuncParams> m_execFuncList;        //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
         
         private:
             Q_DISABLE_COPY (AddInBase)
@@ -491,10 +491,10 @@ namespace ito
                 m_refCountMutex.unlock();
             }
 
-            int m_uniqueID;					//!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
+            int m_uniqueID;                    //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
             
-            QMutex m_refCountMutex;			//!< mutex for making the reference counting mechanism thread-safe.
-            QDockWidget *m_dockWidget;		//!< instance-pointer to the dock-widget of the plugin or NULL if no dock-widget instatiated in constructor of plugin
+            QMutex m_refCountMutex;            //!< mutex for making the reference counting mechanism thread-safe.
+            QDockWidget *m_dockWidget;        //!< instance-pointer to the dock-widget of the plugin or NULL if no dock-widget instatiated in constructor of plugin
             int m_alive;                    //!< member to check if thread is still responsive
             QMutex m_atomicMutex;           //!< mutex for protecting atomic getter and setter methods (e.g. alive and initialized)
             bool m_initialized;             //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
@@ -503,16 +503,16 @@ namespace ito
 
             static int m_instCounter;
 
-		signals:
-			//! This signal usually is emitted if the vector m_params is changed.
-			/*!
-				Emit this signal for instance in setParam if the parameter has been changed in order
-				to inform connected dock-widgets... about the change. This signal is also emitted
-				if you invoke the slot sendParameterRequest.
+        signals:
+            //! This signal usually is emitted if the vector m_params is changed.
+            /*!
+                Emit this signal for instance in setParam if the parameter has been changed in order
+                to inform connected dock-widgets... about the change. This signal is also emitted
+                if you invoke the slot sendParameterRequest.
 
-				\param params is the parameter-vector to send (usually m_params)
-				\sa m_params, sendParameterRequest
-			*/
+                \param params is the parameter-vector to send (usually m_params)
+                \sa m_params, sendParameterRequest
+            */
             void parametersChanged(QMap<QString, ito::Param> params);
 
         public slots:
@@ -530,38 +530,38 @@ namespace ito
             // doc in source-file
             ito::RetVal setParamVector(const QVector<QSharedPointer<ito::ParamBase> > values, ItomSharedSemaphore *waitCond = NULL);
 
-			// doc in source-file
+            // doc in source-file
             virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
        
 
         private slots:
-			//! immediately emits the signal parametersChanged
-			/*!
-				call or invoke this method for instance after creating a configuration dialog for the plugin.
-				Then the dialog gets the current parameter map m_params, if it has been connected to the signal
-				parametersChanged (must be done before).
+            //! immediately emits the signal parametersChanged
+            /*!
+                call or invoke this method for instance after creating a configuration dialog for the plugin.
+                Then the dialog gets the current parameter map m_params, if it has been connected to the signal
+                parametersChanged (must be done before).
 
-				\sa parametersChanged, m_params
-			*/
+                \sa parametersChanged, m_params
+            */
             void sendParameterRequest(){ emit parametersChanged(m_params); };
 
-			//! overwrite this slot if you want to get informed when the dock-widget of the plugin becomes (in)visible
-			/*!
-				It is recommended to use this method, in order to connect the widget to signals like parametersChanged,
-				actuatorStatusChanged or targetChanged (both actuator only) if the dock-widget becomes visible and disconnect
-				them if it is hidden. This is useful in order to avoid intense function calls if the dock-widget is not
-				visible.
+            //! overwrite this slot if you want to get informed when the dock-widget of the plugin becomes (in)visible
+            /*!
+                It is recommended to use this method, in order to connect the widget to signals like parametersChanged,
+                actuatorStatusChanged or targetChanged (both actuator only) if the dock-widget becomes visible and disconnect
+                them if it is hidden. This is useful in order to avoid intense function calls if the dock-widget is not
+                visible.
 
-				\sa parametersChanged
-			*/
+                \sa parametersChanged
+            */
             virtual void dockWidgetVisibilityChanged(bool /*visible*/) {}; 
 
-			//! call this method, if the dock-widget of the plugin will be deleted.
-			/*!
-				The member variable m_dockWidget will be set to NULL.
+            //! call this method, if the dock-widget of the plugin will be deleted.
+            /*!
+                The member variable m_dockWidget will be set to NULL.
 
-				\sa m_dockWidget
-			*/
+                \sa m_dockWidget
+            */
             void dockWidgetDestroyed() { m_dockWidget = NULL; }
     };
 
@@ -871,7 +871,7 @@ namespace ito
             typedef QWidget*    (* t_algoWidget)(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
             typedef ito::RetVal (* t_filterParam)(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
             
-			//!< possible categories for filter or widget-methods
+            //!< possible categories for filter or widget-methods
             enum tAlgoCategory
             {
                 catNone              = 0x0000, //!< default: no category
@@ -879,8 +879,8 @@ namespace ito
                 catAnalyseDataObject = 0x0002, //!< category for methods analysing data objects
                 catPlotDataObject    = 0x0004 //!< category for methods plotting data objects
             };
-			
-			//!< possible algorithm interfaces
+            
+            //!< possible algorithm interfaces
             enum tAlgoInterface
             {
                 iNotSpecified     = 0x0000, //!< default: filter or widget does not fit to any interface
@@ -897,7 +897,7 @@ namespace ito
             class FilterDef
             {
             public:
-				//!< empty, default constructor
+                //!< empty, default constructor
                 FilterDef() : 
                     m_filterFunc(NULL), 
                     m_paramFunc(NULL), 
@@ -905,8 +905,8 @@ namespace ito
                     m_category(ito::AddInAlgo::catNone),
                     m_interface(ito::AddInAlgo::iNotSpecified)
                 {}
-				
-				//!< constructor with all necessary arguments.
+                
+                //!< constructor with all necessary arguments.
                 FilterDef(AddInAlgo::t_filter filterFunc, AddInAlgo::t_filterParam filterParamFunc, QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, QString interfaceMeta = QString()) : 
                     m_filterFunc(filterFunc), 
                     m_paramFunc(filterParamFunc), 
@@ -919,23 +919,23 @@ namespace ito
 
                 virtual ~FilterDef() {}
 
-				t_filter m_filterFunc;	//!< function pointer (unbounded, static) for filter-method
-                t_filterParam m_paramFunc;	//!< function pointer (unbounded, static) for filter's default parameter method
-                ito::AddInInterfaceBase *m_pBasePlugin;		//!< interface (factory) instance of this plugin (will be automatically filled)
-                QString m_name;				//!< name of filter
-                QString m_description;		//!< description of filter
-                ito::AddInAlgo::tAlgoCategory m_category;	//!< category, filter belongs to (default: catNone)
+                t_filter m_filterFunc;    //!< function pointer (unbounded, static) for filter-method
+                t_filterParam m_paramFunc;    //!< function pointer (unbounded, static) for filter's default parameter method
+                ito::AddInInterfaceBase *m_pBasePlugin;        //!< interface (factory) instance of this plugin (will be automatically filled)
+                QString m_name;                //!< name of filter
+                QString m_description;        //!< description of filter
+                ito::AddInAlgo::tAlgoCategory m_category;    //!< category, filter belongs to (default: catNone)
                 ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, filter fits to (default: iNotSpecified)
-                QString m_interfaceMeta;	//!< meta information if required by algorithm interface 
+                QString m_interfaceMeta;    //!< meta information if required by algorithm interface 
             private:
                 FilterDef (const FilterDef & /*p*/); //disable copy constructor
             };
 
-			//! container for publishing widgets provided by any plugin
+            //! container for publishing widgets provided by any plugin
             class AlgoWidgetDef
             {
             public:
-				//!< empty, default constructor
+                //!< empty, default constructor
                 AlgoWidgetDef() : 
                     m_widgetFunc(NULL), 
                     m_paramFunc(NULL), 
@@ -943,8 +943,8 @@ namespace ito
                     m_category(ito::AddInAlgo::catNone),
                     m_interface(ito::AddInAlgo::iNotSpecified)
                 {}
-				
-				//!< constructor with all necessary arguments.
+                
+                //!< constructor with all necessary arguments.
                 AlgoWidgetDef(AddInAlgo::t_algoWidget algoWidgetFunc, AddInAlgo::t_filterParam algoWidgetParamFunc, QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, QString interfaceMeta = QString()) : 
                     m_widgetFunc(algoWidgetFunc), 
                     m_paramFunc(algoWidgetParamFunc), 
@@ -955,16 +955,16 @@ namespace ito
                     m_interfaceMeta(interfaceMeta)
                 {}
 
-                virtual ~AlgoWidgetDef() {}	//!< destructor
+                virtual ~AlgoWidgetDef() {}    //!< destructor
 
-                t_algoWidget m_widgetFunc;	//!< function pointer (unbounded, static) for widget-method
-                t_filterParam m_paramFunc;	//!< function pointer (unbounded, static) for widget's default parameter method
-                ito::AddInInterfaceBase *m_pBasePlugin;		//!< interface (factory) instance of this plugin (will be automatically filled)
-                QString m_name;				//!< name of widget
-                QString m_description;		//!< description of widget
-                ito::AddInAlgo::tAlgoCategory m_category;	//!< category, widget belongs to (default: catNone)
+                t_algoWidget m_widgetFunc;    //!< function pointer (unbounded, static) for widget-method
+                t_filterParam m_paramFunc;    //!< function pointer (unbounded, static) for widget's default parameter method
+                ito::AddInInterfaceBase *m_pBasePlugin;        //!< interface (factory) instance of this plugin (will be automatically filled)
+                QString m_name;                //!< name of widget
+                QString m_description;        //!< description of widget
+                ito::AddInAlgo::tAlgoCategory m_category;    //!< category, widget belongs to (default: catNone)
                 ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, widget fits to (default: iNotSpecified)
-                QString m_interfaceMeta;	//!< meta information if required by algorithm interface 
+                QString m_interfaceMeta;    //!< meta information if required by algorithm interface 
 
             private:
                 AlgoWidgetDef (const AlgoWidgetDef & /*p*/); //disable copy constructor
@@ -1019,7 +1019,7 @@ namespace ito
 static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.0",   //version from start of development until 2012-10-11
     "ito.AddIn.InterfaceBase/1.1",   //version until 2012-10-15 (outdated due to changes in dataObject)
-	"ito.AddIn.InterfaceBase/1.1.1", //version until 2012-10-21 (outdated due to small changes in addInInterface)
+    "ito.AddIn.InterfaceBase/1.1.1", //version until 2012-10-21 (outdated due to small changes in addInInterface)
     "ito.AddIn.InterfaceBase/1.1.2", //version until 2012-10-30 (outdated due to small changes in addInInterface)
     "ito.AddIn.InterfaceBase/1.1.3", //version until 2012-11-09 (outdated due to changes in the checkData()-function in addInGrabber)
     "ito.AddIn.InterfaceBase/1.1.4", //version until 2012-11-12 (outdated due to changes in the DataObject)
@@ -1040,8 +1040,8 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.19",//version until 2013-08-15 (outdated: operators +, +=, -, -= introduced for scalar operands)
     "ito.AddIn.InterfaceBase/1.1.20",//version until 2013-10-10 (outdated: RGBA-type introduced into dataObjectTypes)
     "ito.AddIn.InterfaceBase/1.1.21",//version until 2013-10-15 (outdated: getSize(..) and getTotalSize(..) return int now and -1 if error. Consistency to documented behaviour)
-	"ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
-	"ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
+    "ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
+    "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
     NULL
 };
 

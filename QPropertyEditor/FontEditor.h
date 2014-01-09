@@ -34,28 +34,28 @@
 
 class FontEditor : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	FontEditor(QWidget* parent = 0);
-	virtual ~FontEditor();
+    FontEditor(QWidget* parent = 0);
+    virtual ~FontEditor();
 
     QFont value() const;
     void setValue(QFont font);
 
 private:
-	QFont m_font;
-	QLineEdit *m_textEdit;
-	QToolButton *m_toolBtn;
+    QFont m_font;
+    QLineEdit *m_textEdit;
+    QToolButton *m_toolBtn;
 
 protected:
-	//void focusOutEvent ( QFocusEvent * event );
+    //void focusOutEvent ( QFocusEvent * event );
 
 signals:
     /** slot that is being called by the editor widget */
-	void fontChanged(QFont font);
+    void fontChanged(QFont font);
 
 private slots:
-	void btnClicked();
+    void btnClicked();
 
 };
 #endif

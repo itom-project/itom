@@ -68,22 +68,22 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-	RetVal addBreakPoint(BreakPointItem bp);
+    RetVal addBreakPoint(BreakPointItem bp);
     RetVal deleteBreakPoint(QModelIndex index);
-	RetVal deleteBreakPoints(QModelIndexList indizes);
+    RetVal deleteBreakPoints(QModelIndexList indizes);
 
-	QModelIndex getFirstBreakPointIndex(const QString filename, int lineNo) const;
-	QModelIndexList getBreakPointIndizes(const QString filename, int lineNo) const;
-	QModelIndexList getBreakPointIndizes(const QString filename) const;
+    QModelIndex getFirstBreakPointIndex(const QString filename, int lineNo) const;
+    QModelIndexList getBreakPointIndizes(const QString filename, int lineNo) const;
+    QModelIndexList getBreakPointIndizes(const QString filename) const;
 
-	BreakPointItem getBreakPoint(const QString filename, int lineNo) const;
-	BreakPointItem getBreakPoint(const QModelIndex index) const;
-	QList<BreakPointItem> getBreakPoints(const QModelIndexList indizes) const;
+    BreakPointItem getBreakPoint(const QString filename, int lineNo) const;
+    BreakPointItem getBreakPoint(const QModelIndex index) const;
+    QList<BreakPointItem> getBreakPoints(const QModelIndexList indizes) const;
 
-	RetVal changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged = true);
-	RetVal changeBreakPoints(const QModelIndexList indizes, QList<BreakPointItem> bps, bool emitBreakPointChanged = true);
+    RetVal changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged = true);
+    RetVal changeBreakPoints(const QModelIndexList indizes, QList<BreakPointItem> bps, bool emitBreakPointChanged = true);
 
     QList<BreakPointItem> const getBreakpoints() { return m_breakpoints; };
 
@@ -104,7 +104,7 @@ private:
 signals:
     void breakPointAdded(BreakPointItem bp, int row);                       /*!<  emitted if breakpoint has been added to model at position row */
     void breakPointDeleted(QString filename, int lineNo, int pyBpNumber);   /*!<  emitted if breakpoint in file filename at line lineNo with python internal debugger number has been deleted from model */
-	void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     /*!<  emitted if breakpoint oldBp has been changed to newBp */
+    void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     /*!<  emitted if breakpoint oldBp has been changed to newBp */
 };
 
 

@@ -682,15 +682,15 @@ in the dataObject corresponds to the left upper corner of the bounding rectangle
 /*static*/ PyObject* PythonRegion::PyRegion_SetState(PyRegion *self, PyObject *args)
 {
     PyObject *data = NULL;
-	if(!PyArg_ParseTuple(args, "O", &data))
-	{
-		return NULL;
-	}
+    if(!PyArg_ParseTuple(args, "O", &data))
+    {
+        return NULL;
+    }
 
-	if(data == Py_None)
-	{
-		Py_RETURN_NONE;
-	}
+    if(data == Py_None)
+    {
+        Py_RETURN_NONE;
+    }
     else
     {
         QByteArray ba( PyBytes_AS_STRING(data), PyBytes_GET_SIZE(data) );
@@ -833,12 +833,12 @@ PyTypeObject PythonRegion::PyRegionType = {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
     pyRegion_doc,              /* tp_doc */
-    0,		                   /* tp_traverse */
-    0,		                   /* tp_clear */
-    0,		                   /* tp_richcompare */
-    0,		                   /* tp_weaklistoffset */
-    0,		                   /* tp_iter */
-    0,		                   /* tp_iternext */
+    0,                           /* tp_traverse */
+    0,                           /* tp_clear */
+    0,                           /* tp_richcompare */
+    0,                           /* tp_weaklistoffset */
+    0,                           /* tp_iter */
+    0,                           /* tp_iternext */
     PyRegion_methods,          /* tp_methods */
     0,                         /* tp_members */
     PyRegion_getseters,        /* tp_getset */

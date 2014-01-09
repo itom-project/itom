@@ -54,17 +54,17 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-			QAction *m_pActBackward;
-			QAction *m_pActForward;
-			QAction *m_pActExpand;
-			QAction *m_pActCollapse;
-			QAction *m_pActReload;
-			QWidgetAction *m_pActChanged;
-			QToolBar *m_pMainToolbar;
-			QLineEdit *m_pFilterEdit;
-			
+            QAction *m_pActBackward;
+            QAction *m_pActForward;
+            QAction *m_pActExpand;
+            QAction *m_pActCollapse;
+            QAction *m_pActReload;
+            QWidgetAction *m_pActChanged;
+            QToolBar *m_pMainToolbar;
+            QLineEdit *m_pFilterEdit;
+            
 
-			HelpTreeDockWidget *m_pHelpWidget;
+            HelpTreeDockWidget *m_pHelpWidget;
 
         signals:
 

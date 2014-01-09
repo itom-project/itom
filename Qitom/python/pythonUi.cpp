@@ -828,7 +828,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
         QString temp = PythonQtConversion::PyObjGetString(propertyNames, true, ok);
         if(ok)
         {
-			returnTuple = false;
+            returnTuple = false;
             propNames << temp;
         }
         else
@@ -842,7 +842,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
         if(!ok)
         {
             PyErr_SetString(PyExc_RuntimeError, "list or tuple of property names could not be converted to a list of strings");
-			return NULL;
+            return NULL;
         }
     }
     else
@@ -884,19 +884,19 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     retValue += locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
-	if(returnTuple)
-	{
-		PyObject *retObj = PyList_New(propNames.count());
-		for(int i = 0 ; i < propNames.count() ; i++)
-		{
-			PyList_SetItem(retObj,i, PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames.at(i))));
-		}
-		return retObj;
-	}
-	else
-	{
-		return PythonQtConversion::QVariantToPyObject( retPropMap->value(propNames.at(0)) );
-	}
+    if(returnTuple)
+    {
+        PyObject *retObj = PyList_New(propNames.count());
+        for(int i = 0 ; i < propNames.count() ; i++)
+        {
+            PyList_SetItem(retObj,i, PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames.at(i))));
+        }
+        return retObj;
+    }
+    else
+    {
+        return PythonQtConversion::QVariantToPyObject( retPropMap->value(propNames.at(0)) );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -905,7 +905,7 @@ PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property
 Parameters \n\
 ----------- \n\
 propertyDict : {dict}\n\
-	Dictionary with properties (keyword) and the values that should be set.\n\
+    Dictionary with properties (keyword) and the values that should be set.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -1517,12 +1517,12 @@ PyTypeObject PythonUi::PyUiItemType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         PyUiItemInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         0,            /* tp_richcompare */
-        offsetof(PyUiItem, weakreflist),	/* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        offsetof(PyUiItem, weakreflist),    /* tp_weaklistoffset */
+        0,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyUiItem_methods,             /* tp_methods */
         PyUiItem_members,             /* tp_members */
         PyUiItem_getseters,            /* tp_getset */
@@ -1624,7 +1624,7 @@ type : {int}, optional \n\
         * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
 dialogButtonBar :  {int}, optional \n\
     Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
-		* 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
+        * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
         * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
         * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
 dialogButtons : {dict}, optional \n\
@@ -3002,12 +3002,12 @@ PyTypeObject PythonUi::PyUiType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         pyUiInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,    	               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         0,            /* tp_richcompare */
-        0,		               /* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        0,                       /* tp_weaklistoffset */
+        0,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyUi_methods,             /* tp_methods */
         PyUi_members,             /* tp_members */
         PyUi_getseters,            /* tp_getset */

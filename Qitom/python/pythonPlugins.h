@@ -95,11 +95,11 @@ class PythonPlugins
 
        static PyObject *PyActuatorPlugin_name(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_getParamList(PyActuatorPlugin *self);
-	   static PyObject *PyActuatorPlugin_getParamListInfo(PyActuatorPlugin *self,  PyObject *args);
+       static PyObject *PyActuatorPlugin_getParamListInfo(PyActuatorPlugin *self,  PyObject *args);
        static PyObject* PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyActuatorPlugin_getParam(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setParam(PyActuatorPlugin *self, PyObject *args);
-	   static PyObject *PyActuatorPlugin_getType(PyActuatorPlugin *self);
+       static PyObject *PyActuatorPlugin_getType(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObject *args, PyObject *kwds);
        static PyObject *PyActuatorPlugin_showConfiguration(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_showToolbox(PyActuatorPlugin *self);
@@ -128,7 +128,7 @@ class PythonPlugins
        static PyObject *PyActuatorAxis_getPos(PyActuatorAxis *self, PyObject *args);
        static PyObject *PyActuatorAxis_setPosAbs(PyActuatorAxis *self, PyObject *args);
        static PyObject *PyActuatorAxis_setPosRel(PyActuatorAxis *self, PyObject *args);
-	  
+      
        static PyMemberDef  PyActuatorAxis_members[];
        static PyMethodDef  PyActuatorAxis_methods[];
        static PyTypeObject PyActuatorAxisType;
@@ -146,7 +146,7 @@ class PythonPlugins
        static PyObject* PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject *args);
-	   static PyObject *PyDataIOPlugin_getType(PyDataIOPlugin *self);
+       static PyObject *PyDataIOPlugin_getType(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds);
        static PyObject *PyDataIOPlugin_showConfiguration(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_showToolbox(PyDataIOPlugin *self);
@@ -162,7 +162,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
-	   
+       
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];
        static PyTypeObject PyDataIOPluginType;
@@ -180,7 +180,7 @@ class PythonPlugins
        static PyObject* PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyAlgoPlugin_getParam(PyAlgoPlugin *self, PyObject *args);
        static PyObject *PyAlgoPlugin_setParam(PyAlgoPlugin *self, PyObject *args);
-	   static PyObject *PyAlgoPlugin_getType(PyAlgoPlugin *self);
+       static PyObject *PyAlgoPlugin_getType(PyAlgoPlugin *self);
 
        static PyMemberDef  PyAlgoPlugin_members[];
        static PyMethodDef  PyAlgoPlugin_methods[];

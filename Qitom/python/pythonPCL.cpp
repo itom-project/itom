@@ -29,19 +29,19 @@
 
 #ifndef CMAKE
     #if (defined _DEBUG) && (!defined linux)
-	    #pragma comment(lib, "PointCloudd.lib")
-	    #pragma comment(lib, "pcl_common_debug.lib")
+        #pragma comment(lib, "PointCloudd.lib")
+        #pragma comment(lib, "pcl_common_debug.lib")
     #else
-	    #pragma comment(lib, "PointCloud.lib")
-	    #pragma comment(lib, "pcl_common_release.lib")
+        #pragma comment(lib, "PointCloud.lib")
+        #pragma comment(lib, "pcl_common_release.lib")
     #endif
 #else
     /*#if (defined _DEBUG) && (!defined linux)
-	    #pragma comment(lib, "PointCloud.lib")
-	    #pragma comment(lib, "pcl_common_debug.lib")
+        #pragma comment(lib, "PointCloud.lib")
+        #pragma comment(lib, "pcl_common_debug.lib")
     #else
-	    #pragma comment(lib, "PointCloud.lib")
-	    #pragma comment(lib, "pcl_common_release.lib")
+        #pragma comment(lib, "PointCloud.lib")
+        #pragma comment(lib, "pcl_common_release.lib")
     #endif*/
 #endif
 
@@ -101,16 +101,16 @@ Parameters \n\
 ----------- \n\
 type : point-type (e.g. point.PointXYZ, see Notes) \n\
 pointCloud : {pointCloud} \n\
-	another pointCloud instance which is appended at this point cloud \n\
+    another pointCloud instance which is appended at this point cloud \n\
 indices : {sequence}, optional \n\
-	only the indices of the given pointCloud will be appended to this point cloud \n\
+    only the indices of the given pointCloud will be appended to this point cloud \n\
 width : {int} \n\
-	width of the new point cloud \n\
+    width of the new point cloud \n\
 height : {int} \n\
-	height of the new point cloud (the point cloud is dense if height > 1) \n\
+    height of the new point cloud (the point cloud is dense if height > 1) \n\
 point : {point} \n\
-	single point instance. This point cloud is filled up with elements of this point. If width and height \n\
-	are given, every element is set to this point, else the point cloud only consists of this single point. \n\
+    single point instance. This point cloud is filled up with elements of this point. If width and height \n\
+    are given, every element is set to this point, else the point cloud only consists of this single point. \n\
 \n\
 Notes \n\
 ------ \n\
@@ -1602,66 +1602,66 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
     }
 
     int type = self->data->getType();
-	QByteArray content = "";
-	PyObject *stateTuple = NULL;
+    QByteArray content = "";
+    PyObject *stateTuple = NULL;
 
-	if(type != ito::pclInvalid && self->data->size() > 0)
-	{
+    if(type != ito::pclInvalid && self->data->size() > 0)
+    {
 
-		char *buf = tmpnam(NULL);
-		if(buf == NULL)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be created");
-			return NULL;
-		}
-
-		QString tempFilename = buf;
-		while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
-		{
-			tempFilename.remove(0,1);
-		}
-		
-		tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
-		QFile tempFile2;
-
-		QVector<ito::ParamBase> paramsMand;
-		QVector<ito::ParamBase> paramsOpt;
-		QVector<ito::ParamBase> paramsOut;
-
-		paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
-		paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
-
-		paramsOpt.append( ito::ParamBase("mode", ito::ParamBase::String, "b") );
-		paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "pcd") );
-
-		ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
-
-		if( PythonCommon::transformRetValToPyException(retval) == false )
-		{
+        char *buf = tmpnam(NULL);
+        if(buf == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be created");
             return NULL;
-		}
-		
-		tempFile2.setFileName(tempFilename);
-		if(tempFile2.open(QIODevice::ReadOnly) == false)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be opened");
-			return NULL;
-		}
+        }
 
-		stateTuple = PyBytes_FromStringAndSize(NULL, tempFile2.size() + 10 );
-		char *data = PyBytes_AsString( stateTuple );
-		tempFile2.peek( data, tempFile2.size() + 10 );
-		tempFile2.close();
-		tempFile2.remove();
-	}
-	else
-	{
-		Py_INCREF(Py_None);
-		stateTuple = Py_None;
-	}
-	
-	//the stateTuple is simply a byte array with the binary content of the temporarily written pcd file or None, if the point cloud is invalid or empty
-	//the type-number is passed as argument to the constructor of the point cloud class, if it is reconstructed.
+        QString tempFilename = buf;
+        while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
+        {
+            tempFilename.remove(0,1);
+        }
+        
+        tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+        QFile tempFile2;
+
+        QVector<ito::ParamBase> paramsMand;
+        QVector<ito::ParamBase> paramsOpt;
+        QVector<ito::ParamBase> paramsOut;
+
+        paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+
+        paramsOpt.append( ito::ParamBase("mode", ito::ParamBase::String, "b") );
+        paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "pcd") );
+
+        ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+
+        if( PythonCommon::transformRetValToPyException(retval) == false )
+        {
+            return NULL;
+        }
+        
+        tempFile2.setFileName(tempFilename);
+        if(tempFile2.open(QIODevice::ReadOnly) == false)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be opened");
+            return NULL;
+        }
+
+        stateTuple = PyBytes_FromStringAndSize(NULL, tempFile2.size() + 10 );
+        char *data = PyBytes_AsString( stateTuple );
+        tempFile2.peek( data, tempFile2.size() + 10 );
+        tempFile2.close();
+        tempFile2.remove();
+    }
+    else
+    {
+        Py_INCREF(Py_None);
+        stateTuple = Py_None;
+    }
+    
+    //the stateTuple is simply a byte array with the binary content of the temporarily written pcd file or None, if the point cloud is invalid or empty
+    //the type-number is passed as argument to the constructor of the point cloud class, if it is reconstructed.
     PyObject *tempOut = Py_BuildValue("(O(i)O)", Py_TYPE(self), type, stateTuple);
     Py_XDECREF(stateTuple);
 
@@ -1671,64 +1671,64 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 {
-	PyObject *data = NULL;
-	if(!PyArg_ParseTuple(args, "O", &data))
-	{
-		return NULL;
-	}
+    PyObject *data = NULL;
+    if(!PyArg_ParseTuple(args, "O", &data))
+    {
+        return NULL;
+    }
 
-	if(data == Py_None)
-	{
-		Py_RETURN_NONE;
-	}
-	else if(PyBytes_Check(data))
-	{
-		char *buf = tmpnam(NULL);
-		if(buf == NULL)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be created");
-			return NULL;
-		}
+    if(data == Py_None)
+    {
+        Py_RETURN_NONE;
+    }
+    else if(PyBytes_Check(data))
+    {
+        char *buf = tmpnam(NULL);
+        if(buf == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be created");
+            return NULL;
+        }
 
-		QString tempFilename = buf;
-		while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
-		{
-			tempFilename.remove(0,1);
-		}
-		
-		tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+        QString tempFilename = buf;
+        while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
+        {
+            tempFilename.remove(0,1);
+        }
+        
+        tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
 
-		QFile tempFile2(tempFilename);
-		if(tempFile2.open( QIODevice::WriteOnly ) == false)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "temporary file could not be opened (II)");
-			return NULL;
-		}
-		tempFile2.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
-		tempFile2.close();
+        QFile tempFile2(tempFilename);
+        if(tempFile2.open( QIODevice::WriteOnly ) == false)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "temporary file could not be opened (II)");
+            return NULL;
+        }
+        tempFile2.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
+        tempFile2.close();
 
-		QVector<ito::ParamBase> paramsMand;
-		QVector<ito::ParamBase> paramsOpt;
-		QVector<ito::ParamBase> paramsOut;
+        QVector<ito::ParamBase> paramsMand;
+        QVector<ito::ParamBase> paramsOpt;
+        QVector<ito::ParamBase> paramsOut;
 
-		paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
-		paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
-		paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "pcd" ) );
+        paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "pcd" ) );
 
-		ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
 
-		tempFile2.remove();
+        tempFile2.remove();
 
-		if( PythonCommon::transformRetValToPyException(retval) == false )
-		{
-			return NULL;
-		}
-	}
-	else
-	{
-		PyErr_SetString(PyExc_RuntimeError, "The pickled data must be a byte array for establishing the pointCloud.");
-		return NULL;
-	}
+        if( PythonCommon::transformRetValToPyException(retval) == false )
+        {
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The pickled data must be a byte array for establishing the pointCloud.");
+        return NULL;
+    }
 
 
     Py_RETURN_NONE;
@@ -2122,12 +2122,12 @@ PyTypeObject PythonPCL::PyPointCloudType = {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
     pointCloudInit_doc,           /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    0,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
     PythonPCL::PyPointCloud_methods,             /* tp_methods */
     0, /*PyNpDataObject_members,*/             /* tp_members */
     PythonPCL::PyPointCloud_getseters,                         /* tp_getset */
@@ -3241,12 +3241,12 @@ PyTypeObject PythonPCL::PyPointType = {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
     pointInit_doc,           /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    0,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
     PythonPCL::PyPoint_methods,             /* tp_methods */
     0, /*PyNpDataObject_members,*/             /* tp_members */
     PythonPCL::PyPoint_getseters,                         /* tp_getset */
@@ -3457,65 +3457,65 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         return NULL;
     }
 
-	QByteArray content = "";
-	PyObject *stateTuple = NULL;
+    QByteArray content = "";
+    PyObject *stateTuple = NULL;
 
-	if( self->polygonMesh->valid() )
-	{
+    if( self->polygonMesh->valid() )
+    {
 
-		char *buf = tmpnam(NULL);
-		if(buf == NULL)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be created");
-			return NULL;
-		}
-
-		QString tempFilename = buf;
-		while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
-		{
-			tempFilename.remove(0,1);
-		}
-		
-		tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
-		QFile tempFile2;
-
-		QVector<ito::ParamBase> paramsMand;
-		QVector<ito::ParamBase> paramsOpt;
-		QVector<ito::ParamBase> paramsOut;
-
-		paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
-		paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
-
-		paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "obj") );
-
-		ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
-
-		if( PythonCommon::transformRetValToPyException(retval) == false )
-		{
+        char *buf = tmpnam(NULL);
+        if(buf == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be created");
             return NULL;
-		}
-		
-		tempFile2.setFileName(tempFilename);
-		if(tempFile2.open(QIODevice::ReadOnly) == false)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be opened");
-			return NULL;
-		}
+        }
 
-		stateTuple = PyBytes_FromStringAndSize(NULL, tempFile2.size() + 10 );
-		char *data = PyBytes_AsString( stateTuple );
-		tempFile2.peek( data, tempFile2.size() + 10 );
-		tempFile2.close();
-		tempFile2.remove();
-	}
-	else
-	{
-		Py_INCREF(Py_None);
-		stateTuple = Py_None;
-	}
-	
-	//the stateTuple is simply a byte array with the binary content of the temporarily written obj file or None, if the point cloud is invalid or empty
-	//the type-number is passed as argument to the constructor of the polygon mesh class, if it is reconstructed.
+        QString tempFilename = buf;
+        while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
+        {
+            tempFilename.remove(0,1);
+        }
+        
+        tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+        QFile tempFile2;
+
+        QVector<ito::ParamBase> paramsMand;
+        QVector<ito::ParamBase> paramsOpt;
+        QVector<ito::ParamBase> paramsOut;
+
+        paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+
+        paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "obj") );
+
+        ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+
+        if( PythonCommon::transformRetValToPyException(retval) == false )
+        {
+            return NULL;
+        }
+        
+        tempFile2.setFileName(tempFilename);
+        if(tempFile2.open(QIODevice::ReadOnly) == false)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be opened");
+            return NULL;
+        }
+
+        stateTuple = PyBytes_FromStringAndSize(NULL, tempFile2.size() + 10 );
+        char *data = PyBytes_AsString( stateTuple );
+        tempFile2.peek( data, tempFile2.size() + 10 );
+        tempFile2.close();
+        tempFile2.remove();
+    }
+    else
+    {
+        Py_INCREF(Py_None);
+        stateTuple = Py_None;
+    }
+    
+    //the stateTuple is simply a byte array with the binary content of the temporarily written obj file or None, if the point cloud is invalid or empty
+    //the type-number is passed as argument to the constructor of the polygon mesh class, if it is reconstructed.
     PyObject *tempOut = Py_BuildValue("(O()O)", Py_TYPE(self), stateTuple);
     Py_XDECREF(stateTuple);
 
@@ -3525,64 +3525,64 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 {
-	PyObject *data = NULL;
-	if(!PyArg_ParseTuple(args, "O", &data))
-	{
-		return NULL;
-	}
+    PyObject *data = NULL;
+    if(!PyArg_ParseTuple(args, "O", &data))
+    {
+        return NULL;
+    }
 
-	if(data == Py_None)
-	{
-		Py_RETURN_NONE;
-	}
-	else if(PyBytes_Check(data))
-	{
-		char *buf = tmpnam(NULL);
-		if(buf == NULL)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be created");
-			return NULL;
-		}
+    if(data == Py_None)
+    {
+        Py_RETURN_NONE;
+    }
+    else if(PyBytes_Check(data))
+    {
+        char *buf = tmpnam(NULL);
+        if(buf == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be created");
+            return NULL;
+        }
 
-		QString tempFilename = buf;
-		while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
-		{
-			tempFilename.remove(0,1);
-		}
-		
-		tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+        QString tempFilename = buf;
+        while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
+        {
+            tempFilename.remove(0,1);
+        }
+        
+        tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
 
-		QFile tempFile2(tempFilename);
-		if(tempFile2.open( QIODevice::WriteOnly ) == false)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "temporary file could not be opened (II)");
-			return NULL;
-		}
-		tempFile2.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
-		tempFile2.close();
+        QFile tempFile2(tempFilename);
+        if(tempFile2.open( QIODevice::WriteOnly ) == false)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "temporary file could not be opened (II)");
+            return NULL;
+        }
+        tempFile2.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
+        tempFile2.close();
 
-		QVector<ito::ParamBase> paramsMand;
-		QVector<ito::ParamBase> paramsOpt;
-		QVector<ito::ParamBase> paramsOut;
+        QVector<ito::ParamBase> paramsMand;
+        QVector<ito::ParamBase> paramsOpt;
+        QVector<ito::ParamBase> paramsOut;
 
-		paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
-		paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
-		paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj" ) );
+        paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj" ) );
 
-		ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
 
-		tempFile2.remove();
+        tempFile2.remove();
 
-		if( PythonCommon::transformRetValToPyException(retval) == false )
-		{
-			return NULL;
-		}
-	}
-	else
-	{
-		PyErr_SetString(PyExc_RuntimeError, "The pickled data must be a byte array for establishing the polygonMesh.");
-		return NULL;
-	}
+        if( PythonCommon::transformRetValToPyException(retval) == false )
+        {
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The pickled data must be a byte array for establishing the polygonMesh.");
+        return NULL;
+    }
 
 
     Py_RETURN_NONE;
@@ -3863,7 +3863,7 @@ PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
 //------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"name", (PyCFunction)PyPolygonMesh_name, METH_NOARGS, "name"},
-	{"__reduce__", (PyCFunction)PyPolygonMesh_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
+    {"__reduce__", (PyCFunction)PyPolygonMesh_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyPolygonMesh_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
     {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, "prints content of polygon mesh"},
     //{"get", (PyCFunction)PyPolygonMesh_get, METH_VARARGS | METH_KEYWORDS, pyPolygonMeshGet_docs},
@@ -3902,12 +3902,12 @@ PyTypeObject PythonPCL::PyPolygonMeshType = {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
     polygonMeshInit_doc,           /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    0,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
     PythonPCL::PyPolygonMesh_methods,             /* tp_methods */
     0, /*PyNpDataObject_members,*/             /* tp_members */
     PythonPCL::PyPolygonMesh_getseters,                         /* tp_getset */

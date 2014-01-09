@@ -119,7 +119,7 @@ class PythonDataObject
         static PyObject* PyDataObject_trans(PyDataObject *self);
         static PyObject* PyDataObject_copy(PyDataObject *self, PyObject* args);
         static PyObject* PyDataObject_astype(PyDataObject *self, PyObject* args, PyObject* kwds);
-		static PyObject* PyDataObject_normalize(PyDataObject *self, PyObject* args, PyObject* kwds);
+        static PyObject* PyDataObject_normalize(PyDataObject *self, PyObject* args, PyObject* kwds);
         static PyObject* PyDataObject_size(PyDataObject *self, PyObject* args);
         static PyObject* PyDataObject_makeContinuous(PyDataObject *self);
         static PyObject* PyDataObject_locateROI(PyDataObject *self);

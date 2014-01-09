@@ -37,23 +37,23 @@ namespace ito {
 BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent)
 {
-	m_breakPointView = new QTableView(this);
+    m_breakPointView = new QTableView(this);
 
-	AbstractDockWidget::init();
+    AbstractDockWidget::init();
 
-	setContentWidget(m_breakPointView);
+    setContentWidget(m_breakPointView);
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
-	PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-	if (pe)
-	{
-		m_breakPointView->setModel( pe->getBreakPointModel() );
-	}
+    PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pe)
+    {
+        m_breakPointView->setModel( pe->getBreakPointModel() );
+    }
 
     m_breakPointView->verticalHeader()->setDefaultSectionSize(22);
-	m_breakPointView->setAlternatingRowColors(true);
-	m_breakPointView->setTextElideMode( Qt::ElideLeft );
+    m_breakPointView->setAlternatingRowColors(true);
+    m_breakPointView->setTextElideMode( Qt::ElideLeft );
     m_breakPointView->setSortingEnabled(true);
     m_breakPointView->resizeColumnsToContents();
 }
@@ -88,7 +88,7 @@ void BreakPointDockWidget::updateActions()
 void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
 {
     QString canonicalPath;
-	int lineNr = -1;
+    int lineNr = -1;
     QModelIndex idx;
     QAbstractItemModel *m = m_breakPointView->model();
 
@@ -100,15 +100,15 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
         idx = m->index( index.row(), 1, index.parent() );
         lineNr = m->data(idx, Qt::DisplayRole).toInt() - 1;
 
-		if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
-		{
-			ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-			if (seo)
-			{
-				seo->openScript( canonicalPath, NULL, lineNr );
-			}
-		}
-	}
+        if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
+        {
+            ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+            if (seo)
+            {
+                seo->openScript( canonicalPath, NULL, lineNr );
+            }
+        }
+    }
 }
 
 

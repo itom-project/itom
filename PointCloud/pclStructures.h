@@ -49,9 +49,9 @@ namespace ito
 {
 
 #if PCL_VERSION_COMPARE(>,1,5,1)
-	#define PCLALPHA a
+    #define PCLALPHA a
 #else
-	#define PCLALPHA _unused
+    #define PCLALPHA _unused
 #endif
 
 class PCLPoint
@@ -200,8 +200,8 @@ public:
 
     PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_, const PCLPoint &value_ = PCLPoint());
     PCLPointCloud (PCLPointCloud &pc);
- 	PCLPointCloud (const PCLPointCloud &pc);
- 	PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices);
+     PCLPointCloud (const PCLPointCloud &pc);
+     PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices);
 
     ~PCLPointCloud(){};
 
@@ -263,9 +263,9 @@ public:
     void set_height(uint32_t height);
     void set_dense(bool dense);
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	pcl::PCLHeader header() const;
+    pcl::PCLHeader header() const;
 #else
-	std_msgs::Header header() const;
+    std_msgs::Header header() const;
 #endif
 
     std::string getFieldsList() const;
@@ -316,11 +316,11 @@ private:
     template<typename _Tp> friend const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc);
 
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-	template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(ito::PCLPointCloud &pc);
-	template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(ito::PCLPointCloud &pc);
+    template<typename _Tp> friend pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc);
 #else
     template<typename _Tp> friend std_msgs::Header GetHeaderFunc(ito::PCLPointCloud &pc);
-	template<typename _Tp> friend std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> friend std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc);
 #endif
     template<typename _Tp> friend uint32_t GetWidthFunc(const ito::PCLPointCloud *pc);
     template<typename _Tp> friend uint32_t GetHeightFunc(const ito::PCLPointCloud *pc);
