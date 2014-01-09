@@ -22,22 +22,22 @@ public:
     ~HelpTreeDockWidget();
 
 public slots:
-	void navigateBackwards();
-	void navigateForwards();
-	void expandTree();
-	void collapseTree();
-	void reloadDB();
+    void navigateBackwards();
+    void navigateForwards();
+    void expandTree();
+    void collapseTree();
+    void reloadDB();
     void liveFilter(const QString &filterText);
-	void showTreeview();
-	void unshowTreeview();
-	void propertiesChanged();
+    void showTreeview();
+    void unshowTreeview();
+    void propertiesChanged();
 
 private slots:
     void on_treeView_clicked(QModelIndex i);
-	void on_splitter_splitterMoved ( int pos, int index );
+    void on_splitter_splitterMoved ( int pos, int index );
     void on_textBrowser_anchorClicked(const QUrl & link);   
 
-	void dbLoaderFinished(int index);
+    void dbLoaderFinished(int index);
 
 private:
 
@@ -49,45 +49,45 @@ private:
         QString path;
     };
 
-	Ui::HelpTreeDockWidget ui;
+    Ui::HelpTreeDockWidget ui;
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
-	static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery);
-	static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
+    static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery);
+    static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
 
-	void CreateItem(QStandardItemModel& model, QStringList &items);
+    void CreateItem(QStandardItemModel& model, QStringList &items);
     void saveIni();
-	void loadIni();
-	ito::RetVal displayHelp(const QString &path, const int newpage);
-	QStringList separateLink(const QUrl &link);
-    QTextDocument* highlightContent(const QString &helpText, const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &error);
-	QModelIndex findIndexByName(const QString &modelName);
+    void loadIni();
+    ito::RetVal displayHelp(const QString &path, const int newpage);
+    QStringList separateLink(const QUrl &link);
+    QTextDocument* highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error);
+    QModelIndex findIndexByName(const QString &modelName);
 
-	QFutureWatcher<ito::RetVal> dbLoaderWatcher;
+    QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
-	// Variables
-    QStandardItemModel		*m_pMainModel;
-    LeafFilterProxyModel	*m_pMainFilterModel;
-	ito::AbstractDockWidget *m_pParent;
-	QStringList				m_history;
-	QStringList				m_includedDBs;
-	QString					m_dbPath;
+    // Variables
+    QStandardItemModel        *m_pMainModel;
+    LeafFilterProxyModel    *m_pMainFilterModel;
+    ito::AbstractDockWidget *m_pParent;
+    QStringList                m_history;
+    QStringList                m_includedDBs;
+    QString                    m_dbPath;
 
 
-	QMovie					*m_previewMovie;
+    QMovie                    *m_previewMovie;
 
     QMap<int, QIcon> m_iconGallery;
-	
-	int m_historyIndex;
-	int m_autoCollTime;
-	double m_percWidthVi;
-	double m_percWidthUn;
-	bool m_treeVisible;
-	bool m_plaintext;
-	bool m_openLinks;
-	bool m_autoCollTree;
-	bool m_forced;
+    
+    int m_historyIndex;
+    int m_autoCollTime;
+    double m_percWidthVi;
+    double m_percWidthUn;
+    bool m_treeVisible;
+    bool m_plaintext;
+    bool m_openLinks;
+    bool m_autoCollTree;
+    bool m_forced;
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // HELPTREEDOCKWIDGET_H

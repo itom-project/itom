@@ -1,10 +1,13 @@
 #  Systemstuff
-import inspect, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
+import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
+
+#
+
 
 #
 import itom
 
-# remove this import if numpy is not used, else leave it here, because auf ufunc in getPyType()
+# remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
 import numpy
 
 # some switches
@@ -13,7 +16,7 @@ add_builtin_modules =           0      # e.g. sys
 add_manual_modules =          1      # modules from manuallist
 add_package_modules =        0      # modules which are directories with __init__.py files
 
-remove_all_double_underscore = 1 # Alles was mit zwei Unterstrichen beginnt ignorieren
+remove_all_double_underscore = 1  # Alles was mit zwei Unterstrichen beginnt ignorieren
 
 blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turtledemo','win32traceutil', 
                      'win32pdh', 'perfmondata', 'tzparse', '__next__',
@@ -50,7 +53,7 @@ reportFile = open("HelpReport.txt","w")
 
 reportE = 0
 reportW = 0
-oldPercentage = -1
+oldPercentage = 0
 
 def printPercent(value, maxim):
     global oldPercentage
@@ -63,8 +66,10 @@ def printPercent(value, maxim):
 
 
 def closeReport():
-    reportFile.write('Warnings: '+format(reportW)+'\n')
-    reportFile.write('Errors:   '+format(reportE)+'\n')
+    #t = 
+    reportFile.write('Timestamp: '+time.asctime(time.localtime())+'\n')
+    reportFile.write('Warnings:  '+format(reportW)+'\n')
+    reportFile.write('Errors:    '+format(reportE)+'\n')
     reportFile.close()
     return
 
@@ -283,12 +288,13 @@ def processName(moduleP, ns, recLevel = 0):
             reportMessage('Error in: '+prefix+module,'e')
         return
 
+    exec('class test:\n    class config:\n        numpydoc_edit_link = False', ns)
 
 def createSQLEntry(docstrIn, prefix, name, nametype, id):
     #print(prefix+name)
     # Nametype can be a type or a string... nothing else!!!!
     # create one new Row in Database for every function
-    line = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line = [0, 0, 0, 0, 0, 0, 0, 0]
     
     # 0 ID eintragen, jedoch später nicht in DB
     line[0] = id
@@ -305,14 +311,14 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     line[2] = prefix[:len(prefix)]+name
     
     # 3 prefixL (Lowercase for quick search)
-    prefixL = prefix[:len(prefix)]+name
-    line[3] = prefixL.lower()
+    #prefixL = prefix[:len(prefix)]+name
+    #line[3] = prefixL.lower()
     
     # 4. Name
     if (name != ''):
-        line[4] = name
+        line[3] = name
     else:
-        line[4] = ''
+        line[3] = ''
         
     # 5. Parameter
     # Falls ein Befehl länger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
@@ -320,18 +326,18 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     if (m != None):
         s = docstr[m.start():m.end()]
         s2 = s[s.find('('):]
-        line[5] = s2
+        line[4] = s2
     else:
-        line[5] = ''
+        line[4] = ''
         
     # 6. Shortdescription
     if (id != 0):
         m = re.search(r'->.*?\n',docstr,re.DOTALL)
         if (m != None):
             s = docstr[m.start()+3:m.end()-2]
-            line[6] = s
+            line[5] = s
         else:
-            line[6] = ''
+            line[5] = ''
     else:
         line.append('This Package is only referenced here. It´s original position is: \n')
         
@@ -342,23 +348,36 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             # Shortdescription extrahieren (Enposition der S.Desc finden)
             s = docstr[m.end():]
             try:
-                sout =docutils.core.publish_string(s,writer_name='html',settings_overrides = {'report_level': '5'})
-                line[8] = '0'
+                # -------Test Block--------
+                # String in lines aufsplitten
+                
+                lines = s.split('\n')
+                ns["lines"] = lines
+                # numpy docstring korrigieren
+                global types
+                exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[2]+'.__name__,'+line[2]+', None, lines)', ns)
+                lines = ns['lines']
+                # Linien wieder zusamensetzen
+                cor = "\n".join(lines)
+                # ---Ende des Testblocks---
+                
+                sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})
+                line[7] = '0'
             except:
                 sout = s
-                line[8] = '1'
-            line[7] = itom.compressData(sout)
+                line[7] = '1'
+            line[6] = itom.compressData(sout)
         elif (nametype == '06'):
-            line[7] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
-            line[8] = '4'
+            line[6] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
+            line[7] = '4'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
-            line[7] = itom.compressData(docstr)
-            line[8] = '3'
+            line[6] = itom.compressData(docstr)
+            line[7] = '3'
     else:
         # only a link reference
-        line[7] = itom.compressData(docstr)
-        line[8] = '2'
+        line[6] = itom.compressData(docstr)
+        line[7] = '2'
     
     # 8 HTML-Error
     # Wiird bereits bei #7 eingetragen
@@ -374,23 +393,23 @@ def createSQLDB(ns):
         c = conn.cursor()
         # Create table
         c.execute("DROP TABLE IF EXISTS itomCTL")
-        c.execute('''create table itomCTL (type text, prefix text, prefixL text, name text, param text, sdesc text, doc text, htmlERROR text)''')
+        c.execute('''create table itomCTL (type int, prefix text, name text, param text, sdesc text, doc text, htmlERROR int)''')
         j = 0
         for line in doclist:
             j = j + 1
-            lineS = line[1:9]
+            lineS = line[1:8]
             try:
-                c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?,?)',lineS)
+                c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?)',lineS)
             except:
                 print('ERROR_5: at line ['+str(j)+']: ',line)
             printPercent(j,len(doclist))
         # Save (commit) the changes
         conn.commit()
+        print("SQL-DB succesful")
     except:
         reportMessage("while writing the SQL-DB", 'e')
     finally:
         c.close()
-        print("SQL-DB succesful")
 
 
 #####################
@@ -401,11 +420,26 @@ def createSQLDB(ns):
 print('')
 print('-------------START-------------')
 
+sys.path.append('D:/ITOM/source/itom/docs/userDoc/source/sphinxext')
+import numpydoc
+import sys
 
 
 
 # funktion ispackage in namespace registrieren um sie mit exec ausführen zu können
+
+types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
+
+# pseudo Klasse
+class test:
+    class config:
+        numpydoc_edit_link = False
+        
 ns['ispackage'] = ispackage
+
+ns['numpydoc'] = numpydoc
+ns['sys'] = sys
+ns['test'] = test
 
 # If you want the script to replace the file directly... not possible because of access violation
 #filename = 'F:\\itom-git\\build\\itom\\PythonHelp.db'
