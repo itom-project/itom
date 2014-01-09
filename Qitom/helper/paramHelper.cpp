@@ -716,7 +716,7 @@ namespace ito {
     }
 
 
-    ito::RetVal ParamHelper::getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam)
+    /*static*/ ito::RetVal ParamHelper::getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam)
     {
         ito::RetVal retval;
         int len = arrayParam.getLen();
@@ -768,6 +768,34 @@ namespace ito {
             break;
         }
         return retval;
+    }
+
+
+    /*static*/ ito::Param ParamHelper::getParam(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)
+    {
+        if (!hasIndex)
+        {
+            return param;
+        }
+        else
+        {
+            //check whether param is an array type
+            ito::uint32 type = param.getType();
+            if (type == (ito::ParamBase::IntArray & ito::paramTypeMask) ||
+                type == (ito::ParamBase::DoubleArray & ito::paramTypeMask) ||
+                type == (ito::ParamBase::CharArray & ito::paramTypeMask))
+            {
+                ito::Param p;
+                ret += getItemFromArray(param, index, p);
+                return p;
+            }
+            else
+            {
+                ret += ito::RetVal( ito::retError,0,QObject::tr("Paramater is no array type. Indexing not possible.").toAscii().data() );
+            }
+        }
+
+        return ito::Param();
     }
 
 } //end namespace ito

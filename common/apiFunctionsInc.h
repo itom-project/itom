@@ -198,6 +198,9 @@ namespace ito
     #define apiGetItemFromParamArray \
         (*(ito::RetVal (*)(const ito::Param &arrayParam, const int index, ito::Param &itemParam)) ito::ITOM_API_FUNCS[16])
 
+    #define apiGetParam \
+        (*(ito::Param (*)(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)) ito::ITOM_API_FUNCS[20])
+
     #define apiSaveQLIST2XML \
         (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[17])
 

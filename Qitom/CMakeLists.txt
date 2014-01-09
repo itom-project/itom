@@ -13,7 +13,7 @@ OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WA
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
- 
+
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")  
@@ -29,7 +29,7 @@ find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
 find_package(LATEX QUIET) 
-      
+        
            
 ADD_DEFINITIONS(${QT_DEFINITIONS})  
    

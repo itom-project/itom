@@ -50,6 +50,7 @@ namespace ito
         static ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
         static ito::RetVal getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam);
+        static ito::Param getParam(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret);
 
     private:
         ParamHelper(){};

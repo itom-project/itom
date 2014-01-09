@@ -33,14 +33,14 @@ namespace ito
 {
     void **ITOM_API_FUNCS;
 
-	void *ITOM_API_FUNCS_ARR[] = {
-		(void*)&singleApiFunctions.mfilterGetFunc,      /* [0] */
-		(void*)&singleApiFunctions.mfilterCall,         /* [1] */
-		(void*)&singleApiFunctions.mfilterParam,        /* [2] */
+    void *ITOM_API_FUNCS_ARR[] = {
+        (void*)&singleApiFunctions.mfilterGetFunc,      /* [0] */
+        (void*)&singleApiFunctions.mfilterCall,         /* [1] */
+        (void*)&singleApiFunctions.mfilterParam,        /* [2] */
         (void*)&singleApiFunctions.mfilterParamBase,    /* [3] */
-		(void*)&singleApiFunctions.maddInGetInitParams, /* [4] */
-		(void*)&singleApiFunctions.maddInOpenActuator,  /* [5] */
-		(void*)&singleApiFunctions.maddInOpenDataIO,    /* [6] */
+        (void*)&singleApiFunctions.maddInGetInitParams, /* [4] */
+        (void*)&singleApiFunctions.maddInOpenActuator,  /* [5] */
+        (void*)&singleApiFunctions.maddInOpenDataIO,    /* [6] */
         (void*)&ParamHelper::validateStringMeta,        /* [7] */
         (void*)&ParamHelper::validateDoubleMeta,        /* [8] */
         (void*)&ParamHelper::validateIntMeta,           /* [9] */
@@ -53,14 +53,15 @@ namespace ito
         (void*)&ParamHelper::getItemFromArray,          /* [16] */
         (void*)&saveQLIST2XML,                          /* [17] */
         (void*)&loadXML2QLIST,                          /* [18] */
-		(void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
-		NULL
-	};
+        (void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
+        (void*)&ParamHelper::getParam,                  /* [20] */
+        NULL
+    };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 apiFunctions::apiFunctions() : m_loadFPointer(0)
 { 
-	ITOM_API_FUNCS = ITOM_API_FUNCS_ARR;
+    ITOM_API_FUNCS = ITOM_API_FUNCS_ARR;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -420,49 +421,49 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
 {
-	ito::DataObject *output = NULL;
-	ito::RetVal ret;
+    ito::DataObject *output = NULL;
+    ito::RetVal ret;
 
-	if (dObj)
-	{
-		if (dObj->getDims() != nrDims)
-		{
-			ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toAscii().data(), nrDims, dObj->getDims());
-		}
-		else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
-		{
-			for (int i = 0; i < nrDims; ++i)
-			{
-				int s = dObj->getSize(i);
-				if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
-				{
-					ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
-					break;
-				}
-			}
-		}
+    if (dObj)
+    {
+        if (dObj->getDims() != nrDims)
+        {
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toAscii().data(), nrDims, dObj->getDims());
+        }
+        else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
+        {
+            for (int i = 0; i < nrDims; ++i)
+            {
+                int s = dObj->getSize(i);
+                if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
+                {
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                    break;
+                }
+            }
+        }
 
-		if (!ret.containsError())
-		{
-			if (dObj->getType() == type)
-			{
-				output = new ito::DataObject(*dObj);
-			}
-			else
-			{
-				output = new ito::DataObject();
-				ret += dObj->convertTo(*output, type);
-			}
-		}
-	}
+        if (!ret.containsError())
+        {
+            if (dObj->getType() == type)
+            {
+                output = new ito::DataObject(*dObj);
+            }
+            else
+            {
+                output = new ito::DataObject();
+                ret += dObj->convertTo(*output, type);
+            }
+        }
+    }
 
-	if (ret.containsError())
-	{
-		DELETE_AND_SET_NULL(output);
-	}
+    if (ret.containsError())
+    {
+        DELETE_AND_SET_NULL(output);
+    }
 
-	if (retval) *retval = ret;
-	return output;
+    if (retval) *retval = ret;
+    return output;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
