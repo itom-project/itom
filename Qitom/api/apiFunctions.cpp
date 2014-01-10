@@ -462,7 +462,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
         DELETE_AND_SET_NULL(output);
     }
 
-    if (retval) *retval = ret;
+    if (retval) *retval += ret;
     return output;
 }
 
