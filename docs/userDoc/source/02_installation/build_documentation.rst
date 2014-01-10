@@ -20,21 +20,32 @@ In order to be able to build the documentation, you need to have some tools inst
 2. Python-Package Sphinx
     
     The real user documentation is created in |itom| using a python script that needs the |Python| package **Sphinx** (http://sphinx-doc.org/).
-    **Sphinx** itsself requires other python packages installed on your computer. Therefore we suggest to get **Sphinx** by the python package
+    **Sphinx** itself requires other python packages installed on your computer. Therefore we suggest to get **Sphinx** by the python package
     **distribute** that is able to download the latest version of **Sphinx** including all depending packages. For the Windows operating systems,
-    **distribute** also installs an application **easy_install** in the **Python\Scripts** directory. **Easy_install** can be called from any
+    **distribute** also installs an application **easy_install** in the **Python\Scripts** directory. **easy_install** can be called from any
     command line in order to get **Sphinx**.
     
-    In order to get **distribute** and **easy_install**, execute the following steps:
+    In order to get **distribute** and **easy_install**, follow one of the following two possibilities:
     
-    * Go to http://pypi.python.org/pypi/distribute and download the file *distribute-x.x.xx.tar.gz* and unzip to any folder on your computer.
-    * Open a command line (cmd) and change to the folder (command **cd**) where you unpacked **distribute**.
-    * Execute the following command (Replace with your correct python-directory)::
+    1. Easy installation by distribute_setup.py:
         
-        C:/python32/python.exe distribute_setup.py
+        * Go to http://python-distribute.org and download the script **distribute_setup.py**. 
+        * Execute the script with your Python 3 application, e.g. by typing::
+            
+            C:/python32/python.exe distribute_setup.py
         
-    * Now distribute is installed. When done, you can delete the folder the files were extracted to.
-    * Verify that the application **easy_install.exe** is now available in your *python/scripts* directory (Windows only)
+        in your command line where you previously moved into the directory where you saved the file. The package distribute is then automatically downloaded from the Python package manager. Replace **C:/python32** by the path to your Python installation.
+        
+    2. Official way:
+        
+        * Go to http://pypi.python.org/pypi/distribute and download the file *distribute-x.x.xx.tar.gz* and unzip to any folder on your computer.
+        * Open a command line (cmd) and change to the folder (command **cd**) where you unpacked **distribute**.
+        * Execute the following command (Replace with your correct python-directory)::
+            
+            C:/python32/python.exe distribute_setup.py
+            
+        * Now distribute is installed. When done, you can delete the folder the files were extracted to.
+        * Verify that the application **easy_install.exe** is now available in your *python/scripts* directory (Windows only)
     
     Now you can use **easy_install** in order to get **Sphinx**:
     
@@ -77,7 +88,7 @@ values are possible::
     latex -> creates a pdf-document using latex. You need to have latex installed on your computer
 
 The output of all build processes are located in the folder **docs/userDoc/build/<buildername>**. The locations of the Windows html-help generator or
-the latex interpreter are detected when running **CMake** for the |itom|-project. The absolute pathes to these tools are automatically
+the latex interpreter are detected when running **CMake** for the |itom|-project. The absolute paths to these tools are automatically
 inserted into the script **create_doc.py**.
 
 Show documentation in |itom|
