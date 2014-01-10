@@ -1,11 +1,10 @@
 #  Systemstuff
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
 
-#
-
-
-#
 import itom
+
+sys.path.append(os.path.relpath('../userDoc/source/sphinxext'))
+import numpydoc
 
 # remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
 import numpy
@@ -420,9 +419,7 @@ def createSQLDB(ns):
 print('')
 print('-------------START-------------')
 
-sys.path.append('D:/ITOM/source/itom/docs/userDoc/source/sphinxext')
-import numpydoc
-import sys
+
 
 
 
