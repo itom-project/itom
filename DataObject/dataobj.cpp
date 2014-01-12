@@ -2609,6 +2609,8 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
         else
         {
             m_pRefCount = NULL;
+            m_objSharedDataLock = NULL;
+            m_pDataObjectTags = NULL;
         }
 
         m_type = dObj.m_type;
@@ -2616,16 +2618,20 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
         m_owndata = dObj.m_owndata;
 
         m_data = NULL;
-        mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
 
-        try
+        if (dObj.m_data != NULL)
         {
-            fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
-        }
-        catch(cv::Exception exc) //memory error
-        {
-            secureFreeData();
-            throw; //rethrow exception
+            mdata_realloc(const_cast<DataObject &>(dObj).mdata_size());
+
+            try
+            {
+                fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
+            }
+            catch(cv::Exception exc) //memory error
+            {
+                secureFreeData();
+                throw; //rethrow exception
+            }
         }
     }
 }
