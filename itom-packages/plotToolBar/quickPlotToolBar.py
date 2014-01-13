@@ -18,7 +18,11 @@ hasMCPPFILTERS = True
 if not (pluginLoaded("M++Filter")):
     print('Not fully compatible. M++Filter-DLL not present')
     hasMCPPFILTERS = False
-    
+
+#if not (pluginLoaded("M++Filter")):
+    #print('Not fully compatible. M++Filter-DLL not present')
+    #hasMCPPFILTERS = False
+
 if hasMatPlotLib == True:
     try:
         import matplotlib
@@ -318,7 +322,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
                     ui.msgCritical("DataObject", "Variable does not exist", ui.MsgBoxOk)
                 return [False, 0]
                 
-            if pluginLoaded("ITOM-Filter"):
+            if True: #pluginLoaded("ITOM-Filter"):
                 [check, result] = self.show25DOGL(dataObj)
             else:
                 [check, result] = self.show25DMPL(dataObj)
