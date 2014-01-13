@@ -80,10 +80,20 @@ PyObject* PythonDataObject::PyDataObject_new(PyTypeObject *type, PyObject * /*ar
 */
 PyDoc_STRVAR(dataObjectInit_doc,"dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]]) -> constructor to get a new dataObject.\n\
 \n\
+The itom.dataObject represents a multidimensional array of fixed-size items with corresponding meta information (units, axes descriptions, scalings, tags, protocol...). \n\
+Recently the following data types (dtype) are supported: \n\
+\n\
+* Integer-type (int8, uint8, int16, uint16, int32, uint32),\n\
+* Floating-type (float32, float64 (=> double)),\n\
+* Complex-type  (complex64 (2x float32), complex128 (2x float64)).\n\
+* Color-type  (rgba32 (uint32 or uint[4] containing the four 8bit values [R, G, B, Alpha])).\n\
+\n\
+Arrays can also be constructed using some of the static pre-initialization methods 'zeros', 'ones', 'rand' or 'randN' (refer to the See Also section below). \n\
+\n\
 Parameters \n\
 ----------- \n\
-dims : {List of Integer}, optional \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
+dims : {sequence of integers}, optional \n\
+    'dims' is a list or tuple indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {str}, optional \n\
@@ -91,30 +101,12 @@ continuous : {str}, optional \n\
 data : {str}, optional \n\
     'data' is a single value or a sequence with the same amount of values than the data object. The values from data will be assigned to the new data object (filled row by row).\n\
 \n\
-Returns \n\
-------- \n\
-dataObject {dataObject}\n\
-\n\
 Notes \n\
 ------ \n\
 \n\
-The itom.dataObject contains a n-dimensional matrix and corresponding meta-data.\n\
-It has a direct c++-representation for the python-c++ interface.\n\
-The n-dimensional matrix can have different element types.\n\
-Recently the following types are supported:\n\
+The itom.dataObject is a direct wrapper for the underlying C++ class *dataObject*. This array class mainly is based on the class *Mat* of the computer vision library (OpenCV). \n\
 \n\
-* Integer-type (int8, uint8, int16, uint16, int32, uint32),\n\
-\n\
-* Floating-type (float32, float64 (=> double)),\n\
-\n\
-* Complex-type  (complex64 (2x float32), complex128 (2x float64)).\n\
-\n\
-* Color-type  (rgba32 (uint32 or uint[4] containing [B, G, R, I])).\n\
-\n\
-\n\
-Warning 'uint32' is not fully openCV-compatible and hence causes instability!\n\
-\n\
-In order to handle huge matrices, the data object can divide one matrix into subparts in memory.\n\
+In order to handle huge matrices, the data object can divide one array into chunks in memory.\n\
 Each subpart (called matrix-plane) is two-dimensional and covers data of the last two dimensions.\n\
 In c++-context each of these matrix-planes is of type cv::Mat_<type> and can be used with every operator given by the openCV-framework (version 2.3.1 or higher).\n\
 \n\
@@ -124,10 +116,13 @@ where each dimension has its size s_i, the dimensions order is n, .., z, y, x an
 In order to make the data object compatible to continuously organized data structures, like numpy-arrays, \n\
 it is also possible to have all matrix-planes in one data-block in memory (not recommended for huge matrices).\n\
 Nevertheless, the indicated data structure with the two-dimensional sub-matrix-planes is still existing. \n\
-The data organization is equal to the one of open-cv, hence, two-dimensional matrices are stored row-by-row (C-style)...\n\
+The data organization is equal to the one of openCV, hence, two-dimensional matrices are stored row-by-row (C-style)...\n\
 \n\
+In addition to OpenCV, itom.dataObject supports complex valued data types for all operators and methods. \n\
 \n\
-Deep Copy, Shallow Copy and ROI \n\
+Warning 'uint32' is not fully openCV-compatible and hence causes instability!\n\
+\n\
+**Deep Copy, Shallow Copy and ROI** \n\
 \n\
 It is possible to set a n-dimensional region of interest (ROI) to each matrix, the virtual dimensions,\n\
 which will be delivered if the user asks for the matrix size.\n\
@@ -158,7 +153,9 @@ Example:\n\
     dObjROICopy[0, 0, 0] = 127\n\
     \n\
     \n\
+\n\
 **Constructor** \n\
+\n\
 The function dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]])\n\
 creates a new itom-dataObject filled with undefined data.\n\
 If no parameters are given, an uninitilized DataObject (dims = 0, no sizes) is created.\n\
@@ -166,9 +163,12 @@ If no parameters are given, an uninitilized DataObject (dims = 0, no sizes) is c
 As second possibility you can also use the copy-constructor 'dataObject(AnyArray)', \n\
 where AnyArray must be any array-like structure which is parsable by the numpy-interface.\n\
 \n\
-Further static methods for object construction are dataObject.zeros(..), dataObject.ones(..),\n\
-dataObject.rand(..), dataObject.randN(..) and dataObject.eye(..).\n\
-");
+See Also \n\
+---------- \n\
+ones() : Static method to construct a data object filled with ones. \n\
+zeros() : Static method to construct a data object filled with zeros. \n\
+rand() : Static method to construct a randomly filled data object (uniform distribution). \n\
+randN() : Static method to construct a randomly filled data object (gaussian distribution).");
 int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     Py_ssize_t length = 0;
@@ -1768,7 +1768,7 @@ a tuple is returned which is created by iterating through the values of the data
 In the same way of iterating, the values are set to the data object if you provide a tuple of the size of the data object \n\
 or its ROI, respectively. \n\
 \n\
-Example ::\n\
+Example: ::\n\
 \n\
     b = dataObject[1,1:10,1,1].value\n\
     # or for the first value \n\
@@ -2144,7 +2144,8 @@ axisOffset : {double}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error if the given axisNum is invalid (out of range) \n\
+Runtime error : \n\
+    if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2200,7 +2201,8 @@ axisScale : {double}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error if the given axisNum is invalid (out of range) \n\
+Runtime error : \n\
+    if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2244,7 +2246,8 @@ axisDescription : {str}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error if the given axisNum is invalid (out of range) \n\
+Runtime error : \n\
+    if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2289,7 +2292,8 @@ axisUnit : {str}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error if the given axisNum is invalid (out of range) \n\
+Runtime error : \n\
+    if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3643,7 +3647,8 @@ Every value of this dataObject is replaced by its complex-conjugate value. \n\
 \n\
 Raises \n\
 ------- \n\
-TypeError if data type of this data object is not complex.\n\
+TypeError : \n\
+    if data type of this data object is not complex.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -3681,7 +3686,8 @@ out : {dataObject} \n\
 \n\
 Raises \n\
 ------- \n\
-TypeError if data type of this data object is not complex.\n\
+TypeError : \n\
+    if data type of this data object is not complex.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -3728,7 +3734,8 @@ Every plane (spanned by the last two axes) is transposed and every element is re
 \n\
 Raises \n\
 ------- \n\
-TypeError if data type of this data object is not complex.\n\
+TypeError : \n\
+    if data type of this data object is not complex.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -3773,7 +3780,8 @@ out : {dataObject} \n\
 \n\
 Raises \n\
 ------- \n\
-TypeError if data type of this data object is not complex.\n\
+TypeError : \n\
+    if data type of this data object is not complex.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4292,11 +4300,18 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> returns information about the current region of interest of this data object\n\
 \n\
+A region of interest (ROI) of a data object is defined by the two values per axis. The first element always indicates the size between the \n\
+real border of the data object and the region of interest on the left / top ... side and the second value the margin of the right / bottom ... side. \n\
+\n\
 This method returns a tuple with two elements: The first is a list with the original sizes of this data object, \
 the second is a list with the offsets from the original data object to the first value in the current region of interest \n\
 \n\
 If no region of interest is set (hence: full region of interest), the first list corresponds to the one returned by size(), \
-the second list is a zero-vector.");
+the second list is a zero-vector. \n\
+\n\
+See Also \n\
+-------- \n\
+adjustROI(offsetList) : method to change the current region of interest");
 PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -4332,18 +4347,20 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsetList) -> adjusts the size and position of the region of interest of this data object\n\
+PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsetList) -> adjust the size and position of the region of interest of this data object\n\
 \n\
-For every data object, it is possible to define a region of interest such that following commands only refer to this subpart. \n\
+For every data object, it is possible to define a region of interest such that subsequent commands only refer to this subpart. However, if values within \n\
+the region of interest (ROI) are changed, this also affects the original data object due to the shallow copy principal of python. \n\
 Use this command to adjust the current size and position of this region of interest by passing an offset list, that contains \
 integer numbers with twice the size than the number of dimensions. \n\
 \n\
-Example:: \n\
+Example: :: \n\
+\n\
     d = dataObject([5,4]) \n\
     droi = d \n\
     droi.adjustROI([-2,0,-1,-1]) \n\
     \n\
-Now droi is a region of interest of the original data object whose first value is equal to d[2,1] and its size is (3,2) \n\
+Now *droi* is a region of interest of the original data object whose first value is equal to d[2,1] and its size is (3,2) \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -4351,7 +4368,11 @@ offsetList : {list of integers} \n\
     This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
     current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
     second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
-    shrink towards the center.");
+    shrink towards the center. \n\
+\n\
+See Also \n\
+--------- \n\
+locateROI() : method to get the borders of the current ROI");
 PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args)
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.

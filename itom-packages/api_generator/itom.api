@@ -59,7 +59,7 @@ itom.dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequenc
 itom.dataObject.addToProtocol(newLine) -> Appends a protocol line to the protocol.
 itom.dataObject.adj() -> Adjugate all elements (inline)
 itom.dataObject.adjugate() -> returns the plane-wise adjugated array of this dataObject.
-itom.dataObject.adjustROI(offsetList) -> adjusts the size and position of the region of interest of this data object
+itom.dataObject.adjustROI(offsetList) -> adjust the size and position of the region of interest of this data object
 itom.dataObject.astype(typestring) -> converts this data object to another type
 itom.dataObject.axisDescriptions
 itom.dataObject.axisOffsets

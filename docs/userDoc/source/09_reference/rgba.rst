@@ -1,5 +1,5 @@
-point
-=====
+rgba32
+=======
 
 .. currentmodule:: itom
 
