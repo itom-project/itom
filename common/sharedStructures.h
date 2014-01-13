@@ -890,76 +890,88 @@ namespace ito
                 break;
 
                 case ito::ParamBase::String & paramTypeMask:
-                    if (cVal)
                     {
-                        free(cVal);
-                    }
-                    if (val)
-                    {
-                        cVal = _strdup(const_cast<const char*>((char*)val));
-                        iVal = static_cast<int>(strlen(cVal));
-                    }
-                    else
-                    {
-                        cVal = 0;
-                        iVal = -1;
+                        char *cVal_ = cVal;
+                        if (val)
+                        {
+                            cVal = _strdup(const_cast<const char*>((char*)val));
+                            iVal = static_cast<int>(strlen(cVal));
+                        }
+                        else
+                        {
+                            cVal = 0;
+                            iVal = -1;
+                        }
+                        if (cVal_)
+                        {
+                            free(cVal_);
+                        }
                     }
                     return ito::retOk;
                 break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    if (cVal)
                     {
-                        free(cVal);
-                    }
-                    if ((val) && (len > 0))
-                    {
-                        cVal = (char*)malloc(len * sizeof(char));
-                        memcpy(cVal, val, len * sizeof(char));
-                        iVal = len;
-                    }
-                    else
-                    {
-                        cVal = NULL;
-                        iVal = -1;
+                        char *cVal_ = cVal;
+                        if ((val) && (len > 0))
+                        {
+                            cVal = (char*)malloc(len * sizeof(char));
+                            memcpy(cVal, val, len * sizeof(char));
+                            iVal = len;
+                        }
+                        else
+                        {
+                            cVal = NULL;
+                            iVal = -1;
+                        }
+                        if (cVal_)
+                        {
+                            free(cVal_);
+                        }
                     }
                     return ito::retOk;
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
-                    if (cVal)
                     {
-                        free(cVal);
-                    }
-                    if ((val) && (len > 0))
-                    {
-                        cVal = (char*)malloc(len * sizeof(int));
-                        memcpy(cVal, val, len * sizeof(int));
-                        iVal = len;
-                    }
-                    else
-                    {
-                        cVal = NULL;
-                        iVal = -1;
+                        char *cVal_ = cVal;
+                        if ((val) && (len > 0))
+                        {
+                            cVal = (char*)malloc(len * sizeof(int));
+                            memcpy(cVal, val, len * sizeof(int));
+                            iVal = len;
+                        }
+                        else
+                        {
+                            cVal = NULL;
+                            iVal = -1;
+                        }
+                        if (cVal_)
+                        {
+                            free(cVal_);
+                        }
                     }
                     return ito::retOk;
                 break;
 
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-                    if (cVal)
                     {
-                        free(cVal);
-                    }
-                    if ((val) && (len > 0))
-                    {
-                        cVal = (char*)malloc(len * sizeof(double));
-                        memcpy(cVal, val, len * sizeof(double));
-                        iVal = len;
-                    }
-                    else
-                    {
-                        cVal = NULL;
-                        iVal = -1;
+                        char *cVal_ = cVal;
+                        if ((val) && (len > 0))
+                        {
+                            cVal = (char*)malloc(len * sizeof(double));
+                            memcpy(cVal, val, len * sizeof(double));
+                            iVal = len;
+                        }
+                        else
+                        {
+                            cVal = NULL;
+                            iVal = -1;
+                        }
+                        if (cVal_)
+                        {
+                            free(cVal_);
+                        }
                     }
                     return ito::retOk;
                 break;

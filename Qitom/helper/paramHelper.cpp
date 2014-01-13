@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2013, Institut für Technische Optik (ITO), 
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -31,21 +31,20 @@
 namespace ito {
 
     //----------------------------------------------------------------------------------------------------------------------------------
-
     tCompareResult ParamHelper::compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret)
     {
         //check whether type is equal
-        if(paramTemplate.getType() != param.getType())
+        if (paramTemplate.getType() != param.getType())
         {
-            ret += ito::RetVal::format(ito::retError,0, QObject::tr("Types of parameter '%s' is unequal to required type of interface parameter '%s'").toAscii().data(),param.getName(),paramTemplate.getName());
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("Types of parameter '%s' is unequal to required type of interface parameter '%s'").toAscii().data(), param.getName(), paramTemplate.getName());
             return tCmpFailed;
         }
 
         //check in/out flags
         int inOutFlags = ito::ParamBase::In | ito::ParamBase::Out;
-        if( (paramTemplate.getFlags() & inOutFlags) != (param.getFlags() & inOutFlags) )
+        if ((paramTemplate.getFlags() & inOutFlags) != (param.getFlags() & inOutFlags))
         {
-            ret += ito::RetVal::format(ito::retError,0, QObject::tr("In/Out flags of parameter '%s' are unequal to required flags of interface parameter '%s'").toAscii().data(),param.getName(),paramTemplate.getName());
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("In/Out flags of parameter '%s' are unequal to required flags of interface parameter '%s'").toAscii().data(), param.getName(), paramTemplate.getName());
             return tCmpFailed;
         }
 
@@ -56,53 +55,51 @@ namespace ito {
         return compareMetaParam(metaTemplate, meta, paramTemplate.getName(), param.getName(), ret);
     }
 
-        //----------------------------------------------------------------------------------------------------------------------------------
-
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     tCompareResult ParamHelper::compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret)
     {
-        if(metaTemplate == NULL && meta == NULL) 
+        if (metaTemplate == NULL && meta == NULL) 
         {
             return tCmpEqual;
         }
-        else if(meta == NULL)
+        else if (meta == NULL)
         {
             return tCmpCompatible; //param is compatible to paramTemplate, since it has no meta block defined, but paramTemplate has. A meta bock always is more restrictive than no.
         }
-        else if(metaTemplate == NULL)
+        else if (metaTemplate == NULL)
         {
-            ret += ito::RetVal::format(ito::retError,0, QObject::tr("The parameter '%s' is restricted by meta information while the interface parameter '%s' is not.").toAscii().data(),name,nameTemplate);
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The parameter '%s' is restricted by meta information while the interface parameter '%s' is not.").toAscii().data(), name, nameTemplate);
             return tCmpFailed;
         }
 
-        if(metaTemplate->getType() != meta->getType())
+        if (metaTemplate->getType() != meta->getType())
         {
-            ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
             return tCmpFailed;
         }
 
-        switch( metaTemplate->getType() )
+        switch(metaTemplate->getType())
         {
             case ito::ParamBase::Int:
             {
                 const ito::IntMeta *mT = static_cast<const ito::IntMeta*>(metaTemplate);
                 const ito::IntMeta *m = static_cast<const ito::IntMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
-                if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
+                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
                 {
                     return tCmpEqual;
                 }
-                else if(m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
+                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
                 {
                     return tCmpCompatible;
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The allowed integer range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The allowed integer range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -112,22 +109,22 @@ namespace ito {
             {
                 const ito::CharMeta *mT = static_cast<const ito::CharMeta*>(metaTemplate);
                 const ito::CharMeta *m = static_cast<const ito::CharMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
-                if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
+                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
                 {
                     return tCmpEqual;
                 }
-                else if(m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
+                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
                 {
                     return tCmpCompatible;
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The allowed char range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The allowed char range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -137,22 +134,22 @@ namespace ito {
             {
                 const ito::DoubleMeta *mT = static_cast<const ito::DoubleMeta*>(metaTemplate);
                 const ito::DoubleMeta *m = static_cast<const ito::DoubleMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
-                if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
+                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
                 {
                     return tCmpEqual;
                 }
-                else if(m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
+                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin())
                 {
                     return tCmpCompatible;
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The allowed double range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The allowed double range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -162,43 +159,43 @@ namespace ito {
             {
                 const ito::StringMeta *mT = static_cast<const ito::StringMeta*>(metaTemplate);
                 const ito::StringMeta *m = static_cast<const ito::StringMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
 
-                if(m->getStringType() != mT->getStringType())
+                if (m->getStringType() != mT->getStringType())
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The string type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The string type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
 
                 const char* sT = NULL;
                 bool found = false;
 
-                for(int i=0;i<mT->getLen();i++)
+                for (int i=0;i<mT->getLen();i++)
                 {
                     sT = mT->getString(i);
                     found = false;
 
-                    for(int j=0;j<m->getLen();j++)
+                    for (int j=0;j<m->getLen();j++)
                     {
-                        if( strcmp(sT, m->getString(j)) == 0)
+                        if (strcmp(sT, m->getString(j)) == 0)
                         {
                             found = true;
                             break;
                         }
                     }
 
-                    if(!found)
+                    if (!found)
                     {
-                        ret += ito::RetVal::format(ito::retError,0, QObject::tr("String '%s', requested by meta data of interface parameter '%s' could not be found in meta data of parameter '%s'.").toAscii().data(),sT,nameTemplate,name);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("String '%s', requested by meta data of interface parameter '%s' could not be found in meta data of parameter '%s'.").toAscii().data(), sT, nameTemplate, name);
                         return tCmpFailed;
                     }
                 }
 
-                if(m->getLen() == mT->getLen())
+                if (m->getLen() == mT->getLen())
                 {
                     return tCmpEqual;
                 }
@@ -214,44 +211,44 @@ namespace ito {
             {
                 const ito::DObjMeta *mT = static_cast<const ito::DObjMeta*>(metaTemplate);
                 const ito::DObjMeta *m = static_cast<const ito::DObjMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
 
                 //all bits in allowedTypes of mT must be set in m, too
-                if( (m->getAllowedTypes() & mT->getAllowedTypes()) != mT->getAllowedTypes() )
+                if ((m->getAllowedTypes() & mT->getAllowedTypes()) != mT->getAllowedTypes())
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The allowed data object types of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The allowed data object types of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
 
-                if( m->getAllowedTypes() == mT->getAllowedTypes() )
+                if (m->getAllowedTypes() == mT->getAllowedTypes())
                 {
-                    if(m->getMinDim() == mT->getMinDim() && m->getMaxDim() == mT->getMaxDim())
+                    if (m->getMinDim() == mT->getMinDim() && m->getMaxDim() == mT->getMaxDim())
                     {
                         return tCmpEqual;
                     }
-                    else if(m->getMinDim() <= mT->getMinDim() && m->getMaxDim() >= mT->getMaxDim())
+                    else if (m->getMinDim() <= mT->getMinDim() && m->getMaxDim() >= mT->getMaxDim())
                     {
                         return tCmpCompatible;
                     }
                     else
                     {
-                        ret += ito::RetVal::format(ito::retError,0, QObject::tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                         return tCmpFailed;
                     }
                 }
                 else
                 {
-                    if(m->getMinDim() <= mT->getMinDim() && m->getMaxDim() >= mT->getMaxDim())
+                    if (m->getMinDim() <= mT->getMinDim() && m->getMaxDim() >= mT->getMaxDim())
                     {
                         return tCmpCompatible;
                     }
                     else
                     {
-                        ret += ito::RetVal::format(ito::retError,0, QObject::tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                         return tCmpFailed;
                     }
                 }
@@ -263,37 +260,37 @@ namespace ito {
             {
                 const ito::HWMeta *mT = static_cast<const ito::HWMeta*>(metaTemplate);
                 const ito::HWMeta *m = static_cast<const ito::HWMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
 
-                if(mT->getHWAddInName() != NULL)
+                if (mT->getHWAddInName() != NULL)
                 {
-                    if(m->getHWAddInName() != NULL)
+                    if (m->getHWAddInName() != NULL)
                     {
-                        ret += ito::RetVal::format(ito::retError,0, QObject::tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toAscii().data(),nameTemplate,mT->getHWAddInName(),name);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toAscii().data(), nameTemplate, mT->getHWAddInName(), name);
                         return tCmpFailed;
                     }
-                    else if( strcmp(mT->getHWAddInName(),m->getHWAddInName()) != 0)
+                    else if (strcmp(mT->getHWAddInName(), m->getHWAddInName()) != 0)
                     {
-                        ret += ito::RetVal::format(ito::retError,0, QObject::tr("Both parameter '%s' and interface parameter '%s' require different plugins.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("Both parameter '%s' and interface parameter '%s' require different plugins.").toAscii().data(), name, nameTemplate);
                         return tCmpFailed;
                     }
                 }
 
                 //every bit set in m->getMinType() must be set in mT->getMinType()
-                if( mT->getMinType() == m->getMinType() )
+                if (mT->getMinType() == m->getMinType())
                 {
                     return tCmpEqual;
                 }
-                else if( (mT->getMinType() & m->getMinType()) == m->getMinType() )
+                else if ((mT->getMinType() & m->getMinType()) == m->getMinType())
                 {
                     return tCmpCompatible;
                 }
 
-                ret += ito::RetVal::format(ito::retError,0, QObject::tr("The minimum plugin type bit mask of parameter '%s' is more restrictive than this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The minimum plugin type bit mask of parameter '%s' is more restrictive than this of the interface parameter '%s'.").toAscii().data(), name, nameTemplate);
                 return tCmpFailed;
                 
             }
@@ -301,20 +298,18 @@ namespace ito {
 
             default:
             {
-                ret += ito::RetVal::format(ito::retError,0, QObject::tr("meta data of interface parameter '%s' is unknown.").toAscii().data(),nameTemplate);
+                ret += ito::RetVal::format(ito::retError, 0, QObject::tr("meta data of interface parameter '%s' is unknown.").toAscii().data(), nameTemplate);
                 return tCmpFailed;
             }
             
         }
     }
 
-
-
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory)
     {
         QString pattern;
-        if(meta && meta->getLen() > 0 && value)
+        if (meta && meta->getLen() > 0 && value)
         {
             bool found = false;
             QRegExp reg;
@@ -331,27 +326,27 @@ namespace ito {
                 break;
             }
 
-            for(int i = 0 ; i < meta->getLen() ; i++)
+            for (int i = 0; i < meta->getLen(); i++)
             {
                 pattern = meta->getString(i);
-                reg.setPattern( pattern );
-                if(reg.indexIn( value, 0 ) > -1)
+                reg.setPattern(pattern);
+                if (reg.indexIn(value, 0) > -1)
                 {
                     found = true;
                     break;
                 }
             }
 
-            if(!found)
+            if (!found)
             {
-                return ito::RetVal::format(ito::retError,0, QObject::tr("String '%s' does not fit to given string-constraints.").toAscii().data(), value);
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("String '%s' does not fit to given string-constraints.").toAscii().data(), value);
             }
 
         }
 
-        if(mandatory && (value == NULL))
+        if (mandatory && (value == NULL))
         {
-            return ito::RetVal(ito::retError,0,QObject::tr("AddIn must not be NULL").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("AddIn must not be NULL").toAscii().data());
         }
 
         return ito::retOk;
@@ -360,11 +355,11 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateDoubleMeta(const ito::DoubleMeta *meta, double value)
     {
-        if(meta)
+        if (meta)
         {
-            if(value < meta->getMin() || value > meta->getMax())
+            if (value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("value out of range [%1,%2]").arg(meta->getMin()).arg(meta->getMax()).toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(meta->getMin()).arg(meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;
@@ -373,11 +368,11 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateIntMeta(const ito::IntMeta *meta, int value)
     {
-        if(meta)
+        if (meta)
         {
-            if(value < meta->getMin() || value > meta->getMax())
+            if (value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("value out of range [%1,%2]").arg((int)meta->getMin()).arg((int)meta->getMax()).toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg((int)meta->getMin()).arg((int)meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;
@@ -386,11 +381,11 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateCharMeta(const ito::CharMeta *meta, char value)
     {
-        if(meta)
+        if (meta)
         {
-            if(value < meta->getMin() || value > meta->getMax())
+            if (value < meta->getMin() || value > meta->getMax())
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("Value out of range [%1,%2]").arg((char)meta->getMin()).arg((char)meta->getMax()).toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Value out of range [%1, %2]").arg((char)meta->getMin()).arg((char)meta->getMax()).toAscii().data());
             }
         }
         return ito::retOk;
@@ -399,21 +394,21 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory)
     {
-        if(meta && value)
+        if (meta && value)
         {
             int minType = meta->getMinType();
-            if( (minType & value->getBasePlugin()->getType()) != minType)
+            if ((minType & value->getBasePlugin()->getType()) != minType)
             {
-                return ito::RetVal(ito::retError,0, QObject::tr("AddIn does not fit to minimum required type(s).").toAscii().data()); 
+                return ito::RetVal(ito::retError, 0, QObject::tr("AddIn does not fit to minimum required type(s).").toAscii().data()); 
             }
-            if(meta->getHWAddInName() && QString::compare(meta->getHWAddInName(), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
+            if (meta->getHWAddInName() && QString::compare(meta->getHWAddInName(), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
             {
-                return ito::RetVal::format(ito::retError,0, QObject::tr("AddIn must be of the following plugin: '%s'.").toAscii().data(), meta->getHWAddInName());
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("AddIn must be of the following plugin: '%s'.").toAscii().data(), meta->getHWAddInName());
             }
         }
-        else if(mandatory && value == NULL)
+        else if (mandatory && value == NULL)
         {
-            return ito::RetVal(ito::retError,0,QObject::tr("AddIn must not be NULL").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("AddIn must not be NULL").toAscii().data());
         }
         return ito::retOk;
     }
@@ -426,42 +421,42 @@ namespace ito {
         int index;
 
         //check whether param has an index
-        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
-        if(rx.indexIn(param.getName()) >= 0)
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0, 1}$");
+        if (rx.indexIn(param.getName()) >= 0)
         {
             hasIndex = true;
             index = rx.capturedTexts()[3].toInt();
         }
 
-        if(!hasIndex && (templateParam.getType() == param.getType()))
+        if (!hasIndex && (templateParam.getType() == param.getType()))
         {
 
             switch(templateParam.getType())
             {
             case ito::ParamBase::Char:
                 {
-                    retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
                 }
                 break;
             case ito::ParamBase::Int:
                 {
-                    retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
                 }
                 break;
             case ito::ParamBase::Double:
                 {
-                    retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
+                    retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>()); 
                 }
                 break;
             case ito::ParamBase::CharArray:
                 {
                     const ito::CharMeta *meta = dynamic_cast<const ito::CharMeta*>(templateParam.getMeta());
                     char* vals = param.getVal<char*>();
-                    if(meta)
+                    if (meta)
                     {
-                        for(int i = 0 ; i < param.getLen() ; i++)
+                        for (int i = 0; i < param.getLen(); i++)
                         {
-                            retVal += validateCharMeta( meta, vals[i] );
+                            retVal += validateCharMeta(meta, vals[i]);
                         }
                     }
                 }
@@ -470,11 +465,11 @@ namespace ito {
                 {
                     const ito::IntMeta *meta = dynamic_cast<const ito::IntMeta*>(templateParam.getMeta());
                     int* vals = param.getVal<int*>();
-                    if(meta)
+                    if (meta)
                     {
-                        for(int i = 0 ; i < param.getLen() ; i++)
+                        for (int i = 0; i < param.getLen(); i++)
                         {
-                            retVal += validateIntMeta( meta, vals[i] );
+                            retVal += validateIntMeta(meta, vals[i]);
                         }
                     }
                 }
@@ -483,74 +478,74 @@ namespace ito {
                 {
                     const ito::DoubleMeta *meta = dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta());
                     double* vals = param.getVal<double*>();
-                    if(meta)
+                    if (meta)
                     {
-                        for(int i = 0 ; i < param.getLen() ; i++)
+                        for (int i = 0; i < param.getLen(); i++)
                         {
-                            retVal += validateDoubleMeta( meta, vals[i] );
+                            retVal += validateDoubleMeta(meta, vals[i]);
                         }
                     }
                 }
                 break;
             case ito::ParamBase::String:
                 {
-                    retVal += validateStringMeta( dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory ); 
+                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory); 
                 }
                 break;
             case ito::ParamBase::HWRef & ito::paramTypeMask:
                 {
-                    retVal += validateHWMeta( dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory );
+                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory);
                 }
                 break;
             }
         }
-        else if(hasIndex && (templateParam.getType() & ito::ParamBase::Pointer) && (templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)))
+        else if (hasIndex && (templateParam.getType() & ito::ParamBase::Pointer) && (templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)))
         {
             if (index < 0 || index >= templateParam.getLen())
             {
-                retVal += ito::RetVal::format(ito::retError,0,QObject::tr("Index value is out of range [0,%i]").toAscii().data(),templateParam.getLen()-1);
+                retVal += ito::RetVal::format(ito::retError, 0, QObject::tr("Index value is out of range [0, %i]").toAscii().data(), templateParam.getLen()-1);
             }
 
             switch(templateParam.getType())
             {
             case ito::ParamBase::CharArray:
                 {
-                    retVal += validateCharMeta( dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>() ); 
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
                 }
                 break;
             case ito::ParamBase::IntArray:
                 {
-                    retVal += validateIntMeta( dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>() ); 
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
                 }
                 break;
             case ito::ParamBase::DoubleArray:
                 {
-                    retVal += validateDoubleMeta( dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>() ); 
+                    retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>()); 
                 }
                 break;
             default:
                 {
-                    retVal += ito::RetVal(ito::retError,0,QObject::tr("Index-based parameter name requires an array-type parameter.").toAscii().data());
+                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Index-based parameter name requires an array-type parameter.").toAscii().data());
                 }
                 break;
             }
         }
-        else if(!strict)
+        else if (!strict)
         {
             bool ok = false;
             ito::ParamBase p = convertParam(param, templateParam.getType(), &ok);
-            if(ok)
+            if (ok)
             {
                 retVal += validateParam(templateParam, p, true);
             }
             else
             {
-                retVal += ito::RetVal(ito::retError,0,QObject::tr("Parameter could not be converted to destination type.").toAscii().data());
+                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Parameter could not be converted to destination type.").toAscii().data());
             }
         }
         else
         {
-            retVal += ito::RetVal(ito::retError,0,QObject::tr("type of parameter does not fit to requested parameter type").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("type of parameter does not fit to requested parameter type").toAscii().data());
         }
 
         return retVal;
@@ -561,25 +556,25 @@ namespace ito {
     {
         int sourceType = source.getType();
         bool ok2;
-        if(ok) *ok = true;
+        if (ok) *ok = true;
 
-        if(sourceType == (destType & (int)ito::paramTypeMask) ) return source;
+        if (sourceType == (destType & (int)ito::paramTypeMask)) return source;
 
 
         switch(destType & ito::paramTypeMask)
         {
         case ito::ParamBase::Int:
             {
-                if(source.isNumeric())
+                if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(),destType,source.getVal<int>());
+                    return ito::ParamBase(source.getName(), destType, source.getVal<int>());
                 }
-                else if(sourceType & ito::ParamBase::String)
+                else if (sourceType & ito::ParamBase::String)
                 {
                     int val = QString(source.getVal<char*>()).toInt(&ok2);
-                    if(ok2)
+                    if (ok2)
                     {
-                        return ito::ParamBase(source.getName(),destType,val);
+                        return ito::ParamBase(source.getName(), destType, val);
                     }
                 }
             }
@@ -587,16 +582,16 @@ namespace ito {
         
         case ito::ParamBase::Char:
             {
-                if(source.isNumeric())
+                if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(),destType,source.getVal<char>());
+                    return ito::ParamBase(source.getName(), destType, source.getVal<char>());
                 }
-                else if(sourceType & ito::ParamBase::String)
+                else if (sourceType & ito::ParamBase::String)
                 {
                     char val = QString(source.getVal<char*>()).toShort(&ok2);
-                    if(ok2)
+                    if (ok2)
                     {
-                        return ito::ParamBase(source.getName(),destType,val);
+                        return ito::ParamBase(source.getName(), destType, val);
                     }
                 }
             }
@@ -604,16 +599,16 @@ namespace ito {
         
         case ito::ParamBase::Double:
             {
-                if(source.isNumeric())
+                if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(),destType,source.getVal<double>());
+                    return ito::ParamBase(source.getName(), destType, source.getVal<double>());
                 }
-                else if(sourceType & ito::ParamBase::String)
+                else if (sourceType & ito::ParamBase::String)
                 {
                     double val = QString(source.getVal<char*>()).toDouble(&ok2);
-                    if(ok2)
+                    if (ok2)
                     {
-                        return ito::ParamBase(source.getName(),destType,val);
+                        return ito::ParamBase(source.getName(), destType, val);
                     }
                 }
             }
@@ -621,39 +616,39 @@ namespace ito {
 
         case ito::ParamBase::String:
             {
-                if(source.isNumeric())
+                if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(),destType,QString::number(source.getVal<double>()).toAscii().data() );
+                    return ito::ParamBase(source.getName(), destType, QString::number(source.getVal<double>()).toAscii().data());
                 }
             }
             break;
         }
 
-        if(ok) *ok = false;
+        if (ok) *ok = false;
         return ParamBase();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly)
+    ito::RetVal ParamHelper::getParamFromMapByKey(QMap<QString, ito::Param> &paramMap, const QString &key, QMap<QString, ito::Param>::iterator &found, bool errorIfReadOnly)
     {
-        if(key == "")
+        if (key == "")
         {
-            return ito::RetVal(ito::retError,0,QObject::tr("Name of given parameter is empty.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Name of given parameter is empty.").toAscii().data());
         }
 
-        QMap<QString, ito::Param>::iterator it = paramMap.find( key );
-        if(it != paramMap.end())
+        QMap<QString, ito::Param>::iterator it = paramMap.find(key);
+        if (it != paramMap.end())
         {
-            if(errorIfReadOnly && (it->getFlags() & ito::ParamBase::Readonly) )
+            if (errorIfReadOnly && (it->getFlags() & ito::ParamBase::Readonly))
             {
-                return ito::RetVal::format(ito::retError,0,QObject::tr("Parameter '%1' is read only.").arg(key).toAscii().data());
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter '%1' is read only.").arg(key).toAscii().data());
             }
 
             found = it;
         }
         else
         {
-            return ito::RetVal::format(ito::retError,0,QObject::tr("Parameter '%1' not found.").arg(key).toAscii().data());
+            return ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter '%1' not found.").arg(key).toAscii().data());
         }
 
         return ito::retOk;
@@ -664,7 +659,7 @@ namespace ito {
     /*!
         This method parses any parameter-name with respect to the rules defined for possible names of plugin-parameters.
 
-        The regular expression used for the check is "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$"
+        The regular expression used for the check is "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0, 1}(:(.*)){0, 1}$"
 
         Then the components are:
 
@@ -689,88 +684,86 @@ namespace ito {
         index = -1;
         additionalTag = QString();
 
-        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-        if(rx.indexIn(name) == -1)
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0, 1}(:(.*)){0, 1}$");
+        if (rx.indexIn(name) == -1)
         {
-            retValue += ito::RetVal(ito::retError,0,QObject::tr("invalid parameter name").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toAscii().data());
         }
         else
         {
             QStringList pname = rx.capturedTexts();
             paramName = pname[1];
-            if(pname.size()>=4)
+            if (pname.size()>=4)
             {
-                if(!pname[3].isEmpty())
+                if (!pname[3].isEmpty())
                 {
                     index = pname[3].toInt(&hasIndex);
                 }
             }
-            if(pname.size() >=6)
+            if (pname.size() >=6)
             {
                 additionalTag = pname[5];
             }
         }
-
-
         return retValue;
     }
 
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     /*static*/ ito::RetVal ParamHelper::getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam)
     {
         ito::RetVal retval;
         int len = arrayParam.getLen();
 
-        if(index < 0 || index >= len)
+        if (index < 0 || index >= len)
         {
-            return ito::RetVal::format(ito::retError,0, QObject::tr("index is ouf of range [0,%i]").toAscii().data(), len-1);
+            return ito::RetVal::format(ito::retError, 0, QObject::tr("index is ouf of range [0, %i]").toAscii().data(), len-1);
         }
 
-        QString newName = QString("%1[%2]").arg( arrayParam.getName() ).arg( index );
+        QString newName = QString("%1[%2]").arg(arrayParam.getName()).arg(index);
 
         switch(arrayParam.getType())
         {
         case ito::ParamBase::IntArray & ito::paramTypeMask:
             {
                 int *val = arrayParam.getVal<int*>();
-                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::IntArray) | ito::ParamBase::Int, val[index], NULL, arrayParam.getInfo() );
+                itemParam = ito::Param(newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::IntArray) | ito::ParamBase::Int, val[index], NULL, arrayParam.getInfo());
                 const ito::ParamMeta *m = arrayParam.getMeta();
                 if (m)
                 {
-                    itemParam.copyMetaFrom( m );
+                    itemParam.copyMetaFrom(m);
                 }
             }
             break;
         case ito::ParamBase::DoubleArray & ito::paramTypeMask:
             {
                 double *val = arrayParam.getVal<double*>();
-                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::DoubleArray) | ito::ParamBase::Double, val[index], NULL, arrayParam.getInfo() );
+                itemParam = ito::Param(newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::DoubleArray) | ito::ParamBase::Double, val[index], NULL, arrayParam.getInfo());
                 const ito::ParamMeta *m = arrayParam.getMeta();
                 if (m)
                 {
-                    itemParam.copyMetaFrom( m );
+                    itemParam.copyMetaFrom(m);
                 }
             }
             break;
         case ito::ParamBase::CharArray & ito::paramTypeMask:
             {
                 char *val = arrayParam.getVal<char*>();
-                itemParam = ito::Param( newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::CharArray) | ito::ParamBase::Char, val[index], NULL, arrayParam.getInfo() );
+                itemParam = ito::Param(newName.toAscii().data(), (arrayParam.getType(false) ^ ito::ParamBase::CharArray) | ito::ParamBase::Char, val[index], NULL, arrayParam.getInfo());
                 const ito::ParamMeta *m = arrayParam.getMeta();
                 if (m)
                 {
-                    itemParam.copyMetaFrom( m );
+                    itemParam.copyMetaFrom(m);
                 }
             }
             break;
         default:
-            retval += ito::RetVal(ito::retError,0, QObject::tr("param is no array").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("param is no array").toAscii().data());
             break;
         }
         return retval;
     }
 
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     /*static*/ ito::Param ParamHelper::getParam(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)
     {
         if (!hasIndex)
@@ -791,10 +784,9 @@ namespace ito {
             }
             else
             {
-                ret += ito::RetVal( ito::retError,0,QObject::tr("Paramater is no array type. Indexing not possible.").toAscii().data() );
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Paramater is no array type. Indexing not possible.").toAscii().data());
             }
         }
-
         return ito::Param();
     }
 
