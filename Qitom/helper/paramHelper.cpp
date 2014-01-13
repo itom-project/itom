@@ -421,7 +421,7 @@ namespace ito {
         int index;
 
         //check whether param has an index
-        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0, 1}$");
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
         if (rx.indexIn(param.getName()) >= 0)
         {
             hasIndex = true;
@@ -659,7 +659,7 @@ namespace ito {
     /*!
         This method parses any parameter-name with respect to the rules defined for possible names of plugin-parameters.
 
-        The regular expression used for the check is "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0, 1}(:(.*)){0, 1}$"
+        The regular expression used for the check is "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$"
 
         Then the components are:
 
@@ -684,7 +684,7 @@ namespace ito {
         index = -1;
         additionalTag = QString();
 
-        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0, 1}(:(.*)){0, 1}$");
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
         if (rx.indexIn(name) == -1)
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toAscii().data());
