@@ -150,7 +150,7 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    bool checkNumericParamRange(const ito::Param &param, double value, bool *ok)
+    bool checkNumericParamRange(const ito::Param &param, double &value, bool *ok)
     {
         bool done = false;
         bool result = false;
