@@ -407,7 +407,7 @@ namespace ito
             }
         }
 
-        inline int addNameSuffix(const char *suffix) 
+        inline ito::RetVal addNameSuffix(const char *suffix) 
         { 
             if (suffix && m_pName)  
             { 
@@ -417,6 +417,7 @@ namespace ito
 				{
 //                m_pName = (char *)realloc(m_pName, newSize);
 				// possible memleak when assigning value with realloc
+                    m_pName = tmp; //location of reallocated array can change
 					strcat_s(m_pName, newSize, suffix);
 					return ito::retOk;
 				}
@@ -744,15 +745,17 @@ namespace ito
             inline tType getStringType() const { return m_stringType; } //!< returns the type how strings in list should be considered. \sa tType
             inline int getLen() const { return m_len; } //!< returns the number of string elements in meta information class.
             inline const char* getString(int idx = 0) const { return (idx >= m_len) ? NULL : m_val[idx]; } //!< returns string from list at index position or NULL, if index is out of range.
-            void addItem(const char *val) //!< adds another element to the string list.
+            bool addItem(const char *val) //!< adds another element to the string list.
             {
                 if(m_val)
                 {
-					char **tmp = (char**)realloc(m_val, sizeof(char*) * (++m_len) );
-					if (!tmp)
+                    char **m_val_old = m_val;
+					m_val = (char**)realloc(m_val, sizeof(char*) * (++m_len) ); //m_val can change its address. if NULL, reallocation failed and m_val_old still contains old values
+					if (!m_val)
 					{
-						free(m_val);
-						m_val = NULL;
+                        m_val = m_val_old;
+						m_len--; //failed to add new value
+                        return false;
 					}
                 }
                 else
@@ -760,7 +763,9 @@ namespace ito
                     m_val = (char**) calloc(++m_len, sizeof(char*));
                 }
                 m_val[m_len-1] = _strdup(val);
+                return true;
             }
+
             StringMeta & operator += (const char *val)
             {
                 addItem(val);
