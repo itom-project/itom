@@ -140,6 +140,42 @@ void MainApplication::setupApplication()
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
+    //add further folders to path-variable
+#if (defined WIN32 || defined WIN64)
+    //you can add further pathes to the application-internal PATH variable by adding the following lines to the ini-file:
+    /*[Application]
+    searchPathes\size=1 ->add here the number of pathes
+    searchPathes\1\path=PathToAdd -> for each path add one line like this where you auto-increment the number from \1\ up to your total number*/
+    settings->beginGroup("Application");
+
+    int s = settings->beginReadArray("searchPathes");
+    QStringList pathes;
+    for (int i = 0; i < s; ++i)
+    {
+        settings->setArrayIndex(i);
+        pathes.append( QDir::toNativeSeparators(settings->value("path", "").toString()) ); 
+    }
+
+    settings->endArray();
+    settings->endGroup();
+
+    if (pathes.length() > 0)
+    {
+        QString p = pathes.join(";");
+        char *oldpath = getenv("path");
+        char *newpath = (char*)malloc(strlen(oldpath) + p.size() + 10);
+        newpath[0] = 0;
+        strcat(newpath, "path=");
+        strcat(newpath, p.toAscii().data()); //set libDir at the beginning of the path-variable
+        strcat(newpath, ";");
+        strcat(newpath, oldpath);
+        _putenv(newpath);
+        free(newpath);
+    }
+
+    
+#endif
+
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
     QByteArray codec =  settings->value("codec", "UTF-8").toByteArray();
