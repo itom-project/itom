@@ -40,14 +40,14 @@ public:
         {
             return QApplication::notify(receiver,event);
         }
-        catch (cv::Exception exc)
+        catch (cv::Exception &exc)
         {
             qWarning("Itom-Application has caught a cv::exception");
             qWarning() << (exc.err).c_str() << " from" << receiver->objectName();
             //qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
             qFatal("Exiting due to exception caught");
         }
-        catch(std::exception exc)
+        catch(std::exception &exc)
         {
             qWarning("Itom-Application has caught an exception");
             qWarning() << "Message:" << exc.what() << " from" << receiver->objectName();

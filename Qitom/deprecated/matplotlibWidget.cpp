@@ -68,9 +68,6 @@ void MatplotlibWidget::externalResize(int width, int height)
 
 void MatplotlibWidget::paintResult(QByteArray imageString, int x, int y, int w, int h, bool blit )
 {
-    int imgHeight = 0;
-        int imgWidth = 0;
-
     m_timer.stop();
     
     if(blit == false)
@@ -86,8 +83,8 @@ void MatplotlibWidget::paintResult(QByteArray imageString, int x, int y, int w, 
     {
         //check sizes
         
-        imgHeight = m_pixmap.height();
-        imgWidth = m_pixmap.width();
+        int imgHeight = m_pixmap.height();
+        int imgWidth = m_pixmap.width();
 
         if(x>=0 && y>=0 && imgHeight >= (y+h) && imgWidth >= (x+w))
         {

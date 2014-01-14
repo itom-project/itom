@@ -437,7 +437,7 @@ void ScriptEditorOrganizer::undockScriptTab(ScriptDockWidget* widget, int index,
     \param docked indicates whether script window should be docked in MainWindow or not
     \param waitCond ItomSharedSemaphore which will be waked up if process is finished. Use NULL if nothing should happen
 */
-void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore)
+void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore *semaphore)
 {
     createEmptyScriptDock(docked);
 
@@ -445,7 +445,6 @@ void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore
     {
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 }
 
@@ -455,7 +454,7 @@ void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore
     \param waitCond ItomSharedSemaphore which will be waked up if process is finished. Use NULL if nothing should happen
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
+RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retError);
     ScriptDockWidget* activeWidget = getActiveDockWidget();
@@ -478,7 +477,6 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
     {
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;
@@ -492,7 +490,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore* semaphore)
     \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* semaphore, int visibleLineNr)
+RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore *semaphore, int visibleLineNr)
 {
     RetVal retValue(retOk);
 
@@ -549,7 +547,6 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore* 
         semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;

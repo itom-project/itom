@@ -174,12 +174,12 @@ namespace ito {
                 const char* sT = NULL;
                 bool found = false;
 
-                for (int i=0;i<mT->getLen();i++)
+                for (int i = 0; i < mT->getLen(); i++)
                 {
                     sT = mT->getString(i);
                     found = false;
 
-                    for (int j=0;j<m->getLen();j++)
+                    for (int j = 0; j < m->getLen(); j++)
                     {
                         if (strcmp(sT, m->getString(j)) == 0)
                         {

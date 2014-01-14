@@ -44,7 +44,7 @@ ProcessOrganizer::~ProcessOrganizer()
 {
     QMultiHash<QString, QPair<QProcess*, bool> >::iterator it = m_processes.begin();
     //0. delete all connections for processes
-    it = m_processes.begin();
+    //it = m_processes.begin();
 
     while(it != m_processes.end())
     {
@@ -150,7 +150,7 @@ ProcessOrganizer::~ProcessOrganizer()
 RetVal ProcessOrganizer::collectGarbage(bool forceToCloseAll /*= false*/)
 {
     QMultiHash<QString, QPair<QProcess*, bool> >::iterator it = m_processes.begin();
-    it = m_processes.begin();
+    //it = m_processes.begin();
 
     while(it != m_processes.end())
     {

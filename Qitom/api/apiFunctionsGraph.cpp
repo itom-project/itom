@@ -191,7 +191,7 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctionsGraph::mgetPluginList(const ito::PluginInfo requirements, QHash<QString, ito::PluginInfo> &pluginList, const QString preference)
+ito::RetVal apiFunctionsGraph::mgetPluginList(const ito::PluginInfo &requirements, QHash<QString, ito::PluginInfo> &pluginList, const QString preference)
 {
     //UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     //QHash<QString, ito::PluginInfo> itomPluginList = uiOrg->getLoadedPluginList();

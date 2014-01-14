@@ -347,7 +347,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
             if (i != excludeIndex) list.append(getEditorByIndex(i));
         }
 
-        for (it = list.begin(); it != list.end(); it++)
+        for (it = list.begin(); it != list.end(); ++it)
         {
             retValue += closeTab(getIndexByEditor(*it), false);
         }
@@ -1532,7 +1532,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     int lineTo = -1;
     int indexFrom = -1;
     int indexTo = -1;
-    bool textSelected = false;
+//    bool textSelected = false;
     bool multiLineSelection = false;
     QString defaultText = "";
 
@@ -1542,7 +1542,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     if (lineFrom >= 0)
     {
         //text has been marked
-        textSelected = true;
+//        textSelected = true;
         multiLineSelection = lineTo > lineFrom;
 
         if (multiLineSelection == false)
@@ -1554,8 +1554,8 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     {
         //nothing selected, get cursor position
         sew->getCursorPosition(&lineFrom, &indexFrom);
-        textSelected = false;
-        multiLineSelection = false;
+//        textSelected = false;
+//        multiLineSelection = false;
         defaultText = sew->getWordAtPosition(lineFrom, indexFrom);
     }
 

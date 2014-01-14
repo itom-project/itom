@@ -195,7 +195,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
-    bool numpyAvailable = true;
+//    bool numpyAvailable = true;
 
     qDebug() << "python in thread: " << QThread::currentThreadId ();
 
@@ -230,7 +230,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             if (_import_array() < 0)
             {
-                numpyAvailable = false;
+//                numpyAvailable = false;
                 PyErr_Print();
                 PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.");
                 (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n");
@@ -1427,16 +1427,14 @@ RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool /*sho
         PyTracebackObject* tb = (PyTracebackObject*)pyErrTrace;
 
         int depth=0;
-        int line;
+//        int line;
 
         while(tb != NULL)
         {
             depth++;
-            line = tb->tb_lineno;
+//            line = tb->tb_lineno;
             tb = tb->tb_next;
         }
-
-
 
         if (depth - NrOfLevelsToPopAtFront > 0 && NrOfLevelsToPopAtFront > -1)
         {
@@ -1468,7 +1466,7 @@ ito::RetVal PythonEngine::checkForPyExceptions()
         PyObject* pyErrType = NULL;
         PyObject* pyErrValue = NULL;
         PyObject* pyErrTrace = NULL;
-        PyObject* pyErrSubValue = NULL;
+//        PyObject* pyErrSubValue = NULL;
         QString errType;
         QString errText;
         QString errLine;
@@ -2227,7 +2225,6 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
     {
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 }
 

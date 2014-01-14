@@ -64,9 +64,9 @@ private:
     struct PendingEvent
     { 
     public:
-        PendingEvent() : m_valid(false) {};
-        PendingEvent(int x, int y, int button) : m_type(typeMouseMove), m_x(x), m_y(y), m_button(button), m_valid(true) {};
-        PendingEvent(int h, int w) :m_type(typeResize), m_h(h), m_w(w), m_valid(true)  {};
+        PendingEvent() : m_type(0), m_x(0), m_y(0), m_button(0), m_h(0), m_w(0), m_valid(false) {};
+        PendingEvent(int x, int y, int button) : m_type(typeMouseMove), m_x(x), m_y(y), m_button(button), m_h(0), m_w(0), m_valid(true) {};
+        PendingEvent(int h, int w) : m_type(typeResize), m_x(0), m_y(0), m_button(0), m_h(h), m_w(w), m_valid(true)  {};
         PendingEvent(const PendingEvent &cpy) : m_type(cpy.m_type), m_x(cpy.m_x), m_y(cpy.m_y), m_button(cpy.m_button), m_h(cpy.m_h), m_w(cpy.m_w), m_valid(cpy.m_valid) {};
         bool isValid() { return m_valid; };
         void clear() { m_valid = false; };

@@ -936,20 +936,18 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
 //----------------------------------------------------------------------------------------------------------------------------------
 QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const
 {
-    ito::AddInAlgo::FilterDef *filterDef = NULL;
-    ito::AddInAlgo::AlgoWidgetDef *widgetDef = NULL;
     QString *name;
     QString *description;
 
     if (filterNotWidget)
     {
-        filterDef = (ito::AddInAlgo::FilterDef*)(index.internalPointer());
+        ito::AddInAlgo::FilterDef *filterDef = (ito::AddInAlgo::FilterDef*)(index.internalPointer());
         name = &(filterDef->m_name);
         description = &(filterDef->m_description);
     }
     else
     {
-        widgetDef = (ito::AddInAlgo::AlgoWidgetDef*)(index.internalPointer());
+        ito::AddInAlgo::AlgoWidgetDef *widgetDef = (ito::AddInAlgo::AlgoWidgetDef*)(index.internalPointer());
         name = &(widgetDef->m_name);
         description = &(widgetDef->m_description);
     }

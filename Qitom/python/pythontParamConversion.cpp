@@ -443,7 +443,6 @@ namespace ito
         {
         retVal += ito::RetVal(ito::retError,0,"given paramBaseType is unsupported.");
         return QSharedPointer<ito::ParamBase>();
-        break;
         }
     }
 

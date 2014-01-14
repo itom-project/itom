@@ -148,7 +148,7 @@ namespace ito
             /**
             *   assignment operator, copies values of rhs to current RetVal. Before copiing current errorMessage is freed
             */
-            RetVal & operator = (const RetVal rhs) // Copied from sharedStructure.cpp 05.10.2011
+            RetVal & operator = (const RetVal &rhs) // Copied from sharedStructure.cpp 05.10.2011
             {
                 if (this == &rhs)
                 {
@@ -182,7 +182,7 @@ namespace ito
             *   "Adds" RetVals, i.e. returns the most serious error. In case of
             *   equally serious errors the first is retained
             */
-            RetVal & operator += (const RetVal rhs) // Copied from sharedStructure.cpp 05.10.2011
+            RetVal & operator += (const RetVal &rhs) // Copied from sharedStructure.cpp 05.10.2011
             {
                 if (rhs.m_retValue > this->m_retValue)
                 {
@@ -211,7 +211,7 @@ namespace ito
             *   Concatenation of RetVal
             *   See operator RetVal::operator+=
             */
-            RetVal operator + (const RetVal rhs) // Copied from sharedStructure.cpp 05.10.2011
+            RetVal operator + (const RetVal &rhs) // Copied from sharedStructure.cpp 05.10.2011
             {
                 static RetVal result = *this;
                 result += rhs;
@@ -223,7 +223,7 @@ namespace ito
             /**
             *   equality operator compares retValue with with retValue of rhs RetVal. For possible constant values see \ref tRetValue
             */
-            char operator == (const RetVal rhs) // Copied from sharedStructure.cpp 05.10.2011
+            char operator == (const RetVal &rhs) // Copied from sharedStructure.cpp 05.10.2011
             {
                 return m_retValue == rhs.m_retValue;
             }
@@ -233,7 +233,7 @@ namespace ito
             /**
             *   unequality operator compares retValue with with retValue of rhs RetVal. For possible constant values see \ref tRetValue
             */
-            char operator != (const RetVal rhs) // Copied from sharedStructure.cpp 05.10.2011
+            char operator != (const RetVal &rhs) // Copied from sharedStructure.cpp 05.10.2011
             {
                 return !(m_retValue == rhs.m_retValue);
             }
@@ -412,9 +412,16 @@ namespace ito
             if (suffix && m_pName)  
             { 
                 int newSize = (int)strlen(m_pName) + (int)strlen(suffix) + 1;
-                m_pName = (char *)realloc(m_pName, newSize);
-                strcat_s(m_pName, newSize, suffix);
-                return ito::retOk;
+				char *tmp = (char *)realloc(m_pName, newSize);
+				if (tmp)
+				{
+//                m_pName = (char *)realloc(m_pName, newSize);
+				// possible memleak when assigning value with realloc
+					strcat_s(m_pName, newSize, suffix);
+					return ito::retOk;
+				}
+				else
+					return ito::retError;
             }
             return ito::retWarning;
         }
@@ -460,7 +467,6 @@ namespace ito
                     {
                         return -1;
                     }
-                break;
 
                 case String:
                     if (m_cVal)
@@ -471,16 +477,13 @@ namespace ito
                     {
                         return 0;
                     }
-                break;
 
                 case Double:
                 case Int:
                     return 1;
-                break;
 
                 default:
                     return -1;
-                break;
             }
         }
 
@@ -745,7 +748,12 @@ namespace ito
             {
                 if(m_val)
                 {
-                    m_val = (char**)realloc(m_val, sizeof(char*) * (++m_len) );
+					char **tmp = (char**)realloc(m_val, sizeof(char*) * (++m_len) );
+					if (!tmp)
+					{
+						free(m_val);
+						m_val = NULL;
+					}
                 }
                 else
                 {
@@ -887,7 +895,6 @@ namespace ito
 //                case ito::ParamBase::Pointer & paramTypeMask:
                     cVal = reinterpret_cast<char*>(val);
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::String & paramTypeMask:
                     {
@@ -908,7 +915,6 @@ namespace ito
                         }
                     }
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
                     {
@@ -930,7 +936,6 @@ namespace ito
                         }
                     }
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
                     {
@@ -952,7 +957,6 @@ namespace ito
                         }
                     }
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
                     {
@@ -974,11 +978,9 @@ namespace ito
                         }
                     }
                     return ito::retOk;
-                break;
 
                 default:
                     return ito::retError;
-                break;
             }
         }
 
@@ -998,7 +1000,6 @@ namespace ito
                         len = 0;
                         return 0;
                     }
-                break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
@@ -1013,7 +1014,6 @@ namespace ito
                         len = 0;
                         return 0;
                     }
-                break;
 
                 case (ito::ParamBase::HWRef & paramTypeMask):
                 case (ito::ParamBase::DObjPtr & paramTypeMask):
@@ -1021,12 +1021,10 @@ namespace ito
                 case ito::ParamBase::PointPtr & paramTypeMask:
                 case ito::ParamBase::PolygonMeshPtr & paramTypeMask:
                     return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
-                break;
 
                 default:
                     throw std::logic_error("Non-matching type!");
                     return (_Tp)0;
-                break;
             }
         }
     };
@@ -1041,17 +1039,14 @@ namespace ito
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<double>(val);
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<int>(val);
                     return ito::retOk;
-                break;
 
                 default:
                     return ito::retError;
-                break;
             }
         }
 
@@ -1062,15 +1057,13 @@ namespace ito
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<double>(iVal);
-                break;
+
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     return dVal;
-                break;
 
                 default:
                     throw std::logic_error("Non-matching type!");
                     return 0;
-                break;
             }
         }
     };
@@ -1085,17 +1078,14 @@ namespace ito
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<int>(val);
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = val;
                     return ito::retOk;
-                break;
 
                 default:
                     return ito::retError;
-                break;
             }
         }
 
@@ -1106,21 +1096,17 @@ namespace ito
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return iVal;
-                break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     return static_cast<int>(dVal);
-                break;
 
                 case 0:
                     throw std::invalid_argument("non existent parameter");
                     return 0;
-                break;
 
                 default:
                     throw std::logic_error("Non-matching type!");
                     return 0;
-                break;
             }
         }
     };
@@ -1135,17 +1121,14 @@ namespace ito
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<char>(val);
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<char>(val);
                     return ito::retOk;
-                break;
 
                 default:
                     return ito::retError;
-                break;
             }
         }
 
@@ -1156,21 +1139,17 @@ namespace ito
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<char>(iVal);
-                break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     return static_cast<char>(dVal);
-                break;
 
                 case 0:
                     throw std::invalid_argument("non existent parameter");
                     return 0;
-                break;
 
                 default:
                     throw std::logic_error("Non-matching type!");
                     return 0;
-                break;
             }
         }
     };
@@ -1185,17 +1164,14 @@ namespace ito
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<unsigned char>(val);
                     return ito::retOk;
-                break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     iVal = static_cast<unsigned char>(val);
                     return ito::retOk;
-                break;
 
                 default:
                     return ito::retError;
-                break;
             }
         }
 
@@ -1206,21 +1182,17 @@ namespace ito
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<unsigned char>(iVal);
-                break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     return static_cast<unsigned char>(dVal);
-                break;
 
                 case 0:
                     throw std::invalid_argument("non existent parameter");
                     return 0;
-                break;
 
                 default:
                     throw std::logic_error("Non-matching type!");
                     return 0;
-                break;
             }
         }
     };

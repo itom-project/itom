@@ -319,7 +319,7 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase val, QString &pkey, int &index)
+    ito::RetVal setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase &val, QString &pkey, int &index)
     {
         ito::RetVal retValue(ito::retOk);
         QStringList plkey;

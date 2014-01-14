@@ -61,7 +61,7 @@ namespace ito
                     QDateTime lastModified;
 
                     //sorting depends on filename only
-                    bool operator < (const APIFileInfo rhs) const
+                    bool operator < (const APIFileInfo &rhs) const
                     {
                         return absoluteFilename < rhs.absoluteFilename;
                     }

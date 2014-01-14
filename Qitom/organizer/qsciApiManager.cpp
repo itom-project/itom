@@ -42,7 +42,7 @@ namespace ito
 
 /*static*/ QsciApiManager * QsciApiManager::getInstance(void)
 {
-    static QsciApiSingleton waechter;
+    static QsciApiSingleton guard;
     if (QsciApiManager::m_pQsciApiManager == NULL)
     {
         QsciApiManager::m_pQsciApiManager = new QsciApiManager();

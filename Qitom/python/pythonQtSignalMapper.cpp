@@ -166,12 +166,12 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
         QObject::qt_metacall(c, id, arguments);
     }
 
-    bool found = false;
+//    bool found = false;
     foreach(const PythonQtSignalTarget& t, m_targets)
     {
         if (t.slotId() == id)
         {
-            found = true;
+//            found = true;
             t.call(arguments);
             break;
         }

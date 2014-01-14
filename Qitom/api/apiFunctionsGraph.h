@@ -42,7 +42,7 @@ namespace ito
             static ito::RetVal mgetColorBarName(const QString &name, ito::ItomPalette &palette);
             static ito::RetVal mgetColorBarIdx(const int number, ito::ItomPalette &palette);
             //static ito::RetVal mgetFigure(ito::uint32 &UID, const QString plugin, QWidget **newFigure);
-            static ito::RetVal mgetPluginList(const ito::PluginInfo requirements, QHash<QString, ito::PluginInfo> &pluginList, const QString preference);
+            static ito::RetVal mgetPluginList(const ito::PluginInfo &requirements, QHash<QString, ito::PluginInfo> &pluginList, const QString preference);
             static ito::RetVal mconnectLiveData(QObject *liveDataSource, QObject *liveDataView);
             static ito::RetVal mstartLiveData(QObject* liveDataSource, QObject *liveDataView);
             static ito::RetVal mstopLiveData(QObject* liveDataSource, QObject *liveDataView);

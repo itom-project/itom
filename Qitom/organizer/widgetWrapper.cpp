@@ -84,9 +84,10 @@ WidgetWrapper::~WidgetWrapper()
 */
 void WidgetWrapper::initMethodHash()
 {
-    bool ok;
     if(!initialized)
     {
+	    bool ok;
+		
         //QWidget
         MethodDescriptionList qWidgetList;
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("resize(int,int)"), "void", 1001, ok );

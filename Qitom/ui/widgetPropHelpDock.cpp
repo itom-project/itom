@@ -66,7 +66,7 @@ void WidgetPropHelpDock::refreshDBs()
     int j = 0;
     while (j < ui.listWidget->count())
     {
-        int g = ui.listWidget->count();
+//        int g = ui.listWidget->count();
         QString cont = ui.listWidget->item(j)->text();
         if (foundDBs.indexOf(QRegExp(cont)) == -1)
         {

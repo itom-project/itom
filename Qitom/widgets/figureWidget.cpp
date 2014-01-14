@@ -237,7 +237,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
     QString plotClassName;
-    bool exists = false;
+//    bool exists = false;
     int idx = areaCol + areaRow * m_cols;
 
     *canvasWidget = NULL;
@@ -527,7 +527,7 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
     QWidget *widget = NULL;
     int idx;
     ito::AbstractFigure *figWidget = NULL;
-    QMainWindow *mainWin = getCanvas();
+//    QMainWindow *mainWin = getCanvas();
     QString key_;
 
     for (int r = 0; r < m_rows; r++)

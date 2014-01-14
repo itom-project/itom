@@ -336,9 +336,9 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(bookmarkHandles.size() > 0);
-    bookmarkMenuActions["prevBM"]->setEnabled(bookmarkHandles.size() > 0);
-    bookmarkMenuActions["clearAllBM"]->setEnabled(bookmarkHandles.size() > 0);
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
 
     return RetVal(retOk);
 }
@@ -347,13 +347,13 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
 RetVal ScriptEditorWidget::preShowContextMenuMargin()
 {
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(bookmarkHandles.size() > 0);
-    bookmarkMenuActions["prevBM"]->setEnabled(bookmarkHandles.size() > 0);
-    bookmarkMenuActions["clearAllBM"]->setEnabled(bookmarkHandles.size() > 0);
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
 
-    breakpointMenuActions["nextBP"]->setEnabled(breakPointMap.size() > 0);
-    breakpointMenuActions["prevBP"]->setEnabled(breakPointMap.size() > 0);
-    breakpointMenuActions["clearALLBP"]->setEnabled(breakPointMap.size() > 0);
+    breakpointMenuActions["nextBP"]->setEnabled(!breakPointMap.empty());
+    breakpointMenuActions["prevBP"]->setEnabled(!breakPointMap.empty());
+    breakpointMenuActions["clearALLBP"]->setEnabled(!breakPointMap.empty());
 
     if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
     {
@@ -599,7 +599,7 @@ void ScriptEditorWidget::menuIndent()
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
-            indexTo = indexFrom;
+//            indexTo = indexFrom;
         }
 
         for (int i = lineFrom; i <= lineTo; i++)
@@ -621,7 +621,7 @@ void ScriptEditorWidget::menuUnindent()
         {
             getCursorPosition(&lineFrom, &indexFrom);
             lineTo = lineFrom;
-            indexTo = indexFrom;
+//            indexTo = indexFrom;
         }
 
         for (int i = lineFrom; i <= lineTo; i++)
@@ -985,7 +985,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
     std::list<int>::iterator it;
     bool found = false;
 
-    for (it=bookmarkHandles.begin(); it != bookmarkHandles.end() && !found; it++)
+    for (it=bookmarkHandles.begin(); it != bookmarkHandles.end() && !found; ++it)
     {
         if (markerLine(*it) == line)
         {
@@ -1080,7 +1080,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     if (getFilename() == "") return RetVal(retError);
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
-    std::list<QPair<int, int> >::iterator it;
+//    std::list<QPair<int, int> >::iterator it;
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
 

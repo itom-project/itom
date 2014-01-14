@@ -345,7 +345,7 @@ MainWindow::~MainWindow()
     {
         removeToolBar(*it);
         delete *it;
-        it++;
+        ++it;
     }
     m_userDefinedToolBars.clear();
 
@@ -354,7 +354,7 @@ MainWindow::~MainWindow()
     while (it2 != m_userDefinedRootMenus.end())
     {
         (*it2)->deleteLater();
-        it2++;
+        ++it2;
     }
     m_userDefinedRootMenus.clear();
 

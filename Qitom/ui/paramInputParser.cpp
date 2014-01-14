@@ -422,7 +422,7 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
     return container;
 }
 
-ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
+ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
     QSpinBox *box = qobject_cast<QSpinBox*>(contentWidget);
@@ -456,7 +456,7 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
     return retVal;
 }
 
-ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
+ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
     QSpinBox *box = qobject_cast<QSpinBox*>(contentWidget);
@@ -474,7 +474,7 @@ ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Par
     return retVal;
 }
 
-ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
+ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
     QDoubleSpinBox *box = qobject_cast<QDoubleSpinBox*>(contentWidget);
@@ -492,7 +492,7 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
     return retVal;
 }
 
-ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void* /*internalData*/, bool mandatory)
+ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool mandatory)
 {
     ito::RetVal retVal;
     QString string;
@@ -527,7 +527,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
     return retVal;
 }
 
-ito::RetVal ParamInputParser::getHWValue(ito::ParamBase &param, const ito::Param orgParam, QWidget* /*contentWidget*/, void* internalData, bool mandatory)
+ito::RetVal ParamInputParser::getHWValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget* /*contentWidget*/, void* internalData, bool mandatory)
 {
     ito::RetVal retValue = ito::ParamHelper::validateHWMeta(static_cast<const ito::HWMeta*>(orgParam.getMeta()), (ito::AddInBase*)internalData, mandatory);
     if(!retValue.containsError())

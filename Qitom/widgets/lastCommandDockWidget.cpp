@@ -214,7 +214,7 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
         if (m_lastCommandTreeWidget->topLevelItemCount() > 0)
         {
             lastDateItem = m_lastCommandTreeWidget->topLevelItem(m_lastCommandTreeWidget->topLevelItemCount() - 1);
-            QTreeWidgetItem *lastCommand = NULL;
+//            QTreeWidgetItem *lastCommand = NULL;
             if (lastDateItem->childCount() > 0)
             {
                 lastSavedCommand = lastDateItem->child(lastDateItem->childCount() - 1)->text(0);

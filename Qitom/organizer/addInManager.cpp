@@ -862,7 +862,7 @@ namespace ito
                 {
                     *pluginNum = n;
                     *pluginType = ito::typeAlgo;
-                    found = 1;
+//                    found = 1;
                     ret = ito::retOk;
 
                     if (pluginTypeString)
@@ -1857,7 +1857,7 @@ end:
             }
             else
             {
-                it++;
+                ++it;
             }
         }
 

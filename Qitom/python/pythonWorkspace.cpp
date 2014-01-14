@@ -295,9 +295,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
     //check new value
     item->m_exist = true;
     item->m_type = value->ob_type->tp_name;
-
-    PyObject *subdict = NULL;
-    
+//    PyObject *subdict = NULL;
 
     //at first check for possible types which have children (dict,list,tuple) or its subtypes
     if(PyDict_Check(value))

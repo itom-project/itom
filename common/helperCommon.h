@@ -40,7 +40,6 @@
 
 namespace ito
 {
-
     ito::RetVal checkParamVector(QVector<ito::Param> *params);
     ito::RetVal checkParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
@@ -48,13 +47,12 @@ namespace ito
     ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval = NULL);
     QHash<QString, ito::Param*> createParamHashTable(QVector<ito::Param> *paramVec);
 
-    bool checkNumericParamRange(const ito::Param &param, double value, bool *ok = NULL);
+    bool checkNumericParamRange(const ito::Param &param, double &value, bool *ok = NULL);
 
     ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
     ito::RetVal getParamValue(const QMap<QString, Param> *m_params, const QString &key, ito::Param &value, QString &pkey, int &index);
-    ito::RetVal setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase value, QString &pkey, int &index);   
-
+    ito::RetVal setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase &value, QString &pkey, int &index);
 };   // end namespace ito
 
 #endif

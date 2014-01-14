@@ -18,7 +18,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */* ********************************************************************
+*********************************************************************** */
+/* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
    Copyright (C) 2012, Institut für Technische Optik (ITO), 

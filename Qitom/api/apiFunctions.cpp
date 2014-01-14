@@ -159,7 +159,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
 */
 ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVector<ito::ParamBase> *initParamListOpt, QVector<QVariant> *params)
 {
-    int len;
+//    int len;
     int numMandParams = initParamListMand == NULL ? 0 : initParamListMand->size();
     int numOptParams = initParamListOpt == NULL ? 0 : initParamListOpt->size();
     int *mandPParsed = (int*)calloc(numMandParams, sizeof(int));
@@ -180,7 +180,7 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
         return ito::RetVal(ito::retError, 0, QObject::tr("Wrong number of parameters").toAscii().data());
     }
 
-    len = numParams > numMandParams ? numMandParams : numParams;
+    numParams > numMandParams ? numMandParams : numParams;
 
     // read in mandatory parameters
     for (int n = 0; n < numMandParams; n++)

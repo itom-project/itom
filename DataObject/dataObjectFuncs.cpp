@@ -1250,7 +1250,7 @@ namespace dObjHelper
                 }
             }
         }
-        if(nrOfValidElements <= 0) nrOfValidElements = 1; //in order to avoid divide-by-zero crash
+        if(nrOfValidElements == 0) nrOfValidElements = 1; //in order to avoid divide-by-zero crash
 
         meanResult = static_cast<float64>(sum)/nrOfValidElements;
         return ito::retOk;
@@ -1433,7 +1433,7 @@ namespace dObjHelper
             }
         }
 
-        if(nrOfValidElements <= 0) nrOfValidElements = 1; //in order to avoid divide-by-zero crash
+        if(nrOfValidElements == 0) nrOfValidElements = 1; //in order to avoid divide-by-zero crash
 
         float64 meanValue = static_cast<float64>(sum) / nrOfValidElements;
 
@@ -1630,7 +1630,6 @@ namespace dObjHelper
         ito::RetVal retval(ito::retOk);
         
         bool createNewObj = false;
-        bool createNewInputMat = false;
         bool clearInMat = false;
 
         if(dObjIO == NULL || dObjIO->getDims() > 2 || numMats != 1)
@@ -1719,7 +1718,7 @@ namespace dObjHelper
                 {
                     cvplaneIn = ((cv::Mat_<float64> *)(dObjIO->get_mdata())[0]);
                     cv::Mat planes[] = {cv::Mat_<ito::float32>(*cvplaneIn), cv::Mat::zeros(cvplaneIn->size(), CV_32F)};
-                    cvplaneIn = NULL;
+//                    cvplaneIn = NULL;
                     cvplaneIn = new cv::Mat;
                     cv::merge(planes, 2, *cvplaneIn);
 
@@ -1729,7 +1728,6 @@ namespace dObjHelper
                     cvplaneOut = (cv::Mat_<complex64> *)(tempObject.get_mdata())[0];
                         
                     createNewObj = true;
-                    createNewInputMat = true;
                     clearInMat = true;
                 }
                 break;
@@ -1737,7 +1735,7 @@ namespace dObjHelper
                 {
                     cvplaneIn = ((cv::Mat_<float64> *)(dObjIO->get_mdata())[0]);
                     cv::Mat planes[] = {cv::Mat_<ito::float64>(*cvplaneIn), cv::Mat::zeros(cvplaneIn->size(), CV_64F)};
-                    cvplaneIn = NULL;
+//                    cvplaneIn = NULL;
                     cvplaneIn = new cv::Mat;
                     cv::merge(planes, 2, *cvplaneIn);
 
@@ -1747,7 +1745,6 @@ namespace dObjHelper
                     cvplaneOut = (cv::Mat_<complex128> *)(tempObject.get_mdata())[0];
                         
                     createNewObj = true;
-                    createNewInputMat = true;
                     clearInMat = true;
                 }
                 break;
@@ -1769,9 +1766,9 @@ namespace dObjHelper
         {
             cv::dft(*cvplaneIn, *cvplaneOut, flags);
         }
-        catch (cv::Exception exc)
+        catch (cv::Exception &exc)
         {
-            std::string errBuf(exc.err);
+//            std::string errBuf(exc.err);
             retval += ito::RetVal(ito::retError, 0, exc.err.data());
         }
 
@@ -1795,7 +1792,6 @@ namespace dObjHelper
         float64 newScale = dObjIO->getAxisScale(curDim);
         if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
         {
-            
             newScale = 1/newScale / dObjIO->getSize(curDim);
             axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
             dObjIO->setAxisUnit(curDim, axisUnit);
@@ -1816,10 +1812,9 @@ namespace dObjHelper
             newScale = dObjIO->getAxisScale(curDim);
             if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
             {
-                
-                dObjIO->setAxisUnit(curDim, axisUnit);
-                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
                 newScale = 1/newScale / dObjIO->getSize(curDim);
+                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));				
+                dObjIO->setAxisUnit(curDim, axisUnit);				
             }
             else
             {

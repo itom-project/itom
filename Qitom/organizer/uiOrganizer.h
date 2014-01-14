@@ -203,10 +203,6 @@ public:
 };
 
 
-
-
-
-
 class UiOrganizer : public QObject
 {
     Q_OBJECT

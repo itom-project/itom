@@ -264,7 +264,7 @@ class DataObjectTagType
         //!< Copy Constructor
         DataObjectTagType(const DataObjectTagType& copyConstr) : m_dVal(copyConstr.m_dVal), m_strValue(copyConstr.m_strValue), m_type(copyConstr.m_type){};
 
-        DataObjectTagType & operator = (const DataObjectTagType rhs)
+        DataObjectTagType & operator = (const DataObjectTagType &rhs)
         {
             this->m_dVal = rhs.m_dVal;
             this->m_strValue = rhs.m_strValue;
@@ -391,17 +391,20 @@ public:
     }
 
     //!< Copy constructor
-    DataObjectTags(const DataObjectTags& copyConstr)
-    {
-        m_tags = copyConstr.m_tags;
-        m_axisOffsets = copyConstr.m_axisOffsets;
-        m_axisScales = copyConstr.m_axisScales;
-        m_axisDescription = copyConstr.m_axisDescription;
-        m_axisUnit = copyConstr.m_axisUnit;
-        m_valueOffset = copyConstr.m_valueOffset;
-        m_valueScale = copyConstr.m_valueScale;
-        m_valueDescription = copyConstr.m_valueDescription;
-        m_valueUnit = copyConstr.m_valueUnit;
+    DataObjectTags(const DataObjectTags& copyConstr) : m_tags(copyConstr.m_tags), m_axisOffsets(copyConstr.m_axisOffsets),
+		m_axisScales(copyConstr.m_axisScales), m_axisDescription(copyConstr.m_axisDescription),
+		m_axisUnit(copyConstr.m_axisUnit), m_valueOffset(copyConstr.m_valueOffset), m_valueScale(copyConstr.m_valueScale),
+		m_valueDescription(copyConstr.m_valueDescription), m_valueUnit(copyConstr.m_valueUnit)
+    {	
+//        m_tags = copyConstr.m_tags;
+//        m_axisOffsets = copyConstr.m_axisOffsets;
+//        m_axisScales = copyConstr.m_axisScales;
+//        m_axisDescription = copyConstr.m_axisDescription;
+//        m_axisUnit = copyConstr.m_axisUnit;
+//        m_valueOffset = copyConstr.m_valueOffset;
+//        m_valueScale = copyConstr.m_valueScale;
+//        m_valueDescription = copyConstr.m_valueDescription;
+//        m_valueUnit = copyConstr.m_valueUnit;
         memcpy(m_rotMatrix,copyConstr.m_rotMatrix, sizeof(double)*9);
     }
 
@@ -936,7 +939,7 @@ class DataObject
             return m_pDataObjectTags->m_axisDescription[axisNum];
         }
 
-        inline DataObjectTagType getTag(const std::string key, bool &validOperation) const
+        inline DataObjectTagType getTag(const std::string &key, bool &validOperation) const
         {
             validOperation = false;
             if(!m_pDataObjectTags)
@@ -970,7 +973,7 @@ class DataObject
             std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
             for(int i = 0; i < tagNumber; i++)
             {
-                it++;
+                ++it;
             }
 
             key = (*it).first;
@@ -995,7 +998,7 @@ class DataObject
             validOperation = true;
             for(int i = 0; i < tagNumber; i++)
             {
-                it++;
+                ++it;
             }
             return (*it).first;
         }
@@ -1537,36 +1540,36 @@ class DataObject
         //// Arithmetic Operators
         DataObject & operator = (const cv::Mat &rhs);
         DataObject & operator = (const DataObject &rhs);
-        DataObject & operator = (const int8 value);          /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const uint8 value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const int16 value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const uint16 value);        /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const int32 value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const uint32 value);        /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const float32 value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const float64 value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const complex64 value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const complex128 value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
-        DataObject & operator = (const ito::Rgba32 value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const int8 &value);          /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const uint8 &value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const int16 &value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const uint16 &value);        /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const int32 &value);         /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const uint32 &value);        /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const float32 &value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const float64 &value);       /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const complex64 &value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const complex128 &value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::Rgba32 &value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
 
 
         DataObject & operator += (const DataObject &rhs);
-        DataObject & operator += (const float64 value);
+        DataObject & operator += (const float64 &value);
 
         DataObject operator + (const DataObject &rhs);
-        DataObject operator + (const float64 value);
+        DataObject operator + (const float64 &value);
 
         DataObject & operator -= (const DataObject &rhs);
-        DataObject & operator -= (const float64 value);
+        DataObject & operator -= (const float64 &value);
 
         DataObject operator - (const DataObject &rhs);
-        DataObject operator - (const float64 value);
+        DataObject operator - (const float64 &value);
 
         DataObject & operator *= (const DataObject &rhs);
-        DataObject & operator *= (const float64 factor);
+        DataObject & operator *= (const float64 &factor);
 
         DataObject operator * (const DataObject &rhs);
-        DataObject operator * (const float64 factor);
+        DataObject operator * (const float64 &factor);
 
         // Comparison Operators
         DataObject operator < (DataObject &rhs);
@@ -1745,7 +1748,7 @@ class DataObject
             return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
         }
 
-        DataObject at(const ito::Range rowRange, const ito::Range colRange);     /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
+        DataObject at(const ito::Range &rowRange, const ito::Range &colRange);     /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
         DataObject at(ito::Range *ranges);                                       /*!< addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions */
 
         //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum

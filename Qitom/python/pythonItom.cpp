@@ -214,7 +214,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 {
     const char *kwlist[] = {"data", "className", NULL};
     PyObject *data = NULL;
-    int areaIndex = 0;
+//    int areaIndex = 0;
     char* className = NULL;
     bool ok = true;
 

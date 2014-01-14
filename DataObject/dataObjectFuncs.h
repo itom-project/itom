@@ -66,7 +66,7 @@ namespace dObjHelper
     };
 
     // Invert the unitString
-    inline std::string invertUnit(const std::string oldUnit)
+    inline std::string invertUnit(const std::string &oldUnit)
     {
         if(oldUnit.empty())
             return oldUnit;

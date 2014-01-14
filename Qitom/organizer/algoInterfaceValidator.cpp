@@ -507,13 +507,13 @@ namespace ito
             {
                 const ito::StringMeta *mT = static_cast<const ito::StringMeta*>(metaTemplate);
                 const ito::StringMeta *m = static_cast<const ito::StringMeta*>(meta);
-                if(!mT || !m)
+                if (!mT || !m)
                 {
                     ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
-                if(m->getStringType() != mT->getStringType())
+                if (m->getStringType() != mT->getStringType())
                 {
                     ret += ito::RetVal::format(ito::retError,0,tr("The string type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
                     return tCmpFailed;
@@ -522,28 +522,28 @@ namespace ito
                 const char* sT = NULL;
                 bool found = false;
 
-                for(int i=0;i<mT->getLen();i++)
+                for (int i = 0; i < mT->getLen(); i++)
                 {
                     sT = mT->getString(i);
                     found = false;
 
-                    for(int j=0;j<m->getLen();j++)
+                    for (int j = 0; j < m->getLen(); j++)
                     {
-                        if( strcmp(sT, m->getString(j)) == 0)
+                        if (strcmp(sT, m->getString(j)) == 0)
                         {
                             found = true;
                             break;
                         }
                     }
 
-                    if(!found)
+                    if (!found)
                     {
                         ret += ito::RetVal::format(ito::retError,0,tr("String '%s', requested by meta data of interface parameter '%s' could not be found in meta data of parameter '%s'.").toAscii().data(),sT,nameTemplate,name);
                         return tCmpFailed;
                     }
                 }
 
-                if(m->getLen() == mT->getLen())
+                if (m->getLen() == mT->getLen())
                 {
                     return tCmpEqual;
                 }

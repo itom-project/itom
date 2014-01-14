@@ -434,7 +434,7 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
 void WorkspaceDockWidget::dropEvent(QDropEvent *event)
 {
     QList<QUrl> urls = event->mimeData()->urls();
-    bool ok = true;
+//    bool ok = true;
     QFileInfo finfo;
 
     //check files

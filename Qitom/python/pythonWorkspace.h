@@ -67,7 +67,7 @@ class PyWorkspaceItem;
 class PyWorkspaceItem
 {
 public:
-    PyWorkspaceItem() : m_exist(false), m_isarrayelement(false), m_childState(stateNoChilds)
+    PyWorkspaceItem() : m_compatibleParamBaseType(0), m_exist(false), m_isarrayelement(false), m_childState(stateNoChilds)
     {
     }
     ~PyWorkspaceItem();

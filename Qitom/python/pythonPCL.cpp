@@ -147,29 +147,35 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
         case ito::pclInvalid:
             self->data = new ito::PCLPointCloud(ito::pclInvalid);
-            break;
+		break;
+			
         case ito::pclXYZ:
             self->data = new ito::PCLPointCloud(ito::pclXYZ);
-            break;
+		break;
+		
         case ito::pclXYZI:
             self->data = new ito::PCLPointCloud(ito::pclXYZI);
-            break;
+		break;
+		
         case ito::pclXYZRGBA:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBA);
-            break;
+		break;
+		
         case ito::pclXYZNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZNormal);
-            break;
+		break;
+		
         case ito::pclXYZINormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZINormal);
-            break;
+		break;
+		
         case ito::pclXYZRGBNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBNormal);
-            break;
+		break;
+		
         default:
             PyErr_Format(PyExc_TypeError, "The point cloud type is unknown");
             return -1;
-            break;
         }
     }
 

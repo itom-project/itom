@@ -256,27 +256,28 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QString name;
     QSharedPointer<QString> tempValue;
     QTreeWidgetItem *tempItem = NULL;
-    QString fullName = item->data(0, Qt::UserRole+1).toString();
+    QString fullName("empty item");
 
-    ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
-    if (item != NULL)
+	if (item)
     {
+		fullName = item->data(0, Qt::UserRole+1).toString();
+        ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
         extendedValue = item2->m_extendedValue;
-    }
 
-    if (item->parent() == NULL)
-    {
-        name = item->text(0);
-    }
-    else
-    {
-        tempItem = item;
-        while(tempItem->parent() != NULL)
+        if (item->parent() == NULL)
         {
-            name.prepend( "[" + item->text(0) + "]" );
-            tempItem = tempItem->parent();
+            name = item->text(0);
         }
-        name.prepend( tempItem->text(0) );
+        else
+        {
+            tempItem = item;
+            while(tempItem->parent() != NULL)
+            {
+                name.prepend( "[" + item->text(0) + "]" );
+                tempItem = tempItem->parent();
+            }
+            name.prepend( tempItem->text(0) );
+        }
     }
 
     if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that is hasn't been evaluated at runtime before

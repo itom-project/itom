@@ -882,7 +882,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                     dataMat = new cv::Mat_<_Tp>(1, static_cast<int>(sizes[0]));
                 }
             }
-            catch(cv::Exception exc) //handle memory error
+            catch(cv::Exception /*&exc*/) //handle memory error
             {
                 SecureFreeFunc<_Tp>(dObj);
                 throw; //rethrow error
@@ -905,7 +905,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                     dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[0]), static_cast<int>(sizes[1]));
                 }
             }
-            catch(cv::Exception exc) //handle memory error
+            catch(cv::Exception /*&exc*/) //handle memory error
             {
                 SecureFreeFunc<_Tp>(dObj);
                 throw; //rethrow error
@@ -961,7 +961,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
 
                 }
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception /*&exc*/)
             {
                 SecureFreeFunc<_Tp>(dObj);
                 throw; //rethrow error
@@ -1026,10 +1026,6 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
     cv::Size tempOrgSize;
     cv::Size tempSize;
     cv::Point tempPoint;
-    int dtop = 0;
-    int dleft = 0;
-    int dbottom = 0;
-//    int dright = 0;
 
     if(dimensions == 0)
     {
@@ -1039,9 +1035,9 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
     {
         planes[0].locateROI(tempOrgSize, tempPoint);
         tempSize = planes[0].size();
-        dtop = tempPoint.y;
-        dleft = tempPoint.x;
-        dbottom = tempOrgSize.height - tempSize.height - tempPoint.y;
+        int dtop = tempPoint.y;
+        int dleft = tempPoint.x;
+        int dbottom = tempOrgSize.height - tempSize.height - tempPoint.y;
 
         int* sizes_inc = new int[dimensions];
         int* osizes_inc = new int[dimensions];
@@ -1084,18 +1080,17 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
             dObj->m_pDataObjectTags = new DataObjectTags(dimensions);
         }
 
-        cv::Mat_<_Tp> *dataMat;
         dObj->mdata_realloc(nrOfPlanes);
 
         try
         {
             for(unsigned int i = 0 ; i < nrOfPlanes ; i++)
             {
-                dataMat = new cv::Mat_<_Tp>(planes[i]); //memory error might occur
+                cv::Mat_<_Tp> * dataMat = new cv::Mat_<_Tp>(planes[i]); //memory error might occur
                 dObj->m_data[i] = reinterpret_cast<uchar *>(dataMat);
             }
         }
-        catch(cv::Exception exc) //memory exception
+        catch(cv::Exception /*&exc*/) //memory exception
         {
             SecureFreeFunc<_Tp>(dObj);
             throw; //rethrow error
@@ -1291,8 +1286,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     }
 
     // yes so really clean up
-    int numMats;
-    if (!(numMats = dObj->mdata_size()))
+    if (!dObj->mdata_size())
     {
         return 0;
     }
@@ -1769,7 +1763,7 @@ RetVal DataObject::copyTagMapTo(DataObject &rhs) const
 
     rhs.m_pDataObjectTags->m_tags.clear();
 
-    if(m_pDataObjectTags->m_tags.size() == 0)
+    if(m_pDataObjectTags->m_tags.empty())
     {
         return ito::RetVal(ito::retWarning, 0, "Source tag map was empty");
     }
@@ -2472,7 +2466,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
         {
             fListCopyMatFunc[m_type](rhs.get_mdata(), m_data, false, m_sizeofs);
         }
-        catch(cv::Exception exc) //memory error
+        catch(cv::Exception /*&exc*/) //memory error
         {
             secureFreeData();
             throw; //rethrow exception
@@ -2523,7 +2517,7 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
         {
             fListCopyMatFunc[m_type](copyConstr.m_data, m_data, false, m_sizeofs);
         }
-        catch(cv::Exception exc) //memory error
+        catch(cv::Exception /*&exc*/) //memory error
         {
             secureFreeData();
             throw; //rethrow exception
@@ -2560,7 +2554,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             {
                 fListCopyMatFunc[m_type](dObj.m_data, m_data, false, m_sizeofs);
             }
-            catch(cv::Exception exc) //memory error
+            catch(cv::Exception /*&exc*/) //memory error
             {
                 secureFreeData();
                 throw; //rethrow exception
@@ -2627,7 +2621,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             {
                 fListCopyMatFunc[m_type](dObj.m_data, m_data, true, m_sizeofs);
             }
-            catch(cv::Exception exc) //memory error
+            catch(cv::Exception /*&exc*/) //memory error
             {
                 secureFreeData();
                 throw; //rethrow exception
@@ -2686,7 +2680,7 @@ MAKEFUNCLIST(AssignScalarFunc);
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const int8 value)
+DataObject & DataObject::operator = (const int8 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tInt8, static_cast<const void*>(&value));
     return *this;
@@ -2698,7 +2692,7 @@ DataObject & DataObject::operator = (const int8 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const uint8 value)
+DataObject & DataObject::operator = (const uint8 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tUInt8, static_cast<const void*>(&value));
     return *this;
@@ -2710,7 +2704,7 @@ DataObject & DataObject::operator = (const uint8 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const int16 value)
+DataObject & DataObject::operator = (const int16 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tInt16, static_cast<const void*>(&value));
     return *this;
@@ -2722,7 +2716,7 @@ DataObject & DataObject::operator = (const int16 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const uint16 value)
+DataObject & DataObject::operator = (const uint16 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tUInt16, static_cast<const void*>(&value));
     return *this;
@@ -2734,7 +2728,7 @@ DataObject & DataObject::operator = (const uint16 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const int32 value)
+DataObject & DataObject::operator = (const int32 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tInt32, static_cast<const void*>(&value));
     return *this;
@@ -2746,7 +2740,7 @@ DataObject & DataObject::operator = (const int32 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const uint32 value)
+DataObject & DataObject::operator = (const uint32 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tUInt32, static_cast<const void*>(&value));
     return *this;
@@ -2758,7 +2752,7 @@ DataObject & DataObject::operator = (const uint32 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const float32 value)
+DataObject & DataObject::operator = (const float32 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tFloat32, static_cast<const void*>(&value));
     return *this;
@@ -2770,7 +2764,7 @@ DataObject & DataObject::operator = (const float32 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const float64 value)
+DataObject & DataObject::operator = (const float64 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tFloat64, static_cast<const void*>(&value));
     return *this;
@@ -2782,7 +2776,7 @@ DataObject & DataObject::operator = (const float64 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const complex64 value)
+DataObject & DataObject::operator = (const complex64 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tComplex64, static_cast<const void*>(&value));
     return *this;
@@ -2794,7 +2788,7 @@ DataObject & DataObject::operator = (const complex64 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const complex128 value)
+DataObject & DataObject::operator = (const complex128 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tComplex128, static_cast<const void*>(&value));
     return *this;
@@ -2806,7 +2800,7 @@ DataObject & DataObject::operator = (const complex128 value)
     \return modified data object
     \sa AssignScalarValue
 */
-DataObject & DataObject::operator = (const ito::Rgba32 value)
+DataObject & DataObject::operator = (const ito::Rgba32 &value)
 {
     fListAssignScalarFunc[m_type](this, ito::tRGBA32, static_cast<const void*>(&value));
     return *this;
@@ -2924,7 +2918,7 @@ DataObject & DataObject::operator += (const DataObject &rhs)
     return *this;
 }
 
-DataObject & DataObject::operator += (const float64 value)
+DataObject & DataObject::operator += (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, value, this);
     return *this;
@@ -2955,7 +2949,7 @@ DataObject DataObject::operator + (const DataObject &rhs)
    return result;
 }
 
-DataObject DataObject::operator + (const float64 value)
+DataObject DataObject::operator + (const float64 &value)
 {
     DataObject result;
     result.m_continuous = this->m_continuous;
@@ -3027,7 +3021,7 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
    return *this;
 }
 
-DataObject & DataObject::operator -= (const float64 value)
+DataObject & DataObject::operator -= (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, -value, this);
     return *this;
@@ -3058,7 +3052,7 @@ DataObject DataObject::operator - (const DataObject &rhs)
     return result;
 }
 
-DataObject DataObject::operator - (const float64 value)
+DataObject DataObject::operator - (const float64 &value)
 {
     DataObject result;
     result.m_continuous = this->m_continuous;
@@ -3171,7 +3165,7 @@ DataObject DataObject::operator * (const DataObject &rhs)
     \param factor
     \return retOk
 */
-template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const double factor)
+template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const double &factor)
 {
    int numMats = src->calcNumMats();
    int MatNum = 0;
@@ -3200,7 +3194,7 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
    return 0;
 }
 
-template<> RetVal OpScalarMulFunc<ito::Rgba32>(const DataObject *src, const double factor)
+template<> RetVal OpScalarMulFunc<ito::Rgba32>(const DataObject *src, const double &factor)
 {
    int numMats = src->calcNumMats();
    int MatNum = 0;
@@ -3229,7 +3223,7 @@ template<> RetVal OpScalarMulFunc<ito::Rgba32>(const DataObject *src, const doub
    return 0;
 }
 
-typedef RetVal (*tOpScalarMulFunc)(const DataObject *src, const double factor);
+typedef RetVal (*tOpScalarMulFunc)(const DataObject *src, const double &factor);
 MAKEFUNCLIST(OpScalarMulFunc);
 
 //! high-level method which multiplies every element in this data object by a given floating-point factor
@@ -3237,7 +3231,7 @@ MAKEFUNCLIST(OpScalarMulFunc);
     \param factor
     \sa OpScalarMulFunc
 */
-DataObject & DataObject::operator *= (const double factor)
+DataObject & DataObject::operator *= (const double &factor)
 {
    fListOpScalarMulFunc[m_type](this, factor);
 
@@ -3249,7 +3243,7 @@ DataObject & DataObject::operator *= (const double factor)
     \param factor
     \sa operator *, OpScalarMulFunc
 */
-DataObject DataObject::operator * (const double factor)
+DataObject DataObject::operator * (const double &factor)
 {
    DataObject result;
    result.m_continuous = (*this).m_continuous;
@@ -4103,7 +4097,7 @@ DataObject DataObject::operator ^ (const DataObject & rhs)
     \return new data object which is a shallow copy of this data object and whose ROI is set to the given row- and col-ranges
     \throws cv::Exception if number of dimensions is unequal to two.
 */
-DataObject DataObject::at(const ito::Range rowRange, const ito::Range colRange)
+DataObject DataObject::at(const ito::Range &rowRange, const ito::Range &colRange)
 {
    if (m_dims != 2)
    {
@@ -4261,13 +4255,13 @@ DataObject & DataObject::adjustROI(const unsigned char dims, const int *lims)
 
 
     int startIdx, endSize;
-    int lim1, lim2;
+//    int lim1, lim2;
 
     for(int n = 0; n < dims; n++)
     {
         //TODO: why lim1 & lim2 are set when they actually aren't used?
-        lim1 = lims[n*2];
-        lim2 = lims[n*2+1];       
+//        lim1 = lims[n*2];
+//        lim2 = lims[n*2+1];       
         startIdx = (int)m_roi.m_p[n] - lims[n*2]; //new first index
         if( startIdx < 0 || startIdx > (int)m_osize[n] ) //((int)m_roi.m_p[n] - lims[n*2] + (int)m_size.m_p[n] + lims[n*2+1]) >= (int)m_osize[n])
         {
@@ -4986,7 +4980,7 @@ template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
         }
         return RetVal(retError,0,"CheckType failed: types are not equal");
     }
-    catch(cv::Exception ex)
+    catch(cv::Exception /*&ex*/)
     {
         return RetVal(retError,0,"Error during Type-Check. Type not templated");
     }
@@ -5613,7 +5607,7 @@ int DataObject::setAxisOffset(const unsigned int axisNum, const double offset)
         return 1;           
     else
     {
-        double t = m_pDataObjectTags->m_axisOffsets[axisNum] = offset  + m_roi[axisNum];
+        m_pDataObjectTags->m_axisOffsets[axisNum] = offset  + m_roi[axisNum];
     }
     return 0; //ok
 }

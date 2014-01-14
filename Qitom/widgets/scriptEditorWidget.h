@@ -60,7 +60,7 @@ public:
     inline QString getFilename() const {return filename; }
     inline bool hasNoFilename() const { return filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
-    inline bool isBookmarked() const { return bookmarkHandles.size() > 0; }
+    inline bool isBookmarked() const { return !bookmarkHandles.empty(); }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
 
     RetVal setCursorPosAndEnsureVisible(int line);

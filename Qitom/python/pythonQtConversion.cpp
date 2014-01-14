@@ -932,92 +932,104 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     {
     case QVariant::Invalid:
         return v;
-        break;
+
     case QVariant::Int:
     {
         int d = PyObjGetInt(val, false, ok);
         if (ok) return QVariant(d);
     }
     break;
+	
     case QVariant::UInt:
     {
         int d = PyObjGetInt(val, false, ok);
         if (ok) v = QVariant((unsigned int)d);
     }
     break;
+	
     case QVariant::Bool:
     {
         int d = PyObjGetBool(val, false, ok);
         if (ok) v =  QVariant((bool)(d!=0));
     }
     break;
+	
     case QVariant::Double:
     {
         double d = PyObjGetDouble(val, false, ok);
         if (ok) v =  QVariant(d);
-        break;
     }
+    break;
+	
     case QMetaType::Float:
     {
         float d = (float) PyObjGetDouble(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
+    break;
+	
     case QMetaType::Long:
     {
         long d = (long) PyObjGetLongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
+    break;
+	
     case QMetaType::ULong:
     {
         unsigned long d = (unsigned long) PyObjGetLongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
-    case QMetaType::LongLong:
+    break;
+    
+	case QMetaType::LongLong:
     {
         qint64 d = PyObjGetLongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
     }
     break;
-    case QMetaType::ULongLong:
+    
+	case QMetaType::ULongLong:
     {
         quint64 d = PyObjGetULongLong(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
     }
     break;
+	
     case QMetaType::Short:
     {
         short d = (short) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
+    break;
+	
     case QMetaType::UShort:
     {
         unsigned short d = (unsigned short) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
+    break;
+	
     case QMetaType::Char:
     {
         char d = (char) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
+    break;
+	
     case QMetaType::UChar:
     {
         unsigned char d = (unsigned char) PyObjGetInt(val, false, ok);
         if (ok) v =  qVariantFromValue(d);
-        break;
     }
-
+    break;
+	
     case QVariant::ByteArray:
     {
         QByteArray ba = PyObjGetBytes(val, true, ok);
         if (ok) v = qVariantFromValue(ba);
-        break;
     }
+    break;	
        
     case QVariant::String:
     {
@@ -1051,6 +1063,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
     }
     break;
+	
     case QVariant::List:
     if (PySequence_Check(val)) 
     {
@@ -1066,6 +1079,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         v = list;
     }
     break;
+	
     case QVariant::StringList:
     {
         bool ok;

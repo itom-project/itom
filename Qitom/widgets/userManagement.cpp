@@ -90,7 +90,7 @@ void DialogUserManagement::loadUserList()
 
     QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
 
-    int nUser = 0;
+//    int nUser = 0;
     foreach(QString iniFile, iniList) 
     {
         QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);

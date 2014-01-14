@@ -569,7 +569,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
                 if( (*(int*)index.internalPointer()) & (2 << 32))
                 {
                 }
-                else if
+                else
                 {
                 }
                 return false;

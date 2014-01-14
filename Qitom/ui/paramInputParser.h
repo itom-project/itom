@@ -57,11 +57,11 @@ protected:
     QWidget* renderTypeString(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
     QWidget* renderTypeHWRef(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
 
-    ito::RetVal getIntValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getCharValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getDoubleValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getStringValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getHWValue(ito::ParamBase &param, const ito::Param orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getDoubleValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getStringValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getHWValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
 
     QSignalMapper *m_pSignalMapper;
     QVector<ito::Param> m_params;
