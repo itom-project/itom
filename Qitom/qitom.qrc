@@ -17,6 +17,7 @@
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
+        <file>icons/scriptReference.png</file>
         <file>icons/preferences-general.png</file>
         <file>icons/preferences-python.png</file>
         <file>icons/designer4.png</file>
@@ -27,7 +28,7 @@
         <file>icons/itomicon/itologo64.png</file>
         <file>icons/itomicon/curAppIcon.png</file>
         <file>icons/adBlockAction.png</file>
-        <file>icons/list.ico</file>
+        <file>icons/list.png</file>
         <file>icons/kdb_form.png</file>
         <file>icons/reload.png</file>
         <file>icons/dialog-error-4.png</file>

@@ -157,6 +157,7 @@ private slots:
     void mnuNewScript();
     void mnuOpenFile();
     void mnuShowAssistant();
+    void mnuShowScriptReference();
     void mnuShowDesigner();
     void mnuShowProperties();
     void mnuShowUserManagement();

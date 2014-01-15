@@ -306,7 +306,7 @@ void FileSystemDockWidget::createActions()
 
     m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
     m_pViewList->connectTrigger(this, SLOT(showList()));
-    m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.ico"), tr("Details"), this);
+    m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.png"), tr("Details"), this);
     m_pViewDetails->connectTrigger(this, SLOT(showDetails()));
 }
 

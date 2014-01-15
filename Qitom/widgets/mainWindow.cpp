@@ -499,6 +499,9 @@ void MainWindow::createActions()
         connect(m_actions["open_assistant"] , SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
         m_actions["open_assistant"]->setShortcut(QKeySequence::HelpContents);
 
+        m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
+        connect(m_actions["script_reference"] , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
+
         m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
         connect(m_actions["open_designer"], SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
@@ -618,7 +621,11 @@ void MainWindow::createMenus()
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
-    m_pMenuHelp->addAction(m_actions["open_assistant"]);
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_pMenuHelp->addAction(m_actions["open_assistant"]);
+        m_pMenuHelp->addAction(m_actions["script_reference"]);
+    }
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
 //    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
@@ -826,6 +833,16 @@ void MainWindow::mnuShowAssistant()
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(helpAssistantError(QProcess::ProcessError)));
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuShowScriptReference()
+{
+    if (m_helpDock)
+    {
+        m_helpDock->setVisible(true);
+        m_helpDock->raise();
     }
 }
 
