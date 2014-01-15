@@ -79,7 +79,31 @@ PyObject* PythonUi::PyUiItem_new(PyTypeObject *type, PyObject * /*args*/, PyObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInit_doc,"");
+PyDoc_STRVAR(PyUiItemInit_doc,"uiItem(...) -> base class representing any widget of a graphical user interface \n\
+\n\
+This class represents any widget (graphical, interactive element like a button or checkbox) on a graphical user interface. \n\
+An instance of this class provides many functionalities given by the underlying Qt system. For instance, it is posible to \n\
+call a public slot of the corresponding widget, connect signals to specific python methods or functions or change properties \n\
+of the widget represeted by the instance. \n\
+\n\
+The overall dialog or window as main element of a graphical user interface itself are instances of the class *ui*. However, \n\
+they are derived from *uiItem*, since dialogs or windows internally are widgets as well. \n\
+\n\
+Widgets placed at a user interface using the Qt Designer can be referenced by an *uiItem* instance by their specific objectName, \n\
+assigned in the Qt Designer as well. As an example, a simple dialog with one button is created and the text of the button (objectName: btn) \n\
+is set to OK: :: \n\
+    \n\
+    dialog = ui('filename.ui', type=ui.TYPEDIALOG) \n\
+    button = dialog.btn #here the reference to the button is obtained \n\
+    button[\"text\"] = \"OK\" #set the property text of the button \n\
+    \n\
+Information about available properties, signals and slots can be obtained using the method **info()** of *uiItem*. \n\
+\n\
+Notes \n\
+------ \n\
+It is not intended to directly instantiate this class. Either create a user interface using the class *ui* or obtain \n\
+a reference to an existing widget (this is then an instance of *uiItem*) using the dot-operator of a \n\
+parent widget or the entire user interface.");
 int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 {
     ito::RetVal retValue = retOk;
@@ -316,6 +340,13 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.  \n\
 \n\
+This method invokes (calls) a method of the underlying widget that is marked as public slot. Besides slots there are some public methods of specific \n\
+widget classes that are wrapped by itom and therefore are callable by this method, too. \n\
+\n\
+If only method is available, all arguments are tried to be cast to the requested types and the slot is called on conversion success. If the method has \n\
+multiple overloaded possibilities in the underlying C++ classes, at first, it is intended to find the variant where all arguments can be strictly casted \n\
+from Python types to the necessary C-types. If this fails, the next variant with a non-strict conversion is chosen. \n\
+\n\
 Parameters \n\
 ----------- \n\
 slotOrPublicMethod : {str} \n\
@@ -324,18 +355,13 @@ arguments : {various types}, optional\n\
     Here you must indicate every argument, that the definition of the slot indicates. The type must be convertable into the \n\
     requested C++ based argument type.\n\
 \n\
-Returns \n\
-------- \n\
-\n\
 Notes \n\
 ----- \n\
-Use this method, to invoke any public slot or wrapped method of the underlying *uiItem*. For instance, see the Qt-help for slots of \n\
-the widget of element you are wrapping by this instance of *uiItem*. \n\
+If you want to know all possible slots of a specific widget, see the Qt help or call the member *info()* of the widget. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+info()");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
     int argsSize = PyTuple_Size(args);
@@ -546,6 +572,10 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method \n\
 \n\
+This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
+about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
+callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -553,16 +583,6 @@ signalSignature : {str} \n\
     This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
 callableMethod : {python method or function} \n\
     valid method or function that is called if the signal is emitted. \n\
-\n\
-Notes \n\
------ \n\
-This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
-about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
-callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
-signal definition must be convertable into a python object. \n\
-\n\
-Returns \n\
-------- \n\
 \n\
 See Also \n\
 --------- \n\
@@ -801,11 +821,8 @@ property : {string, string-list} \n\
 \n\
 Returns \n\
 ------- \n\
-returns the value of one single property or a list of values, if a sequence of names is given as parameter. \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+out : {variant, sequence of variants} \n\
+    the value of one single property of a list of values, if a sequence of names is given as parameter. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -982,14 +999,6 @@ propertyName : {tuple}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
 ");
 PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 {
@@ -1096,20 +1105,27 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.\n\
 \n\
+Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
+Qt::WidgetAttribute. Use this method to query the current status of one specific attributes. \n\
+\n\
+Important attributes are: \n\
+\n\
+* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is only hidden [default] \n\
+* Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled \n\
+\n\
 Parameters \n\
 ----------- \n\
 attributeNumber : {int} \n\
+    Number of the attribute of the widget to query (enum Qt::WidgetAttribute) \n\
 \n\
 Returns \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+out : {bool} \n\
+    True if attribute is set, else False \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
+setAttribute()\n\
 ");
 PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 {
@@ -1163,22 +1179,24 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.\n\
 \n\
+Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
+Qt::WidgetAttribute. Use this method to enable/disable one specific attribute.\n\
+\n\
+Important attributes are: \n\
+\n\
+* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is only hidden [default] \n\
+* Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled \n\
+\n\
 Parameters \n\
 ----------- \n\
 attributeNumber : {int} \n\
+    Number of the attribute of the widget to set (enum Qt::WidgetAttribute) \n\
 value : {bool} \n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+    True if attribute should be enabled, else False \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getAttribute");
 
 PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 {
@@ -1222,12 +1240,36 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) -> sets window flags of corresponding widget.\n\
+PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) -> set window flags of corresponding widget.\n\
+\n\
+The window flags are used to set the type of a widget, dialog or window including further hints to the window system. \n\
+This method is used to set the entire or-combination of all flags, contained in the Qt-enumeration Qt::WindowType. \n\
+\n\
+The most important types are: \n\
+\n\
+* Qt::Widget (0) -> default type for widgets \n\
+* Qt::Window (1) -> the widget looks and behaves like a windows (title bar, window frame...) \n\
+* Qt::Dialog (3) -> window decorated as dialog (no minimize or maximize button...) \n\
+\n\
+Further hints can be (among others): \n\
+\n\
+* Qt::FramelessWindowHint (0x00000800) -> borderless window (user cannot move or resize the window) \n\
+* Qt::WindowTitleBar (0x00001000) -> gives the window a title bar \n\
+* Qt::WindowMinimizeButtonHint (0x00004000) -> adds a minimize button to the title bar \n\
+* Qt::WindowMaximizeButtonHint (0x00008000) -> adds a maximize button to the title bar \n\
+* Qt::WindowCloseButtonHint (0x00010000) -> adds a close button. \n\
+\n\
+If you simply want to change one hint, get the current set of flags using **getWindowFlags**, change the necessary bitmask and \n\
+set it again using this method. \n\
 \n\
 Parameters \n\
 ----------- \n\
 flags : {int} \n\
-window flags to set (or-combination, see Qt::WindowFlags)");
+    window flags to set (or-combination, see Qt::WindowFlags) \n\
+\n\
+See Also \n\
+---------- \n\
+getWindowFlags()");
 PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
 {
     int value;
@@ -1270,7 +1312,16 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetWindowFlags_doc,"getWindowFlags(flags) -> gets window flags of corresponding widget. \n\
 \n\
-The flags-value is an or-combination of the enumeration Qt::WindowFlag. See Qt documentation for more information.");
+The flags-value is an or-combination of the enumeration Qt::WindowType. See Qt documentation for more information. \n\
+\n\
+Returns \n\
+-------- \n\
+flags {int}: \n\
+    or-combination of Qt::WindowType describing the type and further hints of the user interface \n\
+\n\
+See Also \n\
+--------- \n\
+setWindowFlags()");
 PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1619,11 +1670,13 @@ filename : {str} \n\
     path to user interface file (*.ui), absolute or relative to current directory \n\
 type : {int}, optional \n\
     display type: \n\
+    \n\
         * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
         * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
         * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
 dialogButtonBar :  {int}, optional \n\
     Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    \n\
         * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
         * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
         * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
@@ -1770,25 +1823,18 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiShow_doc,"show(modal) -> shows initialized UI-Dialog \n\
+PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows initialized UI-Dialog \n\
 \n\
 Parameters \n\
 ----------- \n\
-modal : {int} \n\
+modal : {int}, optional \n\
     * 0: non-modal (default)\n\
     * 1: modal (python waits until dialog is hidden)\n\
     * 2: modal (python returns immediately)\n\
 \n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-\n\
 See Also \n\
 --------- \n\
-\n\
-");
+hide()");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
     int modalLevel = 0;
@@ -1852,22 +1898,11 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized UI-Dialog\n\
-\n\
-Parameters \n\
------------ \n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized user interface \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+show(modal)");
 PyObject* PythonUi::PyUi_hide(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1903,21 +1938,10 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns true if dialog is still visible\n\
 \n\
-Parameters \n\
------------ \n\
-\n\
 Returns \n\
 ------- \n\
-dialog visible : {bool}\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+visibility : {bool} \n\
+    True if user interface is visible, False if it is hidden");
 PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1984,7 +2008,8 @@ decimals : {int}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-A tuple where the first value contains the current double value. The second value is True if the dialog has been accepted, else False. \n\
+out : {tuple (double, bool)} \n\
+    A tuple where the first value contains the current double value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2084,7 +2109,8 @@ step : {int}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-A tuple where the first value contains the current integer value. The second value is True if the dialog has been accepted, else False. \n\
+out : {tuple (int, bool)} \n\
+    A tuple where the first value contains the current integer value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2182,7 +2208,8 @@ editable : {bool}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-A tuple where the first value contains the current active or typed string value. The second value is True if the dialog has been accepted, else False. \n\
+out : {tuple (str, bool)} \n\
+    A tuple where the first value contains the current active or typed string value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2305,7 +2332,8 @@ defaultString : {str}\n\
 \n\
 Returns \n\
 ------- \n\
-A tuple where the first value contains the current string value. The second value is True if the dialog has been accepted, else False. \n\
+out : {tuple (str, bool)} \n\
+    A tuple where the first value contains the current string value. The second value is True if the dialog has been accepted, else False. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2397,17 +2425,9 @@ defaultButton : {int}, optional\n\
 parent : {ui}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
 See Also \n\
 --------- \n\
-\n\
-");                                  
+msgCritical, msgQuestion, msgWarning");                                  
 PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,1);
@@ -2428,7 +2448,10 @@ defaultButton : {int}, optional\n\
     is a value of ui.MsgBox[...] which indicates the default button \n\
 parent : {ui}, optional\n\
     is the parent dialog of the message box.\n\
-");
+\n\
+See Also \n\
+--------- \n\
+msgCritical, msgWarning, msgInformation");
 PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,2);
@@ -2450,17 +2473,9 @@ defaultButton : {int}, optional\n\
 parent : {ui}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
 See Also \n\
 --------- \n\
-\n\
-");
+msgCritical, msgQuestion, msgInformation");
 PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,3);
@@ -2482,17 +2497,9 @@ defaultButton : {int}, optional\n\
 parent : {ui}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
 See Also \n\
 --------- \n\
-\n\
-");
+msgWarning, msgQuestion, msgInformation");
 PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
 {
     return PyUi_msgGeneral(self,args,kwds,4);
@@ -2578,6 +2585,7 @@ startDirectory : {str}\n\
     is the start directory \n\
 options : {int}, optional\n\
     is an or-combination of the following options (see 'QFileDialog::Option'): \n\
+    \n\
         * 1: ShowDirsOnly [default] \n\
         * 2: DontResolveSymlinks \n\
         * ... (for others see Qt-Help) \n\
@@ -2586,7 +2594,12 @@ parent : {ui}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-The selected directory is returned as absolute path or None if the dialog has been rejected.");
+out : {str, None} \n\
+    The selected directory is returned as absolute path or None if the dialog has been rejected. \n\
+\n\
+See Also \n\
+--------- \n\
+getSaveFileName, getOpenFileName");
 PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"caption", "directory", "options", "parent", NULL};
@@ -2657,7 +2670,8 @@ parent : {ui}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-filename as string or None if dialog has been aborted.\n\
+out : {str, None} \n\
+    filename as string or None if dialog has been aborted.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -2714,6 +2728,9 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetSaveFileName_doc,"getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save. \n\
+\n\
+This method creates a modal file dialog to let the user select a file name used for saving a file. \n\
+\n\
 Parameters \n\
 ----------- \n\
 caption : {str}, optional\n\
@@ -2733,7 +2750,8 @@ parent : {ui}, optional\n\
 \n\
 Returns \n\
 ------- \n\
-filename as string or None if dialog has been aborted.\n\
+out : {str, None} \n\
+    filename as string or None if dialog has been aborted.\n\
 \n\
 See Also \n\
 --------- \n\

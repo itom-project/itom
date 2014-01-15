@@ -296,7 +296,12 @@ PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyTimerSetInterval_doc,"setInterval(interval) -> sets timer interval in [ms]\n\
 \n\
-This method sets the timeout interval in milliseconds. The timer calls the callback function continuously after this interval (if started)");
+This method sets the timeout interval in milliseconds. The timer calls the callback function continuously after this interval (if started) \n\
+\n\
+Parameters \n\
+----------- \n\
+interval : {int} \n\
+    timeout interval in milliseconds. The callback function is continuously called after this timeout once the timer is started.");
 PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
 { 
     int timeout; 
