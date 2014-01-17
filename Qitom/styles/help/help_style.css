@@ -241,8 +241,9 @@ p.label {
 p.rubric {
   font-weight: bold ;
   font-size: larger ;
-  color: maroon ;
-  text-align: center }
+  color: #0c3762;
+  background-color: #efefef;
+}
 
 p.sidebar-title {
   font-family: sans-serif ;
@@ -303,7 +304,7 @@ table.citation {
   margin-left: 1px }
 
 table.docinfo {
-  margin: 2em 4em }
+  margin: 2em 0em 2em 1em }
 
 table.docutils {
   margin-top: 0.5em ;
@@ -320,10 +321,12 @@ table.docinfo td, table.docinfo th {
   vertical-align: top }
 
 table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
+  font-weight: bold;
   text-align: left ;
   white-space: nowrap ;
-  padding-left: 0 }
+  padding-left: 0 ;
+  background-color: #dcb8aa ;
+  width: 100px; }
 
 /* "booktabs" style (no vertical lines) */
 table.docutils.booktabs {
@@ -346,4 +349,3 @@ h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
 
 ul.auto-toc {
   list-style-type: none }
-

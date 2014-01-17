@@ -59,7 +59,7 @@ private:
     void loadIni();
     ito::RetVal displayHelp(const QString &path, const int newpage);
     QStringList separateLink(const QUrl &link);
-    QTextDocument* highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error);
+    ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText = true);
     QModelIndex findIndexByName(const QString &modelName);
 
     QFutureWatcher<ito::RetVal> dbLoaderWatcher;

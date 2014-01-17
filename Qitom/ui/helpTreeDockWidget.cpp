@@ -73,6 +73,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
         m_iconGallery[iconAliasesNumb[i]] = QIcon(":/helpTreeDockWidget/"+icon);
         i++;
     }
+
+    //ui.textBrowser->setLineWrapMode( QTextEdit::NoWrap );
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -327,6 +329,8 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
         ui.splitter->setVisible(false);
         ui.lblProcessText->setText(tr("No help database available"));
     }
+
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -359,7 +363,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
 // ERROR decides whether it´s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
-QTextDocument* HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, const QString &helpText, const QString &error)
+ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText /*= true*/)
 {
     QString errorS = error.left(error.indexOf(" ",0));
     int errorCode = errorS.toInt();
@@ -372,12 +376,14 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &prefix, const
     /*********************************/ 
     QString rawContent = helpText;
     QString html =    "<html><head>"
-                    "<link rel='stylesheet' type='text/css' href='help_style.css'>"
-                    "</head><body>"
+        "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
+                    "</head><body>%1"
                     "</body></html>";
 
     if (errorCode == 1)
+    {
         ui.label->setText("Parser: ITO-Parser (Martin)");  
+    }
     else if (errorCode == 0)
     {
         ui.label->setText("Parser: docutils");
@@ -389,18 +395,9 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &prefix, const
         listM->setStringList(errorList);*/
     }
     else if (errorCode == -1)
-        ui.label->setText("Parser: No Help available");
-
-
-    //CSS File als QString einlesen
-    // -------------------------------------
-    // Crate a QTextDocument with the defined HTML, CSS and the images
-    QTextDocument *doc = new QTextDocument(this);
-    QFile file(":/helpTreeDockWidget/help_style");
-    file.open(QIODevice::ReadOnly);
-    QByteArray cssArray = file.readAll();
-    QString cssFile = QString(cssArray);
-    doc->addResource( QTextDocument::StyleSheetResource, QUrl( "help_style.css" ), cssFile );
+    {
+        ui.label->setText("Parser: No help available");
+    }
 
     if (errorCode != 0)
     {
@@ -512,11 +509,32 @@ QTextDocument* HelpTreeDockWidget::highlightContent(const QString &prefix, const
         }
     }
 
-    // Alles zusammenführen
-    // -------------------------------------
-    html.insert(86, rawContent);
-    doc->setHtml( html );
-    return doc;
+    // merge html content and assign to document   
+    if (htmlNotPlainText)
+    {
+        QFile file(":/helpTreeDockWidget/help_style");
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QByteArray cssData = file.readAll();
+            document->addResource( QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData) );
+            file.close();
+        }
+
+        document->setHtml( html.arg(rawContent) );
+
+        //dummy output
+        /*QFile file("helpOutput.html");
+        file.open(QIODevice::WriteOnly);
+        file.write(html.arg(rawContent).toAscii());
+        file.close();*/
+    }
+    else
+    {
+        rawContent.replace("<br/>","<br/>\n");
+        document->setPlainText( html.arg(rawContent) );
+    }
+    
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -562,13 +580,16 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
                             }
 
                             if (!m_plaintext)
-                                ui.textBrowser->setDocument(highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString()));
+                            {
+                                highlightContent(query.value(1).toString(), query.value(2).toString(), 
+                                    query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.textBrowser->document(), true);
+                            }
                             else
                             {
-                                QString output = QString(highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString())->toHtml());
-                                output.replace("<br/>","<br/>\n");
-                                ui.textBrowser->document()->setPlainText(output);             
+                                highlightContent(query.value(1).toString(), query.value(2).toString(), 
+                                    query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.textBrowser->document(), false);             
                             }
+
                             if (newpage == 1)
                             {
                                 m_historyIndex++;
@@ -668,7 +689,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 
 
 /*************************************************************/
-/*****************GUI-Bezogene-Funktionen*********************/
+/*****************GUI related methods*************************/
 /*************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -785,7 +806,7 @@ void HelpTreeDockWidget::navigateForwards()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Tree einblenden
+// show tree
 void HelpTreeDockWidget::showTreeview()
 {
     m_treeVisible = true;
@@ -795,7 +816,7 @@ void HelpTreeDockWidget::showTreeview()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Tree ausblenden
+// hide tree
 void HelpTreeDockWidget::unshowTreeview()
 {
     m_treeVisible = false;
