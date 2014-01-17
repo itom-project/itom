@@ -3620,7 +3620,7 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
 
     Py_XDECREF(fileHandle);
 
-    return RetVal(retOk);
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
