@@ -3476,7 +3476,6 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 
         if (!info.exists() || (info.exists() && (overwriteIfExists > 0)))
         {
-            PyObject *dict = PyDict_New();
             RetVal retval = pyEngine->pickleDictionary(dict, filename);
 
             if (!PythonCommon::transformRetValToPyException(retval))
