@@ -102,12 +102,10 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
         char* msg = retval.errorMessage();
         if (msg)
         {
-            //PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s\n", name.data(), msg);
             PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg);
         }
         else
         {
-            //PyErr_Format(PyExc_RuntimeError, "Error invoking function %s.\n", name.data());
             PyErr_Format(PyExc_RuntimeError, "Error invoking function %s.", name.data());
         }
         return false;
@@ -193,11 +191,13 @@ int parseParams(PyObject *args, int length, char **&cargs, char *&cargt)
          cargt[n] = 'o';
          cargs[n] = (char*)(((PythonPlugins::PyActuatorPlugin *)tempPyObj)->actuatorObj);
       }
+#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
       else if (Py_TYPE(tempPyObj) == &PythonPlugins::PyAlgoPluginType)
       {
          cargt[n] = 'o';
          cargs[n] = (char*)(((PythonPlugins::PyAlgoPlugin *)tempPyObj)->algoObj);
       }
+#endif
       else
       {
           PyErr_Format(PyExc_TypeError, "type of parameter %i cannot be parsed: %s", n+1, tempPyObj->ob_type->tp_name);
@@ -317,6 +317,92 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* plugin_showConfiguration(ito::AddInBase *aib)
+{
+    if (aib)
+    {
+        if (aib->hasConfDialog())
+        {
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply open the widget
+*/
+PyObject* plugin_showToolbox(ito::AddInBase *aib)
+{
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError,0,"timeout while showing toolbox");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "showToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** returns the list of available parameters
+*   @param [in] self    the actuator object (python)
+*
+*   This method simply close the widget
+*/
+PyObject* plugin_hideToolbox(ito::AddInBase *aib)
+{
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
+    if (aib)
+    {
+        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout while showing toolbox");
+        }
+        else
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
+    }
+
+    if (!SetReturnValueMessage(retval, "hideToolbox"))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc. \n\
 \n\
 Every plugin can define further functions, that are called by plugin.exec('funcName' [,param1, param2...]). This can for instance be used in order to call specific calibration \
@@ -328,19 +414,12 @@ funcName : {str}, optional \n\
     is the fullname or a part of any execFunc-name which should be displayed. \n\
     If funcName is none or no execFunc matches funcName casesensitiv a list with all suitable execFuncs is given. \n\
 detailLevel : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
+    if `detailLevel == 1`, function returns a dictionary with parameters [default: 0]. \n\
 \n\
 Returns \n\
 ------- \n\
-None or dict\n\
-    depending on the value of *detailLevel*.\n\
-\n\
-Notes \n\
------ \n\
-Generates an online help with all execFuncs for this plugIn or returns a list of available execFuncs.\n\
-\n\
-");
+out : {None or dict}\n\
+    depending on the value of *detailLevel*.");
 //----------------------------------------------------------------------------------------------------------------------------------
 /** returns a list of execFunction available in a plugin similar to filterHelp 
 *   @param [in] aib     the plugin for which the execFuncs names are requested
@@ -714,14 +793,178 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 }
 
 
-//general docstrings
+//general docstrings BEGIN
 PyDoc_STRVAR(pyPluginName_doc, "name() -> returns the plugin name\n\
 \n\
-Returns the name of the plugin, which corresponds to getParam('name')\n\
+Returns \n\
+-------- \n\
+name : {str} \n\
+    name of the plugin, which corresponds to `getParam('name')` \n\
 \n\
 See Also \n\
 --------- \n\
 getParam");
+
+PyDoc_STRVAR(pyPluginGetParamList_doc, "getParamList() -> returns a list of the names of the internal parameters of the plugin\n\
+\n\
+Each plugin defines a set of parameters, where each parameter has got a name and maps to any value. The value is represented by \n\
+the C++ class ito::ParamBase and can have one of the following types: \n\
+\n\
+* String \n\
+* Char \n\
+* Integer \n\
+* Double \n\
+* CharArray \n\
+* IntegerArray \n\
+* DoubleArray \n\
+* DataObject \n\
+* PolygonMesh \n\
+* PointCloud \n\
+* Another plugin instance \n\
+\n\
+Using one of the parameter names, its current value can be obtained by `getParam('name')` and \n\
+is writable by `setParam('name', newValue)` (if not read-only) \n\
+\n\
+Returns \n\
+------- \n\
+out : {list} \n\
+    list of parameter names \n\
+\n\
+See Also \n\
+--------- \n\
+getParam, setParam, getParamListInfo");
+
+PyDoc_STRVAR(pyPluginGetParamListInfo_doc, "getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters. \n\
+\n\
+Each plugin defines a set of parameters, where each parameter has got a name and maps to any value. The value is represented by \n\
+the C++ class ito::ParamBase and can have one of the following types: \n\
+\n\
+* String \n\
+* Char \n\
+* Integer \n\
+* Double \n\
+* CharArray \n\
+* IntegerArray \n\
+* DoubleArray \n\
+* DataObject \n\
+* PolygonMesh \n\
+* PointCloud \n\
+* Another plugin instance \n\
+\n\
+Using one of the parameter names, its current value can be obtained by `getParam('name')` and \n\
+is writable by `setParam('name', newValue)` (if not read-only) \n\
+\n\
+This method prints a detailed table with the name, current value, description string and further meta information of every plugin parameter. \n\
+\n\
+Parameters \n\
+----------- \n\
+detailLevel : {dict}, optional \n\
+    if `detailLevel == 1`, function returns a dictionary with parameters, else None is returned [default]\n\
+\n\
+Returns \n\
+------- \n\
+out : {None, dict} \n\
+    If `detailLevel == 1`, a dictionary containing all printed information is returned \n\
+\n\
+See Also \n\
+---------- \n\
+getParam, setParam, getParamList");
+
+PyDoc_STRVAR(pyPluginGetParam_doc, "getParam(name) -> current value of the plugin parameter 'name'.\n\
+\n\
+Returns the current value of the internal plugin parameter with 'name'. The type of the returned value depends on the \n\
+real type of the internal plugin, which may be: \n\
+\n\
+* String -> str \n\
+* Char, Integer -> int \n\
+* Double -> float \n\
+* CharArray, IntegerArray -> tuple of int \n\
+* DoubleArray -> tuple of float \n\
+* DataObject -> dataObject \n\
+* PolygonMesh -> polygonMesh \n\
+* PointCloud -> pointCloud \n\
+* Another plugin instance -> dataIO or actuator \n\
+\n\
+The name of the parameter must have the following form: \n\
+\n\
+* name \n\
+* name:additionalTag (additionalTag can be a special feature of some plugins) \n\
+* name[index] \n\ (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
+* name[index]:additionalTag \n\
+\n\
+Parameters \n\
+----------- \n\
+name : {str}\n\
+    name of the requested parameter\n\
+\n\
+Returns \n\
+------- \n\
+out : {variant}\n\
+    value of the parameter \n\
+\n\
+Raises \n\
+----- \n\
+ValueError \n\
+    if parameter does not exist \n\
+\n\
+See Also \n\
+--------- \n\
+setParam, getParamList, getParamListInfo");
+
+PyDoc_STRVAR(pyPluginSetParam_doc, "setParam(name, value) -> sets parameter 'name' to the given value.\n\
+\n\
+Sets the internal plugin parameter with 'name' to a new value. The plugin itsself can decide whether the given value is \n\
+accepted as new value. This may depend on the type of the given value, but also on the allowed value range indicated by \n\
+further meta information of the internal parameter. Parameters that have the read-only flag set can not be reset. \n\
+\n\
+The name of the parameter must have the following form: \n\
+\n\
+* name \n\
+* name:additionalTag (additionalTag can be a special feature of some plugins) \n\
+* name[index] \n\ (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
+* name[index]:additionalTag \n\
+\n\
+Parameters \n\
+----------- \n\
+name : {str}\n\
+    name of the parameter\n\
+value : {str, int, double, ...}\n\
+    value that will be set. Only the name and existance of the parameter is checked before passing the request to the plugin. \n\
+    The plugin itsself is responsible for further validations (including read-only attribute). \n\
+\n\
+See Also \n\
+--------- \n\
+getParam, getParamList, getParamListInfo");
+
+PyDoc_STRVAR(pyPluginShowToolbox_doc, "showToolbox() -> open toolbox of the plugin \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if plugin does not provide a toolbox \n\
+\n\
+See Also \n\
+--------- \n\
+hideToolbox");
+
+PyDoc_STRVAR(pyPluginHideToolbox_doc, "hideToolbox() -> hides toolbox of the plugin \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if plugin does not provide a toolbox \n\
+\n\
+See Also \n\
+--------- \n\
+showToolbox");
+
+PyDoc_STRVAR(pyPluginShowConfiguration_doc, "showConfiguration() -> show configuration dialog of the plugin\n\
+\n\
+Raises \n\
+------- \n\
+RuntimeError \n\
+    if plugin does not provide a configuration dialog");
+//general docstrings END
 
 
 
@@ -896,20 +1139,28 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name[, mandparams, optparams]) -> constructor \n\
+PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name[, mandparams, optparams]) -> creates new instance of actuator plugin 'name' \n\
 \n\
-This is the constructor for a actuator-type plugins. It initializes an new instance\
-if the plugin specified by 'name'. The initialisation parameters are parsed and unnamed parameters are used in their \
-incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
-with name as well but after the first named parameter no more unnamed parameters are allowed.\
+This is the constructor for an `actuator` plugin. It initializes an new instance of the plugin specified by 'name'. \n\
+The initialisation parameters are parsed and unnamed parameters are used in their incoming order to fill first \n\
+mandatory parameters and afterwards optional parameters. Parameters may be passed with name as well but after \n\
+the first named parameter no more unnamed parameters are allowed.\n\
+\n\
 See pluginHelp(name) for detail information about the specific initialisation parameters.\n\
 \n\
 Parameters \n\
 ----------- \n\
 name : {str} \n\
     is the fullname (case sensitive) of an 'actuator'-plugin as specified in the plugin-window. \n\
-initParameters : {variant}, mandatory & optional \n\
-    Parameters to pass to the plugin, content and type depend on the specific plugin.");
+mandparams : {variant(s)} \n\
+    arguments corresponding the mandatory initialization parameters. The number of arguments and their order must fit the the required mandatory parameters \n\
+optparams : {variant(s)}, optional \n\
+    argument corresponding to the optional initialization parameters. If unnamed arguments are used, their order must correspond to the order of the optional parameters, keyword-based parameters are allowed as well. \n\
+\n\
+Returns \n\
+-------- \n\
+inst : {actuator} \n\
+    new instance of the actuator-plugin");
 
 /** constructor for actuator object (plugin) accessible from python
 *   @param [in] self    the according pythonActuator object
@@ -1101,21 +1352,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_name(PyActuatorPlugin* self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetParamList_doc, "getParamList() -> returns the list of available parameters of the plugin\n\
-\n\
-Returns \n\
-------- \n\
-list of available parameters of the plugin\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *   @return             a string with all available parameters for this actuator
@@ -1131,23 +1367,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_getParamList(PyActuatorPlugin* self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetParamListInfo_doc, "getParamListInfo([detailLevel]) -> plots informations about plugin parameters. \n\
-\n\
-Parameters \n\
------------ \n\
-detailLevel : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
-\n\
-Returns \n\
-------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Generates an online help for available parameters and additional informations of the plugin.");                                             
-
 /** returns the list of available parameters and additional information about the plugin
 *   @param [in] self    the actuator object (python)
 *   @return             a string with all available parameters for this actuator
@@ -1177,25 +1396,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* sel
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetParam_doc, "getParam(name) -> value of the parameter 'name'.\n\
-\n\
-Parameters \n\
------------ \n\
-name : {str???}\n\
-    name of the parameter to get value for\n\
-\n\
-Returns \n\
-------- \n\
-doctodo\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+
 
 /** gets a parameter value
 *   @param [in] self    the actuator object (python)
@@ -1211,24 +1412,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_getParam(PyActuatorPlugin* self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorSetParam_doc, "setParam(name, value) -> sets parameter 'name' to the given value.\n\
-\n\
-Parameters \n\
------------ \n\
-name : {str???}\n\
-    name of the parameter which value is set\n\
-value : {str, int, double, ...}\n\
-    value that will be set. The value is checked against the param's parameter definition before involing the setParam method\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** set a parameter to a new value
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the parameter name and new value
@@ -1243,24 +1426,21 @@ PyObject* PythonPlugins::PyActuatorPlugin_setParam(PyActuatorPlugin* self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorCalib_doc, "calib(axis[, axis1, ...]) -> starts calibration of given axes (0-based).\n\
+PyDoc_STRVAR(pyActuatorCalib_doc, "calib(axis[, axis1, ...]) -> starts calibration or homing of given axes (0-based).\n\
+\n\
+Most actuators have the possibility to calibrate or home certain axes. Use this command to start the calibration. \n\
 \n\
 Parameters \n\
 ----------- \n\
-axis : {axis???}\n\
-    axis that should be calibrated\n\
+axis : {int}\n\
+    index of the first axis to calibrate (e.g. 0 for first axis) \n\
+axis1 : {int}\n\
+    add the indices of further axes as optional arguments if they should be calibrated as well\n\
 \n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+Raises \n\
+---------- \n\
+NotImplemented : \n\
+    if calibration not available");
 /** calibrate actuator axi(e)s
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the axi(e)s numbers
@@ -1356,19 +1536,20 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyActuatorSetOrigin_doc, "setOrigin(axis[, axis1, ...]) -> defines the actual position of the given axes to value 0. \n\
 \n\
+The current positions of all indicated axes (axis, axis1,...) are considered to be 0 such that following positioning commands \n\
+are relative with respect to the current position. \n\
+\n\
 Parameters \n\
 ----------- \n\
-axis : {axis}\n\
-    axis for which the origin should be set\n\
+axis : {int}\n\
+    index of the first axis (e.g. 0 for first axis) \n\
+axis1 : {int}\n\
+    add the indices of further axes as optional arguments\n\
 \n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+Raises \n\
+---------- \n\
+NotImplemented : \n\
+    if actuator does not support this feature");
 
 /** set the origin of axi(e)s
 *   @param [in] self    the actuator object (python)
@@ -1461,20 +1642,38 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus() -> retrieve the actuator status.\n\
+PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus() -> returns a list of status values for each axis\n\
+\n\
+Each axis of an actuator plugin has got a status value that is used for informing about the current status of the axis. \n\
+\n\
+The status value is an or-combination of the following possible values: \n\
+\n\
+Moving flags: \n\
+\n\
+* actuatorUnknown     = 0x0001 : unknown current moving status \n\
+* actuatorInterrupted = 0x0002 : movement has been interrupted by the user or another error during the movement occurred \n\
+* actuatorMoving      = 0x0004 : axis is currently moving \n\
+* actuatorAtTarget    = 0x0008 : axis reached the target position \n\
+* actuatorTimeout     = 0x0010 : timout during movement. Unknown status of the movement \n\
+\n\
+Switches flags: \n\
+\n\
+* actuatorEndSwitch      = 0x0100 : axis reached any end switch (e.g. if only one end switch is available) \n\
+* actuatorLeftEndSwitch  = 0x0200 : axis reached the left end switch \n\
+* actuatorRightEndSwitch = 0x0400 : axis reached the right end switch \n\
+* actuatorRefSwitch      = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
+* actuatorLeftRefSwitch  = 0x1000 : axis reached left reference switch \n\
+* actuatorRightRefSwitch = 0x2000 : axis reached right reference switch \n\
+\n\
+Status flags: \n\
+\n\
+* actuatorAvailable = 0x4000 : the axis is available \n\
+* actuatorEnabled   = 0x8000 : the axis is currently enabled and can be moved \n\
 \n\
 Returns \n\
 ------- \n\
-doctodo\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+status : {list of integers} \n\
+    list of integers (size corresponds to number of axes) with the current status of each axis");
 /** get the status of an actuator
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the axi(e)s numbers
@@ -1518,44 +1717,35 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     }
 
     int size = status->size();
-    if (size>0)
+    result = PyList_New(size); //new ref
+    for (int i = 0; i < size; ++i)
     {
-        result = PyList_New(size); //new ref
-        for (int i=0;i<size;i++)
-        {
-            PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
-        }
+        PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
     }
-    else
-    {
-        Py_INCREF(Py_None);
-        result = Py_None;
-    }
-    /*result = PyLong_FromLong(*status);*/
 
     return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetPos_doc, "getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes.\n\
+PyDoc_STRVAR(pyActuatorGetPos_doc, "getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes (in mm or degree).\n\
+\n\
+This method requests the current position(s) of the given axes and returns it. \n\
 \n\
 Parameters \n\
 ----------- \n\
-axis : {axis???}\n\
-    axis for which the position should be returned\n\
+axis : {int}\n\
+    index of the first axis (e.g. 0 for first axis) \n\
+axis1 : {int}\n\
+    add the indices of further axes as optional arguments\n\
 \n\
 Returns \n\
 ------- \n\
-doctodo\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+positions : {float or tuple of float} \n\
+    Current position as float value if only one axis is given or tuple of floats for multiple axes. The unit is mm or degree. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");                         
+setPosRel, setPosAbs");                         
                                
 /** get the current position of axi(e)S
 *   @param [in] self    the actuator object (python)
@@ -1670,20 +1860,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     return result;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyActuatorPlugin_getType_doc, "getType() -> returns actuator type\n\
-\n\
-Returns \n\
-------- \n\
-actuator type\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+PyDoc_STRVAR(PyActuatorPlugin_getType_doc, "getType() -> returns actuator type");
 /** returns the type of the actuator object
 *   @param [in] self    the actuator object (python)
 *   @return             a string with the type
@@ -1742,16 +1919,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorShowConfiguration_doc, "showConfiguration() -> open configuration dialog of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** open configuration dialog
 *   @param [in] self    the actuator object (python)
 *
@@ -1760,32 +1927,11 @@ See Also \n\
 PyObject* PythonPlugins::PyActuatorPlugin_showConfiguration(PyActuatorPlugin* self)
 {
     ito::AddInBase *aib = self->actuatorObj;
-
-    if (aib)
-    {
-        if (aib->hasConfDialog())
-        {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
-        }
-        else
-        {
-            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
-        }
-    }
-
-    Py_RETURN_NONE;
+    return plugin_showConfiguration(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorShowToolbox_doc, "showToolbox() -> open toolbox of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+
 
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
@@ -1795,42 +1941,10 @@ See Also \n\
 PyObject* PythonPlugins::PyActuatorPlugin_showToolbox(PyActuatorPlugin* self)
 {
     ito::AddInBase *aib = self->actuatorObj;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    ito::RetVal retval;
-
-    if (aib)
-    {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
-        {
-            retval += ito::RetVal(ito::retError,0,"timeout while showing dock widget");
-        }
-        else
-        {
-            retval += locker.getSemaphore()->returnValue;
-        }
-    }
-
-    if (!SetReturnValueMessage(retval, "showToolbox"))
-    {
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
+    return plugin_showToolbox(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorHideToolbox_doc, "hideToolbox() -> hides toolbox of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *
@@ -1839,29 +1953,7 @@ See Also \n\
 PyObject* PythonPlugins::PyActuatorPlugin_hideToolbox(PyActuatorPlugin* self)
 {
     ito::AddInBase *aib = self->actuatorObj;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    ito::RetVal retval;
-
-    if (aib)
-    {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
-        {
-            retval += ito::RetVal(ito::retError, 0, "timeout while showing dock widget");
-        }
-        else
-        {
-            retval += locker.getSemaphore()->returnValue;
-        }
-    }
-
-    if (!SetReturnValueMessage(retval, "showToolbox"))
-    {
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
+    return plugin_hideToolbox(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1955,23 +2047,22 @@ ito::RetVal parsePosParams(PyObject *args, char **&cargs, char *&cargt, QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorSetPosAbs_doc,"setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves axis to given absolute value (in mm).\n\
+PyDoc_STRVAR(pyActuatorSetPosAbs_doc,"setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves given axes to given absolute values (in mm or degree).\n\
+\n\
+All arguments are a pair of axis index and the new target position of this axis. This method starts the absolute positioning of all given axes. \n\
+If the 'async' parameter of the plugin is 0 (usually default), a synchronous positioning is started, hence, this method returns after that all \n\
+axes reached their target position or a timeout occurred. Else this method immediately returns and the actuator goes on moving. \n\
 \n\
 Parameters \n\
 ----------- \n\
-axis : {axis???}, optional \n\
-    axis that should be moved absolute\n\
-pos : {???} \n\
-    new position for axis\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+axisM : {int} \n\
+    index of the axis to position \n\
+posM : {float} \n\
+    absolute target position of the `axisM` (in mm or degree) \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");                             
+getPos, setPosRel");                             
 
 /** set actuator axi(e)s to new absolute position(s)
 *   @param [in] self    the actuator object (python)
@@ -2024,35 +2115,27 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorSetPosRel_doc,"setPosRel(axis, pos[, axis1, pos1, ...]) -> relatively moves given axes by the given distances [in mm].\n\
+PyDoc_STRVAR(pyActuatorSetPosRel_doc,"setPosRel(axis0, pos0[, axis1, pos1, ...]) -> relatively moves given axes by the given distances [in mm or degree].\n\
+\n\
+All arguments are a pair of axis index and the relative moving-distance of this axis. This method starts the relative positioning of all given axes. \n\
+If the 'async' parameter of the plugin is 0 (usually default), a synchronous positioning is started, hence, this method returns after that all \n\
+axes reached their target position or a timeout occurred. Else this method immediately returns and the actuator goes on moving. \n\
 \n\
 Parameters \n\
 ----------- \n\
-axis : {axis???} \n\
-    axis that should be moved relative \n\
-pos : {???}\n\
-    position increment/decrement for axis\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+axisM : {int} \n\
+    index of the axis to position \n\
+posM : {float} \n\
+    relative target position of the `axisM` (in mm or degree) \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
-
+getPos, setPosAbs"); 
 /** set actuator axi(e)s to new relative position(s)
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the axi(e)s numbers
@@ -2116,12 +2199,12 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
-   {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyActuatorGetParamList_doc},
-   {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyActuatorGetParamListInfo_doc},
+   {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
+   {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyPluginName_doc},
-   {"getParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParam, METH_VARARGS, pyActuatorGetParam_doc},
-   {"setParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_setParam, METH_VARARGS, pyActuatorSetParam_doc},
+   {"getParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParam, METH_VARARGS, pyPluginGetParam_doc},
+   {"setParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_setParam, METH_VARARGS, pyPluginSetParam_doc},
    {"calib", (PyCFunction)PythonPlugins::PyActuatorPlugin_calib, METH_VARARGS, pyActuatorCalib_doc},
    {"setOrigin", (PyCFunction)PythonPlugins::PyActuatorPlugin_setOrigin, METH_VARARGS, pyActuatorSetOrigin_doc},
    {"getStatus", (PyCFunction)PythonPlugins::PyActuatorPlugin_getStatus, METH_VARARGS, pyActuatorGetStatus_doc},
@@ -2130,9 +2213,9 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"setPosRel", (PyCFunction)PythonPlugins::PyActuatorPlugin_setPosRel, METH_VARARGS, pyActuatorSetPosRel_doc},
    {"getType", (PyCFunction)PythonPlugins::PyActuatorPlugin_getType, METH_NOARGS, PyActuatorPlugin_getType_doc},
    {"exec", (PyCFunction)PythonPlugins::PyActuatorPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyActuatorPlugin_execFunc_doc},
-   {"showConfiguration", (PyCFunction)PythonPlugins::PyActuatorPlugin_showConfiguration, METH_NOARGS, pyActuatorShowConfiguration_doc},
-   {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyActuatorShowToolbox_doc},
-   {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyActuatorHideToolbox_doc},
+   {"showConfiguration", (PyCFunction)PythonPlugins::PyActuatorPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
+   {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
+   {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -2186,6 +2269,11 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    0,                                       /* tp_alloc */
    PyActuatorPlugin_new                     /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
+
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** desctructor for dataIO object in python
@@ -2251,27 +2339,28 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name[, mandparams, optparams]) -> constructor \n\
+PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name' \n\
+\n\
+This is the constructor for a `dataIO` plugin. It initializes an new instance of the plugin specified by 'name'. \n\
+The initialisation parameters are parsed and unnamed parameters are used in their incoming order to fill first \n\
+mandatory parameters and afterwards optional parameters. Parameters may be passed with name as well but after \n\
+the first named parameter no more unnamed parameters are allowed.\n\
+\n\
+See pluginHelp(name) for detail information about the specific initialisation parameters.\n\
 \n\
 Parameters \n\
 ----------- \n\
 name : {str} \n\
-    is the fullname (case sensitive) of a 'dataIO'-plugin as specified in the plugin-window. \n\
-    initParameters : {variant}, mandatory & optional \n\
-    Parameters to pass to the plugin, content and type depend on the specific plugin.\n\
+    is the fullname (case sensitive) of an 'actuator'-plugin as specified in the plugin-window. \n\
+mandparams : {variant(s)} \n\
+    arguments corresponding the mandatory initialization parameters. The number of arguments and their order must fit the the required mandatory parameters \n\
+optparams : {variant(s)}, optional \n\
+    argument corresponding to the optional initialization parameters. If unnamed arguments are used, their order must correspond to the order of the optional parameters, keyword-based parameters are allowed as well. \n\
 \n\
 Returns \n\
-------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This is the constructor for a dataIO-type plugins. It initializes an new instance\n\
-if the plugin specified by 'name'. The initialisation parameters are parsed and unnamed parameters are used in their \n\
-incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \n\
-with name as well but after the first named parameter no more unnamed parameters are allowed.\n\
-See pluginHelp(name) for detail information about the specific initialisation parameters.");
+-------- \n\
+inst : {dataIO} \n\
+    new instance of the dataIO-plugin");
 
 /** constructor for dataIO object
 *   @param [in] self    the according dataIO object
@@ -2458,20 +2547,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_repr(PyDataIOPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getParamList_doc, "getParamList() -> returns list of possible parameters.\n\
-\n\
-Returns \n\
-------- \n\
-List of possible Parameters\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
 /** returns the list of available parameters
 *   @param [in] self    the dataIO object (python)
 *   @return             a string with all available parameters for this dataIO
@@ -2486,23 +2561,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParamList(PyDataIOPlugin* self)
     return getParamList(aib);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getParamListInfo_doc, "getParamListInfo([detailLevel]) -> plots informations about plugin parameters. \n\
-\n\
-Parameters \n\
------------ \n\
-detailLevel : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
-\n\
-Returns \n\
-------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Generates an online help for available parameters and additional informations of the plugin.");  
-
 /** returns the list of available parameters and additional information about the plugin
 *   @param [in] self    the dataIO object (python)
 *   @return             a string with all available parameters for this dataIO
@@ -2531,25 +2589,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, P
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getParam_doc, "getParam(name) -> returns the value of the given parameter.\n\
-\n\
-Parameters \n\
------------ \n\
-name : {str???}\n\
-\n\
-Returns \n\
-------- \n\
-Value of the given parameter\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** return a parameter value
 *   @param [in] self        the addIn whoes parameter is requested
 *   @param [in] args        the parameter name
@@ -2564,22 +2603,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_setParam_doc, "setParam(name,value) -> sets value of parameter, given by name.\n\
-\n\
-Parameters \n\
------------ \n\
-name : {str???}\n\
-value : {str, int, double, ...}\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** set a parameter to a new value
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the parameter name and new value
@@ -2595,29 +2618,23 @@ PyObject* PythonPlugins::PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_startDevice_doc,"startDevice([count=1]) -> starts the given dataIO-plugin. \n\
-If you call startDevice multiple times, the device is only started at the first call, the next calls \n\
-only increment a internal counter. This is necessary, since every connected live image needs to start the device \n\
-without knownledge about any previous start. A call to stopDevice decrements this counter and closes the hardware device \n\
-if that counter drops to 0 again. No acquisition is possible, if the device has not been started, hence the counter is 0. \n\
+\n\
+This command starts the dataIO plugin such that it is ready for data acquisition. Call this method before you start \n\
+using commands like acquire, `getVal` or `copyVal`. If the device already is started, an internal start-counter is incremented \n\
+by the parameter 'count'. The corresponding `stopDevice` method then decrements this counter and finally stops the device once \n\
+the counter drops to zero again. \n\
+\n\
+The counter is necessary, since every connected live image needs to start the device without knownledge about any \n\
+previous start. No acquisition is possible, if the device has not been started, hence the counter is 0. \n\
 \n\
 Parameters \n\
 ----------- \n\
-count : {unsigned integer}, optional \n\
-    default = 1\n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-if count > 1, startDevice is executed 'count' times, in order to increment the grabber internal start counter. \n\
+count : {int}, optional \n\
+    Number of increments to the internal start-counter [default:1] \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
-    
-
+stopDevice()");
 /** start a dataIO device, i.e. prepare it for recording data
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    should be empty
@@ -2671,19 +2688,28 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_stopDevice_doc,"stopDevice([count=1]) -> stops the given dataIO-plugin. \n\
-Usually no acquisition is possible, if the device is not started. \n\
+\n\
+If this method is called as many times as the corresponding `startDevice` (or if the counts are equal), the \n\
+dataIO device is stopped (not deleted) and it is not possible to acquire further data. \n\
+\n\
+Once a live image is connected to a camera, `startDevice` is automatically called at start of the live acquisition \n\
+and `stopDevice` at shutdown. \n\
 \n\
 Parameters \n\
 ----------- \n\
-count : {Integer > 0}, optional\n\
+count : {int}, optional\n\
     default = 1\n\
-    if count > 1, stopDevice is executed 'count' times, in order to decrement the grabber internal start counter. \n\
-    You can also use -1 as count argument, then stopDevice is repeated until the internal start counter is 0. The number of effective counts is then returned \n\
+    if count > 1, `stopDevice` is executed 'count' times, in order to decrement the grabber internal start counter. \n\
+    You can also use -1 as count argument, then `stopDevice` is repeated until the internal start counter is 0. The number of effective counts is then returned \n\
 \n\
 Returns \n\
------------ \n\
-None or the number of cycles that have been necessary to finally decrement the grabber's internal start counter to 0 (only if count==-1)\n\
-");
+-------- \n\
+counts : {None or int} \n\
+    If `count == -1` the number of required counts to finally stop the device is returned. Else: None \n\
+\n\
+See Also \n\
+--------- \n\
+startDevice()");
 
 /** stop a dataIO device
 *   @param [in] self    the dataIO object (python)QString
@@ -2778,15 +2804,18 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers the camera acquisition \n\
-Use this command to start the image acquisition depending on the trigger parameter. \n\
+PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers a new the camera acquisition \n\
+\n\
+This method triggers a new data acquisition. This method immediately returns even if the acquisition is not finished yet. \n\
+Use `getVal` or `copyVal` to get the acquired data. Both methods block until the data is available. \n\
 \n\
 Parameters \n\
 ----------- \n\
-trigger : {Integer}, optional\n\
-    default = 0, dataIO.TRIGGER_SOFTWARE\n\
-    In case of dataIO.TRIGGER_SOFTWARE (0) the acquisition is immediately started after this command. \n\
-");
+trigger : {int}, optional\n\
+    Type of the trigger: \n\
+    \n\
+    *dataIO.TRIGGER_SOFTWARE = 0 : a software trigger is started, hence, the acquisition is immediately started when calling this method\n\
+    *others : depending on your camera, this parameter can be used to set other triggers, like hardware trigger with raising or falling edges...");
 
 /** acquire data with a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -2832,32 +2861,39 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=dataObject|byteArray|bytes [,length=maxlength]) -> returns shallow copy of internal camera image if dataObject-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
+PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=`dataObject`|`bytearray`|`bytes` [,length=maxlength]) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
 \n\
+Returns a reference (shallow copy) of the recently acquired image (located in the internal memory if the plugin) if the plugin is a grabber or camera and the buffer is a `dataObject`. \n\
+Please consider that the values of the `dataObject` might change if a new image is acquired since it is only a reference. Therefore consider copying the `dataObject` or directly use \n\
+`copyVal`. \n\
+\n\
+If no acquisition has been triggered, this method raises a RuntimeError. If the acquisition is not finished yet, this method \n\
+blocks and waits until the end of the acquisition. \n\
+\n\
+If the plugin is another type than a grabber or camera (e.g. serialIO), this method requires any buffer-object that is preallocated with a reasonable size. Then, the currently available \n\
+data is copied into this buffer object and the size of the copied data is returned. If the buffer is too small, only the data that fits into the buffer is copied. Another call to \n\
+`getVal` will copy the rest. \n\
 \n\
 Parameters \n\
 ----------- \n\
-doctodo \n\
+buffer : {`dataObject`, `bytearray`, `bytes` or `str`} \n\
+    this parameter depends on the type of dataIO-instance: \n\
+    \n\
+    * cameras, grabber: the buffer must be a `dataObject` (no length parameter): A reference (shallow copy) to the internal memory of the camera plugin is set to the given data object. \
+    Therefore its content may change if a new image is being acquired by the camera. Consider taking a deep copy if the image (`dataObject.copy`) or use the method `copyVal`. \n\
+    * other IO-devices (AD-converters): The buffer must be an object of type bytearray, bytes or unicode string. The length parameter is then set to the size of the buffers. The effective \
+    size of the used memory in buffer is returned. \n\
+length : {int}, optional \n\
+    size of the given buffer. This value is usually automatically determined and must not be given. \n\
 \n\
 Returns \n\
-------- \n\
-shallow copy of internal camera image\n\
-\n\
-Notes \n\
------ \n\
-Cameras, Grabber: \n\
-- buffer (dataObject), no length value: The image in dataObject is only a shallow copy of the camera internal memory. Therefore this content \n\
-    may change if a new image has been acquired by the camera. Therefore consider to make a deep copy of this image or use the method copyVal. \n\
-\n\
-further IO-devices: \n\
-- buffer (allocated byteArray, bytes...) and optional a length with the maximum number of characters which should be requested by the plugin. \n\
-If length is not provided it is set to the length of the given buffer. Finally the number of effectively set characters is returned.\n\
-\n\
+-------- \n\
+out : {None or int} \n\
+    None or size of used buffer if buffer is no `dataObject` \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+copyVal()");
 
 /** get values from a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -2967,21 +3003,29 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_copyVal_doc,"copyVal(dataObject) -> gets deep copy of data of this plugin, stored in the given data object. \n\
 \n\
+Returns a deep copy of the recently acquired data (for grabber and ADDA only) of the camera or AD-converter device. \n\
+The deep copy sometimes requires one copy operation more than the similar command `getVal`. However, `getVal` only returns \n\
+a reference to the plugin internal data structure whose values might be changed if another data acquisition is started. \n\
+\n\
+If no acquisition has been triggered, this method raises a RuntimeError. If the acquisition is not finished yet, this method \n\
+blocks and waits until the end of the acquisition. \n\
+\n\
 Parameters \n\
 ----------- \n\
-dataObject : {doctodo}\n\
+dataObject : {`dataObject`}\n\
+    `dataObject` where the plugin data is copied to. Either provide an empty `dataObject` or a `dataObject` whose size (or region of interest) \n\
+    exactly has the same size than the available data of the plugin. Therefore you can allocate a 3D data object, set a region of interest \n\
+    to one plane such that the data from the plugin is copied into this plane. \n\
 \n\
-Returns \n\
+Raises \n\
 ------- \n\
-\n\
-Notes \n\
------ \n\
-The object is not changed / adepted to the grabber and must be allocated properly before copyVal is called\n\
+RuntimeError \n\
+    if the dataIO plugin is anything else than ADDA or grabber\n\
+    or if no acquisition has been triggered \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+getVal()");
 /** copy values from a dataIO device to an existing dataObject
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    input buffer
@@ -3081,20 +3125,21 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_setVal_doc,"setVal(dataObject) -> transfers given dataObject to dataIO-plugin.\n\
+PyDoc_STRVAR(PyDataIOPlugin_setVal_doc,"setVal(dataObjectOrBuffer [, length=1]) -> transfer given `dataObject` to ADDA plugin or further buffer to other dataIO plugin.\n\
+\n\
+If the dataIO plugin has the subtype ADDA, this method is used to send data to one or more analog outputs of the device. \n\
+In this case a `dataObject` must be given as first argument and the second argument `length` must be 1. \n\
+\n\
+For other dataIO plugins, the first argument must be any buffer object, like `bytearray`, `bytes` or `unicode string`. The length is then extracted \n\
+from this value. However it is also possible to define a user-defined size using the 'length' argument. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dataObject : {dataObject???}\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+dataObjectOrBuffer : {`dataObject`, `bytearray`, `bytes`, `str`}\n\
+    value to send to plugin. For an ADDA plugin, a `dataObject` is required whose content is sent to the analogous outputs of the device. For other dataIO \n\
+    plugins buffer values like `bytearray`, `bytes` or `unicode string` is required. \n\
+length : {int}, optional \n\
+    usually this value is not required, since the length of the buffer is automatically extracted from the given objects and 1 for a `dataObject`");
 
 /** write values to a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -3258,17 +3303,18 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_enableAutoGrabbing_doc,"enableAutoGrabbing() -> enables auto grabbing for the grabber (camera...), \n\
+PyDoc_STRVAR(PyDataIOPlugin_enableAutoGrabbing_doc,"enableAutoGrabbing() -> enable auto grabbing for the grabber (camera...), \n\
 \n\
-Notes \n\
------ \n\
-such that live images will continuously get new data. \n\
-[Recommended if the measurement routine does not need any camera image at the moment.]\n\
+If the auto grabbing flag is set, the camera acquisition is automatically and continuously triggered if at least one live image is \n\
+connected. This is an undesired behaviour if a measurement is started where the acquisition should be controlled by a specific \n\
+script or something similar. Then disable the auto grabbing property. All connected live images will then get new images when \n\
+`getVal` or `copyVal` is called by the script. The live image timer is disabled. \n\
+\n\
+This method enables the auto grabbing flag. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+setAutoGrabbing(on), disableAutoGrabbing(), getAutoGrabbing()");
                
 /** enable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -3312,17 +3358,18 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_disableAutoGrabbing_doc,"disableAutoGrabbing() -> Disables auto grabbing for the grabber (camera...), \n\
+PyDoc_STRVAR(PyDataIOPlugin_disableAutoGrabbing_doc,"disableAutoGrabbing() -> Disable auto grabbing for the grabber (camera...), \n\
 \n\
-Notes \n\
------ \n\
-such that live images only will be updated if a new image is manually grabbed. \n\
-[Recommended if the measurement routine requires camera images by itself.]\n\
+If the auto grabbing flag is set, the camera acquisition is automatically and continuously triggered if at least one live image is \n\
+connected. This is an undesired behaviour if a measurement is started where the acquisition should be controlled by a specific \n\
+script or something similar. Then disable the auto grabbing property. All connected live images will then get new images when \n\
+`getVal` or `copyVal` is called by the script. The live image timer is disabled. \n\
+\n\
+This method disables the auto grabbing flag. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");                                                  
+setAutoGrabbing(on), disableAutoGrabbing(), getAutoGrabbing()");                                                  
 /** disable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    empty
@@ -3361,7 +3408,14 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_setAutoGrabbing_doc,"setAutoGrabbing(on) -> Sets auto grabbing of the grabber device on or off\n\
+PyDoc_STRVAR(PyDataIOPlugin_setAutoGrabbing_doc,"setAutoGrabbing(on) -> Set auto grabbing of the grabber device to on or off\n\
+\n\
+If the auto grabbing flag is set, the camera acquisition is automatically and continuously triggered if at least one live image is \n\
+connected. This is an undesired behaviour if a measurement is started where the acquisition should be controlled by a specific \n\
+script or something similar. Then disable the auto grabbing property. All connected live images will then get new images when \n\
+`getVal` or `copyVal` is called by the script. The live image timer is disabled. \n\
+\n\
+This method allows setting this flag. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -3369,14 +3423,9 @@ on : {bool}\n\
     * TRUE = on\n\
     * FALSE = off\n\
 \n\
-Notes \n\
------ \n\
-such that live images only will be updated if a new image is manually grabbed (on).\n\
-\n\
 See Also \n\
 --------- \n\
-\n\
-");
+enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing()");
 PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, PyObject * args)
 {
     ito::RetVal ret = ito::retOk;
@@ -3419,24 +3468,22 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getAutoGrabbing_doc,"getAutoGrabbing() -> returns the status of the auto grabbing flag. \n\
+PyDoc_STRVAR(PyDataIOPlugin_getAutoGrabbing_doc,"getAutoGrabbing() -> return the status of the auto grabbing flag. \n\
+\n\
+If the auto grabbing flag is set, the camera acquisition is automatically and continuously triggered if at least one live image is \n\
+connected. This is an undesired behaviour if a measurement is started where the acquisition should be controlled by a specific \n\
+script or something similar. Then disable the auto grabbing property. All connected live images will then get new images when \n\
+`getVal` or `copyVal` is called by the script. The live image timer is disabled. \n\
 \n\
 Returns \n\
 ------- \n\
 auto grabbing flag : {bool}\n\
-    * false = auto grabbing off \n\
-    * true = auto grabbing on. \n\
-\n\
-Notes \n\
------ \n\
-See methods enableAutoGrabbing() or disableAutoGrabbing().\n\
+    * False = auto grabbing off \n\
+    * True = auto grabbing on. \n\
 \n\
 See Also \n\
 --------- \n\
-enableAutoGrabbing()\n\
-disableAutoGrabbing()\n\
-\n\
-");
+enableAutoGrabbing(), disableAutoGrabbing(), setAutoGrabbing(bool)");
 
 /** return the status of the autograbbing
 *   @param [in] self    the dataIO object (python)
@@ -3454,20 +3501,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, Py
     Py_RETURN_FALSE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getType_doc, "getType() -> returns dataIO type\n\
-\n\
-Returns \n\
-------- \n\
-dataIO type\n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
+PyDoc_STRVAR(PyDataIOPlugin_getType_doc, "getType() -> returns dataIO type");
 /** returns the type of the dataIO object
 *   @param [in] self    the dataIO object (python)
 *   @return             a string with the type
@@ -3527,16 +3561,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOShowConfiguration_doc, "showConfiguration() -> open configuration dialog of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** open configuration dialog
 *   @param [in] self    the actuator object (python)
 *
@@ -3545,33 +3569,10 @@ See Also \n\
 PyObject* PythonPlugins::PyDataIOPlugin_showConfiguration(PyDataIOPlugin* self)
 {
     ito::AddInBase *aib = self->dataIOObj;
-
-    if (aib)
-    {
-        if (aib->hasConfDialog())
-        {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
-        }
-        else
-        {
-            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
-        }
-    }
-
-    Py_RETURN_NONE;
+    return plugin_showConfiguration(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOShowToolbox_doc, "showToolbox() -> open toolbox of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *
@@ -3580,42 +3581,10 @@ See Also \n\
 PyObject* PythonPlugins::PyDataIOPlugin_showToolbox(PyDataIOPlugin* self)
 {
     ito::AddInBase *aib = self->dataIOObj;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    ito::RetVal retval;
-
-    if (aib)
-    {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
-        {
-            retval += ito::RetVal(ito::retError,0,"timeout while showing dock widget");
-        }
-        else
-        {
-            retval += locker.getSemaphore()->returnValue;
-        }
-    }
-
-    if (!SetReturnValueMessage(retval, "showToolbox"))
-    {
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
+    return plugin_showToolbox(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOHideToolbox_doc, "hideToolbox() -> hides toolbox of the plugin\n\
-\n\
-Notes \n\
------ \n\
-\n\
-See Also \n\
---------- \n\
-\n\
-");
-
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *
@@ -3624,29 +3593,7 @@ See Also \n\
 PyObject* PythonPlugins::PyDataIOPlugin_hideToolbox(PyDataIOPlugin* self)
 {
     ito::AddInBase *aib = self->dataIOObj;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    ito::RetVal retval;
-
-    if (aib)
-    {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
-        {
-            retval += ito::RetVal(ito::retError, 0, "timeout while showing dock widget");
-        }
-        else
-        {
-            retval += locker.getSemaphore()->returnValue;
-        }
-    }
-
-    if (!SetReturnValueMessage(retval, "showToolbox"))
-    {
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
+    return plugin_hideToolbox(aib);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3656,12 +3603,12 @@ PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
-   {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, PyDataIOPlugin_getParamList_doc},
-   {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, PyDataIOPlugin_getParamListInfo_doc},
+   {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
+   {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, pyPluginName_doc},
-   {"getParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParam, METH_VARARGS, PyDataIOPlugin_getParam_doc},
-   {"setParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_setParam, METH_VARARGS, PyDataIOPlugin_setParam_doc},
+   {"getParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParam, METH_VARARGS, pyPluginGetParam_doc},
+   {"setParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_setParam, METH_VARARGS, pyPluginSetParam_doc},
    {"startDevice", (PyCFunction)PythonPlugins::PyDataIOPlugin_startDevice, METH_VARARGS, PyDataIOPlugin_startDevice_doc},
    {"stopDevice", (PyCFunction)PythonPlugins::PyDataIOPlugin_stopDevice, METH_VARARGS, PyDataIOPlugin_stopDevice_doc},
    {"acquire", (PyCFunction)PythonPlugins::PyDataIOPlugin_acquire, METH_VARARGS, PyDataIOPlugin_acquire_doc},
@@ -3674,9 +3621,9 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_getAutoGrabbing, METH_NOARGS, PyDataIOPlugin_getAutoGrabbing_doc},
    {"getType", (PyCFunction)PythonPlugins::PyDataIOPlugin_getType, METH_NOARGS, PyDataIOPlugin_getType_doc},
    {"exec", (PyCFunction)PythonPlugins::PyDataIOPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyDataIOPlugin_execFunc_doc},
-   {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyDataIOShowConfiguration_doc},
-   {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyDataIOShowToolbox_doc},
-   {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyDataIOHideToolbox_doc},
+   {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
+   {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
+   {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -3741,6 +3688,8 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
     Py_DECREF(value);
     
 }
+
+#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4081,7 +4030,7 @@ PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyAlgoPlugin_methods[] = {
-   {"getParamList", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamList, METH_NOARGS, PyAlgoPlugin_getParamList_doc},
+   {"getParamList", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamListInfo, METH_VARARGS, PyAlgoPlugin_getParamListInfo_doc},
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyAlgoPlugin_name, METH_NOARGS, "name() -> returns name of algorithm plugin"},
@@ -4141,6 +4090,8 @@ PyTypeObject PythonPlugins::PyAlgoPluginType = {
    0,                         /* tp_alloc */
    PyAlgoPlugin_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
+
+#endif 
 
 } //end namespace ito
 

@@ -66,19 +66,12 @@ class PythonPlugins
        typedef struct
        {
            PyObject_HEAD
-           ito::ActuatorAxis *axisObj;
-           PyObject* base;
-       }
-       PyActuatorAxis;
-
-       typedef struct
-       {
-           PyObject_HEAD
            ito::AddInDataIO *dataIOObj;
            PyObject* base;
        }
        PyDataIOPlugin;
 
+#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
        typedef struct
        {
            PyObject_HEAD
@@ -86,6 +79,7 @@ class PythonPlugins
            PyObject* base;
        }
        PyAlgoPlugin;
+#endif
        
        // Actuator
        static void PyActuatorPlugin_dealloc(PyActuatorPlugin *self);
@@ -169,7 +163,7 @@ class PythonPlugins
        static PyModuleDef  PyDataIOPluginModule;
        static void PyDataIOPlugin_addTpDict(PyObject *tp_dict);
 
-
+#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
        // Algo
        static void PyAlgoPlugin_dealloc(PyAlgoPlugin *self);
        static PyObject *PyAlgoPlugin_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -186,6 +180,7 @@ class PythonPlugins
        static PyMethodDef  PyAlgoPlugin_methods[];
        static PyTypeObject PyAlgoPluginType;
        static PyModuleDef  PyAlgoPluginModule;
+#endif
 };
 
 } //end namespace ito

@@ -299,11 +299,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "dataIO", (PyObject *)&PythonPlugins::PyDataIOPluginType);
             }
 
+#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
             if (PyType_Ready(&PythonPlugins::PyAlgoPluginType) >= 0)
             {
                 Py_INCREF(&PythonPlugins::PyAlgoPluginType);
                 PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
             }
+#endif
 
             PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
             PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;

@@ -1780,12 +1780,12 @@ end:
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("no dock widget available").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("no toolbox available").toAscii().data());
             }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("addin not available").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("plugin not available").toAscii().data());
         }
 
         if (waitCond)
