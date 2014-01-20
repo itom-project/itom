@@ -399,6 +399,10 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
         ui.label->setText("Parser: No help available");
     }
 
+    if (shortDesc != "")
+        rawContent.insert(0,shortDesc+""); // ShortDescription mit ID versehen: id=\"sDesc\" um getrennt zu highlighten
+
+/*
     if (errorCode != 0)
     {
         // Zeilenumbrüche ersetzen
@@ -416,7 +420,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
     {
         rawContent.replace("h1", "h2");
     }
-
+*/
 
     // Überschrift (Funktionsname) einfuegen
     // -------------------------------------
@@ -436,6 +440,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
         rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkPath+"\">"+splittedLink[i]+"</a>");
     }
 
+/*
     if (errorCode != 0)
     {
         // Variables Declaration
@@ -508,6 +513,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
             }
         }
     }
+*/
 
     // merge html content and assign to document   
     if (htmlNotPlainText)
