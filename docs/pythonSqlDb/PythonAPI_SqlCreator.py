@@ -338,7 +338,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         else:
             line[5] = ''
     else:
-        line.append('This Package is only referenced here. It´s original position is: \n')
+        line[5] = 'This Package is only referenced here. It´s original position is: \n'
         
     # 7. Doc
     if (id != 0):
@@ -347,9 +347,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             # Shortdescription extrahieren (Enposition der S.Desc finden)
             s = docstr[m.end():]
             try:
-                # -------Test Block--------
                 # String in lines aufsplitten
-                
                 lines = s.split('\n')
                 ns["lines"] = lines
                 # numpy docstring korrigieren
@@ -358,8 +356,6 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
                 lines = ns['lines']
                 # Linien wieder zusamensetzen
                 cor = "\n".join(lines)
-                # ---Ende des Testblocks---
-                
                 sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})
                 line[7] = '0'
             except:
@@ -368,7 +364,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             line[6] = itom.compressData(sout)
         elif (nametype == '06'):
             line[6] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
-            line[7] = '4'
+            line[7] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
             line[6] = itom.compressData(docstr)
@@ -376,7 +372,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     else:
         # only a link reference
         line[6] = itom.compressData(docstr)
-        line[7] = '2'
+        line[7] = '0'
     
     # 8 HTML-Error
     # Wiird bereits bei #7 eingetragen
