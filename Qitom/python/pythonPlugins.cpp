@@ -402,24 +402,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc. \n\
-\n\
-Every plugin can define further functions, that are called by plugin.exec('funcName' [,param1, param2...]). This can for instance be used in order to call specific calibration \
-routines of cameras or actuators. This method allows printing information about available functions of this type. \n\
-\n\
-Parameters \n\
------------ \n\
-funcName : {str}, optional \n\
-    is the fullname or a part of any execFunc-name which should be displayed. \n\
-    If funcName is none or no execFunc matches funcName casesensitiv a list with all suitable execFuncs is given. \n\
-detailLevel : {dict}, optional \n\
-    if `detailLevel == 1`, function returns a dictionary with parameters [default: 0]. \n\
-\n\
-Returns \n\
-------- \n\
-out : {None or dict}\n\
-    depending on the value of *detailLevel*.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** returns a list of execFunction available in a plugin similar to filterHelp 
 *   @param [in] aib     the plugin for which the execFuncs names are requested
@@ -889,7 +872,7 @@ The name of the parameter must have the following form: \n\
 \n\
 * name \n\
 * name:additionalTag (additionalTag can be a special feature of some plugins) \n\
-* name[index] \n\ (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
+* name[index] (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
 * name[index]:additionalTag \n\
 \n\
 Parameters \n\
@@ -903,7 +886,7 @@ out : {variant}\n\
     value of the parameter \n\
 \n\
 Raises \n\
------ \n\
+------- \n\
 ValueError \n\
     if parameter does not exist \n\
 \n\
@@ -921,7 +904,7 @@ The name of the parameter must have the following form: \n\
 \n\
 * name \n\
 * name:additionalTag (additionalTag can be a special feature of some plugins) \n\
-* name[index] \n\ (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
+* name[index] (only possible if parameter is an array type and you only want to get one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
 * name[index]:additionalTag \n\
 \n\
 Parameters \n\
@@ -964,6 +947,50 @@ Raises \n\
 ------- \n\
 RuntimeError \n\
     if plugin does not provide a configuration dialog");
+
+PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc. \n\
+\n\
+Every plugin can define further functions, that are called by plugin.exec('funcName' [,param1, param2...]). This can for  \n\
+instance be used in order to call specific calibration routines of cameras or actuators. This method allows printing \n\
+information about available functions of this type. \n\
+\n\
+Parameters \n\
+----------- \n\
+funcName : {str}, optional \n\
+    is the fullname or a part of any execFunc-name which should be displayed. \n\
+    If funcName is none or no execFunc matches funcName casesensitiv a list with all suitable execFuncs is given. \n\
+detailLevel : {dict}, optional \n\
+    if `detailLevel == 1`, function returns a dictionary with parameters [default: 0]. \n\
+\n\
+Returns \n\
+------- \n\
+out : {None or dict}\n\
+    depending on the value of *detailLevel*. \n\
+\n\
+See Also \n\
+-------- \n\
+exec");
+
+PyDoc_STRVAR(PyPlugin_execFunc_doc, "exec(funcName [, param1, ...]) -> invoke the function 'funcName' registered as execFunc within the plugin.\n\
+\n\
+Every plugin can define further functions that can for instance be used in order to call specific calibration routines \n\
+of cameras or actuators. This general method is used to call one of these specific functions registered under `funcName`. \n\
+\n\
+Parameters \n\
+----------- \n\
+funcName : {str} \n\
+    The name of the function\n\
+param1 : {variant}, optional \n\
+    Further parameters depending on the requirements of the specific function.\n\
+\n\
+Returns \n\
+------- \n\
+out : {variant, list of variants}.\n\
+    The return values depend on the function itself.\n\
+\n\
+See Also \n\
+-------- \n\
+execFuncsInfo");
 //general docstrings END
 
 
@@ -1439,7 +1466,7 @@ axis1 : {int}\n\
 \n\
 Raises \n\
 ---------- \n\
-NotImplemented : \n\
+NotImplemented \n\
     if calibration not available");
 /** calibrate actuator axi(e)s
 *   @param [in] self    the actuator object (python)
@@ -1548,7 +1575,7 @@ axis1 : {int}\n\
 \n\
 Raises \n\
 ---------- \n\
-NotImplemented : \n\
+NotImplemented \n\
     if actuator does not support this feature");
 
 /** set the origin of axi(e)s
@@ -1893,26 +1920,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_getType(PyActuatorPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyActuatorPlugin_execFunc_doc, "exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an actuator-plugin.\n\
-\n\
-Parameters \n\
------------ \n\
-funcName : {str} \n\
-    The name of the filter\n\
-param1 : {variant} \n\
-    Further parameters depend on the function itself.\n\
-\n\
-Returns \n\
-------- \n\
-Variable return values.\n\
-    The return values depend on the function itself.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function is used to invoke a plugIn-Specific execFunc, declared within the corresponding plugin.\n\
-The parameters (arguments), output parameters / return values depends on the function\n\
-(see plugin.getExecFuncsInfo() or plugin.getExecFuncsInfo(funcName)).");
 PyObject* PythonPlugins::PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObject *args, PyObject *kwds)
 {
     return execFunc(self->actuatorObj, args, kwds);
@@ -2212,7 +2219,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"setPosAbs", (PyCFunction)PythonPlugins::PyActuatorPlugin_setPosAbs, METH_VARARGS, pyActuatorSetPosAbs_doc},
    {"setPosRel", (PyCFunction)PythonPlugins::PyActuatorPlugin_setPosRel, METH_VARARGS, pyActuatorSetPosRel_doc},
    {"getType", (PyCFunction)PythonPlugins::PyActuatorPlugin_getType, METH_NOARGS, PyActuatorPlugin_getType_doc},
-   {"exec", (PyCFunction)PythonPlugins::PyActuatorPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyActuatorPlugin_execFunc_doc},
+   {"exec", (PyCFunction)PythonPlugins::PyActuatorPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyPlugin_execFunc_doc},
    {"showConfiguration", (PyCFunction)PythonPlugins::PyActuatorPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
@@ -2814,8 +2821,8 @@ Parameters \n\
 trigger : {int}, optional\n\
     Type of the trigger: \n\
     \n\
-    *dataIO.TRIGGER_SOFTWARE = 0 : a software trigger is started, hence, the acquisition is immediately started when calling this method\n\
-    *others : depending on your camera, this parameter can be used to set other triggers, like hardware trigger with raising or falling edges...");
+    * `dataIO.TRIGGER_SOFTWARE = 0` : a software trigger is started, hence, the acquisition is immediately started when calling this method\n\
+    * others : depending on your camera, this parameter can be used to set other triggers, like hardware trigger with raising or falling edges...");
 
 /** acquire data with a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -3534,27 +3541,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_execFunc_doc, "exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an dataIO-plugin.\n\
-\n\
-Parameters \n\
------------ \n\
-funcName : {str} \n\
-    The name of the filter\n\
-paramN : {variant} \n\
-    Further parameters depend on the function itself.\n\
-\n\
-Returns \n\
-------- \n\
-Variable return values.\n\
-    The return values depend on the function itself.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function is used to invoke a plugIn-Specific execFunc, declared within the corresponding plugin.\n\
-The parameters (arguments), output parameters / return values depends on the function\n\
-(see plugin.getExecFuncsInfo() or plugin.getExecFuncsInfo(funcName)).");
-
 PyObject* PythonPlugins::PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
     return execFunc(self->dataIOObj, args, kwds);
@@ -3620,7 +3606,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"setAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_setAutoGrabbing, METH_VARARGS, PyDataIOPlugin_setAutoGrabbing_doc},
    {"getAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_getAutoGrabbing, METH_NOARGS, PyDataIOPlugin_getAutoGrabbing_doc},
    {"getType", (PyCFunction)PythonPlugins::PyDataIOPlugin_getType, METH_NOARGS, PyDataIOPlugin_getType_doc},
-   {"exec", (PyCFunction)PythonPlugins::PyDataIOPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyDataIOPlugin_execFunc_doc},
+   {"exec", (PyCFunction)PythonPlugins::PyDataIOPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyPlugin_execFunc_doc},
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},

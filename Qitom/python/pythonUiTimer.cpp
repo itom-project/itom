@@ -163,7 +163,7 @@ Parameters \n\
 ----------- \n\
 interval : {double} \n\
     time out interval in ms \n\
-callbackFunc: {function or method} \n\
+callbackFunc: {function, method} \n\
     Python function that should be called when timer event raises \n\
 argTuple: {tuple}, optional \n\
     tuple of parameters passed as arguments to the callback function");
