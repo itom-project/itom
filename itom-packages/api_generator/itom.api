@@ -1,57 +1,49 @@
 itom.BUTTON
 itom.MENU
 itom.SEPARATOR
-itom.actuator(name[, mandparams, optparams]) -> constructor
-itom.actuator.calib(axis[, axis1, ...]) -> starts calibration of given axes (0-based).
-itom.actuator.exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an actuator-plugin.
+itom.actuator(name[, mandparams, optparams]) -> creates new instance of actuator plugin 'name'
+itom.actuator.calib(axis[, axis1, ...]) -> starts calibration or homing of given axes (0-based).
+itom.actuator.exec(funcName [, param1, ...]) -> invoke the function 'funcName' registered as execFunc within the plugin.
 itom.actuator.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc.
-itom.actuator.getParam(name) -> value of the parameter 'name'.
-itom.actuator.getParamList() -> returns the list of available parameters of the plugin
-itom.actuator.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
-itom.actuator.getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes.
-itom.actuator.getStatus() -> retrieve the actuator status.
+itom.actuator.getParam(name) -> current value of the plugin parameter 'name'.
+itom.actuator.getParamList() -> returns a list of the names of the internal parameters of the plugin
+itom.actuator.getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters.
+itom.actuator.getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes (in mm or degree).
+itom.actuator.getStatus() -> returns a list of status values for each axis
 itom.actuator.getType() -> returns actuator type
 itom.actuator.hideToolbox() -> hides toolbox of the plugin
 itom.actuator.name() -> returns the plugin name
 itom.actuator.setOrigin(axis[, axis1, ...]) -> defines the actual position of the given axes to value 0.
 itom.actuator.setParam(name, value) -> sets parameter 'name' to the given value.
-itom.actuator.setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves axis to given absolute value (in mm).
-itom.actuator.setPosRel(axis, pos[, axis1, pos1, ...]) -> relatively moves given axes by the given distances [in mm].
-itom.actuator.showConfiguration() -> open configuration dialog of the plugin
+itom.actuator.setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves given axes to given absolute values (in mm or degree).
+itom.actuator.setPosRel(axis0, pos0[, axis1, pos1, ...]) -> relatively moves given axes by the given distances [in mm or degree].
+itom.actuator.showConfiguration() -> show configuration dialog of the plugin
 itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
-itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar.
-itom.algo(??) [doc: algo plugins]
-itom.algo.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc.
-itom.algo.getParam(name) -> returns value of given parameter
-itom.algo.getParamList() -> returns list of available parameters.
-itom.algo.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
-itom.algo.getType() -> returns AlgoPlugin type
-itom.algo.name() -> returns name of algorithm plugin
-itom.algo.setParam(name,value) -> sets value of given parameter
+itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom.
 itom.checkSignals
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.compressData
-itom.dataIO(name[, mandparams, optparams]) -> constructor
+itom.dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name'
 itom.dataIO.TRIGGER_SOFTWARE
-itom.dataIO.acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers the camera acquisition
+itom.dataIO.acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers a new the camera acquisition
 itom.dataIO.copyVal(dataObject) -> gets deep copy of data of this plugin, stored in the given data object.
-itom.dataIO.disableAutoGrabbing() -> Disables auto grabbing for the grabber (camera...),
-itom.dataIO.enableAutoGrabbing() -> enables auto grabbing for the grabber (camera...),
-itom.dataIO.exec(funcName [, param1, ...]) -> invoke a function 'funcName' within an dataIO-plugin.
-itom.dataIO.getAutoGrabbing() -> returns the status of the auto grabbing flag.
+itom.dataIO.disableAutoGrabbing() -> Disable auto grabbing for the grabber (camera...),
+itom.dataIO.enableAutoGrabbing() -> enable auto grabbing for the grabber (camera...),
+itom.dataIO.exec(funcName [, param1, ...]) -> invoke the function 'funcName' registered as execFunc within the plugin.
+itom.dataIO.getAutoGrabbing() -> return the status of the auto grabbing flag.
 itom.dataIO.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc.
-itom.dataIO.getParam(name) -> returns the value of the given parameter.
-itom.dataIO.getParamList() -> returns list of possible parameters.
-itom.dataIO.getParamListInfo([detailLevel]) -> plots informations about plugin parameters.
+itom.dataIO.getParam(name) -> current value of the plugin parameter 'name'.
+itom.dataIO.getParamList() -> returns a list of the names of the internal parameters of the plugin
+itom.dataIO.getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters.
 itom.dataIO.getType() -> returns dataIO type
-itom.dataIO.getVal(buffer=dataObject|byteArray|bytes [,length=maxlength]) -> returns shallow copy of internal camera image if dataObject-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer.
+itom.dataIO.getVal(buffer=`dataObject`|`bytearray`|`bytes` [,length=maxlength]) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer.
 itom.dataIO.hideToolbox() -> hides toolbox of the plugin
 itom.dataIO.name() -> returns the plugin name
-itom.dataIO.setAutoGrabbing(on) -> Sets auto grabbing of the grabber device on or off
-itom.dataIO.setParam(name,value) -> sets value of parameter, given by name.
-itom.dataIO.setVal(dataObject) -> transfers given dataObject to dataIO-plugin.
-itom.dataIO.showConfiguration() -> open configuration dialog of the plugin
+itom.dataIO.setAutoGrabbing(on) -> Set auto grabbing of the grabber device to on or off
+itom.dataIO.setParam(name, value) -> sets parameter 'name' to the given value.
+itom.dataIO.setVal(dataObjectOrBuffer [, length=1]) -> transfer given `dataObject` to ADDA plugin or further buffer to other dataIO plugin.
+itom.dataIO.showConfiguration() -> show configuration dialog of the plugin
 itom.dataIO.showToolbox() -> open toolbox of the plugin
 itom.dataIO.startDevice([count=1]) -> starts the given dataIO-plugin.
 itom.dataIO.stopDevice([count=1]) -> stops the given dataIO-plugin.
@@ -116,19 +108,19 @@ itom.figure.liveImage(cam, [areaIndex, className]) -> shows a camera live image 
 itom.figure.plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure
 itom.figure.show() -> shows figure
 itom.figure.subplot(index) -> returns plotItem of desired subplot
-itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function within an algorithm-plugin.
+itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
 itom.filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s).
 itom.gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list.
 itom.gcStartTracking() -> stores the current object list of the garbage collector.
 itom.getAppPath() -> returns absolute path of application base directory.
 itom.getCurrentPath() -> returns absolute path of current working directory.
 itom.getDebugger() -> returns new reference to debugger instance
-itom.getDefaultScaleableUnits
+itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units.
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
-itom.liveImage(cam, [className]) -> shows a camera live image in a newly created figure
-itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive to an existing dataObject.
-itom.loadIDC(filename) -> loads a pickled idc-file and returns the content as dictionary
-itom.loadMatlabMat(filename) -> loads matlab mat-file by using scipy methods and returns the loaded dictionary.
+itom.liveImage(cam, [className]) -> show a camera live image in a newly created figure
+itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
+itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
+itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
 itom.npDataObject(??) [doc: npDataObject objects]
 itom.npDataObject.axisDescriptions
@@ -143,13 +135,13 @@ itom.npDataObject.valueOffset
 itom.npDataObject.valueScale
 itom.npDataObject.valueUnit
 itom.numeric:: [module]
-itom.openScript(filename) -> opens the given script in current script window.
+itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className]) -> plots a dataObject in a newly created figure
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.drawAndPickElements
 itom.plotItem.pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this)
 itom.pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.
-itom.pluginLoaded(pluginName) -> checks if a certain plugin was loaded.
+itom.pluginLoaded(pluginName) -> check if a certain plugin could be successfully loaded.
 itom.point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.
 itom.point.PointInvalid
 itom.point.PointXYZ
@@ -223,13 +215,13 @@ itom.rgba.b
 itom.rgba.g
 itom.rgba.name
 itom.rgba.r
-itom.saveDataObject(filename, dataObject [, tagsAsBinary]) -> save a dataObject to harddrive.
+itom.saveDataObject(filename, dataObject [, tagsAsBinary = False]) -> save a dataObject to harddrive in a xml-based file format.
 itom.saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.
-itom.saveMatlabMat(filename, dictionary[, matrixName]) -> saves strings, numbers, arrays or combinations to a Matlab matrix.
-itom.scaleDoubleUnit
+itom.saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file.
+itom.scaleValueAndUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
 itom.setApplicationCursor
-itom.setCurrentPath(newPath) -> sets absolute path of current working directory
+itom.setCurrentPath(newPath) -> set current working directory to given absolute newPath
 itom.timer(interval, callbackFunc, [argTuple]) -> new callback timer
 itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]
@@ -271,14 +263,14 @@ itom.ui.getItem(title, label, stringList [, currentIndex=0, editable=True]) -> s
 itom.ui.getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file.
 itom.ui.getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save.
 itom.ui.getText(title, label, defaultString) -> opens a dialog in order to ask the user for a string
-itom.ui.hide() -> hides initialized UI-Dialog
+itom.ui.hide() -> hides initialized user interface
 itom.ui.isVisible() -> returns true if dialog is still visible
 itom.ui.msgCritical(title, text [, buttons, defaultButton, parent]) -> opens a critical message box
 itom.ui.msgInformation(title, text [, buttons, defaultButton, parent]) -> opens an information message box
 itom.ui.msgQuestion(title, text [, buttons, defaultButton, parent]) -> opens a question message box
 itom.ui.msgWarning(title, text [, buttons, defaultButton, parent]) -> opens a warning message box
-itom.ui.show(modal) -> shows initialized UI-Dialog
-itom.uiItem(??) [class]
+itom.ui.show([modal=0]) -> shows initialized UI-Dialog
+itom.uiItem(...) -> base class representing any widget of a graphical user interface
 itom.uiItem.call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.
 itom.uiItem.connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method
 itom.uiItem.disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.
@@ -290,7 +282,7 @@ itom.uiItem.info
 itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal.
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
-itom.uiItem.setWindowFlags(flags) -> sets window flags of corresponding widget.
+itom.uiItem.setWindowFlags(flags) -> set window flags of corresponding widget.
 itom.uncompressData
 itom.version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).

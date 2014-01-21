@@ -62,12 +62,7 @@ namespace ito
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor() -> opens new, empty script editor window (undocked) \n\
-\n\
-Notes \n\
------ \n\
-\n\
-Opens a new and empty itom script editor window. The window is undocked and non blocking.");
+PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor() -> opens new, empty script editor window (undocked)");
 PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 {
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -97,9 +92,6 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyNewScript_doc, "newScript() -> opens an empty, new script in the current script window.\n\
 \n\
-Notes \n\
------ \n\
-\n\
 Creates a new itom script in the latest opened editor window.");
 PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 {
@@ -128,17 +120,18 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) -> opens the given script in current script window.\n\
+PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) -> open the given script in current script window.\n\
+\n\
+Open the python script indicated by *filename* in a new tab in the current, latest opened editor window. \n\
+Filename can be either a string with a relative or absolute filename to the script to open or any object \n\
+with a `__file__` attribute. This attribute is then read and used as path. \n\
+\n\
+The relative filename is relative with respect to the current directory. \n\
 \n\
 Parameters \n\
 ----------- \n\
 filename : {str} or {obj} \n\
-    Relative or absolute filename to a python script that is then opened (in the current editor window). Alternatively an object with a __file__ attribute is allowed.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Open an existing itom script from the harddrive into the latest opened editor window.");
+    Relative or absolute filename to a python script that is then opened (in the current editor window). Alternatively an object with a `__file__` attribute is allowed.");
 PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 {
     const char* filename;
@@ -208,8 +201,7 @@ Parameters \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-");
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"data", "className", NULL};
@@ -341,7 +333,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> shows a camera live image in a newly created figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> show a camera live image in a newly created figure\n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
@@ -351,7 +343,7 @@ Parameters \n\
 cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings)");
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"cam", "className", NULL};
@@ -409,418 +401,6 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     return res;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyDoc_STRVAR(pyLiveLine_doc,"liveLine(dataIO) -> shows grabber data in a live line view window  \n\
-//\n\
-//Parameters \n\
-//----------- \n\
-//dataIO : {Hardware-Pointer} \n\
-//    Camera grabber device from which images are acquired.\n\
-//plotName : {str}, optional \n\
-//    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-//\n\
-//Notes \n\
-//----- \n\
-//\n\
-//Creates a lineplot-window (1D) and automatically grabs lines into this window.\n\
-//This function is not blocking.");
-//PyObject* PythonItom::PyLiveLine(PyObject * /*pSelf*/, PyObject *pArgs)
-//{
-//    PyObject *grabber = NULL;
-//    const char* plotClassName = NULL;
-//
-//    if (!PyArg_ParseTuple(pArgs, "O!|s", &PythonPlugins::PyDataIOPluginType, &grabber, &plotClassName))
-//    {
-//        return PyErr_Format(PyExc_RuntimeError, "argument is no dataIO device");
-//    }
-//
-//    PythonPlugins::PyDataIOPlugin* elem = (PythonPlugins::PyDataIOPlugin*)grabber;
-//    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-//    QString plotClassName2;
-//    if (plotClassName)
-//    {
-//        plotClassName2 = QString(plotClassName);
-//    }
-//
-//    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-//    QMetaObject::invokeMethod(uiOrg, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(QString, plotClassName2), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-////    QMetaObject::invokeMethod(figureOrganizer, "liveLine", Q_ARG(AddInDataIO*,elem->dataIOObj), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-//
-//    if (locker.getSemaphore()->wait(PLUGINWAIT))
-//    {
-//        if (locker.getSemaphore()->returnValue == retError)
-//        {
-//            PyErr_Format(PyExc_RuntimeError,"error while starting live line view: \n%s\n",locker.getSemaphore()->returnValue.errorMessage());
-//            return NULL;
-//        }
-//        else if (locker.getSemaphore()->returnValue == retWarning)
-//        {
-//            std::cerr << "warning while starting live line view: \n" << "warning message: \n" << std::endl;
-//            std::cerr << locker.getSemaphore()->returnValue.errorMessage() << std::endl;
-//
-//            Py_RETURN_NONE;
-//        }
-//        else
-//        {
-//            Py_RETURN_NONE;
-//        }
-//    }
-//    else
-//    {
-//        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//        {
-//            return PyErr_Occurred();
-//        }
-//        return PyErr_Format(PyExc_RuntimeError, "timeout while opening live line view");
-//    }
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyDoc_STRVAR(pySetFigParam_doc,"setFigParam(figHandle, name, value OR name, value) -> sets the parameter 'name' of figure to value \n\
-//\n\
-//Parameters \n\
-//----------- \n\
-//figHandle : {int}, optional \n\
-//    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
-//    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
-//name :  {str} \n\
-//    the name of the parameter to be changed.\n\
-//value : {int} \n\
-//    value is the new value for this parameter.\n\
-//\n\
-//Notes \n\
-//----- \n\
-//\n\
-//This function sets the parameter 'name' of the specigied figure to value.\n\
-//If 'help?' is used as name of the parameter, a list of available parameters is printed.");
-//PyObject* PythonItom::PySetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
-//{
-//    const char *paramKey = "help?\0";
-//    int figHandle = -1; //takes current figure handle
-//    PyObject *paramValue = NULL;
-//    //pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
-//    if (PyTuple_Size(pArgs) <= 0)
-//    {
-//        paramKey = "help?\0";
-//    }
-//    else
-//    {
-//        if (!PyArg_ParseTuple(pArgs, "sO", &paramKey, &paramValue))
-//        {
-//            PyErr_Clear();
-//            if (!PyArg_ParseTuple(pArgs, "i|sO", &figHandle, &paramKey, &paramValue))
-//            {
-//                return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key, variant argument");
-//            }
-//        }
-//    }
-//
-//    QVariant argument = QVariant();
-//
-//    if (paramValue != NULL)
-//    {
-//        PythonQtConversion::convertPyObjectToQVariant(paramValue, argument);
-//        if (PyErr_Occurred()) return NULL;
-//    }
-//
-//    return PyErr_Format(PyExc_RuntimeError, "temporarily not implemented");
-//
-//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-//
-//    //QMetaObject::invokeMethod(figureOrganizer, "setFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QVariant, argument), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-//
-//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-//    //{
-//    //    Py_RETURN_NONE;
-//    //}
-//    //else
-//    //{
-//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//    //    {
-//    //        return PyErr_Occurred();
-//    //    }
-//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while setting figure parameter");
-//    //}
-//
-//}
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyObject* PythonItom::convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg)
-//{
-//    if (PyList_Check(argument))
-//    {
-//        PyObject* tempArg = NULL;
-//        PyObject* retValue = NULL;
-//        QVariantList list;
-//        for (Py_ssize_t i = 0; i < PyList_Size(argument); i++)
-//        {
-//            tempArg = PyList_GetItem(argument, i);
-//            list.append(QVariant());
-//            retValue = convertPyObjectToQVariant(tempArg, list[i]);
-//
-//            if (PyErr_Occurred())
-//            {
-//                return NULL;
-//            }
-//            if (retValue != NULL) Py_DECREF(retValue);
-//        }
-//
-//        qVarArg = list;
-//
-//        Py_RETURN_NONE;
-//    }
-//
-//    //check for elementary types char*, int, double
-//    char* textArg;
-//    if (PyLong_Check(argument))
-//    {
-//        qVarArg = (int)PyLong_AsLong(argument);
-//    }
-//    else if (PyFloat_Check(argument))
-//    {
-//        qVarArg = PyFloat_AsDouble(argument);
-//    }
-//    else if (PyArg_Parse(argument, "s", &textArg))
-//    {
-//        qVarArg = QString(textArg);
-//    }
-//    else
-//    {
-//        PyErr_Format(PyExc_ValueError, "argument does not fit to char*, int, long or double");
-//        qVarArg = QVariant();
-//    }
-//
-//    if (PyErr_Occurred())
-//    {
-//        return NULL;
-//    }
-//
-//    Py_RETURN_NONE;
-//
-//}
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyDoc_STRVAR(pyGetFigParam_doc,"getFigParam(figHandle, name, OR name) -> gets the parameter 'name' of given figure \n\
-//\n\
-//Parameters \n\
-//----------- \n\
-//figHandle : {int}, optinal \n\
-//    figHandle is the handle to the figure, which is returned by the plot-command (e.g.). \n\
-//    If figHandle is not given, -1 is assumed, which means that the current figure is taken. \n\
-//name :  {str} \n\
-//    the name of the parameter to be read out.\n\
-//\n\
-//Returns \n\
-//------- \n\
-//The value of the parameter 'name' or Py_Error.\n\
-//\n\
-//Notes \n\
-//----- \n\
-//\n\
-//This function gets the value of parameter 'name' of the specigied figure.\n\
-//If 'help?' is used as name of the parameter, a list of available parameters is printed.");
-//PyObject* PythonItom::PyGetFigParam(PyObject * /*pSelf*/, PyObject *pArgs)
-//{
-//    return PyErr_Format(PyExc_RuntimeError, "temporary not implemented");
-//
-//    //const char *paramKey = "help?\0";
-//    //int figHandle = -1; //takes current figure handle
-//    ////pArgs of type [unsigned int figHandle, string key, variant argument (one elem or tuple of elements)
-//    //if (PyTuple_Size(pArgs) <= 0)
-//    //{
-//    //    paramKey = "help?\0";
-//    //}
-//    //else
-//    //{
-//    //    if (!PyArg_ParseTuple(pArgs, "s", &paramKey))
-//    //    {
-//    //        PyErr_Clear();
-//    //        if (!PyArg_ParseTuple(pArgs, "i|s", &figHandle, &paramKey))
-//    //        {
-//    //            return PyErr_Format(PyExc_RuntimeError, "argument is invalid, must be [int figureNumber], string key");
-//    //        }
-//    //    }
-//    //}
-//
-//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-//
-//    //QSharedPointer<QVariant> returnValue = QSharedPointer<QVariant>(new QVariant());
-//
-//    //QMetaObject::invokeMethod(figureOrganizer, "getFigureParameter", Q_ARG(int, figHandle), Q_ARG(QString, QString(paramKey)), Q_ARG(QSharedPointer<QVariant>, returnValue), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-//
-//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-//    //{
-//    //    //everything's ok
-//    //}
-//    //else
-//    //{
-//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//    //    {
-//    //        return PyErr_Occurred();
-//    //    }
-//    //    return PyErr_Format(PyExc_RuntimeError, "timeout while getting parameters");
-//    //}
-//
-//    //PyObject* retObject = NULL;
-//
-//    ////now parse returnValue
-//    //retObject = PythonQtConversion::QVariantToPyObject(*returnValue);
-//
-//    //return retObject;
-//}
-
-////----------------------------------------------------------------------------------------------------------------------------------
-////returns new reference
-//PyObject* PythonItom::convertQVariantToPyObject(QVariant value)
-//{
-//    QString stringValue;
-//
-//    switch(value.type())
-//    {
-//    case QVariant::Invalid:
-//        Py_RETURN_NONE;
-//        break;
-//    case QVariant::Int:
-//        return PyLong_FromLong(value.value<int>());
-//        break;
-//    case QVariant::Double:
-//        return PyFloat_FromDouble(value.value<double>());
-//        break;
-//    case QVariant::String:
-//        stringValue = value.value<QString>();
-//        if (stringValue.isEmpty() || stringValue.isNull() || stringValue == "")
-//        {
-//            return PyUnicode_FromFormat("");
-//        }
-//        else
-//        {
-//            return PyUnicode_FromFormat("%s", stringValue.toAscii().data());
-//        }
-//        break;
-//    case QVariant::List:
-//        QVariantList list = value.value<QVariantList>();
-//        PyObject* retObject = PyList_New(list.length());
-//        for (int i = 0; i < list.length(); i++)
-//        {
-//            PyList_SetItem(retObject,i,convertQVariantToPyObject(list[i]));
-//        }
-//        return retObject;
-//        break;
-//    }
-//
-//    Py_RETURN_NONE;
-//}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-////bekommt ein array input, dessen werte werden umgeschrieben, zusätzlich wird ein undefiniertes array der größe x-y zurückgegeben
-//PyObject* PythonItom::arrayManipulation(PyObject* pSelf, PyObject* pArgs)
-//{
-//   // FigureOrganizer *figureOrganizer = qobject_cast<FigureOrganizer*>(AppManagement::getFigureOrganizer());
-//
-//   // int j;
-//   // QSharedPointer<blub> h;
-//   // int64 time = cv::getTickCount();
-//
-//   // /*for (int i = 0; i < 10000; i++)
-//   // {
-//   //     j=2;
-//   //     QMetaObject::invokeMethod(figureOrganizer, "test1", Qt::BlockingQueuedConnection, Q_ARG(int,j));
-//   // }*/
-//   //
-//   // int64 time2 = cv::getTickCount();
-//
-//   // /*for (int i = 0; i < 10000; i++)
-//   // {
-//   //     j=2;
-//   //     figureOrganizer->test1(j);
-//   // }*/
-//
-//   // int64 time3 = cv::getTickCount();
-//
-//   ///* for (int i = 0; i < 10000; i++)
-//   // {*/
-//   //     h = QSharedPointer<blub>(new blub());
-//   //     QMetaObject::invokeMethod(figureOrganizer, "test2", Qt::BlockingQueuedConnection, Q_ARG(QSharedPointer<blub>, h));
-//   // //}
-//
-//   // int64 time4 = cv::getTickCount();
-//
-//   // double freq = cv::getTickFrequency();
-//
-//   // double meth1 = (double)(time2-time)/freq;
-//   // double meth2 = (double)(time3-time2)/freq;
-//   // double meth3 = (double)(time4-time3)/freq;
-//
-//
-//   // Py_RETURN_NONE;
-//
-//
-//    PyArrayObject* input;
-//    int x,y;
-//
-//    if (!PyArg_ParseTuple(pArgs, "O!ii:arrayManipulation",  &PyArray_Type, &input, &x, &y))
-//    {
-//        //printPythonError(std::cout);
-//        return NULL; /* PyArg_ParseTuple raised an exception */
-//    }
-//
-//    int nx = PyArray_DIM(input,0);
-//    int ny = PyArray_DIM(input,1);
-//
-//    double *value;
-//
-//    for (int i = 0; i < nx; i++)
-//    {
-//        for (int j = 0; j < ny; j++)
-//        {
-//            value = (double *) PyArray_GETPTR2(input,i,j);
-//            *value = i*j;
-//        }
-//    }
-//
-//
-//    PyArrayObject* a;
-//
-//
-//
-//    npy_intp a_dims[2];
-//    a_dims[0] = x;
-//    a_dims[1] = y;
-//
-//    if (0)
-//    {
-//    //version 1:
-//        //a = (PyArrayObject*) (PyArray_SimpleNew(2,a_dims,NPY_INT));
-//        a = (PyArrayObject*) (PyArray_ZEROS(2,a_dims,NPY_DOUBLE,0));
-//    }else{
-//    //version 2:
-//        double* dataPtr = new double[x*y];
-//        for (int i = 0; i < x * y; i++) dataPtr[i]=0.0;
-//
-//        //if (1)
-//        //{
-//        //    //!< owndata-flag should be set
-//        //    a = (PyArrayObject*) (PyArray_New(&PyArray_Type, 2, a_dims, NPY_DOUBLE, NULL, (void *) dataPtr, NPY_OWNDATA, NPY_CARRAY, NULL));
-//        //}
-//        //else
-//        //{
-//            //!< owndata-flag not set
-//            a = (PyArrayObject*) (PyArray_SimpleNewFromData(2,a_dims,NPY_DOUBLE,(void *) dataPtr));
-//
-//            //PythonItom::getInstance()->attachPyArrayToGarbageCollector(*a, pyGarbageDeleteIfUnused);
-//
-//
-//
-//            //PyObject *capsule = PyCapsule_New((void *) dataPtr, "itom.a", numpyArray_deleteBorrowedData);
-//            //PyArray_BASE(a) = capsule;
-//            //Py_DECREF(capsule); //darf hier nicht geschehen
-//        //}
-//    }
-//
-//    return PyArray_Return(a);
-//};
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pKwds)
 {
@@ -1027,8 +607,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     longest_name = filteredKey.length();
                 }
             }
-
-            
+  
         }
         longest_name = (longest_name + 3) > 50 ? 50 : longest_name + 3;
         if (keyList.size())
@@ -1190,7 +769,7 @@ furtherInfos : {int}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-{None} or {dict} \n\
+out : {None or dict} \n\
     In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
     returns a dictionary with the single components of the information text.");
 
@@ -1219,7 +798,7 @@ furtherInfos : {int}, optional \n\
 \n\
 Returns \n\
 ------- \n\
-{None} or {dict} \n\
+out : {None or dict} \n\
     In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
     returns a dictionary with the single components of the information text.");
 PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
@@ -1228,7 +807,8 @@ PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> checks if a certain plugin was loaded.\n\
+PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> check if a certain plugin could be successfully loaded.\n\
+\n\
 Checks if a specified plugin is loaded and returns the result as a boolean expression. \n\
 \n\
 Parameters \n\
@@ -1238,7 +818,8 @@ pluginName :  {str} \n\
 \n\
 Returns \n\
 ------- \n\
-True, if the plugin has been loaded and can be used, else False.");
+result : {bool} \n\
+    True, if the plugin has been loaded and can be used, else False.");
 PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* pluginName = NULL;
@@ -1292,11 +873,12 @@ Parameters \n\
 pluginName : {str} \n\
     is the fullname of a plugin as specified in the plugin window.\n\
 dictionary : {bool}, optional \n\
-    if dictionary == True, function returns an dict with plugin parameters (default: False)\n\
+    if `dictionary == True`, function returns a dict with plugin parameters (default: False)\n\
 \n\
 Returns \n\
 ------- \n\
-Returns None or a dict depending on the value of parameter dictionary.");
+out : {None or dict} \n\
+    Returns None or a dict depending on the value of parameter dictionary.");
 PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"pluginName", "dictionary", NULL};
@@ -1583,7 +1165,7 @@ None (display outPut) or PyDictionary with version information.\n\
 Notes \n\
 ----- \n\
 \n\
-Retrieve complete version information of ITOM and if specified version information of loaded plugins\n\
+Retrieve complete version information of itom and if specified version information of loaded plugins\n\
 and print it either to the console or to a PyDictionary.");
 PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 {
@@ -1816,29 +1398,30 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window \n\
 \n\
+This function adds a button to a toolbar in the main window. If the button is pressed the given code, function or method is executed. \n\
+If the toolbar specified by 'toolbarName' does not exist, it is created. The button will show the optional icon, or if not given or not \n\
+loadable, 'buttonName' is displayed as text. \n\
+\n\
+itom comes with basic icons addressable by ':/../iconname.png', e.g. ':/gui/icons/close.png'. These natively available icons are listed \n\
+in the icon-browser in the menu 'edit >> iconbrowser' of any script window. Furthermore you can give a relative or absolute path to \n\
+any allowed icon file (the preferred file format is png). \n\
+\n\
 Parameters \n\
 ----------- \n\
 toolbarName : {str} \n\
     The name of the toolbar.\n\
 buttonName : {str} \n\
-    The name (str, identifier) of the button to create.\n\
-code : {str, Method, Function}\n\
-    The code to be executed if button is pressed.\n\
+    The name and identifier of the button to create.\n\
+code : {str, method, function}\n\
+    The code to be executed if the button is pressed.\n\
 icon : {str}, optional \n\
     The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
 argtuple : {tuple}, optional \n\
-    Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
+    Arguments, which will be passed to the method (in order to avoid cyclic references try to only use basic element types). \n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function adds a button to a toolbar in the main window.\n\
-If the button is pressed the simple python command specified by python-code is executed.\n\
-If the toolbar specified by toolbarName do not exist, the toolbar is created.\n\
-The button representation will be the optional icon or if icon is not loadable 'buttonName' will be displayed.\n\
-\n\
-ITOM comes with basic icons addressable by ':/.../iconname.png', e.g. ':/gui/icons/close.png'.\n\
-Find available via iconbrower under 'Editor-Menu/Edit/iconbrower' or crtl-b");
+See Also \n\
+--------- \n\
+removeButton()");
 PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *kwds)
 {
     //int type = 0; //BUTTON (default)
@@ -1948,6 +1531,9 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(toolbarName, buttonName) -> removes a button from a given toolbar. \n\
 \n\
+This method removes an existing button from a toolbar in the main window of 'itom'. This button must have been \n\
+created using `addButton`. If the toolbar is empty after the removal, it is finally deleted. \n\
+\n\
 Parameters \n\
 ----------- \n\
 toolbarName : {str} \n\
@@ -1955,11 +1541,9 @@ toolbarName : {str} \n\
 buttonName : {str} \n\
     The name (str, identifier) of the button to remove.\n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function removes a button from a toolbar in the main window.\n\
-If the toolbar is empty after removal, it is deleted.");
+See Also \n\
+--------- \n\
+addButton()");
 PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* toolbarName;
@@ -1977,7 +1561,20 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar. \n\
+PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom. \n\
+\n\
+This function adds an element to the main window menu bar. \n\
+The root element of every menu-list must be a MENU-element. Such a MENU-element can contain sub-elements. \n\
+The following sub-elements can be either another MENU, a SEPARATOR or a BUTTON. Only the BUTTON itself \n\
+triggers a signal, which then executes the code, given by a string or a reference to a callable python method \n\
+or function. Remember, that this reference is only stored as a weak pointer. \n\
+If you want to directly add a sub-element, you can give a slash-separated string in the key-parameter. \n\
+Every sub-component of this string then represents the menu-element in its specific level. Only the element in the last \n\
+can be something else than MENU.\n\
+\n\
+itom comes with basic icons addressable by ':/../iconname.png', e.g. ':/gui/icons/close.png'. These natively available icons are listed \n\
+in the icon-browser in the menu 'edit >> iconbrowser' of any script window. Furthermore you can give a relative or absolute path to \n\
+any allowed icon file (the preferred file format is png). \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1994,20 +1591,9 @@ icon : {str}, optional \n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function adds an element to the main window menu bar. \n\
-The root element of every menu-list must be a MENU-element. Such a MENU-element can contain sub-elements. \n\
-The following sub-elements can be either another MENU, a SEPARATOR or a BUTTON. Only the BUTTON itself \n\
-triggers a signal, which then executes the code, given by a string or a reference to a callable python method \n\
-or function. Remember, that this reference is only stored as a weak pointer. \n\
-If you want to directly add a sub-element, you can give a slash-separated string in the key-parameter. \n\
-Every sub-component of this string then represents the menu-element in its specific level. Only the element in the last \n\
-can be something else than MENU.\n\
-\n\
-ITOM comes with basic icons addressable by ':/.../iconname.png', e.g. ':/gui/icons/close.png'.\n\
-Find available via iconbrower under 'Editor-Menu/Edit/iconbrower' or crtl-b");
+See Also \n\
+--------- \n\
+removeMenu");
 PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *kwds)
 {
     int type = 0; //BUTTON (default)
@@ -2156,17 +1742,18 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key) -> remove a menu element with the given key. \n\
 \n\
+This function remove a menu element with the given key. \n\
+key is a slash separated list. The sub-components then \n\
+lead the way to the final element, which should be removed. \n\
+\n\
 Parameters \n\
 ----------- \n\
 key : {str} \n\
     The name (str, identifier) of the menu entry to remove.\n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function remove a menu element with the given key. \n\
-key is a slash separated list. The sub-components then \n\
-lead the way to the final element, which should be removed.");
+See Also \n\
+--------- \n\
+addMenu");
 PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *kwds)
 {
     const char* keyName;
@@ -2334,21 +1921,16 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> returns dictionary with information about all available screens. \n\
 \n\
+This method returns a dictionary with information about the current screen configuration of this computer. \n\
+\n\
 Returns \n\
 ------- \n\
-ScreenInfo : {PyDict} \n\
-    Returns a PyDictionary containing:\n\
-screenCount : {int} \n\
-    number of available screens \n\
-primaryScreen : {int} \n\
-    index (0-based) of primary screen \n\
-geometry : {tuple} \n\
-    tuple with dictionaries for each screen containing data for width (w), height (h) and its top-left-position (x, y)\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function returns a PyDictionary which contains informations about the current screen configuration of this PC.");
+screenInfo : {dict} \n\
+    dictionary with the following content is returned: \n\
+    \n\
+    * screenCount (int): number of available screens \n\
+    * primaryScreen (int): index (0-based) of primary screen \n\
+    * geometry (tuple): tuple with dictionaries for each screen containing data for width (w), height (h) and its top-left-position (x, y)");
 PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -2400,25 +1982,30 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, dictionary[, matrixName]) -> saves strings, numbers, arrays or combinations to a Matlab matrix. \n\
+PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
+\n\
+Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`, `npDataObject`...) to a Matlab *mat* file. \n\
+There are the following possibilites for saving: \n\
+\n\
+* One given value is saved under one given 'matrixName' or 'matrix' if 'matrixName' is not given. \n\
+* A list or tuple of objects is given. If no 'matrixName' is given, the items get the names 'matrix1', 'matrix2'... Else, 'matrixName' must be a sequence of value names with the same length than 'values'. \n\
+* A dictionary is given, such that each value is stored under its corresponding key. \n\
 \n\
 Parameters \n\
 ----------- \n\
 filename : {str} \n\
-    Filename to which the data will be written (.mat will be added if not available)\n\
-dictionary : {dictionary, list, tuple} \n\
-    dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray, npDataObject...)\n\
-matrix-name : {string or list or tuple of strings}, optional \n\
-    string or list or tuple of string (same length than object-sequence)\n\
+    Filename under which the file should be saved (.mat will be appended if not available)\n\
+values : {dictionary, list, tuple, variant} \n\
+    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray, npDataObject...)\n\
+matrix-name : {str, list, tuple}, optional \n\
+    if 'values' is a single value, this parameter must be one single str, if 'values' is a sequence it must be a sequence of strings with the same length, if 'values' is a dictionary this argument is ignored. \n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function saves strings, numbers, arrays or combinations to a Matlab matrix (file). \n\
-List or Tuples will be included to new dictionary (element-wise entry with name matrix1,...,matrixN or names given by last optional matrix-name sequence).");
+Save Also \n\
+---------- \n\
+loadMatlabMat");
 PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 {
-    PyObject* scipyIoModule = PyImport_ImportModule("scipy.io"); // borrowed reference
+    PyObject* scipyIoModule = PyImport_ImportModule("scipy.io"); // new reference
 
     if (scipyIoModule == NULL)
     {
@@ -2445,7 +2032,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     if (!PyArg_ParseTuple(pArgs, "sO|O", &filename, &element, &matrixNames))
     {
         Py_XDECREF(scipyIoModule);
-        return PyErr_Format(PyExc_TypeError, "wrong arguments. Required arguments are: filename (string), dict or other python object [e.g. array] [, matrix-name (string)]");
+        return NULL;
     }
 
     if (element == Py_None)
@@ -2630,7 +2217,9 @@ PyObject* PythonItom::PyMatlabMatDataObjectConverter(PyObject *element)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadMatlabMat_doc,"loadMatlabMat(filename) -> loads matlab mat-file by using scipy methods and returns the loaded dictionary. \n\
+PyDoc_STRVAR(pyLoadMatlabMat_doc,"loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary. \n\
+\n\
+This function loads matlab mat-file by using scipy methods and returns the loaded dictionary. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2639,12 +2228,12 @@ filename : {str} \n\
 \n\
 Returns \n\
 ------- \n\
-PyDictionary with content of the Matlab-file\n\
+mat : {dict} \n\
+    dictionary with content of file \n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function loads matlab mat-file by using scipy methods and returns the loaded dictionary.");
+See Also \n\
+--------- \n\
+saveMatlabMat");
 PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 {
     PyObject* scipyIoModule = PyImport_ImportModule("scipy.io"); // new reference
@@ -2663,7 +2252,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     if (!PyArg_ParseTuple(pArgs, "s", &filename))
     {
         Py_XDECREF(scipyIoModule);
-        return PyErr_Format(PyExc_ValueError, "wrong arguments. Required argument is: filename (string)");
+        return NULL;
     }
 
     PyObject *kwdDict = PyDict_New();
@@ -2744,7 +2333,11 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function within an algorithm-plugin. \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
+\n\
+This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
+The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
+By filterHelp() a list of available filter functions is retrieved. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2755,15 +2348,12 @@ furtherParameters : {variant} \n\
 \n\
 Returns \n\
 ------- \n\
-output parameters : {variant} \n\
+out : {variant} \n\
     The returned values depend on the definition of each filter. In general it is a tuple of all output parameters that are defined by the filter function.\n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
-The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
-By filterHelp() a list of available filter functions is retrieved.");
+See Also \n\
+--------- \n\
+filterHelp");
 PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *kwds)
 {
     int length = PyTuple_Size(pArgs);
@@ -2921,7 +2511,11 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject [, tagsAsBinary]) -> save a dataObject to harddrive. \n\
+PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject [, tagsAsBinary = False]) -> save a dataObject to harddrive in a xml-based file format. \n\
+\n\
+This method writes a `dataObject` into the file specified by 'filename'. The data is stored in a binary format within a xml-based structure. \n\
+All string-tags of the dataObject are encoded in order to avoid xml-errors, the value of numerical tags are converted to string with \n\
+15 significant digits (>32bit, tagsAsBinary = False [default]) or in a binary format (tagsAsBinary = True). \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2934,61 +2528,30 @@ tagsAsBinary : {bool}, optional \n\
 \n\
 Notes \n\
 ----- \n\
+Tagnames which contains special characters leads to XML-conflics. \n\
 \n\
-This function writes an ito::dataObject to the file specified by filename. The data is stored as binary. \n\
-The value of string-Tags is encoded to avoid XML-conflics. The value of numerical-Tags are saved as string\n\
-with 15 significat digits (>32bit, tagsAsBinary == False, default) or as binary (tagsAsBinary == True).\n\
-Tagnames which contains special characters leads to XML-conflics.");
-PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
+See Alse \n\
+--------- \n\
+loadDataObject");
+PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
     ito::RetVal ret(ito::retOk);
-    int length = PyTuple_Size(pArgs);
+
+    const char *kwlist[] = {"filename", "dataObject", "tagsAsBinary", NULL};
     const char* folderfilename;
     PyObject *pyDataObject = NULL;
-    PyObject *pyBool = NULL;
-    bool asBin = false; // defaults metaData as string (false)
+    int pyBool = 0;
+    bool tagAsBin = false; // defaults metaData as string (false)
 
-    if (length < 2)
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|i", const_cast<char**>(kwlist), &folderfilename, &PythonDataObject::PyDataObjectType, &pyDataObject, &pyBool))
     {
-        return PyErr_Format(PyExc_ValueError, "Mandatory parameters are a String for the Folder/Filename and a dataObject");
-    }
-    else if (length == 2) //!< copy name + object
-    {
-        if (!PyArg_ParseTuple(pArgs, "sO", &folderfilename, &pyDataObject))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        Py_INCREF(pyDataObject);
-    }
-    else if (length == 3) //!< copy name + object + asBinary
-    {
-        if (!PyArg_ParseTuple(pArgs, "sOO", &folderfilename, &pyDataObject, &pyBool))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        Py_INCREF(pyDataObject);
-        Py_INCREF(pyBool);
-    }
-    else
-    {
-        return PyErr_Format(PyExc_ValueError, "To many arguments");
+        return NULL;
     }
 
     PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
+    tagAsBin = pyBool > 0; 
 
-    if (pyBool == NULL)
-    {
-        if (pyBool == Py_True)   // do not change the filename
-        {
-            asBin = true;
-        }
-        Py_XDECREF(pyBool);
-    }
-
-    ret += ito::saveDOBJ2XML(elem->dataObject, folderfilename, false, asBin);
-
-
-    Py_XDECREF(pyDataObject);
+    ret += ito::saveDOBJ2XML(elem->dataObject, folderfilename, false, tagAsBin);
 
     if (ret.containsError())
     {
@@ -3006,74 +2569,45 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive to an existing dataObject. \n\
+PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive. \n\
+\n\
+This function reads a `dataObject` from the file specified by filename. \n\
+MetaData saveType (string, binary) are extracted from the file and restored within the object.\n\
 \n\
 Parameters \n\
 ----------- \n\
 filename : {str} \n\
     Filename and Path of the destination (.ido will be added if not available)\n\
-dataObject : {DataObject} \n\
-    A pre-allocated dataObject (empty Objects are allowed).\n\
+dataObject : {`dataObject`} \n\
+    A pre-allocated `dataObject` (empty dataObject is allowed).\n\
 doNotAppendIDO : {bool}, optional \n\
-    Optional tag to avoid adding -ido-Tag, default is False.\n\
+    False[default]: file suffix *.ido* will not be appended to filename, True: it will be added.\n\
 \n\
 Notes \n\
 ----- \n\
 \n\
-This function reads an ito::dataObject from the file specified by filename. \n\
-MetaData saveType (string, binary) are extracted from the file and restored within the object.\n\
 The value of string-Tags must be encoded to avoid XML-conflics.\n\
 Tagnames which contains special characters leads to XML-conflics.");
-PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
+PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
     ito::RetVal ret(ito::retOk);
-    int length = PyTuple_Size(pArgs);
+
+    const char *kwlist[] = {"filename", "dataObject", "doNotAppendIDO", NULL};
     const char* folderfilename;
     PyObject *pyDataObject = NULL;
-    PyObject *pyBool = NULL;
-    bool appendEnding = true;
+    int  pyBool = 0;
+    bool appendEnding;
 
-    if (length < 2)
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|i", const_cast<char**>(kwlist), &folderfilename, &PythonDataObject::PyDataObjectType, &pyDataObject, &pyBool))
     {
-        return PyErr_Format(PyExc_ValueError, "Mandatory parameters are a String for the Folder/Filename and a dataObject");
-    }
-    else if (length == 2) //!< copy name + object
-    {
-        if (!PyArg_ParseTuple(pArgs, "sO", &folderfilename, &pyDataObject))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        Py_INCREF(pyDataObject);
-    }
-    else if (length == 3) //!< copy name + object + asBinary
-    {
-        if (!PyArg_ParseTuple(pArgs, "sOO", &folderfilename, &pyDataObject, &pyBool))
-        {
-            return PyErr_Format(PyExc_TypeError, "wrong input type");
-        }
-        Py_INCREF(pyDataObject);
-        Py_INCREF(pyBool);
-    }
-    else
-    {
-        return PyErr_Format(PyExc_ValueError, "To many arguments");
+        return NULL;
     }
 
     PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
 
-    if (pyBool == NULL)
-    {
-        if (pyBool == Py_False)   // do not change the filename
-        {
-            appendEnding = false;
-        }
-        Py_XDECREF(pyBool);
-    }
+    appendEnding = (pyBool > 0);
 
     ret += ito::loadXML2DOBJ(elem->dataObject, folderfilename, false, appendEnding);
-
-    Py_XDECREF(pyDataObject);
-
 
     if (ret.containsError())
     {
@@ -3093,17 +2627,19 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getDefaultScaleAbleUnits_doc,"getDefaultScaleAbleUnits() -> Get a PythonList with standard scaleable units. \n\
+PyDoc_STRVAR(getDefaultScaleableUnits_doc,"getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units. \n\
+\n\
+The unit strings returned as a list by this method can be transformed into each other using `scaleValueAndUnit`. \n\
 \n\
 Returns \n\
 ------- \n\
-List with strings containing all scaleable units : {PyList}\n\
+units : {list} \n\
+    List with strings containing all scaleable units \n\
 \n\
-Notes \n\
------ \n\
-\n\
-Get a PythonList with standard scaleable units. Used together with itom.ScaleValueAndUnit(...)");
-PyObject* PythonItom::getDefaultScaleAbleUnits(PyObject * /*pSelf*/)
+See Also \n\
+-------- \n\
+scaleValueAndUnit");
+PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 {
     PyObject *myList = PyList_New(0);
     PyList_Append(myList, PyUnicode_FromString("mm"));
@@ -3119,11 +2655,11 @@ PyObject* PythonItom::getDefaultScaleAbleUnits(PyObject * /*pSelf*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(ScaleValueAndUnit_doc,"ScaleValueAndUnit(ScaleableUnits, value, valueUnit) -> Scale a value and its unit and returns [value, 'Unit'] \n\
+PyDoc_STRVAR(scaleValueAndUnit_doc,"ScaleValueAndUnit(scaleableUnits, value, valueUnit) -> Scale a value and its unit and returns [value, 'Unit'] \n\
 \n\
 Parameters \n\
 ----------- \n\
-ScaleableUnits : {PyList of Strings} \n\
+scaleableUnits : {PyList of Strings} \n\
     A string list with all scaleable units\n\
 value : {double} \n\
     The value to be scaled\n\
@@ -3137,11 +2673,12 @@ PyTuple with scaled value and scaled unit\n\
 Notes \n\
 ----- \n\
 \n\
-Rescale a value with SI-unit (e.g. 0.01 mm to 10 micrometer). Used together with itom.getDefaultScaleAbleUnits()");
-PyObject* PythonItom::ScaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs)
+Rescale a value with SI-unit (e.g. 0.01 mm to 10 micrometer). Used together with itom.getDefaultScaleableUnits()");
+PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     QStringList myQlist;
 
+    const char *kwlist[] = {"scaleableUnits", "value", "valueUnit", NULL};
     int length = PyTuple_Size(pArgs);
     double value = 0.0;
     double valueOut = 0.0;
@@ -3150,24 +2687,8 @@ PyObject* PythonItom::ScaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs)
     QString unitIn("");
     QString unitOut("");
 
-    if (length < 3)
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!ds", const_cast<char**>(kwlist), &PyList_Type, &myList, &value, &unitString))
     {
-        PyErr_Format(PyExc_ValueError, "Inputarguments are scaleable units, value, unit");
-        return NULL;
-    }
-    else if (length == 3)
-    {
-        if (!PyArg_ParseTuple(pArgs, "O!ds", &PyList_Type, &myList, &value, &unitString))
-        //if (!PyArg_ParseTuple(pArgs, "ds", &value, &unitString))
-        {
-            PyErr_Format(PyExc_RuntimeError, "Inputarguments are ...");
-            return NULL;
-        }
-        Py_INCREF(myList);
-    }
-    else
-    {
-        PyErr_Format(PyExc_RuntimeError, "to many input parameters specified");
         return NULL;
     }
 
@@ -3182,7 +2703,6 @@ PyObject* PythonItom::ScaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs)
     }
 
     ito::RetVal ret = ito::formatDoubleWithUnit(myQlist, unitIn, value, valueOut, unitOut);
-    Py_XDECREF(myList);
 
     return Py_BuildValue("ds", valueOut, unitOut.toLatin1().data());
 }
@@ -3190,16 +2710,13 @@ PyObject* PythonItom::ScaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getAppPath_doc,"getAppPath() -> returns absolute path of application base directory.\n\
 \n\
+This function returns the absolute path of application base directory.\n\
+The return value is independent of the current working directory. \n\
+\n\
 Returns \n\
 ------- \n\
-Path : {str}\n\
-    string with absolute path of this application\n\
-\n\
-Notes \n\
------ \n\
-\n\
-This function returns the absolute path of application base directory.\n\
-The return value is independent of the current working diractory");
+path : {str}\n\
+    absolute path of this application's base directory");
 PyObject* PythonItom::getAppPath(PyObject* /*pSelf*/)
 {
     return PythonQtConversion::QStringToPyObject(QDir::cleanPath(QCoreApplication::applicationDirPath()));
@@ -3211,19 +2728,23 @@ PyDoc_STRVAR(getCurrentPath_doc,"getCurrentPath() -> returns absolute path of cu
 Returns \n\
 ------- \n\
 Path : {str}\n\
-    string with current working path\n\
+    absolute path of current working directory \n\
 \n\
-Notes \n\
------ \n\
-\n\
-This function returns the current working path of the application.");
+See Also \n\
+---------- \n\
+setCurrentPath");
 PyObject* PythonItom::getCurrentPath(PyObject* /*pSelf*/)
 {
     return PythonQtConversion::QStringToPyObject(QDir::cleanPath(QDir::currentPath()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(setCurrentPath_doc,"setCurrentPath(newPath) -> sets absolute path of current working directory \n\
+PyDoc_STRVAR(setCurrentPath_doc,"setCurrentPath(newPath) -> set current working directory to given absolute newPath \n\
+\n\
+sets the absolute path of the current working directory to 'newPath'. The current working directory is the base \n\
+directory for all subsequent relative pathes of icon-files, script-files, ui-files, relative import statements... \n\
+\n\
+The current directory is always indicated in the right corner of the status bar of the main window. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -3232,13 +2753,12 @@ newPath : {str} \n\
 \n\
 Returns \n\
 ------- \n\
-Success : {bool} \n\
-    True in case of success else False\n\
+success : {bool} \n\
+    True in case of success else False \n\
 \n\
-Notes \n\
------ \n\
-\n\
-sets absolute path of current working directory returns True if currentPath could be changed, else False.");
+See Also \n\
+--------- \n\
+getCurrentPath()");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     PyObject *pyObj = NULL;
@@ -3355,39 +2875,27 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 //    }
 //}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
-\n\
-This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
-close of class figure.\n\
-\n\
-Parameters \n\
------------ \n\
-handle : {dataIO-Instance} \n\
-    any figure handle (>0) or 'all' in order to close all opened figures \n\
-\n\
-Notes \n\
-------- \n\
-If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too. \n\
-\n\
-See Also \n\
---------- \n\
-figure.close");
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> loads a pickled idc-file and returns the content as dictionary\n\
+PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> load a pickled idc-file and return the content as dictionary\n\
 \n\
-This methods loads the given idc-file using the method load from the python-buildin module pickle and returns the loaded dictionary.\n\
+This methods loads the given idc-file using the method `pickle.load` from the python-buildin module `pickle` and returns the loaded dictionary.\n\
 \n\
 Parameters \n\
 ----------- \n\
 filename : {String} \n\
     absolute filename or filename relative to the current directory. \n\
 \n\
+Returns \n\
+-------- \n\
+content : {dict} \n\
+    dictionary with loaded content \n\
+\n\
 See Also \n\
 --------- \n\
-pickle.load");
+pickle.load, saveIDC");
 PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"filename", NULL};
@@ -3432,7 +2940,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.\n\
 \n\
-This method saves the given dictionary as pickled icd-file using the method dump from the builtin module pickle.\n\
+This method saves the given dictionary as pickled idc-file using the method dump from the builtin module pickle.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -3445,7 +2953,7 @@ overwriteIfExists : {bool}, default: True \n\
 \n\
 See Also \n\
 --------- \n\
-pickle.dump");
+pickle.dump, loadIDC");
 PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"filename", "dict", "overwriteIfExists", NULL};
@@ -3499,6 +3007,25 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+\n\
+This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
+`figure.close`.\n\
+\n\
+Parameters \n\
+----------- \n\
+handle : {`dataIO`, str} \n\
+    any figure handle (>0) or 'all' in order to close all opened figures \n\
+\n\
+Notes \n\
+------- \n\
+If any instance of class 'figure' still keeps a reference to any figure, it is only closed and will be deleted after that the last referencing instance has been deleted. \n\
+\n\
+See Also \n\
+--------- \n\
+figure.close");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
 //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
@@ -3528,16 +3055,16 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
     {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
-    {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS, pySaveDataObject_doc},
-    {"loadDataObject", (PyCFunction)PythonItom::PyLoadDataObject, METH_VARARGS, pyLoadDataObject_doc},
+    {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS | METH_KEYWORDS, pySaveDataObject_doc},
+    {"loadDataObject", (PyCFunction)PythonItom::PyLoadDataObject, METH_VARARGS | METH_KEYWORDS, pyLoadDataObject_doc},
     {"addButton", (PyCFunction)PythonItom::PyAddButton, METH_VARARGS | METH_KEYWORDS, pyAddButton_doc},
     {"removeButton", (PyCFunction)PythonItom::PyRemoveButton, METH_VARARGS, pyRemoveButton_doc},
     {"addMenu", (PyCFunction)PythonItom::PyAddMenu, METH_VARARGS | METH_KEYWORDS, pyAddMenu_doc},
     {"removeMenu", (PyCFunction)PythonItom::PyRemoveMenu, METH_VARARGS | METH_KEYWORDS, pyRemoveMenu_doc},
     {"saveMatlabMat", (PyCFunction)PythonItom::PySaveMatlabMat, METH_VARARGS, pySaveMatlabMat_doc},
     {"loadMatlabMat", (PyCFunction)PythonItom::PyLoadMatlabMat, METH_VARARGS, pyLoadMatlabMat_doc},
-    {"scaleDoubleUnit", (PyCFunction)PythonItom::ScaleValueAndUnit, METH_VARARGS, ScaleValueAndUnit_doc},
-    {"getDefaultScaleableUnits", (PyCFunction)PythonItom::getDefaultScaleAbleUnits, METH_NOARGS, getDefaultScaleAbleUnits_doc},
+    {"scaleValueAndUnit", (PyCFunction)PythonItom::scaleValueAndUnit, METH_VARARGS | METH_KEYWORDS, scaleValueAndUnit_doc},
+    {"getDefaultScaleableUnits", (PyCFunction)PythonItom::getDefaultScaleableUnits, METH_NOARGS, getDefaultScaleableUnits_doc},
     {"getAppPath", (PyCFunction)PythonItom::getAppPath, METH_NOARGS, getAppPath_doc},
     {"getCurrentPath", (PyCFunction)PythonItom::getCurrentPath, METH_NOARGS, getCurrentPath_doc},
     {"setCurrentPath", (PyCFunction)PythonItom::setCurrentPath, METH_VARARGS, setCurrentPath_doc},

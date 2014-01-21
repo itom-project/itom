@@ -90,8 +90,8 @@ public:
     static PyObject* PyPluginLoaded(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PyFilterLoaded(PyObject* pSelf, PyObject* pArgs);
 
-    static PyObject* PySaveDataObject(PyObject* pSelf, PyObject* pArgs);
-    static PyObject* PyLoadDataObject(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PySaveDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+    static PyObject* PyLoadDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
 
     static PyObject* PyAddButton(PyObject* pSelf, PyObject* pArgs, PyObject *kwds);
     static PyObject* PyRemoveButton(PyObject* pSelf, PyObject* pArgs);
@@ -113,8 +113,8 @@ public:
 
     static PyObject* PyGetScreenInfo(PyObject* pSelf);
 
-    static PyObject* getDefaultScaleAbleUnits(PyObject* pSelf);
-    static PyObject* ScaleValueAndUnit(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* getDefaultScaleableUnits(PyObject* pSelf);
+    static PyObject* scaleValueAndUnit(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
 
     static PyObject* getAppPath(PyObject* pSelf);
     static PyObject* getCurrentPath(PyObject* pSelf);
