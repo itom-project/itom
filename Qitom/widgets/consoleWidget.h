@@ -117,7 +117,7 @@ private:
 
     RetVal moveCursorToValidRegion();
 
-    int checkValidDropRegion(QPoint pos);
+    int checkValidDropRegion(const QPoint &pos);
     
     int startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
     

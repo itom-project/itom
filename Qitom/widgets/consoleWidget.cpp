@@ -215,22 +215,26 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransDebugExecCmdBegin:
         if (!waitForCmdExecutionDone)
         {
+            //this part is only executed if a script or other python code is executed but
+            //not from the command line. Then, the text that is not executed yet, is
+            //temporarily removed and finally added again when python has been finished
+
             //copy text from startLineBeginCmd on to temporaryRemovedCommands
             QStringList temp;
 
-            for (int i=startLineBeginCmd; i<=lines()-1; i++)
+            for (int i = startLineBeginCmd; i <= lines() - 1; i++)
             {
                 temp.push_back(text(i));
             }
             temporaryRemovedCommands = temp.join("");
 
-            setSelection(startLineBeginCmd, 0, lines()-1, lineLength(lines()-1));
+            setSelection(startLineBeginCmd, 0, lines() - 1, lineLength(lines() - 1));
 
             removeSelectedText();
         }
         else
         {
-            temporaryRemovedCommands = "";
+            //temporaryRemovedCommands = "";
         }
 
         pythonBusy = true;
@@ -242,8 +246,9 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 
         if (!waitForCmdExecutionDone)
         {
-            startLineBeginCmd = lines()-1;
+            startLineBeginCmd = lines() - 1;
             append(temporaryRemovedCommands);
+            temporaryRemovedCommands = "";
             moveCursorToEnd();
         }
         else
@@ -274,23 +279,23 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
         clear();
     }
 
-    if (text()=="")
+    if (text() == "")
     {
         //!< empty editor, just start new command
         append(">>");
         moveCursorToEnd();
-        startLineBeginCmd = lines()-1;
+        startLineBeginCmd = lines() - 1;
     }
     else
     {
         //!< append at the end of the existing text
-        if (lineLength(lines()-1)>0)
+        if (lineLength(lines() - 1) > 0)
         {
             append(ConsoleWidget::lineBreak);
         }
         append(">>");
         moveCursorToEnd();
-        startLineBeginCmd = lines()-1;
+        startLineBeginCmd = lines() - 1;
     }
     return RetVal(retOk);
 }
@@ -344,7 +349,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
 
         //delete possible commands after startLineBeginCmd:
         lineFrom = startLineBeginCmd;
-        lineTo = lines()-1;
+        lineTo = lines() - 1;
         indexFrom = 2;
         indexTo = lineLength(lineTo);
         setSelection(lineFrom, indexFrom, lineTo, indexTo);
@@ -430,7 +435,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                     getCursorPosition(&lineFrom, &indexFrom);
                 }
 
-                if (lineFrom == lines()-1 || lineFrom < startLineBeginCmd)
+                if (lineFrom == lines() - 1 || lineFrom < startLineBeginCmd)
                 {
                     acceptEvent = true;
                     forwardEvent = false;
@@ -465,7 +470,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Escape:
             if (isListActive() == false)
             {
-                lineTo = lines()-1;
+                lineTo = lines() - 1;
                 indexTo = lineLength(lineTo);
 
                 setSelection(startLineBeginCmd, 2, lineTo, indexTo);
@@ -528,7 +533,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                         //!< new line for possible error or message
                         append(ConsoleWidget::lineBreak);
 
-                        execCommand(startLineBeginCmd, lines()-2);
+                        execCommand(startLineBeginCmd, lines() - 2);
                         acceptEvent = true;
                         forwardEvent = false;
 
@@ -726,6 +731,13 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             waitForCmdExecutionDone = false;
             startNewCommand(false);
+
+            //if further text has been removed within execCommand, it is appended now.
+            //text, that is removed due to another run of python (not invoked by this command line),
+            //is added in the pythonStateChanged method
+            append(temporaryRemovedCommands);
+            temporaryRemovedCommands = "";
+            moveCursorToEnd();
         }
     }
     else
@@ -801,13 +813,13 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         }
         if (singleLine.startsWith(">>"))
         {
-            singleLine.remove(0,2);
+            singleLine.remove(0, 2);
         }
         cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 1));
     }
     else
     {
-        for (int i=beginLine;i<=endLine;i++)
+        for (int i = beginLine; i <= endLine; i++)
         {
             singleLine = text(i);
             if (singleLine.endsWith('\n'))
@@ -816,7 +828,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             }
             if (singleLine.startsWith(">>"))
             {
-                singleLine.remove(0,2);
+                singleLine.remove(0, 2);
             }
 
             buffer.append(singleLine);
@@ -872,6 +884,18 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         //}
    
     }
+
+    //if endLine does not correspond to last line in command line, remove this part
+    //and add it to temporaryRemovedCommands. It is added again after that python has been finished
+    QStringList temp;
+
+    for (int i = endLine + 1; i < lines(); i++)
+    {
+        temp.push_back(text(i));
+    }
+    temporaryRemovedCommands = temp.join("");
+    setSelection(endLine + 1, 0, lines() - 1, lineLength(lines() - 1));
+    removeSelectedText();
 
     waitForCmdExecutionDone = true;
     executeCmdQueue();
@@ -1017,7 +1041,7 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 /*
 @return 0: pos invalid, 1: pos valid, 2: pos below last line
 */
-int ConsoleWidget::checkValidDropRegion(QPoint pos)
+int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
 {
     if (waitForCmdExecutionDone || pythonBusy)
     {
@@ -1186,6 +1210,8 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     // we have to remove the indent
     if (selectionText.length() > 0)
     {
+//        waitForCmdExecutionDone = false;
+
         // 1. identify the indent typ
         QChar indentTyp = 0;
         if (selectionText[0] == '\t')
@@ -1214,23 +1240,13 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
             // 4. now we have to remove this indent size in every other lines
             selectionText.replace(indent, ConsoleWidget::lineBreak);
         }
-    }
 
-    selectionText += ConsoleWidget::lineBreak;
+        selectionText += ConsoleWidget::lineBreak;
 
-    if (text(startLineBeginCmd) == ">>")
-    {
         insertAt(selectionText, startLineBeginCmd, 2);
-    }
-    else if (text(startLineBeginCmd).left(2) == "") 
-    {
-        //clear all after ">>" until end
-        setSelection(startLineBeginCmd, 2, lines()-1, lineLength(lines()-1));
-        removeSelectedText();
-        insertAt(selectionText, startLineBeginCmd, 0);
-    }
 
-    execCommand(startLineBeginCmd, lines()-2);
+        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
