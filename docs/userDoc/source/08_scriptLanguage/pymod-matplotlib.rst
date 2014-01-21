@@ -70,26 +70,124 @@ Its source code is:
 Please consider that the original source code has been changed such that the first two lines are prepended. After executing this script, the following figure is displayed in |itom|:
 
 .. figure:: images/matplotlib_ellipseCollection.png
-    :scale: 100%
+    :scale: 80%
     :align: center
 
 .. note::
     
-    If the figure does not appear, the matplotlib designer widget for |itom| is not available. This means, the library **matplotlibFigure** in the **designer** folder of |itom| is missing.
+    If the figure does not appear, the matplotlib designer widget for |itom| is not available. This means, the library **matplotlibPlot** in the **designer** folder of |itom| is missing.
     
 Embedding a matplotlib figure in your own user interface
 ---------------------------------------------------------
 
-|itom| not only provides stand-alone windows for showing the result of the matplotlib, but it is also possible to integrate a matplotlib canvas into own user interfaces created by the
+|itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into own user interfaces created by the
 QtDesigner and scripted with |python|. For more information how to do this, see :ref:`qtdesigner`.
 
-If you open the QtDesigner, you will see a widget **MatplotlibFigure** in the section **ITOM Plugins**. Then you can drag&drop one instance of this widget onto your user interface. In our
-case we opened a new main window and placed on the left side a MatplotlibFigure (name: mplFig) and on the right side, there are two buttons (name: btn1 and btn2):
+In the widget library of QtDesigner there is the widget **MatplotlibPlot** in the section **itom Plugins** (under the consumption that the corresponding designer plugin library is contained in the folder *designer* of the root directory of |itom|). Drag&Drop an instance of this widget onto your user interface. 
+
+In the following example, a new main window is created where a *MatplotlibPlot* widget (name: *plot*) is placed on the left side while two buttons (name: *btnDroppedSpines* and *btnSine*) are placed on the right side:
 
 .. figure:: images/matplotlib_gui.png
-    :scale: 100%
+    :scale: 80%
     :align: center
 
-When any of the both buttons are pressed, the corresponding example should be displayed in the figure **mplFig** on the left side.
+When any of the both buttons are pressed, the following example should be displayed in the figure **plot** on the left side.
 
-Rest TODO
+.. code-block:: python
+    
+    import matplotlib
+    matplotlib.use('module://mpl_itom.backend_itomagg',False)
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    def plotDroppedSpines():
+        '''
+        plot taken from matplotlib example 'spines_demo_dropped.py'
+        '''
+        canvas = gui.plot #reference to matplotlibPlot widget
+        fig = plt.figure(num = 3, canvas=canvas)
+        ax = fig.add_subplot(111)
+        ax.clear()
+        
+        image = np.random.uniform(size=(10, 10))
+        ax.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
+        ax.set_title('dropped spines')
+
+        # Move left and bottom spines outward by 10 points
+        ax.spines['left'].set_position(('outward', 10))
+        ax.spines['bottom'].set_position(('outward', 10))
+        # Hide the right and top spines
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        # Only show ticks on the left and bottom spines
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')
+        
+        plt.show()
+        
+
+    def plotSine():
+        '''
+        plots sine, taken from matplotlib gallery examples
+        '''
+        t = np.arange(0.0, 1.0, 0.01)
+        s = np.sin(2*np.pi*t)
+        
+        canvas = gui.plot #reference to matplotlibPlot widget
+        fig = plt.figure(num = 3, canvas=canvas)
+        ax = fig.add_subplot(111)
+        ax.clear()
+        ax.plot(t,s)
+        
+        plt.show()
+
+    gui = ui("matplotlibGui.ui", type = ui.TYPEWINDOW)
+    gui.btnSine.connect("clicked()", plotSine)
+    gui.btnDroppedSpines.connect("clicked()", plotDroppedSpines)
+    gui.show()
+
+    # if you call this script for the second time, the given figure-num (3)
+    # is already in used for the lastly closed figure. Therefore also tell
+    # matplotlib to close this figure handle.
+    plt.close(3)
+    
+The result is:
+
+.. figure:: images/matplotlib_gui_result.png
+    :scale: 80%
+    :align: center
+
+**What happens here?**
+
+* At the end of the script, the user interface *matplotlibGui.ui* is loaded and referenced by the variable *gui*.
+* The click-events of both buttons is connected to the methods *plotSine* and *plotDroppedSpines* respectively.
+* The gui is shown
+
+For both button clicks the following things have to be done:
+
+Once you added the |itom|-backend command as first, mandatory line to your script, the *figure*-class of *matplotlib*
+has got one further keyword-based parameter *canvas*. This needs to be used in order to tell the figure where the
+widget is to plot the content to. If you omit this parameter, a new window is opened with the corresponding output.
+If you set this parameter to the reference of the widget of type *MatplotlibPlot* (here: called canvas), the output is
+print there.
+
+The you have the reference to the figure-instance of *matplotlib* and can go one like usual.
+
+.. note::
+    
+    Once you created one figure that maps to a given widget using the canvas-keyword, this figure is not deleted when
+    a new figure is created using the same keyword. Therefore it will happen that lots of invisible figures need to be handled.
+    Therefore, the *num* keyword argument is used in the methods in the example in order to always tell *matplotlib* that a defined
+    figure with the handle *3* should be instantiated. If this handle already exists, this existing figure is used. Therefore it is
+    also necessary to clear the axes using **ax.clear()**.
+    
+    Furthermore, if you created a figure with a given *num* and *canvas*, deletes the user interface and creates a new one, a new figure
+    with the handle of the old one is not able to plot in the new user interface since it still is connected with the old, deleted
+    widget. Therefore, the command::
+        
+        plt.close(3)
+    
+    is used to firstly delete the matplotlib-figure with handle *3* once the script is re-executed.
+
+This example is contained in the **demo/ui/embeddedMatplotlib** folder.
