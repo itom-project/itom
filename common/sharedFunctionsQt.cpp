@@ -2020,32 +2020,25 @@ namespace ito
 
         // First start with the properties of the file, check if it ist readable ...
 
-        QString fileName("");
         QFileInfo checkFile(folderFileName);
 
-        fileName.append(checkFile.canonicalPath());
-        fileName.append("\\");
-        fileName.append(checkFile.completeBaseName());
 
         if(appendEnding || checkFile.suffix().isEmpty())
         {
             if(onlyHeaderObjectFile)
             {
-                fileName.append(".idh");
+                folderFileName.append(".idh");
             }
             else
             {
-                fileName.append(".ido");
+                folderFileName.append(".ido");
             }
-        }
-        else
-        {
-            fileName.append(checkFile.suffix());
+
+            checkFile = folderFileName;
         }
 
-        paramFile.setFileName(fileName);
+        paramFile.setFileName(checkFile.canonicalFilePath());
 
-        checkFile = paramFile;
         if(!checkFile.isReadable() && !checkFile.exists())
         {
             return RetVal(retError, 0, QObject::tr("Load object failed: file not readable or does not exists").toAscii().data());
