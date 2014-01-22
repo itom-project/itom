@@ -58,7 +58,7 @@ DialogLoadedPlugins::~DialogLoadedPlugins()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::init()
 {
-    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (AIM)
     {
         m_content = AIM->getPluginLoadStatus();

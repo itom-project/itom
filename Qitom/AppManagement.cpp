@@ -45,7 +45,7 @@ QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
 
 
-QObject* AppManagement::getAddinManager() 
+QObject* AppManagement::getAddInManager() 
 { 
     QMutexLocker locker (&m_mutex); 
     return qobject_cast<QObject*>(ito::AddInManager::getInstance()); 

@@ -43,7 +43,7 @@ class AppManagement
         inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; }        /*!< returns static pointer to DesignerWidgetOrganizer instance */
     
         inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; }
-        static QObject* getAddinManager();
+        static QObject* getAddInManager();
         inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */

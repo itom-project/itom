@@ -87,7 +87,7 @@ namespace ito {
         }
         else //check whether there is a plugin which can open this file
         {
-            ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+            ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
             ito::AddInAlgo::FilterDef *filter = NULL;
             if (AIM)
             {
@@ -607,7 +607,7 @@ end:
 /*static*/ RetVal IOHelper::uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/, bool globalNotLocal /*= true*/)
 {
     RetVal retval;
-    ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+    ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PythonEngine *pyEng = static_cast<PythonEngine*>(AppManagement::getPythonEngine());
     QVector<ito::ParamBase> autoMand;
     QVector<ito::ParamBase> autoOut;
@@ -773,7 +773,7 @@ end:
 /*static*/ RetVal IOHelper::uiSaveFileWithFilter(QSharedPointer<ito::ParamBase> &value, const QString &filename, QWidget *parent /*= NULL*/)
 {
 
-    ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+    ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     ito::AddInAlgo::FilterDef *filter = NULL;
     QList<ito::AddInAlgo::FilterDef*> filters;
     QFileInfo info(filename);
@@ -907,7 +907,7 @@ end:
 
     if (IOfilters.testFlag(ito::IOHelper::IOPlugin))
     {
-        ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+        ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         QList<ito::AddInAlgo::FilterDef*> filterPlugins;
         if (AIM)
         {
