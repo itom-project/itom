@@ -149,7 +149,7 @@ At first, the constructor consists of a section where you define basic informati
 .. c:member:: bool m_callInitInNewThread
     
     Usually, the plugin's init method, where for instance the hardware is started and initialized, is called in a new thread in order to keep the GUI reactive during the whole process. If you change this member from
-    its default value **true** to **false**, **init** is executed in the main thread and afterwards the plugin is moved to the new thread. For more information, see :ref:`plugin-class` or the info box :ref:`plugin-class-callInitThread`.
+    its default value **true** to **false**, **init** is executed in the main thread and afterwards the plugin is moved to the new thread. For more information, see :ref:`plugin-class` or the :ref:`info box <plugin-class-callInitThread>`.
     
 **Part 2 (mandatory and optional parameters):**
 

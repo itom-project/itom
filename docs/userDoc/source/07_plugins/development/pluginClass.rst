@@ -28,7 +28,7 @@ The following components and structures are equal for all plugins of type *actua
 #. The communcation between the plugin and its GUI-components (Config-Dialog, Dock-Widget in main window) must therefore be done using a signal-slot-connection or a simple invoke, that allows to call methods in another thread.
 #. The plugin's **init** method is called with the mandatory and optional parameters, those default is set the in the plugin's interface and which are updated by the user input.
 
-The basic scheme of the live-cycle of any plugin is depicted in figure :ref:`plugin-plugincall-scheme1`:
+The basic scheme of the live-cycle of any plugin is depicted in the following figure:
 
 .. _plugin-plugincall-scheme1:
 
@@ -55,7 +55,7 @@ Finally, if the plugin should be closed, the inverse function calls with respect
 .. note::
     
     In some cases, it is not possible to initialize the hardware (some cameras) in another thread than the main thread. Since this initialization should be done in the **init** method of the plugin, |itom| provides a
-    possibility to call **init** before moving the plugin to the new thread. Hence, those both steps in scheme :ref:`plugin-plugincall-scheme1` are switched. This can be done by setting the member **m_callInitInNewThread**
+    possibility to call **init** before moving the plugin to the new thread. Hence, those both steps in :ref:`this scheme <plugin-plugincall-scheme1>` are switched. This can be done by setting the member **m_callInitInNewThread**
     of the plugin interface class from its default value **true** to **false**. However, only use this possibility if there is no other chance, since the GUI is completely blocked during an initialization executed in the
     main thread (see also :ref:`plugin-interface-class`).
     
@@ -202,7 +202,7 @@ The method **init** has the following bare framework:
 
 Consider the following hints for the implementation of the **init**-method:
 
-#. Usually it is executed in new-thread (see :ref:`plugin-class-callInitThread`)
+#. Usually it is executed in a new thread (see :ref:`here <plugin-class-callInitThread>`)
 #. The parameters are the filled mandatory and optional parameter vectors, those default implementation has been given in the constructor of the interface class.
 #. You can be sure, that both the order and type of those plugins remains invariant.
 #. Initialize the plugin with respect to these parameters.
