@@ -400,7 +400,7 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     {
         if (source->urls().length() == 1)
         {
-            QString fext = QFileInfo(source->urls().at(0).toString()).suffix();
+            QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
 //            qDebug() << fext.toAscii().data();
             if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                 || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
@@ -427,7 +427,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
         {
             if (event->mimeData()->urls().length() == 1)
             {
-                QString fext = QFileInfo(event->mimeData()->urls().at(0).toString()).suffix();
+                QString fext = QFileInfo(event->mimeData()->urls().at(0).toString()).suffix().toLower();
     //            qDebug() << fext.toAscii().data();
                 if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                     || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))

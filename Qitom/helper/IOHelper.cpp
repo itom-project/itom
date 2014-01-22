@@ -63,7 +63,7 @@ namespace ito {
     else
     {
         QFileInfo fileinfo(file);
-        QString suffix = fileinfo.suffix();
+        QString suffix = fileinfo.suffix().toLower();
 
         if (suffix == "py")
         {
@@ -215,10 +215,11 @@ end:
     else
     {
         QFileInfo info(filename);
+        QString suffix = info.suffix().toLower();
 
         uiExportPyWorkspaceDefaultPath = info.path(); //save directory as default for next call to this export dialog
 
-        if (info.suffix() == "idc" || info.suffix() == "mat")
+        if (suffix == "idc" || suffix == "mat")
         {
             //QDir::setCurrent(info.path());
             return exportPyWorkspaceVars(filename, globalNotLocal, varNames);
@@ -301,8 +302,9 @@ end:
     }
 
     QFileInfo info(file);
+    QString suffix = info.suffix().toLower();
 
-    if (info.suffix() == "idc")
+    if (suffix == "idc")
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
@@ -320,7 +322,7 @@ end:
 
         QApplication::restoreOverrideCursor();
     }
-    else if (info.suffix() == "mat")
+    else if (suffix == "mat")
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
@@ -415,8 +417,9 @@ end:
     }
 
     QFileInfo info(file);
+    QString suffix = info.suffix().toLower();
 
-    if (info.suffix() == "idc")
+    if (suffix == "idc")
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
@@ -433,7 +436,7 @@ end:
 
         QApplication::restoreOverrideCursor();
     }
-    else if (info.suffix() == "mat")
+    else if (suffix == "mat")
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
@@ -774,7 +777,7 @@ end:
     ito::AddInAlgo::FilterDef *filter = NULL;
     QList<ito::AddInAlgo::FilterDef*> filters;
     QFileInfo info(filename);
-    QString suffix = info.suffix();
+    QString suffix = info.suffix().toLower();
 
     if (AIM)
     {

@@ -389,7 +389,7 @@ void FileSystemDockWidget::updateActions()
         QFileInfo fileinfo = m_pFileSystemModel->fileInfo(indexList.first());
 //        isDir = fileinfo.isDir();
         isFile = fileinfo.isFile();
-        isPyFile = isFile && (fileinfo.suffix() == "py");
+        isPyFile = isFile && (fileinfo.suffix().toLower() == "py");
         if (isPyFile)
         {
             PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());

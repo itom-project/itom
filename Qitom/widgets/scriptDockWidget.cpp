@@ -239,7 +239,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     else
     {
         QFileInfo info(file);
-        if (info.suffix() != "py")
+        if (info.suffix().toLower() != "py")
         {
             if (!silent)
             {
