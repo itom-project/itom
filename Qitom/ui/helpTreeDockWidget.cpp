@@ -117,7 +117,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 void HelpTreeDockWidget::saveIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup("HelpScriptReference");
     settings.setValue("percWidthVi", m_percWidthVi);
     settings.setValue("percWidthUn", m_percWidthUn);
     settings.endGroup();
@@ -128,7 +128,7 @@ void HelpTreeDockWidget::saveIni()
 void HelpTreeDockWidget::loadIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup("HelpScriptReference");
     m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
     m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
     settings.endGroup();
@@ -140,7 +140,7 @@ void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
     
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("helpTreeDockWidget");
+    settings.beginGroup("HelpScriptReference");
     // Read the other Options
     m_openLinks = settings.value("OpenExtLinks", true).toBool();
     m_plaintext = settings.value("Plaintext", false).toBool();
@@ -345,10 +345,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
         QString temp;
         temp = path+'/'+includedDBs.at(i);
         retval = readSQL(/*DBList,*/ "", temp, sqlList);
-
         QCoreApplication::processEvents();
-
-
         if (!retval.containsWarningOrError())
         {
             createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
@@ -356,7 +353,6 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
         else
         {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
     }
-
     return retval;
 }
 
@@ -369,58 +365,33 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
     int errorCode = errorS.toInt();
     QStringList errorList;
 
-    
-
     /*********************************/
     // Allgemeine HTML sachen anfügen /
     /*********************************/ 
     QString rawContent = helpText;
-    QString html =    "<html><head>"
-        "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
-                    "</head><body>%1"
-                    "</body></html>";
-
+    QString html = "<html><head>"
+                   "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
+                   "</head><body>%1"
+                   "</body></html>";
+    // Set Label.Text above Textbrowser
+    // -------------------------------------
     if (errorCode == 1)
-    {
+    { // not needed anymore (as long as the Documentation is right)
         ui.label->setText("Parser: ITO-Parser (Martin)");  
     }
     else if (errorCode == 0)
     {
         ui.label->setText("Parser: docutils");
-        
-        // REGEX muss noch an den html code angepasst werden . ... und dann noch der betreffende teil aus dem helptext ausgeschnitten werden!
-        /*QRegExp docError("System Message: ERROR/\\d \\(.+\\).*\\.");
-        errorList = docError.capturedTexts();
-        QStringListModel *listM = new QStringListModel();
-        listM->setStringList(errorList);*/
     }
     else if (errorCode == -1)
     {
-        ui.label->setText("Parser: No help available");
+        ui.label->setText("Parser: No help-text available");
     }
 
+    // Insert Shortdescription
+    // -------------------------------------
     if (shortDesc != "")
-        rawContent.insert(0,shortDesc+""); // ShortDescription mit ID versehen: id=\"sDesc\" um getrennt zu highlighten
-
-/*
-    if (errorCode != 0)
-    {
-        // Zeilenumbrüche ersetzen
-        // -------------------------------------
-        rawContent.replace('\n',"<br/>");
-        // Shortdescription einfügen
-        // -------------------------------------
-        //if (ShortDesc != "-")
-            
-            //rawContent.insert(0,ShortDesc+""); // ShortDescription mit ID versehen: id=\"sDesc\" um getrennt zu highlighten
-        // Parameter formatieren
-        // -------------------------------------
-    }
-    else if (errorCode == 0)
-    {
-        rawContent.replace("h1", "h2");
-    }
-*/
+        rawContent.insert(0,shortDesc+"");
 
     // Überschrift (Funktionsname) einfuegen
     // -------------------------------------
@@ -440,82 +411,8 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
         rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkPath+"\">"+splittedLink[i]+"</a>");
     }
 
-/*
-    if (errorCode != 0)
-    {
-        // Variables Declaration
-        //--------------------------------------
-        QStringList sections; 
-        sections  <<  "<h2 id=\"Sections\">"  <<  "</h2>"  <<  "Parameters"  <<  "Returns"  <<  "Attributes" <<  "Examples"  <<  "Notes"  <<  "Args"  <<   "Raises"  <<  "See Also"  <<  "References"; // <<   <<   <<  ... Hier alle regex für Keywords der 1. Überschrift eintragen
-        int pos = 0;
-        
-        // Sections Highlighten
-        // -------------------------------------
-        QRegExp reg("([a-zA-Z0-9 -.,:;]+)<br/>\\W{,7}-{3,}\\W{,7}<br/>|([a-zA-Z0-9 -.,:;]+)<br/>\\W{,7}={3,}\\W{,7}<br/>|([a-zA-Z0-9 -.,:;]+)<br/>\\W{,7}~{3,}\\W{,7}<br/>");
-        reg.setMinimal(true);
-        while ((pos = reg.indexIn(rawContent, pos)) != -1)
-        {
-            if (pos == -1) {
-                break;}
-            QString content = rawContent.mid(pos, reg.matchedLength());
-        
-            QRegExp keywordReg("<br/>");
-            keywordReg.setMinimal(false);
-            int pos2 = keywordReg.indexIn(content, 0);
-            content = content.left(pos2);
-
-            rawContent.remove(pos, reg.matchedLength());
-            rawContent.insert(pos, sections[0] + content + sections[1]);
-            pos += QString(sections[0] + sections[1]).length()+content.length();
-        }
-
-        // Enumerations bei folgenden Section setzen 
-        // -------------------------------------
-        // Section[2] = Parameters, Section[3] = Returns,... Attributes
-        for (int i = 2; i<5; i++)
-        {
-            int headPos = 0;
-            int pos = 0;
-            int bottomPos = 1;
-            QRegExp head(QString("<h2 id=\"Sections\">.*"+sections[i]+".*</h2>"));
-            QRegExp bottom("<h2 id=\"Sections\">");
-            head.setMinimal(true);
-            // find multiple occurences of one heading
-            while ( ((headPos = head.indexIn(rawContent, headPos)) != -1) && (pos < bottomPos) )
-            {
-                if (headPos == -1) {
-                    break;}
-                // beginning of the bullets
-                rawContent.insert(headPos + head.matchedLength(),"<ul>");
-                pos = headPos;            
-                bottomPos = bottom.indexIn(rawContent, headPos+head.matchedLength());
-                if (bottomPos == -1)
-                {
-                    rawContent.append("</ul>");
-                    bottomPos = rawContent.length()-1;
-                }
-                else
-                    rawContent.insert(bottomPos,"</ul>");
-
-                // search for: "x : int" for example
-                QRegExp line("[a-zA-Z _,.-]*: [^<br/>]*");            
-            
-                while ( ((pos = line.indexIn(rawContent,pos)) != -1) && (pos < bottomPos) )
-                {
-                    if (pos == -1) {
-                        break;}
-                    rawContent.insert(pos,"<li>");
-                    pos += line.matchedLength()+4;
-                }
-                // end of the Bullets
-            
-                headPos += head.matchedLength() + 5;
-            }
-        }
-    }
-*/
-
-    // merge html content and assign to document   
+    // Insert docstring
+    // -------------------------------------
     if (htmlNotPlainText)
     {
         QFile file(":/helpTreeDockWidget/help_style");
@@ -525,21 +422,51 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
             document->addResource( QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData) );
             file.close();
         }
+        // Remake "See Also"-Section so that the links work
+        // -------------------------------------
+        // Alte "See Also" Section kopieren
+        QRegExp seeAlso("(<div class=\"seealso\">).*(</div>)");
+        seeAlso.setMinimal(true);
+        seeAlso.indexIn(rawContent);
+        QString oldSec = seeAlso.capturedTexts()[0];
+
+        // Extract Links (names) from old Section
+        QRegExp links("`(.*)`");
+        links.setMinimal(true);
+        int offset = 0;
+        QStringList texts;
+        while (links.indexIn(oldSec, offset) > -1)
+        {
+            texts.append(links.capturedTexts()[1]);
+            offset = links.pos()+links.matchedLength();
+        }
+
+        // Build the new Section with Headings, Links, etc
+        QString newSection = "<p class=\"rubric\">See Also</p><p>";
+        for (int i = 0; i<texts.length(); i++)
+        {
+            newSection.append("\n<a id=\"HiLink\" href=\"itom://"+prefix.left(prefix.lastIndexOf('.'))+"."+texts[i]+"\">"+texts[i].remove('`')+"</a>, ");
+        }
+        newSection = newSection.left(newSection.length()-2);
+        newSection.append("\n</p>");
+
+        // Exchange old Section against new one
+        rawContent.remove(seeAlso.pos(), seeAlso.matchedLength());
+        rawContent.insert(seeAlso.pos(), newSection);
 
         document->setHtml( html.arg(rawContent) );
-
-        //dummy output
-        /*QFile file("helpOutput.html");
-        file.open(QIODevice::WriteOnly);
-        file.write(html.arg(rawContent).toAscii());
-        file.close();*/
+        
+        //dummy output (write last loaded Plaintext into html-File)
+        QFile file2("helpOutput.html");
+        file2.open(QIODevice::WriteOnly);
+        file2.write(html.arg(rawContent).toAscii());
+        file2.close();
     }
     else
-    {
+    {   // Only for debug reasons! Displays the Plaintext instead of the html
         rawContent.replace("<br/>","<br/>\n");
         document->setPlainText( html.arg(rawContent) );
     }
-    
     return ito::retOk;
 }
 
@@ -671,7 +598,6 @@ void HelpTreeDockWidget::liveFilter(const QString &filterText)
 // prot|||....link.....        
 QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
-    //qDebug()  <<  "THE REALLINK: "  <<  link.toEncoded()  <<  "The LinkCaption: "  <<  link.userInfo();
     QStringList result;
 
     QRegExp maillink(QString("^(mailto):(.*)"));
@@ -719,9 +645,7 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     QStringList parts = separateLink(link.toString());
     if (parts[0] == "itom")
     {
-        //qDebug()  <<  "OnTreeClickedPfad: "  <<  parts[1];
         displayHelp( parts[1], 1);
-
         QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(parts[1]) );
         ui.treeView->setCurrentIndex(filteredIndex);
     }
@@ -751,8 +675,7 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
             case QMessageBox::No:
                 break;
         }
-    }
-        
+    }    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -777,7 +700,6 @@ void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
 void HelpTreeDockWidget::on_treeView_clicked(QModelIndex i)
 {
     int MyR = Qt::UserRole;
-    //qDebug()  <<  "OnTreeClickedPfad: "  <<  QString(i.data(MyR+1).toString());
     displayHelp(QString(i.data(MyR+1).toString()), 1);
 }
 

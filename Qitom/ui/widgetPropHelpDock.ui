@@ -25,10 +25,36 @@
         <property name="geometry">
          <rect>
           <x>4</x>
-          <y>20</y>
+          <y>100</y>
           <width>277</width>
-          <height>373</height>
+          <height>281</height>
          </rect>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>30</y>
+          <width>151</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Show Filters</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_4">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>60</y>
+          <width>151</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Show Modules and Packages</string>
         </property>
        </widget>
       </widget>
@@ -86,7 +112,7 @@
          <enum>QFrame::Raised</enum>
         </property>
         <property name="text">
-         <string>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are loaded.</string>
+         <string>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are selected.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

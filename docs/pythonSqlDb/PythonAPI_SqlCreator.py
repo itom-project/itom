@@ -8,6 +8,23 @@ import numpydoc
 
 # remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
 import numpy
+import time
+
+from sphinx import directives
+from sphinx import locale
+
+
+def textDummy(text):
+    '''overwrites local._ since this uses a translated text that is not available
+    in this context'''
+    return str(text)
+
+locale._ = textDummy
+
+from docutils import languages
+language = languages.get_language("en")
+language.labels.update(locale.admonitionlabels)
+
 
 # some switches
 add_builtins =                      0      # e.g. open()
@@ -37,6 +54,10 @@ manualList = ['itom']
 
 # This is how the DB is named! For singlepackage databases use their name as filename!
 filename = 'PythonHelpNew.db'
+
+# This is the path, where the file will be copied after it´s created
+autocopy = 1
+destination = 'D:\\ITOM\\build\\itom\\help\\'
 
 stackList = []
 
@@ -249,15 +270,17 @@ def processName(moduleP, ns, recLevel = 0):
         nametype = getPyType(prefix+module, ns)
         try:
             exec('hasdoc = hasattr('+prefix+module+', "__doc__")', ns)
-            if ns['hasdoc']:
-                exec('doc = '+prefix+module+'.__doc__', ns)
-                if (nametype == '6'): # '6' = const
-                    exec('doc = str('+prefix+module+')', ns)
-                    createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
-                else:
-                    createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
         except:
             reportMessage(prefix+module, 'e')
+        
+        if ns['hasdoc']:
+            exec('doc = '+prefix+module+'.__doc__', ns)
+            if (nametype == '6'): # '6' = const
+                exec('doc = str('+prefix+module+')', ns)
+                createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+            else:
+                createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+        
         try:
             #this object can only have 'childs' if it is either a class, module or package
             if (nametype == '2' or nametype == '3' or nametype == '4'):
@@ -286,17 +309,14 @@ def processName(moduleP, ns, recLevel = 0):
         except:
             reportMessage('Error in: '+prefix+module,'e')
         return
-
     exec('class test:\n    class config:\n        numpydoc_edit_link = False', ns)
 
 def createSQLEntry(docstrIn, prefix, name, nametype, id):
     #print(prefix+name)
     # Nametype can be a type or a string... nothing else!!!!
     # create one new Row in Database for every function
-    line = [0, 0, 0, 0, 0, 0, 0, 0]
-    
-    # 0 ID eintragen, jedoch später nicht in DB
-    line[0] = id
+    line = [0, 0, 0, 0, 0, 0, 0]
+    time.sleep(0.001)
     
     if type(docstrIn) == str:
         docstr = docstrIn
@@ -304,77 +324,90 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         docstr = ''
         
     # 1. Typ bestimmen und eintragen
-    line[1] = nametype
+    line[0] = nametype
     
     # 2. prefix
-    line[2] = prefix[:len(prefix)]+name
+    line[1] = prefix[:len(prefix)]+name
     
-    # 3 prefixL (Lowercase for quick search)
-    #prefixL = prefix[:len(prefix)]+name
-    #line[3] = prefixL.lower()
-    
-    # 4. Name
+    # 3. Name
     if (name != ''):
-        line[3] = name
+        line[2] = name
     else:
-        line[3] = ''
+        line[2] = ''
         
-    # 5. Parameter
+    # 4. Parameter
+    
     # Falls ein Befehl länger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
     m = re.search(r'^.{0:20}[(].*?[)]',docstr,re.DOTALL)
     if (m != None):
         s = docstr[m.start():m.end()]
         s2 = s[s.find('('):]
-        line[4] = s2
+        line[3] = s2
     else:
-        line[4] = ''
+        line[3] = ''
         
-    # 6. Shortdescription
+    # 5. Shortdescription
     if (id != 0):
         m = re.search(r'->.*?\n',docstr,re.DOTALL)
         if (m != None):
             s = docstr[m.start()+3:m.end()-2]
-            line[5] = s
+            line[4] = s
         else:
-            line[5] = ''
+            line[4] = ''
     else:
-        line[5] = 'This Package is only referenced here. It´s original position is: \n'
+        line[4] = 'This Package is only referenced here. It´s original position is: \n'
         
-    # 7. Doc
+    # 6. Doc
     if (id != 0):
         m = re.search(r'.*?\n',docstr,re.DOTALL)
         if (m != None and nametype != '06'):
             # Shortdescription extrahieren (Enposition der S.Desc finden)
             s = docstr[m.end():]
+            
+            # String in lines aufsplitten
+            lines = s.split('\n')
+            ns["lines"] = lines
+            # numpy docstring korrigieren
+            global types
+            exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[1]+'.__name__,'+line[1]+', None, lines)', ns)
+            lines = ns['lines']
+            # Linien wieder zusamensetzen
+            cor = "\n".join(lines)
+            sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})#, 'env':app.env.settings["env"]})
+            line[6] = '0'
+            
+            
+            '''
             try:
                 # String in lines aufsplitten
                 lines = s.split('\n')
                 ns["lines"] = lines
                 # numpy docstring korrigieren
                 global types
-                exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[2]+'.__name__,'+line[2]+', None, lines)', ns)
+                exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[1]+'.__name__,'+line[1]+', None, lines)', ns)
                 lines = ns['lines']
                 # Linien wieder zusamensetzen
                 cor = "\n".join(lines)
                 sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})
-                line[7] = '0'
+                line[6] = '0'
             except:
                 sout = s
-                line[7] = '1'
-            line[6] = itom.compressData(sout)
+                line[6] = '1'
+            '''
+            line[5] = itom.compressData(sout)
         elif (nametype == '06'):
-            line[6] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
-            line[7] = '0'
+            line[5] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
+            line[6] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
-            line[6] = itom.compressData(docstr)
-            line[7] = '3'
+            line[5] = itom.compressData(docstr)
+            line[6] = '3'
     else:
         # only a link reference
-        line[6] = itom.compressData(docstr)
-        line[7] = '0'
+        line[5] = itom.compressData(docstr)
+        line[6] = '0'
     
-    # 8 HTML-Error
+    # 7 HTML-Error
     # Wiird bereits bei #7 eingetragen
     # Insert commands into doclist
     doclist.append(line)
@@ -392,9 +425,9 @@ def createSQLDB(ns):
         j = 0
         for line in doclist:
             j = j + 1
-            lineS = line[1:8]
+            line
             try:
-                c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?)',lineS)
+                c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?)',line)
             except:
                 print('ERROR_5: at line ['+str(j)+']: ',line)
             printPercent(j,len(doclist))
@@ -460,6 +493,17 @@ print('-> inserted objects: '+str(len(doclist)))
 
 print('-> the db file can be found under:')
 print('    '+filename)
+
+# copy to destination
+if (autocopy):
+    print('-> the File is now being copied to the destination folder')
+    import shutil
+    try:
+        shutil.copyfile(filename, destination+filename)
+    except:
+        print('-> the File could not be copied to: '+destination)
+else:
+    print('-> autocopy-File is turned off, for changes go to line 49')
 
 print('--------------DONE--------------')
 

@@ -42,6 +42,13 @@ WidgetPropHelpDock::~WidgetPropHelpDock()
 
 }
 
+void WidgetPropHelpDock::on_checkBox_4_stateChanged (int state)
+{
+    if (ui.checkBox_4->isChecked())
+        ui.listWidget->setEnabled(true);
+    else
+        ui.listWidget->setEnabled(false);
+}
 
 void WidgetPropHelpDock::on_listWidget_itemChanged(QListWidgetItem * item)
 {
@@ -107,6 +114,12 @@ void WidgetPropHelpDock::readSettings()
 
     ui.checkBox->setChecked( settings.value("OpenExtLinks", true).toBool() );
     ui.checkBox_2->setChecked( settings.value("Plaintext", false).toBool() );
+    ui.checkBox_3->setChecked( settings.value("ShowFilters", false).toBool() );
+    ui.checkBox_4->setChecked( settings.value("ShowModules", false).toBool() );
+    if (ui.checkBox_4->isChecked())
+        ui.listWidget->setEnabled(true);
+    else
+        ui.listWidget->setEnabled(false);
 
     // Read the List of Databases and if they are checked ($ = checked, % = unchecked)
     int size = settings.beginReadArray("Databases");
@@ -140,6 +153,8 @@ void WidgetPropHelpDock::writeSettings()
     settings.setValue("OpenExtLinks", ui.checkBox->isChecked() );
     settings.setValue("Plaintext", ui.checkBox_2->isChecked() );
     settings.setValue("reLoadDBs", m_plistChanged );
+    settings.setValue("showFilters", ui.checkBox_3->isChecked() );
+    settings.setValue("showModules", ui.checkBox_4->isChecked() );
 
     // Write the checkstate with the List into the ini File
     settings.beginWriteArray("Databases");

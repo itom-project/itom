@@ -54,6 +54,7 @@ public slots:
 
 private slots:
     void on_listWidget_itemChanged(QListWidgetItem * item);
+    void on_checkBox_4_stateChanged (int state);
 
 
 };
