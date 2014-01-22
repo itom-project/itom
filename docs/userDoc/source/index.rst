@@ -8,6 +8,7 @@
 .. toctree::
    :maxdepth: 2
    
+   00_releaseNotes/whats-new.rst
    01_introduction/introduction.rst
    02_installation/install.rst
    03_gettingStarted/getting-started.rst
@@ -35,8 +36,6 @@
         :maxdepth: 1
         
         todo.rst
-
-.. :py:class:`zipfile.ZipFile`
    
 Indices and tables
 ###################
