@@ -2000,7 +2000,7 @@ values : {dictionary, list, tuple, variant} \n\
 matrix-name : {str, list, tuple}, optional \n\
     if 'values' is a single value, this parameter must be one single str, if 'values' is a sequence it must be a sequence of strings with the same length, if 'values' is a dictionary this argument is ignored. \n\
 \n\
-Save Also \n\
+See Also \n\
 ---------- \n\
 loadMatlabMat");
 PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
@@ -2530,7 +2530,7 @@ Notes \n\
 ----- \n\
 Tagnames which contains special characters leads to XML-conflics. \n\
 \n\
-See Alse \n\
+See Also \n\
 --------- \n\
 loadDataObject");
 PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)

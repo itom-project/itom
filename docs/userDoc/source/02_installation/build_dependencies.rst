@@ -56,7 +56,7 @@ Create the following environment variables (Windows only - you need to log-off f
 
 * create an entry **QTDIR** and set it to the *Qt*-base directory (e.g. **C:\\Qt\\4.8.0**)
 * create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
-* add the following text to the Path variable: **;%QTDIR%\\bin** (please only **add** this string, **do not replace** the existing path-entry) 
+* add the following text to the Path variable: **;%QTDIR%\\bin** (please only **add** this string, **do not replace** the existing path-entry)
 
 .. note::
     
@@ -108,21 +108,27 @@ Download **QScintilla** (2.6 or higher) from http://www.riverbankcomputing.com/s
 QtCreator project file of QScintilla finally copies the entire output to the **bin** directory of **Qt** so that no other settings need to be adapted. However, the original 
 project settings are not ready for a multi-configuration build in **Visual Studio**. As a result, you need to adapt the Qt-project file. To do this follow these steps:
 
-	* Copy the downloaded files to a directory of your choise (preferably **NOT** the windows program directory, we are assuming in the following that you placed them in **C:\\QScintilla2**)
-	* Open the Visual-Studio 2010 32-bit commandline
-	* Open the file C:\\QScintilla2\\Qt4\\QScintilla.pro in a text editor and replace the line **CONFIG** with::
-		CONFIG += qt warn_off debug_and_release build_all dll thread
-	 and add the lines::
-		CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
-	 (see also: http://www.mantidproject.org/Debugging_MantidPlot)
-	* If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
-	* Execute the following commands from the commandline console
-		- cd C:\\QScintilla2\\Qt4
-    		- nmake distclean 
-		- QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
-		- nmake
-		- nmake install
-	* copy the library files qscintilla2.dll and qscintilla2d.dll from %QTDIR%\\lib to %QTDIR%\\bin 
+    * Copy the downloaded files to a directory of your choise (preferably **NOT** the windows program directory, we are assuming in the following that you placed them in **C:\\QScintilla2**)
+    * Open the Visual-Studio 2010 32-bit commandline
+    * Open the file C:\\QScintilla2\\Qt4\\QScintilla.pro in a text editor and replace the line **CONFIG** with::
+        
+        CONFIG += qt warn_off debug_and_release build_all dll thread
+    
+    and add the lines::
+        
+        CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
+    
+    (see also: http://www.mantidproject.org/Debugging_MantidPlot)
+    * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
+    * Execute the following commands from the command-line::
+        
+        - cd C:\\QScintilla2\\Qt4
+        - nmake distclean 
+        - QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
+        - nmake
+        - nmake install
+    
+    * copy the library files qscintilla2.dll and qscintilla2d.dll from %QTDIR%\\lib to %QTDIR%\\bin 
 
 
 

@@ -76,7 +76,7 @@ These are the steps you need to execute if you want to generate and build |itom|
    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
    | **BUILD_SHARED**           | click this checkbox (default: clicked) in order to use the shared libraries of Qt which is needed if the LGPL-version of Qt is used. |
    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
-   | **BUILD_TARGET64**         | click this checkbox if you want to build itom for 64bit. In the future, this should be automatically detected.                           |
+   | **BUILD_TARGET64**         | click this checkbox if you want to build itom for 64bit. In the future, this should be automatically detected.                       |
    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
    | **BUILD_UNICODE**          | click this checkbox (default: clicked) if you want to compile itom with unicode strings.                                             |
    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
@@ -116,9 +116,11 @@ In some cases, multiple plugins or designer-plugins are bundled together in one 
 one project for each plugin. If you want to generate all plugins, directly use the main directory as source directory in CMake. If you only want to generate single plugins, directly use the corresponding 
 subfolder as source directory. Any source directory must always contain a file *CMakeLists.txt*.
 
+The most convenient way is to use the overall *CMakeLists.txt* file and choose single plugins by clicking the checkboxes of variables starting with *PLUGIN_xxx*.
+
 When configuring any plugin or designer-plugin for the first time, you will probably see that either the variable **ITOM_SDK_DIR** or **OPENCV_DIR** is missing (or both), meaning that their values
 are set to **ITOM_SDK_DIR-NOTFOUND** or **OPENCV_DIR-NOTFOUND**. First set the variable **ITOM_SDK_DIR** to the **SDK**-directory of |itom|. This is either contained in the installation path
-of |itom| created by the setup or in the build-directory of |itom| if built from sources. Afterwards set **OPENCV_DIR** to the build-directory of **OpenCV** (see :ref:`install-depend-opencv` for details where
+of |itom| created by the setup or in the build-directory of |itom| if built from sources. Afterwards set **OPENCV_DIR** to the build-directory of **OpenCV** (see :ref:`this document <install-depend-opencv>` for details where
 the build-directory of **OpenCV** is). If one of these variables is not correctly set, other depending errors may be displayed in **CMAKE**, like::
 
     CMake Error at AMMS/CMakeLists.txt:25 (find_package):
@@ -141,7 +143,7 @@ The rest is the same as calling the CMake GUI. **QtCreator** is also able to dir
 .. _install-third-party-libs:
 
 Additional third-party libraries
------------------------------
+-----------------------------------
 
 Some plugins are dependent on additional third-party libraries. The |itom| SDK provides some find-methods for several commonly used libraries. You will be informed by CMake
 if any library could not be found by this automatic find-method, if a variable of the following style and content is available::

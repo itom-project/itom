@@ -151,8 +151,6 @@ Example:\n\
     \n\
     # Set the value of dObjROICopy element [0, 0, 0] to 127 without effecting other objects\n\
     dObjROICopy[0, 0, 0] = 127\n\
-    \n\
-    \n\
 \n\
 **Constructor** \n\
 \n\

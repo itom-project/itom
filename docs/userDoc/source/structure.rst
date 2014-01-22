@@ -4,7 +4,6 @@ Structure of the manual
 .. toctree::
    :maxdepth: 10
 
-   .. 00_releaseNotes/whats-new.rst
    01_introduction/introduction.rst
    02_installation/install.rst
    03_gettingStarted/getting-started.rst

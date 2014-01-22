@@ -1,4 +1,4 @@
-﻿.. include:: ../../include/global.inc
+﻿.. include:: /../../include/global.inc
 
 Creating a project folder and run a first program
 -------------------------------------------------

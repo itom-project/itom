@@ -56,8 +56,7 @@ the variables. You can export into the following file formats:
 
 * itom data collection (.idc) [multiple files]. The variables are pickled (python module **pickle**) to the file.
 * Matlab file (.mat). [multiple files, Python package **scipy** required]. 
-* If you have itom algorithm-plugins installed that implement one of the following interfaces: **iWriteDataObject**, **iWritePointCloud**, **iWritePolygonMesh**, then you can also export dataObjects, pointClouds or polygonMeshes
-into the specific file formats. [single variable only].
+* If you have itom algorithm-plugins installed that implement one of the following interfaces: **iWriteDataObject**, **iWritePointCloud**, **iWritePolygonMesh**, then you can also export dataObjects, pointClouds or polygonMeshes into the specific file formats. [single variable only].
 
 In both the file open and save dialogs, the filter list always considers all file formats that are available for import and export on your computer.
 

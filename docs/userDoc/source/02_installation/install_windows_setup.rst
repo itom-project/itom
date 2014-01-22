@@ -38,6 +38,7 @@ In the following we will guide you through the installation setup with a couple 
 
 .. figure:: images/itom_install/setup03.jpg
     :scale: 70%
+    
     Read the license text and agree to it.
 
 .. figure:: images/itom_install/setup04.jpg
