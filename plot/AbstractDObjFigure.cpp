@@ -155,6 +155,9 @@ void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
             //delete current static dataObject, that recently has been displayed
             if (m_dataPointer.contains("source"))
             {
+                ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)NULL);
+                retval += updateParam(&thisParam, 1);
+
                 m_dataPointer["source"] = QSharedPointer<ito::DataObject>();
             }
         }
@@ -164,7 +167,6 @@ void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 
         retval += apiConnectLiveData(camera, this); //increments reference of AddInDataIO
         retval += apiStartLiveData(camera, this);
-        //QMetaObject::invokeMethod(camera, "startDeviceAndRegisterListener", Q_ARG(QObject*, this), Q_ARG(ItomSharedSemaphore*, NULL));
     }
 
     updatePropertyDock();
