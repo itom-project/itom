@@ -301,8 +301,8 @@ void DObjConstIterator::seekRel(int ofs)
         int width = dObj->getSize(dims-1);
         int stride = dObj->getOriginalSize(dims-1);
 
-        int curRowIdx = (ptr - dObj->rowPtr(plane,0)) / (stride * elemSize); //floor
-        int curElemIdxInPlane;
+        size_t curRowIdx = (ptr - dObj->rowPtr(plane,0)) / (stride * elemSize); //floor
+        size_t curElemIdxInPlane;
         if(planeContinuous)
         {
             curElemIdxInPlane = (ptr - dObj->rowPtr(plane,0)) / elemSize;
@@ -5563,6 +5563,12 @@ DataObject makeContinuous(const DataObject &dObj)
 template<typename _Tp> ito::RetVal DataObject::linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed)
 {
     ito::RetVal ret(ito::retOk);
+    // nan check
+    if (0.0 * start != 0.0 || 0.0 * end != 0.0 || 0.0 * inc != 0.0)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "input parameter is nan or inf", "", __FILE__, __LINE__));
+        return RetVal(ito::retError, 0, "nan error");
+    }
     int numElements = (int)((end - start) / inc + 1);
     int ne = 0;
     _Tp *dataPtr = NULL;
@@ -5587,8 +5593,11 @@ template<typename _Tp> ito::RetVal DataObject::linspace(const _Tp start, const _
             freeData();
             CreateFunc<_Tp>(this, 2, sizesT, 0, NULL, NULL);
         }
+//        for (_Tp count = start; count <= end; count = count + inc, ne++)
+//            at<_Tp>(ne, 0) = count;
+        dataPtr = (_Tp*)((cv::Mat_<_Tp>*)get_mdata()[0])->ptr(0);
         for (_Tp count = start; count <= end; count = count + inc, ne++)
-            at<_Tp>(ne, 0) = count;
+            dataPtr[ne] = count;
     }
     return ret;
 }
