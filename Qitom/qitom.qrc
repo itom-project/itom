@@ -13,6 +13,9 @@
         <file alias="link_module">icons/HelpTreeDocWidget/link_module.png</file>
         <file alias="link_package">icons/HelpTreeDocWidget/link_package.png</file>
         <file alias="link_routine">icons/HelpTreeDocWidget/link_routine.png</file>
+        <file alias="filter">icons/HelpTreeDocWidget/filter.png</file>
+        <file alias="singlefilter">icons/HelpTreeDocWidget/singlefilter.png</file>
+        <file alias="dll">icons/HelpTreeDocWidget/dll.png</file>
     </qresource>
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>

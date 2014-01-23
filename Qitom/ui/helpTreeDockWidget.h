@@ -49,9 +49,16 @@ private:
         QString path;
     };
 
+    struct DisplayBool
+    {
+        bool Filters;
+        bool Modules;
+    };
+
     Ui::HelpTreeDockWidget ui;
+    static void createFilterNode(QStandardItemModel* model);
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
-    static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery);
+    static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
     static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
 
     void CreateItem(QStandardItemModel& model, QStringList &items);
@@ -66,8 +73,8 @@ private:
 
     // Variables
     QStandardItemModel        *m_pMainModel;
-    LeafFilterProxyModel    *m_pMainFilterModel;
-    ito::AbstractDockWidget *m_pParent;
+    LeafFilterProxyModel      *m_pMainFilterModel;
+    ito::AbstractDockWidget   *m_pParent;
     QStringList                m_history;
     QStringList                m_includedDBs;
     QString                    m_dbPath;
@@ -76,7 +83,7 @@ private:
     QMovie                    *m_previewMovie;
 
     QMap<int, QIcon> m_iconGallery;
-    
+    DisplayBool m_showSelection;
     int m_historyIndex;
     int m_autoCollTime;
     double m_percWidthVi;

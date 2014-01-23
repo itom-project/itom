@@ -1,6 +1,8 @@
 #include "helpTreeDockWidget.h"
 
-// #include <qdebug.h>
+#include <qdebug.h>
+#include "../organizer/addInManager.h"
+#include <AppManagement.h>
 #include <qdesktopservices.h>
 #include <qdiriterator.h>
 #include <qfile.h>
@@ -73,7 +75,6 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
         m_iconGallery[iconAliasesNumb[i]] = QIcon(":/helpTreeDockWidget/"+icon);
         i++;
     }
-
     //ui.textBrowser->setLineWrapMode( QTextEdit::NoWrap );
 }
 
@@ -82,6 +83,48 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 HelpTreeDockWidget::~HelpTreeDockWidget()
 {
     saveIni();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Get The Filters and put them into a node of the Tree
+void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
+{
+    // Map der Plugin-Namen und Zeiger auf das Node des Plugins
+    QMap <QString, QStandardItem*> plugins;
+
+    // AddInManager einbinden
+    ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+
+    // Main Node zusammenbauen
+    QStandardItem *mainNode = new QStandardItem("Filter");
+    mainNode->setIcon(QIcon(":/helpTreeDockWidget/filter"));
+
+    // Listen aller DLLs und Filter abholen
+    const QHash  <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
+    
+    // Ueber die Liste itterieren
+    QHash<QString , ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+    while (i != filterHashTable->constEnd()) 
+    {
+        if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
+        {// // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
+            QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
+            plugin->setEditable(false);
+            plugin->setIcon(QIcon(":/helpTreeDockWidget/dll"));
+            plugin->setToolTip(i.value()->m_pBasePlugin->getFilename()+"; v"+QString::number(i.value()->m_pBasePlugin->getVersion()));
+            plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
+            mainNode->appendRow(plugin);
+        }
+        // Filter-Node anhängen
+        QStandardItem *filter = new QStandardItem(i.value()->m_name);
+        filter->setEditable(false);
+        filter->setIcon(QIcon(":/helpTreeDockWidget/singlefilter"));
+        filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
+        QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
+        test->appendRow(filter);
+        ++i;
+    }
+    model->insertRow(0,mainNode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +187,8 @@ void HelpTreeDockWidget::propertiesChanged()
     // Read the other Options
     m_openLinks = settings.value("OpenExtLinks", true).toBool();
     m_plaintext = settings.value("Plaintext", false).toBool();
+    m_showSelection.Filters = settings.value("ShowFilters", true).toBool();
+    m_showSelection.Modules = settings.value("ShowModules", true).toBool();
 
     // if the setting of the loaded DBs has changed:
     // This setting exists only from the time when the property dialog was open till this routine is done!
@@ -282,7 +327,6 @@ void HelpTreeDockWidget::propertiesChanged()
 // Reload Database and clear search-edit and start the new Thread
 void HelpTreeDockWidget::reloadDB()
 {
-    
     //Create and Display Mainmodel
     m_pMainModel->clear();
     ui.treeView->reset();
@@ -295,19 +339,19 @@ void HelpTreeDockWidget::reloadDB()
     ui.splitter->setVisible(false);
     ui.lblProcessText->setText(tr("Help database is loading..."));
 
+
     // THREAD START QtConcurrent::run
-    QFuture<ito::RetVal> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery);
+    QFuture<ito::RetVal> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery, m_showSelection);
     dbLoaderWatcher.setFuture(f1);
     //f1.waitForFinished();
-    // THREAD END
-       
+    // THREAD END  
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 {
     ito::RetVal retval = dbLoaderWatcher.future().resultAt(0);
-    // Ende Neuer Code
+
     m_pMainFilterModel->setSourceModel(m_pMainModel);
 
     //model has been 
@@ -316,7 +360,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
     m_previewMovie->stop();
     ui.lblProcessMovie->setVisible(false);
 
-    if (m_includedDBs.size() > 0)
+    if ((m_includedDBs.size() > 0 && m_showSelection.Modules) | m_showSelection.Filters)
     {
         ui.lblProcessText->setVisible(false);
         ui.treeView->setVisible(true);
@@ -335,24 +379,29 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Load the Database in different Thread
-/*static*/ ito::RetVal HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery)
+/*static*/ ito::RetVal HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show)
 {
     QList<SqlItem> sqlList;
     ito::RetVal retval;
-    for (int i = 0; i < includedDBs.length(); i++)
+    if (show.Modules)
     {
-        sqlList.clear();
-        QString temp;
-        temp = path+'/'+includedDBs.at(i);
-        retval = readSQL(/*DBList,*/ "", temp, sqlList);
-        QCoreApplication::processEvents();
-        if (!retval.containsWarningOrError())
+        for (int i = 0; i < includedDBs.length(); i++)
         {
-            createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
+            sqlList.clear();
+            QString temp;
+            temp = path+'/'+includedDBs.at(i);
+            retval = readSQL(/*DBList,*/ "", temp, sqlList);
+            QCoreApplication::processEvents();
+            if (!retval.containsWarningOrError())
+            {
+                createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
+            }
+            else
+            {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
         }
-        else
-        {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
     }
+    if (show.Filters)
+        createFilterNode(mainModel);
     return retval;
 }
 
