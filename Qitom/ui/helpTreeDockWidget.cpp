@@ -93,7 +93,7 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
     QMap <QString, QStandardItem*> plugins;
 
     // AddInManager einbinden
-    ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddinManager());
+    ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     // Main Node zusammenbauen
     QStandardItem *mainNode = new QStandardItem("Filter");
