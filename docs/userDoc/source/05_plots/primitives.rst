@@ -167,8 +167,7 @@ Evaluation of Geometric Elements
 ----------------------------------------------
 
 The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elments and a row for each geometric element to display.
-Further more it allows the evaluation of geometric relations between the geometric primitives.
-
+Further more it allows the evaluation of geometric relations between the geometric primitives. See section :ref:`listCustomDesignerWidgets` for the widget description.
 
 
 Demo Scripts and Examples 

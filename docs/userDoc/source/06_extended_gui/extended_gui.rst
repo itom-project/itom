@@ -9,4 +9,6 @@ Extending the user interface of |itom|
    toolbar.rst
    method-itom.rst
    qtdesigner.rst
-   algo-plugin.rst 
+   list_custom_widgets.rst
+   algo-plugin.rst
+   

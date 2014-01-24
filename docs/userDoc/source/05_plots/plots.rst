@@ -1,3 +1,5 @@
+.. _PlotsAndFigures:
+
 Plots and Figures
 =========================
 
@@ -32,3 +34,5 @@ Content:
    isometricPlot
    primitives
 
+
+There are further custom widgets for the QtDesigner which realized itom specific non-plotting functions. See section :ref:`listCustomDesignerWidgets` for the widget description.
