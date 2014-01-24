@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link rel='stylesheet' type='text/css' href='help_style.css'>
+</head>
+<body>
+
+<!-- Breadcrumb menu-->
+%BREADCRUMB%
+
+<h1 id="FunctionName">%NAME%</h1>
+
+<div class="document">
+    <!-- Description -->
+    <p>%INFO%</p>
+    
+    <!--%PARAMETERS_INSERT%-->
+    <!--%PARAMETERS_START%-->
+    <p class="rubric">Parameters</p>
+    <table class="docutils field-list" frame="void" rules="none">
+        <col class="field-name" />
+        <col class="field-body" />
+        <tbody valign="top">
+            <!--%PARAMMAND_START%-->
+            <tr class="field">
+                <th class="field-name">%PARAMNAME% <br> %PARAMTYPE% </th>
+                <td class="field-body">%PARAMINFO%</td>
+            </tr>
+            <!--%PARAMMAND_END%-->
+            <!--%PARAMMAND_INSERT%-->
+            <!--%PARAMOPT_START%-->
+            <tr class="field">
+                <th class="field-name">%PARAMNAME% <br> %PARAMTYPE% <br>(optional)</th>
+                <td class="field-body">%PARAMINFO%</td>
+            </tr>
+            <!--%PARAMOPT_END%-->
+            <!--%PARAMOPT_INSERT%-->
+    </tbody>
+    </table>
+    <!--%PARAMETERS_END%-->
+    
+    <!--%RETURNS_INSERT%-->
+    <!--%RETURNS_START%-->
+    <p class="rubric">Returns</p>
+    <table class="docutils field-list" frame="void" rules="none">
+        <col class="field-name" />
+        <col class="field-body" />
+        <tbody valign="top">
+            <!--%OUT_START%-->
+            <tr class="field">
+                <th class="field-name">%PARAMNAME% <br> %PARAMTYPE%</th>
+                <td class="field-body">%PARAMINFO%</td>
+            </tr>
+            <!--%OUT_END%-->
+            <!--%OUT_INSERT%-->
+    </tbody>
+    </table>
+    <!--%RETURNS_END%-->
+
+</div>
+</body>
+</html>
+</body></html>

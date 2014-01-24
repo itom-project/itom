@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/helpTreeDockWidget">
         <file alias="help_style">styles/help/help_style.css</file>
+        <file alias="filter_tmpl">styles/help/filter_widget_plugin.html</file>
         <file alias="class">icons/HelpTreeDocWidget/class.png</file>
         <file alias="const">icons/HelpTreeDocWidget/constant.png</file>
         <file alias="routine">icons/HelpTreeDocWidget/function.png</file>

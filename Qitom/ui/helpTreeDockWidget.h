@@ -21,6 +21,8 @@ public:
     HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WFlags flags = 0);
     ~HelpTreeDockWidget();
 
+    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5};
+
 public slots:
     void navigateBackwards();
     void navigateForwards();
@@ -31,6 +33,7 @@ public slots:
     void showTreeview();
     void unshowTreeview();
     void propertiesChanged();
+    ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
     void on_treeView_clicked(QModelIndex i);
@@ -40,6 +43,8 @@ private slots:
     void dbLoaderFinished(int index);
 
 private:
+
+    
 
     struct SqlItem
     {
@@ -68,6 +73,10 @@ private:
     QStringList separateLink(const QUrl &link);
     ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText = true);
     QModelIndex findIndexByName(const QString &modelName);
+
+    QString parseFilterContent(const QString &input);
+    ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);
+    QString parseParam(const QString &tmpl, const ito::Param &param);
 
     QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
