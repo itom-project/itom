@@ -36,7 +36,7 @@ public slots:
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
-    void on_treeView_clicked(QModelIndex i);
+    void on_treeView_clicked(const QModelIndex &i);
     void on_splitter_splitterMoved ( int pos, int index );
     void on_textBrowser_anchorClicked(const QUrl & link);   
 

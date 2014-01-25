@@ -1,30 +1,17 @@
+'''Python API Sql Creator
+---------------------------
+
+This script creates database files for the online script reference of itom.
+The final db-file must be placed in the help folder of the itom installation
+and can then be selected in the property editor of itom.
+
+Use the following variables to select the part of python, itom or other packages
+that should be created
+'''
+
 #  Systemstuff
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
-
 import itom
-
-sys.path.append(os.path.relpath('../userDoc/source/sphinxext'))
-import numpydoc
-
-# remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
-import numpy
-import time
-
-from sphinx import directives
-from sphinx import locale
-
-
-def textDummy(text):
-    '''overwrites local._ since this uses a translated text that is not available
-    in this context'''
-    return str(text)
-
-locale._ = textDummy
-
-from docutils import languages
-language = languages.get_language("en")
-language.labels.update(locale.admonitionlabels)
-
 
 # some switches
 add_builtins =                      0      # e.g. open()
@@ -32,7 +19,7 @@ add_builtin_modules =           0      # e.g. sys
 add_manual_modules =          1      # modules from manuallist
 add_package_modules =        0      # modules which are directories with __init__.py files
 
-remove_all_double_underscore = 1  # Alles was mit zwei Unterstrichen beginnt ignorieren
+remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
 
 blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turtledemo','win32traceutil', 
                      'win32pdh', 'perfmondata', 'tzparse', '__next__',
@@ -51,22 +38,41 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
 
 manualList = ['itom']
 
-
 # This is how the DB is named! For singlepackage databases use their name as filename!
-filename = 'PythonHelpNew.db'
+filename = 'PyModItom.db'
+
 
 # This is the path, where the file will be copied after it´s created
 autocopy = 1
-destination = 'D:\\ITOM\\build\\itom\\help\\'
+destination = os.path.abspath(os.path.join( itom.getAppPath(), "help" ))
+
+# remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
+import numpy
+import time
+
+from sphinx import directives
+from sphinx import locale
+locale.init([], "en")
+
+
+#def textDummy(text):
+    #'''overwrites local._ since this uses a translated text that is not available
+    #in this context'''
+    #return str(text)
+#
+#locale._ = textDummy
+
+from docutils import languages
+language = languages.get_language("en")
+language.labels.update(locale.admonitionlabels)
+
+from sphinxext import numpydoc
+
 
 stackList = []
-
 ns = {}
-
 doubleID = {}
-
 idList = {}
-
 doclist = []
 
 reportFile = open("HelpReport.txt","w")
@@ -376,7 +382,6 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})#, 'env':app.env.settings["env"]})
             line[6] = '0'
             
-            
             '''
             try:
                 # String in lines aufsplitten
@@ -499,7 +504,7 @@ if (autocopy):
     print('-> the File is now being copied to the destination folder')
     import shutil
     try:
-        shutil.copyfile(filename, destination+filename)
+        shutil.copyfile(filename, os.path.abspath(os.path.join(destination,filename)))
     except:
         print('-> the File could not be copied to: '+destination)
 else:

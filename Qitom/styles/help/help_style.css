@@ -245,6 +245,13 @@ p.rubric {
   background-color: #efefef;; 
 }
 
+p.admonition-title {
+  font-weight: bold ;
+  font-size: larger ;
+  color: #0c3762;
+  background-color: #efefef;; 
+}
+
 p.sidebar-title {
   font-family: sans-serif ;
   font-weight: bold ;
@@ -324,9 +331,16 @@ table.docutils th.field-name, table.docinfo th.docinfo-name {
   font-weight: bold;
   text-align: left ;
   white-space: nowrap ;
-  padding-left: 0 ;
+  padding-top: 5 ;
+  padding-left: 5 ;
+  padding-bottom: 10 ;
   background-color: #dcb8aa ;
   width: 100px; }
+
+div.smaller {
+  font-weight: normal;
+  font-size: smaller;
+}
 
 /* "booktabs" style (no vertical lines) */
 table.docutils.booktabs {

@@ -361,8 +361,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 break;
         }
 
-        docString.replace("%PARAMETERS_INSERT%", parameterSection);
-        docString.replace("%RETURNS_INSERT%", returnsSection);
+        docString.replace("<!--%PARAMETERS_INSERT%-->", parameterSection);
+        docString.replace("<!--%RETURNS_INSERT%-->", returnsSection);
     }
 
     if (!retval.containsError())
@@ -409,7 +409,9 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
     else
     {
         QString rowContent = content.mid(start, end + endString.size() - start);
+        qDebug() << rowContent;
         content.remove(start, end + endString.size() - start);
+        qDebug() << content;
         QString internalContent = "";
 
         foreach(const ito::Param &p, paramVector)
@@ -435,52 +437,52 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
     {
     case ito::ParamBase::Int:
         {
-            type = "{integer}";
+            type = "integer";
         }
         break;
     case ito::ParamBase::Char:
         {
-            type = "{char}";
+            type = "char";
         }
         break;
     case ito::ParamBase::Double:
         {
-            type = "{double}";
+            type = "double";
         }
         break;
     case ito::ParamBase::String:
         {
-            type = "{string}";
+            type = "string";
         }
         break;
     case ito::ParamBase::CharArray & ito::paramTypeMask:
         {
-            type = "{char-array}";
+            type = "char-list";
         }
         break;
     case ito::ParamBase::IntArray & ito::paramTypeMask:
         {
-            type = "{int-array}";
+            type = "integer-list";
         }
         break;
     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
         {
-            type = "{double-array}";
+            type = "double-list";
         }
         break;
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
         {
-            type = "{dataObject}";
+            type = "dataObject";
         }
         break;
     case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
         {
-            type = "{pointCloud}";
+            type = "pointCloud";
         }
         break;
     case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
         {
-            type = "{polygonMesh}";
+            type = "polygonMesh";
         }
         break;
     }
@@ -794,7 +796,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
     // -------------------------------------
     if (errorCode == 1)
     { // not needed anymore (as long as the Documentation is right)
-        ui.label->setText("Parser: ITO-Parser (Martin)");  
+        ui.label->setText("Parser: ITO-Parser");  
     }
     else if (errorCode == 0)
     {
@@ -846,6 +848,13 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
         seeAlso.setMinimal(true);
         seeAlso.indexIn(rawContent);
         QString oldSec = seeAlso.capturedTexts()[0];
+
+        if (oldSec == "") //there are version, where the see-also section is an admonition
+        {
+            seeAlso.setPattern("(<div class=\"admonition-see-also seealso\">).*(</div>)");
+            seeAlso.indexIn(rawContent);
+            oldSec = seeAlso.capturedTexts()[0];
+        }
 
         // Extract Links (names) from old Section
         QRegExp links("`(.*)`");
@@ -1114,7 +1123,7 @@ void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show the Help in the right Memo
-void HelpTreeDockWidget::on_treeView_clicked(QModelIndex i)
+void HelpTreeDockWidget::on_treeView_clicked(const QModelIndex &i)
 {
     int urPath = Qt::UserRole + 1;
     int urType = Qt::UserRole + 2;
