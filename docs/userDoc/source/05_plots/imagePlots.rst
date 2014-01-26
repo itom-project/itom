@@ -14,10 +14,17 @@ Itom2dQwtPlot
 It supports the axis-scaling / axis offset of DataObjects, offers axis-tags and meta-data handling.
 It does not offer plotting of real color images.
 All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
-The data is plotted mathematically correct. This means the value at [0,0] is in the lower left position.
+The data is plotted mathematically correct. This means the value at [0,0] is in the lower left position. This can be changed by a flag.
 
 The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
 
+Features:
+
+* Export graphics to images, pdf and vector graphics.
+* Metadata support
+* Supports fixed ratio x/y-axis but not necessary fixed ratio to monitor-pixel
+* Drawing of geometrical elements and markers by script and user interaction.
+* Images are displayed either mathematically ([0,0] lower left) or in windows-style ([0,0] upper left)
 
 Properties
 ---------------
@@ -195,6 +202,13 @@ The data is plotted image orientated. This means the value at [0,0] is in the up
 The figure allows z-stack sectioning. An automatic videolike visualisation is in preperation for Summer 2014.
 
 The "GraphicViewPlot" does not support graphic element / marker plotting. Use "Itom2dQwtPlot" instead for this case.
+
+Features:
+
+* Supports real color and gray-value visialisation
+* Supports fixed ratio between image-pixel and monitor-pixel (4:1 - 1:4)
+* Fast implementation for 8-bit and 16-bit direct camera output.
+* Images are displayed in windows-style 
 
 Properties
 ---------------
