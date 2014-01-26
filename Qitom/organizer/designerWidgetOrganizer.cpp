@@ -113,6 +113,10 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     const QMetaObject *metaObj = NULL;
     bool allowedInterface;
 
+    //This regular expression is used to check whether the error message during loading a plugin contains the words
+    //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
+    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive); 
+
     //get version of the required AbstractItomDesignerPlugin
     AbstractItomDesignerPlugin *dummyPlugin = new DummyItomDesignerPlugin(NULL);
     if (dummyPlugin)
@@ -188,11 +192,28 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
             loader = new QPluginLoader(absolutePluginPath);
 
+
             QDesignerCustomWidgetInterface *iface = NULL;
             QObject *instance = loader->instance();
 
+            if (instance == NULL)
+            {
+                message = loader->errorString();
+                loader->unload();
+
+                if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
+                {
+                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, message));
+                }
+                else
+                {
+                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                }
+                
+                DELETE_AND_SET_NULL(loader);
+            }
             // try with a normal plugin, we do not support collections
-            if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
+            else if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
             {
                 if (instance->inherits("ito::AbstractItomDesignerPlugin"))
                 {
@@ -249,6 +270,8 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     */
                     loader->unload();
 #endif
+                    message = tr("Plugin in file '%1' is a Qt Designer widget but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
+                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfIgnored, message));
                     DELETE_AND_SET_NULL(loader);
                 }
             }

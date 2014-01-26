@@ -457,10 +457,10 @@ namespace ito
                 }
                 else
                 {
-//                    QString notValidQtLibraryMsg = QLibrary::tr("The file '%1' is not a valid Qt plugin.").arg("*");
-                    QRegExp rxDebug("* debug *", Qt::CaseInsensitive, QRegExp::Wildcard);
-                    QRegExp rxRelease("* release *", Qt::CaseInsensitive, QRegExp::Wildcard);
-                    if (rxDebug.exactMatch(loader->errorString()) || rxRelease.exactMatch(loader->errorString()))
+                    //This regular expression is used to check whether the error message during loading a plugin contains the words
+                    //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
+                    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive); 
+                    if (regExpDebugRelease.exactMatch(loader->errorString()))
                     {
                         message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
