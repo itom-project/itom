@@ -60,6 +60,9 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     ui.lblProcessMovie->setVisible(false);
     ui.lblProcessText->setVisible(false);
 
+    ui.treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui.treeView->setHeaderHidden(true);
+
     loadIni();
     m_forced = true;
     propertiesChanged();
@@ -75,6 +78,10 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
         m_iconGallery[iconAliasesNumb[i]] = QIcon(":/helpTreeDockWidget/"+icon);
         i++;
     }
+
+    m_iconGallery[100] = QIcon(":/helpTreeDockWidget/filter");
+    m_iconGallery[101] = QIcon(":/helpTreeDockWidget/dll");
+    m_iconGallery[102] = QIcon(":/helpTreeDockWidget/singlefilter");
     //ui.textBrowser->setLineWrapMode( QTextEdit::NoWrap );
 }
 
@@ -87,7 +94,7 @@ HelpTreeDockWidget::~HelpTreeDockWidget()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Get The Filters and put them into a node of the Tree
-void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
+void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model, const QMap<int,QIcon> *iconGallery)
 {
     // Map der Plugin-Namen und Zeiger auf das Node des Plugins
     QMap <QString, QStandardItem*> plugins;
@@ -100,7 +107,7 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
 
     // Main Node zusammenbauen
     QStandardItem *mainNode = new QStandardItem("Filter");
-    mainNode->setIcon(QIcon(":/helpTreeDockWidget/filter"));
+    mainNode->setIcon( iconGallery->value(100) );
 
     // Listen aller Filter abholen
     const QHash  <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
@@ -114,7 +121,7 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
             QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
             plugin->setEditable(false);
             plugin->setData(typeFPlugin, urType);
-            plugin->setIcon(QIcon(":/helpTreeDockWidget/dll"));
+            plugin->setIcon( iconGallery->value(101) );
             plugin->setToolTip(i.value()->m_pBasePlugin->getFilename()+"; v"+QString::number(i.value()->m_pBasePlugin->getVersion()));
             plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
             mainNode->appendRow(plugin);
@@ -123,7 +130,7 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model)
         QStandardItem *filter = new QStandardItem(i.value()->m_name);
         filter->setEditable(false);
         filter->setData(typeFilter, urType);
-        filter->setIcon(QIcon(":/helpTreeDockWidget/singlefilter"));
+        filter->setIcon(iconGallery->value(102));
         filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
         QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
         test->appendRow(filter);
@@ -727,6 +734,9 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
     //model has been 
     ui.treeView->setModel(m_pMainFilterModel);
 
+    //after setModel, the corresponding selectionModel is changed, too
+    connect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+
     m_previewMovie->stop();
     ui.lblProcessMovie->setVisible(false);
 
@@ -744,7 +754,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
         ui.lblProcessText->setText(tr("No help database available"));
     }
 
-    
+    ui.treeView->resizeColumnToContents(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -770,8 +780,12 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
             {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
         }
     }
+
     if (show.Filters)
-        createFilterNode(mainModel);
+    {
+        createFilterNode(mainModel, iconGallery);
+    }
+
     return retval;
 }
 
@@ -1055,6 +1069,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 void HelpTreeDockWidget::expandTree()
 {
     ui.treeView->expandAll();
+    ui.treeView->resizeColumnToContents(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1062,6 +1077,7 @@ void HelpTreeDockWidget::expandTree()
 void HelpTreeDockWidget::collapseTree()
 {
     ui.treeView->collapseAll();
+    ui.treeView->resizeColumnToContents(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1121,38 +1137,39 @@ void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
     //ui.label->setText(QString("vi %1 un %2").arg(percWidthVi).arg(percWidthUn));
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show the Help in the right Memo
-void HelpTreeDockWidget::on_treeView_clicked(const QModelIndex &i)
+void HelpTreeDockWidget::selectedItemChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
     int urPath = Qt::UserRole + 1;
     int urType = Qt::UserRole + 2;
-    int type = i.data(urType).toInt();
+    int type = current.data(urType).toInt();
     switch(type)
     {
         case typeSqlItem:
         {
-            displayHelp(QString(i.data(urPath).toString()), 1);
+            displayHelp(QString(current.data(urPath).toString()), 1);
             break;
         }
         case typeFilter:
         {
-            showFilterWidgetPluginHelp(i.data(0).toString(), typeFilter);
+            showFilterWidgetPluginHelp(current.data(0).toString(), typeFilter);
             break;
         }
         case typeWidget:
         {
-            showFilterWidgetPluginHelp(i.data(0).toString(), typeWidget);
+            showFilterWidgetPluginHelp(current.data(0).toString(), typeWidget);
             break;
         }
         case typeFPlugin:
         {
-            showFilterWidgetPluginHelp(i.data(0).toString(), typeFPlugin);
+            showFilterWidgetPluginHelp(current.data(0).toString(), typeFPlugin);
             break;
         }
         case typeWPlugin:
         {
-            showFilterWidgetPluginHelp(i.data(0).toString(), typeWPlugin);
+            showFilterWidgetPluginHelp(current.data(0).toString(), typeWPlugin);
             break;
         }
     }
@@ -1206,4 +1223,16 @@ void HelpTreeDockWidget::unshowTreeview()
     QList<int> intList;
     intList  <<  ui.splitter->width()*m_percWidthUn/100  <<  ui.splitter->width()*(100-m_percWidthUn)/100;
     ui.splitter->setSizes(intList);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex &index)
+{
+    ui.treeView->resizeColumnToContents(0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
+{
+    ui.treeView->resizeColumnToContents(0);
 }

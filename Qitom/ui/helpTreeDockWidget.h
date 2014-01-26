@@ -36,15 +36,17 @@ public slots:
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
-    void on_treeView_clicked(const QModelIndex &i);
     void on_splitter_splitterMoved ( int pos, int index );
     void on_textBrowser_anchorClicked(const QUrl & link);   
 
     void dbLoaderFinished(int index);
 
-private:
+    void on_treeView_expanded(const QModelIndex &index);
+    void on_treeView_collapsed(const QModelIndex &index);
 
-    
+    void selectedItemChanged(const QModelIndex &current, const QModelIndex &previous);
+
+private:
 
     struct SqlItem
     {
@@ -60,8 +62,8 @@ private:
         bool Modules;
     };
 
-    Ui::HelpTreeDockWidget ui;
-    static void createFilterNode(QStandardItemModel* model);
+    
+    static void createFilterNode(QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
     static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
     static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
@@ -81,13 +83,14 @@ private:
     QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
     // Variables
+    Ui::HelpTreeDockWidget ui;
+
     QStandardItemModel        *m_pMainModel;
     LeafFilterProxyModel      *m_pMainFilterModel;
     ito::AbstractDockWidget   *m_pParent;
     QStringList                m_history;
     QStringList                m_includedDBs;
     QString                    m_dbPath;
-
 
     QMovie                    *m_previewMovie;
 
