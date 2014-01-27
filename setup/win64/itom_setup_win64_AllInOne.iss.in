@@ -225,7 +225,9 @@ Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "
 Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\glew32.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-;Source: "{#SourceDirOpenCV}\tbb.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
 Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
