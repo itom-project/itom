@@ -172,8 +172,6 @@ void MainApplication::setupApplication()
         _putenv(newpath);
         free(newpath);
     }
-
-    
 #endif
 
     settings->beginGroup("Language");

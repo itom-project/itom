@@ -268,11 +268,37 @@ MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
 	#SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
 	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
 	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
+	
+	LIST(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
+	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)	
 #	message(STATUS "sources:  ${${sources}}")
 #	message(STATUS "destinations:  ${${destinations}}")
 
 ENDMACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST)
 
+#use this macro in order to append to the sources and destinations
+#list the header files for your designer plugin, that is finally
+#copied to the designer/{$target} folder of itom.
+#
+# example:
+# set(COPY_SOURCES "")
+# set(COPY_DESTINATIONS "")
+# ADD_DESIGNERLIBRARY_TO_COPY_LIST(targetNameOfYourDesignerPlugin COPY_SOURCES COPY_DESTINATIONS)
+#
+# Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
+# and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
+#
+MACRO (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
+    IF(${ITOM_APP_DIR} STREQUAL "")
+        message(SEND_ERROR "ITOM_DIR is not indicated")
+    ENDIF()
+	
+	MESSAGE(STATUS "header-target: " ${target})
+	foreach(_hfile ${${headerfiles}})
+		LIST(APPEND ${sources} ${_hfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+		LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer/${target})
+	endforeach()
+ENDMACRO (ADD_DESIGNERHEADER_TO_COPY_LIST)
 
 #use this macro in order to append to the sources and destinations
 #list the library file for your itom plugin, that is finally

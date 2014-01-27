@@ -33,7 +33,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjFigure::update(void)
+ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::update(void)
 {
     ito::RetVal retval = ito::retOk;
 
@@ -61,7 +61,7 @@ ito::RetVal AbstractDObjFigure::update(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
+ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
 {
     ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
     if (dObj)
@@ -72,7 +72,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
+ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
 { 
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::DataObject> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
@@ -108,14 +108,16 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
 
     updatePropertyDock();
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
+ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
 {
     return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toAscii().data());
 
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
+ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {
     ito::DataObject *dObj = m_pOutput["displayed"]->getVal<ito::DataObject*>();
     if (dObj)
@@ -126,7 +128,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
+ITOMSHAREDDESIGNER_EXPORT QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 {
     if (m_pInput.contains("liveSource") && m_cameraConnected)
     {
@@ -139,7 +141,7 @@ QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
+ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 {
     ito::RetVal retval;
     if (camera && m_pInput.contains("liveSource"))
@@ -174,7 +176,7 @@ void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //this source is invoked by any connected camera
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
+ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
 { 
     ito::RetVal retval = ito::retOk;
 
@@ -217,7 +219,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractDObjFigure::removeLiveSource()
+ITOMSHAREDDESIGNER_EXPORT RetVal AbstractDObjFigure::removeLiveSource()
 {
     RetVal retval;
     if (m_pInput.contains("liveSource"))
@@ -237,7 +239,5 @@ RetVal AbstractDObjFigure::removeLiveSource()
     }
     return retval;
 }
-
-
 
 } //end namespace ito

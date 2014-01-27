@@ -37,7 +37,7 @@
 
 namespace ito {
 
-class AbstractDObjFigure : public AbstractFigure
+class ITOMSHAREDDESIGNER_EXPORT AbstractDObjFigure : public AbstractFigure
 {
     Q_OBJECT
     Q_PROPERTY(QSharedPointer<ito::DataObject> source READ getSource WRITE setSource DESIGNABLE false USER false)

@@ -28,6 +28,12 @@
 #ifndef ABSTRACTFIGURE_H
 #define ABSTRACTFIGURE_H
 
+#if defined(ITOMSHAREDDESIGNER)
+#  define ITOMSHAREDDESIGNER_EXPORT Q_DECL_EXPORT
+#else
+#  define ITOMSHAREDDESIGNER_EXPORT Q_DECL_IMPORT
+#endif
+
 #include "AbstractNode.h"
 
 #include "../common/apiFunctionsGraphInc.h"
@@ -43,11 +49,11 @@ class QPropertyEditorWidget; //forward declaration
 
 namespace ito {
 
-class AbstractFigure;
+class ITOMSHAREDDESIGNER_EXPORT AbstractFigure;
 
 void initialize(AbstractFigure *fig);
 
-class AbstractFigure : public QMainWindow, public AbstractNode
+class ITOMSHAREDDESIGNER_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
     Q_ENUMS(WindowMode)
