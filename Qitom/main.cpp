@@ -149,14 +149,28 @@ int main(int argc, char *argv[])
     }
     QString libDir = QDir::cleanPath(appLibPath.filePath(""));
 
+    //and designer path
+    if(appLibPath.exists("designer"))
+    {
+        appLibPath.cd("designer");
+    }
+    else
+    {
+        appLibPath.cdUp();
+        appLibPath.cd("designer");
+    }
+    QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
+
 #if (defined WIN32 || defined WIN64)
     libDir = QDir::toNativeSeparators( libDir );
 
     char *oldpath = getenv("path");
-    char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + 10);
+    char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + designerDir.size() + 11);
     newpath[0] = 0;
     strcat(newpath, "path=");
     strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
+    strcat(newpath, ";");
+    strcat(newpath, designerDir.toAscii().data());
     strcat(newpath, ";");
     strcat(newpath, oldpath);
     _putenv(newpath);
