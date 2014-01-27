@@ -1,30 +1,32 @@
 2D image plots
 ****************
 
-"Itom2dQwtPlot" and "GraphicViewPlot" are the basic plots for visualization of image like DataObjects.
-Both plots has line-picker and point pickers included. By pressing "Ctrl" during picker movement, the picker can only be moved 
+"Itom2dQwtPlot" and "GraphicViewPlot" are the basic plots for visualization of images, dataObjects or other array-like objects.
+Both plots have a line-cut and point picker included. By pressing "Ctrl" during picker movement, the picker can only be moved 
 horizontal or vertical according to the mouse movement.
 
-You can also use the "matplotlib"-backend to plot 2D-objects. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
+You can also use the "matplotlib"-backend to plot any data structures (lines, bars, statistical plots, images, contours, 3d plots...). 
+See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
 Itom2dQwtPlot
 ==========================
 
-"Itom2dQwtPlot" is designs as a visualization of metrical data, false color or topography measurements.
-It supports the axis-scaling / axis offset of DataObjects, offers axis-tags and meta-data handling.
-It does not offer plotting of real color images.
-All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
-The data is plotted mathematically correct. This means the value at [0,0] is in the lower left position. This can be changed by a flag.
+"Itom2dQwtPlot" is designed for visualizing metrical data, false color or topography measurements.
+It supports the axis-scaling / axis offset of **dataObjects**, offers axis-tags and meta-data handling.
+All data types are accepted except the plotting of real color objects (rgba). To plot complex objects, it is possible to choose 
+between the following modes: "absolut", "phase", "real" and "imaginary". The data is plotted mathematically correct. This means 
+the value at [0,0] is in the lower left position. This can be changed by the property *yAxisFlipped*.
 
-The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
+The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. 
+See section :ref:`primitives` for a short introduction.
 
-Features:
+**Features:**
 
 * Export graphics to images, pdf and vector graphics.
-* Metadata support
+* Metadata support (the 'title'-tag is used as title of the plot).
 * Supports fixed ratio x/y-axis but not necessary fixed ratio to monitor-pixel
 * Drawing of geometrical elements and markers by script and user interaction.
-* Images are displayed either mathematically ([0,0] lower left) or in windows-style ([0,0] upper left)
+* Images are displayed either mathematically ([0,0] lower left) or in windows-style ([0,0] upper left) (Property: 'yAxisFlipped')
 
 Properties
 ---------------
@@ -194,18 +196,18 @@ Slots
 GraphicViewPlot
 ==========================
 
-"GraphicViewPlot" is designs as a fast visualization of images, e.g. direct grabber output or colored images. 
-It allows the ploting of real colors (at the moment only 24-bit or 32-bit stored as int32 or RGBA32). It does not handle meta-data.
+"GraphicViewPlot" is designed for the fast display of images, e.g. direct grabber output or colored images. 
+It allows plotting real colors (at the moment only 24-bit or 32-bit stored as int32 or RGBA32). It does not handle meta-data.
 All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
 The data is plotted image orientated. This means the value at [0,0] is in the upper left position.
 
-The figure allows z-stack sectioning. An automatic videolike visualisation is in preperation for Summer 2014.
+The figure allows z-stack sectioning. An automatic video-like visualisation is in preparation.
 
 The "GraphicViewPlot" does not support graphic element / marker plotting. Use "Itom2dQwtPlot" instead for this case.
 
 Features:
 
-* Supports real color and gray-value visialisation
+* Supports real color and gray-value visualization
 * Supports fixed ratio between image-pixel and monitor-pixel (4:1 - 1:4)
 * Fast implementation for 8-bit and 16-bit direct camera output.
 * Images are displayed in windows-style 
@@ -270,7 +272,7 @@ Signals
 
 No public signals at the moment.
  
-Depreciated figures
+Deprecated figures
 ==========================
 
-The plot-dll "itom2DQWTFigure" and "itom2DGVFigure" are depreciated and were replaced by  "Itom2dQwtPlot" and "GraphicViewPlot".
+The plot-dll "itom2DQWTFigure" and "itom2DGVFigure" are deprecated and have been replaced by  "Itom2dQwtPlot" and "GraphicViewPlot".

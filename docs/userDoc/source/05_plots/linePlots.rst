@@ -2,7 +2,7 @@ line plots (1D)
 ******************
 
 
-"Itom1DQwtPlot" is the basic line plot for plotting DataObjects with 1xN data-Slices based on QWT.
+"Itom1DQwtPlot" is the basic line plot for plotting 'dataObjects' with shape [1xM] based on the Qwt library.
 All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
 RGBA-Values are currently interpreted as Gray-Values using RGBA as gray.
 
@@ -163,7 +163,7 @@ Slots
  Refresh / redraw current plot
 
 
-Depreciated figures
+Deprecated figures
 ==========================
  
-The plot-dll "itom1DQWTFigure"  is depreciated and was replaced by  "Itom1DQwtPlot".
+The plot-dll "itom1DQWTFigure"  is deprecated and has been replaced by  "Itom1DQwtPlot".

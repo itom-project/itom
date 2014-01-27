@@ -61,7 +61,7 @@ Slots
 
  Refresh / redraw current plot  
  
-Depreciated figures
+Deprecated figures
 ==========================
 
 None
