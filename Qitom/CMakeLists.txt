@@ -1,4 +1,4 @@
-SET (target_name qitom) 
+SET (target_name qitom)
 
 project(${target_name})
 

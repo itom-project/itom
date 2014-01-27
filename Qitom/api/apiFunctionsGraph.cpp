@@ -50,6 +50,7 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mdisconnectLiveData,    /* [8] */
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
         (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
+        (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
         NULL
     };
 
@@ -273,7 +274,7 @@ ito::RetVal apiFunctionsGraph::mstopLiveData(QObject *liveDataSource, QObject *l
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject *liveDataView)
 {
-    ito::RetVal retval = ito::retOk;
+    ito::RetVal retval(ito::retOk);
 
     if (liveDataSource && liveDataView)
     {
@@ -298,7 +299,7 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObject *liveDataView)
 {
-    ito::RetVal retval = ito::retOk;
+    ito::RetVal retval(ito::retOk);
 
     if (liveDataSource && liveDataView)
     {
@@ -360,5 +361,68 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
     
     return value;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QWidget **widget)
+{
+    ito::RetVal retval(ito::retOk);
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    DesignerWidgetOrganizer *dwOrg = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+
+    if(uiOrg)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<unsigned int> dialogHandle(new unsigned int);
+        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+        QSharedPointer<unsigned int> objectID(new unsigned int);
+        QSharedPointer<int> modalRet(new int);
+        QSharedPointer<QByteArray> className(new QByteArray());
+        *dialogHandle = 0;
+        *initSlotCount = 0;
+        *objectID = 0;
+        UiContainer *widgetContainer = NULL;
+        QMetaObject::invokeMethod(uiOrg, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(algoWidgetFunc)), Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(QSharedPointer<unsigned int>, dialogHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if(!locker.getSemaphore()->wait(-1))
+        {
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while loading plugin widget").toAscii().data());
+            return retval;
+        }
+
+        retval += locker.getSemaphore()->returnValue;
+        if (retval.containsError())
+            return retval;
+
+        QMetaObject::invokeMethod(uiOrg, "getUiDialogByHandle", Qt::BlockingQueuedConnection, Q_RETURN_ARG(UiContainer*, widgetContainer), Q_ARG(unsigned int, *dialogHandle));
+        if (!(*widget = widgetContainer->getUiWidget()))
+        {
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("error retrieving widget pointer").toAscii().data());
+            ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+    
+            if(!locker2.getSemaphore()->wait(5000))
+            {
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("error closing dialog").toAscii().data());
+            }
+            return retval;
+        }
+
+        ItomSharedSemaphoreLocker locker3(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrg, "showDialog", Q_ARG(unsigned int, *dialogHandle) , Q_ARG(int, 0), Q_ARG(QSharedPointer<int>, modalRet), Q_ARG(ItomSharedSemaphore*, locker3.getSemaphore()));
+        if(!locker3.getSemaphore()->wait(-1))
+        {
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout showing dialog").toAscii().data());
+            return retval;
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("UI-Organizer is not available!").toAscii().data());
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 }; // namespace ito

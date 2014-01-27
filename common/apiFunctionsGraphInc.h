@@ -94,6 +94,9 @@ namespace ito
     #define apiGetFigureSetting \
         (*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
 
+    #define apiGetPluginWidget \
+        (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *, QWidget **)) ito::ITOM_API_FUNCS_GRAPH[11])
+
     /** \} */
 
     #if defined(ITOM_IMPORT_PLOTAPI)

@@ -52,6 +52,8 @@ namespace ito
             static ito::RetVal mgetFigure(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent = NULL);
             static QVariant mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue = QVariant(), ito::RetVal *retval = NULL);
 
+            static ito::RetVal mgetPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QWidget **widget);
+
         private:
     };
 }

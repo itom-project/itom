@@ -278,8 +278,6 @@ protected:
     static void threadSafeDeleteUi(unsigned int *handle);
 
 private:
-    UiContainer* getUiDialogByHandle(unsigned int uiHandle);
-
     void execGarbageCollection();
 
     unsigned int addObjectToList(QObject* objPtr);
@@ -316,6 +314,7 @@ public slots:
     RetVal hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on = true, ItomSharedSemaphore *semaphore = NULL);
     RetVal isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore = NULL);
+    UiContainer* getUiDialogByHandle(unsigned int uiHandle);
 
     RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);
     RetVal setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore = NULL);
