@@ -296,3 +296,41 @@ begin
 //                IsMsiProductInstalled(RP64) or IsMsiProductInstalled(RP64SP1)
 //                IsMsiProductInstalled(RPIA) or IsMsiProductInstalled(RPIASP1));
 end;
+
+procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
+var  Filter: string;
+begin
+  if DirExists(Path) then begin
+    Filter := Path;
+    if Filename <> '' then begin
+      if Copy(Filter, Length(Filter), 1)<>'\' then  Filter := Filter + '\';    
+      Filter := Filter + Filename;
+    end; 
+    DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
+  end 
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var  AppDir, MsgText: string;
+begin
+  if (CurStep = ssInstall) then begin
+    AppDir := ExpandConstant('{app}') + '\';
+    if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
+      MsgText := 'This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the '+
+                 'current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?';
+      if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then begin
+        DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'imageformats', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'sqldrivers', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'help', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'lib', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'designer', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'plugins', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'docs\userDoc\build\qthelp', '', True, True, True);
+        DeleteDirAndFiles(AppDir, '*.dll', False, True, False);
+      end;
+    end;
+  end;
+end;
+
