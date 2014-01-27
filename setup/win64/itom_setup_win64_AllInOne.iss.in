@@ -212,7 +212,7 @@ Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\translation\*.qm"; DestDir: "
 ;Source: "{#SourceDirItomBuild}\plugins\QCam\translation\*.qm"; DestDir: "{app}\plugins\QCam\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\SerialIO.dll"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\translation\*.qm"; DestDir: "{app}\plugins\SerialIO\translation"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\USB3xIII.dll"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\USB3xIII64.dll"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\USBMotion3XIII.dll"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\translation\*.qm"; DestDir: "{app}\plugins\USBMotion3XIII\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\Vistek\Vistek.dll"; DestDir: "{app}\plugins\Vistek"; Flags: promptifolder
