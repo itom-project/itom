@@ -16,7 +16,7 @@ if (BUILD_TARGET64)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
-
+ 
 #set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #if(NOT CMAKE_SIZEOF_VOID_P)
 #   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
