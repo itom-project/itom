@@ -1045,7 +1045,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.23";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.24";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)
