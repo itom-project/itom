@@ -70,7 +70,6 @@ namespace ito
             QTreeWidgetItem *m_lastTreeWidgetParent;
             bool m_enabled;
             QString m_dateColor;
-            bool m_timeStamp;
             bool m_doubleCommand;
 
         signals:

@@ -217,10 +217,6 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
             if (lastDateItem->childCount() > 0)
             {
                 lastSavedCommand = lastDateItem->child(lastDateItem->childCount() - 1)->text(0);
-                if (m_timeStamp)
-                {
-                    lastSavedCommand = lastSavedCommand.mid(9);
-                }
             }
         }
 
@@ -241,15 +237,7 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
 
             QTreeWidgetItem *childItem = new QTreeWidgetItem(m_lastTreeWidgetParent);
             QString addCmd;
-            if (m_timeStamp)
-            {
-                QTime time(QTime::currentTime());
-                addCmd = time.toString("hh:mm:ss") + " " + cmd;
-            }
-            else
-            {
-                addCmd = cmd;
-            }
+            addCmd = cmd;
             childItem->setText(0, addCmd);
             m_lastTreeWidgetParent->addChild(childItem);
             m_lastTreeWidgetParent->setExpanded(true);
@@ -265,7 +253,6 @@ void LastCommandDockWidget::propertiesChanged()
     settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
-    m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();
     m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
     settings.endGroup();
 
