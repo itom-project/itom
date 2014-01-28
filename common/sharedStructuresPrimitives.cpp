@@ -29,20 +29,21 @@
 
 namespace ito
 {
+    //----------------------------------------------------------------------------------------------------------------------------------
     PrimitiveContainer::PrimitiveContainer(ito::DataObject primitives)
     {
         int newSize = 64;
         int cols = 11;
 
 #if (defined _DEBUG) && (!defined linux)
-        if(primitives.getDims() != 0 && primitives.getSize(primitives.getDims()-1) < 11)
+        if (primitives.getDims() != 0 && primitives.getSize(primitives.getDims()-1) < 11)
         {
             cv::error(cv::Exception(CV_StsAssert, "Error, primitives object not valid.", "", __FILE__, __LINE__));
         }
 
 #endif
 
-        if((primitives.getDims() == 2 || primitives.calcNumMats() == 1))
+        if (primitives.getDims() == 2 || primitives.calcNumMats() == 1)
         {
             newSize = newSize * (primitives.getSize(primitives.getDims() - 2) / 64 + 1);
 
@@ -51,7 +52,7 @@ namespace ito
             cv::Mat* scr = (cv::Mat*)(primitives.get_mdata()[primitives.seekMat(0)]);
             cv::Mat* dst = (cv::Mat*)(m_primitives.get_mdata()[0]);
 
-            for(int i = 0; i < scr->rows; i++)
+            for (int i = 0; i < scr->rows; i++)
             {
                 memcpy(dst->ptr<ito::float32>(i), scr->ptr<ito::float32>(i), sizeof(ito::float32) * cols);
             }       
@@ -64,20 +65,22 @@ namespace ito
         m_internalMat = (cv::Mat*)(m_primitives.get_mdata()[0]);
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     PrimitiveContainer::~PrimitiveContainer()
     {
         m_internalMat = NULL;
         return;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     int PrimitiveContainer::getNumberOfElements(const int type) const
     {
         int val = 0;
-        if(type == -1)
+        if (type == -1)
         {
             for (int i = 0; i < m_internalMat->rows; i++)
             {
-                if(((int)(m_internalMat->ptr<float32>(i)[0]) & 0x0000FFFF) != 0)
+                if (((int)(m_internalMat->ptr<float32>(i)[0]) & 0x0000FFFF) != 0)
                 {
                     val++;
                 }
@@ -87,7 +90,7 @@ namespace ito
         {
             for (int i = 0; i < m_internalMat->rows; i++)
             {
-                if(((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
+                if (((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
                 {
                     val++;
                 }
@@ -96,11 +99,12 @@ namespace ito
         return val;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     int PrimitiveContainer::getFirstElementRow(const int type) const
     {
         for (int i = 0; i < m_internalMat->rows; i++)
         {
-            if(((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
+            if (((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
             {
                 return i;
             }
@@ -108,38 +112,42 @@ namespace ito
         return -1;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::float32* PrimitiveContainer::getElementPtr(const int row)
     {
-        if(row > -1 && row < m_internalMat->rows)
+        if (row > -1 && row < m_internalMat->rows)
         {
             return m_internalMat->ptr<float32>(row);
         }
         return NULL;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     const ito::float32* PrimitiveContainer::getElementPtr(const int row) const
     {
-        if(row > -1 && row < m_internalMat->rows)
+        if (row > -1 && row < m_internalMat->rows)
         {
             return m_internalMat->ptr<const float32>(row);
         }
         return NULL;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     int PrimitiveContainer::getIndexFromRow(const int row) const
     {
-        if(row > -1 && row < m_internalMat->rows)
+        if (row > -1 && row < m_internalMat->rows)
         {
             return (int)(m_internalMat->ptr<float32>(row)[0]);       
         }
         return false;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     int PrimitiveContainer::getRowFromIndex(const int idx) const
     {
         for (int i = 0; i < m_internalMat->rows; i++)
         {
-            if((int)(m_internalMat->ptr<float32>(i)[0]) == idx)
+            if ((int)(m_internalMat->ptr<float32>(i)[0]) == idx)
             {
                 return i;
             }
@@ -147,17 +155,19 @@ namespace ito
         return -1;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     void PrimitiveContainer::clear(void)
     {
         memset(m_internalMat->ptr(), 0, m_internalMat->rows * 11);
         return;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     bool PrimitiveContainer::isElement(const int row) const
     {
-        if(row > -1 && row < m_internalMat->rows)
+        if (row > -1 && row < m_internalMat->rows)
         {
-            if(m_internalMat->ptr<float32>(row)[1] > 0.0)
+            if (m_internalMat->ptr<float32>(row)[1] > 0.0)
             {
                 return true;
             }
@@ -166,32 +176,36 @@ namespace ito
         return false;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal PrimitiveContainer::addElement(const int type, ito::float32 * cells)
     {
         return ito::retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal PrimitiveContainer::changeElement(const int type, ito::float32 * cells)
     {
         return ito::retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal PrimitiveContainer::removeElement(const int row)
     {
         return ito::retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal PrimitiveContainer::copyGeometricElements(const ito::DataObject &rhs)
     {
         bool newObject = false;
         int cols = 11;
 
-        if(rhs.getDims() == 0 || rhs.calcNumMats() != 1)
+        if (rhs.getDims() == 0 || rhs.calcNumMats() != 1)
         {
             return ito::retError;
         }
 
-        if( rhs.getSize(rhs.getDims()-1) > m_primitives.getSize(1))
+        if (rhs.getSize(rhs.getDims()-1) > m_primitives.getSize(1))
         {
             int newSize = 64 * (rhs.getSize(rhs.getDims() - 2) / 64 + 1);
             m_primitives.zeros(newSize, 11, ito::tFloat32);
@@ -200,19 +214,19 @@ namespace ito
         }
 
         
-        cols = cols > rhs.getSize(rhs.getDims()-1) ? cols : rhs.getSize(rhs.getDims()-1);
+        cols = cols > rhs.getSize(rhs.getDims()-1) ? cols : rhs.getSize(rhs.getDims() - 1);
 
         cv::Mat* scr = (cv::Mat*)(rhs.get_mdata()[rhs.seekMat(0)]);
         cv::Mat* dst = (cv::Mat*)(m_primitives.get_mdata()[0]);
 
-        for(int i = 0; i < scr->rows; i++)
+        for (int i = 0; i < scr->rows; i++)
         {
             memcpy(dst->ptr<ito::float32>(i), scr->ptr<ito::float32>(i), sizeof(ito::float32) * cols);
         }
 
-        if(!newObject)
+        if (!newObject)
         {
-            for(int i = scr->rows; i < dst->rows; i++)
+            for (int i = scr->rows; i < dst->rows; i++)
             {
                 memset(dst->ptr<ito::float32>(i), 0, sizeof(ito::float32) * 11);
             }

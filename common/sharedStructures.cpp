@@ -32,7 +32,7 @@
 namespace ito
 {
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name only
 *   @param [in] name  name of new ParamBase
 *   @return     new   ParamBase name "name"
@@ -49,6 +49,7 @@ ParamBase::ParamBase(const char *name) :
     InOutCheck();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name and type
 *   @param [in] name  name of new ParamBase
 *   @param [in] type  type of new ParamBase for possible types see \ref Type
@@ -66,6 +67,7 @@ ParamBase::ParamBase(const char *name, const uint32 type) :
     InOutCheck();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name and type, char val and optional info
 *   @param [in] name  name of new ParamBase
 *   @param [in] type  type of new ParamBase for possible types see \ref Type
@@ -88,7 +90,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const char *val) :
 
     if (val)
     {
-        if ( (m_type & paramTypeMask) == String)
+        if ((m_type & paramTypeMask) == String)
         {
             m_cVal = _strdup(val);
             m_iVal = static_cast<int>(strlen(m_cVal));
@@ -103,6 +105,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const char *val) :
     InOutCheck();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name and type, double val
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
@@ -138,6 +141,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const double val) :
     InOutCheck();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name and type and int val
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
@@ -167,7 +171,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const int val) :
             m_dVal = (double)val;
         break;
         case String & paramTypeMask:
-            if(val == 0)
+            if (val == 0)
             {
                 m_iVal = -1;
                 m_cVal = NULL;
@@ -178,7 +182,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const int val) :
             }
         break;
         case HWRef & paramTypeMask:
-            if(val == 0)
+            if (val == 0)
             {
                 m_iVal = -1;
                 m_cVal = NULL;
@@ -194,6 +198,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const int val) :
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** array constructor with name and type, size and array
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
@@ -238,6 +243,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const unsigned int siz
                     m_cVal = 0;
                 }
             break;
+
             case IntArray & paramTypeMask:
                 m_iVal = size;
                 if (m_iVal > 0)
@@ -251,6 +257,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const unsigned int siz
                     m_cVal = 0;
                 }
             break;
+
             case DoubleArray & paramTypeMask:
                 m_iVal = size;
                 if (m_iVal > 0)
@@ -283,6 +290,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const unsigned int siz
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** array constructor with name and type, size and array
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
@@ -344,6 +352,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const unsigned int siz
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** array constructor with name and type, size and array
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
@@ -397,7 +406,7 @@ ParamBase::ParamBase(const char *name, const uint32 type, const unsigned int siz
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /** destructor
 *
 *   clear (frees) the name and in case a string value.
@@ -410,16 +419,17 @@ ParamBase::~ParamBase()
         m_pName = NULL;
     }
 
-    if ( (m_cVal) && ( (typeFilter(m_type) == typeFilter(String))
+    if ((m_cVal) && ((typeFilter(m_type) == typeFilter(String))
         || (typeFilter(m_type) == typeFilter(DoubleArray))
         || (typeFilter(m_type) == typeFilter(IntArray))
-        || (typeFilter(m_type) == typeFilter(CharArray)) ) )
+        || (typeFilter(m_type) == typeFilter(CharArray))))
     {
         free(m_cVal);
         m_cVal = NULL;
     };
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /** copy constructor
 *   @param [in] copyConstr ParamBase to copy from
 *   @return     new ParamBase with copied values
@@ -512,27 +522,29 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ParamBase::InOutCheck()
 {
-    if( (m_type & (ParamBase::In | ParamBase::Out)) == 0 )
+    if ((m_type & (ParamBase::In | ParamBase::Out)) == 0)
     {
         m_type |= ParamBase::In;
     }
-    if( ((m_type & ParamBase::In) | ParamBase::Out) == ParamBase::Out )
+    if (((m_type & ParamBase::In) | ParamBase::Out) == ParamBase::Out)
     {
         //out only not allowed for pointer-based types (beside arrays)
-        if(m_type & ( (DObjPtr | PointCloudPtr | PolygonMeshPtr| HWRef) ^ (Pointer | NoAutosave) ) )
+        if (m_type & ((DObjPtr | PointCloudPtr | PolygonMeshPtr| HWRef) ^ (Pointer | NoAutosave)))
         {
             throw std::logic_error("It is not allowed to delcare a parameter as OUT for types DObjPtr, PointCloudPtr, PolygonMeshPtr or HWRef");
         }
     }
 }
 
+
 //--------------------------------------------------------------------------------------------
 //  ASSIGNMENT AND OPERATORS
 //--------------------------------------------------------------------------------------------
             
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /** braces operator
 *   @param [in] num array index for which the value should be returned
 *   @return     new tParam with values of ParamBase[num] in the array
@@ -578,7 +590,7 @@ const ParamBase ParamBase::operator [] (const int num) const
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /** assignment operator
 *   @param [in] rhs ParamBase to copy from
 *   @return     new ParamBase with copied values
@@ -593,10 +605,10 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
         free(m_pName);
         m_pName = NULL;
     }
-    if ( (m_cVal) && ((typeFilter(m_type) == typeFilter(String))
+    if ((m_cVal) && ((typeFilter(m_type) == typeFilter(String))
             || (typeFilter(m_type) == typeFilter((CharArray)))
         || (typeFilter(m_type) == typeFilter(DoubleArray))
-        || (typeFilter(m_type) == typeFilter(IntArray)) ) )
+        || (typeFilter(m_type) == typeFilter(IntArray))))
     {
         free(m_cVal);
         m_cVal = NULL;
@@ -686,9 +698,10 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
     return *this;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 {
-    if ( typeFilter(m_type) != rhs->getType() )
+    if (typeFilter(m_type) != rhs->getType())
     {
         return ito::RetVal(ito::retError, 0, "tParam types are not equal");
     }
@@ -787,140 +800,151 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
     return ito::RetVal(ito::retOk);
 }
 
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const char *val, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const double minVal, const double maxVal, const double val, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pInfo(NULL)
 {
-    assert( (type & ParamBase::Double) );
-    m_pMeta = new DoubleMeta(minVal,maxVal);
+    assert((type & ParamBase::Double));
+    m_pMeta = new DoubleMeta(minVal, maxVal);
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const int minVal, const int maxVal, const int val, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pInfo(NULL)
 {
-    assert( (type & ParamBase::Int) );
-    m_pMeta = new IntMeta(minVal,maxVal);
+    assert((type & ParamBase::Int));
+    m_pMeta = new IntMeta(minVal, maxVal);
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pInfo(NULL)
 {
-    assert( (type & ParamBase::Char) );
-    m_pMeta = new CharMeta(minVal,maxVal);
+    assert((type & ParamBase::Char));
+    m_pMeta = new CharMeta(minVal, maxVal);
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const char *values, const char *info):
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const int *values, const char *info) :
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const double *values, const char *info) :
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const int val, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const double val, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const char val, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,val),
+    ParamBase(name, type, val),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const double *values, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const int *values, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const char *name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info) :
-    ParamBase(name,type,size,values),
+    ParamBase(name, type, size, values),
     m_pMeta(NULL),
     m_pInfo(NULL)
 {
     setInfo(info);
-    if(!setMeta(meta,true))
+    if (!setMeta(meta, true))
     {
         throw std::runtime_error("Type of meta [ParamMeta] must be included in given type of Param.");
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::~Param()
 {
     if (m_pInfo)
@@ -929,13 +953,14 @@ Param::~Param()
         m_pInfo = NULL;
     }
 
-    if(m_pMeta)
+    if (m_pMeta)
     {
         delete m_pMeta;
         m_pMeta = NULL;
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const Param &copyConstr) : ParamBase(copyConstr), m_pMeta(NULL), m_pInfo(NULL)
 {
     setInfo(copyConstr.m_pInfo);
@@ -946,9 +971,11 @@ Param::Param(const Param &copyConstr) : ParamBase(copyConstr), m_pMeta(NULL), m_
 //--------------------------------------------------------------------------------------------
 //  ASSIGNMENT AND OPERATORS
 //--------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------------------
 const Param Param::operator [] (const int num) const
 {
-    if (( (m_type & paramTypeMask) == CharArray) 
+    if (((m_type & paramTypeMask) == CharArray) 
         || ((m_type & paramTypeMask) == IntArray) 
         || ((m_type & paramTypeMask) == DoubleArray))
     {
@@ -964,7 +991,7 @@ const Param Param::operator [] (const int num) const
                 case Char:
                     {
                     CharMeta *cMeta = static_cast<CharMeta*>(m_pMeta);
-                    if(cMeta) cMeta = new CharMeta(*cMeta);
+                    if (cMeta) cMeta = new CharMeta(*cMeta);
                     return Param(m_pName, m_type & ~Pointer, (getVal<char*>(len))[num], cMeta, m_pInfo);
                     }
                 break;
@@ -972,7 +999,7 @@ const Param Param::operator [] (const int num) const
                 case Int:
                     {
                     IntMeta *iMeta = static_cast<IntMeta*>(m_pMeta);
-                    if(iMeta) iMeta = new IntMeta(*iMeta);
+                    if (iMeta) iMeta = new IntMeta(*iMeta);
                     return Param(m_pName, m_type & ~Pointer, (getVal<int*>(len))[num], iMeta, m_pInfo);
                     }
                 break;
@@ -980,7 +1007,7 @@ const Param Param::operator [] (const int num) const
                 case Double:
                     {
                     DoubleMeta *dMeta = static_cast<DoubleMeta*>(m_pMeta);
-                    if(dMeta) dMeta = new DoubleMeta(*dMeta);
+                    if (dMeta) dMeta = new DoubleMeta(*dMeta);
                     return Param(m_pName, m_type & ~Pointer, (getVal<double*>(len))[num], dMeta, m_pInfo);
                     }
                 break;
@@ -997,6 +1024,7 @@ const Param Param::operator [] (const int num) const
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 Param& Param::operator = (const Param &rhs)
 {
     ParamBase::operator=(rhs);
@@ -1005,27 +1033,29 @@ Param& Param::operator = (const Param &rhs)
     return *this;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Param::copyValueFrom(const ParamBase *rhs)
 {
     return ParamBase::copyValueFrom(rhs);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 bool Param::setMeta(ParamMeta* meta, bool takeOwnership)
 {
-    if(m_pMeta) 
+    if (m_pMeta) 
     {
         delete m_pMeta; 
         m_pMeta = NULL;
     }
 
-    if(meta)
+    if (meta)
     {
         uint32 metaType = meta->getType();
-        if((metaType & m_type) != metaType)
+        if ((metaType & m_type) != metaType)
         {
             return false;
         }
-        else if(takeOwnership)
+        else if (takeOwnership)
         {
             m_pMeta = meta; //Param takes ownership of meta
         }
@@ -1034,22 +1064,22 @@ bool Param::setMeta(ParamMeta* meta, bool takeOwnership)
             switch(metaType & ito::paramTypeMask)
             {
             case Param::Int:
-                m_pMeta = new IntMeta( *(IntMeta*)(meta) );
+                m_pMeta = new IntMeta(*(IntMeta*)(meta));
                 break;
             case Param::Double:
-                m_pMeta = new DoubleMeta( *(DoubleMeta*)(meta) );
+                m_pMeta = new DoubleMeta(*(DoubleMeta*)(meta));
                 break;
             case Param::Char:
-                m_pMeta = new CharMeta( *(CharMeta*)(meta) );
+                m_pMeta = new CharMeta(*(CharMeta*)(meta));
                 break;
             case Param::String:
-                m_pMeta = new StringMeta( *(StringMeta*)(meta) );
+                m_pMeta = new StringMeta(*(StringMeta*)(meta));
                 break;
             case Param::DObjPtr & ito::paramTypeMask:
-                m_pMeta = new DObjMeta( *(DObjMeta*)(meta) );
+                m_pMeta = new DObjMeta(*(DObjMeta*)(meta));
                 break;
             case Param::HWRef & ito::paramTypeMask:
-                m_pMeta = new HWMeta( *(HWMeta*)(meta) );
+                m_pMeta = new HWMeta(*(HWMeta*)(meta));
                 break;
             default:
                 throw std::logic_error("Type of meta [ParamMeta] is unknown and cannot not be copied or assigned.");
@@ -1059,18 +1089,19 @@ bool Param::setMeta(ParamMeta* meta, bool takeOwnership)
     return true;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 bool Param::copyMetaFrom(const ParamMeta *meta)
 {
-    if(m_pMeta) 
+    if (m_pMeta) 
     {
         delete m_pMeta; 
         m_pMeta = NULL;
     }
 
-    if(meta)
+    if (meta)
     {
         uint32 metaType = meta->getType();
-        if((metaType & m_type) != metaType)
+        if ((metaType & m_type) != metaType)
         {
             return false;
         }
@@ -1079,22 +1110,22 @@ bool Param::copyMetaFrom(const ParamMeta *meta)
             switch(metaType & ito::paramTypeMask)
             {
             case Param::Int:
-                m_pMeta = new IntMeta( *(IntMeta*)(meta) );
+                m_pMeta = new IntMeta(*(IntMeta*)(meta));
                 break;
             case Param::Double:
-                m_pMeta = new DoubleMeta( *(DoubleMeta*)(meta) );
+                m_pMeta = new DoubleMeta(*(DoubleMeta*)(meta));
                 break;
             case Param::Char:
-                m_pMeta = new CharMeta( *(CharMeta*)(meta) );
+                m_pMeta = new CharMeta(*(CharMeta*)(meta));
                 break;
             case Param::String:
-                m_pMeta = new StringMeta( *(StringMeta*)(meta) );
+                m_pMeta = new StringMeta(*(StringMeta*)(meta));
                 break;
             case Param::DObjPtr & ito::paramTypeMask:
-                m_pMeta = new DObjMeta( *(DObjMeta*)(meta) );
+                m_pMeta = new DObjMeta(*(DObjMeta*)(meta));
                 break;
             case Param::HWRef & ito::paramTypeMask:
-                m_pMeta = new HWMeta( *(HWMeta*)(meta) );
+                m_pMeta = new HWMeta(*(HWMeta*)(meta));
                 break;
             default:
                 throw std::logic_error("Type of meta [ParamMeta] is unknown and cannot not be copied or assigned.");
@@ -1104,10 +1135,10 @@ bool Param::copyMetaFrom(const ParamMeta *meta)
     return true;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 double Param::getMin() const
 {
-    if(m_pMeta)
+    if (m_pMeta)
     {
         switch(m_pMeta->getType())
         {
@@ -1122,9 +1153,10 @@ double Param::getMin() const
     return -std::numeric_limits<double>::max();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 double Param::getMax() const
 {
-    if(m_pMeta)
+    if (m_pMeta)
     {
         switch(m_pMeta->getType())
         {
@@ -1138,7 +1170,6 @@ double Param::getMax() const
     }
     return -std::numeric_limits<double>::max();
 }
-
 
 }; //end namespace ito
 

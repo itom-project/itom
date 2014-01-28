@@ -77,13 +77,12 @@ void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl:
     out.width = in.width;
     out.height = in.height;
 
-    for(size_t i = 0; i < in.points.size() ; i++)
+    for (size_t i = 0; i < in.points.size(); i++)
     {
         pcl::PointXYZRGBA p;
         ito::pclHelper::PointXYZRGBtoXYZRGBA (in.points[i], p);
         out.points.push_back (p);
     }
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -91,9 +90,9 @@ void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl:
 ito::RetVal pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointCloud *pc)
 {
     RetVal retval = retOk;
-    if(!pc)
+    if (!pc)
     {
-        return RetVal(retError,0,"PCLPointCloud is NULL");
+        return RetVal(retError, 0, "PCLPointCloud is NULL");
     }
 
     ito::tPCLPointType pointType = pc->getType();
@@ -102,31 +101,31 @@ ito::RetVal pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointC
     switch(pointType)
     {
     case ito::pclXYZ:
-        pcl::createMapping<pcl::PointXYZ>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZ>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZ()), field_map);
         break;
     case ito::pclXYZI:
-        pcl::createMapping<pcl::PointXYZI>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZI>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZI()), field_map);
         break;
     case ito::pclXYZRGBA:
-        pcl::createMapping<pcl::PointXYZRGBA>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZRGBA>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZRGBA()), field_map);
         break;
     case ito::pclXYZNormal:
-        pcl::createMapping<pcl::PointNormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointNormal>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZNormal()), field_map);
         break;
     case ito::pclXYZINormal:
-        pcl::createMapping<pcl::PointXYZINormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZINormal>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZINormal()), field_map);
         break;
     case ito::pclXYZRGBNormal:
-        pcl::createMapping<pcl::PointXYZRGBNormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZRGBNormal>(msg.fields, field_map);
         pcl::fromPCLPointCloud2(msg, *(pc->toPointXYZRGBNormal()), field_map);
         break;
     default:
-        retval += RetVal(retError,0,"given point cloud cannot be converted into desired type");
+        retval += RetVal(retError, 0, "given point cloud cannot be converted into desired type");
         break;
     }
 
@@ -136,9 +135,9 @@ ito::RetVal pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointC
 ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc)
 {
     RetVal retval = retOk;
-    if(!pc)
+    if (!pc)
     {
-        return RetVal(retError,0,"PCLPointCloud is NULL");
+        return RetVal(retError, 0, "PCLPointCloud is NULL");
     }
 
     ito::tPCLPointType pointType = pc->getType();
@@ -147,40 +146,37 @@ ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLP
     switch(pointType)
     {
     case ito::pclXYZ:
-        pcl::createMapping<pcl::PointXYZ>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZ>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZ()), field_map);
         break;
     case ito::pclXYZI:
-        pcl::createMapping<pcl::PointXYZI>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZI>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZI()), field_map);
         break;
     case ito::pclXYZRGBA:
-        pcl::createMapping<pcl::PointXYZRGBA>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZRGBA>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZRGBA()), field_map);
         break;
     case ito::pclXYZNormal:
-        pcl::createMapping<pcl::PointNormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointNormal>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZNormal()), field_map);
         break;
     case ito::pclXYZINormal:
-        pcl::createMapping<pcl::PointXYZINormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZINormal>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZINormal()), field_map);
         break;
     case ito::pclXYZRGBNormal:
-        pcl::createMapping<pcl::PointXYZRGBNormal>( msg.fields, field_map );
+        pcl::createMapping<pcl::PointXYZRGBNormal>(msg.fields, field_map);
         pcl::fromROSMsg(msg, *(pc->toPointXYZRGBNormal()), field_map);
         break;
     default:
-        retval += RetVal(retError,0,"given point cloud cannot be converted into desired type");
+        retval += RetVal(retError, 0, "given point cloud cannot be converted into desired type");
         break;
     }
 
     return retval;
 }
 #endif
-
-
-
 
 //------------------------------------------------------------------------------------------------------------------------------
 #if PCL_VERSION_COMPARE(>=,1,7,0)
@@ -215,7 +211,7 @@ ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointClo
         msg = pcl::PCLPointCloud2();
         break;
     default:
-        retval += RetVal(retError,0,"given point cloud cannot be converted into sensor_msgs::PointCloud2");
+        retval += RetVal(retError, 0, "given point cloud cannot be converted into sensor_msgs::PointCloud2");
         break;
     }
 
@@ -253,14 +249,13 @@ ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::Poi
         msg = sensor_msgs::PointCloud2();
         break;
     default:
-        retval += RetVal(retError,0,"given point cloud cannot be converted into sensor_msgs::PointCloud2");
+        retval += RetVal(retError, 0, "given point cloud cannot be converted into sensor_msgs::PointCloud2");
         break;
     }
 
     return retval;
 }
 #endif
-
 
 //------------------------------------------------------------------------------------------------------------------------------
 #if PCL_VERSION_COMPARE(>=,1,7,0)
@@ -269,14 +264,14 @@ ito::tPCLPointType guessPointType(const pcl::PCLPointCloud2 &msg)
 ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
 #endif
 {
-    if( pcl::getFieldIndex(msg,"x") >= 0 && pcl::getFieldIndex(msg,"y") >= 0 && pcl::getFieldIndex(msg,"z") >= 0)
+    if (pcl::getFieldIndex(msg,"x") >= 0 && pcl::getFieldIndex(msg,"y") >= 0 && pcl::getFieldIndex(msg,"z") >= 0)
     {
         bool rgb = (pcl::getFieldIndex(msg,"rgb") >= 0);
         bool rgba = (pcl::getFieldIndex(msg,"rgba") >= 0);
-        bool normal = ( pcl::getFieldIndex(msg, "normal_x") >= 0 && pcl::getFieldIndex(msg,"normal_y") >= 0 && pcl::getFieldIndex(msg,"normal_z") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
+        bool normal = (pcl::getFieldIndex(msg, "normal_x") >= 0 && pcl::getFieldIndex(msg,"normal_y") >= 0 && pcl::getFieldIndex(msg,"normal_z") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
 
         //hack, since ply-files sometimes call normal_i ni. rename it now. (maybe this is fixed in pcl 1.6)
-        normal |= ( pcl::getFieldIndex(msg, "nx") >= 0 && pcl::getFieldIndex(msg,"ny") >= 0 && pcl::getFieldIndex(msg,"nz") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
+        normal |= (pcl::getFieldIndex(msg, "nx") >= 0 && pcl::getFieldIndex(msg,"ny") >= 0 && pcl::getFieldIndex(msg,"nz") >= 0 && pcl::getFieldIndex(msg,"curvature") >= 0);
         bool intensity = (pcl::getFieldIndex(msg, "intensity") >= 0);
 
         //pclInvalid      = 0x0000, /*!< invalid point */
@@ -286,27 +281,27 @@ ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
         //pclXYZNormal    = 0x0008, /*!< point with x,y,z value, its normal vector nx,ny,nz and a curvature value */
         //pclXYZINormal   = 0x0010, /*!< point with the same values than pclXYZNormal and an additional intensity value */
         //pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector (including curvature) */
-        if(!rgb && !rgba && !normal && !intensity)
+        if (!rgb && !rgba && !normal && !intensity)
         {
             return ito::pclXYZ;
         }
-        else if(!rgb && !rgba && !normal && intensity)
+        else if (!rgb && !rgba && !normal && intensity)
         {
             return ito::pclXYZI;
         }
-        else if( (rgb || rgba) && !normal && !intensity)
+        else if ((rgb || rgba) && !normal && !intensity)
         {
             return ito::pclXYZRGBA;
         }
-        else if(!rgb && !rgba && normal && !intensity)
+        else if (!rgb && !rgba && normal && !intensity)
         {
             return ito::pclXYZNormal;
         }
-        else if(!rgb && !rgba && normal && intensity)
+        else if (!rgb && !rgba && normal && intensity)
         {
             return ito::pclXYZINormal;
         }
-        else if((rgb || rgba) && normal && !intensity)
+        else if ((rgb || rgba) && normal && !intensity)
         {
             return ito::pclXYZRGBNormal;
         } 
@@ -325,7 +320,7 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
     retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
     retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         uint32_t width, height;
         cv::Mat *x = reinterpret_cast<cv::Mat*>(mapX->get_mdata()[ mapX->seekMat(0) ]);
@@ -340,7 +335,7 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
         width = mapZ->getSize(1);
         height = mapZ->getSize(0);
 
-        if(deleteNaN)
+        if (deleteNaN)
         {
             pointCloud = ito::PCLPointCloud(ito::pclXYZ);
             cloud = pointCloud.toPointXYZ();
@@ -356,7 +351,7 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
 
                 for (int j = 0; j < x->cols; j++)
                 {
-                    if(!(pcl_isnan(zRow[j]) || pcl_isnan(yRow[j]) || pcl_isnan(xRow[j])))
+                    if (!(pcl_isnan(zRow[j]) || pcl_isnan(yRow[j]) || pcl_isnan(xRow[j])))
                     {
                         point.x = xRow[j];
                         point.y = yRow[j];
@@ -372,8 +367,7 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
         }
         else
         {
-
-            pointCloud = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point) );
+            pointCloud = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
 
             cloud = pointCloud.toPointXYZ();
 
@@ -391,7 +385,7 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
                     point.y = yRow[j];
                     point.z = zRow[j];
 
-                    if(!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
+                    if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
                     {
                         isDense = false;
                     }
@@ -422,7 +416,7 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
     retval += ito::dObjHelper::verify2DDataObject(mapY, "Y", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
     retval += ito::dObjHelper::verify2DDataObject(mapI, "I", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 1, ito::tFloat32);
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         uint32_t width, height;
         cv::Mat *x = reinterpret_cast<cv::Mat*>(mapX->get_mdata()[ mapX->seekMat(0) ]);
@@ -438,7 +432,7 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
         width = mapZ->getSize(1);
         height = mapZ->getSize(0);
 
-        if(deleteNaN)
+        if (deleteNaN)
         {
             pointCloud = ito::PCLPointCloud(ito::pclXYZI);
             cloud = pointCloud.toPointXYZI();
@@ -455,7 +449,7 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
 
                 for (int j = 0; j < x->cols; j++)
                 {
-                    if(!(pcl_isnan(zRow[j]) || pcl_isnan(yRow[j]) || pcl_isnan(xRow[j])))
+                    if (!(pcl_isnan(zRow[j]) || pcl_isnan(yRow[j]) || pcl_isnan(xRow[j])))
                     {
                         point.x = xRow[j];
                         point.y = yRow[j];
@@ -472,8 +466,7 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
         }
         else
         {
-
-            pointCloud = ito::PCLPointCloud(width, height, ito::pclXYZI, ito::PCLPoint(point) );
+            pointCloud = ito::PCLPointCloud(width, height, ito::pclXYZI, ito::PCLPoint(point));
 
             cloud = pointCloud.toPointXYZI();
 
@@ -493,7 +486,7 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
                     point.z = zRow[j];
                     point.intensity = iRow[j];
 
-                    if(!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
+                    if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
                     {
                         isDense = false;
                     }
@@ -530,17 +523,17 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
     bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-    if(mapI)
+    if (mapI)
     {
         retval += ito::dObjHelper::verify2DDataObject(mapI, "intensityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
 
-        if( mapI->getSize(0) != mapDisp->getSize(0) || mapI->getSize(1) != mapDisp->getSize(1) )
+        if (mapI->getSize(0) != mapDisp->getSize(0) || mapI->getSize(1) != mapDisp->getSize(1))
         {
-            retval += ito::RetVal(ito::retError,0,"disparityMap and intensityMap must have the same size");
+            retval += ito::RetVal(ito::retError, 0, "disparityMap and intensityMap must have the same size");
         }
     }
 
-    if(retval == retOk)
+    if (retval == retOk)
     {
         bool checkScale = true;
         firstX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 0, checkScale));
@@ -549,7 +542,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
         stepY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 1, checkScale)) - firstY;
     }
 
-    if(retval == ito::retOk)
+    if (retval == ito::retOk)
     {
         uint32_t width, height;
         ito::float32 *zRow;
@@ -557,7 +550,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 
         cv::Mat *z = reinterpret_cast<cv::Mat*>(mapDisp->get_mdata()[ mapDisp->seekMat(0) ]);
 
-        if(mapI == NULL)
+        if (mapI == NULL)
         {
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
             pcl::PointXYZ point;
@@ -565,7 +558,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             width = mapDisp->getSize(1);
             height = mapDisp->getSize(0);
 
-            if(deleteNaN)
+            if (deleteNaN)
             {
                 out = ito::PCLPointCloud(ito::pclXYZ);
                 cloud = out.toPointXYZ();
@@ -578,7 +571,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 
                     for (int j = 0; j < z->cols; j++)
                     {
-                        if(!(pcl_isnan(zRow[j])))
+                        if (!(pcl_isnan(zRow[j])))
                         {
                             point.x = firstX + j * stepX;
                             point.y = firstY + i * stepY;
@@ -594,7 +587,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             }
             else
             {
-                out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point) );
+                out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
                 cloud = out.toPointXYZ();
                 size_t counter = 0;
 
@@ -608,7 +601,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
                         point.y = firstY + i * stepY;
                         point.z = zRow[j];
 
-                        if(!pcl_isfinite(point.z))
+                        if (!pcl_isfinite(point.z))
                         {
                             isDense = false;
                         }
@@ -632,7 +625,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             width = mapDisp->getSize(1);
             height = mapDisp->getSize(0);
 
-            if(deleteNaN)
+            if (deleteNaN)
             {
                 out = ito::PCLPointCloud(ito::pclXYZI);
                 cloud = out.toPointXYZI();
@@ -646,7 +639,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 
                     for (int j = 0; j < z->cols; j++)
                     {
-                        if(!(pcl_isnan(zRow[j])))
+                        if (!(pcl_isnan(zRow[j])))
                         {
                             point.x = firstX + j * stepX;
                             point.y = firstY + i * stepY;
@@ -663,7 +656,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             }
             else
             {
-                out = ito::PCLPointCloud(width, height, ito::pclXYZI, ito::PCLPoint(point) );
+                out = ito::PCLPointCloud(width, height, ito::pclXYZI, ito::PCLPoint(point));
                 cloud = out.toPointXYZI();
                 size_t counter = 0;
 
@@ -679,7 +672,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
                         point.z = zRow[j];
                         point.intensity = iRow[j];
 
-                        if(!pcl_isfinite(point.z))
+                        if (!pcl_isfinite(point.z))
                         {
                             isDense = false;
                         }
@@ -701,23 +694,23 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
 {
-    if(pc == NULL)
+    if (pc == NULL)
     {
-        return RetVal(retError,0,"PCLPointCloud is NULL");
+        return RetVal(retError, 0, "PCLPointCloud is NULL");
     }
     
-    if(pc->getType() == ito::pclXYZ)
+    if (pc->getType() == ito::pclXYZ)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pc->toPointXYZ();
         pcl::PointCloud<pcl::PointXYZ>::VectorType points = cloud->points;
         out = DataObject(3, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZ *point;
 
-        ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
-        ito::float32 *yRow = (ito::float32*)out.rowPtr(0,1);
-        ito::float32 *zRow = (ito::float32*)out.rowPtr(0,2);
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
 
-        for(size_t i = 0 ; i < points.size() ; i++)
+        for (size_t i = 0; i < points.size(); i++)
         {
             point = &(points[i]);
             xRow[i] = point->x;
@@ -725,19 +718,19 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             zRow[i] = point->z;
         }
     }
-    else if(pc->getType() == ito::pclXYZI)
+    else if (pc->getType() == ito::pclXYZI)
     {
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloud = pc->toPointXYZI();
         pcl::PointCloud<pcl::PointXYZI>::VectorType points = cloud->points;
         out = DataObject(4, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZI *point;
 
-        ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
-        ito::float32 *yRow = (ito::float32*)out.rowPtr(0,1);
-        ito::float32 *zRow = (ito::float32*)out.rowPtr(0,2);
-        ito::float32 *iRow = (ito::float32*)out.rowPtr(0,3);
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
+        ito::float32 *iRow = (ito::float32*)out.rowPtr(0, 3);
 
-        for(size_t i = 0 ; i < points.size() ; i++)
+        for (size_t i = 0; i < points.size(); i++)
         {
             point = &(points[i]);
             xRow[i] = point->x;
@@ -746,21 +739,21 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             iRow[i] = point->intensity;
         }
     }
-    else if(pc->getType() == ito::pclXYZNormal)
+    else if (pc->getType() == ito::pclXYZNormal)
     {
         pcl::PointCloud<pcl::PointNormal>::Ptr cloud = pc->toPointXYZNormal();
         pcl::PointCloud<pcl::PointNormal>::VectorType points = cloud->points;
         out = DataObject(6, (int)cloud->size(), ito::tFloat32);
         pcl::PointNormal *point;
 
-        ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
-        ito::float32 *yRow = (ito::float32*)out.rowPtr(0,1);
-        ito::float32 *zRow = (ito::float32*)out.rowPtr(0,2);
-        ito::float32 *nxRow = (ito::float32*)out.rowPtr(0,3);
-        ito::float32 *nyRow = (ito::float32*)out.rowPtr(0,4);
-        ito::float32 *nzRow = (ito::float32*)out.rowPtr(0,5);
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
+        ito::float32 *nxRow = (ito::float32*)out.rowPtr(0, 3);
+        ito::float32 *nyRow = (ito::float32*)out.rowPtr(0, 4);
+        ito::float32 *nzRow = (ito::float32*)out.rowPtr(0, 5);
 
-        for(size_t i = 0 ; i < points.size() ; i++)
+        for (size_t i = 0; i < points.size(); i++)
         {
             point = &(points[i]);
             xRow[i] = point->x;
@@ -771,22 +764,22 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             nzRow[i] = point->normal_z;
         }
     }
-    else if(pc->getType() == ito::pclXYZINormal)
+    else if (pc->getType() == ito::pclXYZINormal)
     {
         pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud = pc->toPointXYZINormal();
         pcl::PointCloud<pcl::PointXYZINormal>::VectorType points = cloud->points;
         out = DataObject(7, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZINormal *point;
 
-        ito::float32 *xRow = (ito::float32*)out.rowPtr(0,0);
-        ito::float32 *yRow = (ito::float32*)out.rowPtr(0,1);
-        ito::float32 *zRow = (ito::float32*)out.rowPtr(0,2);
-        ito::float32 *nxRow = (ito::float32*)out.rowPtr(0,3);
-        ito::float32 *nyRow = (ito::float32*)out.rowPtr(0,4);
-        ito::float32 *nzRow = (ito::float32*)out.rowPtr(0,5);
-        ito::float32 *iRow = (ito::float32*)out.rowPtr(0,6);
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
+        ito::float32 *nxRow = (ito::float32*)out.rowPtr(0, 3);
+        ito::float32 *nyRow = (ito::float32*)out.rowPtr(0, 4);
+        ito::float32 *nzRow = (ito::float32*)out.rowPtr(0, 5);
+        ito::float32 *iRow = (ito::float32*)out.rowPtr(0, 6);
 
-        for(size_t i = 0 ; i < points.size() ; i++)
+        for (size_t i = 0; i < points.size(); i++)
         {
             point = &(points[i]);
             xRow[i] = point->x;
@@ -798,13 +791,13 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             iRow[i] = point->intensity;
         }
     }
-    else if(pc->getType() == ito::pclInvalid)
+    else if (pc->getType() == ito::pclInvalid)
     {
         out = DataObject();
     }
     else
     {
-        return RetVal(retError,0,"point clouds with RGB content cannot be converted to data object");
+        return RetVal(retError, 0, "point clouds with RGB content cannot be converted to data object");
     }
 
     return retOk;
@@ -817,31 +810,31 @@ ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out
     RetVal retval;
     ito::DataObject* in2 = NULL;
 
-    if(in)
+    if (in)
     {
         retval += ito::dObjHelper::verify2DDataObject(in, "transform", 4, 4, 4, 4, 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32);
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
-            const ito::float32* r0 = (const ito::float32*)in->rowPtr(0,0);
-            const ito::float32* r1 = (const ito::float32*)in->rowPtr(0,1);
-            const ito::float32* r2 = (const ito::float32*)in->rowPtr(0,2);
-            const ito::float32* r3 = (const ito::float32*)in->rowPtr(0,3);
+            const ito::float32* r0 = (const ito::float32*)in->rowPtr(0, 0);
+            const ito::float32* r1 = (const ito::float32*)in->rowPtr(0, 1);
+            const ito::float32* r2 = (const ito::float32*)in->rowPtr(0, 2);
+            const ito::float32* r3 = (const ito::float32*)in->rowPtr(0, 3);
 
-            if(in->getType() != ito::tFloat32)
+            if (in->getType() != ito::tFloat32)
             {
                 in2 = new ito::DataObject();
                 retval += in->convertTo(*in2, ito::tFloat32);
 
-                if(retval == retOk)
+                if (retval == retOk)
                 {
-                    r0 = (const ito::float32*)in2->rowPtr(0,0);
-                    r1 = (const ito::float32*)in2->rowPtr(0,1);
-                    r2 = (const ito::float32*)in2->rowPtr(0,2);
-                    r3 = (const ito::float32*)in2->rowPtr(0,3);
+                    r0 = (const ito::float32*)in2->rowPtr(0, 0);
+                    r1 = (const ito::float32*)in2->rowPtr(0, 1);
+                    r2 = (const ito::float32*)in2->rowPtr(0, 2);
+                    r3 = (const ito::float32*)in2->rowPtr(0, 3);
                 }
             }
 
-            if(!retval.containsError())
+            if (!retval.containsError())
             {
                 Eigen::Matrix4f homMat;
 
@@ -859,7 +852,7 @@ ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out
         retval += RetVal(retError,0,"dataObject must not be NULL");
     }
 
-    if(in2)
+    if (in2)
     {
         delete in2;
     }
@@ -874,18 +867,18 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
     out = DataObject();
     retval += out.eye(4, ito::tFloat32);
 
-    if(in->Options & Eigen::ColMajor)
+    if (in->Options & Eigen::ColMajor)
     {
-        retval += ito::RetVal(ito::retError,0,"affine3f object must be rowMajor");
+        retval += ito::RetVal(ito::retError, 0, "affine3f object must be rowMajor");
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        ito::float32 *r0 = (ito::float32*)out.rowPtr(0,0);
-        ito::float32 *r1 = (ito::float32*)out.rowPtr(0,1);
-        ito::float32 *r2 = (ito::float32*)out.rowPtr(0,2);
+        ito::float32 *r0 = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *r1 = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *r2 = (ito::float32*)out.rowPtr(0, 2);
 
-        if(in->Mode == Eigen::AffineCompact) //in is a 3x4 matrix
+        if (in->Mode == Eigen::AffineCompact) //in is a 3x4 matrix
         {
             const ito::float32 *d = in->data();
             r0[0] = d[0];
@@ -906,7 +899,7 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
         }
         else
         {
-            retval += RetVal(retError,0,"Eigen transform object must have a type AffineCompact.");
+            retval += RetVal(retError, 0, "Eigen transform object must have a type AffineCompact.");
         }
     }
 

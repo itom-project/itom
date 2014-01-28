@@ -32,7 +32,6 @@
 //!< constants
 const QString ConsoleWidget::lineBreak = QString("\n");
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent),
@@ -58,12 +57,17 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     qout = new QDebugStream(std::cout, msgReturnInfo, ConsoleWidget::lineBreak);
     qerr = new QDebugStream(std::cerr, msgReturnError, ConsoleWidget::lineBreak);
     
-
     connect(this, SIGNAL(wantToCopy()), SLOT(copy()));
     connect(this, SIGNAL(selectionChanged()), SLOT(selChanged()));
 
-    if (qout) connect(qout, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
-    if (qerr) connect(qerr, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
+    if (qout)
+    {
+        connect(qout, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
+    }
+    if (qerr)
+    {
+        connect(qerr, SIGNAL(flushStream(QString, tMsgType)), this, SLOT(receiveStream(QString, tMsgType)));
+    }
 
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 
@@ -131,27 +135,26 @@ ConsoleWidget::~ConsoleWidget()
     DELETE_AND_SET_NULL(cmdList);
     DELETE_AND_SET_NULL(qout);
     DELETE_AND_SET_NULL(qerr);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::initEditor()
 {
-    setPaper(QColor(1,81,107));
+    setPaper(QColor(1, 81, 107));
 
     setFolding(QsciScintilla::NoFoldStyle);
     autoAdaptLineNumberColumnWidth(); //setMarginWidth(1,25);
-    setMarginSensitivity(1,false);
-    setMarginLineNumbers(1,true);
+    setMarginSensitivity(1, false);
+    setMarginLineNumbers(1, true);
 
     setWrapMode(QsciScintilla::WrapWord);
     setWrapVisualFlags(QsciScintilla::WrapFlagByBorder, QsciScintilla::WrapFlagNone , 2);
 
     markErrorLine = markerDefine(QsciScintilla::Background);
-    setMarkerBackgroundColor(QColor(255,0,0,25), markErrorLine);
+    setMarkerBackgroundColor(QColor(255, 0, 0, 25), markErrorLine);
 
     markCurrentLine = markerDefine(QsciScintilla::Background);
-    setMarkerBackgroundColor(QColor(255,255,0,50), markCurrentLine);
+    setMarkerBackgroundColor(QColor(255, 255, 0, 50), markCurrentLine);
 
     return RetVal(retOk);
 }
@@ -166,7 +169,10 @@ void ConsoleWidget::loadSettings()
     QsciScintilla::WrapVisualFlag start, end;
 
     int wrapMode = settings.value("WrapMode", 0).toInt(&ok);
-    if (!ok) wrapMode = 0;
+    if (!ok)
+    {
+        wrapMode = 0;
+    }
     switch (wrapMode)
     {
         case 0: setWrapMode(QsciScintilla::WrapNone); break;
@@ -175,22 +181,46 @@ void ConsoleWidget::loadSettings()
     };
 
     QString flagStart = settings.value("WrapFlagStart", "NoFlag").toString();
-    if (flagStart == "NoFlag") start = QsciScintilla::WrapFlagNone;
-    if (flagStart == "FlagText") start = QsciScintilla::WrapFlagByText;
-    if (flagStart == "FlagBorder") start = QsciScintilla::WrapFlagByBorder;
+    if (flagStart == "NoFlag")
+    {
+        start = QsciScintilla::WrapFlagNone;
+    }
+    if (flagStart == "FlagText")
+    {
+        start = QsciScintilla::WrapFlagByText;
+    }
+    if (flagStart == "FlagBorder")
+    {
+        start = QsciScintilla::WrapFlagByBorder;
+    }
 
     QString flagEnd = settings.value("WrapFlagEnd", "NoFlag").toString();
-    if (flagEnd == "NoFlag") end = QsciScintilla::WrapFlagNone;
-    if (flagEnd == "FlagText") end = QsciScintilla::WrapFlagByText;
-    if (flagEnd == "FlagBorder") end = QsciScintilla::WrapFlagByBorder;
+    if (flagEnd == "NoFlag")
+    {
+        end = QsciScintilla::WrapFlagNone;
+    }
+    if (flagEnd == "FlagText")
+    {
+        end = QsciScintilla::WrapFlagByText;
+    }
+    if (flagEnd == "FlagBorder")
+    {
+        end = QsciScintilla::WrapFlagByBorder;
+    }
 
     int indent = settings.value("WrapIndent", 2).toInt(&ok);
-    if (!ok) indent = 2;
+    if (!ok)
+    {
+        indent = 2;
+    }
 
-    setWrapVisualFlags(end,start,indent);
+    setWrapVisualFlags(end, start, indent);
 
     int indentMode = settings.value("WrapIndentMode", 0).toInt(&ok);
-    if (!ok) indentMode = 0;
+    if (!ok)
+    {
+        indentMode = 0;
+    }
     switch (indentMode)
     {
         case 0: setWrapIndentMode(QsciScintilla::WrapIndentFixed); break;
@@ -201,7 +231,6 @@ void ConsoleWidget::loadSettings()
     settings.endGroup();
 
     AbstractPyScintillaWidget::loadSettings();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -374,8 +403,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
     bool acceptEvent = false;
     bool forwardEvent = false;
 
-
-
     if (key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
     {
         if (PythonEngine::getInstance())
@@ -447,7 +474,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                     forwardEvent = true;
                 }
             }
-
             break;
 
         case Qt::Key_Left:
@@ -466,7 +492,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             break;
         
         // Löscht die aktuelle Eingabe
-        
         case Qt::Key_Escape:
             if (isListActive() == false)
             {
@@ -496,27 +521,32 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             if (lineFrom == startLineBeginCmd && indexFrom>=2)
             {
                 if (modifiers & Qt::ShiftModifier)
+                {
                     setSelection(startLineBeginCmd,2,lineFrom,indexFrom);
+                }
                 else
+                {
                     setCursorPosition(startLineBeginCmd, 2);
+                }
             }
             else
             {
                 if (modifiers & Qt::ShiftModifier)
+                {
                     setSelection(lineFrom,0,lineFrom,indexFrom);
+                }
                 else
+                {
                     setCursorPosition(lineFrom, 0);
+                }
             }
-
             acceptEvent = true;
             forwardEvent = false;
-
-            
             break;
 
         case Qt::Key_Return:
         case Qt::Key_Enter:
-            if ((modifiers & Qt::ShiftModifier)==0)
+            if ((modifiers & Qt::ShiftModifier) == 0)
             {
                 //!> return pressed
                 if (startLineBeginCmd >= 0 && !pythonBusy)
@@ -548,8 +578,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 }
                 SendScintilla(SCI_CALLTIPCANCEL);
                 SendScintilla(SCI_AUTOCCANCEL);
-
-
             }
             else
             {
@@ -557,9 +585,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 acceptEvent = true;
                 forwardEvent = true;
             }
-
-
-
             break;
 
         case Qt::Key_Backspace:
@@ -600,6 +625,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 }
             }
             break;
+
         case Qt::Key_Delete:
             //!< check that del and backspace is only pressed in valid cursor context
             getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -637,8 +663,8 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                     forwardEvent = false;
                 }
             }
-
             break;
+
          case Qt::Key_C:
             if ((modifiers & Qt::ControlModifier))
             {
@@ -653,6 +679,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 forwardEvent = true;
             }
             break;
+
         case Qt::Key_X:
             if ((modifiers & Qt::ControlModifier))
             {
@@ -667,6 +694,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 forwardEvent = true;
             }
             break;
+
         case Qt::Key_V:
             if ((modifiers & Qt::ControlModifier))
             {
@@ -709,14 +737,11 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         {
             event->accept();
         }
-
-
     }
     else
     {
         event->ignore();
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -799,7 +824,10 @@ RetVal ConsoleWidget::executeCmdQueue()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 {
-    if (endLine<beginLine) return RetVal(retError);
+    if (endLine<beginLine)
+    {
+        return RetVal(retError);
+    }
 
     QString singleLine;
     QStringList buffer;
@@ -869,7 +897,6 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             }
         }
 
-
         ////old method //line-by-line
         //for (int i=beginLine;i<=endLine;i++)
         //{
@@ -882,7 +909,6 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 
         //    cmdQueue.push(cmdQueueStruct(singleLine, i));
         //}
-   
     }
 
     //if endLine does not correspond to last line in command line, remove this part
@@ -928,6 +954,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
             {
                 toLine--;
             }
+
             for (int i = fromLine; i <= toLine; i++)
             {
                 markerAdd(i, markErrorLine);
@@ -939,6 +966,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
                 this->startNewCommand(false);
             }
             break;
+
         case msgReturnInfo:
         case msgReturnWarning:
             //!> insert msg after last line
@@ -952,6 +980,7 @@ RetVal ConsoleWidget::printMessage(QStringList msg, tMsgType type)
                 this->startNewCommand(false);
             }
             break;
+
         case msgTextInfo:
         case msgTextWarning:
         case msgTextError:
@@ -1049,7 +1078,6 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
     }
     else
     {
-
         long position;
         int line, index;
         QPoint pos2 = pos;
@@ -1057,7 +1085,6 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
         int margin = marginWidth(1) + marginWidth(2) + marginWidth(3) + marginWidth(4);
 
         pos2.setX(1+ margin);
-
 
         position = SendScintilla(SCI_POSITIONFROMPOINTCLOSE, pos2.x(), pos2.y());
         if (position>=0)
@@ -1076,7 +1103,7 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
         }
         else if (line == startLineBeginCmd)
         {
-            if (pos.x()<=margin)
+            if (pos.x() <= margin)
             {
                 //!< mouse over margin left
                 return 0;
@@ -1111,7 +1138,6 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
     }
 
     return 0;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1164,7 +1190,6 @@ void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
     QsciScintilla::paste();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1292,7 +1317,7 @@ RetVal DequeCommandList::moveLast()
 //----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getPrevious()
 {
-    if (cmdList.size()>1)
+    if (cmdList.size() > 1)
     {
         if (rit < cmdList.rend())
         {
@@ -1309,13 +1334,12 @@ QString DequeCommandList::getPrevious()
     }
 
     return QString();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getNext()
 {
-    if (cmdList.size()>1)
+    if (cmdList.size() > 1)
     {
         if (rit > cmdList.rbegin())
         {

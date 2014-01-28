@@ -48,12 +48,12 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pe)
     {
-        m_breakPointView->setModel( pe->getBreakPointModel() );
+        m_breakPointView->setModel(pe->getBreakPointModel());
     }
 
     m_breakPointView->verticalHeader()->setDefaultSectionSize(22);
     m_breakPointView->setAlternatingRowColors(true);
-    m_breakPointView->setTextElideMode( Qt::ElideLeft );
+    m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->setSortingEnabled(true);
     m_breakPointView->resizeColumnsToContents();
 }
@@ -94,10 +94,10 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
 
     if (index.isValid() && m)
     {
-        idx = m->index( index.row(), 0, index.parent() );
+        idx = m->index(index.row(), 0, index.parent());
         canonicalPath = m->data(idx, Qt::ToolTipRole).toString();
 
-        idx = m->index( index.row(), 1, index.parent() );
+        idx = m->index(index.row(), 1, index.parent());
         lineNr = m->data(idx, Qt::DisplayRole).toInt() - 1;
 
         if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)
@@ -105,12 +105,10 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
             ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
             if (seo)
             {
-                seo->openScript( canonicalPath, NULL, lineNr );
+                seo->openScript(canonicalPath, NULL, lineNr);
             }
         }
     }
 }
-
-
 
 } //end namespace ito
