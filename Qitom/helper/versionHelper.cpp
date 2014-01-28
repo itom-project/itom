@@ -230,14 +230,17 @@ QMap<QString, QString> ito::getItomVersionMap()
     bool isClean = GIT_CLEAN_BUILD_FLAG > 0? false:true;
     if(!isClean)
     {
-        items["version_Warnings"] = QObject::tr("Warning: The version contains locally changed and uncomitted code!\n");
+        items["version_Warnings"] = "Warning: ";
+        if(GIT_CLEAN_BUILD_FLAG & 0x01) items["version_Warnings"].append(QObject::tr("The version contains locally changed code! "));
+        if(GIT_CLEAN_BUILD_FLAG & 0x02) items["version_Warnings"].append(QObject::tr("The version contains unversioned files (e.g. from pyCache-files)!"));
+        items["version_Warnings"].append("\n");
     }
     else
     {
         items["version_Warnings"] = QObject::tr("Build from a clean version.\n");
     }
 #else
-    items["version_Warnings"] = QObject::tr("This version of itom not under version control (no GIT or SVN)!\n");
+    items["version_Warnings"] = QObject::tr("This version of itom is not under version control (no GIT or SVN)!\n");
 #endif
     
     //OpenCV
