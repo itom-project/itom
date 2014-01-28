@@ -92,7 +92,6 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
     settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
-    m_timeStamp = settings.value("lastCommandTimeStamp", "false").toBool();
     m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
 
     QTreeWidgetItem *childItem = NULL;

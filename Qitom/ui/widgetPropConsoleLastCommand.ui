@@ -61,13 +61,6 @@
        </layout>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkShowTimeStamp">
-        <property name="text">
-         <string>show time stamp</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="checkHideDoubleCommand">
         <property name="text">
          <string>do not add if the new command is equal to the last one</string>

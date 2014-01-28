@@ -46,7 +46,6 @@ void WidgetPropConsoleLastCommand::readSettings()
     settings.beginGroup("itomLastCommandDockWidget");
     ui.groupLastCommand->setChecked(settings.value("lastCommandEnabled", "true").toBool());
     QString dateColor = settings.value("lastCommandDateColor", "green").toString();
-    ui.checkShowTimeStamp->setChecked(settings.value("lastCommandTimeStamp", "false").toBool());
     ui.checkHideDoubleCommand->setChecked(settings.value("lastCommandHideDoubleCommand", "false").toBool());
     ui.spinCommandNumbers->setValue(settings.value("lastCommandCommandNumbers", "100").toInt());
     settings.endGroup();
@@ -75,7 +74,6 @@ void WidgetPropConsoleLastCommand::writeSettings()
 
     settings.setValue("lastCommandEnabled", ui.groupLastCommand->isChecked());
     settings.setValue("lastCommandDateColor", dateColor);
-    settings.setValue("lastCommandTimeStamp", ui.checkShowTimeStamp->isChecked());
     settings.setValue("lastCommandHideDoubleCommand", ui.checkHideDoubleCommand->isChecked());
     settings.setValue("lastCommandCommandNumbers", ui.spinCommandNumbers->value());
 
