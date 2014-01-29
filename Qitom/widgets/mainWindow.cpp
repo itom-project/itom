@@ -298,11 +298,11 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    m_fileSystemDock->saveState("itomFileSystemDockWidget");
-    m_helpDock->saveState("itomHelpDockWidget");
-    m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
-    m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
-    m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    if(m_fileSystemDock) m_fileSystemDock->saveState("itomFileSystemDockWidget");
+    if(m_helpDock) m_helpDock->saveState("itomHelpDockWidget");
+    if(m_globalWorkspaceDock) m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
+    if(m_localWorkspaceDock) m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
+    if(m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -332,12 +332,41 @@ MainWindow::~MainWindow()
     if (m_globalWorkspaceDock) disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
     if (m_localWorkspaceDock)  disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
-    disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-    disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+    if (m_lastCommandDock && m_console) disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
+    if (m_console && m_lastCommandDock) disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
 //    delete m_pAIManagerView;
 //    delete m_pAIManagerDock;
-    delete m_pAIManagerWidget;
+    if(m_pAIManagerWidget)
+    {
+        delete m_pAIManagerWidget;
+        m_pAIManagerWidget = NULL;
+    }
+    if(m_fileSystemDock)
+    {
+        delete m_fileSystemDock;
+        m_fileSystemDock = NULL;
+    }
+    if(m_helpDock)
+    {
+        delete m_helpDock;
+        m_helpDock = NULL;
+    }
+    if(m_globalWorkspaceDock)
+    {
+        delete m_globalWorkspaceDock;
+        m_globalWorkspaceDock = NULL;
+    }
+    if(m_localWorkspaceDock)
+    {
+        delete m_localWorkspaceDock;
+        m_localWorkspaceDock = NULL;
+    }
+    if(m_localWorkspaceDock)
+    {
+        delete m_localWorkspaceDock;
+        m_localWorkspaceDock = NULL;
+    }
 
     //delete remaining user-defined toolbars and actions
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
@@ -359,7 +388,12 @@ MainWindow::~MainWindow()
     m_userDefinedRootMenus.clear();
 
     DELETE_AND_SET_NULL(m_userDefinedSignalMapper);
-    m_pHelpSystem = NULL;
+
+    if(m_pHelpSystem)
+    {
+        //delete m_pHelpSystem;
+        m_pHelpSystem = NULL;
+    }
 
     QMapIterator<QString, QWeakPointer<WidgetInfoBox> > i(m_infoBoxWidgets);
     while (i.hasNext()) 
