@@ -95,7 +95,7 @@ namespace ito
         (*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
 
     #define apiGetPluginWidget \
-        (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *, QWidget **)) ito::ITOM_API_FUNCS_GRAPH[11])
+        (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *, QWeakPointer<QWidget>*)) ito::ITOM_API_FUNCS_GRAPH[11])
 
     /** \} */
 

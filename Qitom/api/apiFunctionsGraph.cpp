@@ -363,7 +363,7 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QWidget **widget)
+ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QWeakPointer<QWidget> *widget)
 {
     ito::RetVal retval(ito::retOk);
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
