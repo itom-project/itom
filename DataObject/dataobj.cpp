@@ -898,7 +898,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
             {
                 if(continuousDataPtr)
                 {
-                    dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[0]), static_cast<int>(sizes[1]), (_Tp *)continuousDataPtr, steps[0]);
+                    dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[0]), static_cast<int>(sizes[1]), (_Tp *)continuousDataPtr, steps ? steps[0] : cv::Mat::AUTO_STEP);
                 }
                 else
                 {
@@ -937,7 +937,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                         dObj->mdata_realloc(numMats);
                         for (int n = 0; n < numMats; n++)
                         {
-                            dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]), (_Tp *)continuousDataPtr, steps[dimensions-2]);
+                            dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]), (_Tp *)continuousDataPtr, steps ? steps[dimensions-2] : cv::Mat::AUTO_STEP);
                             dObj->m_data[n] = reinterpret_cast<uchar *>(dataMat);
                             continuousDataPtr += matSize;
                         }
