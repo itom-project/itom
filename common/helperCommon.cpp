@@ -32,9 +32,6 @@
 #include <qstringlist.h>
 #include <qsharedpointer.h>
 
-
-
-
 namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -87,8 +84,6 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     //! brief returns a parameter from the parameter-vector, that fits to a specific name
     /*!
-        
-
         \param name description
         \return 
     */
@@ -439,10 +434,7 @@ namespace ito
             }
         }
 
-
         return retValue;
     }
-
-    
 
 } //end namespace ito

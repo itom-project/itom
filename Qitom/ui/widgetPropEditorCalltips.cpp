@@ -25,12 +25,14 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorCalltips::WidgetPropEditorCalltips(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorCalltips::~WidgetPropEditorCalltips()
 {
 }
@@ -40,8 +42,8 @@ void WidgetPropEditorCalltips::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
-    ui.groupCallTips->setChecked( settings.value("calltipsEnabled",true).toBool());
-    ui.spinNoOfCalltips->setValue( settings.value("calltipsNoVisible",3).toInt());
+    ui.groupCallTips->setChecked( settings.value("calltipsEnabled", true).toBool());
+    ui.spinNoOfCalltips->setValue( settings.value("calltipsNoVisible", 3).toInt());
 
     QString style = settings.value("calltipsStyle","NoContext").toString();
     ui.radioCalltipsContext1->setChecked( style == "NoContext" );
@@ -51,6 +53,7 @@ void WidgetPropEditorCalltips::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorCalltips::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -59,17 +62,17 @@ void WidgetPropEditorCalltips::writeSettings()
     settings.setValue("calltipsEnabled", ui.groupCallTips->isChecked());
     settings.setValue("calltipsNoVisible", ui.spinNoOfCalltips->value());
     
-    if(ui.radioCalltipsContext1->isChecked())
+    if (ui.radioCalltipsContext1->isChecked())
     {
-        settings.setValue("calltipsStyle","NoContext");
+        settings.setValue("calltipsStyle", "NoContext");
     }
-    else if(ui.radioCalltipsContext2->isChecked())
+    else if (ui.radioCalltipsContext2->isChecked())
     {
-        settings.setValue("calltipsStyle","NoAutoCompletionContext");
+        settings.setValue("calltipsStyle", "NoAutoCompletionContext");
     }
     else
     {
-        settings.setValue("calltipsStyle","Context");
+        settings.setValue("calltipsStyle", "Context");
     }
 
     settings.endGroup();

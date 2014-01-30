@@ -152,7 +152,7 @@ void MainApplication::setupApplication()
     for (int i = 0; i < s; ++i)
     {
         settings->setArrayIndex(i);
-        pathes.append( QDir::toNativeSeparators(settings->value("path", "").toString()) ); 
+        pathes.append(QDir::toNativeSeparators(settings->value("path", "").toString())); 
     }
 
     settings->endArray();
@@ -482,8 +482,8 @@ void MainApplication::finalizeApplication()
         waitCond->waitAndProcessEvents(-1);
 
         //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-        QCoreApplication::sendPostedEvents ();
-        QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+        QCoreApplication::sendPostedEvents();
+        QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
         QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
@@ -503,8 +503,8 @@ void MainApplication::finalizeApplication()
     AppManagement::setProcessOrganizer(NULL);
 
     //call further objects, which have been marked by "deleteLater" during this finalize method (partII)
-    QCoreApplication::sendPostedEvents ();
-    QCoreApplication::sendPostedEvents (NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+    QCoreApplication::sendPostedEvents();
+    QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
     QCoreApplication::processEvents();
 
     QString settingsName(AppManagement::getSettingsFile());

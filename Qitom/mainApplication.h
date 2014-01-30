@@ -23,8 +23,6 @@
 #ifndef MAINAPPLICATION_H
 #define MAINAPPLICATION_H
 
-
-
 #include "python/pythonEngineInc.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "organizer/paletteOrganizer.h"

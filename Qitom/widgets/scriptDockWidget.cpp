@@ -62,9 +62,14 @@ namespace ito {
     \return description
     \sa AbstractDockWidget::AbstractDockWidget
 */
-ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/)
-    : AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
-    m_tab(NULL), m_pWidgetFindWord(NULL), m_pDialogReplace(NULL), m_actTabIndex(-1), m_tabContextMenu(NULL), m_winMenu(NULL)
+ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/) :
+    AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
+    m_tab(NULL),
+    m_pWidgetFindWord(NULL),
+    m_pDialogReplace(NULL),
+    m_actTabIndex(-1),
+    m_tabContextMenu(NULL),
+    m_winMenu(NULL)
 {
     m_tab = new QTabWidgetItom(this);
 
@@ -130,7 +135,7 @@ ScriptDockWidget::~ScriptDockWidget()
     }
     disconnect(m_tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 
-    for (int i = m_tab->count()-1 ; i >= 0 ; i--)
+    for (int i = m_tab->count() - 1; i >= 0; i--)
     {
         closeTab(i, false);
     }
@@ -156,7 +161,7 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     QStringList list;
     ScriptEditorWidget* sew;
 
-    for (int i = 0; i < m_tab->count() ; i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         sew = getEditorByIndex(i);
         if (sew != NULL && sew->isModified() && i != excludeIndex)
@@ -344,7 +349,10 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
         QList<ScriptEditorWidget*>::iterator it;
         for (int i = 0; i < m_tab->count(); i++)
         {
-            if (i != excludeIndex) list.append(getEditorByIndex(i));
+            if (i != excludeIndex)
+            {
+                list.append(getEditorByIndex(i));
+            }
         }
 
         for (it = list.begin(); it != list.end(); ++it)
@@ -378,9 +386,9 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     }
     m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
     //!< activate appended tab
-    m_tab->setCurrentIndex(m_tab->count()-1);
-    m_tab->setTabToolTip(m_tab->count()-1, toolTip);
-    m_tab->setTabText(m_tab->count()-1,name);
+    m_tab->setCurrentIndex(m_tab->count() - 1);
+    m_tab->setTabToolTip(m_tab->count() - 1, toolTip);
+    m_tab->setTabText(m_tab->count() - 1, name);
     
     connect(editorWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     connect(editorWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
@@ -421,7 +429,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 
     if (index>0)
     {
-        m_tab->setCurrentIndex(index-1);
+        m_tab->setCurrentIndex(index - 1);
     }
     else
     {
@@ -441,7 +449,7 @@ bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (withou
     bool newScripts = false;
     ScriptEditorWidget *editorWidget;
 
-    for (int i = 0; i < m_tab->count() ; i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(i));
         if (editorWidget)
@@ -541,6 +549,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
     int index = getIndexByEditor(sew);
 
     RetVal retValue = closeTab(index, ignoreModifications);
+    // TODO: What to do with retValue???
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -639,7 +648,7 @@ int ScriptDockWidget::getIndexByEditor(ScriptEditorWidget* sew) const
     {
         return -1;
     }
-    for (int i = 0; i < m_tab->count() ; i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         if (getEditorByIndex(i) == sew)
         {
@@ -678,7 +687,6 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
             m_tab->setCurrentIndex(i);
             m_actTabIndex = i;
         }
-
     }
 
     m_tabContextMenu->exec(event->globalPos());
@@ -689,7 +697,7 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
 void ScriptDockWidget::updateEditorActions()
 {
     m_saveAllScriptsAction->setEnabled(false);
-    for (int i = 0; i < m_tab->count() ; i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         if (static_cast<ScriptEditorWidget *>(m_tab->widget(i))->isModified())
         {
@@ -771,7 +779,7 @@ void ScriptDockWidget::updatePythonActions()
 void ScriptDockWidget::updateTabContextActions()
 {
     bool notFirst = m_actTabIndex > 0;
-    bool notLast = m_actTabIndex > -1 && m_actTabIndex < m_tab->count()-1;
+    bool notLast = m_actTabIndex > -1 && m_actTabIndex < m_tab->count() - 1;
     bool tabExist = m_actTabIndex > -1;
     m_tabMoveLeftAction->setEnabled(notFirst);
     m_tabMoveRightAction->setEnabled(notLast);
@@ -780,7 +788,7 @@ void ScriptDockWidget::updateTabContextActions()
 
     m_tabCloseAction->setEnabled(tabExist);
     m_tabCloseAllAction->setEnabled(tabExist);
-    m_tabCloseOthersAction->setEnabled(tabExist && m_tab->count()>1);
+    m_tabCloseOthersAction->setEnabled(tabExist && m_tab->count() > 1);
 
     ScriptEditorWidget *sew = NULL;
     if (m_actTabIndex > -1)
@@ -859,10 +867,10 @@ void ScriptDockWidget::createActions()
     m_redoAction = new ShortcutAction(QIcon(":/editor/icons/editRedo.png"), tr("redo"), this, QKeySequence::Redo, Qt::WidgetWithChildrenShortcut);
     m_redoAction->connectTrigger(this, SLOT(mnuRedo()));
 
-    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("comment"), this, QKeySequence(tr("Ctrl+R","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("comment"), this, QKeySequence(tr("Ctrl+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_commentAction->connectTrigger(this, SLOT(mnuComment()));
 
-    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("uncomment"), this, QKeySequence(tr("Ctrl+Shift+R","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("uncomment"), this, QKeySequence(tr("Ctrl+Shift+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_uncommentAction->connectTrigger(this, SLOT(mnuUncomment()));
 
     m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("indent"), this);
@@ -871,40 +879,40 @@ void ScriptDockWidget::createActions()
     m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("unindent"), this);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
 
-    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run"), this, QKeySequence(tr("F5","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run"), this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
     m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("run selection"), this);
     m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
 
-    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
-    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F10","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F10", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
-    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("continue"), this, QKeySequence(tr("F6","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("continue"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptContinueAction->connectTrigger(this, SLOT(mnuScriptContinue()));
 
-    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("step"), this, QKeySequence(tr("F11","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("step"), this, QKeySequence(tr("F11", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepAction->connectTrigger(this, SLOT(mnuScriptStep()));
 
-    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this, QKeySequence(tr("F10","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this, QKeySequence(tr("F10", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepOverAction->connectTrigger(this, SLOT(mnuScriptStepOver()));
 
-    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this, QKeySequence(tr("Shift+F11","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this, QKeySequence(tr("Shift+F11", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStepOutAction->connectTrigger(this, SLOT(mnuScriptStepOut()));
 
     m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("quick search..."), this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 
-    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
 
-    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon &browser..."),this, QKeySequence(tr("Ctrl+B","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("icon &browser..."),this, QKeySequence(tr("Ctrl+B", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_openIconBrowser->connectTrigger(this, SLOT(mnuOpenIconBrowser()));
 
-    m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G","QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_gotoAction = new ShortcutAction(QIcon(), tr("goto..."), this, QKeySequence(tr("Ctrl+G", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_gotoAction->connectTrigger(this, SLOT(mnuGoto()));
 
     m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&toggle bookmark"), this);
@@ -1104,7 +1112,7 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
     filename = finfo1.canonicalFilePath().toLower();
     QFileInfo finfo2;
 
-    for (int i = 0 ; i < m_tab->count() ; i++)
+    for (int i = 0; i < m_tab->count(); i++)
     {
         sew = static_cast<ScriptEditorWidget *>(m_tab->widget(i));
 
@@ -1113,12 +1121,12 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
             finfo2.setFile(sew->getFilename());
             temp = finfo1.canonicalFilePath().toLower();
                 temp2 = finfo2.canonicalFilePath().toLower();
-            if (filename== finfo2.canonicalFilePath().toLower())
+            if (filename == finfo2.canonicalFilePath().toLower())
             {
                 m_tab->setCurrentIndex(i);
                 raiseAndActivate();
 
-                if (line>=0)
+                if (line >= 0)
                 {
                     sew->pythonDebugPositionChanged(filename, line);
                 }
@@ -1133,10 +1141,10 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptDockWidget::activeTabEnsureLineVisible(int lineNr)
 {
-    if(m_actTabIndex >= 0)
+    if (m_actTabIndex >= 0)
     {
         ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
-        if(sew)
+        if (sew)
         {
             sew->setCursorPosAndEnsureVisible(lineNr);
             return true;
@@ -1152,7 +1160,7 @@ void ScriptDockWidget::mnuTabMoveLeft()
 {
     if (m_actTabIndex > 0)
     {
-        m_tab->getTabBar()->moveTab(m_actTabIndex,m_actTabIndex-1);
+        m_tab->getTabBar()->moveTab(m_actTabIndex, m_actTabIndex - 1);
     }
 }
 
@@ -1160,9 +1168,9 @@ void ScriptDockWidget::mnuTabMoveLeft()
 //! moves active tab by one position to the right
 void ScriptDockWidget::mnuTabMoveRight()
 {
-    if (m_actTabIndex < m_tab->count()-1)
+    if (m_actTabIndex < m_tab->count() - 1)
     {
-        m_tab->getTabBar()->moveTab(m_actTabIndex,m_actTabIndex+1);
+        m_tab->getTabBar()->moveTab(m_actTabIndex, m_actTabIndex + 1);
     }
 }
 
@@ -1185,7 +1193,7 @@ void ScriptDockWidget::mnuTabMoveFirst()
 {
     if (m_actTabIndex >= 0)
     {
-       m_tab->getTabBar()->moveTab(m_actTabIndex,0);
+       m_tab->getTabBar()->moveTab(m_actTabIndex, 0);
     }
 }
 
@@ -1193,9 +1201,9 @@ void ScriptDockWidget::mnuTabMoveFirst()
 //! moves active tab to the last position
 void ScriptDockWidget::mnuTabMoveLast()
 {
-    if (m_actTabIndex <= m_tab->count()-1)
+    if (m_actTabIndex <= m_tab->count() - 1)
     {
-        m_tab->getTabBar()->moveTab(m_actTabIndex,m_tab->count()-1);
+        m_tab->getTabBar()->moveTab(m_actTabIndex, m_tab->count() - 1);
     }
 }
 
@@ -1213,14 +1221,14 @@ void ScriptDockWidget::mnuTabClose()
 //! closes every tab besides active one (asks for saving tabs, which should be closed)
 void ScriptDockWidget::mnuTabCloseOthers()
 {
-    closeAllScripts(true,true,false,m_actTabIndex);
+    closeAllScripts(true, true, false, m_actTabIndex);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! closes every tab, asks for saving first
 void ScriptDockWidget::mnuTabCloseAll()
 {
-    closeAllScripts(true,true,false);
+    closeAllScripts(true, true, false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1280,7 +1288,7 @@ void ScriptDockWidget::mnuSaveAllScripts()
 {
     ScriptEditorWidget *sew;
     RetVal retValue(retOk);
-    for (int i = 0 ; i < m_tab->count() && !retValue.containsError() ; i++)
+    for (int i = 0; i < m_tab->count() && !retValue.containsError(); i++)
     {
         sew = getEditorByIndex(m_actTabIndex);
         if (sew != NULL)
@@ -1478,7 +1486,7 @@ void ScriptDockWidget::mnuScriptStop()
         emit (pythonDebugCommand(ito::pyDbgQuit));
         //activateWindow(); (if you uncomment this line,the script window will always dissappear in the background - that's a little bit crazy, therefore don't activate it here)
     }
-    else if(PythonEngine::getInstance())
+    else if (PythonEngine::getInstance())
     {
         PythonEngine::getInstance()->pythonInterruptExecution();
     }
@@ -1584,20 +1592,20 @@ void ScriptDockWidget::mnuGoto()
     int curIndex;
     sew->getCursorPosition(&curLine,&curIndex);
 
-    DialogGoto *d = new DialogGoto(sew->lines(),curLine+1,sew->length(),sew->positionFromLineIndex(curLine,curIndex), getCanvas());
+    DialogGoto *d = new DialogGoto(sew->lines(), curLine + 1, sew->length(), sew->positionFromLineIndex(curLine, curIndex), getCanvas());
     
-    if(d->exec())
+    if (d->exec())
     {
         d->getData(lineNotChar,curValue);
-        if(lineNotChar)
+        if (lineNotChar)
         {
-            sew->setCursorPosAndEnsureVisible(curValue-1);
+            sew->setCursorPosAndEnsureVisible(curValue - 1);
         }
         else
         {
-            sew->lineIndexFromPosition(curValue,&curLine,&curIndex);
+            sew->lineIndexFromPosition(curValue, &curLine, &curIndex);
             sew->setCursorPosAndEnsureVisible(curLine);
-            sew->setCursorPosition(curLine,curIndex);
+            sew->setCursorPosition(curLine, curIndex);
         }
     }
     DELETE_AND_SET_NULL(d);
@@ -1687,7 +1695,7 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
 
         if (isQuickSeach)
         {
-            QMetaObject::invokeMethod(m_pWidgetFindWord,"setSuccessState",Q_ARG(bool,success));
+            QMetaObject::invokeMethod(m_pWidgetFindWord, "setSuccessState", Q_ARG(bool,success));
         }
         else
         {

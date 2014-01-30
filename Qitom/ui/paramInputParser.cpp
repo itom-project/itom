@@ -28,7 +28,7 @@
 
 namespace ito {
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ParamInputParser::ParamInputParser(QWidget *canvas) :
     QObject(canvas)
 {
@@ -39,20 +39,22 @@ ParamInputParser::ParamInputParser(QWidget *canvas) :
     connect(m_pSignalMapper, SIGNAL(mapped(int)), this, SLOT(browsePluginPicker(int)));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ParamInputParser::~ParamInputParser()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
 {
     ito::RetVal retValue;
     QWidget *parent = m_canvas.data();
-    if(parent == NULL)
+    if (parent == NULL)
     {
-        return ito::RetVal(ito::retError,0,tr("Canvas widget does not exist any more").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
     }
 
-    if(parent->layout())
+    if (parent->layout())
     {
         delete parent->layout();
     }
@@ -70,12 +72,12 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
 
     m_internalData.resize(params.size());
 
-    foreach(const ito::Param &param, params)
+    foreach (const ito::Param &param, params)
     {
         m_lblInfo = new QLabel(parent);
         m_lblInfo->setMaximumSize(24,24);
-        m_lblInfo->setPixmap( m_iconInfo.pixmap(16,16) );
-        m_lblInfo->setToolTip( param.getInfo() );
+        m_lblInfo->setPixmap(m_iconInfo.pixmap(16,16));
+        m_lblInfo->setToolTip(param.getInfo());
 
         m_lblName = new QLabel(QString(param.getName()).append(":"), parent);
         m_lblType = new QLabel(parent);
@@ -119,7 +121,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
             m_content->setEnabled(false);
         }
 
-        gridLayout->addWidget( m_lblName, i, 0);
+        gridLayout->addWidget(m_lblName, i, 0);
         gridLayout->addWidget(m_content, i, 1);
         gridLayout->addWidget(m_lblType, i, 2);
         gridLayout->addWidget(m_lblInfo, i, 3);
@@ -133,17 +135,17 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
     return retValue;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue, bool showMessages /*= false*/)
 {
     QWidget *parent = m_canvas.data();
-    if(parent == NULL)
+    if (parent == NULL)
     {
-        retValue += ito::RetVal(ito::retError,0,tr("Canvas widget does not exist any more").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
         return false;
     }
 
-    int i=0;
+    int i = 0;
     QGridLayout *gridLayout = NULL;
     ito::ParamBase tempParam;
     QVBoxLayout *temp = qobject_cast<QVBoxLayout*>(parent->layout());
@@ -155,7 +157,7 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
         return false;
     }
 
-    foreach(const ito::Param &param, m_params)
+    foreach (const ito::Param &param, m_params)
     {        
         //copy orgParams to params
         tempParam =  ito::ParamBase(param);
@@ -181,14 +183,14 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
             break;
         }
 
-        if(retValue.containsError())
+        if (retValue.containsError())
         {
-            if(showMessages)
+            if (showMessages)
             {
-                QString text = QString( tr("The parameter '%1' is invalid.") ).arg(param.getName());
-                if(retValue.errorMessage())
+                QString text = QString(tr("The parameter '%1' is invalid.")).arg(param.getName());
+                if (retValue.errorMessage())
                 {
-                    text.append("\n\n").append( retValue.errorMessage() );
+                    text.append("\n\n").append(retValue.errorMessage());
                 }
                 QMessageBox::critical(parent, tr("Invalid input"), text);
             }
@@ -204,17 +206,17 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
     return true;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
 {
     ito::RetVal retValue;
     QWidget *parent = m_canvas.data();
-    if(parent == NULL)
+    if (parent == NULL)
     {
-        return ito::RetVal(ito::retError,0,tr("Canvas widget does not exist any more").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
     }
 
-    int i=0;
+    int i = 0;
     QGridLayout *gridLayout = NULL;
     ito::ParamBase tempParam;
     QVBoxLayout *temp = qobject_cast<QVBoxLayout*>(parent->layout());
@@ -227,7 +229,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
         return retValue;
     }
 
-    foreach(const ito::Param &param, m_params)
+    foreach (const ito::Param &param, m_params)
     {
         //copy orgParams to params
         tempParam =  ito::ParamBase(param);
@@ -260,104 +262,107 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
     return retValue;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeInt(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     const ito::IntMeta *meta = static_cast<const ito::IntMeta*>(param.getMeta());
-    if(meta && meta->getMin() == 0 && meta->getMax() == 1)
+    if (meta && meta->getMin() == 0 && meta->getMax() == 1)
     {
         //special case, we use a checkbox instead of the spinbox
         QCheckBox *box = new QCheckBox(parent);
-        box->setToolTip( tr("checked: 1, unchecked: 0") );
-        box->setChecked( param.getVal<int>() > 0 );
+        box->setToolTip(tr("checked: 1, unchecked: 0"));
+        box->setChecked(param.getVal<int>() > 0);
         return box;
     }
     else
     {
         QSpinBox *box = new QSpinBox(parent);
         
-        if(meta)
+        if (meta)
         {
-            box->setMinimum( meta->getMin() );
-            box->setMaximum( meta->getMax() );
+            box->setMinimum(meta->getMin());
+            box->setMaximum(meta->getMax());
             box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
         }
         else
         {
-            box->setMinimum( std::numeric_limits<int>::min() );
-            box->setMaximum( std::numeric_limits<int>::max() );
+            box->setMinimum(std::numeric_limits<int>::min());
+            box->setMaximum(std::numeric_limits<int>::max());
             box->setToolTip("unlimited");
         }
 
-        box->setValue( const_cast<ito::Param&>(param).getVal<int>() );
+        box->setValue(const_cast<ito::Param&>(param).getVal<int>());
 
         return box;
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     QSpinBox *box = new QSpinBox(parent);
     
     const ito::CharMeta *meta = static_cast<const ito::CharMeta*>(param.getMeta());
-    if(meta)
+    if (meta)
     {
-        box->setMinimum( meta->getMin() );
-        box->setMaximum( meta->getMax() );
+        box->setMinimum(meta->getMin());
+        box->setMaximum(meta->getMax());
         box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
     }
     else
     {
-        box->setMinimum( std::numeric_limits<char>::min() );
-        box->setMaximum( std::numeric_limits<char>::max() );
+        box->setMinimum(std::numeric_limits<char>::min());
+        box->setMaximum(std::numeric_limits<char>::max());
         box->setToolTip("unlimited");
     }
 
-    box->setValue( const_cast<ito::Param&>(param).getVal<int>() );
+    box->setValue(const_cast<ito::Param&>(param).getVal<int>());
 
     return box;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     QDoubleSpinBox *box = new QDoubleSpinBox(parent);
     
     const ito::DoubleMeta *meta = static_cast<const ito::DoubleMeta*>(param.getMeta());
-    if(meta)
+    if (meta)
     {
-        box->setMinimum( meta->getMin() );
-        box->setMaximum( meta->getMax() );
+        box->setMinimum(meta->getMin());
+        box->setMaximum(meta->getMax());
         box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
     }
     else
     {
-        box->setMinimum( std::numeric_limits<double>::min() );
-        box->setMaximum( std::numeric_limits<double>::max() );
+        box->setMinimum(std::numeric_limits<double>::min());
+        box->setMaximum(std::numeric_limits<double>::max());
         box->setToolTip("unlimited");
     }
 
-    box->setValue( const_cast<ito::Param&>(param).getVal<double>() );
+    box->setValue(const_cast<ito::Param&>(param).getVal<double>());
 
     return box;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     const ito::StringMeta *meta = static_cast<const ito::StringMeta*>(param.getMeta());
 
-    if(meta && meta->getStringType() == ito::StringMeta::String && meta->getLen() > 0)
+    if (meta && meta->getStringType() == ito::StringMeta::String && meta->getLen() > 0)
     {
         QComboBox *cmb = new QComboBox(parent);
         int cur = -1;
-        for(int i=0;i<meta->getLen();i++)
+        for (int i = 0; i < meta->getLen(); i++)
         {
-            cmb->addItem( meta->getString(i) );
-            if(param.getVal<char*>() && strcmp(param.getVal<char*>(), meta->getString(i))==0)
+            cmb->addItem(meta->getString(i));
+            if (param.getVal<char*>() && strcmp(param.getVal<char*>(), meta->getString(i)) == 0)
             {
                 cur = i;
             }
         }
-        if(cur >= 0)
+        if (cur >= 0)
         {
             cmb->setCurrentIndex(cur);
         }
@@ -367,44 +372,45 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
     {
         QLineEdit *txt = new QLineEdit(parent);
         QString value = const_cast<ito::Param&>(param).getVal<char*>();
-        value.replace('\r',"\\r");
-        value.replace('\n',"\\n");
-        value.replace('\t',"\\t");
-        value.replace('\\',"\\");
+        value.replace('\r', "\\r");
+        value.replace('\n', "\\n");
+        value.replace('\t', "\\t");
+        value.replace('\\', "\\");
 
-        if(meta && meta->getStringType() == ito::StringMeta::Wildcard && meta->getLen() > 0)
+        if (meta && meta->getStringType() == ito::StringMeta::Wildcard && meta->getLen() > 0)
         {
-            if(meta->getLen() == 1)
+            if (meta->getLen() == 1)
             {
                 QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::Wildcard);
-                txt->setValidator( new QRegExpValidator(reg, txt) );
+                txt->setValidator(new QRegExpValidator(reg, txt));
                 QString toolTip = tr("%1 [Wildcard]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }
         }
-        else if(meta && meta->getStringType() == ito::StringMeta::RegExp && meta->getLen() > 0)
+        else if (meta && meta->getStringType() == ito::StringMeta::RegExp && meta->getLen() > 0)
         {
-            if(meta->getLen() == 1)
+            if (meta->getLen() == 1)
             {
                 QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::RegExp);
-                txt->setValidator( new QRegExpValidator(reg, txt) );
+                txt->setValidator(new QRegExpValidator(reg, txt));
                 QString toolTip = tr("%1 [Regular Expression]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }
         }
 
-        txt->setText( value );
+        txt->setText(value);
         return txt;
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
 {
     QWidget *container = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout();
     QLineEdit *txt = new QLineEdit(container);
-    txt->setObjectName( QString("HWRef_%1").arg(virtualIndex));
-    txt->setText( tr("[None]") );
+    txt->setObjectName(QString("HWRef_%1").arg(virtualIndex));
+    txt->setText(tr("[None]"));
     txt->setEnabled(false);
 
     QToolButton *tool = new QToolButton(container);
@@ -414,7 +420,7 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
 
     layout->addWidget(txt);
     layout->addWidget(tool);
-    layout->setContentsMargins(0,0,0,0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
     container->setLayout(layout);
@@ -422,6 +428,7 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
     return container;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
@@ -429,11 +436,11 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
     if (box == NULL)
     {
         QCheckBox *c = qobject_cast<QCheckBox*>(contentWidget);
-        if(c)
+        if (c)
         {
-            int val = c->isChecked()?1:0;
-            retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()) , val );
-            if(!retVal.containsError())
+            int val = c->isChecked() ? 1 : 0;
+            retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()), val);
+            if (!retVal.containsError())
             {
                 param.setVal<int>(val);
             }
@@ -445,9 +452,9 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
     }
     else
     {
-        retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()) , box->value());
+        retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()), box->value());
 
-        if(!retVal.containsError())
+        if (!retVal.containsError())
         {
             param.setVal<int>(box->value());
         }
@@ -456,6 +463,7 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
     return retVal;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
@@ -465,15 +473,16 @@ ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Par
         return ito::RetVal(ito::retError, 0, tr("QT error: Spin box widget could not be found").toAscii().data());
     }
     
-    retVal += ito::ParamHelper::validateCharMeta(static_cast<const ito::CharMeta*>(orgParam.getMeta()) , box->value());
+    retVal += ito::ParamHelper::validateCharMeta(static_cast<const ito::CharMeta*>(orgParam.getMeta()), box->value());
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
         param.setVal<char>(box->value());
     }
     return retVal;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool /*mandatory*/)
 {
     ito::RetVal retVal;
@@ -483,15 +492,16 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
         return ito::RetVal(ito::retError, 0, tr("QT error: Double spin box widget could not be found").toAscii().data());
     }
 
-    retVal += ito::ParamHelper::validateDoubleMeta(static_cast<const ito::DoubleMeta*>(orgParam.getMeta()) , box->value());
+    retVal += ito::ParamHelper::validateDoubleMeta(static_cast<const ito::DoubleMeta*>(orgParam.getMeta()), box->value());
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
         param.setVal<int>(box->value());
     }
     return retVal;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void* /*internalData*/, bool mandatory)
 {
     ito::RetVal retVal;
@@ -500,7 +510,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
     if (txt == NULL)
     {
         QComboBox *cmb = qobject_cast<QComboBox*>(contentWidget);
-        if(cmb == NULL)
+        if (cmb == NULL)
         {
             return ito::RetVal(ito::retError, 0, tr("QT error: String input widget could not be found").toAscii().data());
         }
@@ -511,15 +521,15 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
         string = txt->text();
     }
 
-    retVal += ito::ParamHelper::validateStringMeta(static_cast<const ito::StringMeta*>(orgParam.getMeta()) , string.toAscii().data(), mandatory);
+    retVal += ito::ParamHelper::validateStringMeta(static_cast<const ito::StringMeta*>(orgParam.getMeta()), string.toAscii().data(), mandatory);
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
-        string.replace("\\\\","#~!?üü@@?!~#");
-        string.replace("\\n","\n");
-        string.replace("\\r","\r");
-        string.replace("\\t","\t");
-        string.replace("#~!?üü@@?!~#","\\");
+        string.replace("\\\\", "#~!?üü@@?!~#");
+        string.replace("\\n", "\n");
+        string.replace("\\r", "\r");
+        string.replace("\\t", "\t");
+        string.replace("#~!?üü@@?!~#", "\\");
         QByteArray ba = string.toAscii();
         char *temp = ba.data();
         param.setVal<char*>(temp);
@@ -527,16 +537,18 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
     return retVal;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::getHWValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget* /*contentWidget*/, void* internalData, bool mandatory)
 {
     ito::RetVal retValue = ito::ParamHelper::validateHWMeta(static_cast<const ito::HWMeta*>(orgParam.getMeta()), (ito::AddInBase*)internalData, mandatory);
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         param.setVal<void*>(internalData);
     }
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void ParamInputParser::browsePluginPicker(int i)
 {
     ito::AddInBase *aib = NULL;
@@ -548,9 +560,9 @@ void ParamInputParser::browsePluginPicker(int i)
     ito::HWMeta* hwmeta = static_cast<ito::HWMeta*>(p.getMeta());
     QString pluginName = QString::Null();
     int minimumPluginType = 0x0;
-    if(hwmeta)
+    if (hwmeta)
     {
-        if(hwmeta->getHWAddInName())
+        if (hwmeta->getHWAddInName())
         {
             pluginName = hwmeta->getHWAddInName();
         }
@@ -558,9 +570,8 @@ void ParamInputParser::browsePluginPicker(int i)
     }
 
     QWidget *canvas = m_canvas.data();
-    if(canvas)
+    if (canvas)
     {
-
         DialogPluginPicker *dialog = new DialogPluginPicker(true, aib, minimumPluginType, pluginName, canvas);
 
         if (dialog->exec() == 1) //accepted
@@ -569,29 +580,26 @@ void ParamInputParser::browsePluginPicker(int i)
             m_internalData[i] = (void*)aib;
 
             QString name = QString("HWRef_%1").arg(i);
-            QLineEdit *le = canvas->findChild<QLineEdit*>( name );
+            QLineEdit *le = canvas->findChild<QLineEdit*>(name);
             if (le && aib)
             {
-                if(aib->getIdentifier() != "")
+                if (aib->getIdentifier() != "")
                 {
-                    le->setText( QString("%1, Identifier: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getIdentifier()) );
+                    le->setText(QString("%1, Identifier: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getIdentifier()));
                 }
                 else
                 {
-                    le->setText( QString("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()) );
+                    le->setText(QString("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()));
                 }
             }
             else if (le && !aib)
             {
-                le->setText( "[None]" );
+                le->setText("[None]");
             }
-
         }
 
         DELETE_AND_SET_NULL(dialog);
     }
-
-    
 }
 
 } //end namespace ito

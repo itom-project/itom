@@ -25,9 +25,7 @@
 #include "../models/leafFilterProxyModel.h"
 #include "../AppManagement.h"
 
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 // on_start
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WFlags flags)
     : QWidget(parent, flags),
@@ -56,7 +54,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     ui.textBrowser->installEventFilter(this);
 
     m_previewMovie = new QMovie(":/application/icons/loader32x32trans.gif", QByteArray(), this);
-    ui.lblProcessMovie->setMovie( m_previewMovie );
+    ui.lblProcessMovie->setMovie(m_previewMovie);
     ui.lblProcessMovie->setVisible(false);
     ui.lblProcessText->setVisible(false);
 
@@ -73,7 +71,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     iconAliasesName << "class" << "const" << "routine" << "module" << "package" << "unknown" << "link_unknown" << "link_class" << "link_const" << "link_module" << "link_package" << "link_routine";
     iconAliasesNumb << 04      << 06      << 05        << 03       << 02        << 00        << 11             << 14           << 16           << 13            << 12             << 15;
     int i = 0;
-    foreach(const QString &icon, iconAliasesName)
+    foreach (const QString &icon, iconAliasesName)
     {
         m_iconGallery[iconAliasesNumb[i]] = QIcon(":/helpTreeDockWidget/"+icon);
         i++;
@@ -82,7 +80,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_iconGallery[100] = QIcon(":/helpTreeDockWidget/filter");
     m_iconGallery[101] = QIcon(":/helpTreeDockWidget/dll");
     m_iconGallery[102] = QIcon(":/helpTreeDockWidget/singlefilter");
-    //ui.textBrowser->setLineWrapMode( QTextEdit::NoWrap );
+    //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -107,13 +105,13 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model, const QMap<
 
     // Main Node zusammenbauen
     QStandardItem *mainNode = new QStandardItem("Filter");
-    mainNode->setIcon( iconGallery->value(100) );
+    mainNode->setIcon(iconGallery->value(100));
 
     // Listen aller Filter abholen
     const QHash  <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
     
     // Ueber die Liste itterieren
-    QHash<QString , ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
     while (i != filterHashTable->constEnd()) 
     {
         if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
@@ -121,8 +119,8 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model, const QMap<
             QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
             plugin->setEditable(false);
             plugin->setData(typeFPlugin, urType);
-            plugin->setIcon( iconGallery->value(101) );
-            plugin->setToolTip(i.value()->m_pBasePlugin->getFilename()+"; v"+QString::number(i.value()->m_pBasePlugin->getVersion()));
+            plugin->setIcon(iconGallery->value(101));
+            plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
             plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
             mainNode->appendRow(plugin);
         }
@@ -136,7 +134,7 @@ void HelpTreeDockWidget::createFilterNode(QStandardItemModel* model, const QMap<
         test->appendRow(filter);
         ++i;
     }
-    model->insertRow(0,mainNode);
+    model->insertRow(0, mainNode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -152,7 +150,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     if (file.open(QIODevice::ReadOnly))
     {
         QByteArray cssData = file.readAll();
-        ui.textBrowser->document()->addResource( QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData) );
+        ui.textBrowser->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
         file.close();
     }
     // Standard html laden
@@ -194,20 +192,23 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     splittedLink.append(filtername);
     linkNav.insert(0,">>"+splittedLink[splittedLink.length()-1]);
-    for (int i = splittedLink.length()-2; i > -1; i--)
+    for (int i = splittedLink.length() - 2; i > -1; i--)
     {
         QString linkPath;
-        for (int j = 0; j<=i; j++)
-            linkPath.append(splittedLink.mid(0,i+1)[j]+".");
+        for (int j = 0; j <= i; j++)
+        {
+            linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
+        }
         if (linkPath.right(1) == ".")
-            linkPath = linkPath.left(linkPath.length()-1);
-        linkNav.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkPath+"\">"+splittedLink[i]+"</a>");
+        {
+            linkPath = linkPath.left(linkPath.length() - 1);
+        }
+        linkNav.insert(0, ">> <a id=\"HiLink\" href=\"itom://" + linkPath + "\">" + splittedLink[i] + "</a>");
     }
-    docString.replace("%BREADCRUMB%",linkNav);
+    docString.replace("%BREADCRUMB%", linkNav);
 
     // Titel einfügen
     // -------------------------------------
-    
     
     //search for sections
     QString parameterSection;
@@ -223,11 +224,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, "Template Error: Returns section is only defined by either the start or end tag.");
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toAscii().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, "Template Error: End tag of returns section comes before start tag.");
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toAscii().data());
     }
     else
     {
@@ -245,11 +246,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, "Template Error: Parameters section is only defined by either the start or end tag.");
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toAscii().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, "Template Error: End tag of parameters section comes before start tag.");
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toAscii().data());
     }
     else
     {
@@ -294,7 +295,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError,0,tr("Unknown filter name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filtername).toAscii().data());
                 }
                 break;
             }
@@ -331,7 +332,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError,0,tr("Unknown widget name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown widget name '%1'").arg(filtername).toAscii().data());
                 }
                 break;
             }
@@ -352,19 +353,19 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 if (aib)
                 {
                     docString.replace("%NAME%", aib->objectName());
-                    docString.replace("%INFO%",parseFilterContent(aib->getDescription()));
+                    docString.replace("%INFO%", parseFilterContent(aib->getDescription()));
 
                     parameterSection = "";
                     returnsSection = "";
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError,0,tr("Unknown algorithm plugin with name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filtername).toAscii().data());
                 }
                 break;
             }
             default:
-                retval += ito::RetVal(ito::retError,0,tr("unknown type").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("unknown type").toAscii().data());
                 break;
         }
 
@@ -407,11 +408,11 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, "Template Error: %s section is only defined by either the start or end tag.", sectionname.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: %s section is only defined by either the start or end tag.").toAscii().data(), sectionname.toAscii().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, "Template Error: End tag of %s section comes before start tag.", sectionname.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: End tag of %s section comes before start tag.").toAscii().data(), sectionname.toAscii().data());
     }
     else
     {
@@ -423,7 +424,7 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
 
         foreach(const ito::Param &p, paramVector)
         {
-            internalContent.append( parseParam(rowContent, p) );
+            internalContent.append(parseParam(rowContent, p));
         }
 
         content.replace(insertString, internalContent);
@@ -598,12 +599,12 @@ void HelpTreeDockWidget::propertiesChanged()
     int urPath = Qt::UserRole + 1;
     int urType = Qt::UserRole + 2;
 
-    while( items.count() > 0)
+    while(items.count() > 0)
     {
         firstItem = items[0];
         //splitt = firstItem.split(':');
 
-        if(firstItem.prefix == parentPath) //first item is direct child of parent
+        if (firstItem.prefix == parentPath) //first item is direct child of parent
         {    
             items.removeFirst();
             QStandardItem *node = new QStandardItem(firstItem.name);
@@ -623,7 +624,7 @@ void HelpTreeDockWidget::propertiesChanged()
             createItemRek(model, *node, firstItem.path, items, iconGallery);
             parent.appendRow(node);
         }
-        else if(firstItem.prefix.indexOf( parentPath ) == 0) //parentPath is the first part of path
+        else if (firstItem.prefix.indexOf(parentPath) == 0) //parentPath is the first part of path
         {
             items.removeFirst();
             int li = firstItem.prefix.lastIndexOf(".");
@@ -654,15 +655,15 @@ void HelpTreeDockWidget::propertiesChanged()
 /*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<SqlItem> &items)
 {
     ito::RetVal retval = ito::retOk;
-    QFile f( file );
+    QFile f(file);
     SqlItem item;
   
-    if( f.exists() )
+    if (f.exists())
     {
         QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",file); //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
         database.setDatabaseName(file);
         bool ok = database.open();
-        if(ok)
+        if (ok)
         {
             //QSqlQuery query("SELECT type, prefix, prefixL, name FROM itomCTL ORDER BY prefix", database);
             QSqlQuery query("SELECT type, prefix, name FROM itomCTL ORDER BY prefix", database);
@@ -672,7 +673,7 @@ void HelpTreeDockWidget::propertiesChanged()
                 item.type = query.value(0).toInt();
                 item.path = query.value(1).toString();
                 int li = query.value(1).toString().lastIndexOf(".");
-                if(li >= 0)
+                if (li >= 0)
                 {
                     item.prefix = query.value(1).toString().left(li);
                     item.name = query.value(1).toString().mid(li+1);
@@ -688,13 +689,13 @@ void HelpTreeDockWidget::propertiesChanged()
         }
         else
         {
-            retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be opened", file.toAscii().data());
+            retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be opened").toAscii().data(), file.toAscii().data());
         }
         database.close();
     }
     else
     {
-        retval += ito::RetVal::format(ito::retWarning,0,"Database %s could not be found", file.toAscii().data());
+        retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be found").toAscii().data(), file.toAscii().data());
     }    
     QSqlDatabase::removeDatabase(file);
     return retval;
@@ -792,9 +793,9 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
 // ERROR decides whether it´s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
-ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText /*= true*/)
+ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText /*= true*/)
 {
-    QString errorS = error.left(error.indexOf(" ",0));
+    QString errorS = error.left(error.indexOf(" ", 0));
     int errorCode = errorS.toInt();
     QStringList errorList;
 
@@ -833,15 +834,15 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
     // Prefix als Navigations-Links einfuegen
     // -------------------------------------
     QStringList splittedLink = prefix.split(".");
-    rawContent.insert(0,">>"+splittedLink[splittedLink.length()-1]);
-    for (int i = splittedLink.length()-2; i > -1; i--)
+    rawContent.insert(0, ">>" + splittedLink[splittedLink.length() - 1]);
+    for (int i = splittedLink.length() - 2; i > -1; i--)
     {
         QString linkPath;
-        for (int j = 0; j<=i; j++)
-            linkPath.append(splittedLink.mid(0,i+1)[j]+".");
+        for (int j = 0; j <= i; j++)
+            linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
         if (linkPath.right(1) == ".")
-            linkPath = linkPath.left(linkPath.length()-1);
-        rawContent.insert(0,">> <a id=\"HiLink\" href=\"itom://"+linkPath+"\">"+splittedLink[i]+"</a>");
+            linkPath = linkPath.left(linkPath.length() - 1);
+        rawContent.insert(0, ">> <a id=\"HiLink\" href=\"itom://" + linkPath + "\">" + splittedLink[i] + "</a>");
     }
 
     // Insert docstring
@@ -852,7 +853,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
         if (file.open(QIODevice::ReadOnly))
         {
             QByteArray cssData = file.readAll();
-            document->addResource( QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData) );
+            document->addResource(QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData));
             file.close();
         }
         // Remake "See Also"-Section so that the links work
@@ -883,18 +884,18 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
 
         // Build the new Section with Headings, Links, etc
         QString newSection = "<p class=\"rubric\">See Also</p><p>";
-        for (int i = 0; i<texts.length(); i++)
+        for (int i = 0; i < texts.length(); i++)
         {
-            newSection.append("\n<a id=\"HiLink\" href=\"itom://"+prefix.left(prefix.lastIndexOf('.'))+"."+texts[i]+"\">"+texts[i].remove('`')+"</a>, ");
+            newSection.append("\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
         }
-        newSection = newSection.left(newSection.length()-2);
+        newSection = newSection.left(newSection.length() - 2);
         newSection.append("\n</p>");
 
         // Exchange old Section against new one
         rawContent.remove(seeAlso.pos(), seeAlso.matchedLength());
         rawContent.insert(seeAlso.pos(), newSection);
 
-        document->setHtml( html.arg(rawContent) );
+        document->setHtml(html.arg(rawContent));
         
         //dummy output (write last loaded Plaintext into html-File)
         QFile file2("helpOutput.html");
@@ -905,7 +906,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix , const Q
     else
     {   // Only for debug reasons! Displays the Plaintext instead of the html
         rawContent.replace("<br/>","<br/>\n");
-        document->setPlainText( html.arg(rawContent) );
+        document->setPlainText(html.arg(rawContent));
     }
     return ito::retOk;
 }
@@ -927,7 +928,7 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
     while(it.hasNext() && !found)
     {
         QString temp = it.next();
-        if (m_includedDBs.contains(temp.right(temp.length()-m_dbPath.length()-1)))
+        if (m_includedDBs.contains(temp.right(temp.length() - m_dbPath.length() - 1)))
         {
             QFile file(temp);
         
@@ -935,12 +936,12 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
             {
                 { //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
                     // display the help: Run through all the files in the directory
-                    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE",temp);
+                    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", temp);
                     database.setDatabaseName(temp);
                     ok = database.open();
                     if (ok)
                     {
-                        QSqlQuery query("SELECT type, prefix, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE LOWER(prefix) IS '"+path.toUtf8().toLower()+"'", database);
+                        QSqlQuery query("SELECT type, prefix, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE LOWER(prefix) IS '" + path.toUtf8().toLower() + "'", database);
                         query.exec();
                         found = query.next();
                         if (found)
@@ -1043,12 +1044,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     QRegExp maillink(QString("^(mailto):(.*)"));
     QRegExp itomlink(QString("^([A-Za-z0-9]+)://(.*)"));
     
-    if (maillink.indexIn(link.toEncoded(),0) != -1)
+    if (maillink.indexIn(link.toEncoded(), 0) != -1)
     {
         result.append(maillink.cap(1));
         result.append(link.toEncoded());
     }
-    else if (itomlink.indexIn(link.toEncoded(),0) != -1)
+    else if (itomlink.indexIn(link.toEncoded(), 0) != -1)
     {
         result.append(itomlink.cap(1));
         result.append(itomlink.cap(2));
@@ -1057,7 +1058,6 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
         result.append("-1");
     return result;
 }
-
 
 
 /*************************************************************/
@@ -1087,8 +1087,8 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     QStringList parts = separateLink(link.toString());
     if (parts[0] == "itom")
     {
-        displayHelp( parts[1], 1);
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(parts[1]) );
+        displayHelp(parts[1], 1);
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(parts[1]));
         ui.treeView->setCurrentIndex(filteredIndex);
     }
     else if (parts[0] == "http")
@@ -1100,13 +1100,15 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
         QDesktopServices::openUrl(parts[1]);
     }
     else if (parts[0] == "-1")
-        ui.label->setText("invalid Link");
+    {
+        ui.label->setText(tr("invalid Link"));
+    }
     else
     {
-        ui.label->setText("unknown protocol");
+        ui.label->setText(tr("unknown protocol"));
         QMessageBox msgBox;
-        msgBox.setText("The protocol of the link is unknown. ");
-        msgBox.setInformativeText("Do you want to try with the external browser?");
+        msgBox.setText(tr("The protocol of the link is unknown. "));
+        msgBox.setInformativeText(tr("Do you want to try with the external browser?"));
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);
         int ret = msgBox.exec();
@@ -1122,21 +1124,28 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Saves the position of the splitter depending on the use of the tree or the textbox
-void HelpTreeDockWidget::on_splitter_splitterMoved ( int pos, int index )
+void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
 {
     double width = ui.splitter->width();
     if (m_treeVisible == true)
-        m_percWidthVi = pos/width*100;
+    {
+        m_percWidthVi = pos / width * 100;
+    }
     else
-        m_percWidthUn = pos/width*100;
+    {
+        m_percWidthUn = pos / width * 100;
+    }
     if (m_percWidthVi < m_percWidthUn)
-        m_percWidthVi = m_percWidthUn+10;
+    {
+        m_percWidthVi = m_percWidthUn + 10;
+    }
     if (m_percWidthVi == 0)
+    {
         m_percWidthVi = 30;
+    }
     // Verhaltnis testweise anzeigen lassen
     //ui.label->setText(QString("vi %1 un %2").arg(percWidthVi).arg(percWidthUn));
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show the Help in the right Memo
@@ -1185,7 +1194,7 @@ void HelpTreeDockWidget::navigateBackwards()
         displayHelp(m_history.at(m_historyIndex), 0);
 
         // Highlight the entry in the tree
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(m_history.at(m_historyIndex)) );
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
         ui.treeView->setCurrentIndex(filteredIndex);
     }
 }
@@ -1200,7 +1209,7 @@ void HelpTreeDockWidget::navigateForwards()
         displayHelp(m_history.at(m_historyIndex), 0);
 
         // Highlight the entry in the tree
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource( findIndexByName(m_history.at(m_historyIndex)) );
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
         ui.treeView->setCurrentIndex(filteredIndex);
     }
 }
@@ -1211,7 +1220,7 @@ void HelpTreeDockWidget::showTreeview()
 {
     m_treeVisible = true;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthVi/100  <<  ui.splitter->width()*(100-m_percWidthVi)/100;
+    intList  <<  ui.splitter->width()*m_percWidthVi/100  <<  ui.splitter->width() * (100 - m_percWidthVi) / 100;
     ui.splitter->setSizes(intList);
 }
 
@@ -1221,7 +1230,7 @@ void HelpTreeDockWidget::unshowTreeview()
 {
     m_treeVisible = false;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthUn/100  <<  ui.splitter->width()*(100-m_percWidthUn)/100;
+    intList  <<  ui.splitter->width()*m_percWidthUn/100  <<  ui.splitter->width() * (100 - m_percWidthUn) / 100;
     ui.splitter->setSizes(intList);
 }
 

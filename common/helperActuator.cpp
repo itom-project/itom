@@ -36,7 +36,7 @@ namespace ito
                 If yes and if the actuator is accessable by getParam the actuatorhandle is stored in pMyMotor. The Semaphore for the invoke-method is also allocated here.
                 If the actuator is invalid or not accessable the pMyMotor keeps beeing NULL.
 
-        \param [in] parameterVector     is the ParameterVector (optional or mandatory ) of the filter / algorithm
+        \param [in] parameterVector     is the ParameterVector (optional or mandatory) of the filter / algorithm
         \param [in] paramNumber         is the zerobased number of the actuator in the parameterlist
         \return (void)
         \sa threadActuator
@@ -49,18 +49,22 @@ namespace ito
         pMyMotor = NULL;
         axisNumbers = 0;
 
-        if(parameterVector->isEmpty())
+        if (parameterVector->isEmpty())
+        {
             return;
+        }
 
-        if(parameterVector->size() - 1 < paramNumber)
+        if (parameterVector->size() - 1 < paramNumber)
+        {
             return;
+        }
 
         if (reinterpret_cast<ito::AddInBase *>((*parameterVector)[paramNumber].getVal<void *>())->getBasePlugin()->getType() & (ito::typeActuator))
         {
             pMyMotor = (ito::AddInActuator *)(*parameterVector)[paramNumber].getVal<void *>();
         }
 
-        if(pMyMotor == NULL)
+        if (pMyMotor == NULL)
         {
             return;
         }
@@ -74,14 +78,14 @@ namespace ito
         {
             if (!pMyMotor->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, "timeout while getting numaxis parameter");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
                 break;
             }
         }
 
         retval += pMySemaphoreLocker.getSemaphore()->returnValue;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
             pMyMotor = NULL;
             return;
@@ -91,6 +95,7 @@ namespace ito
 
         return;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail The destructor. Deletes the semaphore after waiting a last time.
@@ -99,7 +104,7 @@ namespace ito
     */
     threadActuator::~threadActuator()
     {
-        if(pMySemaphoreLocker.getSemaphore())
+        if (pMySemaphoreLocker.getSemaphore())
         {
             while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -110,9 +115,9 @@ namespace ito
                 }
             }
         }
-
         return;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail This function is called by every subroutine of the threadActuator. It checks if the motor-handle and the semaphore handle is zero and if the semaphore has waited after last command.
@@ -125,29 +130,30 @@ namespace ito
     {
         ito::RetVal retval(ito::retOk);
 
-        if(!pMyMotor)
+        if (!pMyMotor)
         {
-            return ito::RetVal(ito::retError, 0, "Motor not correctly initialized");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Motor not correctly initialized").toAscii().data());
         }
 
-        if(pMySemaphoreLocker.getSemaphore())
+        if (pMySemaphoreLocker.getSemaphore())
         {
             while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
             {
                 if (!pMyMotor->isAlive())
                 {
-                    retval += ito::RetVal(ito::retError, 0, "Timeout while Waiting for Semaphore");
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
                     break;
                 }
             }
-            if(pMySemaphoreLocker.getSemaphore()->returnValue.containsWarningOrError())
+            if (pMySemaphoreLocker.getSemaphore()->returnValue.containsWarningOrError())
             {
                 errorBuffer += pMySemaphoreLocker.getSemaphore()->returnValue;
-                retval += ito::RetVal(ito::retWarning, 0, "Semaphore contained error");
+                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Semaphore contained error").toAscii().data());
             }
         }
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Move the axis in axisVec with a distance defined in stepSizeVec relative to current position.
@@ -158,7 +164,7 @@ namespace ito
 
         \param [in] axisVec         Vector with the axis to move
         \param [in] stepSizeVec     Vector with the distances for every axis
-        \param [in] timeOutMS       TimeOut for the semaphore-wait, if(0) the waitForSemaphore is not called and must be called seperate by the algorithm
+        \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
         \return retOk or retError
         \sa threadActuator
@@ -166,25 +172,26 @@ namespace ito
     ito::RetVal threadActuator::setPosRel(QVector<int> axisVec, QVector<double> stepSizeVec, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
 
-        if(stepSizeVec.size() != axisVec.size())
+        if (stepSizeVec.size() != axisVec.size())
         {
-            return ito::RetVal(ito::retError, 0, "Error during setPosRel: Vectors differ in size");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toAscii().data());
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
         QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, stepSizeVec), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
-        if(timeOutMS)
+        if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
         }
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Move the axis in axisVec to the positions given in posVec.
@@ -195,7 +202,7 @@ namespace ito
 
         \param [in] axisVec         Vector with the axis to move
         \param [in] posVec          Vector with the new absolute positions
-        \param [in] timeOutMS       TimeOut for the semaphore-wait, if(0) the waitForSemaphore is not called and must be called seperate by the algorithm
+        \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
         \return retOk or retError
         \sa threadActuator
@@ -203,25 +210,26 @@ namespace ito
     ito::RetVal threadActuator::setPosAbs(QVector<int> axisVec, QVector<double> posVec, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
 
-        if(posVec.size() != axisVec.size())
+        if (posVec.size() != axisVec.size())
         {
-            return ito::RetVal(ito::retError, 0, "Error during setPosRel: Vectors differ in size");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toAscii().data());
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
         QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
-        if(timeOutMS)
+        if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
         }
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Move a single axis specified by axis  with a distance defined in stepSize relative to current position. After the invoke-command this thread must wait / synchronize with the actuator-thread.
@@ -231,7 +239,7 @@ namespace ito
 
         \param [in] axis         Number of the axis
         \param [in] stepSize     Distances from current position
-        \param [in] timeOutMS       TimeOut for the semaphore-wait, if(0) the waitForSemaphore is not called and must be called seperate by the algorithm
+        \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
         \return retOk or retError
         \sa threadActuator
@@ -239,7 +247,7 @@ namespace ito
     ito::RetVal threadActuator::setPosRel(int axis, double stepSize, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -248,12 +256,13 @@ namespace ito
 
         QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(stepSize)), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
 
-        if(timeOutMS)
+        if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
         }
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Move a single axis specified by axis to the position pos. After the invoke-command this thread must wait / synchronize with the actuator-thread.
@@ -263,7 +272,7 @@ namespace ito
 
         \param [in] axis         Number of the axis
         \param [in] pos          New position of the axis
-        \param [in] timeOutMS       TimeOut for the semaphore-wait, if(0) the waitForSemaphore is not called and must be called seperate by the algorithm
+        \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
         \return retOk or retError
         \sa threadActuator
@@ -271,7 +280,7 @@ namespace ito
     ito::RetVal threadActuator::setPosAbs(int axis, double pos, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -280,13 +289,14 @@ namespace ito
 
         QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(pos)), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
 
-        if(timeOutMS)
+        if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
         }
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail After the invoke-command this thread must wait / be synchronize with the actuator-thread.
@@ -301,16 +311,16 @@ namespace ito
     {
         ito::RetVal retval(ito::retOk);
 
-        if(!pMySemaphoreLocker.getSemaphore())
+        if (!pMySemaphoreLocker.getSemaphore())
         {
-            return ito::RetVal(ito::retError, 0, "Semaphore not correctly initialized");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toAscii().data());
         }
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
             if (!pMyMotor->isAlive())
             {
-                return ito::RetVal(ito::retError, 0, "Timeout while Waiting for Semaphore");
+                return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
             }
         }
 
@@ -318,6 +328,7 @@ namespace ito
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get the position of a single axis specified by axis.
@@ -332,7 +343,7 @@ namespace ito
     ito::RetVal threadActuator::getPos(int axis, double &pos, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -349,6 +360,7 @@ namespace ito
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get the position of a number of axis specified by axisVec.
@@ -363,7 +375,7 @@ namespace ito
     ito::RetVal threadActuator::getPos(QVector<int> axisVec, QVector<double> &posVec, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -372,7 +384,7 @@ namespace ito
 
         QSharedPointer<QVector<double> > posVecSP(new QVector<double>());
 
-        for(int i = 0; i <  axisVec.size(); i++)
+        for (int i = 0; i <  axisVec.size(); i++)
         {
             posVecSP->append(0.0);
         }
@@ -383,13 +395,14 @@ namespace ito
 
         retval += waitForSemaphore(timeOutMS);
 
-        for(int i = 0; i <  axisVec.size(); i++)
+        for (int i = 0; i <  axisVec.size(); i++)
         {
             posVec.append((*posVecSP)[i]);
         }
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get any parameter of the actuator defined by val.name. val must be initialised and name must be correct. After correct execution, val has the correct value.
@@ -403,7 +416,7 @@ namespace ito
     ito::RetVal threadActuator::getParam(ito::Param &val, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -417,6 +430,7 @@ namespace ito
         val = *qsParam;
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get the parameter of the actuator defined by val.name to the value of val.
@@ -430,7 +444,7 @@ namespace ito
     ito::RetVal threadActuator::setParam(ito::ParamBase val, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -443,6 +457,7 @@ namespace ito
         retval += waitForSemaphore(timeOutMS);
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Check if a specific axis is within the axisSpace of this actuator
@@ -454,7 +469,7 @@ namespace ito
     */
     ito::RetVal threadActuator::checkAxis(int axisNum)
     {
-        if(axisNum < 0 && (axisNum + 1) < axisNumbers)
+        if (axisNum < 0 && (axisNum + 1) < axisNumbers)
         {
             return ito::retError;
         }
@@ -463,6 +478,7 @@ namespace ito
             return ito::retOk;
         }
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Returns the last unrecieved errors and warnings and resets the internel errorBuffer.

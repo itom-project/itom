@@ -36,9 +36,9 @@ EnumProperty::EnumProperty(const QString &name /* = QString()*/,
     QMetaProperty prop = meta->property(meta->indexOfProperty(qPrintable(name)));
 
     // if it is indeed an enum type, fill the QStringList member with the keys
-    if(prop.isEnumType()){
+    if (prop.isEnumType()){
         QMetaEnum qenum = prop.enumerator();
-        for(int i=0; i < qenum.keyCount(); i++){
+        for (int i=0; i < qenum.keyCount(); i++){
             m_enum << qenum.key(i);
         }
     }
@@ -48,7 +48,7 @@ EnumProperty::EnumProperty(const QString &name /* = QString()*/,
 // value
 /////////////////////////////////////////////////////////////////////////////////////////////
 QVariant EnumProperty::value(int role /* = Qt::UserRole */) const {
-    if(role == Qt::DisplayRole){
+    if (role == Qt::DisplayRole){
         if (m_propertyObject){
             // resolve the value to the corresponding enum key
             int index = m_propertyObject->property(qPrintable(objectName())).toInt();
@@ -84,14 +84,14 @@ bool EnumProperty::setEditorData(QWidget *editor, const QVariant &data)
 {
     QComboBox* combo = 0;
     //TODO: maybe malformed if statment or put brackets to make gcc happy
-    if(combo = qobject_cast<QComboBox*>(editor))
+    if (combo = qobject_cast<QComboBox*>(editor))
     {
         int value = data.toInt();
         const QMetaObject* meta = m_propertyObject->metaObject();
         QMetaProperty prop = meta->property(meta->indexOfProperty(qPrintable(objectName())));
         
         int index = combo->findText(prop.enumerator().valueToKey(value));
-        if(index == -1)
+        if (index == -1)
             return false;
 
         combo->setCurrentIndex(index);
@@ -111,7 +111,7 @@ QVariant EnumProperty::editorData(QWidget *editor)
 {
     QComboBox* combo = 0;
     //TODO: maybe malformed if statment or put brackets to make gcc happy
-    if(combo = qobject_cast<QComboBox*>(editor))
+    if (combo = qobject_cast<QComboBox*>(editor))
     {
         return QVariant(combo->currentText());
     }
@@ -124,6 +124,7 @@ QVariant EnumProperty::editorData(QWidget *editor)
 /////////////////////////////////////////////////////////////////////////////////////////////
 // valueChanged
 /////////////////////////////////////////////////////////////////////////////////////////////
-void EnumProperty::valueChanged(const QString item){
+void EnumProperty::valueChanged(const QString item)
+{
     setValue(QVariant(item));
 }

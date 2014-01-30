@@ -79,7 +79,7 @@ void WidgetPropEditorAPI::readSettings()
     {
         settings.setArrayIndex(i);
 
-        filename = settings.value("file",QString()).toString();
+        filename = settings.value("file", QString()).toString();
         filename = baseDir.absoluteFilePath(filename);
         QFileInfo fileInfo(filename);
         if (fileInfo.exists())
@@ -95,8 +95,6 @@ void WidgetPropEditorAPI::readSettings()
     }
 
     settings.endArray();
-
-
     settings.endGroup();
 }
 
@@ -114,9 +112,9 @@ void WidgetPropEditorAPI::writeSettings()
     {
         settings.setArrayIndex(i);
         filename = ui.listWidget->item(i)->text();
-        if(filename.endsWith(m_notExistAppendix))
+        if (filename.endsWith(m_notExistAppendix))
         {
-            filename = filename.left( filename.length() - m_notExistAppendix.length() ).trimmed();
+            filename = filename.left(filename.length() - m_notExistAppendix.length()).trimmed();
         }
         filename = baseDir.relativeFilePath(filename); //save relative filenames
         settings.setValue("file", filename);
@@ -126,7 +124,7 @@ void WidgetPropEditorAPI::writeSettings()
     settings.endArray();
     settings.endGroup();
 
-    if(m_changes)
+    if (m_changes)
     {
         m_pApiManager->updateAPI(files);
         m_changes = false;
@@ -170,7 +168,6 @@ void WidgetPropEditorAPI::on_btnRemove_clicked()
 {
     qDeleteAll(ui.listWidget->selectedItems());
     m_changes = true;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

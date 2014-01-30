@@ -25,16 +25,20 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorAutoCompletion::WidgetPropEditorAutoCompletion(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorAutoCompletion::~WidgetPropEditorAutoCompletion()
 {
+
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorAutoCompletion::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -57,6 +61,7 @@ void WidgetPropEditorAutoCompletion::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorAutoCompletion::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -70,11 +75,11 @@ void WidgetPropEditorAutoCompletion::writeSettings()
 
     settings.setValue("autoComplThreshold", ui.spinThreshold->value());
 
-    if(ui.radioACSource1->isChecked())
+    if (ui.radioACSource1->isChecked())
     {
         settings.setValue("autoComplSource", "AcsAll" );
     }
-    else if(ui.radioACSource2->isChecked())
+    else if (ui.radioACSource2->isChecked())
     {
         settings.setValue("autoComplSource", "AcsDocument" );
     }

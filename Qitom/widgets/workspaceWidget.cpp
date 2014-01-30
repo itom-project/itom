@@ -288,11 +288,11 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             tempValue = QSharedPointer<QString>(new QString());
-            QMetaObject::invokeMethod(eng,"workspaceGetValueInformation",Q_ARG(PyWorkspaceContainer*,m_workspaceContainer),Q_ARG(QString,fullName),Q_ARG(QSharedPointer<QString>,tempValue),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+            QMetaObject::invokeMethod(eng, "workspaceGetValueInformation", Q_ARG(PyWorkspaceContainer*, m_workspaceContainer), Q_ARG(QString,fullName), Q_ARG(QSharedPointer<QString>, tempValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
             
             if (!locker.getSemaphore()->waitAndProcessEvents(1000))
             {
-                extendedValue = "timeout while asking python for detailed information";
+                extendedValue = tr("timeout while asking python for detailed information");
             }
             else
             {

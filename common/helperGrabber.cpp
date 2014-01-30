@@ -37,7 +37,7 @@ namespace ito
                 If yes and the camera is accessable (try bpp) the camera handle is stored in pMyCamera. The Semaphore for the invoke-method is also allocated here.
                 If the camera is invalid keeps beeing NULL.
 
-        \param [in] parameterVector     is the ParameterVector (optional or mandatory ) of the filter / algorithm
+        \param [in] parameterVector     is the ParameterVector (optional or mandatory) of the filter / algorithm
         \param [in] paramNumber         is the zerobased number of the camera in the parameterlist
         \return (void)
         \sa threadCamera
@@ -49,18 +49,22 @@ namespace ito
         errorBuffer = ito::retOk;
         pMyCamera = NULL;
 
-        if(parameterVector->isEmpty())
+        if (parameterVector->isEmpty())
+        {
             return;
+        }
 
-        if(parameterVector->size() - 1 < paramNumber)
+        if (parameterVector->size() - 1 < paramNumber)
+        {
             return;
+        }
 
         if (reinterpret_cast<ito::AddInBase *>((*parameterVector)[paramNumber].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeGrabber))
         {
             pMyCamera = (ito::AddInGrabber *)(*parameterVector)[paramNumber].getVal<void *>();
         }
 
-        if(pMyCamera == NULL)
+        if (pMyCamera == NULL)
         {
             return;
         }
@@ -71,13 +75,13 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout while getting numaxis parameter");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
             return;
         }
 
         retval += pMySemaphoreLocker.getSemaphore()->returnValue;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
             pMyCamera = NULL;
             return;
@@ -85,6 +89,7 @@ namespace ito
 
         return;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail The destructor. Deletes the semaphore after waiting a last time.
@@ -95,6 +100,7 @@ namespace ito
     {
         return;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail This function is called by every subroutine of the threadActuator. It checks if the camera-handle and the semaphore handle is zero and if the semaphore has waited after last command.
@@ -107,9 +113,9 @@ namespace ito
     {
         ito::RetVal retval(ito::retOk);
 
-        if(!pMyCamera)
+        if (!pMyCamera)
         {
-            return ito::RetVal(ito::retError, 0, "Camera not correctly initialized");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Camera not correctly initialized").toAscii().data());
         }
 
         return retval;
@@ -129,14 +135,14 @@ namespace ito
     {
         ito::RetVal retval(ito::retOk);
 
-        if(!pMySemaphoreLocker.getSemaphore())
+        if (!pMySemaphoreLocker.getSemaphore())
         {
-            return ito::RetVal(ito::retError, 0, "Semaphore not correctly initialized");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toAscii().data());
         }
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            return ito::RetVal(ito::retError, 0, "Timeout while Waiting for Semaphore");
+            return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
         }
 
         return pMySemaphoreLocker.getSemaphore()->returnValue;
@@ -154,7 +160,7 @@ namespace ito
     ito::RetVal threadCamera::startDevice(int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -177,7 +183,7 @@ namespace ito
     ito::RetVal threadCamera::stopDevice(int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -188,6 +194,7 @@ namespace ito
         retval += waitForSemaphore(timeOutMS);
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail The acquire()-function triggers a new exposure of the camera and returns afterwards. It can only be executed after startDevice().
@@ -204,7 +211,7 @@ namespace ito
         //double starttime = (double)(cv::getTickCount())/cv::getTickFrequency();
 
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -239,7 +246,7 @@ namespace ito
     ito::RetVal threadCamera::getVal(ito::DataObject &dObj, int timeOutMS)   /*! < Get a shallow-copy of the dataObject */
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -250,6 +257,7 @@ namespace ito
         retval += waitForSemaphore(timeOutMS);
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail The copyVal function is used to wait until an exposure is finished. Than it gives a deep copy of the inner dataObject within the grabber to the dObj-argument.
@@ -267,7 +275,7 @@ namespace ito
         //double starttime = (double)(cv::getTickCount())/cv::getTickFrequency();
 
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -301,7 +309,7 @@ namespace ito
     ito::RetVal threadCamera::getParam(ito::Param &val, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -316,6 +324,7 @@ namespace ito
         val = *qsParam;
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get the parameter of the camera defined by val.name to the value of val.
@@ -329,7 +338,7 @@ namespace ito
     ito::RetVal threadCamera::setParam(ito::ParamBase val, int timeOutMS)
     {
         ito::RetVal retval = securityChecks();
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
@@ -341,6 +350,7 @@ namespace ito
 
         return retval;
     }
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \detail Get the most important parameter of the camera.
@@ -363,13 +373,13 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout while getting numaxis parameter");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
             return retval;
         }
 
         retval += pMySemaphoreLocker.getSemaphore()->returnValue;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
             return retval;
         }
@@ -383,13 +393,13 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout while getting numaxis parameter");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
             return retval;
         }
 
         retval += pMySemaphoreLocker.getSemaphore()->returnValue;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
             return retval;
         }
@@ -403,13 +413,13 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout while getting numaxis parameter");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
             break;
         }
 
         retval += pMySemaphoreLocker.getSemaphore()->returnValue;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
             return retval;
         }

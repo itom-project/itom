@@ -33,6 +33,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 AbstractPyScintillaWidget::AbstractPyScintillaWidget(QWidget* parent):
     QsciScintilla(parent),
     qSciLex(NULL),
@@ -48,13 +49,14 @@ AbstractPyScintillaWidget::AbstractPyScintillaWidget(QWidget* parent):
     connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 AbstractPyScintillaWidget::~AbstractPyScintillaWidget()
 {
     DELETE_AND_SET_NULL(qSciLex);
     m_pApiManager = NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractPyScintillaWidget::init()
 {
     DELETE_AND_SET_NULL(qSciLex);
@@ -66,10 +68,11 @@ void AbstractPyScintillaWidget::init()
     setUtf8(true); //utf8 can display special characters, false -> latin1 (default) can not
 
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
-    setIndicatorForegroundColor( Qt::green, m_textIndicatorNr);
-    setIndicatorDrawUnder( true, m_textIndicatorNr);
+    setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);
+    setIndicatorDrawUnder(true, m_textIndicatorNr);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractPyScintillaWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -79,11 +82,11 @@ void AbstractPyScintillaWidget::loadSettings()
 
     QString eolMode = settings.value("eolMode", "EolUnix").toString();
 
-    if(eolMode == "EolUnix")
+    if (eolMode == "EolUnix")
     {
         setEolMode(QsciScintilla::EolUnix);
     }
-    else if(eolMode == "EolWindows")
+    else if (eolMode == "EolWindows")
     {
         setEolMode(QsciScintilla::EolWindows);
     }
@@ -92,26 +95,26 @@ void AbstractPyScintillaWidget::loadSettings()
         setEolMode(QsciScintilla::EolMac);
     }
 
-    setAutoIndent( settings.value("autoIndent", true).toBool());                  //auto indentation
-    setIndentationsUseTabs( settings.value("indentationUseTabs", false).toBool()); //tabs (true) or whitespace (false)
-    setIndentationWidth( settings.value("indentationWidth", 4).toInt());          //numbers of whitespaces
-    setIndentationGuides( settings.value("showIndentationGuides", true).toBool());
+    setAutoIndent(settings.value("autoIndent", true).toBool());                  //auto indentation
+    setIndentationsUseTabs(settings.value("indentationUseTabs", false).toBool()); //tabs (true) or whitespace (false)
+    setIndentationWidth(settings.value("indentationWidth", 4).toInt());          //numbers of whitespaces
+    setIndentationGuides(settings.value("showIndentationGuides", true).toBool());
 
     QString indentationWarning = settings.value("indentationWarning", "Inconsistent").toString();
 
-    if(eolMode == "Inconsistent")
+    if (eolMode == "Inconsistent")
     {
         qSciLex->setIndentationWarning(QsciLexerPython::Inconsistent);
     }
-    else if(eolMode == "NoWarning")
+    else if (eolMode == "NoWarning")
     {
         qSciLex->setIndentationWarning(QsciLexerPython::NoWarning);
     }
-    else if(eolMode == "TabsAfterSpaces")
+    else if (eolMode == "TabsAfterSpaces")
     {
         qSciLex->setIndentationWarning(QsciLexerPython::TabsAfterSpaces);
     }
-    else if(eolMode == "Spaces")
+    else if (eolMode == "Spaces")
     {
         qSciLex->setIndentationWarning(QsciLexerPython::Spaces);
     }
@@ -133,19 +136,19 @@ void AbstractPyScintillaWidget::loadSettings()
     // ------------ calltips --------------------------------------------------------
     bool calltipsEnabled = settings.value("calltipsEnabled",true).toBool();
 
-    if(calltipsEnabled)
+    if (calltipsEnabled)
     {
         QString style = settings.value("calltipsStyle","NoContext").toString();
 
-        if(style == "NoContext")
+        if (style == "NoContext")
         {
             setCallTipsStyle(QsciScintilla::CallTipsNoContext);
         }
-        else if(style == "NoAutoCompletionContext")
+        else if (style == "NoAutoCompletionContext")
         {
             setCallTipsStyle(QsciScintilla::CallTipsNoAutoCompletionContext);
         }
-        else if(style == "Context")
+        else if (style == "Context")
         {
             setCallTipsStyle(QsciScintilla::CallTipsContext);
         }
@@ -165,17 +168,17 @@ void AbstractPyScintillaWidget::loadSettings()
     bool acEnabled = settings.value("autoComplEnabled", true).toBool();
     QString source = settings.value("autoComplSource", "AcsAPIs").toString();
 
-    if(acEnabled)
+    if (acEnabled)
     {
-        if(source == "AcsAll")
+        if (source == "AcsAll")
         {
             setAutoCompletionSource(QsciScintilla::AcsAll);
         }
-        else if(source == "AcsDocument")
+        else if (source == "AcsDocument")
         {
             setAutoCompletionSource(QsciScintilla::AcsDocument);
         }
-        else if(source == "AcsAPIs")
+        else if (source == "AcsAPIs")
         {
             setAutoCompletionSource(QsciScintilla::AcsAPIs);
         }
@@ -197,48 +200,46 @@ void AbstractPyScintillaWidget::loadSettings()
 
     settings.endGroup();
 
-
     // ------------ styles ---------------------------------------------------------------
     int noOfStyles = qSciLex->styleBitsNeeded();
 
-    for(int i=0 ; i<(2 << noOfStyles) ; i++)
+    for (int i = 0; i < (2 << noOfStyles); i++)
     {
-        if(!qSciLex->description(i).isEmpty())
+        if (!qSciLex->description(i).isEmpty())
         {
             settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(i));
 
             QColor bgColor = settings.value("backgroundColor", qSciLex->defaultPaper(i)).toString();
-            if(bgColor.isValid())
+            if (bgColor.isValid())
             {
-                bgColor.setAlpha(settings.value("backgroundColorAlpha",255).toInt());
+                bgColor.setAlpha(settings.value("backgroundColorAlpha", 255).toInt());
                 qSciLex->setPaper(bgColor,i);
             }
 
             QColor fgColor = settings.value("foregroundColor", qSciLex->defaultColor(i)).toString();
-            if(fgColor.isValid())
+            if (fgColor.isValid())
             {
-                fgColor.setAlpha(settings.value("foregroundColorAlpha",255).toInt());
-                qSciLex->setColor(fgColor,i);
+                fgColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
+                qSciLex->setColor(fgColor, i);
             }
 
-            QFont font = QFont(settings.value("fontFamily", "").toString(), settings.value("pointSize",0).toInt(), settings.value("weight", 0).toInt(), settings.value("italic", false).toBool());
-            if(font.pointSize() > 0 && font.family() != "")
+            QFont font = QFont(settings.value("fontFamily", "").toString(), settings.value("pointSize", 0).toInt(), settings.value("weight", 0).toInt(), settings.value("italic", false).toBool());
+            if (font.pointSize() > 0 && font.family() != "")
             {
-                qSciLex->setFont(font,i);
+                qSciLex->setFont(font, i);
             }
             else
             {
                 qSciLex->setFont(qSciLex->defaultFont(i),i);
             }
 
-            qSciLex->setEolFill( settings.value("fillToEOL",qSciLex->defaultEolFill(i)).toBool(), i);
+            qSciLex->setEolFill(settings.value("fillToEOL", qSciLex->defaultEolFill(i)).toBool(), i);
             settings.endGroup();
         }
     }
-
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //void AbstractPyScintillaWidget::mouseReleaseEvent(QMouseEvent * event)
 //{
 //    //QsciScintilla::mouseReleaseEvent(event);
@@ -253,13 +254,14 @@ void AbstractPyScintillaWidget::loadSettings()
 //    event->ignore();
 //}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractPyScintillaWidget::checkUserSelectionState()
 {
     int lineFrom, indexFrom, lineTo, indexTo;
     bool sel = true;
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-    if(lineFrom == -1)
+    if (lineFrom == -1)
     {
         sel = false;
     }
@@ -268,7 +270,7 @@ void AbstractPyScintillaWidget::checkUserSelectionState()
     switch(m_userSelectionState)
     {
     case selNo:
-        if(sel)
+        if (sel)
         {
             m_userSelectionState = selRange;
             //emit signal, since selection is ready now
@@ -276,7 +278,7 @@ void AbstractPyScintillaWidget::checkUserSelectionState()
         }
         break;
     case selRange:
-        if(!sel)
+        if (!sel)
         {
             m_userSelectionState = selNo;
             //emit signal, since selection is gone
@@ -292,13 +294,13 @@ void AbstractPyScintillaWidget::checkUserSelectionState()
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractPyScintillaWidget::selectionChanged()
 {
     int nrOfLines = lines();
     int lengthOfLastLine = text(nrOfLines-1).length();
 
-    if(m_textIndicatorActive)
+    if (m_textIndicatorActive)
     {
         m_textIndicatorActive = false;
         clearIndicatorRange(0,0,nrOfLines,lengthOfLastLine,m_textIndicatorNr);
@@ -311,17 +313,19 @@ void AbstractPyScintillaWidget::selectionChanged()
     int j;
     int index;
     int selLength;
-    if(hasSelectedText())
+    if (hasSelectedText())
     {
         selection = selectedText();
-        if(selection.trimmed() == "") return;
+        if (selection.trimmed() == "")
+        {
+            return;
+        }
         selLength = selection.length();
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-        if(lineFrom == lineTo)
+        if (lineFrom == lineTo)
         {
-
-            for(int i = 0; i < nrOfLines; i++)
+            for (int i = 0; i < nrOfLines; i++)
             {
                 lineText = text(i);
                 lineLength = lineText.length() - selLength;
@@ -329,9 +333,9 @@ void AbstractPyScintillaWidget::selectionChanged()
                 while(j <= lineLength)
                 {
                     index = lineText.indexOf(selection, j, Qt::CaseInsensitive);
-                    if(index >= 0)
+                    if (index >= 0)
                     {
-                        if(i != lineFrom || (index < indexFrom || index >= indexTo))
+                        if (i != lineFrom || (index < indexFrom || index >= indexTo))
                         {
                             m_textIndicatorActive = true;
                             fillIndicatorRange(i, index, i, index + selLength, m_textIndicatorNr);
@@ -345,19 +349,18 @@ void AbstractPyScintillaWidget::selectionChanged()
                 }
             }
         }
-
-
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int &index)
 {
-    if( line < 0 || line >= lines() )
+    if (line < 0 || line >= lines())
     {
         return "";
     }
 
-    if(index < 0 || index >= lineLength(line))
+    if (index < 0 || index >= lineLength(line))
     {
         return "";
     }
@@ -367,7 +370,7 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
     long start = SendScintilla(QsciScintilla::SCI_WORDSTARTPOSITION, pos, true);
     long end = SendScintilla(QsciScintilla::SCI_WORDENDPOSITION, pos, true);
 
-    if( start != end)
+    if (start != end)
     {
         char *bytes = new char[(end-start) + 1];
         SendScintilla(QsciScintilla::SCI_GETTEXTRANGE, start, end, bytes);
@@ -378,22 +381,22 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
     return "";
 }
 
-
-//bool AbstractPyScintillaWidget::event ( QEvent * event )
+//----------------------------------------------------------------------------------------------------------------------------------
+//bool AbstractPyScintillaWidget::event (QEvent * event)
 //{
-//    if(event->type() == QEvent::ToolTip && !QToolTip::isVisible())
+//    if (event->type() == QEvent::ToolTip && !QToolTip::isVisible())
 //    {
 //        //see http://www.riverbankcomputing.com/pipermail/qscintilla/2008-November/000381.html
 //        QHelpEvent *evt = static_cast<QHelpEvent*>(event);
 //        QPoint point = evt->pos();
 //        long pos = SendScintilla(QsciScintilla::SCI_POSITIONFROMPOINTCLOSE, point.x(), point.y());
 //
-//        if(pos >= 0)
+//        if (pos >= 0)
 //        {
 //            long start = SendScintilla(QsciScintilla::SCI_WORDSTARTPOSITION, pos, true);
 //            long end = SendScintilla(QsciScintilla::SCI_WORDENDPOSITION, pos, true);
 //
-//            if( start != end)
+//            if (start != end)
 //            {
 //                char *bytes = new char[(end-start) + 1];
 //                SendScintilla(QsciScintilla::SCI_GETTEXTRANGE, start, end, bytes);

@@ -75,18 +75,18 @@ namespace ito
 //        int i=0;
         int size = m_autoGrabbingListeners.size();
 
-        if(waitMS == 0)
+        if (waitMS == 0)
         {
             foreach(obj, m_autoGrabbingListeners)
             {
-                //if(!QMetaObject::invokeMethod( obj, "dataAvailable", Q_ARG(ito::DataObject, m_data), Q_ARG(ItomSharedSemaphore*, NULL)))
-                if(!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, NULL)))
+                //if (!QMetaObject::invokeMethod( obj, "dataAvailable", Q_ARG(ito::DataObject, m_data), Q_ARG(ItomSharedSemaphore*, NULL)))
+                if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toAscii().data());
                 }
             }
         }
-        else if(m_autoGrabbingListeners.size() > 0)
+        else if (m_autoGrabbingListeners.size() > 0)
         {
             ItomSharedSemaphore** waitConds = new ItomSharedSemaphore*[size];
             int i=0;
@@ -95,7 +95,7 @@ namespace ito
             {
                 waitConds[i] = new ItomSharedSemaphore();
                 //TODO: on Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
-                if(!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
+                if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toAscii().data());
                 }
@@ -103,9 +103,9 @@ namespace ito
                 i++;
             }
 
-            for(i = 0; i < size; i++)
+            for (i = 0; i < size; i++)
             {
-                if(!waitConds[i]->wait(waitMS))
+                if (!waitConds[i]->wait(waitMS))
                 {
                     qDebug() << "timeout in number: " << i << "number of items: " << size;
                 }
@@ -131,23 +131,23 @@ namespace ito
         QCoreApplication::sendPostedEvents(this,0);
         ito::RetVal retValue = ito::retOk;
 
-        if(m_autoGrabbingListeners.size() > 0) //verify that any liveImage is listening
+        if (m_autoGrabbingListeners.size() > 0) //verify that any liveImage is listening
         {
             retValue += acquire(0,NULL);
 
-            if(!retValue.containsError())
+            if (!retValue.containsError())
             {
                 retValue += retrieveData();
             }
 
-            if(!retValue.containsError())
+            if (!retValue.containsError())
             {
                 retValue += sendDataToListeners(200);
             }
 
-            if(retValue == ito::retWarning)
+            if (retValue == ito::retWarning)
             {
-                if(retValue.errorMessage())
+                if (retValue.errorMessage())
                 {
                     std::cout << "warning while sending live image: \n" << "warning message: \n" << std::endl;
                     std::cout << retValue.errorMessage() << std::endl;
@@ -158,9 +158,9 @@ namespace ito
                 }
             }
 
-            if(retValue == ito::retError)
+            if (retValue == ito::retError)
             {
-                if(retValue.errorMessage())
+                if (retValue.errorMessage())
                 {
                     std::cout << "error while sending live image: \n" << "error message: \n" << std::endl;
                     std::cout << retValue.errorMessage() << std::endl;
@@ -182,15 +182,15 @@ namespace ito
         int futureType;
 
         int bpp = m_params["bpp"].getVal<int>();
-        if(bpp <= 8)
+        if (bpp <= 8)
         {
             futureType = ito::tUInt8;
         }
-        else if(bpp <= 16)
+        else if (bpp <= 16)
         {
             futureType = ito::tUInt16;
         }
-        else if(bpp <= 32)
+        else if (bpp <= 32)
         {
             futureType = ito::tInt32;
         }
@@ -199,9 +199,9 @@ namespace ito
             futureType = ito::tFloat64;
         }
 
-        if(externalDataObject == NULL)
+        if (externalDataObject == NULL)
         {
-            if(m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(futureHeight,futureWidth,futureType);
             }
@@ -209,15 +209,15 @@ namespace ito
         else
         {
             int dims = externalDataObject->getDims();
-            if(externalDataObject->getDims() == 0)
+            if (externalDataObject->getDims() == 0)
             {
                 *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
             }
-            else if(externalDataObject->calcNumMats () > 1)
+            else if (externalDataObject->calcNumMats () > 1)
             {
                 return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toAscii().data());            
             }
-            else if(externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+            else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
             {
                 return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toAscii().data());
             }
