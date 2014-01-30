@@ -100,7 +100,6 @@ MainApplication::~MainApplication()
     MainApplication::mainApplicationInstance = NULL;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
@@ -190,7 +189,7 @@ void MainApplication::setupApplication()
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
     //load translation files
-    m_splashScreen->showMessage(tr("load translations...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load translations..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
@@ -223,7 +222,7 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage(tr("load style...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load style..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         //set styles (if available)
@@ -282,7 +281,7 @@ void MainApplication::setupApplication()
     }
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
-    m_splashScreen->showMessage(tr("load process organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_processOrganizer = new ito::ProcessOrganizer();
@@ -291,7 +290,7 @@ void MainApplication::setupApplication()
     qDebug("MainApplication::setupApplication");
 
    // starting AddInManager
-    m_splashScreen->showMessage(tr("scan and load plugins...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
@@ -300,7 +299,7 @@ void MainApplication::setupApplication()
 
     qDebug("..plugins loaded");
 
-    m_splashScreen->showMessage(tr("start python...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("start python..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_pyEngine = new PythonEngine();
@@ -325,19 +324,19 @@ void MainApplication::setupApplication()
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage(tr("load main window...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load main window..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_mainWin = new MainWindow();
         AppManagement::setMainWindow(qobject_cast<QObject*>(m_mainWin));
 
-        m_splashScreen->showMessage(tr("load ui organizer...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer();
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
-        m_splashScreen->showMessage(tr("scan and load designer widgets...") , Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
@@ -355,7 +354,7 @@ void MainApplication::setupApplication()
 
     qDebug("..palette organizer started");
 
-    m_splashScreen->showMessage(tr("load script editor organizer...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("load script editor organizer..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != NULL);
@@ -365,7 +364,7 @@ void MainApplication::setupApplication()
 
     if (m_mainWin != NULL)
     {
-        connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addAbstractDock(AbstractDockWidget*,Qt::DockWidgetArea)));
+        connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addAbstractDock(AbstractDockWidget*, Qt::DockWidgetArea)));
         connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeAbstractDock(AbstractDockWidget*)));
         connect(m_mainWin, SIGNAL(mainWindowCloseRequest()), this, SLOT(mainWindowCloseRequest()));
     }
@@ -373,7 +372,7 @@ void MainApplication::setupApplication()
     qDebug("..starting load settings");
 
     //try to execute startup-python scripts
-    m_splashScreen->showMessage(tr("execute startup scripts...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     settings->beginGroup("Python");
@@ -382,7 +381,7 @@ void MainApplication::setupApplication()
     for (int i = 0; i < size; ++i)
     {
         settings->setArrayIndex(i);
-        startupScripts.append(settings->value("file",QString()).toString());
+        startupScripts.append(settings->value("file", QString()).toString());
     }
 
     settings->endArray();
@@ -395,11 +394,11 @@ void MainApplication::setupApplication()
     }
 
     settings->beginGroup("CurrentStatus");
-    QString currentDir = (settings->value("currentDir",QDir::currentPath()).toString());
+    QString currentDir = (settings->value("currentDir", QDir::currentPath()).toString());
     settings->endGroup();
     delete settings;
 
-    m_splashScreen->showMessage(tr("scan and run scripts in autostart folder...") , Qt::AlignRight | Qt::AlignBottom);
+    m_splashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
     //force python to scan and run files in autostart folder in itom-packages folder
