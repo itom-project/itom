@@ -476,13 +476,9 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 *   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
 *   value if it is possible. If the paramter cannot be set an error is returned.
 */
-ito::RetVal apiFunctions::getCurrentWorkingDir(QString workingDir)
+QString apiFunctions::getCurrentWorkingDir(void)
 {
-    ito::RetVal ret(ito::retOk);
-
-    workingDir = QDir::cleanPath(QDir::currentPath());
-
-    return ret;
+    return QDir::cleanPath(QDir::currentPath());
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

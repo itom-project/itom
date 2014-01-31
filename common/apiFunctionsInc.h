@@ -228,7 +228,7 @@ namespace ito
         (* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
 
     #define apiGetCurrentWorkingDir \
-        (* (ito::RetVal (*)(QString workingDir)) ito::ITOM_API_FUNCS[21])
+        (* (QString (*)(void)) ito::ITOM_API_FUNCS[21])
 
     /** \} */
 

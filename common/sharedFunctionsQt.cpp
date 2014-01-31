@@ -2029,7 +2029,9 @@ namespace ito
 
         QFileInfo checkFile(folderFileName);
 
-        if (appendEnding || checkFile.suffix().isEmpty())
+//        if (appendEnding || checkFile.suffix().isEmpty())
+        // should this be && here, because when we use || and already have an ending, we endup with 2 endings
+        if (appendEnding && checkFile.suffix().isEmpty())
         {
             if (onlyHeaderObjectFile)
             {

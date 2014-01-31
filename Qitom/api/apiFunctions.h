@@ -43,7 +43,7 @@ namespace ito
             static ito::RetVal maddInOpenDataIO(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&dataIO);
 
             static ito::DataObject* mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
-            static ito::RetVal getCurrentWorkingDir(QString workingDir);
+            static QString getCurrentWorkingDir(void);
 
         private:
             int m_loadFPointer;
