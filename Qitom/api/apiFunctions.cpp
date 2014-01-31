@@ -26,6 +26,7 @@
 #include "../Qitom/AppManagement.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../common/sharedFunctionsQt.h"
+#include "../Qitom/organizer/uiOrganizer.h"
 
 static ito::apiFunctions singleApiFunctions;
 
@@ -55,6 +56,7 @@ namespace ito
         (void*)&loadXML2QLIST,                          /* [18] */
         (void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
         (void*)&ParamHelper::getParam,                  /* [20] */
+        (void*)&singleApiFunctions.getCurrentWorkingDir, /* [21] */
         NULL
     };
 
@@ -467,4 +469,22 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+/** Helper function returning the currently selected directory of the filesystemwidget
+*   @param [in, out]    dir   the currently selected directory
+*   @return             retOk on success, retError otherwise
+*
+*   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
+*   value if it is possible. If the paramter cannot be set an error is returned.
+*/
+ito::RetVal apiFunctions::getCurrentWorkingDir(QString workingDir)
+{
+    ito::RetVal ret(ito::retOk);
+
+    workingDir = QDir::cleanPath(QDir::currentPath());
+
+    return ret;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+
 }; // namespace ito
