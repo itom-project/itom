@@ -48,7 +48,7 @@
 
 namespace ito
 {
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     /**
     * tPluginType enumeration
     * used to describe the plugin type and subtype (in case of DataIO main type)
@@ -86,7 +86,6 @@ namespace ito
         actRefSwitchMask        = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch,
         actSwitchesMask         = actEndSwitchMask | actRefSwitchMask,
         actStatusMask           = actuatorAvailable | actuatorEnabled
-
     };
 
     enum tAutoLoadPolicy {
@@ -299,7 +298,10 @@ namespace ito
                 QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
                 if (rx.indexIn(name) == -1)
                 {
-                    if (nameCheckOk) *nameCheckOk = false;
+                    if (nameCheckOk)
+                    {
+                        *nameCheckOk = false;
+                    }
                     return Param();
                 }
                 else
@@ -307,12 +309,19 @@ namespace ito
                     QStringList pname = rx.capturedTexts();
                     if (pname.length() > 1)
                     {
-                        if (nameCheckOk) *nameCheckOk = true;
+                        if (nameCheckOk)
+                        {
+                            *nameCheckOk = true;
+                        }
                         ito::Param tempParam = m_params.value(pname[1]);
                         if (pname[2].length())
+                        {
                             tempParam.addNameSuffix(pname[2].toAscii().data());
+                        }
                         if (pname[4].length())
+                        {
                             tempParam.addNameSuffix(pname[4].toAscii().data());
+                        }
                         return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
                     }
                 }
@@ -516,7 +525,6 @@ namespace ito
             void parametersChanged(QMap<QString, ito::Param> params);
 
         public slots:
-
             //! method for the initialisation of a new instance of the class (must be overwritten)
             virtual ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! method for closing an instance (must be overwritten)
@@ -533,7 +541,6 @@ namespace ito
             // doc in source-file
             virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
        
-
         private slots:
             //! immediately emits the signal parametersChanged
             /*!
@@ -687,7 +694,10 @@ namespace ito
             { 
                 foreach(const int &i, m_currentStatus) 
                 {
-                    if (i & ito::actuatorMoving) return true;
+                    if (i & ito::actuatorMoving)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -844,7 +854,6 @@ namespace ito
             virtual ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! increment/decrement a number of axis by position values. The axis' numbers are given in the axis vector
             virtual ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL) = 0;
-
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -983,9 +992,18 @@ namespace ito
 
             static ito::RetVal prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
             {
-                if (!paramsMand) return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toAscii().data());
-                if (!paramsOpt) return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toAscii().data());
-                if (!paramsOut) return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toAscii().data());
+                if (!paramsMand)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toAscii().data());
+                }
+                if (!paramsOpt)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toAscii().data());
+                }
+                if (!paramsOut)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toAscii().data());
+                }
                 paramsMand->clear(); 
                 paramsOpt->clear(); 
                 paramsOut->clear();
