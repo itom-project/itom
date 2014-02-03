@@ -167,15 +167,6 @@ PythonEngine::PythonEngine() :
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonEngine::~PythonEngine()
 {
-    //delete all remaining weak references in m_pyFuncWeakRefHashes (if available)
-    QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = m_pyFuncWeakRefHashes.begin();
-    while(it != m_pyFuncWeakRefHashes.end())
-    {
-        Py_XDECREF(it->first);
-        Py_XDECREF(it->second);
-        it= m_pyFuncWeakRefHashes.erase(it);
-    }
-
     if (started)
     {
         pythonShutdown();
@@ -545,6 +536,15 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     RetVal retValue(retOk);
     if (started)
     {
+		//delete all remaining weak references in m_pyFuncWeakRefHashes (if available)
+		QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = m_pyFuncWeakRefHashes.begin();
+		while(it != m_pyFuncWeakRefHashes.end())
+		{
+			Py_XDECREF(it->first);
+			Py_XDECREF(it->second);
+			it= m_pyFuncWeakRefHashes.erase(it);
+		}
+
         Py_XDECREF(itomDbgInstance);
         itomDbgInstance = NULL;
         Py_XDECREF(itomDbgModule);
