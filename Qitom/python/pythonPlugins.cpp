@@ -243,6 +243,7 @@ PyObject * getParamList(ito::AddInBase *aib)
 {
    PyObject *result = NULL;
    QMap<QString, ito::Param> *paramList = NULL;
+   const char *name;
 
    aib->getParamList(&paramList);
 
@@ -253,7 +254,15 @@ PyObject * getParamList(ito::AddInBase *aib)
 
       for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); paramIt++)
       {
-          PyList_Append(result, PyUnicode_FromString(paramIt.value().getName()));
+          name = paramIt.value().getName();
+          if (name)
+          {
+            PyList_Append(result, PyUnicode_FromString(name));
+          }
+          else
+          {
+            PyList_Append(result, PyUnicode_FromString("<invalid name>"));
+          }
       }
    }
 
