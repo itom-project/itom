@@ -85,24 +85,16 @@ namespace ito
     {
         public:
             PluginInfo(void) : m_plotFeatures(Static) {}
-            PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures) : m_plotDataTypes(plotDataTypes), m_plotDataFormats(plotDataFormats), m_plotFeatures(plotFeatures) {}
+            PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures) 
+                : m_plotDataTypes(plotDataTypes), 
+                m_plotDataFormats(plotDataFormats), 
+                m_plotFeatures(plotFeatures) 
+            {}
 
             PlotDataTypes m_plotDataTypes;
             PlotDataFormats m_plotDataFormats;
             PlotFeatures m_plotFeatures;
     };
-
-
-    enum tPalette
-    {
-        tPaletteNoType      = 0x00,
-        tPaletteGray        = 0x01,
-        tPaletteRGB         = 0x02,
-        tPaletteFC          = 0x04,
-        tPaletteIndexed     = 0x08,
-        tPaletteLinear      = 0x10,
-        tPaletteReadOnly    = 0x20
-    };    
 
     struct ItomPalette
     {

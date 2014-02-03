@@ -271,7 +271,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
