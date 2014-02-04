@@ -96,6 +96,17 @@ namespace ito
             PlotFeatures m_plotFeatures;
     };
 
+    enum tPalette
+    {
+        tPaletteNoType      = 0x00,
+        tPaletteGray        = 0x01,
+        tPaletteRGB         = 0x02,
+        tPaletteFC          = 0x04,
+        tPaletteIndexed     = 0x08,
+        tPaletteLinear      = 0x10,
+        tPaletteReadOnly    = 0x20
+    };
+
     struct ItomPalette
     {
         ItomPalette() : type(0), name("") {}
