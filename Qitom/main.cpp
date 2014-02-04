@@ -161,21 +161,32 @@ int main(int argc, char *argv[])
     }
     QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
 
-#if (defined WIN32 || defined WIN64)
     libDir = QDir::toNativeSeparators( libDir );
 
+#if (defined WIN32 || defined WIN64)
     char *oldpath = getenv("path");
+    char pathSep[] = ";";
+#else
+    char *oldpath = getenv("PATH");
+    char pathSep[] = ":";
+#endif
     char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + designerDir.size() + 11);
     newpath[0] = 0;
+#if (defined WIN32 || defined WIN64)
     strcat(newpath, "path=");
-    strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
-    strcat(newpath, ";");
-    strcat(newpath, designerDir.toAscii().data());
-    strcat(newpath, ";");
-    strcat(newpath, oldpath);
-    _putenv(newpath);
-    free(newpath);
+#else
 #endif
+    strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
+    strcat(newpath, pathSep);
+    strcat(newpath, designerDir.toAscii().data());
+    strcat(newpath, pathSep);
+    strcat(newpath, oldpath);
+#if (defined WIN32 || defined WIN64)
+    _putenv(newpath);
+#else
+    setenv("PATH", newpath, 1);
+#endif
+    free(newpath);
 
     QString defUserName;
     for (int nA = 0; nA < argc; nA++)
