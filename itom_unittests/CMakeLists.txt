@@ -1,3 +1,4 @@
 cmake_minimum_required(VERSION 2.8)
 
 ADD_SUBDIRECTORY(unittest_dataobject)
+ADD_SUBDIRECTORY(unittest_commonlib)
