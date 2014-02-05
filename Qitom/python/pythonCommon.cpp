@@ -1292,7 +1292,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
     QByteArray msg;
     if (retVal.containsWarningOrError())
     {
-        char *temp = retVal.errorMessage();
+        const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
             msg = QObject::tr("- unknown message -").toAscii();

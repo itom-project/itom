@@ -245,7 +245,7 @@ void WorkspaceDockWidget::mnuExportItem()
         RetVal retValue = IOHelper::uiExportPyWorkspaceVars(m_globalNotLocal, keyList, compatibleParamBaseTypes, QString::Null(), this);
         if (retValue.containsError())
         {
-            char *errorMsg = retValue.errorMessage();
+            const char *errorMsg = retValue.errorMessage();
             QString message = QString();
             if (errorMsg) message =errorMsg;
             //std::cerr << "error while exporting variables. reason: " << message.toAscii().data() << "\n" << std::endl;
@@ -267,7 +267,7 @@ void WorkspaceDockWidget::mnuImportItem()
     RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll), QString::Null(), this);
     if (retValue.containsError())
     {
-        char *errorMsg = retValue.errorMessage();
+        const char *errorMsg = retValue.errorMessage();
         QString message = QString();
         if (errorMsg) message = errorMsg;
         QMessageBox::critical(this, tr("Import data"), tr("Error while importing variables:\n%1").arg(message));

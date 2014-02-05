@@ -99,7 +99,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
     if (retval.containsError())
     {
         QByteArray name = functionName.toAscii();
-        char* msg = retval.errorMessage();
+        const char* msg = retval.errorMessage();
         if (msg)
         {
             PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg);
