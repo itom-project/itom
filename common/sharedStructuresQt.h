@@ -28,6 +28,7 @@
 #ifndef SHAREDSTRUCTURES_QT_H
 #define SHAREDSTRUCTURES_QT_H
 
+#include "commonGlobal.h"
 #include <qmutex.h>
 #include <qsemaphore.h>
 #include <qdebug.h>
@@ -36,7 +37,7 @@
 #include "sharedStructures.h"
 
 
-class ItomSharedSemaphore
+class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 {
     private:
         QSemaphore *m_pSemaphore;        /*!< underlying instance of QSemaphore. This semaphore is created and destructed in the constructor and destructor respectively. */

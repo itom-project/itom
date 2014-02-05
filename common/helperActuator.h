@@ -29,7 +29,7 @@
 #define HELPERACTUATOR_H
 
 #include "typeDefs.h"
-#include "../common/addInInterface.h"
+#include "addInInterface.h"
 #include "sharedStructures.h"
 
 namespace ito
@@ -46,7 +46,7 @@ namespace ito
     * \date 04.2012
     */
 
-    class threadActuator
+    class ITOMCOMMONQT_EXPORT threadActuator
     {
         private:
             int axisNumbers;                /*! < Number of axis of the actuator */
@@ -79,27 +79,6 @@ namespace ito
             ito::RetVal getErrorBuf(void);                                                                             /*! < Check if an axis is within the axis-range */
     };
 
-//    class threadAxis
-//    {
-//        private:
-//            int thisAxis;
-//            ito::AddInActuator *pMyMotor;   /*! < Handle to the actuator */
-//            ItomSharedSemaphore *pMySemaphore;  /*! < Handle to the semaphore needed for thread save communication. Allocated in constructor, deleted in destructor*/
-//            inline ito::RetVal securityChecks();
-//
-    //    protected:
-    //        threadActuator(QVector<ito::tParam> *parameterVector, int paramNumber, int axisNumber); /*! < Constructor */
-    //        ~threadActuator();  /*! < Desctructor */
-
-    //    public:
-    //        ito::RetVal setPosRel(int axis, double stepSize, int timeOutMS, bool callWait = true);                          /*! < Move a single axis relativ to current position */
-    //        ito::RetVal setPosAbs(int axis, double pos, int timeOutMS, bool callWait = true);                               /*! < Move a single axi absolute*/
-    //        ito::RetVal waitForSemaphore(int timeOutMS);                                                                    /*! < Wait until actuator-thread has finished the last command */
-
-    //        ito::RetVal getPos(int axis, double &pos, int timeOutMS);                                                       /*! < Get the position of a single axis */
-    //
-    //        ito::RetVal checkAxis(int axisNum);                                                                             /*! < Check if an axis is within the axis-range */
-    //};
 
 }   // end namespace ito
 

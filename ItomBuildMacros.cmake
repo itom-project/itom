@@ -326,6 +326,20 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
 
 ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
 
+MACRO (ADD_ITOMLIBRARY_TO_COPY_LIST target sources destinations)
+	IF(${ITOM_APP_DIR} STREQUAL "")
+        message(SEND_ERROR "ITOM_DIR is not indicated")
+    ENDIF()
+	
+    #GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
+	#STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
+	#SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
+	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+    
+	LIST(APPEND ${destinations} ${ITOM_APP_DIR})
+
+ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
+
 
 MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
 	IF(${ITOM_APP_DIR} STREQUAL "")

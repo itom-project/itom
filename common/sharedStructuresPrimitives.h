@@ -56,7 +56,7 @@
     \date   12.2013
 */
 
-struct geometricPrimitives
+struct ITOMCOMMONQT_EXPORT geometricPrimitives
 {
 
 /*
@@ -155,7 +155,7 @@ namespace ito
         \author Wolfram Lyda, twip optical solutions GmbH, Stuttgart
         \date   12.2013
     */
-    class PrimitiveContainer 
+    class ITOMCOMMONQT_EXPORT PrimitiveContainer 
     {
     public:
 

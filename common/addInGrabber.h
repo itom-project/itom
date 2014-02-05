@@ -36,7 +36,7 @@
 
 namespace ito
 {
-    class AddInGrabber : public ito::AddInDataIO
+    class ITOMCOMMONQT_EXPORT AddInGrabber : public ito::AddInDataIO
     {
         Q_OBJECT
 

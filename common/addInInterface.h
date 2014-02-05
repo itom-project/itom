@@ -28,6 +28,8 @@
 #ifndef ADDININTERFACE_H
 #define ADDININTERFACE_H
 
+#include "commonGlobal.h"
+
 #include "apiFunctionsInc.h"
 #include "apiFunctionsGraphInc.h"
 
@@ -142,7 +144,7 @@ namespace ito
     *   is obtained using one of the initAddIn \ref initAddIn methods. Which first create a new instance, move the instance to a new thread
     *   and at last call the classes init method
     */
-    class AddInInterfaceBase : public QObject
+    class ITOMCOMMONQT_EXPORT AddInInterfaceBase : public QObject
     {
         Q_OBJECT
 
@@ -263,7 +265,7 @@ namespace ito
     *   The base functionality included in this base class is getting the plugin's parameter list, getting the classes uniqueID (which is
     *   used e.g. for saveing the parameter values) and optinally to bring up a configuration dialog.
     */
-    class AddInBase : public QObject
+    class ITOMCOMMONQT_EXPORT AddInBase : public QObject
     {
         Q_OBJECT
 
@@ -592,7 +594,7 @@ namespace ito
     *   If the user wants to change values in this image, he should make a deep copy first.
     *
     */
-    class AddInDataIO : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
     {
         Q_OBJECT
 
@@ -656,7 +658,7 @@ namespace ito
     *   This class is one step further down the line from \ref AddInBase. Actuator plugins must be derived from this class which
     *   is derived from AddInBase. In this class only the methods specific to actuator plugins are declared.
     */
-    class AddInActuator : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInActuator : public AddInBase
     {
         Q_OBJECT
 
@@ -856,7 +858,7 @@ namespace ito
     *   not have an init function or a close function. In the algo base class at the moment no further methods or variables are declared -
     *   it serves more as an organisation class, putting all actual plugins to the same level of inheritance.
     */
-    class AddInAlgo : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInAlgo : public AddInBase
     {
         Q_OBJECT
 

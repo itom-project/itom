@@ -32,7 +32,7 @@
 namespace ito
 {
 
-int ParamBase::numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double;
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor with name only
@@ -644,6 +644,42 @@ void ParamBase::InOutCheck()
         {
             throw std::logic_error("It is not allowed to delcare a parameter as OUT for types DObjPtr, PointCloudPtr, PolygonMeshPtr or HWRef");
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int ParamBase::getLen(void) const
+{
+    switch (m_type & paramTypeMask)
+    {
+        case DoubleArray:
+        case IntArray:
+        case CharArray:
+            if (m_cVal)
+            {
+                return m_iVal;
+            }
+            else
+            {
+                return -1;
+            }
+
+        case String:
+            if (m_cVal)
+            {
+                return static_cast<int>(strlen(m_cVal));
+            }
+            else
+            {
+                return 0;
+            }
+
+        case Double:
+        case Int:
+            return 1;
+
+        default:
+            return -1;
     }
 }
 

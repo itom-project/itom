@@ -16,8 +16,6 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 
-find_package(Qt4 REQUIRED)
-
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
@@ -32,20 +30,15 @@ ELSE(CMAKE_BUILD_TYPE)
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 
-INCLUDE_DIRECTORIES( 
-    ${QT_QTCORE_INCLUDE_DIR}
-)
-
-INCLUDE(${QT_USE_FILE})
 
 set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/param.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/color.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
 )
-
-QT4_WRAP_CPP(itomCommon_HEADERS_MOC ${itomCommon_HEADERS})
 
 set(itomCommon_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/retVal.cpp
@@ -53,6 +46,12 @@ set(itomCommon_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp
 )
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommon_SOURCES} ${itomCommon_HEADERS} ${itomCommon_HEADERS_MOC})
+add_library(${target_name} ${LIBRARY_TYPE} ${itomCommon_SOURCES} ${itomCommon_HEADERS})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name})
+
+# COPY SECTION
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
+ADD_ITOMLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

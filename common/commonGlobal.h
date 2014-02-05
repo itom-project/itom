@@ -64,6 +64,41 @@
     #endif
 
 
+    #if defined(ITOMCOMMONQT_DLL) || defined(_DLL) || defined(__DLL__ ) || \
+        (( defined(_Windows) || defined(_WINDOWS) || \
+           defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+
+
+        #  ifndef ITOMCOMMONQT_EXPORT
+
+             /* Borland/Microsoft */
+        #    if defined(_MSC_VER) || defined(__BORLANDC__)
+        #      if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
+        #      else
+        #         ifdef ITOMCOMMONQT_DLL
+        #            define ITOMCOMMONQT_EXPORT __export
+        #         else
+        #            define ITOMCOMMONQT_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
+        #         endif                              /* Exists in Borland C++ for
+                                                        C++ classes (== huge) */
+        #      endif
+        #    endif
+
+        #    ifndef ITOMCOMMONQTEXP
+        #      ifdef ITOMCOMMONQT_DLL
+        #        define ITOMCOMMONQT_EXPORT __declspec(dllexport)
+        #      else
+        #        define ITOMCOMMONQT_EXPORT __declspec(dllimport)
+        #      endif
+        #    endif
+        #  endif  /* ITOMCOMMONQTEXP */
+    #endif
+
+    #ifndef ITOMCOMMONQT_EXPORT
+    #  define ITOMCOMMONQT_EXPORT
+    #endif
+
+
 /////// exchange-add operation for atomic operations on reference counters ///////
     #ifdef __GNUC__
     

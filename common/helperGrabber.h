@@ -29,7 +29,7 @@
 #define HELPERGRABBER_H
 
 #include "typeDefs.h"
-#include "../common/addInGrabber.h"
+#include "addInGrabber.h"
 #include "sharedStructures.h"
 
 namespace ito
@@ -54,7 +54,7 @@ namespace ito
     * \date 04.2012
     */
 
-    class threadCamera
+    class ITOMCOMMONQT_EXPORT threadCamera
     {
         private:
             ito::AddInGrabber *pMyCamera;                   /*! < Handle to the Grabber */

@@ -87,12 +87,8 @@ LINK_DIRECTORIES(
 
 INCLUDE(${QT_USE_FILE})
 
-set(qitom_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
@@ -107,6 +103,14 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
+)
+
+
+set(qitom_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
@@ -264,14 +268,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.cpp
@@ -451,7 +447,7 @@ ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
 # END HANDLE VERSION
 
 #handle translations BEGIN
-set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
+set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui} ) #PARENT_SCOPE)
 set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
@@ -468,7 +464,7 @@ endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
 
-ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
@@ -508,7 +504,7 @@ ELSE(BUILD_WITH_PCL)
 ENDIF(BUILD_WITH_PCL)
 
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
  
 BUILD_PARALLEL_LINUX(${target_name})
 

@@ -69,8 +69,6 @@ namespace ito
         int m_iVal;         //!< internal value for integer typed values
         char *m_cVal;       //!< internal pointer for pointer type values (also strings)
 
-        static int numericTypeMask;
-
     public:
         enum Type {
             //flags (bit 17-32)
@@ -131,6 +129,7 @@ namespace ito
         //! returns true if Param is of type char, int or double
         inline bool isNumeric(void) const
         {
+            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double;
             return (numericTypeMask & getType()) > 0;
         }
 
@@ -169,41 +168,8 @@ namespace ito
         //! when an instance of a plugin class is deleted (closed)
         inline void setAutosave(const uint32 autosave) { m_type = autosave > 0 ? m_type & ~NoAutosave : m_type | NoAutosave; return; }
 
-        inline int getLen(void) const
-        {
-            switch (m_type & paramTypeMask)
-            {
-                case DoubleArray:
-                case IntArray:
-                case CharArray:
-                    if (m_cVal)
-                    {
-                        return m_iVal;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-
-                case String:
-                    if (m_cVal)
-                    {
-                        return static_cast<int>(strlen(m_cVal));
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-
-                case Double:
-                case Int:
-                    return 1;
-
-                default:
-                    return -1;
-            }
-        }
-
+        int getLen(void) const;
+        
             
         /** setVal  set parameter value - templated version
         *   @param [in] val  value to set to
