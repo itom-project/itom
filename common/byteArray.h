@@ -40,6 +40,8 @@ extern "C++" {
 #include <stdio.h>
 #include <assert.h>     /* assert */
 
+#include <cstdlib>
+
 namespace ito
 {
 
@@ -120,7 +122,7 @@ class ITOMCOMMON_EXPORT ByteArray
         { 
             if (x && !(BYTEARRAY_DECREF(x))) 
             { 
-                free(x); 
+                free(x);
             }
         }
 
