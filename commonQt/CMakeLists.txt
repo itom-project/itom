@@ -9,13 +9,31 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
-#compile dataObject as shared library (always)
-SET(LIBRARY_TYPE SHARED)
+
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
 
+IF(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE SHARED)
+    
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
+ELSE(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE STATIC)
+    
+    #if itomCommon is static, add -fPIC as compiler flag for linux
+    IF(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    ENDIF(UNIX)
+    
+    ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
+                                               #published with void** only one (!) time. if this lib is statically linked to itom, it is already
+                                               #defined within itom and must not be defined in this lib but with extern void**. If this lib is
+                                               #shared, it also needs to be defined there.
+    
+ENDIF(BUILD_ITOMLIBS_SHARED)
 
 find_package(Qt4 REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
@@ -23,12 +41,6 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
-
-IF (BUILD_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-ENDIF (BUILD_ITOMLIBS_SHARED)
-
-ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
 
 SET (QT_USE_QTXML TRUE)
 

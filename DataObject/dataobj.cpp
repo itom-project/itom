@@ -5783,7 +5783,6 @@ int DataObject::setAxisDescription(const unsigned int axisNum, const std::string
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function to set the string value of the specified tag, if the tag do not exist, it will be added automatically, return 1 if tagspace does not exist
-//inline int setTag(const std::string &key, const std::string &value)
 int DataObject::setTag(const std::string &key, const DataObjectTagType &value)
 {
     if(!m_pDataObjectTags) return 1; //error
@@ -6094,9 +6093,6 @@ int DataObject::getTagListSize() const
     return static_cast<int>(m_pDataObjectTags->m_tags.size());
 }
 
-//   inline void setValueOffset(double offset) { m_valueOffset =offset; }
-//   inline void setValueScale(double scale) { m_valueScale =scale; }
-
 //!<  Function to set the string-value of the value unit, return 1 if values does not exist
 int DataObject::setValueUnit(const std::string &unit)
 {
@@ -6113,7 +6109,7 @@ int DataObject::setValueDescription(const std::string &description)
     return 0;
 }
 
-inline RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
+RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
 {
     if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
     r11 = m_pDataObjectTags->m_rotMatrix[0];

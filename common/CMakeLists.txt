@@ -7,20 +7,29 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-
-#compile dataObject as shared library (always)
-SET(LIBRARY_TYPE SHARED)
+OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
 
+IF(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE SHARED)
+    
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
+ELSE(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE STATIC)
+    
+    #if itomCommon is static, add -fPIC as compiler flag for linux
+    IF(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    ENDIF(UNIX)
+ENDIF(BUILD_ITOMLIBS_SHARED)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
-
-ADD_DEFINITIONS(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
