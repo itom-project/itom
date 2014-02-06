@@ -70,7 +70,8 @@ The actual status of the return value can be obtained using the following method
     
 .. cpp:function:: char *errorMessage()
     
-    Returns a zero-terminated string containing the actual error-message of this return value or NULL.
+    Returns a zero-terminated string containing the actual error-message of this return value or a zero-terminated, empty string
+    if no message has been set (Caution: in |itom| <= 1.1.0 this method returned NULL in the latter case).
     
 Additionally you can use the comparinson operators **==** or **!=** to compare the error state of two return values or the error state of one return value with a given error state.
 

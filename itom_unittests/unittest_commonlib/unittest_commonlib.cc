@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	//::testing::FLAGS_gtest_filter = "iterator_test/*.iterator_test_2d"; //To Perform perticular subtest check, give the Path of Perticular test. Comment this statement to perform whole test check.
 	//::testing::FLAGS_gtest_filter = "const_iterator_test/*.*";
 	//::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
-    int64 t = cv::getTickCount();
+    /*int64 t = cv::getTickCount();
     int m = 1000000;
 
     t = cv::getTickCount();
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
         retval.containsError();
     }
     t = cv::getTickCount() - t;
-    std::cout << t/cv::getTickFrequency() << "\n" << std::endl;
+    std::cout << t/cv::getTickFrequency() << "\n" << std::endl;*/
     
     
 

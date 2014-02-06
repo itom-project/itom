@@ -602,7 +602,7 @@ namespace ito
                             else
                             {
                                 algoInst->rejectFilter(it.key() );
-                                if (validRet.errorMessage())
+                                if (validRet.hasErrorMessage())
                                 {
                                     message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded: " + QString(validRet.errorMessage());
                                 }
@@ -617,7 +617,7 @@ namespace ito
                         else if (validRet.containsError() || fd->m_interface != 0) //the !=0 check is only to make sure that we always get into that case if the filter is somehow wrong
                         {
                             algoInst->rejectFilter(it.key());
-                            if (validRet.errorMessage())
+                            if (validRet.hasErrorMessage())
                             {
                                 message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
                             }
@@ -677,7 +677,7 @@ namespace ito
                         else if (validRet.containsError())
                         {
                             algoInst->rejectAlgoWidget(jt.key());
-                            if (validRet.errorMessage())
+                            if (validRet.hasErrorMessage())
                             {
                                 message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
                             }

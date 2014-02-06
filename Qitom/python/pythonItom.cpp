@@ -935,7 +935,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         if (pDetailDescription)
             free(pDetailDescription);
 
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName, retval.errorMessage());
         }
@@ -1013,7 +1013,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
             {
                 Py_DECREF(result);
 
-                if (retval.errorMessage())
+                if (retval.hasErrorMessage())
                 {
                     return PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName, retval.errorMessage());
                 }
@@ -2555,7 +2555,7 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 
     if (ret.containsError())
     {
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not save dataObject: error message: \n%s\n", ret.errorMessage());
         }
@@ -2611,7 +2611,7 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 
     if (ret.containsError())
     {
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not load dataObject: error message: \n%s\n", ret.errorMessage());
         }

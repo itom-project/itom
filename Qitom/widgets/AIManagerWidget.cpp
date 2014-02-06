@@ -855,7 +855,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     if (retValue.containsError())
     {
         msgBox.setText(tr("Error while opening user interface from plugin."));
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             msgBox.setDetailedText(retValue.errorMessage());
         }
@@ -865,7 +865,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     else if (retValue.containsWarning())
     {
         msgBox.setText(tr("Warning while opening user interface from plugin."));
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             msgBox.setDetailedText(retValue.errorMessage());
         }

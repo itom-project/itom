@@ -89,8 +89,6 @@ class ITOMCOMMON_EXPORT ByteArray
 
         const char *data() const { return d ? d->m_pData : &emptyChar; };
 
-        const char *lazyData() const { return d ? d->m_pData : NULL; };
-
         inline char &operator[](unsigned int i) const
         {
             assert(i >= 0 && i < (unsigned int)(size()));

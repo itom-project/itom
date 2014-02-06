@@ -411,7 +411,7 @@ void MainApplication::setupApplication()
 
     if (retValue.containsError())
     {
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
         }
@@ -422,7 +422,7 @@ void MainApplication::setupApplication()
     }
     else if (retValue.containsWarning())
     {
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
         }
