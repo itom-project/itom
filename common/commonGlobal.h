@@ -36,7 +36,7 @@
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
             #else
-                #ifdef DATAOBJECT_DLL
+                #ifdef ITOMCOMMON_DLL
                     #define ITOMCOMMON_EXPORT __export
                 #else
                     #define ITOMCOMMON_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
@@ -46,7 +46,7 @@
         #endif
 
         #ifndef ITOMCOMMON_EXPORT //ITOMCOMMON_EXPORT has not be defined yet
-            #ifdef DATAOBJECT_DLL
+            #ifdef ITOMCOMMON_DLL
                 #define ITOMCOMMON_EXPORT __declspec(dllexport)
             #else
                 #define ITOMCOMMON_EXPORT __declspec(dllimport)
@@ -70,7 +70,7 @@
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
             #else
-                #ifdef DATAOBJECT_DLL
+                #ifdef ITOMCOMMONQT_DLL
                     #define ITOMCOMMONQT_EXPORT __export
                 #else
                     #define ITOMCOMMONQT_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
@@ -80,7 +80,7 @@
         #endif
 
         #ifndef ITOMCOMMONQT_EXPORT //ITOMCOMMONQT_EXPORT has not be defined yet
-            #ifdef DATAOBJECT_DLL
+            #ifdef ITOMCOMMONQT_DLL
                 #define ITOMCOMMONQT_EXPORT __declspec(dllexport)
             #else
                 #define ITOMCOMMONQT_EXPORT __declspec(dllimport)
