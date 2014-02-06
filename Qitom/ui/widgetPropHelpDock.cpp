@@ -121,6 +121,7 @@ void WidgetPropHelpDock::readSettings()
     ui.checkExtLinks->setChecked( settings.value("OpenExtLinks", true).toBool() );
     ui.checkPlaintext->setChecked( settings.value("Plaintext", false).toBool() );
     ui.checkFilters->setChecked( settings.value("ShowFilters", false).toBool() );
+    ui.checkWidgets->setChecked( settings.value("ShowWidgets", false).toBool() );
     ui.checkModules->setChecked( settings.value("ShowModules", false).toBool() );
     if (ui.checkModules->isChecked())
         ui.listWidget->setEnabled(true);
@@ -160,6 +161,7 @@ void WidgetPropHelpDock::writeSettings()
     settings.setValue("Plaintext", ui.checkPlaintext->isChecked() );
     settings.setValue("reLoadDBs", m_plistChanged );
     settings.setValue("showFilters", ui.checkFilters->isChecked() );
+    settings.setValue("showWidgets", ui.checkWidgets->isChecked() );
     settings.setValue("showModules", ui.checkModules->isChecked() );
 
     // Write the checkstate with the List into the ini File

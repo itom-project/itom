@@ -21,7 +21,7 @@ public:
     HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WFlags flags = 0);
     ~HelpTreeDockWidget();
 
-    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5};
+    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6};
 
 public slots:
     void navigateBackwards();
@@ -59,11 +59,12 @@ private:
     struct DisplayBool
     {
         bool Filters;
+        bool Widgets;
         bool Modules;
     };
 
     
-    static void createFilterNode(QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
+    static void createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
     static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
     static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
@@ -73,10 +74,10 @@ private:
     void loadIni();
     ito::RetVal displayHelp(const QString &path, const int newpage);
     QStringList separateLink(const QUrl &link);
-    ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, bool htmlNotPlainText = true);
+    ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document);
     QModelIndex findIndexByName(const QString &modelName);
 
-    QString parseFilterContent(const QString &input);
+    QString parseFilterWidgetContent(const QString &input);
     ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);
     QString parseParam(const QString &tmpl, const ito::Param &param);
 

@@ -93,6 +93,11 @@ div.warning p.admonition-title, .code .error {
   color: red ;
   font-weight: bold ;
   font-family: sans-serif }
+  
+div.meta{
+  font-style: italic;
+  margin-top: 1em;
+}  
 
 /* Uncomment (and remove this text!) to get reduced vertical space in
    compound paragraphs.
