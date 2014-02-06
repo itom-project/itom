@@ -11,6 +11,7 @@ OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
 OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
@@ -40,6 +41,10 @@ ENDIF (BUILD_UNICODE)
 IF (BUILD_WITH_PCL)
     ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
 ENDIF (BUILD_WITH_PCL)
+
+IF (BUILD_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+ENDIF (BUILD_ITOMLIBS_SHARED)
 
 ADD_DEFINITIONS(-DCMAKE -DITOM_CORE -DITOMSHAREDDESIGNER)
  
@@ -498,7 +503,11 @@ else()
 endif()
 
 IF(BUILD_WITH_PCL)
-    SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    IF(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES pointcloud)
+    ELSE(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    ENDIF(BUILD_ITOMLIBS_SHARED)
 ELSE(BUILD_WITH_PCL)
     SET(POINTCLOUD_LIBRARIES "")
 ENDIF(BUILD_WITH_PCL)

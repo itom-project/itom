@@ -6,10 +6,15 @@ cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
 
 include("../../ItomBuildMacros.cmake")
+
+IF (BUILD_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+ENDIF (BUILD_ITOMLIBS_SHARED)
 
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.6.0/cmake/internal_utils.cmake")
@@ -97,7 +102,7 @@ set(unittest_dataobject_SOURCES
 # #end add filters to visual studio
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_dataobject_SOURCES} ${unittest_dataobject_HEADERS})
-target_link_libraries(${target_name} dataobject ${OpenCV_LIBS})
+target_link_libraries(${target_name} dataobject itomCommonLib ${OpenCV_LIBS})
 
 #ADD_EXECUTABLE(${target_name} WIN32 ${unittest_dataobject_SOURCES} ${unittest_dataobject_HEADERS})
 #TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject gtest gtest_main)

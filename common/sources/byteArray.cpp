@@ -29,6 +29,8 @@
 
 namespace ito {
 
+/*static*/ char ByteArray::emptyChar = '\0';
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ByteArray::ByteArray(const char *str) : d(NULL)
 {
@@ -62,24 +64,67 @@ void ByteArray::append(const char *str)
     if (str)
     {
         int newlen = strlen(str);
-        Data *oldData = d;
+        
         int oldlen = strlen(d->m_pData);
 
         if (newlen > 0)
         {
-            d = static_cast<Data*>(malloc(sizeof(Data) + newlen + oldlen));
-            d->m_ref = 0;
-            d->m_pData = d->m_buffer;
-            memcpy(d->m_buffer, oldData->m_pData, oldlen);
-            memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
-
-            //decref the old data structure
-            if (oldData)
+            if (d && d->m_ref == 0) //this is the only user
             {
+                d = static_cast<Data*>(realloc(d, sizeof(Data) + newlen + oldlen));
+                memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
+            }
+            else
+            {
+                Data *oldData = d;
+                d = static_cast<Data*>(malloc(sizeof(Data) + newlen + oldlen));
+                d->m_ref = 0;
+                d->m_pData = d->m_buffer;
+                memcpy(d->m_buffer, oldData->m_pData, oldlen);
+                memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
+
+                //decref the old data structure
                 decAndFree(oldData);
             }
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ByteArray::append(const ByteArray &str)
+{
+    int newlen = str.length();
+    Data *oldData = d;
+    int oldlen = strlen(d->m_pData);
+
+    if (newlen > 0)
+    {
+        d = static_cast<Data*>(malloc(sizeof(Data) + newlen + oldlen));
+        d->m_ref = 0;
+        d->m_pData = d->m_buffer;
+        memcpy(d->m_buffer, oldData->m_pData, oldlen);
+        memcpy(d->m_buffer + oldlen * sizeof(char), str.d->m_pData, newlen+1);
+
+        //decref the old data structure
+        if (oldData)
+        {
+            decAndFree(oldData);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ByteArray::operator==(const ByteArray &a) const
+{
+    if (d && a.d)
+    {
+        return (strcmp(d->m_pData,a.d->m_pData)==0);
+    }
+    else if (!d && !a.d)
+    {
+        return true;
+    }
+    return false;
 }
 
 

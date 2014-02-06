@@ -338,7 +338,7 @@ MACRO (ADD_ITOMLIBRARY_TO_COPY_LIST target sources destinations)
     
 	LIST(APPEND ${destinations} ${ITOM_APP_DIR})
 
-ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
+ENDMACRO (ADD_ITOMLIBRARY_TO_COPY_LIST)
 
 
 MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)

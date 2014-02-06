@@ -37,6 +37,8 @@ extern "C++" {
 #include "typeDefs.h"
 
 #include <stdarg.h>
+#include <stdio.h>
+#include <assert.h>     /* assert */
 
 namespace ito
 {
@@ -64,6 +66,8 @@ class ITOMCOMMON_EXPORT ByteArray
             //do not append further members add, only prepend!!!
         };
 
+        static char emptyChar;
+
     public:
         inline ByteArray() : d(NULL) {}
         
@@ -77,7 +81,39 @@ class ITOMCOMMON_EXPORT ByteArray
 
         void append(const char *str);
 
-        const char *data() const { return d ? d->m_pData : NULL; };
+        void append(const ByteArray &str);
+
+        int length() const { if(d){ return strlen(d->m_pData); } return 0; }
+
+        int size() const { if(d){ return strlen(d->m_pData); } return 0; }
+
+        const char *data() const { return d ? d->m_pData : &emptyChar; };
+
+        const char *lazyData() const { return d ? d->m_pData : NULL; };
+
+        inline char &operator[](unsigned int i) const
+        {
+            assert(i >= 0 && i < (unsigned int)(size()));
+            if (d)
+            {
+                return d->m_pData[i];
+            }
+            return emptyChar; //will never occur
+        }
+
+        inline char &operator[](int i) const
+        {
+            assert(i >= 0 && i < size());
+            if (d)
+            {
+                return d->m_pData[i];
+            }
+            return emptyChar; //will never occur
+        }
+
+        bool operator==(const ByteArray &a) const;
+        inline bool operator!=(const ByteArray &a) const { return !(operator==(a)); }       
+        
 
     private:
         Data *d;
@@ -92,6 +128,25 @@ class ITOMCOMMON_EXPORT ByteArray
 
 
 };
+
+inline bool operator==(const ByteArray &a1, const char *a2)
+{ 
+    return a2 ? strcmp(a1.data(),a2) == 0 : (a1.size() == 0);  
+}
+
+inline bool operator==(const char *a1, const ByteArray &a2)
+{ 
+    return a1 ? strcmp(a1,a2.data()) == 0 : (a2.size() == 0);
+}
+
+inline bool operator!=(const ByteArray &a1, const char *a2)
+{ 
+    return a2 ? strcmp(a1.data(),a2) != 0 : (a1.size() > 0); 
+}
+inline bool operator!=(const char *a1, const ByteArray &a2)
+{ 
+    return a1 ? strcmp(a1,a2.data()) != 0 : (a2.size() > 0); 
+}
 
 
 } //end namespace ito

@@ -145,7 +145,7 @@ class ITOMCOMMON_EXPORT RetVal
         inline int containsError() { return (m_retValue & retError); }                 /*!< checks if any error has occurred in this return value (true), else (false) */
         inline int containsWarningOrError() { return (m_retValue & (retError | retWarning)); }  /*!< checks if any warning or error has occurred in this return value (true), else (false) */
 
-        inline const char *errorMessage() { return m_retMessage.data(); }
+        inline const char *errorMessage() { return m_retMessage.lazyData(); }
         inline int errorCode() const { return m_retCode; }
 
         //----------------------------------------------------------------------------------------------------------------------------------

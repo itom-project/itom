@@ -28,6 +28,8 @@
 #ifndef READWRITELOCK
 #define READWRITELOCK
 
+#include "defines.h"
+
 // Use Window or Posix
 //#if defined (_WINDOWS) || defined (WIN32)
 #ifdef WIN32
@@ -45,12 +47,12 @@
         If this object is locked for writing (lockWrite), it can not be used for reading nor writing until the writer released the protection
         with (unlock). On the other hand, the object can multiply be locked for reading if no write-operation is executed at the same time.
 */
-
+namespace ito {
 
 #ifdef WIN32
 //#if defined _WINDOWS || defined WIN32
 
-    class ReadWriteLock
+    class DATAOBJ_EXPORT ReadWriteLock
     {
     private:
 
@@ -217,7 +219,7 @@
 
 #else
 
-    class ReadWriteLock
+    class DATAOBJ_EXPORT ReadWriteLock
     {
         public:
             //! constructor
@@ -367,6 +369,6 @@
 
 #endif
 
-
+} //namespace ito
 
 #endif

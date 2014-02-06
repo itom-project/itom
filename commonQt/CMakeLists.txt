@@ -7,6 +7,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
 #compile dataObject as shared library (always)
 SET(LIBRARY_TYPE SHARED)
@@ -22,6 +23,10 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
+
+IF (BUILD_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+ENDIF (BUILD_ITOMLIBS_SHARED)
 
 ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
 

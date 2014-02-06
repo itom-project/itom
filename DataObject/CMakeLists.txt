@@ -1,18 +1,28 @@
-project(DataObject) 
+SET (target_name dataobject)
+project(${target_name}) 
 
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
-#compile dataObject as static library (always)
-SET(LIBRARY_TYPE STATIC)
+IF(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE SHARED)
+    
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
+ELSE(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE STATIC)
+    
+    #if dataObject is static, add -fPIC as compiler flag for linux
+    IF(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    ENDIF(UNIX)
+ENDIF(BUILD_ITOMLIBS_SHARED)
 
-#if dataObject is static, add -fPIC as compiler flag for linux
-IF(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-ENDIF(UNIX)
+
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
@@ -48,9 +58,11 @@ set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
 )
 
-add_library(dataobject ${LIBRARY_TYPE} ${libSrcs})
+add_library(${target_name} ${LIBRARY_TYPE} ${libSrcs})
 
-#TARGET_LINK_LIBRARIES(dataobject)
+IF(BUILD_ITOMLIBS_SHARED)
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} itomCommonLib)
+ENDIF(BUILD_ITOMLIBS_SHARED)
 
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
@@ -60,4 +72,9 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/readWriteLock.h  DESTINATION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 ADD_OUTPUTLIBRARY_TO_SDK_LIB(dataobject COPY_SOURCES COPY_DESTINATIONS)
+
+IF(BUILD_ITOMLIBS_SHARED)
+    ADD_ITOMLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+ENDIF(BUILD_ITOMLIBS_SHARED)
+
 POST_BUILD_COPY_FILES(dataobject COPY_SOURCES COPY_DESTINATIONS)

@@ -29,10 +29,80 @@
 #include "dataobj.h"
 #include <cmath>
 
+#include <vector>
+#include <map>
+
+
 namespace ito {
 
 
 const int DataObject::m_sizeofs = sizeof(int) < sizeof(int *) ? 1 : sizeof(int) / sizeof(int *);
+
+
+//--------------------------------------------------------------------------
+//       BEGIN DataObjectTagsPrivate
+//--------------------------------------------------------------------------
+class DataObjectTagsPrivate
+{
+public:
+    std::map<std::string, DataObjectTagType> m_tags;   /*!< map for tags with keyword (std::string) and value (either std::string or double) */
+    std::vector<double> m_axisOffsets;          /*!< vector with offset-values for each axis (offset in dataObject-Pixel). Describes the distance from pixel [0,0,..0] to coordiante system origin. Unit-Coordinate = ( px-Coordinate - Offset)* Scale*/
+    std::vector<double> m_axisScales;           /*!< vector with scale-values for each axis (unit / px). Unit-Coordinate = ( px-Coordinate - Offset)* Scale. Scale cannot be 0.0*/
+    std::vector<std::string> m_axisDescription; /*!< vector with axis-describtions */
+    std::vector<std::string> m_axisUnit;        /*!< vector with axis-units-description (e.g. 'mm') */
+    double m_valueOffset;                       /*!< offset of the values within the dataObject. Currently as read only with value 0.0 */
+    double m_valueScale;                        /*!< scale of the values within the dataObject. Currently as read only with value 1.0 */
+    std::string m_valueDescription;             /*!< descriptions for the values (e.g. 'Intensity' or 'Heigth') */
+    std::string m_valueUnit;                    /*!< unit description for the values (e.g. 'mm') */
+
+    double m_rotMatrix[9];                      /*!< array containing the rotiational matrix for the yx-plane */;
+
+    DataObjectTagsPrivate()
+        : m_valueOffset(0.0), m_valueScale(1.0)
+    {
+    }
+
+    //!< Constructor
+    DataObjectTagsPrivate(unsigned int totalAxisNum) : m_valueOffset(0.0), m_valueScale(1.0)
+    {
+        m_axisOffsets.resize(totalAxisNum, 0.0);
+        m_axisScales.resize(totalAxisNum, 1.0);
+        m_axisDescription.resize(totalAxisNum, "");
+        m_axisUnit.resize(totalAxisNum, "");
+        memset(m_rotMatrix, 0, sizeof(double)*9);
+        m_rotMatrix[0] = 1; // r11
+        m_rotMatrix[4] = 1; // r22
+        m_rotMatrix[8] = 1; // r33
+    }
+
+    //!< Destructor
+    ~DataObjectTagsPrivate()
+    {
+    }
+
+    ////!< Copy constructor
+    //DataObjectTagsPrivate(const DataObjectTags& copyConstr)
+};
+
+//--------------------------------------------------------------------------
+//       END DataObjectTagsPrivate
+//--------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //-------------------------------------------------------------------------  
 //! default constructor
 DObjConstIterator::DObjConstIterator() :
@@ -655,6 +725,49 @@ uchar ** DataObject::get_mdata(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+int DataObject::mdata_realloc(const int size)
+{
+    if (m_data)
+    {
+        m_data = static_cast<uchar **>(realloc(m_data - m_sizeofs, (size + m_sizeofs) * sizeof(uchar *)));
+    }
+    else
+    {
+        int numBytes = (size + m_sizeofs) * sizeof(uchar *);
+        m_data = static_cast<uchar **>(calloc(numBytes, 1));
+        memset( m_data, 0, numBytes );
+    }
+    (*reinterpret_cast<int*>(m_data)) = size;
+    m_data += m_sizeofs;
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DataObject::mdata_size(void) const
+{
+    if (!m_data)
+    {
+        return 0;
+    }
+    else
+    {
+        return (*reinterpret_cast<int *>(m_data - m_sizeofs));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DataObject::mdata_free()
+{
+    if (m_data)
+    {
+        uchar **ptr = m_data - m_sizeofs;
+        free(ptr);
+    }
+    m_data = NULL;
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! \todo documentation is missing
 /*!
 
@@ -849,11 +962,11 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
         dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock.getLockStatus());
         if(dimensions == 1)
         {
-            dObj->m_pDataObjectTags = new DataObjectTags(2);
+            dObj->m_pDataObjectTags = new DataObjectTagsPrivate(2);
         }
         else
         {
-            dObj->m_pDataObjectTags = new DataObjectTags(dimensions);
+            dObj->m_pDataObjectTags = new DataObjectTagsPrivate(dimensions);
         }
    }
 
@@ -1077,7 +1190,7 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         {
             dObj->m_pRefCount = new int(0);
             dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock.getLockStatus());
-            dObj->m_pDataObjectTags = new DataObjectTags(dimensions);
+            dObj->m_pDataObjectTags = new DataObjectTagsPrivate(dimensions);
         }
 
         dObj->mdata_realloc(nrOfPlanes);
@@ -2589,7 +2702,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             m_pRefCount = new int(0);
             m_objSharedDataLock = new ReadWriteLock(m_objHeaderLock.getLockStatus());
 
-            m_pDataObjectTags = new DataObjectTags( *dObj.m_pDataObjectTags ); //deep copy of tags
+            m_pDataObjectTags = new DataObjectTagsPrivate( *dObj.m_pDataObjectTags ); //deep copy of tags
 
             //flip last two elements of axisDescription, axisOffsets, axisScale, axisUnit
             if(dims >= 2)
@@ -5713,7 +5826,7 @@ int DataObject::addToProtocol(const std::string &value)
     if(!m_pDataObjectTags) return 1; //error
     /* Check if object is only an ROI */
     bool isROI = false;
-    std::string newcontent(""); // Start with an empty sting
+    ByteArray newcontent; // Start with an empty sting
     for(int dim = 0; dim < m_dims; dim++)   // Check if this is an ROI
     {
         if(m_size[dim] != m_osize[dim])
@@ -5753,7 +5866,7 @@ int DataObject::addToProtocol(const std::string &value)
         free(sizeTotal);
         free(posROI);
     }
-    newcontent.append(value);   // Append the value to the content
+    newcontent.append(value.data());   // Append the value to the content
     if(newcontent[newcontent.length()-1] != '\n')   // add a \n is not aready there
     {
         newcontent.append("\n");
@@ -5767,7 +5880,7 @@ int DataObject::addToProtocol(const std::string &value)
     else
     {   // is there, so just append to existing tag
         //(*it).second.append(newcontent);
-        std::string tempVal = (*it).second.getVal_ToString();
+        ByteArray tempVal = (*it).second.getVal_ToString();
         tempVal.append(newcontent);
         (*it).second = tempVal;
     }
@@ -5819,6 +5932,215 @@ DObjConstIterator DataObject::constBegin() const
 DObjConstIterator DataObject::constEnd() const
 {
     return DObjConstIterator(this, getTotal());
+}
+
+
+// Function return the offset of the values stored within the dataOject
+double DataObject::getValueOffset() const
+{
+    if(!m_pDataObjectTags) return 0.0; // default
+    return m_pDataObjectTags->m_valueOffset;
+}
+
+// Function return the scaling of values stored within the dataOject
+double DataObject::getValueScale() const
+{
+    if(!m_pDataObjectTags) return 1.0; // default
+    return m_pDataObjectTags->m_valueScale;
+}
+
+// Function return the unit description for the values stoerd within the dataOject
+const std::string DataObject::getValueUnit() const
+{
+    if(!m_pDataObjectTags) return std::string(); //default
+    return m_pDataObjectTags->m_valueUnit;
+}
+
+// Function return the description for the values stored within the dataOject, if tagspace does not exist, NULL is returned.
+std::string DataObject::getValueDescription() const
+{
+    if(!m_pDataObjectTags) return std::string(); //default
+    return m_pDataObjectTags->m_valueDescription;
+}
+
+// Function return the axis-offset for the existing axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
+double DataObject::getAxisOffset(const int axisNum) const
+{
+    if(axisNum < 0 || axisNum >= m_dims)
+    {
+        cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
+    }
+    if(!m_pDataObjectTags) return 0.0; // default
+           
+    return m_pDataObjectTags->m_axisOffsets[axisNum] - m_roi[axisNum];
+}
+
+//!< Function returns the axis-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
+double DataObject::getAxisScale(const int axisNum) const
+{
+    if(axisNum < 0 || axisNum >= m_dims)
+    {
+        cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
+    }
+    if(!m_pDataObjectTags) return 1.0; // default
+
+    return m_pDataObjectTags->m_axisScales[axisNum];
+}
+
+//!< Function returns the axis-unit-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
+const std::string DataObject::getAxisUnit(const int axisNum, bool &validOperation) const
+{
+    if(axisNum < 0 || axisNum >= m_dims)
+    {
+        validOperation = false;
+        cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
+    }
+    if(!m_pDataObjectTags)
+    {
+        validOperation = false;
+        return std::string(); //error
+    }
+    validOperation = true;            
+    return m_pDataObjectTags->m_axisUnit[axisNum];
+}
+
+//!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
+std::string DataObject::getAxisDescription(const int axisNum, bool &validOperation) const
+{
+    if(axisNum < 0 || axisNum >= m_dims)
+    {
+        validOperation = false;
+        cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
+    }
+    if(!m_pDataObjectTags)
+    {
+        validOperation = false;
+        return std::string(); //error
+    }
+
+    validOperation = true;          
+    return m_pDataObjectTags->m_axisDescription[axisNum];
+}
+
+
+DataObjectTagType DataObject::getTag(const std::string &key, bool &validOperation) const
+{
+    validOperation = false;
+    if(!m_pDataObjectTags)
+    {
+        return DataObjectTagType(); //error
+    }
+    std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
+    if(it != m_pDataObjectTags->m_tags.end())
+    {
+        validOperation = true;
+        return it->second;
+    }
+    return DataObjectTagType();
+}
+
+bool DataObject::getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const
+{
+    if(!m_pDataObjectTags)
+    {
+        key = std::string();
+        value = "";
+        return false;
+    }
+
+    if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
+    {
+        key = std::string();
+        value = "";
+        return false;
+    }
+    std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
+    for(int i = 0; i < tagNumber; i++)
+    {
+        ++it;
+    }
+
+    key = (*it).first;
+    value = (*it).second;
+    return true;
+}
+
+//!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap do not exist NULL is returned
+std::string DataObject::getTagKey(const int tagNumber, bool &validOperation) const
+{
+    if(!m_pDataObjectTags)
+    {
+        validOperation = false;
+        return std::string(""); //error
+    }
+    if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
+    {
+        validOperation = false;
+        return std::string(""); //does not exist
+    }
+    std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
+    validOperation = true;
+    for(int i = 0; i < tagNumber; i++)
+    {
+        ++it;
+    }
+    return (*it).first;
+}
+
+//!< Function returns the number of elements in the Tags-Maps
+int DataObject::getTagListSize() const
+{
+    if(!m_pDataObjectTags) return 0; //error
+    return static_cast<int>(m_pDataObjectTags->m_tags.size());
+}
+
+//   inline void setValueOffset(double offset) { m_valueOffset =offset; }
+//   inline void setValueScale(double scale) { m_valueScale =scale; }
+
+//!<  Function to set the string-value of the value unit, return 1 if values does not exist
+int DataObject::setValueUnit(const std::string &unit)
+{
+    if(!m_pDataObjectTags) return 1;    //error
+    m_pDataObjectTags->m_valueUnit = unit;
+    return 0;
+}
+
+//!<  Function to set the string-value of the value description, return 1 if values does not exist
+int DataObject::setValueDescription(const std::string &description)
+{
+    if(!m_pDataObjectTags) return 1;    //error
+    m_pDataObjectTags->m_valueDescription = description;
+    return 0;
+}
+
+inline RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
+{
+    if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
+    r11 = m_pDataObjectTags->m_rotMatrix[0];
+    r12 = m_pDataObjectTags->m_rotMatrix[1];
+    r13 = m_pDataObjectTags->m_rotMatrix[2];
+    r21 = m_pDataObjectTags->m_rotMatrix[3];
+    r22 = m_pDataObjectTags->m_rotMatrix[4];
+    r23 = m_pDataObjectTags->m_rotMatrix[5];
+    r31 = m_pDataObjectTags->m_rotMatrix[6];
+    r32 = m_pDataObjectTags->m_rotMatrix[7];
+    r33 = m_pDataObjectTags->m_rotMatrix[8];
+    return retOk;
+}
+
+RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33)
+{
+    if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
+    m_pDataObjectTags->m_rotMatrix[0] = r11;
+    m_pDataObjectTags->m_rotMatrix[1] = r12;
+    m_pDataObjectTags->m_rotMatrix[2] = r13;
+    m_pDataObjectTags->m_rotMatrix[3] = r21;
+    m_pDataObjectTags->m_rotMatrix[4] = r22;
+    m_pDataObjectTags->m_rotMatrix[5] = r23;
+    m_pDataObjectTags->m_rotMatrix[6] = r31;
+    m_pDataObjectTags->m_rotMatrix[7] = r32;
+    m_pDataObjectTags->m_rotMatrix[8] = r33;
+    return retOk;
 }
 
 ////! missing documentation
