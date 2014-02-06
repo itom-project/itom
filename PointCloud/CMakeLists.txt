@@ -7,7 +7,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
-OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
+OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 
 IF(BUILD_ITOMLIBS_SHARED)
@@ -76,10 +76,5 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud/impl/pclFunctionsImpl.h DEST
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-ADD_OUTPUTLIBRARY_TO_SDK_LIB(pointcloud COPY_SOURCES COPY_DESTINATIONS)
-
-IF(BUILD_ITOMLIBS_SHARED)
-    ADD_ITOMLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ENDIF(BUILD_ITOMLIBS_SHARED)
-
+ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(pointcloud COPY_SOURCES COPY_DESTINATIONS)
