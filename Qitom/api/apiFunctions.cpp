@@ -139,7 +139,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
         break;
 
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("Unknown parameter type").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Unknown parameter type").toLatin1().data());
     }
 
     return ito::retOk;
@@ -179,7 +179,7 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
         if (optPParsed)
             free(optPParsed);
 
-        return ito::RetVal(ito::retError, 0, QObject::tr("Wrong number of parameters").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Wrong number of parameters").toLatin1().data());
     }
 
     numParams > numMandParams ? numMandParams : numParams;
@@ -194,7 +194,7 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
                 free(mandPParsed);
             if (optPParsed)
                 free(optPParsed);
-            return ito::RetVal(ito::retError, 0, QObject::tr("Wrong parameter type").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Wrong parameter type").toLatin1().data());
         }
     }
 
@@ -208,7 +208,7 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
                 free(mandPParsed);
             if (optPParsed)
                 free(optPParsed);
-            return ito::RetVal(ito::retError, 0, QObject::tr("Wrong parameter type").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Wrong parameter type").toLatin1().data());
         }
     }
 
@@ -234,7 +234,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     if (name.length() < 1)
     {
         FilterDef = NULL;
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
     ito::AddInManager *aim = ito::AddInManager::getInstance();
@@ -243,7 +243,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     if (cfit == flist->end())
     {
         FilterDef = NULL;
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
     }
 
     FilterDef = cfit.value();
@@ -257,7 +257,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 
     if (name.length() < 1)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
     ito::AddInManager *aim = ito::AddInManager::getInstance();
@@ -265,7 +265,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toAscii().data(), name.toAscii().data() );
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data() );
     }
 
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
@@ -279,11 +279,11 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 {
     if (name.length() < 1)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
     if(!paramsMand || !paramsOpt || !paramsOut)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
     ito::AddInManager *aim = ito::AddInManager::getInstance();
@@ -291,14 +291,14 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toAscii().data(), name.toAscii().data() );
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data() );
     }
 
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
     const ito::FilterParams *fp = aim->getHashedFilterParams(fFunc->m_paramFunc);
     if(!fp)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter parameters not found in hash table.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter parameters not found in hash table.").toLatin1().data());
     }
 
     paramsMand->clear();
@@ -327,11 +327,11 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 {
     if (name.length() < 1)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
     if(!paramsMand || !paramsOpt || !paramsOut)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
     ito::AddInManager *aim = ito::AddInManager::getInstance();
@@ -339,14 +339,14 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toAscii().data(), name.toAscii().data() );
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data() );
     }
 
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
     const ito::FilterParams *fp = aim->getHashedFilterParams(fFunc->m_paramFunc);
     if(!fp)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Filter parameters not found in hash table.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter parameters not found in hash table.").toLatin1().data());
     }
 
     *paramsMand = fp->paramsMand;
@@ -365,12 +365,12 @@ ito::RetVal apiFunctions::maddInGetInitParams(const QString &name, const int plu
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
     }
 
     if (name.length() < 1)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("No plugin name specified.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("No plugin name specified.").toLatin1().data());
     }
 
     return AIM->getInitParams(name, pluginType, pluginNum, paramsMand, paramsOpt);
@@ -384,7 +384,7 @@ ito::RetVal apiFunctions::maddInOpenActuator(const QString &name, const int plug
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
@@ -406,7 +406,7 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
@@ -430,7 +430,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
     {
         if (dObj->getDims() != nrDims)
         {
-            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toAscii().data(), nrDims, dObj->getDims());
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toLatin1().data(), nrDims, dObj->getDims());
         }
         else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
         {
@@ -439,7 +439,7 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
                 int s = dObj->getSize(i);
                 if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
                 {
-                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toAscii().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
                     break;
                 }
             }

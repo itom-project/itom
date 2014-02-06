@@ -224,11 +224,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
     }
     else
     {
@@ -246,11 +246,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
     }
     else
     {
@@ -295,7 +295,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filtername).toLatin1().data());
                 }
                 break;
             }
@@ -332,7 +332,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown widget name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown widget name '%1'").arg(filtername).toLatin1().data());
                 }
                 break;
             }
@@ -360,12 +360,12 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filtername).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filtername).toLatin1().data());
                 }
                 break;
             }
             default:
-                retval += ito::RetVal(ito::retError, 0, tr("unknown type").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("unknown type").toLatin1().data());
                 break;
         }
 
@@ -408,11 +408,11 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: %s section is only defined by either the start or end tag.").toAscii().data(), sectionname.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: %s section is only defined by either the start or end tag.").toLatin1().data(), sectionname.toLatin1().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: End tag of %s section comes before start tag.").toAscii().data(), sectionname.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: End tag of %s section comes before start tag.").toLatin1().data(), sectionname.toLatin1().data());
     }
     else
     {
@@ -689,13 +689,13 @@ void HelpTreeDockWidget::propertiesChanged()
         }
         else
         {
-            retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be opened").toAscii().data(), file.toAscii().data());
+            retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be opened").toLatin1().data(), file.toLatin1().data());
         }
         database.close();
     }
     else
     {
-        retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be found").toAscii().data(), file.toAscii().data());
+        retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be found").toLatin1().data(), file.toLatin1().data());
     }    
     QSqlDatabase::removeDatabase(file);
     return retval;
@@ -900,7 +900,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
         //dummy output (write last loaded Plaintext into html-File)
         QFile file2("helpOutput.html");
         file2.open(QIODevice::WriteOnly);
-        file2.write(html.arg(rawContent).toAscii());
+        file2.write(html.arg(rawContent).toLatin1());
         file2.close();
     }
     else

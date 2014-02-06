@@ -213,7 +213,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
 #endif //ITOM_POINTCLOUDLIBRARY > 0
 
     default:
-        return ito::RetVal(ito::retError, 0, QObject::tr("Unknown parameter type").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Unknown parameter type").toLatin1().data());
     }
 
     //validate parameter (due to possible meta information)
@@ -322,7 +322,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             PyDict_SetItemString(p_pyLine, "name", item);
             Py_DECREF(item);
 
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(type.toAscii());
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(type.toLatin1());
             PyDict_SetItemString(p_pyLine, "type", item);
             Py_DECREF(item);
 
@@ -574,11 +574,11 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 
     if (asErr)
     {
-        std::cerr << output.toAscii().data() << std::endl;
+        std::cerr << output.toLatin1().data() << std::endl;
     }
     else
     {
-        std::cout << output.toAscii().data() << std::endl;
+        std::cout << output.toLatin1().data() << std::endl;
     }
 
     return p_pyDic;
@@ -599,7 +599,7 @@ void errOutInitParams(const QVector<ito::Param> *params, const int num, const QS
 {
     PyErr_Print();
     std::cerr << "\n";
-    std::cerr << reason.toAscii().data() << "\n";
+    std::cerr << reason.toLatin1().data() << "\n";
     if (params)
     {
         PyObject* dummy = PrntOutParams(params, true, false, num);
@@ -1192,11 +1192,11 @@ ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoL
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("Keyword autoLoadParams not of integer type").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Keyword autoLoadParams not of integer type").toLatin1().data());
             }
             if (PyDict_DelItemString(kwds, "autoLoadParams"))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("Could not delete Keyword: autoLoadParams").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Could not delete Keyword: autoLoadParams").toLatin1().data());
             }
         }
     }
@@ -1211,7 +1211,7 @@ ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoL
 //    switch(value->type())
 //    {
 //    case QVariant::Invalid:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid return value").toAscii().data());
+//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid return value").toLatin1().data());
 //        return NULL;
 //        break;
 //    case QVariant::Bool:
@@ -1233,10 +1233,10 @@ ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoL
 //        return Py_BuildValue("d",value->toDouble());
 //        break;
 //    case QVariant::String:
-//        return Py_BuildValue("s", value->toString().toAscii().data());
+//        return Py_BuildValue("s", value->toString().toLatin1().data());
 //        break;
 //    default:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("unknown parameter of type QVariant").toAscii().data());
+//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
 //        return NULL;
 //        break;
 //    }
@@ -1295,7 +1295,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            msg = QObject::tr("- unknown message -").toAscii();
+            msg = QObject::tr("- unknown message -").toLatin1();
         }
         else
         {

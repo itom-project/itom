@@ -189,7 +189,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(AbstractNode *child,
     {
         if ((tempChannel->getHash() == channelHash1) || (tempChannel->getHash() == channelHash2))
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toLatin1().data());
         }
     }
 
@@ -197,19 +197,19 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(AbstractNode *child,
     {
         if (apiCompareParam(*childParam, *parentParam, retVal) == ito::tCmpFailed)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toLatin1().data());
         }
     }
     else if (direction == Channel::childToParent)
     {
         if (apiCompareParam(*parentParam, *childParam, retVal) == ito::tCmpFailed)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toLatin1().data());
         }
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("undefined channel direction, while adding channel").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("undefined channel direction, while adding channel").toLatin1().data());
     }
 
     Channel *newChannel = new Channel(this, parentParam, deleteOnParentDisconnect, child, childParam, deleteOnChildDisconnect, direction);
@@ -224,7 +224,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(Channel *newChannel)
 {
     if (newChannel->getChild() != this)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid child pointer, in addChannel").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("invalid child pointer, in addChannel").toLatin1().data());
     }
 
     uint channelHash1 = ito::calculateChannelHash(this, newChannel->getChildParam(), newChannel->getParent(), newChannel->getParentParam());
@@ -235,7 +235,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(Channel *newChannel)
     {
         if ((tempChannel->getHash() == channelHash1) || (tempChannel->getHash() == channelHash2))
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toLatin1().data());
         }
     }
 
@@ -251,7 +251,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannelFromList(unsigned 
 
     if (!m_pChannels.contains(uniqueID))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toLatin1().data());
     }
 
     m_pChannels.remove(uniqueID);
@@ -278,7 +278,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannel(Channel *delChann
 {
     if (!m_pChannels.contains(delChannel->getUniqueID()))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toLatin1().data());
     }
 
     unsigned int uniqueID = delChannel->getUniqueID();

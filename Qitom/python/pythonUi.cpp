@@ -1044,7 +1044,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
     else if(retValue.containsWarning())
     {
-        std::cout << "Warning while getting property infos with message: " << QObject::tr(retValue.errorMessage()).toAscii().data() << std::endl;
+        std::cout << "Warning while getting property infos with message: " << QObject::tr(retValue.errorMessage()).toLatin1().data() << std::endl;
     }
     
     QStringList stringList = retPropMap->keys();
@@ -1060,7 +1060,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
         int flags = retPropMap->value(propNameString).toInt();
         PyObject *retObj = PyDict_New();
 
-        PyObject *item = PythonQtConversion::QByteArrayToPyUnicodeSecure( propNameString.toAscii() );
+        PyObject *item = PythonQtConversion::QByteArrayToPyUnicodeSecure( propNameString.toLatin1() );
         PyDict_SetItemString(retObj, "name", item);
         Py_DECREF(item);
 
@@ -1094,7 +1094,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
     else
     {
-        PyErr_Format(PyExc_RuntimeError, QString("the property '%1' does not exist.").arg(propNameString).toAscii());
+        PyErr_Format(PyExc_RuntimeError, QString("the property '%1' does not exist.").arg(propNameString).toLatin1());
         return NULL;
     }
 
@@ -2309,7 +2309,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     if(*retOk == true)
     {
         //Py_INCREF(Py_True);
-        QByteArray ba = retString->toAscii();
+        QByteArray ba = retString->toLatin1();
         return Py_BuildValue("sO", ba.data(), Py_True );
     }
     else
@@ -2400,7 +2400,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     if(*retOk == true)
     {
         //Py_INCREF(Py_True);
-        return Py_BuildValue("sO", retStringValue->toAscii().data(), Py_True );
+        return Py_BuildValue("sO", retStringValue->toLatin1().data(), Py_True );
     }
     else
     {
@@ -2571,7 +2571,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     retValue = locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
     
-    return Py_BuildValue("is", *retButton, retButtonText->toAscii().data());
+    return Py_BuildValue("is", *retButton, retButtonText->toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2644,7 +2644,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
     else
     {
-        return Py_BuildValue("s", sharedDir->toAscii().data());
+        return Py_BuildValue("s", sharedDir->toLatin1().data());
     }
 }
 
@@ -2722,7 +2722,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("s", file->toAscii().data());
+        return Py_BuildValue("s", file->toLatin1().data());
     }
 }
 
@@ -2802,7 +2802,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("s", file->toAscii().data());
+        return Py_BuildValue("s", file->toLatin1().data());
     }
 }
 
@@ -2833,7 +2833,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, QObject::tr("no widget name specified").toAscii());
+        PyErr_Format(PyExc_ValueError, QObject::tr("no widget name specified").toLatin1());
         return NULL;
     }
     
@@ -2848,7 +2848,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("no addin-manager found").toAscii());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("no addin-manager found").toLatin1());
         return NULL;
     }
 
@@ -2856,21 +2856,21 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     algoWidgetName = PythonQtConversion::PyObjGetString(pnameObj, true, ok);
     if(!ok)
     {
-        PyErr_Format(PyExc_TypeError, QObject::tr("the first parameter must contain the widget name as string").toAscii());
+        PyErr_Format(PyExc_TypeError, QObject::tr("the first parameter must contain the widget name as string").toLatin1());
         return NULL;
     }
 
     const ito::AddInAlgo::AlgoWidgetDef *def = AIM->getAlgoWidgetDef( algoWidgetName );
     if(def == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toLatin1().data());
         return NULL;
     }
 
     const ito::FilterParams *filterParams = AIM->getHashedFilterParams(def->m_paramFunc);
     if(!filterParams)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toLatin1().data());
         return NULL;
     }
 
@@ -2879,7 +2879,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     retVal = def->m_paramFunc(&paramsMand, &paramsOpt);
     if (retVal.containsWarningOrError())
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toAscii(), QObject::tr(retVal.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toLatin1(), QObject::tr(retVal.errorMessage()).toLatin1().data());
         return NULL;
     }*/
 
@@ -3057,7 +3057,7 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
         if(obsoleteKeys.contains(key) == false)
         {
             key.prepend("MsgBox"); //Button-Constants will be accessed by ui.MsgBoxOk, ui.MsgBoxError...
-            PyDict_SetItemString(tp_dict, key.toAscii().data(), value);
+            PyDict_SetItemString(tp_dict, key.toLatin1().data(), value);
             Py_DECREF(value);
         }
     }

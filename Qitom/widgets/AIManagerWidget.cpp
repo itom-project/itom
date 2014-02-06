@@ -814,7 +814,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     {
         if (paramsMand.size() > 0 || paramsOpt.size() > 0)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters").toLatin1().data());
         }
         else
         {
@@ -840,13 +840,13 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError, 0, tr("User interface of plugin could not be created. Returned handle is invalid.").toAscii().data());
+                        retValue += ito::RetVal(ito::retError, 0, tr("User interface of plugin could not be created. Returned handle is invalid.").toLatin1().data());
                     }
                 }
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toLatin1().data());
             }
 
         }

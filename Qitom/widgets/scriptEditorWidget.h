@@ -33,8 +33,9 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
-#include <qprinter.h>
-#include <qsciprinter.h>
+#include <QtPrintSupport/qprinter.h>
+//#include <Qt/qprinter.h>
+#include <Qsci/qsciprinter.h>
 
 QT_BEGIN_NAMESPACE
 

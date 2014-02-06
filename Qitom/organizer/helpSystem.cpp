@@ -170,7 +170,7 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
 
     }
 
-    checksum = qChecksum(checksumString.toAscii().data(), checksumString.size());
+    checksum = qChecksum(checksumString.toLatin1().data(), checksumString.size());
 
     return RetVal(retOk);
 }
@@ -188,7 +188,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         if(!file.open(QIODevice::ReadOnly))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("file could not be opened.").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("file could not be opened.").toLatin1().data());
         }
 
         QXmlStreamReader stream(&file);
@@ -198,21 +198,21 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         if(stream.atEnd())
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed: file seems corrupt").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load XML file failed: file seems corrupt").toLatin1().data());
         }
 
         ReadSigns = stream.documentVersion();
         if(!ReadSigns.compare("1.0"))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed:  wrong xml version").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
         }
 
         ReadSigns = stream.documentEncoding();
         if(!ReadSigns.compare("UTF-8"))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed: wrong document encoding").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
         }
 
         while(stream.readNextStartElement())
@@ -227,7 +227,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
                 if(!ok)
                 {
                     file.close();
-                    return RetVal(retError, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toAscii().data());
+                    return RetVal(retError, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toLatin1().data());
                 }
                 else
                 {
@@ -301,7 +301,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     if(!file.open(QIODevice::WriteOnly))
     {
         file.close();
-        return RetVal(retError, 0, QObject::tr("collection project file could not be opened").toAscii().data());
+        return RetVal(retError, 0, QObject::tr("collection project file could not be opened").toLatin1().data());
     }
 
     QXmlStreamWriter stream(&file);
@@ -353,7 +353,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
 
     QString app = ProcessOrganizer::getAbsQtToolPath( "qcollectiongenerator" );
 
-    process.start(app.toAscii().data() , args);
+    process.start(app.toLatin1().data() , args);
     process.waitForFinished(60000);
 
 

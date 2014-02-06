@@ -351,11 +351,11 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
     }
 
     QString msg = QString("Warning the ini file\n").append(iniFile).append("\nfor user ").append(name).append(" will be deleted!\nAre you sure?");
-    if (QMessageBox::warning(this, tr("Warning"), tr(msg.toAscii().data()), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
+    if (QMessageBox::warning(this, tr("Warning"), tr(msg.toLatin1().data()), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
     {
         QFile file(iniFile);
         if (!file.remove())
-            QMessageBox::warning(this, tr("Warning"), tr((QString("file: \n").append(iniFile).append("\ncould not be deleted!")).toAscii().data()), QMessageBox::Ok);
+            QMessageBox::warning(this, tr("Warning"), tr((QString("file: \n").append(iniFile).append("\ncould not be deleted!")).toLatin1().data()), QMessageBox::Ok);
 
         loadUserList();
     }

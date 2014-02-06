@@ -143,8 +143,8 @@ void benchmarkTest4()
     double freq = cv::getTickFrequency();
     QString str1 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
     QString str2 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
-    QByteArray ba1 = str1.toAscii();
-    QByteArray ba2 = str2.toAscii();
+    QByteArray ba1 = str1.toLatin1();
+    QByteArray ba2 = str2.toLatin1();
     char *c1 = ba1.data();
     char *c2 = ba2.data();
     int num = 10000000;

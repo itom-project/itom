@@ -401,7 +401,7 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
         if (source->urls().length() == 1)
         {
             QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
-//            qDebug() << fext.toAscii().data();
+//            qDebug() << fext.toLatin1().data();
             if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                 || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
                 return 1;
@@ -428,7 +428,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
             if (event->mimeData()->urls().length() == 1)
             {
                 QString fext = QFileInfo(event->mimeData()->urls().at(0).toString()).suffix().toLower();
-    //            qDebug() << fext.toAscii().data();
+    //            qDebug() << fext.toLatin1().data();
                 if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                     || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
                     QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, event->mimeData()->urls().at(0).toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
@@ -916,7 +916,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
 
     convertEols(QsciScintilla::EolUnix);
 
-    file.write(text().toAscii());
+    file.write(text().toLatin1());
     file.close();
 
     setModified(false);
@@ -965,7 +965,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     m_pFileSysWatcher->removePath(getFilename());
 
     convertEols(QsciScintilla::EolUnix);
-    file.write(text().toAscii());
+    file.write(text().toLatin1());
     file.close();
 
     changeFilename(tempFileName);

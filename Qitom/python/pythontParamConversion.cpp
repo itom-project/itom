@@ -371,7 +371,7 @@ namespace ito
             QString s = PythonQtConversion::PyObjGetString(obj, strict, ok);
             if(ok)
             {
-                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::String, s.toAscii().data()) ); //does not require the special deleter
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::String, s.toLatin1().data()) ); //does not require the special deleter
             }
         }
         break;

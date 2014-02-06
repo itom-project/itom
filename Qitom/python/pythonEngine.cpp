@@ -237,13 +237,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             // ck moved this here from below import numpy to print out early errors like missing numpy
             if  ((tretVal = runString("import sys")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stderr = itom.pythonStream(2)")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
 
 
             static wchar_t *wargv = L"";
@@ -432,7 +432,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
             if (itomFunctions == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toLatin1().data());
                 std::cerr << "the module itoFunctions could not be loaded." << std::endl;
                 PyErr_Print();
                 PyErr_Clear();
@@ -442,7 +442,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomDbgModule = PyImport_ImportModule("itoDebugger"); // new reference
             if (itomDbgModule == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
                 std::cerr << "the module itoDebugger could not be loaded." <<std::endl;
                 PyErr_Print();
             }
@@ -453,7 +453,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 itomDbgDict = NULL;
                 if (itomDbgClass == NULL)
                 {
-                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toAscii().data());
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
                     PyErr_Print();
                     //printPythonError(PySys_GetObject("stderr"));
                 }
@@ -471,7 +471,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         }
         else
         {
-            (*retValue) += RetVal(retError, 2, tr("deadlock in python setup.").toAscii().data());
+            (*retValue) += RetVal(retError, 2, tr("deadlock in python setup.").toLatin1().data());
         }
     }
 
@@ -570,7 +570,7 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         }
         else
         {
-            retValue += RetVal(retError, 1, tr("Python not initialized").toAscii().data());
+            retValue += RetVal(retError, 1, tr("Python not initialized").toLatin1().data());
         }
 
         Py_XDECREF(dictUnicode);
@@ -664,7 +664,7 @@ RetVal PythonEngine::delMethodFromModule(const char* ml_name)
 
     if (PyDict_DelItemString(moduleDict, ml_name))
     {
-        retValue += RetVal(retError, 1, tr("method name not found in builtin itom").toAscii().data());
+        retValue += RetVal(retError, 1, tr("method name not found in builtin itom").toLatin1().data());
     }
 
     moduleDict = NULL;
@@ -747,7 +747,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
         
         if (!found)
         {
-            retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to UTF-8").arg(qtCodecNames.last().data()).toAscii().data());
+            retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to UTF-8").arg(qtCodecNames.last().data()).toLatin1().data());
             encodingType = PythonQtConversion::utf_8;
             encodingName = "utf_8";
         }
@@ -807,7 +807,7 @@ RetVal PythonEngine::runString(const char *command)
     if (mainDict == NULL)
     {
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
-        retValue += RetVal(retError, 1, tr("main dictionary is empty").toAscii().data());
+        retValue += RetVal(retError, 1, tr("main dictionary is empty").toLatin1().data());
     }
     else
     {
@@ -827,12 +827,12 @@ RetVal PythonEngine::runString(const char *command)
                 if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                 {
                     std::cerr << "wish to exit (not possible yet)" << std::endl;
-                    retValue += RetVal(retError, 2, tr("exiting desired.").toAscii().data());
+                    retValue += RetVal(retError, 2, tr("exiting desired.").toLatin1().data());
                 }
                 else
                 {
                     PyErr_Print();
-                    retValue += RetVal(retError, 2, tr("error while evaluating python string.").toAscii().data());
+                    retValue += RetVal(retError, 2, tr("error while evaluating python string.").toLatin1().data());
                 }
                 PyErr_Clear();
 
@@ -900,15 +900,15 @@ RetVal PythonEngine::runPyFile(char* pythonFileName)
         QFile data(pythonFileName);
         if (data.exists() == false)
         {
-            retValue += RetVal(retError, 0, tr("file does not exist").toAscii().data());
+            retValue += RetVal(retError, 0, tr("file does not exist").toLatin1().data());
         }
         else
         {
             if (data.open(QFile::ReadOnly))
             {
                 QTextStream stream(&data);
-                QByteArray fileContent = stream.readAll().toAscii();
-                QByteArray filename = data.fileName().toAscii();
+                QByteArray fileContent = stream.readAll().toLatin1();
+                QByteArray filename = data.fileName().toLatin1();
                 data.close();
 
                 compile = Py_CompileString(fileContent.data(), filename.data(), Py_file_input);
@@ -968,7 +968,7 @@ RetVal PythonEngine::runPyFile(char* pythonFileName)
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("file could not be opened in readonly-mode").toAscii().data());
+                retValue += RetVal(retError, 0, tr("file could not be opened in readonly-mode").toLatin1().data());
             }
         }
     }
@@ -1030,7 +1030,7 @@ RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1138,7 +1138,7 @@ RetVal PythonEngine::debugFile(char* pythonFileName)
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1222,7 +1222,7 @@ RetVal PythonEngine::debugString(const char *command)
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1307,17 +1307,17 @@ RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int line
 
         if (condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOOi", filename.toAscii().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOOi", filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOsi", filename.toAscii().data(), lineno+1, PyEnabled, PyTemporary, condition.toAscii().data(), ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOsi", filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
         }
 
         if (result == NULL)
         {
             Py_XDECREF(result);
-            std::cerr << tr("Error while transmitting breakpoints to itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while transmitting breakpoints to itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1355,17 +1355,17 @@ RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &f
 
         if (condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOOi", pyBpNumber, filename.toAscii().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOOi", pyBpNumber, filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOsi", pyBpNumber, filename.toAscii().data(), lineno+1, PyEnabled, PyTemporary, condition.toAscii().data(), ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOsi", pyBpNumber, filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
         }
 
         if (result == NULL)
         {
             Py_XDECREF(result);
-            std::cerr << tr("Error while editing breakpoint in itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while editing breakpoint in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1397,7 +1397,7 @@ RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
         if (result == NULL)
         {
             Py_XDECREF(result);
-            std::cerr << tr("Error while clearing breakpoint in itoDebugger.").toAscii().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing breakpoint in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             return RetVal(retError);
         }
@@ -1479,7 +1479,7 @@ ito::RetVal PythonEngine::checkForPyExceptions()
         errType = PythonQtConversion::PyObjGetString( pyErrType );
         errText = PythonQtConversion::PyObjGetString( pyErrValue );
 
-        retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toAscii().data(), errType.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toLatin1().data(), errType.toLatin1().data());
 
         Py_XDECREF(pyErrTrace);
         Py_DECREF(pyErrType);
@@ -1555,7 +1555,7 @@ void PythonEngine::setLocalDictionary(PyObject* localDict)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunString(QString cmd)
 {
-    QByteArray ba(cmd.toAscii());
+    QByteArray ba(cmd.toLatin1());
     if (ba.trimmed().startsWith("#"))
     {
         ba.prepend("pass"); //a single command line leads to an error while execution
@@ -1598,7 +1598,7 @@ void PythonEngine::pythonRunFile(QString filename)
         {
             if (filenameTemp != "")
             {
-                runPyFile(filenameTemp.toAscii().data());
+                runPyFile(filenameTemp.toLatin1().data());
             }
         }
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
@@ -1621,7 +1621,7 @@ void PythonEngine::pythonDebugFile(QString filename)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
-        debugFile(filename.toAscii().data());
+        debugFile(filename.toLatin1().data());
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
         pythonStateTransition(pyTransEndDebug);
         break;
@@ -1638,7 +1638,7 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-    QByteArray ba = cmd.toAscii();
+    QByteArray ba = cmd.toLatin1();
     if (ba.trimmed().startsWith("#"))
     {
         ba.prepend("pass"); //a single comment while cause an error in python
@@ -1648,7 +1648,7 @@ void PythonEngine::pythonDebugString(QString cmd)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
-        debugString(cmd.toAscii().data());
+        debugString(cmd.toLatin1().data());
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
         pythonStateTransition(pyTransEndDebug);
         break;
@@ -1665,7 +1665,7 @@ void PythonEngine::pythonDebugString(QString cmd)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    QByteArray ba(cmd.toAscii());
+    QByteArray ba(cmd.toLatin1());
     if (ba.trimmed().startsWith("#"))
     {
         ba.prepend("pass"); //a single command line leads to an error while execution
@@ -1679,7 +1679,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         if (m_executeInternalPythonCodeInDebugMode)
         {
             pythonStateTransition(pyTransBeginDebug);
-            debugString(cmd.toAscii().data());
+            debugString(cmd.toLatin1().data());
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
             pythonStateTransition(pyTransEndDebug);
         }
@@ -1791,13 +1791,13 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key '" << hashValue.toAscii().data() << "' does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key '" << hashValue.toLatin1().data() << "' does not exist any more\n" << std::endl;
             }
             Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toAscii().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
         
     }
@@ -1836,14 +1836,14 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key " << hashValue.toAscii().data() << " does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key " << hashValue.toLatin1().data() << " does not exist any more\n" << std::endl;
             }
             Py_XDECREF(argTuple);
             Py_XDECREF(callable);
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toAscii().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
         
     }
@@ -2105,7 +2105,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &
     {
         if (PyDict_Check(obj))
         {
-            tempObj = PyDict_GetItemString(obj, items[0].toAscii().data());
+            tempObj = PyDict_GetItemString(obj, items[0].toLatin1().data());
             if (tempObj == NULL) //maybe key is a number
             {
                 i = items[0].toInt(&ok);
@@ -2141,7 +2141,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &
             PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
             if (temp)
             {
-                tempObj = PyDict_GetItemString(temp, items[0].toAscii().data());
+                tempObj = PyDict_GetItemString(temp, items[0].toLatin1().data());
                 if (tempObj == NULL) //maybe key is a number
                 {
                     i = items[0].toInt(&ok);
@@ -2626,34 +2626,34 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         if (dict == NULL)
         {
             retVal = false;
-            std::cerr << "variable " << oldKey.toAscii().data() << " can not be renamed, since dictionary is not available\n" << std::endl;
+            std::cerr << "variable " << oldKey.toLatin1().data() << " can not be renamed, since dictionary is not available\n" << std::endl;
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toAscii().data())))
+            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
             {
                 PyErr_Clear();
                 retVal = false;
-                std::cerr << "variable name " << newKey.toAscii().data() << " is invalid.\n" << std::endl;
+                std::cerr << "variable name " << newKey.toLatin1().data() << " is invalid.\n" << std::endl;
             }
             else
             {
-                if (PyDict_GetItemString(dict, oldKey.toAscii().data()) == NULL)
+                if (PyDict_GetItemString(dict, oldKey.toLatin1().data()) == NULL)
                 {
                     retVal = false;
-                    std::cerr << "variable " << oldKey.toAscii().data() << " can not be found in dictionary\n" << std::endl;
+                    std::cerr << "variable " << oldKey.toLatin1().data() << " can not be found in dictionary\n" << std::endl;
                 }
-                else if (PyDict_GetItemString(dict, newKey.toAscii().data()) != NULL)
+                else if (PyDict_GetItemString(dict, newKey.toLatin1().data()) != NULL)
                 {
                     retVal = false;
-                    std::cerr << "variable " << newKey.toAscii().data() << " already exists in dictionary\n" << std::endl;
+                    std::cerr << "variable " << newKey.toLatin1().data() << " already exists in dictionary\n" << std::endl;
                 }
                 else
                 {
-                    value = PyDict_GetItemString(dict, oldKey.toAscii().data());
+                    value = PyDict_GetItemString(dict, oldKey.toLatin1().data());
                     //Py_INCREF(value); //do not increment, since value is already incremented by SetItemString-method.
-                    PyDict_SetItemString(dict, newKey.toAscii().data(), value); //first set new, then delete in order not to loose the reference inbetween
-                    PyDict_DelItemString(dict, oldKey.toAscii().data());
+                    PyDict_SetItemString(dict, newKey.toLatin1().data(), value); //first set new, then delete in order not to loose the reference inbetween
+                    PyDict_DelItemString(dict, oldKey.toLatin1().data());
                     
 
                     if (PyErr_Occurred())
@@ -2739,7 +2739,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
         {
             foreach (key, keys)
             {
-                PyDict_DelItemString(dict, key.toAscii().data());
+                PyDict_DelItemString(dict, key.toLatin1().data());
 
                 if (PyErr_Occurred())
                 {
@@ -2820,7 +2820,7 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toAscii().data()));
+            PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
@@ -2828,15 +2828,15 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
 
             for (int i = 0 ; i < varNames.size() ; i++)
             {
-                tempElem = PyDict_GetItemString(dict, varNames.at(i).toAscii().data()); //borrowed
+                tempElem = PyDict_GetItemString(dict, varNames.at(i).toLatin1().data()); //borrowed
 
                 if (tempElem == NULL)
                 {
-                    std::cerr << "variable '" << varNames.at(i).toAscii().data() << "' can not be found in dictionary and will not be exported.\n" << std::endl;
+                    std::cerr << "variable '" << varNames.at(i).toLatin1().data() << "' can not be found in dictionary and will not be exported.\n" << std::endl;
                 }
                 else
                 {
-                    PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toAscii().data()));
+                    PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
                     PyList_Append(valueList, tempElem);
                 }
             }
@@ -2909,7 +2909,7 @@ RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, 
         }
         else
         {
-            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toAscii().data()));
+            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
@@ -2981,11 +2981,11 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
 
     if (names.size() != values.size())
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("The number of names and values must be equal").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("The number of names and values must be equal").toLatin1().data());
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -3010,7 +3010,7 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
         if (destinationDict == NULL)
         {
             retVal = false;
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
@@ -3018,28 +3018,28 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
 
             for (int i=0; i<names.size();i++)
             {
-                existingItem = PyDict_GetItemString(destinationDict, names[i].toAscii().data()); //borrowed ref
+                existingItem = PyDict_GetItemString(destinationDict, names[i].toLatin1().data()); //borrowed ref
 
                 if (existingItem)
                 {
                     if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem))
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
                         break;
                     }
                     else if (PyMethod_Check(existingItem))
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
                         break;
                     }
                     else if (PyType_Check(existingItem))
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
                         break;
                     }
                     else if (PyModule_Check(existingItem))
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toAscii().data(), names[i].toAscii().data());
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
                         break;
                     }
                 }
@@ -3047,11 +3047,11 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
                 value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
                 if (value == NULL)
                 {
-                    retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toAscii().data(), names[i].toAscii().data());
+                    retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
                 }
                 else
                 {
-                    PyDict_SetItemString(destinationDict, names[i].toAscii().data(), value); //existing is automatically decremented
+                    PyDict_SetItemString(destinationDict, names[i].toLatin1().data(), value); //existing is automatically decremented
                     Py_XDECREF(value);
                 }
             }
@@ -3106,11 +3106,11 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
 
     if (names.size() != paramBaseTypes.size())
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("The number of names and types must be equal").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("The number of names and types must be equal").toLatin1().data());
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -3135,16 +3135,16 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
         if (sourceDict == NULL)
         {
             retVal = false;
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
             for (int i=0; i<names.size();i++)
             {
-                value = PyDict_GetItemString (sourceDict, names[i].toAscii().data()); //borrowed
+                value = PyDict_GetItemString (sourceDict, names[i].toLatin1().data()); //borrowed
                 if (value == NULL)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("item '%1' does not exist in workspace.").arg(names[i]).toAscii().data());
+                    retVal += ito::RetVal(ito::retError, 0, tr("item '%1' does not exist in workspace.").arg(names[i]).toLatin1().data());
                     break;
                 }
                 else
@@ -3152,7 +3152,7 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
                     //non strict conversion, such that numpy-arrays are converted to dataObject, if possible
                     //the value of pyObject is either copied to param, or in case of a pointer-type, a shallow copy of this pointer-type is stored in 
                     //param, and if the param runs out of scope, the special deleter method of QSharedPointer
-                    param = PythonParamConversion::PyObjectToParamBase(value, names[i].toAscii().data(), retVal, paramBaseTypes[i], false);
+                    param = PythonParamConversion::PyObjectToParamBase(value, names[i].toLatin1().data(), retVal, paramBaseTypes[i], false);
                     if (!retVal.containsError())
                     {
                         *values << param;
@@ -3208,12 +3208,12 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
     PyObject* dict = NULL;
     PyObject* value = NULL;
     bool globalNotLocal = true; //may also be accessed by parameter, if desired
-    QByteArray ba = varname.toAscii();
+    QByteArray ba = varname.toLatin1();
     const char* varname2 = ba.data();
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += RetVal(retError, 0, tr("It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toAscii().data());
+        retVal += RetVal(retError, 0, tr("It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
         {
@@ -3243,7 +3243,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
 
         if (dict == NULL)
         {
-            retVal += RetVal(retError, 0, tr("Dictionary is not available").toAscii().data());
+            retVal += RetVal(retError, 0, tr("Dictionary is not available").toLatin1().data());
         }
         else
         {
@@ -3251,14 +3251,14 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
             {
                 PyErr_Clear();
                 QString ErrStr = tr("variable name '%1' is no valid python variable name.").arg(varname);
-                retVal += RetVal(retError, 0, ErrStr.toAscii().data());
+                retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
             }
             else
             {
                 if (PyDict_GetItemString(dict, varname2) != NULL)
                 {
                     QString ErrStr = tr("variable name '%1' already exists in dictionary").arg(varname);
-                    retVal += RetVal(retError, 0, ErrStr.toAscii().data());
+                    retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
                 }
                 else
                 {
@@ -3268,7 +3268,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
                         dataIOPlugin = PyObject_New(PythonPlugins::PyDataIOPlugin, &PythonPlugins::PyDataIOPluginType); //new ref
                         if (dataIOPlugin == NULL)
                         {
-                            retVal += RetVal(retError, 0, tr("No instance of python class dataIO could be created").toAscii().data());
+                            retVal += RetVal(retError, 0, tr("No instance of python class dataIO could be created").toLatin1().data());
                         }
                         else
                         {
@@ -3284,7 +3284,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
                         actuatorPlugin = PyObject_New(PythonPlugins::PyActuatorPlugin, &PythonPlugins::PyActuatorPluginType); //new ref
                         if (actuatorPlugin == NULL)
                         {
-                            retVal += RetVal(retError, 0, tr("No instance of python class actuator could be created").toAscii().data());
+                            retVal += RetVal(retError, 0, tr("No instance of python class actuator could be created").toLatin1().data());
                         }
                         else
                         {
@@ -3296,7 +3296,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
                     }
                     else
                     {
-                        retVal += RetVal(retError, 0, tr("AddIn must be of type dataIO or actuator").toAscii().data());
+                        retVal += RetVal(retError, 0, tr("AddIn must be of type dataIO or actuator").toLatin1().data());
                     }
 
                     if (!retVal.containsError())
@@ -3305,7 +3305,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
                         Py_XDECREF(value);
                         if (PyErr_Occurred())
                         {
-                            retVal += RetVal(retError, 0, tr("Dictionary is not available").toAscii().data());
+                            retVal += RetVal(retError, 0, tr("Dictionary is not available").toLatin1().data());
                             PyErr_Print();
                         }
                     }
@@ -3354,7 +3354,7 @@ RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QShared
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toAscii().data());
+        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
@@ -3370,7 +3370,7 @@ RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QShared
         //code
         if (itomFunctions == NULL)
         {
-            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toAscii().data());
+            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toLatin1().data());
         }
         else
         {
@@ -3378,7 +3378,7 @@ RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QShared
 
             if (!result)
             {
-                retValue += RetVal(retError, 0, tr("error while loading the modules").toAscii().data());
+                retValue += RetVal(retError, 0, tr("error while loading the modules").toLatin1().data());
                 PyErr_Print();
             }
             else
@@ -3426,7 +3426,7 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toAscii().data());
+        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
@@ -3442,7 +3442,7 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
         //code
         if (itomFunctions == NULL)
         {
-            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toAscii().data());
+            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toLatin1().data());
         }
         else
         {
@@ -3453,7 +3453,7 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
 
             if (!result)
             {
-                retValue += RetVal(retError, 0, tr("error while reloading the modules").toAscii().data());
+                retValue += RetVal(retError, 0, tr("error while reloading the modules").toLatin1().data());
                 PyErr_Print();
             }
             else
@@ -3531,15 +3531,15 @@ RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStr
 
             for (int i = 0 ; i < varNames.size() ; i++)
             {
-                tempElem = PyDict_GetItemString(dict, varNames.at(i).toAscii().data()); //borrowed
+                tempElem = PyDict_GetItemString(dict, varNames.at(i).toLatin1().data()); //borrowed
 
                 if (tempElem == NULL)
                 {
-                    std::cerr << "variable '" << varNames.at(i).toAscii().data() << "' can not be found in dictionary and will not be exported.\n" << std::endl;
+                    std::cerr << "variable '" << varNames.at(i).toLatin1().data() << "' can not be found in dictionary and will not be exported.\n" << std::endl;
                 }
                 else
                 {
-                    PyDict_SetItemString(exportDict, varNames.at(i).toAscii().data(), tempElem); //increments tempElem by itsself
+                    PyDict_SetItemString(exportDict, varNames.at(i).toLatin1().data(), tempElem); //increments tempElem by itsself
                 }
             }
 
@@ -3597,7 +3597,7 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toAscii().data(),"wb\0"); //new reference
+    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
 
     if (fileHandle == NULL)
     {
@@ -3731,7 +3731,7 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toAscii().data(), "rb\0"); //new reference
+    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
 
     if (fileHandle == NULL)
     {

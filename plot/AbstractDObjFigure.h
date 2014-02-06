@@ -63,8 +63,8 @@ public:
         AbstractFigure(itomSettingsFile, windowMode, parent),
         m_cameraConnected(false)
     {
-        m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toAscii().data()));
-        m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toAscii().data()));
+        m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+        m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
     }
 
     virtual ~AbstractDObjFigure() 

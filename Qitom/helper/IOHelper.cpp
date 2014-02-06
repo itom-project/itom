@@ -57,7 +57,7 @@ namespace ito {
 
     if (!file.exists())
     {
-        retval += RetVal(retError, 1001, tr("file %1 does not exist").arg(generalFileName).toAscii().data());
+        retval += RetVal(retError, 1001, tr("file %1 does not exist").arg(generalFileName).toLatin1().data());
         goto end;
     }
     else
@@ -135,13 +135,13 @@ namespace ito {
             }
             else
             {
-                retval += RetVal(retError, 1002, tr("File '%1' could not be opened with registered external application").arg(generalFileName).toAscii().data());
+                retval += RetVal(retError, 1002, tr("File '%1' could not be opened with registered external application").arg(generalFileName).toLatin1().data());
                 goto end;
             }
         }
         else
         {
-            retval += RetVal(retError, 1002, tr("file %1 can not be opened with this application").arg(generalFileName).toAscii().data());
+            retval += RetVal(retError, 1002, tr("file %1 can not be opened with this application").arg(generalFileName).toLatin1().data());
             goto end;
         }
     }
@@ -232,12 +232,12 @@ end:
             PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
             if (eng == NULL)
             {
-                return RetVal(retError, 1, tr("python engine not available").toAscii().data());
+                return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
             }
 
             if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
             {
-                return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toAscii().data());
+                return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
             }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -247,7 +247,7 @@ end:
             QMetaObject::invokeMethod(eng, "getParamsFromWorkspace",Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, varNames), Q_ARG(QVector<int>, compatibleParamBaseTypes), Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(5000))
             {
-                retVal += RetVal(retError, 0, tr("timeout while getting value from workspace").toAscii().data());
+                retVal += RetVal(retError, 0, tr("timeout while getting value from workspace").toLatin1().data());
             }
             else
             {
@@ -256,7 +256,7 @@ end:
             
             if (values->size() != varNames.size())
             {
-                retVal += RetVal(retError, 0, tr("the number of values returned from workspace does not correspond to requested number").toAscii().data());
+                retVal += RetVal(retError, 0, tr("the number of values returned from workspace does not correspond to requested number").toLatin1().data());
             }
             QApplication::restoreOverrideCursor();
 
@@ -286,19 +286,19 @@ end:
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        return RetVal(retError, 3, tr("file cannot be opened").toAscii().data());
+        return RetVal(retError, 3, tr("file cannot be opened").toLatin1().data());
     }
     file.close();
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (eng == NULL)
     {
-        return RetVal(retError, 1, tr("python engine not available").toAscii().data());
+        return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
     }
 
     if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
     {
-        return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toAscii().data());
+        return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toLatin1().data());
     }
 
     QFileInfo info(file);
@@ -313,7 +313,7 @@ end:
 
         if (!locker.getSemaphore()->wait(120000))
         {
-            retValue += RetVal(retError, 2, tr("timeout while pickling variables").toAscii().data());
+            retValue += RetVal(retError, 2, tr("timeout while pickling variables").toLatin1().data());
         }
         else
         {
@@ -331,7 +331,7 @@ end:
 
         if (!locker.getSemaphore()->wait(120000))
         {
-            retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toAscii().data());
+            retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toLatin1().data());
         }
         else
         {
@@ -342,7 +342,7 @@ end:
     }
     else
     {
-        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toAscii().data());
+        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toLatin1().data());
     }
 
     return retValue;
@@ -387,7 +387,7 @@ end:
         }
         else
         {
-            return RetVal(retError, 1, tr("file not found").toAscii().data());
+            return RetVal(retError, 1, tr("file not found").toLatin1().data());
         }
     }
 }
@@ -401,19 +401,19 @@ end:
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        return RetVal(retError, 3, tr("file cannot be opened").toAscii().data());
+        return RetVal(retError, 3, tr("file cannot be opened").toLatin1().data());
     }
     file.close();
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (eng == NULL)
     {
-        return RetVal(retError, 1, tr("python engine not available").toAscii().data());
+        return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
     }
 
     if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
     {
-        return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toAscii().data());
+        return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
     }
 
     QFileInfo info(file);
@@ -427,7 +427,7 @@ end:
         QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if (!locker.getSemaphore()->wait(120000))
         {
-            retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toAscii().data());
+            retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toLatin1().data());
         }
         else
         {
@@ -445,7 +445,7 @@ end:
         
         if (!locker.getSemaphore()->wait(120000))
         {
-            retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toAscii().data());
+            retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toLatin1().data());
         }
         else
         {
@@ -456,7 +456,7 @@ end:
     }
     else
     {
-        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toAscii().data());
+        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toLatin1().data());
     }
 
     return retValue;
@@ -502,7 +502,7 @@ end:
             QMetaObject::invokeMethod(seo,"openScript",Q_ARG(QString, filename),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(20000))
             {
-                retValue += RetVal(retError, 2, tr("timeout while opening script").toAscii().data());
+                retValue += RetVal(retError, 2, tr("timeout while opening script").toLatin1().data());
             }
             QApplication::restoreOverrideCursor();
 
@@ -545,7 +545,7 @@ end:
                     if (result)
                     {
                         filename.append("\n");
-                        socket.write(filename.toAscii().data());
+                        socket.write(filename.toLatin1().data());
                         done = true;
                         socket.disconnectFromHost();
                         socket.waitForDisconnected(250);
@@ -646,7 +646,7 @@ end:
                     //1. dataObject
                     autoMand[0].setVal<void*>(&dObj);
                     //2. filename
-                    autoMand[1].setVal<char*>(filename.toAscii().data());
+                    autoMand[1].setVal<char*>(filename.toLatin1().data());
 
                     dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
                     if (!retval.containsError())
@@ -669,7 +669,7 @@ end:
                     //1. pointCloud
                     autoMand[0].setVal<void*>(&pointCloud);
                     //2. filename
-                    autoMand[1].setVal<char*>(filename.toAscii().data());
+                    autoMand[1].setVal<char*>(filename.toLatin1().data());
 
                     dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
                     if (!retval.containsError())
@@ -691,7 +691,7 @@ end:
                     //1. polygonMesh
                     autoMand[0].setVal<void*>(&polygonMesh);
                     //2. filename
-                    autoMand[1].setVal<char*>(filename.toAscii().data());
+                    autoMand[1].setVal<char*>(filename.toLatin1().data());
 
                     dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent);
                     if (!retval.containsError())
@@ -711,11 +711,11 @@ end:
 #else
             case ito::AddInAlgo::iReadPointCloud:
             case ito::AddInAlgo::iReadPolygonMesh:
-                retval += ito::RetVal(ito::retError, 0, tr("PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.").toLatin1().data());
                 break;
 #endif
             default:
-                retval += ito::RetVal(ito::retError, 0, tr("The algorithm interface is not supported").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("The algorithm interface is not supported").toLatin1().data());
             }
 
             if (!retval.containsError() && putParamsToWorkspace)
@@ -753,7 +753,7 @@ end:
         }
         else
         {
-            retval += RetVal(retError, 0, tr("AlgoInterfaceValidator not available.").toAscii().data());
+            retval += RetVal(retError, 0, tr("AlgoInterfaceValidator not available.").toLatin1().data());
         }
 
         if (!retval.containsError())
@@ -763,7 +763,7 @@ end:
     }
     else
     {
-        retval += RetVal(retError, 0, tr("AddInManager or PythonEngine not available").toAscii().data());
+        retval += RetVal(retError, 0, tr("AddInManager or PythonEngine not available").toLatin1().data());
     }
     
     return retval;
@@ -793,7 +793,7 @@ end:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWritePolygonMesh, suffix);
             break;
         default:
-            return RetVal(retError, 0, tr("There is no plugin interface able to save the requested file type").toAscii().data());
+            return RetVal(retError, 0, tr("There is no plugin interface able to save the requested file type").toLatin1().data());
         }
 
         if (filters.size() == 1)
@@ -841,10 +841,10 @@ end:
                 case ito::AddInAlgo::iWritePolygonMesh:
                 case ito::AddInAlgo::iWritePointCloud:
                     autoMand[0] = *value;
-                    autoMand[1].setVal<char*>(filename.toAscii().data());
+                    autoMand[1].setVal<char*>(filename.toLatin1().data());
                     break;
                 default:
-                    retval += ito::RetVal(retError, 0, tr("algorithm interface not supported").toAscii().data());
+                    retval += ito::RetVal(retError, 0, tr("algorithm interface not supported").toLatin1().data());
                 }
 
                 if (!retval.containsError())
@@ -876,18 +876,18 @@ end:
             }
             else
             {
-                retval += RetVal(retError, 0, tr("error while getting mand and out parameters from algorithm interface").toAscii().data());
+                retval += RetVal(retError, 0, tr("error while getting mand and out parameters from algorithm interface").toLatin1().data());
             }
         }
         else
         {
-            retval += RetVal(retError, 0, tr("AlgoInterfaceValidator not available").toAscii().data());
+            retval += RetVal(retError, 0, tr("AlgoInterfaceValidator not available").toLatin1().data());
         }
         return retval;
     }
     else
     {
-        return RetVal(retError, 0, tr("AddInManager not available").toAscii().data());
+        return RetVal(retError, 0, tr("AddInManager not available").toLatin1().data());
     }
 }
 

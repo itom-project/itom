@@ -26,6 +26,7 @@
 #include "../AppManagement.h"
 #include <QMessageBox>
 #include <qfile.h>
+#include <qmimedata.h>
 //#include "../widgets/lastCommandDockWidget.h"
 //#include "../widgets/mainWindow.h"
 
@@ -866,7 +867,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         QStringList temp;
         QByteArray encoding;
         singleLine = buffer.join("\n");
-        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toAscii().data(), encoding); //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
+        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toLatin1().data(), encoding); //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
         if (lines.length() == 0 || (encoding.length() > 0 && lines.length() == 1)) //probably error while execution, execute it in one block
         {
             if (encoding.length() > 0)

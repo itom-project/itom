@@ -23,7 +23,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <QtGui/QApplication>
+#include <qapplication.h>
 #include <qdebug.h>
 #include "opencv/cv.h"
 

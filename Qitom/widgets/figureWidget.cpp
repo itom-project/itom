@@ -209,7 +209,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toAscii().data(), plotClassName.toAscii().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
 
@@ -225,7 +225,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
     }
     else
     {
-        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toAscii().data());
+        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toLatin1().data());
     }
 
     return retval;
@@ -244,11 +244,11 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 
     if (!dwo)
     {
-        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toAscii().data());
+        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toLatin1().data());
     }
     else if (cam.isNull())
     {
-        retval += RetVal(retError, 0, tr("camera is not available any more").toAscii().data());
+        retval += RetVal(retError, 0, tr("camera is not available any more").toLatin1().data());
     }
     else
     {
@@ -325,7 +325,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toAscii().data(), plotClassName.toAscii().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
             
@@ -357,12 +357,12 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
 
     if (areaRow < 0 || areaRow >= m_rows)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("areaRow out of range [0,%i]").toAscii().data(), m_rows-1);
+        retval += ito::RetVal::format(ito::retError, 0, tr("areaRow out of range [0,%i]").toLatin1().data(), m_rows-1);
     }
 
     if (areaCol < 0 || areaCol >= m_cols)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("arealCol out of range [0,%i]").toAscii().data(), m_cols-1);
+        retval += ito::RetVal::format(ito::retError, 0, tr("arealCol out of range [0,%i]").toLatin1().data(), m_cols-1);
     }
 
     if (!retval.containsError())
@@ -439,13 +439,13 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                 }
                 else
                 {
-                    retval += RetVal::format(retError, 0, tr("could not create designer widget of class '%s'").toAscii().data(), plotClassName.toAscii().data());
+                    retval += RetVal::format(retError, 0, tr("could not create designer widget of class '%s'").toLatin1().data(), plotClassName.toLatin1().data());
                 }
             }
         }
         else
         {
-            retval += RetVal(retError, 0, tr("designerWidgetOrganizer or uiOrganizer is not available").toAscii().data());
+            retval += RetVal(retError, 0, tr("designerWidgetOrganizer or uiOrganizer is not available").toLatin1().data());
         }
     }
 
@@ -475,7 +475,7 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 
     if (addIn == NULL)
     {
-        retval += RetVal(retError, 0, tr("addInBase pointer is NULL").toAscii().data());
+        retval += RetVal(retError, 0, tr("addInBase pointer is NULL").toLatin1().data());
     }
     else
     {
@@ -487,7 +487,7 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
             QMetaObject::invokeMethod(addIn, "getParam", Q_ARG(QSharedPointer<ito::Param>, result), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(5000))
             {
-                retval += RetVal::format(retError, 0, tr("timeout while getting parameter '%s' from plugin").toAscii().data(), paramName.toAscii().data());
+                retval += RetVal::format(retError, 0, tr("timeout while getting parameter '%s' from plugin").toLatin1().data(), paramName.toLatin1().data());
             }
             else
             {
@@ -496,7 +496,7 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("parameter '%s' is not defined in plugin").toAscii().data(), paramName.toAscii().data());
+            retval += RetVal::format(retError, 0, tr("parameter '%s' is not defined in plugin").toLatin1().data(), paramName.toLatin1().data());
         }
     }
 

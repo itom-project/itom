@@ -1362,14 +1362,14 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QString str = item.toString();
         if (str.isEmpty() == false) //string
         {
-            val = enumerator.keyToValue(str.toAscii().data());
+            val = enumerator.keyToValue(str.toLatin1().data());
             if (val >= 0)
             {
                 result = val;
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s",str.toAscii().data(), enumerator.scope(), enumerator.name());
+                retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s",str.toLatin1().data(), enumerator.scope(), enumerator.name());
                 return result;
             }
         }
@@ -1874,7 +1874,7 @@ PyObject* PythonQtConversion::QStringToPyObject(const QString& str)
     } 
     else 
     {
-        return QByteArrayToPyUnicode(str.toAscii()); //str.toAscii() decodes with current encoding and then it is transformed to PyObject with the same encoding
+        return QByteArrayToPyUnicode(str.toLatin1()); //str.toLatin1() decodes with current encoding and then it is transformed to PyObject with the same encoding
     }
 }
 

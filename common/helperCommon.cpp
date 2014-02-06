@@ -44,7 +44,7 @@ namespace ito
     {
         if (params == NULL)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("parameter vector is not initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("parameter vector is not initialized").toLatin1().data());
         }
         return ito::retOk;
     }
@@ -65,15 +65,15 @@ namespace ito
     {
         if (paramsMand == NULL)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("mandatory parameter vector is not initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("mandatory parameter vector is not initialized").toLatin1().data());
         }
         if (paramsOpt == NULL)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("optional parameter vector is not initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("optional parameter vector is not initialized").toLatin1().data());
         }
         if (paramsOut == NULL)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("output parameter vector is not initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("output parameter vector is not initialized").toLatin1().data());
         }
         paramsMand->clear();
         paramsOpt->clear();
@@ -103,7 +103,7 @@ namespace ito
                 }
             }
         }
-        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
+        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toLatin1().data());
         return NULL;
     }
 
@@ -124,7 +124,7 @@ namespace ito
                 }
             }
         }
-        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toAscii().data());
+        if (retval) *retval += ito::RetVal::format(ito::retError, 0 , QObject::tr("parameter '%1' cannot be found in given parameter vector").arg(name).toLatin1().data());
         return NULL;
     }
 
@@ -202,14 +202,14 @@ namespace ito
 
         if (key == "")
         {
-            retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {
-                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toAscii().data());
+                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toLatin1().data());
             }
             else
             {
@@ -233,21 +233,21 @@ namespace ito
                         else
                         {
                             val = ito::Param();
-                            retValue += ito::RetVal(ito::retError, 0, QObject::tr("array index of parameter out of bounds.").toAscii().data());
+                            retValue += ito::RetVal(ito::retError, 0, QObject::tr("array index of parameter out of bounds.").toLatin1().data());
                         }
                     }
                     else
                     {
                         if (index >= 0)
                         {
-                            retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toAscii().data());
+                            retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toLatin1().data());
                         }
                         val = paramIt.value();
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, QObject::tr("parameter not found in m_params.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, QObject::tr("parameter not found in m_params.").toLatin1().data());
                 }
             }
         }
@@ -327,20 +327,20 @@ namespace ito
 
         if (key == "")
         {
-            retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {
-                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toAscii().data());
+                retValue = ito::RetVal::format(ito::retError, 0, QObject::tr("the parameter name '%1' is invald").arg(key).toLatin1().data());
             }
             else
             {
                 if (!hasIndex) index = -1;
 
-                QMap<QString, ito::Param>::iterator paramIt = (QMap<QString, ito::Param>::iterator)(m_params->find(paramName)); //TODO: why do I need a cast here???
+                QMap<QString, ito::Param>::iterator paramIt = (const_cast<QMap<QString, ito::Param> *>(m_params)->find(paramName)); //TODO: why do I need a cast here???
 
                 if (paramIt != m_params->constEnd())
                 {
@@ -360,21 +360,21 @@ namespace ito
                         }
                         else
                         {
-                            retValue += ito::RetVal(ito::retError, 0, QObject::tr("array index out of bounds.").toAscii().data());
+                            retValue += ito::RetVal(ito::retError, 0, QObject::tr("array index out of bounds.").toLatin1().data());
                         }
                     }
                     else
                     {
                         if (index >= 0)
                         {
-                            retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toAscii().data());
+                            retValue += ito::RetVal(ito::retWarning, 0, QObject::tr("given index of parameter name ignored since parameter is no array type").toLatin1().data());
                         }
                         paramIt.value().copyValueFrom(&val);
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, QObject::tr("parameter not found in m_params.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, QObject::tr("parameter not found in m_params.").toLatin1().data());
                 }
             }
         }
@@ -415,7 +415,7 @@ namespace ito
         QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
         if (rx.indexIn(name) == -1)
         {
-            retValue += ito::RetVal(ito::retError,0,QObject::tr("invalid parameter name").toAscii().data());
+            retValue += ito::RetVal(ito::retError,0,QObject::tr("invalid parameter name").toLatin1().data());
         }
         else
         {

@@ -24,6 +24,7 @@
 #define VERSIONHELPER
 
 #include <QtCore/qpair.h>
+#include <qmap.h>
 
 namespace ito
 {

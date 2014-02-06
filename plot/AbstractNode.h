@@ -206,7 +206,7 @@ class AbstractNode
             m_NodeType(rttiUnknown),
             m_uniqueID(UID++)
         {
-            m_pInput.insert("liveSource", new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toAscii().data()));
+            m_pInput.insert("liveSource", new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toLatin1().data()));
         }
 
 

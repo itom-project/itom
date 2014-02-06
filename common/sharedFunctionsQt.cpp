@@ -36,7 +36,7 @@
 #include <QDebug>
 #include <QFileInfo>
 
-#include <QDomDocument> /*!< this is for the plugin param save / load*/
+#include <QtXml/qdom.h> /*!< this is for the plugin param save / load*/
 #include <QXmlStreamWriter> /*!< this is for the dataobject save / load*/
 
 namespace ito
@@ -64,11 +64,11 @@ namespace ito
         {
             unitOut = QString(unitIn);
             dValOut = dVal;
-            retVal = RetVal(retWarning, 1, QObject::tr("Tried to scale unscaleable unit").toAscii().data());
+            retVal = RetVal(retWarning, 1, QObject::tr("Tried to scale unscaleable unit").toLatin1().data());
         }
         else if (unitIn.isEmpty())
         {
-            retVal = RetVal(retWarning, 1, QObject::tr("No unit specified").toAscii().data());
+            retVal = RetVal(retWarning, 1, QObject::tr("No unit specified").toLatin1().data());
         }
         else if (aval <= std::numeric_limits<double>::min())
         {
@@ -209,7 +209,7 @@ namespace ito
 
         if (plugInName == "")
         {
-            return RetVal(retWarning, 0, QObject::tr("Pluginname undefined. No xml file loaded").toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("Pluginname undefined. No xml file loaded").toLatin1().data());
         }
         if (plugInName.endsWith(".dll", Qt::CaseInsensitive))
         {
@@ -246,7 +246,7 @@ namespace ito
 
         if (!paramList)
         {
-            return RetVal(retWarning, 0, QObject::tr("ParamList not inialized properly").toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("ParamList not inialized properly").toLatin1().data());
         }
 
         if (!paramList->empty())
@@ -258,8 +258,8 @@ namespace ito
         if (!paramFile.open(QIODevice::ReadOnly))
         {
             QString err;
-            err.sprintf("Can't open xml file: %s", paramFile.fileName().toAscii().data());
-            return RetVal(retWarning, 0, QObject::tr(err.toAscii().data()).toAscii().data());
+            err.sprintf("Can't open xml file: %s", paramFile.fileName().toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr(err.toLatin1().data()).toLatin1().data());
         }
 
         if (!paramDomDoc.setContent((QIODevice *)&paramFile, true, &errorStr, &errorLine, &errorColumn))
@@ -270,8 +270,8 @@ namespace ito
                 //    .arg(errorColumn)
                 //    .arg(errorStr));
                 QString errStr;
-                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toAscii().data());
-                return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toAscii().data()).toAscii().data());
+                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toLatin1().data());
+                return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toLatin1().data()).toLatin1().data());
         }
 
         QDomElement root = paramDomDoc.documentElement();
@@ -310,21 +310,21 @@ namespace ito
 
                     if (instParam.attribute("type") == "number")
                     {
-                        param = Param(paramName.toAscii().data(), ParamBase::Double, instParam.text().toDouble(), NULL, NULL);
+                        param = Param(paramName.toLatin1().data(), ParamBase::Double, instParam.text().toDouble(), NULL, NULL);
                         //param.setVal<double>(instParam.text().toDouble());
                         paramList->insert(param.getName(),param);
                     }
                     else if (instParam.attribute("type") == "string")
                     {
-                        QByteArray cvalDecoded = QByteArray::fromPercentEncoding(instParam.text().toAscii());
-                        param = Param(paramName.toAscii().data(), ParamBase::String, cvalDecoded.data(), NULL);
+                        QByteArray cvalDecoded = QByteArray::fromPercentEncoding(instParam.text().toLatin1());
+                        param = Param(paramName.toLatin1().data(), ParamBase::String, cvalDecoded.data(), NULL);
                         //param.setVal<char*>(cvalDecoded.data());
                         paramList->insert(param.getName(),param);
                     }
                     else if (instParam.attribute("type") == "numericVector")
                     {
                         // okay first try to decode the vector from a binary coding
-                        QByteArray cvalDecoded = QByteArray::fromBase64(instParam.text().toAscii());
+                        QByteArray cvalDecoded = QByteArray::fromBase64(instParam.text().toLatin1());
                         unsigned int ptrlength = instParam.attribute("ptrlength").toInt();
                         bool isBinary = true;
                         bool asciiFailed = false;
@@ -334,8 +334,8 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if (ptrlength == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(paramName.toAscii().data(), ParamBase::CharArray, ptrlength, (int*)cvalDecoded.data(), NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::CharArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::CharArray, 0, NULL);
                                 //param.setVal<char*>(cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
                                 isBinary = true;
@@ -351,8 +351,8 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if ((ptrlength * sizeof(int)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(paramName.toAscii().data(), ParamBase::IntArray, ptrlength, (int*)cvalDecoded.data(), NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::IntArray, ptrlength, (int*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::IntArray, 0, NULL, NULL);
                                 //param.setVal<int*>((int*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
                                 isBinary = true;
@@ -368,8 +368,8 @@ namespace ito
                             // check is the binary length is equal to the number of elements
                             if ((ptrlength * sizeof(double)) == (unsigned int)cvalDecoded.length())
                             {
-                                param = Param(paramName.toAscii().data(), ParamBase::DoubleArray, ptrlength, (double*)cvalDecoded.data(), NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray, 0, NULL, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::DoubleArray, ptrlength, (double*)cvalDecoded.data(), NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::DoubleArray, 0, NULL, NULL);
                                 //param.setVal<double*>((double*)cvalDecoded.data(), ptrlength);
                                 paramList->insert(param.getName(),param);
                                 isBinary = true;
@@ -385,7 +385,7 @@ namespace ito
                         if (isBinary == false)
                         {
                             asciiFailed = false;
-                            cvalDecoded = instParam.text().toAscii();
+                            cvalDecoded = instParam.text().toLatin1();
                             QList<QByteArray> tokes = cvalDecoded.split(';');
 
                             if (ptrlength != tokes.length())
@@ -399,8 +399,8 @@ namespace ito
                                 {
                                     cArray[vCnt] = cv::saturate_cast<char>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(paramName.toAscii().data(), ParamBase::CharArray, ptrlength, cArray, NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::CharArray, 0, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::CharArray, ptrlength, cArray, NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::CharArray, 0, NULL);
                                 //param.setVal<char*>(cArray, ptrlength);
                                 paramList->insert(param.getName(),param);
                                 free(cArray);
@@ -413,8 +413,8 @@ namespace ito
                                 {
                                     iArray[vCnt] = cv::saturate_cast<int>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(paramName.toAscii().data(), ParamBase::IntArray, ptrlength, iArray, NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::IntArray, 0, NULL, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::IntArray, ptrlength, iArray, NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::IntArray, 0, NULL, NULL);
                                 //param.setVal<int*>(iArray, ptrlength);
                                 paramList->insert(param.getName(),param);
                                 free(iArray);
@@ -426,8 +426,8 @@ namespace ito
                                 {
                                     dArray[vCnt] = cv::saturate_cast<double>(tokes[vCnt].toDouble());
                                 }
-                                param = Param(paramName.toAscii().data(), ParamBase::DoubleArray, ptrlength, dArray, NULL);
-                                //param = Param(instParam.nodeName().toAscii().data(), ParamBase::DoubleArray,  0, NULL, NULL);
+                                param = Param(paramName.toLatin1().data(), ParamBase::DoubleArray, ptrlength, dArray, NULL);
+                                //param = Param(instParam.nodeName().toLatin1().data(), ParamBase::DoubleArray,  0, NULL, NULL);
                                 //param.setVal<double*>(dArray, ptrlength);
                                 paramList->insert(param.getName(),param);
                                 free(dArray);
@@ -437,8 +437,8 @@ namespace ito
                         if (asciiFailed == true)
                         {
                             QString errStr;
-                            errStr.sprintf("Decoding Error: %s could not be decoded from numericVector", instParam.nodeName().toAscii().data());
-                            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(errStr.toAscii().data()).toAscii().data());
+                            errStr.sprintf("Decoding Error: %s could not be decoded from numericVector", instParam.nodeName().toLatin1().data());
+                            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(errStr.toLatin1().data()).toLatin1().data());
                         }
                     }
                     instParam = instParam.nextSiblingElement();
@@ -456,8 +456,8 @@ namespace ito
         if (!idFound)
         {
             QString idStr;
-            idStr.sprintf("Id: %s not found in xml file", id.toAscii().data());
-            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(idStr.toAscii().data()).toAscii().data());
+            idStr.sprintf("Id: %s not found in xml file", id.toLatin1().data());
+            ret += ito::RetVal(ito::retWarning, 0, QObject::tr(idStr.toLatin1().data()).toLatin1().data());
         }
         return ret;
     }
@@ -491,7 +491,7 @@ namespace ito
 
         if (!paramFile.open(QIODevice::ReadOnly))
         {
-            return RetVal(retWarning, 0, QObject::tr("Can't open xml file").toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("Can't open xml file").toLatin1().data());
         }
 
         paramDomDoc.setContent((QIODevice *)&paramFile, true, &errorStr, &errorLine, &errorColumn);
@@ -611,7 +611,7 @@ namespace ito
                             }
                         }
                     }
-                    paramList->remove(paramName.toAscii());
+                    paramList->remove(paramName.toLatin1());
                     instParam = instParam.nextSiblingElement();
                 }
 
@@ -707,7 +707,7 @@ namespace ito
 
                 if (!paramFile.open(QIODevice::WriteOnly))
                 {
-                    return RetVal(retWarning, 0, QObject::tr("Can't open xml file").toAscii().data());
+                    return RetVal(retWarning, 0, QObject::tr("Can't open xml file").toLatin1().data());
                 }
 
                 QTextStream out((QIODevice *)&paramFile);
@@ -786,7 +786,7 @@ namespace ito
                         msg = QObject::tr("XML-Import warnings:\nAutosave parameter %1 not found").arg(name);
                     }
 //                    ret += RetVal(retWarning, 0, errorbuf);
-                    ret += RetVal(retWarning, 0, msg.toAscii().data());
+                    ret += RetVal(retWarning, 0, msg.toLatin1().data());
                 }
 
                 if (deleteUnchangedParams)
@@ -817,7 +817,7 @@ namespace ito
                     msg = QObject::tr("XML-Import warnings:\nObsolete parameter %1").arg(name);
                 }
 //                ret += RetVal(retWarning, 0, errorbuf);
-                ret += RetVal(retWarning, 0, msg.toAscii().data());
+                ret += RetVal(retWarning, 0, msg.toLatin1().data());
             }
             else if (paramIt.value().getAutosave() == 0)
             {
@@ -830,7 +830,7 @@ namespace ito
                     msg = QObject::tr("XML-Import warnings:\nParameter %1 not autosave").arg(name);
                 }
 //                ret += RetVal(retWarning, 0, errorbuf);
-                ret += RetVal(retWarning, 0, msg.toAscii().data());
+                ret += RetVal(retWarning, 0, msg.toLatin1().data());
             }
             else    // So parameters exist and now we have to check if they are similar types
             {
@@ -858,7 +858,7 @@ namespace ito
                             {
                                 msg = QObject::tr("XML-Import warnings:\nParameter not loadable %1").arg(name);
                             }
-                            ret += RetVal(retWarning, 0, msg.toAscii().data());
+                            ret += RetVal(retWarning, 0, msg.toLatin1().data());
                         break;
                     }
                 }
@@ -873,7 +873,7 @@ namespace ito
                         msg = QObject::tr("XML-Import warnings:\nType conflict for %1").arg(name);
                     }
 //                    ret += RetVal(retWarning, 0, errorbuf);
-                    ret += RetVal(retWarning, 0, msg.toAscii().data());
+                    ret += RetVal(retWarning, 0, msg.toLatin1().data());
                 }
             }
         }
@@ -947,7 +947,7 @@ namespace ito
             type = "tRGBA32";
             break;
         default:
-            return RetVal(retError, 0, QObject::tr("Save object failed: type not supported").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: type not supported").toLatin1().data());
         }
 
         // First add informations of the dataObject to element DataObject like FormatVersion of this file...
@@ -1241,19 +1241,19 @@ namespace ito
 
         if (!dObjOut)
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: invalid object handle").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: invalid object handle").toLatin1().data());
         }
 
         if ((dObjOut->getDims() == 0) || (dObjOut->getTotal() == 0))
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: object seems empty").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: object seems empty").toLatin1().data());
         }
 
         /*ret += dObjOut->evaluateTransposeFlag();
 
         if (ret.containsError())
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: evaluate transpose failed").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: evaluate transpose failed").toLatin1().data());
         }*/
 
         int elementsize = 1;
@@ -1281,7 +1281,7 @@ namespace ito
 
         if (!checkFile.isWritable() && checkFile.exists())
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: file not writeable").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: file not writeable").toLatin1().data());
         }
 
         paramFile.open(QIODevice::WriteOnly);
@@ -1365,19 +1365,19 @@ namespace ito
         {
             if (!isBinary)
             {
-                QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toAscii());
+                QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toLatin1());
                 val = cval.toDouble();  
             }
             else
             {
-                QByteArray cvalDecoded = QByteArray::fromBase64(attrStream.value(Attrib).toString().toAscii());
+                QByteArray cvalDecoded = QByteArray::fromBase64(attrStream.value(Attrib).toString().toLatin1());
                 memcpy(&val, cvalDecoded.data(), sizeof(double));
             }
         }
         else
         {
             QString warning = QObject::tr("Load object warning: Metadata \" %1 \" for %2 missing").arg(Attrib).arg(Element);
-            return RetVal(retWarning, 0, warning.toAscii().data());
+            return RetVal(retWarning, 0, warning.toLatin1().data());
         }
         return retOk;
     }
@@ -1400,12 +1400,12 @@ namespace ito
             
         if (attrStream.hasAttribute(Attrib))
         {
-            QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toAscii());
+            QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toLatin1());
             val = cval.data();  
         }
         else
         {
-            return RetVal(retWarning, 0, QObject::tr("Load object warning: Metadata \" %1 \" for %2 missing").arg(Attrib).arg(Element).toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("Load object warning: Metadata \" %1 \" for %2 missing").arg(Attrib).arg(Element).toLatin1().data());
         }
         return retOk;
     }
@@ -1441,7 +1441,7 @@ namespace ito
             ndims = attrStream.value("dims").toString().toInt();
             if (ndims < 2)
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: Number of dims smaller 2").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: Number of dims smaller 2").toLatin1().data());
             }
         }   
 
@@ -1449,7 +1449,7 @@ namespace ito
         {
             if (NULL==(sizes = (int *)calloc(ndims, sizeof(int))))
             {
-                ret += RetVal(retError, 0, QObject::tr("Not enough memory to alloc sizes vector").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Not enough memory to alloc sizes vector").toLatin1().data());
             }
         }
 
@@ -1465,7 +1465,7 @@ namespace ito
                 }
                 else
                 {
-                    ret += RetVal(retError, 0, QObject::tr("Load object failed: dimension size missing").toAscii().data());
+                    ret += RetVal(retError, 0, QObject::tr("Load object failed: dimension size missing").toLatin1().data());
                     break;
                 }
             }
@@ -1479,7 +1479,7 @@ namespace ito
             }
             else
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: dimX not specified").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: dimX not specified").toLatin1().data());
             }
         }
 
@@ -1491,7 +1491,7 @@ namespace ito
             }
             else
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: dimY not specified").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: dimY not specified").toLatin1().data());
             }
         }
 
@@ -1503,7 +1503,7 @@ namespace ito
             }
             else
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: isTransposed not specified").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: isTransposed not specified").toLatin1().data());
             }
         }*/
 
@@ -1566,7 +1566,7 @@ namespace ito
             }
             else
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: type not supported").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: type not supported").toLatin1().data());
             }
         }
         
@@ -1575,7 +1575,7 @@ namespace ito
             dObjIn = DataObject(ndims, sizes, objType);
             if (dObjIn.getDims() < 2)
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: Error during allocating memory").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: Error during allocating memory").toLatin1().data());
             }
             /*else
             {
@@ -1620,14 +1620,14 @@ namespace ito
 
         if (stream.atEnd())
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: file corrupted at metaData (v1.0)").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: file corrupted at metaData (v1.0)").toLatin1().data());
         }
 
         QString test = stream.qualifiedName().toString();
 
         if (stream.qualifiedName().toString().compare("metaData") != 0)
         {
-            return RetVal(retWarning, 0, QObject::tr("Load object warning: file has invalid metaData for v1.0").toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("Load object warning: file has invalid metaData for v1.0").toLatin1().data());
         }
 
         attrStream = stream.attributes();
@@ -1645,12 +1645,12 @@ namespace ito
             }    
             else
             {
-                return RetVal(retWarning, 0, QObject::tr("Load object warning: DoubleExportType for v1.0 invalid").toAscii().data());
+                return RetVal(retWarning, 0, QObject::tr("Load object warning: DoubleExportType for v1.0 invalid").toLatin1().data());
             }
         }
         else
         {
-            return RetVal(retWarning, 0, QObject::tr("Load object warning: DoubleExportType for v1.0 missing").toAscii().data());
+            return RetVal(retWarning, 0, QObject::tr("Load object warning: DoubleExportType for v1.0 missing").toLatin1().data());
         }
 
         for (char i = 0; i < ndims - 2; i++)
@@ -1685,7 +1685,7 @@ namespace ito
             else
             {
                 QString warning = QObject::tr("Load object warning: MetaData for %1 missing").arg(elementName);
-                ret += RetVal(retWarning, 0, warning.toAscii().data());
+                ret += RetVal(retWarning, 0, warning.toLatin1().data());
             }
         }
        
@@ -1717,7 +1717,7 @@ namespace ito
         }
         else
         {
-            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for dimX missing").toAscii().data());
+            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for dimX missing").toLatin1().data());
         }
 
         done = readTillNext(stream, loops, 10);
@@ -1747,7 +1747,7 @@ namespace ito
         }
         else
         {
-            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for dimY missing").toAscii().data());
+            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for dimY missing").toLatin1().data());
         }
 
         done = readTillNext(stream, loops, 10);
@@ -1777,7 +1777,7 @@ namespace ito
         }
         else
         {
-            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for values missing").toAscii().data());
+            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData for values missing").toLatin1().data());
         }
 
         done = readTillNext(stream, loops, 10);
@@ -1806,7 +1806,7 @@ namespace ito
             attrName = "r33";
             ret2 += readDoubleFromXML(attrStream, elementName, attrName, RD[8], doubleAsBinary);
             if (!ret2.containsWarningOrError()) dObjIn.setXYRotationalMatrix(RD[0], RD[1], RD[2], RD[3], RD[4], RD[5], RD[6], RD[7], RD[8]);
-            else ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData import for Rotation Matrix failed").toAscii().data());
+            else ret += RetVal(retWarning, 0, QObject::tr("Load object warning: MetaData import for Rotation Matrix failed").toLatin1().data());
         }
         return ret;
     }
@@ -1841,13 +1841,13 @@ namespace ito
 
         if (stream.atEnd())
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: file corrupted at tagSpace (v1.0)").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: file corrupted at tagSpace (v1.0)").toLatin1().data());
         }
 
         if (!stream.qualifiedName().toString().compare("tagSpace") == 0)
         {
             error = QObject::tr("Load object failed: tag space not at expected position. Got %1 instead").arg(stream.qualifiedName().toString());
-            return RetVal(retError, 0, error.toAscii().data());
+            return RetVal(retError, 0, error.toLatin1().data());
         }
         
         //TODO: what should this look like? in case put brackets here!
@@ -1859,7 +1859,7 @@ namespace ito
             }
             else
             {
-                return RetVal(retWarning, 0, QObject::tr("Load object failed: tags Space invalid").toAscii().data());
+                return RetVal(retWarning, 0, QObject::tr("Load object failed: tags Space invalid").toLatin1().data());
             }
 
             for (int i = 0; i < nTags; i++)
@@ -1868,7 +1868,7 @@ namespace ito
                 attrStream = stream.attributes();
                 if (!stream.isEndElement())  // okay tag-space is not empty
                 {
-                    cvalDecoded = QByteArray::fromPercentEncoding(stream.qualifiedName().toString().toAscii());
+                    cvalDecoded = QByteArray::fromPercentEncoding(stream.qualifiedName().toString().toLatin1());
                     tagName = cvalDecoded.data();
 
                     tagValue = stream.readElementText();
@@ -1885,31 +1885,31 @@ namespace ito
                         else if (tagType.compare("d2b") == 0)
                         {
                             double dVal = 0.0;
-                            QByteArray cvalDecoded = QByteArray::fromBase64(tagValue.toAscii());
+                            QByteArray cvalDecoded = QByteArray::fromBase64(tagValue.toLatin1());
                             memcpy(&dVal, cvalDecoded.data(), sizeof(double));
                             dObjIn.setTag(tagName, dVal);
                         }
                         else if (tagType.compare("s") == 0)
                         {
-                            cvalDecoded = QByteArray::fromPercentEncoding(tagValue.toAscii());
+                            cvalDecoded = QByteArray::fromPercentEncoding(tagValue.toLatin1());
                             std::string sVal = cvalDecoded.data();
                             dObjIn.setTag(tagName, sVal);                  
                         }
                         else
                         {
-                            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: invalid tagType found").toAscii().data());
+                            ret += RetVal(retWarning, 0, QObject::tr("Load object warning: invalid tagType found").toLatin1().data());
                             continue;
                         }
                     }
                     else
                     {
-                        ret += RetVal(retWarning, 0, QObject::tr("Load object warning: invalid tagType found").toAscii().data());
+                        ret += RetVal(retWarning, 0, QObject::tr("Load object warning: invalid tagType found").toLatin1().data());
                         continue;
                     }
                 }
                 else
                 {
-                    return RetVal(retWarning, 0, QObject::tr("Load object warning: tagsSpace invalid").toAscii().data());
+                    return RetVal(retWarning, 0, QObject::tr("Load object warning: tagsSpace invalid").toLatin1().data());
                 }
             }
         }
@@ -1948,13 +1948,13 @@ namespace ito
 
         if (stream.atEnd())
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: dataSpace missing").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: dataSpace missing").toLatin1().data());
         }
 
         if (!stream.qualifiedName().toString().compare("data") == 0)
         {
             error = QObject::tr("Load object failed: dataSpace not at expected position. Got %1 instead").arg(stream.qualifiedName().toString());
-            return RetVal(retError, 0, error.toAscii().data());
+            return RetVal(retError, 0, error.toLatin1().data());
         }
 
         QXmlStreamAttributes attrStream = stream.attributes();
@@ -1963,12 +1963,12 @@ namespace ito
         {
             if (attrStream.value("planes").toString().toInt() != numPlanes)
             {
-                ret += RetVal(retWarning, 0, QObject::tr("Load object warning: dataSpace and dataObject are not equal").toAscii().data());
+                ret += RetVal(retWarning, 0, QObject::tr("Load object warning: dataSpace and dataObject are not equal").toLatin1().data());
             }
         }
         else
         {
-            ret +=  RetVal(retWarning, 0, QObject::tr("Load object warning: dataSpace attributes corrupted").toAscii().data());
+            ret +=  RetVal(retWarning, 0, QObject::tr("Load object warning: dataSpace attributes corrupted").toLatin1().data());
         }
 
         for (int i = 0; i < numPlanes; i++)
@@ -1978,11 +1978,11 @@ namespace ito
             if (!stream.isEndElement() && !stream.atEnd())  // okay tag-space is not empty
             {
                 attrStream = stream.attributes();
-                QByteArray cval = QByteArray::fromBase64(stream.readElementText().toAscii());
+                QByteArray cval = QByteArray::fromBase64(stream.readElementText().toLatin1());
                 if (cval.length() != planeSize)
                 {
                     error = QObject::tr("Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes").arg(cval.length()).arg(planeSize);
-                    return RetVal(retError, 0, error.toAscii().data());
+                    return RetVal(retError, 0, error.toLatin1().data());
                 }
                 else
                 {
@@ -1992,7 +1992,7 @@ namespace ito
             }
             else
             {
-                return RetVal(retError, 0, QObject::tr("Load object failed: dataStream ended before finished reading").toAscii().data());
+                return RetVal(retError, 0, QObject::tr("Load object failed: dataStream ended before finished reading").toLatin1().data());
             }
         }
         return ret;
@@ -2022,7 +2022,7 @@ namespace ito
 
         if (!dObjIn)
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: invalid object handle").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: invalid object handle").toLatin1().data());
         }
 
         // First start with the properties of the file, check if it ist readable ...
@@ -2049,7 +2049,7 @@ namespace ito
 
         if (!checkFile.isReadable() && !checkFile.exists())
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: file not readable or does not exists").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: file not readable or does not exists").toLatin1().data());
         }
 
         // open the file
@@ -2063,7 +2063,7 @@ namespace ito
 
         if (stream.atEnd())
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: file seems corrupt").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: file seems corrupt").toLatin1().data());
         }
         else
         {
@@ -2071,7 +2071,7 @@ namespace ito
             if (ReadSigns.compare("1.0") == 0)
             {
                 paramFile.close();
-                return  RetVal(retError, 0, QObject::tr("Load object failed: wrong xml version").toAscii().data());
+                return  RetVal(retError, 0, QObject::tr("Load object failed: wrong xml version").toLatin1().data());
             }
         }
 
@@ -2079,13 +2079,13 @@ namespace ito
         if (ReadSigns.compare("UTF-8") == 0)
         {
             paramFile.close();
-            return RetVal(retError, 0, QObject::tr("Load object failed: wrong document encoding").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: wrong document encoding").toLatin1().data());
         }
 
         if (stream.atEnd())
         {
             paramFile.close();
-            return RetVal(retError, 0, QObject::tr("Load object failed: unexpected file ending").toAscii().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: unexpected file ending").toLatin1().data());
         }
 
         stream.readNextStartElement();
@@ -2104,7 +2104,7 @@ namespace ito
         if (stream.qualifiedName().toString().compare(startNoteName) == 0)
         {
             paramFile.close();
-            return  RetVal(retError, 0, QObject::tr("Load object failed: file is no itomDataObjectFile").toAscii().data());
+            return  RetVal(retError, 0, QObject::tr("Load object failed: file is no itomDataObjectFile").toLatin1().data());
         }
         attrStream = stream.attributes();
 
@@ -2132,12 +2132,12 @@ namespace ito
             }
             else
             {
-                ret += RetVal(retError, 0, QObject::tr("Load object failed: illegal format version").toAscii().data());
+                ret += RetVal(retError, 0, QObject::tr("Load object failed: illegal format version").toLatin1().data());
             }
         }
         else
         {
-            ret += RetVal(retError, 0, QObject::tr("Load object failed: object header not valied").toAscii().data());
+            ret += RetVal(retError, 0, QObject::tr("Load object failed: object header not valied").toLatin1().data());
         }
 
         // Get the data

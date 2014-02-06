@@ -151,7 +151,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
             QString f = PythonQtConversion::PyObjGetString(__file__,true,ok);
             if (ok)
             {
-                filename2 = f.toAscii();
+                filename2 = f.toLatin1();
                 filename = filename2.data(); //be carefull, filename is borrowed from filename2
             }
             else
@@ -489,7 +489,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
     if (keyList.size() < 1)
     {
-        std::cout << "No "<< contextName.toAscii().data() <<" defined\n";
+        std::cout << "No "<< contextName.toLatin1().data() <<" defined\n";
     }
     else
     {
@@ -507,8 +507,8 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 //QVector<ito::Param> paramsMand, paramsOpt, paramsOut;
                 const ito::FilterParams *filterParams;
 
-                std::cout << contextName.toUpper().toAscii().data() << "NAME:    "<< filteredKey.toAscii().data() << "\n";
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toAscii());
+                std::cout << contextName.toUpper().toLatin1().data() << "NAME:    "<< filteredKey.toLatin1().data() << "\n";
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toLatin1());
                 PyDict_SetItemString(resulttemp, "name", item);
                 Py_DECREF(item);
 
@@ -518,8 +518,8 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     filterParams = AIM->getHashedFilterParams(wFunc->m_paramFunc);
                     //(*(wFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
-                    std::cout << "DESCRIPTION    " << wFunc->m_description.toAscii().data() << "\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(wFunc->m_description.toAscii());
+                    std::cout << "DESCRIPTION    " << wFunc->m_description.toLatin1().data() << "\n";
+                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(wFunc->m_description.toLatin1());
                     PyDict_SetItemString(resulttemp, "description", item);      
                     Py_DECREF(item);
                 }
@@ -529,8 +529,8 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     filterParams = AIM->getHashedFilterParams(fFunc->m_paramFunc);
                     //(*(fFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
-                    std::cout << "DESCRIPTION    " << fFunc->m_description.toAscii().data() << "\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(fFunc->m_description.toAscii());
+                    std::cout << "DESCRIPTION    " << fFunc->m_description.toLatin1().data() << "\n";
+                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(fFunc->m_description.toLatin1());
                     PyDict_SetItemString(resulttemp, "description", item);
                     Py_DECREF(item);
                 }
@@ -548,7 +548,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     }
                     else
                     {
-                        std::cout << "\nMandatory parameters: " <<  contextName.toAscii().data()  << " function has no mandatory parameters \n";
+                        std::cout << "\nMandatory parameters: " <<  contextName.toLatin1().data()  << " function has no mandatory parameters \n";
                     }
                     if (filterParams->paramsOpt.size())
                     {
@@ -559,7 +559,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     }
                     else
                     {
-                        std::cout << "\nOptional parameters: " <<  contextName.toAscii().data()  << " function has no optional parameters \n";
+                        std::cout << "\nOptional parameters: " <<  contextName.toLatin1().data()  << " function has no optional parameters \n";
                     }
                     if (filterParams->paramsOut.size())
                     {
@@ -570,7 +570,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     }
                     else
                     {
-                        std::cout << "\nOutput parameters: " <<  contextName.toAscii().data()  << " function has no output parameters \n";
+                        std::cout << "\nOutput parameters: " <<  contextName.toLatin1().data()  << " function has no output parameters \n";
                     }
                 }
                 else
@@ -579,7 +579,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 }
                 
                 std::cout << "\n";
-                PyDict_SetItemString(result, filteredKey.toAscii().data(), resulttemp);
+                PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
                 Py_DECREF(resulttemp);
             }
             else
@@ -590,11 +590,11 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
         if (namefilter.length())
         {
-            std::cout << contextName.toAscii().data() << ", which contain the given string: " << namefilter.toAscii().data() << "\n";
+            std::cout << contextName.toLatin1().data() << ", which contain the given string: " << namefilter.toLatin1().data() << "\n";
         }
         else
         {
-            std::cout << "Complete "<< contextName.toAscii().data() << "list\n";
+            std::cout << "Complete "<< contextName.toLatin1().data() << "list\n";
         }
 
         for (int n = 0; n < keyList.size(); n++)    // get the longest name in this list
@@ -616,7 +616,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
             
             if (!userwithinfos)
             {
-                std::cout <<"\n" << contextName.append("name").leftJustified(longest_name +1, ' ', false).toAscii().data() << " \tInfo-String\n";
+                std::cout <<"\n" << contextName.append("name").leftJustified(longest_name +1, ' ', false).toLatin1().data() << " \tInfo-String\n";
             }
         }
 
@@ -632,11 +632,11 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 QString descriptionString("");
 
                 if (userwithinfos)
-                    std::cout << contextName.toUpper().toAscii().data() << "NAME:    " << filteredKey.leftJustified(longest_name, ' ', false).toAscii().data() << " ";
+                    std::cout << contextName.toUpper().toLatin1().data() << "NAME:    " << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
                 else
-                    std::cout << filteredKey.leftJustified(longest_name, ' ', false).toAscii().data() << " ";
+                    std::cout << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
 
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toAscii());
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toLatin1());
                 PyDict_SetItemString(resulttemp, "name", item);
                 Py_DECREF(item);
 
@@ -671,8 +671,8 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         desString = desString.left(linebreakIdx);
                     }
 
-                    std::cout << "\t'" << desString.toAscii().data() << "'\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(descriptionString.toAscii());
+                    std::cout << "\t'" << desString.toLatin1().data() << "'\n";
+                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(descriptionString.toLatin1());
                     PyDict_SetItemString(resulttemp, "description", item);
                     Py_DECREF(item);
                 }
@@ -698,7 +698,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         }
                         else
                         {
-                            std::cout << "\nMandatory parameters: " <<  contextName.toAscii().data()  << " function has no mandatory parameters \n";
+                            std::cout << "\nMandatory parameters: " <<  contextName.toLatin1().data()  << " function has no mandatory parameters \n";
                         }
                         if (filterParams->paramsOpt.size())
                         {
@@ -709,7 +709,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         }
                         else
                         {
-                            std::cout << "\nOptional parameters: " <<  contextName.toAscii().data()  << " function has no optional parameters \n";
+                            std::cout << "\nOptional parameters: " <<  contextName.toLatin1().data()  << " function has no optional parameters \n";
                         }
                         if (filterParams->paramsOut.size())
                         {
@@ -720,7 +720,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         }
                         else
                         {
-                            std::cout << "\nOutput parameters: " <<  contextName.toAscii().data()  << " function has no output parameters \n";
+                            std::cout << "\nOutput parameters: " <<  contextName.toLatin1().data()  << " function has no output parameters \n";
                         }
                     }
                     else
@@ -728,7 +728,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         std::cout << "Errors while loading parameter info";
                     }
                     std::cout << "\n";
-                    PyDict_SetItemString(result, filteredKey.toAscii().data(), resulttemp);
+                    PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
                     Py_DECREF(resulttemp);
                 }
             }
@@ -1085,10 +1085,10 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                     PyObject *algorithmlist = PyDict_New();
                     for (int algos = 0; algos < keyList.size(); algos++)
                     {
-                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toAscii());
-                        PyDict_SetItemString(algorithmlist, keyList.value(algos).toAscii().data(), item);
+                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toLatin1());
+                        PyDict_SetItemString(algorithmlist, keyList.value(algos).toLatin1().data(), item);
                         Py_DECREF(item);
-                        std::cout << "> " << algos << "  " << keyList.value(algos).toAscii().data() << "\n";
+                        std::cout << "> " << algos << "  " << keyList.value(algos).toLatin1().data() << "\n";
                     }
                     PyDict_SetItemString(result, "filter", algorithmlist);
                     Py_DECREF(algorithmlist);
@@ -1111,10 +1111,10 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                     PyObject *widgetlist = PyDict_New();
                     for (int widgets = 0; widgets < keyList.size(); widgets++)
                     {
-                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toAscii());
-                        PyDict_SetItemString(widgetlist, keyList.value(widgets).toAscii().data(), item);
+                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toLatin1());
+                        PyDict_SetItemString(widgetlist, keyList.value(widgets).toLatin1().data(), item);
                         Py_DECREF(item);
-                        std::cout << "> " << widgets << "  " << keyList.value(widgets).toAscii().data() << "\n";
+                        std::cout << "> " << widgets << "  " << keyList.value(widgets).toLatin1().data() << "\n";
                     }
                     PyDict_SetItemString(result, "widgets", widgetlist);
                     Py_DECREF(widgetlist);
@@ -1301,7 +1301,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                 continue;
             }
 
-            std::cout << key.toAscii().toUpper().data() << ":\n";
+            std::cout << key.toLatin1().toUpper().data() << ":\n";
 
             PyObject* currentDict = PyDict_GetItem(myDic, currentKey);
             
@@ -1378,7 +1378,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     continue;
                 }
 
-                std::cout << subKey.toAscii().data() <<"\t" << subVal.toAscii().data() << "\n";
+                std::cout << subKey.toLatin1().data() <<"\t" << subVal.toLatin1().data() << "\n";
 
             }
 
@@ -1463,13 +1463,13 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
     if (qkey == "")
     {
-        retValue += RetVal(retError,0,QObject::tr("Button must have a valid name.").toAscii().data());
+        retValue += RetVal(retError,0,QObject::tr("Button must have a valid name.").toLatin1().data());
     }
     else
     {
         if (!code)
         {
-            retValue += RetVal(retError,0,QObject::tr("Any type of code (String or callable method or function) must be indicated.").toAscii().data());
+            retValue += RetVal(retError,0,QObject::tr("Any type of code (String or callable method or function) must be indicated.").toLatin1().data());
         }
         else if (!ok) //check whether code is a method or function
         {
@@ -1480,7 +1480,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
                 qcode = ":::itomfcthash:::" + qkey2;
                 if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
                 {
-                    retValue += RetVal(retError,0,QObject::tr("The given button name is already associated to a python method or function. The button can not be created.").toAscii().data());
+                    retValue += RetVal(retError,0,QObject::tr("The given button name is already associated to a python method or function. The button can not be created.").toLatin1().data());
                 }
                 else
                 {
@@ -1507,13 +1507,13 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
                     }
                     else
                     {
-                        retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toAscii().data());
+                        retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toLatin1().data());
                     }
                 }
             }
             else
             {
-                retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toAscii().data());
+                retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toLatin1().data());
             }
         }
     }
@@ -1640,7 +1640,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
 
     if (qkey == "")
     {
-        retValue += RetVal(retError,0,QObject::tr("Menu element must have a valid key.").toAscii().data());
+        retValue += RetVal(retError,0,QObject::tr("Menu element must have a valid key.").toLatin1().data());
     }
     else
     {
@@ -1652,7 +1652,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             {
             if (!code)
             {
-                retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toAscii().data());
+                retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toLatin1().data());
             }
             else if (!ok) //check whether code is a method or function
             {
@@ -1663,7 +1663,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
                     qcode = ":::itomfcthash:::" + qkey2;
                     if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
                     {
-                        retValue += RetVal(retError,0,QObject::tr("The given key is already associated to a python method or function. The menu element can not be created.").toAscii().data());
+                        retValue += RetVal(retError,0,QObject::tr("The given key is already associated to a python method or function. The menu element can not be created.").toLatin1().data());
                     }
                     else
                     {
@@ -1690,13 +1690,13 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
                         }
                         else
                         {
-                            retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toAscii().data());
+                            retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toLatin1().data());
                         }
                     }
                 }
                 else
                 {
-                    retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toAscii().data());
+                    retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toLatin1().data());
                 }
             }
             break;
@@ -1705,12 +1705,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             {
             if (ok && qcode != "")
             {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute some code. Code argument is ignored.").toAscii().data());
+                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute some code. Code argument is ignored.").toLatin1().data());
                 qcode = "";
             }
             else if (!ok && code != NULL && code != Py_None)
             {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute any function or method. Code argument is ignored.").toAscii().data());
+                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute any function or method. Code argument is ignored.").toLatin1().data());
             }
             break;
             }
@@ -1718,12 +1718,12 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             {
             if (ok && qcode != "")
             {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute some code. Code argument is ignored.").toAscii().data());
+                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute some code. Code argument is ignored.").toLatin1().data());
                 qcode = "";
             }
             else if (!ok && code != NULL && code != Py_None)
             {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute any function or method. Code argument is ignored.").toAscii().data());
+                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute any function or method. Code argument is ignored.").toLatin1().data());
             }
             break;
             }
@@ -1893,7 +1893,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
             if (n == 0)
             {
                 temp = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok));
-                std::cout << "New Element. Addr:" << (size_t)t << " Type: " << temp.toAscii().data() << "\n" << std::endl;
+                std::cout << "New Element. Addr:" << (size_t)t << " Type: " << temp.toLatin1().data() << "\n" << std::endl;
             }
         }
 
@@ -1901,7 +1901,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
          while (i.hasNext()) 
          {
              i.next();
-             std::cout << "Del Element. Addr:" << i.key() << " Type: " << i.value().toAscii().data() << "\n" << std::endl;
+             std::cout << "Del Element. Addr:" << i.key() << " Type: " << i.value().toLatin1().data() << "\n" << std::endl;
          }
 
          m_gcTrackerList.clear();
@@ -2927,7 +2927,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError, "The file '%s' does not exist", info.absoluteFilePath().toAscii().data());
+            return PyErr_Format(PyExc_RuntimeError, "The file '%s' does not exist", info.absoluteFilePath().toLatin1().data());
         }
     }
     else
@@ -2996,7 +2996,7 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError, "The file '%s' cannot be overwritten", info.absoluteFilePath().toAscii().data());
+            return PyErr_Format(PyExc_RuntimeError, "The file '%s' cannot be overwritten", info.absoluteFilePath().toLatin1().data());
         }
     }
     else

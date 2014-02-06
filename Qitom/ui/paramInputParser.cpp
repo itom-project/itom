@@ -51,7 +51,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
     QWidget *parent = m_canvas.data();
     if (parent == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
     }
 
     if (parent->layout())
@@ -141,7 +141,7 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
     QWidget *parent = m_canvas.data();
     if (parent == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
         return false;
     }
 
@@ -153,7 +153,7 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
 
     if (gridLayout == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toLatin1().data());
         return false;
     }
 
@@ -213,7 +213,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
     QWidget *parent = m_canvas.data();
     if (parent == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
     }
 
     int i = 0;
@@ -225,7 +225,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
     
     if (gridLayout == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toLatin1().data());
         return retValue;
     }
 
@@ -447,7 +447,7 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("QT error: Spin box widget could not be found").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("QT error: Spin box widget could not be found").toLatin1().data());
         }
     }
     else
@@ -470,7 +470,7 @@ ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Par
     QSpinBox *box = qobject_cast<QSpinBox*>(contentWidget);
     if (box == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("QT error: Spin box widget could not be found").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("QT error: Spin box widget could not be found").toLatin1().data());
     }
     
     retVal += ito::ParamHelper::validateCharMeta(static_cast<const ito::CharMeta*>(orgParam.getMeta()), box->value());
@@ -489,7 +489,7 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
     QDoubleSpinBox *box = qobject_cast<QDoubleSpinBox*>(contentWidget);
     if (box == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("QT error: Double spin box widget could not be found").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("QT error: Double spin box widget could not be found").toLatin1().data());
     }
 
     retVal += ito::ParamHelper::validateDoubleMeta(static_cast<const ito::DoubleMeta*>(orgParam.getMeta()), box->value());
@@ -512,7 +512,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
         QComboBox *cmb = qobject_cast<QComboBox*>(contentWidget);
         if (cmb == NULL)
         {
-            return ito::RetVal(ito::retError, 0, tr("QT error: String input widget could not be found").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("QT error: String input widget could not be found").toLatin1().data());
         }
         string = cmb->currentText();
     }
@@ -521,7 +521,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
         string = txt->text();
     }
 
-    retVal += ito::ParamHelper::validateStringMeta(static_cast<const ito::StringMeta*>(orgParam.getMeta()), string.toAscii().data(), mandatory);
+    retVal += ito::ParamHelper::validateStringMeta(static_cast<const ito::StringMeta*>(orgParam.getMeta()), string.toLatin1().data(), mandatory);
 
     if (!retVal.containsError())
     {
@@ -530,7 +530,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
         string.replace("\\r", "\r");
         string.replace("\\t", "\t");
         string.replace("#~!?üü@@?!~#", "\\");
-        QByteArray ba = string.toAscii();
+        QByteArray ba = string.toLatin1();
         char *temp = ba.data();
         param.setVal<char*>(temp);
     }

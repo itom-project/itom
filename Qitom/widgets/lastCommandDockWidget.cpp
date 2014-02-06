@@ -66,7 +66,7 @@ QMimeData * LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem *> items
         texts.append( roleDataMap[0].toString() );
     }
 
-    mimeData->setData("text/plain", texts.join("\n").toAscii() );
+    mimeData->setData("text/plain", texts.join("\n").toLatin1() );
     return mimeData;
 }
 

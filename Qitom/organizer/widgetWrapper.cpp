@@ -179,7 +179,7 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
     int retTypeInt = 0;
     if(retType != "" && QString::compare(retType, "void", Qt::CaseInsensitive) != 0)
     {
-        retTypeInt = QMetaType::type(retType.toAscii().data());
+        retTypeInt = QMetaType::type(retType.toLatin1().data());
         if(retTypeInt == 0)
             return MethodDescription(); //error
     }
@@ -205,7 +205,7 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
 
     foreach(const QString& param, paramList)
     {
-        type = QMetaType::type( param.trimmed().toAscii().data() );
+        type = QMetaType::type( param.trimmed().toLatin1().data() );
         if(type == 0)
         {
             ok2 = false;
@@ -318,13 +318,13 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             case 5001: //statusBar
                 {
                 QWidget* _r = (QWidget*)( object2->statusBar() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toAscii(), _r->metaObject()->className(), (void*)_r);
+                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                 return true;
                 }
             case 5002: //centralWidget
                 {
                 QWidget* _r = ( object2->centralWidget() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toAscii(), _r->metaObject()->className(), (void*)_r);
+                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                 return true;
                 }
             }
@@ -401,13 +401,13 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             case 7001: //horizontalHeader
                 {
                 QHeaderView* _r = (QHeaderView*)( object2->horizontalHeader() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toAscii(), _r->metaObject()->className(), (void*)_r);
+                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                 return true;
                 }
             case 7002: //verticalHeader
                 {
                 QHeaderView* _r = (QHeaderView*)( object2->verticalHeader() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toAscii(), _r->metaObject()->className(), (void*)_r);
+                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                 return true;
                 }
             }
@@ -465,7 +465,7 @@ QMetaProperty WidgetWrapper::fakeProperty(const QObject *baseObject, const QStri
             newProperty[0] = newProperty[0].toLower();
 
             tempMetaObject = header->metaObject();
-            int idx = tempMetaObject->indexOfProperty(newProperty.toAscii().data());
+            int idx = tempMetaObject->indexOfProperty(newProperty.toLatin1().data());
             if(idx >= 0)
             {
                 return tempMetaObject->property(idx);
@@ -499,7 +499,7 @@ QMetaProperty WidgetWrapper::fakeProperty(const QObject *baseObject, const QStri
             }
 
             tempMetaObject = header->metaObject();
-            int idx = tempMetaObject->indexOfProperty(newProperty.toAscii().data());
+            int idx = tempMetaObject->indexOfProperty(newProperty.toLatin1().data());
             if(idx >= 0)
             {
                 return tempMetaObject->property(idx);

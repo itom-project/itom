@@ -102,7 +102,7 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
 
     if (!m_pInput.contains(input->getName()))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Parameter: does not exist in updateParam").toAscii().data()); //Todo: add parameter name in error string
+        return ito::RetVal(ito::retError, 0, QObject::tr("Parameter: does not exist in updateParam").toLatin1().data()); //Todo: add parameter name in error string
     }
 
     Channel *inpChannel = getInputChannel(input->getName());
@@ -111,12 +111,12 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
     {
         if (inpChannel->getUpdatePending() == false)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Running update on a locked input channel, i.e. updatePending flag is not set").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Running update on a locked input channel, i.e. updatePending flag is not set").toLatin1().data());
         }
 
         if (inpChannel->getChannelBuffering())
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Channel is already updating").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Channel is already updating").toLatin1().data());
         }
 
         //now set the flag that this input channel is being updated right now.
@@ -238,7 +238,7 @@ RetVal AbstractNode::updateChannels(QList<QString> paramNames)
     if (retval.containsError()) 
         return retval;
     if (copyParamNames.length() != 0)
-        return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toLatin1().data());
 
     foreach (thisChannel, channelList)
     {
@@ -276,12 +276,12 @@ RetVal AbstractNode::setUpdatePending(int uniqueID /*= -1*/)
             }
             else
             {
-                retval += RetVal(ito::retError, 0, QObject::tr("channel is not a sender in setUpdatePending").toAscii().data());
+                retval += RetVal(ito::retError, 0, QObject::tr("channel is not a sender in setUpdatePending").toLatin1().data());
             }
         }
         else
         {
-            retval += RetVal(ito::retError, 0, QObject::tr("unknown channel in setUpdatePending").toAscii().data());
+            retval += RetVal(ito::retError, 0, QObject::tr("unknown channel in setUpdatePending").toLatin1().data());
         }
     }
     return retval;

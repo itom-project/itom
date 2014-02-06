@@ -205,7 +205,7 @@ namespace ito
     {
         QString uid = getUserID(fileName);
         QCryptographicHash nameHash(QCryptographicHash::Sha1);
-        nameHash.addData(uid.toAscii().data(), uid.length());
+        nameHash.addData(uid.toLatin1().data(), uid.length());
 
         QSettings settings(fileName, QSettings::IniFormat);
         settings.beginGroup("ITOMIniFile");
@@ -228,7 +228,7 @@ namespace ito
         QString uid = getUserID(iniFile);
         settings.beginGroup("ITOMIniFile");
         QCryptographicHash nameHash(QCryptographicHash::Sha1);
-        nameHash.addData(uid.toAscii().data(), uid.length());
+        nameHash.addData(uid.toLatin1().data(), uid.length());
 
         QByteArray fileFlags;
         QByteArray qbaFlags = QByteArray::number(flags);

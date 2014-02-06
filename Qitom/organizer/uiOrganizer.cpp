@@ -262,7 +262,7 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBas
 
     if (widget == NULL)
     {
-        retValue += RetVal(retError, 0, tr("the plugin did not return a valid widget pointer.").toAscii().data());
+        retValue += RetVal(retError, 0, tr("the plugin did not return a valid widget pointer.").toLatin1().data());
     }
     else
     {
@@ -308,7 +308,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
     
     if (widget == NULL)
     {
-        retValue += RetVal(retError, 0, tr("widget is NULL").toAscii().data());
+        retValue += RetVal(retError, 0, tr("widget is NULL").toLatin1().data());
     }
     else
     {
@@ -369,7 +369,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
             }
             case UiContainer::uiTypeQDockWidget:
             {
-                retValue += RetVal(retError, 0, tr("widgets of type QDockWidget are not yet implemented").toAscii().data());
+                retValue += RetVal(retError, 0, tr("widgets of type QDockWidget are not yet implemented").toLatin1().data());
                 break;
             }
             default: //widget packed into UiDialog
@@ -434,7 +434,7 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
     else
     {
         QString errorMsg = tr("plugin with name '%1' could be found.").arg(pluginName);
-        retValue += ito::RetVal(retError, 0, errorMsg.toAscii().data());
+        retValue += ito::RetVal(retError, 0, errorMsg.toLatin1().data());
     }
 
     if (!retValue.containsError())
@@ -513,7 +513,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
         else
         {
             QString errorMsg = tr("No internal dialog or window with name '%1' could be found.").arg(filename);
-            retValue += ito::RetVal(retError, 0, errorMsg.toAscii().data());
+            retValue += ito::RetVal(retError, 0, errorMsg.toLatin1().data());
         }
 
         if (!retValue.containsError())
@@ -565,13 +565,13 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
             if (wid == NULL)
             {
-                retValue += RetVal(retError, 1007, tr("ui-file '%1' could not be correctly parsed.").arg(filename).toAscii().data());
+                retValue += RetVal(retError, 1007, tr("ui-file '%1' could not be correctly parsed.").arg(filename).toLatin1().data());
             }
         }
         else
         {
             wid = NULL;
-            retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toAscii().data());
+            retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toLatin1().data());
         }
 
         if (!retValue.containsError())
@@ -613,7 +613,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
                     if (dialog == NULL)
                     {
-                        retValue += RetVal(retError, 1020, tr("dialog could not be created").toAscii().data());
+                        retValue += RetVal(retError, 1020, tr("dialog could not be created").toLatin1().data());
                         wid->deleteLater();
                     }
                     else if (!retValue.containsError())
@@ -696,7 +696,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
                 if (wid->inherits("QDialog"))
                 {
-                    retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be docked into the main window").toAscii().data());
+                    retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be docked into the main window").toLatin1().data());
                     wid->deleteLater();
                     wid = NULL;
                 }
@@ -705,7 +705,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
                     QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
                     if (!mainWin)
                     {
-                        retValue += RetVal(retError, 0, tr("Main window not available for docking the user interface.").toAscii().data());
+                        retValue += RetVal(retError, 0, tr("Main window not available for docking the user interface.").toLatin1().data());
                         wid->deleteLater();
                         wid = NULL;
                     }
@@ -831,7 +831,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 
         if (widget == NULL)
         {
-            retValue += RetVal(retError, 0, tr("designer plugin widget ('%1') could not be created").arg(tempClassName).toAscii().data());
+            retValue += RetVal(retError, 0, tr("designer plugin widget ('%1') could not be created").arg(tempClassName).toLatin1().data());
         }
         else
         {
@@ -840,7 +840,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
     }
     else
     {
-        retValue += RetVal::format(retError, 0, tr("No designer plugin with className '%s' could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder").toAscii().data(),className.toAscii().data());
+        retValue += RetVal::format(retError, 0, tr("No designer plugin with className '%s' could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder").toLatin1().data(),className.toLatin1().data());
     }
     return widget;
 }
@@ -858,7 +858,7 @@ RetVal UiOrganizer::deleteDialog(unsigned int handle, ItomSharedSemaphore *semap
     }
     else
     {
-        retValue += RetVal(retError, errorUiHandleInvalid, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -950,7 +950,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -975,7 +975,7 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -1009,12 +1009,12 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
         }
         else
         {
-            retValue += RetVal(retError, 0, tr("dialog cannot be docked").toAscii().data());
+            retValue += RetVal(retError, 0, tr("dialog cannot be docked").toLatin1().data());
         }
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -1056,12 +1056,12 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
         }
         else
         {
-            retValue += RetVal(retError, 0, tr("dialog cannot be docked or undocked").toAscii().data());
+            retValue += RetVal(retError, 0, tr("dialog cannot be docked or undocked").toLatin1().data());
         }
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -1086,7 +1086,7 @@ RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attrib
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -1111,7 +1111,7 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
     }
 
     if (semaphore)
@@ -1244,7 +1244,7 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString titl
     //check defaultButton:
     if (metaEnum.valueToKey(defaultButton) == NULL)
     {
-        retValue += RetVal(retError, 1001, tr("defaultButton must be within enum QMessageBox::StandardButton").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("defaultButton must be within enum QMessageBox::StandardButton").toLatin1().data());
     }
     else
     {
@@ -1256,12 +1256,12 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString titl
 
     if (stdButtons == -1)
     {
-        retValue += RetVal(retError, 1001, tr("buttons must be within enum QMessageBox::StandardButtons").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("buttons must be within enum QMessageBox::StandardButtons").toLatin1().data());
     }
 
     if (defaultButton != 0 && stdButtons.testFlag(stdDefaultButton) == false)
     {
-        retValue += RetVal(retError, 1001, tr("defaultButton must appear in buttons, too.").toAscii().data());
+        retValue += RetVal(retError, 1001, tr("defaultButton must appear in buttons, too.").toLatin1().data());
     }
 
     if (!retValue.containsWarningOrError())
@@ -1438,7 +1438,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -1503,7 +1503,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
         QMap<QString, QVariant>::iterator i = properties->begin();
         while (i !=  properties->end())
         {
-            i.value() = obj->property(i.key().toAscii().data());
+            i.value() = obj->property(i.key().toLatin1().data());
             if (!i.value().isValid())
             {
                 QObject *newObj = NULL;
@@ -1526,12 +1526,12 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
 
         if (errString.count() > 0)
         {
-            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
+            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toLatin1().data());
     }
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -1559,7 +1559,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
         QMap<QString, QVariant>::const_iterator i = properties.constBegin();
         while (i !=  properties.constEnd())
         {
-            index = mo->indexOfProperty(i.key().toAscii().data());
+            index = mo->indexOfProperty(i.key().toLatin1().data());
             if (index == -1)
             {
                 QObject *newObj = NULL;
@@ -1628,12 +1628,12 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap propertie
 
         if (errString.count() > 0)
         {
-            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toAscii().data());
+            retValue += RetVal(retError, errorObjPropRead, errString.join("\n").toLatin1().data());
     }
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -1657,7 +1657,7 @@ RetVal UiOrganizer::getAttribute(unsigned int objectID, int attributeNumber, QSh
     {
         if (attributeNumber < 0 || attributeNumber >= Qt::WA_AttributeCount)
         {
-            retval += RetVal(retError, 0, tr("The attribute number is out of range.").toAscii().data());
+            retval += RetVal(retError, 0, tr("The attribute number is out of range.").toLatin1().data());
         }
         else
         {
@@ -1666,7 +1666,7 @@ RetVal UiOrganizer::getAttribute(unsigned int objectID, int attributeNumber, QSh
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore)
@@ -1688,7 +1688,7 @@ RetVal UiOrganizer::setAttribute(unsigned int objectID, int attributeNumber, boo
     {
         if (attributeNumber < 0 || attributeNumber >= Qt::WA_AttributeCount)
         {
-            retval += RetVal(retError, 0, tr("The attribute number is out of range.").toAscii().data());
+            retval += RetVal(retError, 0, tr("The attribute number is out of range.").toLatin1().data());
         }
         else
         {
@@ -1697,7 +1697,7 @@ RetVal UiOrganizer::setAttribute(unsigned int objectID, int attributeNumber, boo
     }
     else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore)
@@ -1722,7 +1722,7 @@ RetVal UiOrganizer::getWindowFlags(unsigned int objectID, QSharedPointer<int> fl
     }
     else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore)
@@ -1746,7 +1746,7 @@ RetVal UiOrganizer::setWindowFlags(unsigned int objectID, int flags, ItomSharedS
     }
     else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore)
@@ -1779,7 +1779,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -1801,12 +1801,12 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
 
     if (obj)
     {
-        *objectName = obj->objectName().toAscii();
+        *objectName = obj->objectName().toLatin1();
         *widgetClassName = obj->metaObject()->className();
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object ID is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object ID is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -1836,7 +1836,7 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QS
             }
             else
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
             }
         }
         else //return reference to dialog or windows itself
@@ -1848,13 +1848,13 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QS
             }
             else
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("could not get reference to main dialog or window").toAscii().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("could not get reference to main dialog or window").toLatin1().data());
             }
         }
     }
     else
     {
-        retValue += RetVal(retError, errorUiHandleInvalid, tr("uiHandle is invalid").toAscii().data());
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("uiHandle is invalid").toLatin1().data());
     }
 
     if (semaphore)
@@ -1887,22 +1887,22 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, QString objectN
                 }
                 else
                 {
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("no object name given.").toAscii().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("no object name given.").toLatin1().data());
             }
         }
         else
         {
-            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is invalid.").toAscii().data());
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is invalid.").toLatin1().data());
         }
     }
     else
     {
-        retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toAscii().data());
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1936,22 +1936,22 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, QString objectN
                 }
                 else
                 {
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("no object name given.").toAscii().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("no object name given.").toLatin1().data());
             }
         }
         else
         {
-            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is invalid.").toAscii().data());
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is invalid.").toLatin1().data());
         }
     }
     else
     {
-        retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toAscii().data());
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1978,7 +1978,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignatur
     if (obj)
     {
         const QMetaObject *mo = obj->metaObject();
-        *signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toAscii().data()));
+        *signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toLatin1().data()));
 
         QMetaMethod metaMethod = mo->method(*signalIndex);
         QList<QByteArray> names = metaMethod.parameterTypes();
@@ -1992,7 +1992,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignatur
             else
             {
                 QString msg = tr("parameter type %1 is unknown").arg(name.constData());
-                retValue += RetVal(retError, errorUnregisteredType, msg.toAscii().data());
+                retValue += RetVal(retError, errorUnregisteredType, msg.toLatin1().data());
                 *signalIndex = -1;
                 break;
             }
@@ -2000,7 +2000,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignatur
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -2024,23 +2024,23 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, QString 
     if (obj)
     {
         const QMetaObject *mo = obj->metaObject();
-        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toAscii().data()));
+        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toLatin1().data()));
 
         if (signalIndex < 0)
         {
-            retValue += RetVal(retError, errorSignalDoesNotExist, tr("signal does not exist").toAscii().data());
+            retValue += RetVal(retError, errorSignalDoesNotExist, tr("signal does not exist").toLatin1().data());
         }
         else
         {
             if (!QMetaObject::connect(obj, signalIndex, this, this->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("pythonKeyboardInterrupt(bool)"))))
             {
-                retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot throwing a python keyboard interrupt.").toAscii().data());
+                retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot throwing a python keyboard interrupt.").toLatin1().data());
             }
         }
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -2089,13 +2089,13 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
         //if return value is set in qt_metacall, this is available in args->args()[0].
         if (success == false)
         {
-            retValue += RetVal(retError,errorSlotDoesNotExist, tr("slot could not be found").toAscii().data());
+            retValue += RetVal(retError,errorSlotDoesNotExist, tr("slot could not be found").toLatin1().data());
         }
 
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -2156,7 +2156,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
     }
 
     if (semaphore)
@@ -2248,7 +2248,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
             }
         }
 
-        std::cout << "WIDGET '" << className.toAscii().data() << "'\n--------------------------\n\n" << std::endl;
+        std::cout << "WIDGET '" << className.toLatin1().data() << "'\n--------------------------\n\n" << std::endl;
 
         if (classInfo.size() > 0)
         {
@@ -2256,7 +2256,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
             foreach(const QString &i, classInfo)
             {
-                std::cout << " " << i.toAscii().data() << "\n";
+                std::cout << " " << i.toLatin1().data() << "\n";
             }
 
             std::cout << "\n" << std::endl;
@@ -2268,7 +2268,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
             foreach(const QString &i, properties)
             {
-                std::cout << " " << i.toAscii().data() << "\n";
+                std::cout << " " << i.toLatin1().data() << "\n";
             }
 
             std::cout << "\n" << std::endl;
@@ -2280,7 +2280,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
             foreach(const QString &i, signal)
             {
-                std::cout << " " << i.toAscii().data() << "\n";
+                std::cout << " " << i.toLatin1().data() << "\n";
             }
 
             std::cout << "\n" << std::endl;
@@ -2291,7 +2291,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
             foreach(const QString &i, slot)
             {
-                std::cout << " " << i.toAscii().data() << "\n";
+                std::cout << " " << i.toLatin1().data() << "\n";
             }
 
             std::cout << "\n" << std::endl;
@@ -2300,7 +2300,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("There exists no object with the given id.").toAscii().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("There exists no object with the given id.").toLatin1().data());
     }
 
     if (semaphore)
@@ -2367,7 +2367,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 //                }
 //                else
 //                {
-//                    retval += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
+//                    retval += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toLatin1().data());
 //                }
 //            }
 //        }
@@ -2409,7 +2409,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 //        }
 //        else
 //        {
-//            retVal += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toAscii().data());
+//            retVal += ito::RetVal(ito::retError,0, tr("Plot window could not be loaded").toLatin1().data());
 //        }
 //    }
 //
@@ -2615,12 +2615,12 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toAscii().data(), *figHandle);
+                retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toLatin1().data(), *figHandle);
             }
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toAscii().data(), *figHandle);
+            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), *figHandle);
         }
     }
 
@@ -2674,12 +2674,12 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toAscii().data(), *figHandle);
+                retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toLatin1().data(), *figHandle);
             }
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toAscii().data(), *figHandle);
+            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), *figHandle);
         }
     }
 
@@ -2731,19 +2731,19 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("figure window is not available any more").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("figure window is not available any more").toLatin1().data());
                 }
             }
             else
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr("handle '%i' is no figure.").toAscii().data(), h);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("handle '%i' is no figure.").toLatin1().data(), h);
             }
         }
         else
         {
             if (h == 0)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("handle '0' cannot be assigned.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("handle '0' cannot be assigned.").toLatin1().data());
             }
             else
             {
@@ -2819,21 +2819,21 @@ RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned 
             {
                 *objectID = addObjectToList(obj);
                 *widgetClassName = obj->metaObject()->className();
-                *objectName = obj->objectName().toAscii();
+                *objectName = obj->objectName().toLatin1();
             }
             else
             {
-                retval += RetVal::format(retError, errorObjDoesNotExist, tr("subplot at indexed position %i is not available").toAscii().data(), subplotIndex);
+                retval += RetVal::format(retError, errorObjDoesNotExist, tr("subplot at indexed position %i is not available").toLatin1().data(), subplotIndex);
             }
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("figHandle %i is not a handle for a figure window.").toAscii().data(), *figHandle);
+            retval += RetVal::format(retError, 0, tr("figHandle %i is not a handle for a figure window.").toLatin1().data(), *figHandle);
         }
     }
     else
     {
-        retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toAscii().data(), *figHandle);
+        retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), *figHandle);
     }
 
     if (semaphore)
@@ -2862,12 +2862,12 @@ RetVal UiOrganizer::figureRemoveGuardedHandle(unsigned int figHandle, ItomShared
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toAscii().data(), figHandle);
+            retval += RetVal::format(retError, 0, tr("figHandle %i is not handle for a figure window.").toLatin1().data(), figHandle);
         }
     }
     else
     {
-        retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toAscii().data(), figHandle);
+        retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), figHandle);
     }
 
     if (semaphore)
@@ -2898,12 +2898,12 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("figHandle %i is not a handle for a figure window.").toAscii().data(), figHandle);
+                retval += RetVal::format(retError, 0, tr("figHandle %i is not a handle for a figure window.").toLatin1().data(), figHandle);
             }
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toAscii().data(), figHandle);
+            retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), figHandle);
         }
     }
     else
@@ -2941,7 +2941,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
         const QMetaObject* metaObject = widget->metaObject();
         if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
         {
-            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toAscii().data());
+            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
@@ -2956,7 +2956,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore && retval.containsError()) //else the semaphore is released by the userInteractionWatcher-instance, executed in a separate thread and monitoring the widget
@@ -2978,7 +2978,7 @@ RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPo
         const QMetaObject* metaObject = widget->metaObject();
         if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
         {
-            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toAscii().data());
+            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
@@ -2993,7 +2993,7 @@ RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPo
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     if (semaphore && retval.containsError()) //else the semaphore is released by the userInteractionWatcher-instance, executed in a separate thread and monitoring the widget
@@ -3015,7 +3015,7 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
         const QMetaObject* metaObject = widget->metaObject();
         if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1)
         {
-            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toAscii().data());
+            retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
@@ -3029,7 +3029,7 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toAscii().data());
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
     }
 
     return retval;

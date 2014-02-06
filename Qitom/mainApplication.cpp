@@ -165,7 +165,7 @@ void MainApplication::setupApplication()
         char *newpath = (char*)malloc(strlen(oldpath) + p.size() + 10);
         newpath[0] = 0;
         strcat(newpath, "path=");
-        strcat(newpath, p.toAscii().data()); //set libDir at the beginning of the path-variable
+        strcat(newpath, p.toLatin1().data()); //set libDir at the beginning of the path-variable
         strcat(newpath, ";");
         strcat(newpath, oldpath);
         _putenv(newpath);

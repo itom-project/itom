@@ -36,7 +36,7 @@
 #include <qfileinfo.h>
 #include <qpluginloader.h>
 #include <qapplication.h>
-#include <QDomDocument>
+#include <QtXml/qdom.h>
 #include "../global.h"
 #include <qmainwindow.h>
 #include <qdockwidget.h>
@@ -257,11 +257,11 @@ namespace ito
         if (pluginsDir.exists() == false)
         {
             QString dirErr = QObject::tr("directory '%1' could not be found").arg(pluginsDir.canonicalPath());
-            retValue += RetVal(retError, 0, dirErr.toAscii().data());
+            retValue += RetVal(retError, 0, dirErr.toLatin1().data());
         }
         else if (!pluginsFolderExists)
         {
-            retValue += RetVal(retWarning, 0, QObject::tr("plugins folder could not be found").toAscii().data());
+            retValue += RetVal(retWarning, 0, QObject::tr("plugins folder could not be found").toLatin1().data());
         }
         else
         {
@@ -304,7 +304,7 @@ namespace ito
         {
             message = QObject::tr("filename is no AddIn-library: %1").arg(filename);
             qDebug() << message;
-            retValue += RetVal(retError, 1001, message.toAscii().data());
+            retValue += RetVal(retError, 1001, message.toLatin1().data());
         }
         else
         {
@@ -393,7 +393,7 @@ namespace ito
                     default:
                         message = QObject::tr("AddIn with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toAscii().data());
+                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
                         pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
                         break;
                     }
@@ -433,7 +433,7 @@ namespace ito
                         message = QObject::tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
                     qDebug() << message;
-                    //retValue += RetVal(retError, 1003, message.toAscii().data());
+                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
                     pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
 
@@ -472,7 +472,7 @@ namespace ito
                     {
                         message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toAscii().data());
+                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
                         pls.filename = filename;
                         pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
                         m_pluginLoadStatus.append(pls);
@@ -534,7 +534,7 @@ namespace ito
             {
                 message = QObject::tr("error initializing plugin: %1").arg(plugin->objectName());
                 qDebug() << message;
-                retValue += RetVal(retError, 1002, message.toAscii().data());
+                retValue += RetVal(retError, 1002, message.toLatin1().data());
                 pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
             }
             else
@@ -557,7 +557,7 @@ namespace ito
                         algoInst->rejectFilter(it.key());
                         message = QObject::tr("Filter '%1' rejected since a filter with the same name already exists in global filter list").arg(it.key());
                         qDebug() << message;
-                        retValue += RetVal(retWarning, 1004, message.toAscii().data());
+                        retValue += RetVal(retWarning, 1004, message.toLatin1().data());
                         pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, message));
                     }
                     else
@@ -644,7 +644,7 @@ namespace ito
                         algoInst->rejectAlgoWidget(jt.key());
                         message = QObject::tr("Widget '%1' rejected since widget with the same name already exists in global plugin widget list").arg(jt.key());
                         qDebug() << message;
-                        retValue += RetVal(retWarning, 1005, message.toAscii().data());
+                        retValue += RetVal(retWarning, 1005, message.toLatin1().data());
                     }
                     else
                     {
@@ -714,7 +714,7 @@ namespace ito
     */
     const RetVal AddInManager::getInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
     {
-        ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toAscii().data());
+        ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toLatin1().data());
 
         switch(pluginType)
         {
@@ -785,7 +785,7 @@ namespace ito
     */
     const RetVal AddInManager::getPlugInInfo(const QString &name, int *pluginType, int *pluginNum, char **pluginTypeString, char ** author, char ** description, char ** detaildescription, int *version)
     {
-        ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toAscii().data());
+        ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toLatin1().data());
         int found = 0;
 
         for (int n=0; n < m_addInListAct.size(); n++)
@@ -800,15 +800,15 @@ namespace ito
 
                 if (author)
                 {
-                    *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getAuthor()).toAscii());
+                    *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getAuthor()).toLatin1());
                 }
                 if (description)
                 {
-                    *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDescription()).toAscii());
+                    *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDescription()).toLatin1());
                 }
                 if (detaildescription)
                 {
-                    *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDetailDescription()).toAscii());
+                    *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDetailDescription()).toLatin1());
                 }
                 if (version)
                 {
@@ -835,15 +835,15 @@ namespace ito
 
                     if (author)
                     {
-                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getAuthor()).toAscii());
+                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getAuthor()).toLatin1());
                     }
                     if (description)
                     {
-                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDescription()).toAscii());
+                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDescription()).toLatin1());
                     }
                     if (detaildescription)
                     {
-                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDetailDescription()).toAscii());
+                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDetailDescription()).toLatin1());
                     }
                     if (version)
                     {
@@ -870,15 +870,15 @@ namespace ito
 
                     if (author)
                     {
-                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getAuthor()).toAscii());
+                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getAuthor()).toLatin1());
                     }
                     if (description)
                     {
-                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDescription()).toAscii());
+                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDescription()).toLatin1());
                     }
                     if (detaildescription)
                     {
-                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDetailDescription()).toAscii());
+                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDetailDescription()).toLatin1());
                     }
                     if (version)
                     {
@@ -944,7 +944,7 @@ namespace ito
 
         if ((m_addInListDataIO[pluginNum])->objectName() != name)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
         }
 
@@ -965,7 +965,7 @@ namespace ito
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
         {
-            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toAscii().data());
+            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
             goto end;
         }
 
@@ -986,7 +986,7 @@ namespace ito
         {
             if (!(*addIn)->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing dataIO").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing dataIO").toLatin1().data());
                 timeoutOccurred = true;
                 break;
             }
@@ -1028,7 +1028,7 @@ namespace ito
 
                 if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
                 {
-                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
+                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
                 }
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
@@ -1079,7 +1079,7 @@ end:
 
         if ((m_addInListAct[pluginNum])->objectName() != name)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
         }
 
@@ -1100,7 +1100,7 @@ end:
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
         {
-            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toAscii().data());
+            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
             goto end;
         }
 
@@ -1121,7 +1121,7 @@ end:
         {
             if (!(*addIn)->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing actuator").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing actuator").toLatin1().data());
                 timeoutOccurred = true;
                 break;
             }
@@ -1161,7 +1161,7 @@ end:
 
                 if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
                 {
-                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
+                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
                 }
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
@@ -1209,7 +1209,7 @@ end:
 
         if ((m_addInListAlgo[pluginNum])->objectName() != name)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
         }
 
@@ -1253,7 +1253,7 @@ end:
 
         if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
         {
-            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toAscii().data());
+            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
         }
 
         if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
@@ -1525,10 +1525,10 @@ end:
         id = qRegisterMetaType<ito::AddInDataIO**>("ito::AddInDataIO**");
         id = qRegisterMetaType<ito::AddInActuator**>("ito::AddInActuator**");
         id = qRegisterMetaType<ito::AddInAlgo**>("ito::AddInAlgo**");
-        id = qRegisterMetaType<ito::ActuatorAxis*>("ito::ActuatorAxis**");
+//        id = qRegisterMetaType<ito::ActuatorAxis*>("ito::ActuatorAxis**");
         id = qRegisterMetaType<ito::RetVal>("ito::RetVal");
         id = qRegisterMetaType<ito::RetVal*>("ito::RetVal*");
-        id = qRegisterMetaType<const void*>("const void*");
+//        id = qRegisterMetaType<const void*>("const void*");
         id = qRegisterMetaType<QVector<ito::Param>*>("QVector<ito::Param>*");
         id = qRegisterMetaType<QVector<ito::ParamBase>*>("QVector<ito::ParamBase>*");
         id = qRegisterMetaType<QVector<int> >("QVector<int>");
@@ -1780,12 +1780,12 @@ end:
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("no toolbox available").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("no toolbox available").toLatin1().data());
             }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("plugin not available").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("plugin not available").toLatin1().data());
         }
 
         if (waitCond)

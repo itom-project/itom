@@ -176,9 +176,9 @@ int main(int argc, char *argv[])
     strcat(newpath, "path=");
 #else
 #endif
-    strcat(newpath, libDir.toAscii().data()); //set libDir at the beginning of the path-variable
+    strcat(newpath, libDir.toLatin1().data()); //set libDir at the beginning of the path-variable
     strcat(newpath, pathSep);
-    strcat(newpath, designerDir.toAscii().data());
+    strcat(newpath, designerDir.toLatin1().data());
     strcat(newpath, pathSep);
     strcat(newpath, oldpath);
 #if (defined WIN32 || defined WIN64)

@@ -858,7 +858,7 @@ void MainWindow::mnuShowAssistant()
             }
             
             args << QLatin1String("-collectionFile");
-            args << QLatin1String(collectionFile.toAscii().data());
+            args << QLatin1String(collectionFile.toLatin1().data());
             args << QLatin1String("-enableRemoteControl");
 
             QString app = ProcessOrganizer::getAbsQtToolPath("assistant");
@@ -1119,7 +1119,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
         {
             if (typeID != 2)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
             }
         }
 
@@ -1147,7 +1147,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("no menu element is indicated").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("no menu element is indicated").toLatin1().data());
     }
 
     //check further elements
@@ -1174,7 +1174,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
             {
                 if (act->menu() == NULL) //item is no menu, but has to be a menu
                 {
-                    retValue += RetVal::format(retError, 0, tr("The menu item '%s' does already exist but is no menu type").toAscii().data(), act->iconText().toAscii().data());
+                    retValue += RetVal::format(retError, 0, tr("The menu item '%s' does already exist but is no menu type").toLatin1().data(), act->iconText().toLatin1().data());
                 }
                 else
                 {
@@ -1183,7 +1183,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("menu item already exists.").toAscii().data());
+                retValue += RetVal(retError, 0, tr("menu item already exists.").toLatin1().data());
             }
         }
         else //element has to be created
@@ -1222,7 +1222,7 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
                     parentMnu = act->menu();*/
                     break;
                 default:
-                    retValue += RetVal(retError, 0, tr("Invalid typeID.").toAscii().data());
+                    retValue += RetVal(retError, 0, tr("Invalid typeID.").toLatin1().data());
                     break;
                 }
             }
@@ -1352,7 +1352,7 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     }
     else
     {
-        QByteArray ba(pythonCode.toAscii());
+        QByteArray ba(pythonCode.toLatin1());
         ba.replace("\\n",QByteArray(1,'\n'));
         ba.replace("\n",QByteArray(1,'\n'));
 

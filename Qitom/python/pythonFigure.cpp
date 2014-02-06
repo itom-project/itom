@@ -742,7 +742,7 @@ void PythonFigure::PyFigure_addTpDict(PyObject *tp_dict)
     //    value = Py_BuildValue("i", metaEnum.value(i));
     //    key = metaEnum.key(i);
     //    key.prepend("MsgBox"); //Button-Constants will be accessed by ui.MsgBoxOk, ui.MsgBoxError...
-    //    PyDict_SetItemString(tp_dict, key.toAscii().data(), value);
+    //    PyDict_SetItemString(tp_dict, key.toLatin1().data(), value);
     //    Py_DECREF(value);
     //}
 

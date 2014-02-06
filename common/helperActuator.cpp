@@ -78,7 +78,7 @@ namespace ito
         {
             if (!pMyMotor->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toLatin1().data());
                 break;
             }
         }
@@ -132,7 +132,7 @@ namespace ito
 
         if (!pMyMotor)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Motor not correctly initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Motor not correctly initialized").toLatin1().data());
         }
 
         if (pMySemaphoreLocker.getSemaphore())
@@ -141,14 +141,14 @@ namespace ito
             {
                 if (!pMyMotor->isAlive())
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toLatin1().data());
                     break;
                 }
             }
             if (pMySemaphoreLocker.getSemaphore()->returnValue.containsWarningOrError())
             {
                 errorBuffer += pMySemaphoreLocker.getSemaphore()->returnValue;
-                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Semaphore contained error").toAscii().data());
+                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Semaphore contained error").toLatin1().data());
             }
         }
         return retval;
@@ -179,7 +179,7 @@ namespace ito
 
         if (stepSizeVec.size() != axisVec.size())
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toLatin1().data());
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
@@ -217,7 +217,7 @@ namespace ito
 
         if (posVec.size() != axisVec.size())
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toLatin1().data());
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
@@ -313,14 +313,14 @@ namespace ito
 
         if (!pMySemaphoreLocker.getSemaphore())
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toLatin1().data());
         }
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
             if (!pMyMotor->isAlive())
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toLatin1().data());
             }
         }
 

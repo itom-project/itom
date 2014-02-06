@@ -536,7 +536,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Directory '%1' does not existing!").arg(dir).toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Directory '%1' does not existing!").arg(dir).toLatin1().data());
     }
 
     // not existing

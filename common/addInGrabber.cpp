@@ -82,7 +82,7 @@ namespace ito
                 //if (!QMetaObject::invokeMethod( obj, "dataAvailable", Q_ARG(ito::DataObject, m_data), Q_ARG(ItomSharedSemaphore*, NULL)))
                 if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
-                    retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toAscii().data());
+                    retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace ito
                 //TODO: on Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
                 if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
                 {
-                    retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toAscii().data());
+                    retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
                 }
 
                 i++;
@@ -215,11 +215,11 @@ namespace ito
             }
             else if (externalDataObject->calcNumMats () > 1)
             {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toAscii().data());            
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
             }
             else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
             {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toAscii().data());
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
             }
         }
 

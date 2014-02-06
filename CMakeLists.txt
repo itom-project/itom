@@ -1,4 +1,4 @@
-project(itom)       
+project(itom)      
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -32,7 +32,7 @@ ELSE(BUILD_WITH_PCL)
     SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor")
 ENDIF(BUILD_WITH_PCL)
 
-ADD_SUBDIRECTORY(QPropertyEditor)
+#ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(Qitom)  
 
 IF(BUILD_UNITTEST)

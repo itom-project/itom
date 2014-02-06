@@ -206,7 +206,7 @@ namespace ito
     {
         ItomSharedSemaphoreLocker locker(waitCond);
 
-        ito::RetVal retValue = ito::RetVal(ito::retError, 0, tr("function execution unused in this plugin").toAscii().data());
+        ito::RetVal retValue = ito::RetVal(ito::retError, 0, tr("function execution unused in this plugin").toLatin1().data());
 
         if (waitCond)
         {
@@ -276,8 +276,8 @@ namespace ito
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
                     QString err = QString("Mandatory parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
-                    retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
-                    //throw std::logic_error(err.toAscii().data());
+                    retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
+                    //throw std::logic_error(err.toLatin1().data());
                     break;
                 }
             }
@@ -287,8 +287,8 @@ namespace ito
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
                     QString err = QString("Optional parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
-                    retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
-                    //throw std::logic_error(err.toAscii().data());
+                    retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
+                    //throw std::logic_error(err.toLatin1().data());
                     break;
                 }
             }
@@ -298,15 +298,15 @@ namespace ito
                 if ((p.getFlags() & ito::ParamBase::In) || !(p.getFlags() & ito::ParamBase::Out))
                 {
                     QString err = QString("Output parameter '%1' must be defined as Out-Parameter").arg(p.getName());
-                    retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
-                    //throw std::logic_error(err.toAscii().data());
+                    retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
+                    //throw std::logic_error(err.toLatin1().data());
                     break;
                 }
                 if ((p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double)) == 0)
                 {
                     QString err = QString("Output parameter '%1' must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(p.getName());
-                    retValue += ito::RetVal(ito::retError,0,err.toAscii().data());
-                    //throw std::logic_error(err.toAscii().data());
+                    retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
+                    //throw std::logic_error(err.toLatin1().data());
                     break;
                 }
             }
@@ -382,7 +382,7 @@ namespace ito
     */
     const ito::RetVal AddInBase::showConfDialog(void)
     {
-        return ito::RetVal(ito::retWarning,0, tr("Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method").toAscii().data());
+        return ito::RetVal(ito::retWarning,0, tr("Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method").toLatin1().data());
     }
 
 
@@ -395,14 +395,14 @@ namespace ito
         m_autoGrabbingEnabled(true)
     {
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
-        Q_ASSERT_X(1, "AddInDataIO::AddInDataIO", tr("Constructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::AddInDataIO", tr("Constructor must be overwritten").toLatin1().data());
         return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInDataIO::~AddInDataIO()
     {
-        Q_ASSERT_X(1, "AddInDataIO::~AddInDataIO", tr("Destructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::~AddInDataIO", tr("Destructor must be overwritten").toLatin1().data());
         return;
     }
 
@@ -417,11 +417,11 @@ namespace ito
 //        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("dataAvailable(ito::DataObject)")) == -1)
         if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
         {
-            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toLatin1().data());
         }
         else if (m_autoGrabbingListeners.contains(obj))
         {
-            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toAscii().data());
+            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toLatin1().data());
         }
         else
         {
@@ -433,7 +433,7 @@ namespace ito
 
                 if (m_timerID == 0)
                 {
-                    retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
                 }
             }
 
@@ -458,7 +458,7 @@ namespace ito
 
         if (!m_autoGrabbingListeners.remove(obj))
         {
-            retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toAscii().data());
+            retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toLatin1().data());
         }
         else
         {
@@ -552,7 +552,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::startDevice(ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::startDevice", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::startDevice", tr("not implemented").toLatin1().data());
 
         ItomSharedSemaphoreLocker locker(waitCond);
 
@@ -572,7 +572,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::stopDevice(ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::stopDevice", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::stopDevice", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -590,7 +590,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::acquire", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::acquire", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -608,7 +608,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(void * /*data*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -626,7 +626,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(QSharedPointer<char> /*data*/, QSharedPointer<int> /*length*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -644,7 +644,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::copyVal(void * /*data*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::copyVal(void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::copyVal(void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -662,7 +662,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::setVal(const void * /*data*/, const int /*length*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::setVal(const void *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toAscii().data());
+        Q_ASSERT_X(1, "AddInDataIO::setVal(const void *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
@@ -684,14 +684,14 @@ namespace ito
         m_nrOfTargetChangedConnections(0), 
         m_interruptFlag(false)
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toLatin1().data());
         return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Destructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Destructor must be overwritten").toLatin1().data());
         return;
     }
 
@@ -783,7 +783,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInAlgo::AddInAlgo() : AddInBase()
     {
-        Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toAscii().data());
+        Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toLatin1().data());
         return;
     }
 

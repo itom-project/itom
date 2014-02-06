@@ -499,7 +499,7 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     {
         if (i->key == key)
         {
-            return RetVal(retError, 0, tr("toolbar '%1' is already available").arg(key).toAscii().data());
+            return RetVal(retError, 0, tr("toolbar '%1' is already available").arg(key).toLatin1().data());
         }
 
         if (i->area == area && i->section > highestSection)
@@ -615,7 +615,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
 
     }
 
-    return RetVal(retError, 0, tr("toolbar '%1' not found").arg(key).toAscii().data());
+    return RetVal(retError, 0, tr("toolbar '%1' not found").arg(key).toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

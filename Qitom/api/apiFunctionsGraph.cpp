@@ -92,7 +92,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
     }
     else
     {
-        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toAscii().data());
+        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toLatin1().data());
     }
 }
 
@@ -125,7 +125,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito:
     }
     else
     {
-        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toAscii().data());
+        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toLatin1().data());
     }
 }
 
@@ -258,7 +258,7 @@ ito::RetVal apiFunctionsGraph::mstopLiveData(QObject *liveDataSource, QObject *l
 
     if(!locker1.getSemaphore()->wait(10000))
     {
-        retValue += RetVal(retError, 1001, QObject::tr("timeout while unregistering live image from camera.").toAscii().data());
+        retValue += RetVal(retError, 1001, QObject::tr("timeout while unregistering live image from camera.").toLatin1().data());
     }
     else
     {
@@ -385,7 +385,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<it
 
         if(!locker.getSemaphore()->wait(-1))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while loading plugin widget").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while loading plugin widget").toLatin1().data());
             return retval;
         }
 
@@ -396,13 +396,13 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<it
         QMetaObject::invokeMethod(uiOrg, "getUiDialogByHandle", Qt::BlockingQueuedConnection, Q_RETURN_ARG(UiContainer*, widgetContainer), Q_ARG(unsigned int, *dialogHandle));
         if (!(*widget = widgetContainer->getUiWidget()))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("error retrieving widget pointer").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("error retrieving widget pointer").toLatin1().data());
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
     
             if(!locker2.getSemaphore()->wait(5000))
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("error closing dialog").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("error closing dialog").toLatin1().data());
             }
             return retval;
         }
@@ -411,13 +411,13 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(void* algoWidgetFunc, QVector<it
         QMetaObject::invokeMethod(uiOrg, "showDialog", Q_ARG(unsigned int, *dialogHandle) , Q_ARG(int, 0), Q_ARG(QSharedPointer<int>, modalRet), Q_ARG(ItomSharedSemaphore*, locker3.getSemaphore()));
         if(!locker3.getSemaphore()->wait(-1))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout showing dialog").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout showing dialog").toLatin1().data());
             return retval;
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("UI-Organizer is not available!").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("UI-Organizer is not available!").toLatin1().data());
     }
 
     return retval;

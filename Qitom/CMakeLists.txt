@@ -1,8 +1,9 @@
 SET (target_name qitom)
+set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -17,8 +18,14 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")  
-   
-find_package(Qt4 REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
+  # As moc files are generated in the binary dir, tell CMake
+  # to always look for includes there:
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+#find_package(Qt4 REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV REQUIRED COMPONENTS core)
@@ -31,8 +38,11 @@ find_package(HTMLHelp)
 find_package(LATEX QUIET) 
         
            
-ADD_DEFINITIONS(${QT_DEFINITIONS})  
-   
+#ADD_DEFINITIONS(${QT_DEFINITIONS})  
+#qt5_use_modules(Widgets Declarative)
+#QT += widgets declarative
+add_definitions(${Qt5Widgets_DEFINITIONS})
+
 IF (BUILD_UNICODE) 
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
@@ -47,11 +57,11 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-SET (QT_USE_QTOPENGL TRUE)
-SET (QT_USE_QTXML TRUE)
-SET (QT_USE_QTSVG TRUE)
-SET (QT_USE_QTSQL TRUE)
-SET (QT_USE_QTNETWORK TRUE)
+#SET (QT_USE_QTOPENGL TRUE)
+#SET (QT_USE_QTXML TRUE)
+#SET (QT_USE_QTSVG TRUE)
+#SET (QT_USE_QTSQL TRUE)
+#SET (QT_USE_QTNETWORK TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -62,13 +72,15 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
+
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${QT_QTCORE_INCLUDE_DIR}
-    ${QT_QTSVG_INCLUDE_DIR}
+ #   ${QT_QTCORE_INCLUDE_DIR}
+ #   ${QT_QTSVG_INCLUDE_DIR}
+    ${Qt5Widgets_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
     ${QSCINTILLA_INCLUDE_DIR}
@@ -85,7 +97,7 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-INCLUDE(${QT_USE_FILE})
+#INCLUDE(${QT_USE_FILE})
 
 set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
@@ -214,7 +226,7 @@ set(qitom_HEADERS
 )
 
 
-QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
+#QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
 
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
@@ -250,14 +262,14 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
 )
 
-QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
+#QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
 
 
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+#QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
@@ -271,6 +283,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.cpp
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
@@ -457,14 +470,14 @@ set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
-    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+#    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
-    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+#    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+#    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
@@ -509,7 +522,9 @@ ELSE(BUILD_WITH_PCL)
 ENDIF(BUILD_WITH_PCL)
 
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${Qt5Widgets_LIBRARIES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
  
 BUILD_PARALLEL_LINUX(${target_name})
 

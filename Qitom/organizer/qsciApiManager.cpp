@@ -295,7 +295,7 @@ void QsciApiManager::apiPreparationFinished()
             foreach(const APIFileInfo &file, m_preparingAPIFiles)
             {
                 temp = QString("%1;%2;%3").arg( file.absoluteFilename ).arg( file.checksum ).arg( file.lastModified.toString( Qt::ISODate ) );
-                infoFile.write(temp.toAscii().data(),temp.length());
+                infoFile.write(temp.toLatin1().data(),temp.length());
                 infoFile.write("\n\0");
             }
             infoFile.close();

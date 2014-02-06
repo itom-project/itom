@@ -87,7 +87,7 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
     if (!file.exists())
     {
         m_uiWidget = NULL;
-        retValue += RetVal::format(retError, 1006, tr("filename '%s' does not exist").toAscii().data(), filename.toAscii().data());
+        retValue += RetVal::format(retError, 1006, tr("filename '%s' does not exist").toLatin1().data(), filename.toLatin1().data());
     }
     else
     {
@@ -103,7 +103,7 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
 
         if (contentWidget == NULL)
         {
-            retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toAscii().data());
+            retValue += RetVal(retError, 1007, tr("ui-file could not be correctly parsed.").toLatin1().data());
         }
 
         retValue += init(contentWidget, buttonBarType, dialogButtons);
@@ -142,7 +142,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
 
     if (m_uiWidget == NULL)
     {
-        retValue += RetVal(retError, 1007, tr("content-widget is empty.").toAscii().data());
+        retValue += RetVal(retError, 1007, tr("content-widget is empty.").toLatin1().data());
     }
 
     if (buttonBarType & (UserUiDialog::bbTypeHorizontal | UserUiDialog::bbTypeVertical))
@@ -157,7 +157,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
             QDialogButtonBox::ButtonRole role = getButtonRole(i.key());
             if (role == QDialogButtonBox::InvalidRole)
             {
-                retValue += RetVal(retWarning, 1004, tr("dialog button role is unknown").toAscii().data());
+                retValue += RetVal(retWarning, 1004, tr("dialog button role is unknown").toLatin1().data());
             }
             m_dialogBtnBox->addButton(i.value(), role);
             ++i;

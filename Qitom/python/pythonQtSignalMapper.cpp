@@ -228,7 +228,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
         }
     }
 
-    //qDebug() << m_signalName.toAscii().data() << endl;
+    //qDebug() << m_signalName.toLatin1().data() << endl;
     if (m_boundedMethod == false)
     {
         PyObject *func = PyWeakref_GetObject(m_function);

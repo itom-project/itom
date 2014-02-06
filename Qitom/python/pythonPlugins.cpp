@@ -61,18 +61,18 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toLatin1().data());
         }
         return false;
     }
 
     if (retval.containsWarning())
     {
-        std::cerr << "Warning while loading plugin: " << pluginName.toAscii().data() << "\n" << std::endl;
+        std::cerr << "Warning while loading plugin: " << pluginName.toLatin1().data() << "\n" << std::endl;
 
         if (retval.errorMessage() != NULL)
         {
@@ -98,7 +98,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
 {
     if (retval.containsError())
     {
-        QByteArray name = functionName.toAscii();
+        QByteArray name = functionName.toLatin1();
         char* msg = retval.errorMessage();
         if (msg)
         {
@@ -113,7 +113,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
 
     if (retval.containsWarning())
     {
-        std::cerr << "Warning invoking " << functionName.toAscii().data() << "\n" << std::endl;
+        std::cerr << "Warning invoking " << functionName.toLatin1().data() << "\n" << std::endl;
         if (retval.errorMessage() != NULL)
         {
             std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
@@ -455,7 +455,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 (*funcList)[funcNameString].paramsMand;
                 (*funcList)[funcNameString].paramsOpt;
 
-                std::cout << "\nParameters for the execFunction '"<< funcNameString.toAscii().data() <<"' are :\n";
+                std::cout << "\nParameters for the execFunction '"<< funcNameString.toLatin1().data() <<"' are :\n";
                 QVector<ito::Param> parameter = (*funcList)[funcNameString].paramsMand;
                 if (parameter.size())
                 {
@@ -515,16 +515,16 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
                     outPut.append(QPair<QString, QString>(execFuncs.value(funcs), (*funcList)[execFuncs.value(funcs)].infoString));
 
-                    PyObject *text = PythonQtConversion::QByteArrayToPyUnicodeSecure((*funcList)[execFuncs.value(funcs)].infoString.toAscii());
-                    PyDict_SetItemString(result, execFuncs.value(funcs).toAscii().data() , text);
+                    PyObject *text = PythonQtConversion::QByteArrayToPyUnicodeSecure((*funcList)[execFuncs.value(funcs)].infoString.toLatin1());
+                    PyDict_SetItemString(result, execFuncs.value(funcs).toLatin1().data() , text);
                     Py_DECREF(text);
                     text = NULL;
                 }
                 longname+= 3;
-                std::cout << "No " << QString("Name").leftJustified(longname, ' ', false).toAscii().data() << "   \tInfostring\n"; 
+                std::cout << "No " << QString("Name").leftJustified(longname, ' ', false).toLatin1().data() << "   \tInfostring\n"; 
                 for (int funcs = 0; funcs < outPut.size(); funcs++)
                 {
-                    std::cout << funcs << "  " << outPut.value(funcs).first.leftJustified(longname, ' ', false).toAscii().data() << "  \t'" << outPut.value(funcs).second.toAscii().data() << "'\n"; 
+                    std::cout << funcs << "  " << outPut.value(funcs).first.leftJustified(longname, ' ', false).toLatin1().data() << "  \t'" << outPut.value(funcs).second.toLatin1().data() << "'\n"; 
                 }    
             }
         }
@@ -568,7 +568,7 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
     {
         if (!addInObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting name parameter").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting name parameter").toLatin1().data());
             break;
         }
     }
@@ -599,7 +599,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
     if (argsLength < 1)
     {
-        ret += ito::RetVal(ito::retError,0,QObject::tr("you must provide at least one parameter with the name of the function").toAscii().data());
+        ret += ito::RetVal(ito::retError,0,QObject::tr("you must provide at least one parameter with the name of the function").toLatin1().data());
     }
     else
     {
@@ -607,7 +607,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         name = PythonQtConversion::PyObjGetString(pyObj,true,ok);
         if (!ok)
         {
-            ret += ito::RetVal(ito::retError,0,QObject::tr("the first function name parameter can not be interpreted as string").toAscii().data());
+            ret += ito::RetVal(ito::retError,0,QObject::tr("the first function name parameter can not be interpreted as string").toLatin1().data());
         }
     }
     
@@ -618,7 +618,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
         if (it == funcList->constEnd())
         {
-            ret += ito::RetVal::format(ito::retError,0,QObject::tr("plugin does not provide an execution of function '%s'").toAscii().data(),name.toAscii().data());
+            ret += ito::RetVal::format(ito::retError,0,QObject::tr("plugin does not provide an execution of function '%s'").toLatin1().data(),name.toLatin1().data());
         }
         else
         {
@@ -642,7 +642,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 {
                     if (!aib->isAlive())
                     {
-                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling specific function in plugin.").toAscii().data());
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling specific function in plugin.").toLatin1().data());
                         break;
                     }
                 }
@@ -756,7 +756,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     it = params->find(nameOnly);
     if (it == params->end())
     {
-        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", nameOnly.toAscii().data());
+        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", nameOnly.toLatin1().data());
         return NULL;
     }
 
@@ -767,7 +767,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     {
         if (!addInObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting parameter").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting parameter").toLatin1().data());
             break;
         }
     }
@@ -1050,7 +1050,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     it = params->find(paramName);
     if (it == params->end())
     {
-        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", paramName.toAscii().data());
+        PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", paramName.toLatin1().data());
         return NULL;
     }
 
@@ -1068,7 +1068,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
             qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Double, false);
             break;
         default:
-            PyErr_Format(PyExc_ValueError, "Parameter '%s' of plugin is no array.", paramName.toAscii().data());
+            PyErr_Format(PyExc_ValueError, "Parameter '%s' of plugin is no array.", paramName.toLatin1().data());
             return NULL;
         }
     }
@@ -1079,7 +1079,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
 
     if(ret.containsError())
     {
-        PyErr_Format(PyExc_ValueError, "The given value could not be transformed to type of parameter.", paramName.toAscii().data());
+        PyErr_Format(PyExc_ValueError, "The given value could not be transformed to type of parameter.", paramName.toLatin1().data());
         return NULL;
     }
     else
@@ -1091,7 +1091,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
         {
             if (!addInObj->isAlive())
             {
-                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout.").toAscii().data());
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout.").toLatin1().data());
                 timeout = true;
                 break;
             }
@@ -1280,11 +1280,11 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -1296,11 +1296,11 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -1355,7 +1355,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_repr(PyActuatorPlugin *self)
             QString ident = self->actuatorObj->getIdentifier();
             if(ident != "")
             {
-                result = PyUnicode_FromFormat("Actuator-Plugin(%U, %s, ID: %i)", tempObj, ident.toAscii().data(), self->actuatorObj->getID());
+                result = PyUnicode_FromFormat("Actuator-Plugin(%U, %s, ID: %i)", tempObj, ident.toLatin1().data(), self->actuatorObj->getID());
             }
             else
             {
@@ -1545,7 +1545,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calibration").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calibration").toLatin1().data());
             break;
         }
     }
@@ -1562,7 +1562,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     /*
     if (ret != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking calib with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking calib with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
         return NULL;
     }
     */
@@ -1654,7 +1654,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting origin").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting origin").toLatin1().data());
             break;
         }
     }
@@ -1670,7 +1670,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     /*
     if (ret != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setOrigin with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setOrigin with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
         return NULL;
     }
     */
@@ -1739,7 +1739,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toLatin1().data());
             break;
         }
     }
@@ -1859,7 +1859,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting position values").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting position values").toLatin1().data());
             break;
         }
     }
@@ -1889,7 +1889,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     /*
     if (ret != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
         return NULL;
     }
     */
@@ -2116,7 +2116,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting absolute position").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting absolute position").toLatin1().data());
             break;
         }
     }
@@ -2188,7 +2188,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         if (!self->actuatorObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting relative position").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting relative position").toLatin1().data());
             break;
         }
     }
@@ -2206,7 +2206,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     /*
     if (ret != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
         return NULL;
     }
     */
@@ -2239,7 +2239,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
 PyModuleDef PythonPlugins::PyActuatorPluginModule = {
    PyModuleDef_HEAD_INIT,
    "actuatorPlugin",
-   QObject::tr("Itom ActuatorPlugin type in python").toAscii().data(),
+   QObject::tr("Itom ActuatorPlugin type in python").toLatin1().data(),
    -1,
    NULL, NULL, NULL, NULL, NULL
 };
@@ -2458,11 +2458,11 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -2473,11 +2473,11 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -2548,7 +2548,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_repr(PyDataIOPlugin *self)
             QString ident = self->dataIOObj->getIdentifier();
             if(ident != "")
             {
-                result = PyUnicode_FromFormat("DataIO-Plugin(%U, %s, ID: %i)", name, ident.toAscii().data(), self->dataIOObj->getID());
+                result = PyUnicode_FromFormat("DataIO-Plugin(%U, %s, ID: %i)", name, ident.toLatin1().data(), self->dataIOObj->getID());
             }
             else
             {
@@ -3129,7 +3129,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("copyVal function only implemented for typeADDA and typeGrabber").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("copyVal function only implemented for typeADDA and typeGrabber").toLatin1().data());
     }
 
     if (!SetReturnValueMessage(ret, "copyVal"))
@@ -3245,7 +3245,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             if (sizeof(Py_UNICODE) == sizeof(wchar_t))
             {
                 tempString = QString::fromWCharArray((wchar_t*)PyUnicode_AS_DATA(tempObj));
-                ba = tempString.toAscii();
+                ba = tempString.toLatin1();
                 buf = ba.data();
                 datalen = ba.length();
             }
@@ -3257,14 +3257,14 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             else if (sizeof(Py_UNICODE) == 2)
             {
                 tempString = QString::fromUtf16((ushort*)PyUnicode_AS_DATA(tempObj));
-                ba = tempString.toAscii();
+                ba = tempString.toLatin1();
                 buf = ba.data();
                 datalen = ba.length();
             }
             else if (sizeof(Py_UNICODE) == 4)
             {
                 tempString = QString::fromUcs4((uint*)PyUnicode_AS_DATA(tempObj));
-                ba = tempString.toAscii();
+                ba = tempString.toLatin1();
                 buf = ba.data();
                 datalen = ba.length();
             }
@@ -3366,7 +3366,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     /*
     if (ret != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error while enabling the auto grabbing functionality: \n%s\n").toAscii(), QObject::tr(ret.errorMessage()).toAscii().data());
+        PyErr_Format(PyExc_RuntimeError, QObject::tr("error while enabling the auto grabbing functionality: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
         return NULL;
     }
     */
@@ -3626,7 +3626,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
 PyModuleDef PythonPlugins::PyDataIOPluginModule = {
    PyModuleDef_HEAD_INIT,
    "dataIOPlugin",
-   QObject::tr("Itom DataIOPlugin type in python").toAscii().data(),
+   QObject::tr("Itom DataIOPlugin type in python").toLatin1().data(),
    -1,
    NULL, NULL, NULL, NULL, NULL
 };
@@ -3821,11 +3821,11 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -3837,11 +3837,11 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     {
         if (retval.errorMessage())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toAscii().data(), retval.errorMessage());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toAscii().data());
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
         }
         return -1;
     }
@@ -4039,7 +4039,7 @@ PyMethodDef PythonPlugins::PyAlgoPlugin_methods[] = {
 PyModuleDef PythonPlugins::PyAlgoPluginModule = {
    PyModuleDef_HEAD_INIT,
    "algorithmPlugin",
-   QObject::tr("Itom AlgorithmPlugin type in python").toAscii().data(),
+   QObject::tr("Itom AlgorithmPlugin type in python").toLatin1().data(),
    -1,
    NULL, NULL, NULL, NULL, NULL
 };

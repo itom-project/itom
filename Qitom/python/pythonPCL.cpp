@@ -605,7 +605,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
 
     for(int i = 0 ; i < a.size() ; i++)
     {
-        ba = a[i].toAscii();
+        ba = a[i].toLatin1();
         PyList_SetItem(result,i, PyUnicode_FromStringAndSize( ba.data(), ba.size() ) );
     }
     
@@ -1635,7 +1635,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         QVector<ito::ParamBase> paramsOut;
 
         paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
-        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data() ) );
 
         paramsOpt.append( ito::ParamBase("mode", ito::ParamBase::String, "b") );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "pcd") );
@@ -1718,7 +1718,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         QVector<ito::ParamBase> paramsOut;
 
         paramsMand.append( ito::ParamBase("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->data) );
-        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data() ) );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "pcd" ) );
 
         ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
@@ -2469,7 +2469,7 @@ PyObject* PythonPCL::PyPoint_repr(PyPoint *self)
             return PyUnicode_FromString("Point (invalid)");
         }
 
-        QByteArray ba = str.toAscii();
+        QByteArray ba = str.toLatin1();
         return PyUnicode_FromString(ba.data());
     }
 }
@@ -3490,7 +3490,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         QVector<ito::ParamBase> paramsOut;
 
         paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
-        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data() ) );
 
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "obj") );
 
@@ -3572,7 +3572,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         QVector<ito::ParamBase> paramsOut;
 
         paramsMand.append( ito::ParamBase("polygonMesh", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, (const char*)self->polygonMesh) );
-        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
+        paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data() ) );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj" ) );
 
         ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);

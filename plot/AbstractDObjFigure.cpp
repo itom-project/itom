@@ -112,7 +112,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito:
 //----------------------------------------------------------------------------------------------------------------------------------
 ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
 {
-    return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toAscii().data());
+    return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toLatin1().data());
 
 }
 
@@ -235,7 +235,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractDObjFigure::removeLiveSource()
     }
     else
     {
-        retval += RetVal(retWarning, 0, tr("Figure does not contain an input slot for live sources").toAscii().data());
+        retval += RetVal(retWarning, 0, tr("Figure does not contain an input slot for live sources").toLatin1().data());
     }
     return retval;
 }

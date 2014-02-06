@@ -254,7 +254,7 @@ bool ProcessOrganizer::bringWindowsOnTop(const QString &windowName)
     HWND THandle = FindWindow(NULL, nameArray );
     delete[] nameArray;
 #else
-    HWND THandle = FindWindow(NULL, windowName.toAscii().data() );
+    HWND THandle = FindWindow(NULL, windowName.toLatin1().data() );
 #endif
     
 

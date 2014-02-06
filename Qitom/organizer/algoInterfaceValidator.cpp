@@ -77,7 +77,7 @@ namespace ito
             
             return ito::retOk;
         }
-        return ito::RetVal(ito::retError,0,tr("interface not found").toAscii().data());
+        return ito::RetVal(ito::retError,0,tr("interface not found").toLatin1().data());
     }
 
     //! loads the requirements for every interface defined in the enumeration AddInAlgo::tAlgoInterface
@@ -111,49 +111,49 @@ namespace ito
         //1. ito::AddInAlgo::iReadDataObject
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("DataObject [in/out]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("DataObject [in/out]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iReadDataObject, pMand, pOut, maxNum, maxNum, 0);
 
         //2. ito::AddInAlgo::iReadPointCloud
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("PointCloud [in/out]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("PointCloud [in/out]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iReadPointCloud, pMand, pOut, maxNum, maxNum, 0);
 
         //3. ito::AddInAlgo::iReadPolygonMesh
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("PolygonMesh [in/out]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("PolygonMesh [in/out]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iReadPolygonMesh, pMand, pOut, maxNum, maxNum, 0);
 
         //4. ito::AddInAlgo::iWriteDataObject
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("DataObject [in]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("DataObject [in]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iWriteDataObject, pMand, pOut, maxNum, maxNum, 0);
 
         //5. ito::AddInAlgo::iWritePointCloud
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("PointCloud [in]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("pointCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("PointCloud [in]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iWritePointCloud, pMand, pOut, maxNum, maxNum, 0);
 
         //6. ito::AddInAlgo::iWritePolygonMesh
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("PolygonMesh [in]").toAscii().data());
-        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toAscii().data());
+        pMand << ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("PolygonMesh [in]").toLatin1().data());
+        pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("filename").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iWritePolygonMesh, pMand, pOut, maxNum, maxNum, 0);
 
         //7. ito::AddInAlgo::iPlotSingleObject
         pMand.clear();
         pOut.clear();
-        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("DataObject [in]").toAscii().data());
+        pMand << ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("DataObject [in]").toLatin1().data());
         retVal += addInterface(ito::AddInAlgo::iPlotSingleObject, pMand, pOut, maxNum, maxNum, 0);
 
         return retVal;
@@ -335,19 +335,19 @@ namespace ito
 
             if((int)paramsMand.size() > it->maxNumMand)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
+                ret += ito::RetVal(ito::retError,0,tr("Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
             if((int)paramsOpt.size() > it->maxNumOpt)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
+                ret += ito::RetVal(ito::retError,0,tr("Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
             if((int)paramsOut.size() > it->maxNumOut)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.").toAscii().data());
+                ret += ito::RetVal(ito::retError,0,tr("Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
@@ -374,7 +374,7 @@ namespace ito
         }
         else
         {
-            ret += ito::RetVal(ito::retError,0,tr("The given algorithm interface is unknown").toAscii().data());
+            ret += ito::RetVal(ito::retError,0,tr("The given algorithm interface is unknown").toLatin1().data());
             return false;
         }
         return true;
@@ -385,7 +385,7 @@ namespace ito
         //check whether type is equal
         if(paramTemplate.getType() != param.getType())
         {
-            ret += ito::RetVal::format(ito::retError,0,tr("Types of parameter '%s' is unequal to required type of interface parameter '%s'").toAscii().data(),param.getName(),paramTemplate.getName());
+            ret += ito::RetVal::format(ito::retError,0,tr("Types of parameter '%s' is unequal to required type of interface parameter '%s'").toLatin1().data(),param.getName(),paramTemplate.getName());
             return tCmpFailed;
         }
 
@@ -393,7 +393,7 @@ namespace ito
         int inOutFlags = ito::ParamBase::In | ito::ParamBase::Out;
         if( (paramTemplate.getFlags() & inOutFlags) != (param.getFlags() & inOutFlags) )
         {
-            ret += ito::RetVal::format(ito::retError,0,tr("In/Out flags of parameter '%s' are unequal to required flags of interface parameter '%s'").toAscii().data(),param.getName(),paramTemplate.getName());
+            ret += ito::RetVal::format(ito::retError,0,tr("In/Out flags of parameter '%s' are unequal to required flags of interface parameter '%s'").toLatin1().data(),param.getName(),paramTemplate.getName());
             return tCmpFailed;
         }
 
@@ -416,13 +416,13 @@ namespace ito
         }
         else if(metaTemplate == NULL)
         {
-            ret += ito::RetVal::format(ito::retError,0,tr("The parameter '%s' is restricted by meta information while the interface parameter '%s' is not.").toAscii().data(),name,nameTemplate);
+            ret += ito::RetVal::format(ito::retError,0,tr("The parameter '%s' is restricted by meta information while the interface parameter '%s' is not.").toLatin1().data(),name,nameTemplate);
             return tCmpFailed;
         }
 
         if(metaTemplate->getType() != meta->getType())
         {
-            ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+            ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
             return tCmpFailed;
         }
 
@@ -434,7 +434,7 @@ namespace ito
                 const ito::IntMeta *m = static_cast<const ito::IntMeta*>(meta);
                 if(!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
                 if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
@@ -447,7 +447,7 @@ namespace ito
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed integer range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed integer range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -459,7 +459,7 @@ namespace ito
                 const ito::CharMeta *m = static_cast<const ito::CharMeta*>(meta);
                 if(!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
                 if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
@@ -472,7 +472,7 @@ namespace ito
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed char range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed char range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -484,7 +484,7 @@ namespace ito
                 const ito::DoubleMeta *m = static_cast<const ito::DoubleMeta*>(meta);
                 if(!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
                 if(m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
@@ -497,7 +497,7 @@ namespace ito
                 }
                 else
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed double range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed double range of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
             }
@@ -509,13 +509,13 @@ namespace ito
                 const ito::StringMeta *m = static_cast<const ito::StringMeta*>(meta);
                 if (!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
                 if (m->getStringType() != mT->getStringType())
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The string type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The string type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
@@ -538,7 +538,7 @@ namespace ito
 
                     if (!found)
                     {
-                        ret += ito::RetVal::format(ito::retError,0,tr("String '%s', requested by meta data of interface parameter '%s' could not be found in meta data of parameter '%s'.").toAscii().data(),sT,nameTemplate,name);
+                        ret += ito::RetVal::format(ito::retError,0,tr("String '%s', requested by meta data of interface parameter '%s' could not be found in meta data of parameter '%s'.").toLatin1().data(),sT,nameTemplate,name);
                         return tCmpFailed;
                     }
                 }
@@ -561,14 +561,14 @@ namespace ito
                 const ito::DObjMeta *m = static_cast<const ito::DObjMeta*>(meta);
                 if(!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
                 //all bits in allowedTypes of mT must be set in m, too
                 if( (m->getAllowedTypes() & mT->getAllowedTypes()) != mT->getAllowedTypes() )
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed data object types of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The allowed data object types of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
@@ -584,7 +584,7 @@ namespace ito
                     }
                     else
                     {
-                        ret += ito::RetVal::format(ito::retError,0,tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError,0,tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                         return tCmpFailed;
                     }
                 }
@@ -596,7 +596,7 @@ namespace ito
                     }
                     else
                     {
-                        ret += ito::RetVal::format(ito::retError,0,tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError,0,tr("The minimum and maximum dimensions of the data object of parameter '%s' are more restrictive than these required by the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                         return tCmpFailed;
                     }
                 }
@@ -610,7 +610,7 @@ namespace ito
                 const ito::HWMeta *m = static_cast<const ito::HWMeta*>(meta);
                 if(!mT || !m)
                 {
-                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                    ret += ito::RetVal::format(ito::retError,0,tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                     return tCmpFailed;
                 }
 
@@ -618,12 +618,12 @@ namespace ito
                 {
                     if(m->getHWAddInName() != NULL)
                     {
-                        ret += ito::RetVal::format(ito::retError,0,tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toAscii().data(),nameTemplate,mT->getHWAddInName(),name);
+                        ret += ito::RetVal::format(ito::retError,0,tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toLatin1().data(),nameTemplate,mT->getHWAddInName(),name);
                         return tCmpFailed;
                     }
                     else if( strcmp(mT->getHWAddInName(),m->getHWAddInName()) != 0)
                     {
-                        ret += ito::RetVal::format(ito::retError,0,tr("Both parameter '%s' and interface parameter '%s' require different plugins.").toAscii().data(),name,nameTemplate);
+                        ret += ito::RetVal::format(ito::retError,0,tr("Both parameter '%s' and interface parameter '%s' require different plugins.").toLatin1().data(),name,nameTemplate);
                         return tCmpFailed;
                     }
                 }
@@ -638,7 +638,7 @@ namespace ito
                     return tCmpCompatible;
                 }
 
-                ret += ito::RetVal::format(ito::retError,0,tr("The minimum plugin type bit mask of parameter '%s' is more restrictive than this of the interface parameter '%s'.").toAscii().data(),name,nameTemplate);
+                ret += ito::RetVal::format(ito::retError,0,tr("The minimum plugin type bit mask of parameter '%s' is more restrictive than this of the interface parameter '%s'.").toLatin1().data(),name,nameTemplate);
                 return tCmpFailed;
                 
             }
@@ -646,7 +646,7 @@ namespace ito
 
             default:
             {
-                ret += ito::RetVal::format(ito::retError,0,tr("meta data of interface parameter '%s' is unknown.").toAscii().data(),nameTemplate);
+                ret += ito::RetVal::format(ito::retError,0,tr("meta data of interface parameter '%s' is unknown.").toLatin1().data(),nameTemplate);
                 return tCmpFailed;
             }
             

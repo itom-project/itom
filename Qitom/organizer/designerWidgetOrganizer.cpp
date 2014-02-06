@@ -136,7 +136,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     if (requiredInterface == "0.0.0")
     {
-        return RetVal(retError, 0, tr("could not read interface 'ito.AbstractItomDesignerPlugin'").toAscii().data());
+        return RetVal(retError, 0, tr("could not read interface 'ito.AbstractItomDesignerPlugin'").toLatin1().data());
     }
 
     foreach(const QString &plugin, candidates)
@@ -314,17 +314,17 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
         {
             if ((plugin.plotDataTypes & plotDataTypesMask) != plotDataTypesMask)
             {
-                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
+                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toLatin1().data(), className.toLatin1().data());
                 break;
             }
             if ((plugin.plotDataFormats & plotDataFormatsMask) != plotDataFormatsMask)
             {
-                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
+                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toLatin1().data(), className.toLatin1().data());
                 break;
             }
             if ((plugin.plotFeatures & plotFeaturesMask) != plotFeaturesMask)
             {
-                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toAscii().data(), className.toAscii().data());
+                retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toLatin1().data(), className.toLatin1().data());
                 break;
             }
             success = true;
@@ -333,7 +333,7 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
 
     if (retVal == ito::retOk && success == false)
     {
-        retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' not found").toAscii().data(), className.toAscii().data());
+        retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' not found").toLatin1().data(), className.toLatin1().data());
     }
     
     if (ok) *ok = success;
@@ -387,7 +387,7 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
 {
     if (!m_figureCategories.contains(figureCategory))
     {
-        retVal += ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toAscii().data(), figureCategory.data());
+        retVal += ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toLatin1().data(), figureCategory.data());
         return "";
     }
 
@@ -485,7 +485,7 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
         return figurePlugins[0].classname;
     }
 
-    retVal += ito::RetVal(ito::retError, 0, tr("no plot figure plugin could be found that fits to the given category.").toAscii().data());
+    retVal += ito::RetVal(ito::retError, 0, tr("no plot figure plugin could be found that fits to the given category.").toLatin1().data());
     return "";
 }
 
@@ -494,7 +494,7 @@ RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCateg
 {
     if (!m_figureCategories.contains(figureCategory))
     {
-        return ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toAscii().data(), figureCategory.data());
+        return ito::RetVal::format(ito::retError, 0, tr("The figure category '%s' is unknown").toLatin1().data(), figureCategory.data());
     }
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);

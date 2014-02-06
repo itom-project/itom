@@ -115,7 +115,7 @@ namespace ito
     };
 
     class AddInBase;        //!< forward declaration
-    class ActuatorAxis;     //!< forward declaration
+//    class ActuatorAxis;     //!< forward declaration
     class DataObject;
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -310,9 +310,9 @@ namespace ito
                         if (nameCheckOk) *nameCheckOk = true;
                         ito::Param tempParam = m_params.value(pname[1]);
                         if (pname[2].length())
-                            tempParam.addNameSuffix(pname[2].toAscii().data());
+                            tempParam.addNameSuffix(pname[2].toLatin1().data());
                         if (pname[4].length())
-                            tempParam.addNameSuffix(pname[4].toAscii().data());
+                            tempParam.addNameSuffix(pname[4].toLatin1().data());
                         return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
                     }
                 }
@@ -983,9 +983,9 @@ namespace ito
 
             static ito::RetVal prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
             {
-                if (!paramsMand) return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toAscii().data());
-                if (!paramsOpt) return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toAscii().data());
-                if (!paramsOut) return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toAscii().data());
+                if (!paramsMand) return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toLatin1().data());
+                if (!paramsOpt) return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toLatin1().data());
+                if (!paramsOut) return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toLatin1().data());
                 paramsMand->clear(); 
                 paramsOpt->clear(); 
                 paramsOut->clear();

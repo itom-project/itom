@@ -75,7 +75,7 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toLatin1().data());
             return;
         }
 
@@ -115,7 +115,7 @@ namespace ito
 
         if (!pMyCamera)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Camera not correctly initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Camera not correctly initialized").toLatin1().data());
         }
 
         return retval;
@@ -137,12 +137,12 @@ namespace ito
 
         if (!pMySemaphoreLocker.getSemaphore())
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Semaphore not correctly initialized").toLatin1().data());
         }
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Timeout while Waiting for Semaphore").toLatin1().data());
         }
 
         return pMySemaphoreLocker.getSemaphore()->returnValue;
@@ -373,7 +373,7 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toLatin1().data());
             return retval;
         }
 
@@ -393,7 +393,7 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toLatin1().data());
             return retval;
         }
 
@@ -413,7 +413,7 @@ namespace ito
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting numaxis parameter").toLatin1().data());
             break;
         }
 
