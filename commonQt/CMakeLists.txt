@@ -57,6 +57,7 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES( 
     ${QT_QTCORE_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${OpenCV_DIR}/include
 )
 
@@ -77,6 +78,13 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/drawItem.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/multiPointPickerMachine.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
 )
 
 QT4_WRAP_CPP(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
@@ -90,11 +98,17 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/drawItem.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/multiPointPickerMachine.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/userInteractionPlotPicker.cpp
 )
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject itomCommonLib)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
 
 # COPY SECTION
 set(COPY_SOURCES "")

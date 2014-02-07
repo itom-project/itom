@@ -104,6 +104,10 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
 )
 
 
@@ -112,10 +116,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
@@ -269,9 +269,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
@@ -522,7 +519,7 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py               DESTINATI
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include PATTERN ".svn" EXCLUDE)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGlut.cmake               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
