@@ -42,6 +42,8 @@ IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
+ADD_DEFINITIONS(-DITOMCOMMONQT_MOC)
+
 SET (QT_USE_QTXML TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize

@@ -9,6 +9,7 @@ SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 
 if (BUILD_TARGET64)
@@ -27,9 +28,9 @@ ADD_SUBDIRECTORY(DataObject)
 
 IF(BUILD_WITH_PCL)
     ADD_SUBDIRECTORY(PointCloud)
-    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor")
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor itomCommonLib itomCommonQtLib")
 ELSE(BUILD_WITH_PCL)
-    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor")
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor itomCommonLib itomCommonQtLib")
 ENDIF(BUILD_WITH_PCL)
 
 ADD_SUBDIRECTORY(common)

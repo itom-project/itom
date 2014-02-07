@@ -30,6 +30,8 @@
 #include <qelapsedtimer.h>
 #include <qcoreapplication.h>
 
+//namespace ito {
+
 /*!
 *    \class ItomSharedSemaphore
 *    \brief semaphore which can be used for asychronous thread communication. By using this class it is possible to realize timeouts.
@@ -88,3 +90,5 @@ bool ItomSharedSemaphore::waitAndProcessEvents(int timeout, QEventLoop::ProcessE
 
     return available;
 }
+
+//} //end namespace ito

@@ -5076,31 +5076,30 @@ DataObject DataObject::squeeze() const
     return resObj;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! verifies if the data type of elements in this data object is equal to the type of the argument.
-/*
-    \param [in] src is any variable whose type is checked
-    \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
-*/
-template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
-{
-    try
-    {
-        ito::tDataType t = ito::getDataType(src);
-        if(m_type == t)
-        {
-            return ito::retOk;
-        }
-        return RetVal(retError,0,"CheckType failed: types are not equal");
-    }
-    catch(cv::Exception /*&ex*/)
-    {
-        return RetVal(retError,0,"Error during Type-Check. Type not templated");
-    }
-}
+////----------------------------------------------------------------------------------------------------------------------------------
+////! verifies if the data type of elements in this data object is equal to the type of the argument.
+///*
+//    \param [in] src is any variable whose type is checked
+//    \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
+//*/
+//template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
+//{
+//    try
+//    {
+//        if(m_type == ito::getDataType(src))
+//        {
+//            return ito::retOk;
+//        }
+//        return RetVal(retError,0,"CheckType failed: types are not equal");
+//    }
+//    catch(cv::Exception /*&ex*/)
+//    {
+//        return RetVal(retError,0,"Error during Type-Check. Type not templated");
+//    }
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const int sizeX, const int sizeY)
+RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -5113,16 +5112,16 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const i
     if (retval != ito::retOk)
        return retval;
 
-    cv::Mat_<_Tp> *cvMat = ((cv::Mat_<_Tp> *)this->get_mdata()[this->seekMat(0)]);
+    cv::Mat *cvMat = ((cv::Mat *)this->get_mdata()[this->seekMat(0)]);
     if (cvMat->isContinuous())
     {
-        memcpy(cvMat->ptr(0), src, sizeX * sizeY * sizeof(_Tp));
+        memcpy(cvMat->ptr(0), src, sizeX * sizeY * sizeOfElem);
     }
     else
     {
         for (int y = 0; y < sizeY; y++)
         {
-            memcpy(cvMat->ptr(y), src + y * sizeX * sizeof(_Tp), sizeX * sizeof(_Tp));
+            memcpy(cvMat->ptr(y), src + y * sizeX * sizeOfElem, sizeX * sizeOfElem);
         }
     }
 
@@ -5130,7 +5129,7 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const i
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const int sizeX, const int /* sizeY */, const int x0, const int y0, const int width, const int height)
+RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height)
 {
     ito::RetVal retval;
 
@@ -5143,10 +5142,10 @@ template<typename _Tp> RetVal DataObject::copyFromData2D(const _Tp *src, const i
     if (retval != ito::retOk)
         return retval;
 
-    cv::Mat_<_Tp> *cvMat = ((cv::Mat_<_Tp> *)this->get_mdata()[this->seekMat(0)]);
+    cv::Mat *cvMat = ((cv::Mat *)this->get_mdata()[this->seekMat(0)]);
     for (int y = 0; y < height; y++)
     {
-        memcpy(cvMat->ptr(y), src + ((y0 + y) * sizeX + x0) * sizeof(_Tp) , width * sizeof(_Tp));
+        memcpy(cvMat->ptr(y), src + ((y0 + y) * sizeX + x0) * sizeOfElem , width * sizeOfElem);
     }
 
     return retOk;
@@ -6254,31 +6253,31 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
 //    return fListMinMaxLocFunc[dObj.getType()](dObj, minVal, maxVal, minPos, maxPos);
 //}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-template RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int);
-template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int);
-template RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int);
-template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int);
-template RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int);
-template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int);
-
-//----------------------------------------------------------------------------------------------------------------------------------
-template RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int, const int, const int, const int, const int);
-template RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int, const int, const int, const int, const int);
+////----------------------------------------------------------------------------------------------------------------------------------
+//template<> RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int);
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+//template<> RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int, const int, const int, const int, const int);
+//template<> RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int, const int, const int, const int, const int);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template RetVal DataObject::linspace<int8>(const int8, const int8, const int8, const int);
@@ -6289,6 +6288,12 @@ template RetVal DataObject::linspace<int32>(const int32, const int32, const int3
 template RetVal DataObject::linspace<uint32>(const uint32, const uint32, const uint32, const int);
 template RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
 template RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
+
+template <class T>
+T Sum(T a, T b)
+{
+     return (a + b);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 }// namespace ito

@@ -32,6 +32,8 @@
 #include "addInGrabber.h"
 #include "sharedStructures.h"
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
 namespace ito
 {
 
@@ -84,5 +86,7 @@ namespace ito
     };
 
 }   // end namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif

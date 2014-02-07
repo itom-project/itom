@@ -756,6 +756,9 @@ class DATAOBJ_EXPORT DataObject
         int mdata_size(void) const;
         
         int mdata_free();
+
+        RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY);  
+        RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
         
 
         //low-level, templated methods
@@ -1547,14 +1550,37 @@ class DATAOBJ_EXPORT DataObject
         DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
         RetVal locateROI(int *wholeSizes, int *offsets);                              /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
         RetVal locateROI(int *lims);                                                  /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY);        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height);       //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal checkType(const _Tp *src);    //compares type of elements in this data objects and type of given argument (doc in source)
+
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        
+        //----------------------------------------------------------------------------------------------------------------------------------
+        //! verifies if the data type of elements in this data object is equal to the type of the argument.
+        /*
+            \param [in] src is any variable whose type is checked
+            \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
+        */
+        template<typename _Tp> RetVal checkType(const _Tp *src)    //must be inline since function template!
+        {
+            try
+            {
+                if(m_type == ito::getDataType(src))
+                {
+                    return ito::retOk;
+                }
+                return RetVal(retError,0,"CheckType failed: types are not equal");
+            }
+            catch(cv::Exception /*&ex*/)
+            {
+                return RetVal(retError,0,"Error during Type-Check. Type not templated");
+            }
+        }
 
         //
         template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
 
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
+
 };
 
 
@@ -1568,7 +1594,7 @@ DataObject DATAOBJ_EXPORT imag(const DataObject &dObj);             /*!< calcula
 
 DataObject DATAOBJ_EXPORT makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
 
-template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
+//template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
 
 //RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos = NULL, int *maxPos = NULL);
 

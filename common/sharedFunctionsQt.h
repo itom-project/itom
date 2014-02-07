@@ -36,6 +36,8 @@
 #include <qmap.h>
 #include <qstring.h>
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
 namespace ito
 {
     //!< Function to convert double values with unit to scaled values with scaled units (0.01m -> 10mm)
@@ -56,5 +58,7 @@ namespace ito
     ITOMCOMMONQT_EXPORT ito::RetVal loadXML2DOBJ(ito::DataObject *dObjIn, QString folderFileName, bool onlyHeaderObjectFile = false, bool appendEnding = true);
 
 }   // end namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif

@@ -442,14 +442,14 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::hideToolBar(const QString &key)
 //----------------------------------------------------------------------------------------------------------------------------------
 ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
 { 
-    importItomPlotApi(apiFunctionGraphBasePtr);
+    //importItomPlotApi(apiFunctionGraphBasePtr);
     m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr; 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
 { 
-    importItomApi(apiFunctionBasePtr);
+    //importItomApi(apiFunctionBasePtr);
     m_apiFunctionsBasePtr = apiFunctionBasePtr; 
 }
 
@@ -464,8 +464,8 @@ ITOMSHAREDDESIGNER_EXPORT bool AbstractFigure::event(QEvent *e)
     //also is necessary if any methods of the plugin are directly called from itom).
     if (e->type() == (QEvent::User+123))
     {
-        importItomApi(m_apiFunctionsBasePtr);
-        importItomPlotApi(m_apiFunctionsGraphBasePtr);
+        //importItomApi(m_apiFunctionsBasePtr);
+        //importItomPlotApi(m_apiFunctionsGraphBasePtr);
         init();
     }   
     return QMainWindow::event(e);

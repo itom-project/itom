@@ -65,26 +65,36 @@ void ByteArray::append(const char *str)
     {
         int newlen = strlen(str);
         
-        int oldlen = strlen(d->m_pData);
-
         if (newlen > 0)
         {
-            if (d && d->m_ref == 0) //this is the only user
+            if (d)
             {
-                d = static_cast<Data*>(realloc(d, sizeof(Data) + newlen + oldlen));
-                memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
+                int oldlen = strlen(d->m_pData);
+
+                if (d->m_ref == 0) //this is the only user
+                {
+                    d = static_cast<Data*>(realloc(d, sizeof(Data) + newlen + oldlen));
+                    memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
+                }
+                else
+                {
+                    Data *oldData = d;
+                    d = static_cast<Data*>(malloc(sizeof(Data) + newlen + oldlen));
+                    d->m_ref = 0;
+                    d->m_pData = d->m_buffer;
+                    memcpy(d->m_buffer, oldData->m_pData, oldlen);
+                    memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
+
+                    //decref the old data structure
+                    decAndFree(oldData);
+                }
             }
             else
             {
-                Data *oldData = d;
-                d = static_cast<Data*>(malloc(sizeof(Data) + newlen + oldlen));
+                d = static_cast<Data*>(malloc(sizeof(Data) + newlen));
                 d->m_ref = 0;
                 d->m_pData = d->m_buffer;
-                memcpy(d->m_buffer, oldData->m_pData, oldlen);
-                memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
-
-                //decref the old data structure
-                decAndFree(oldData);
+                memcpy(d->m_buffer, str, newlen+1);
             }
         }
     }

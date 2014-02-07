@@ -35,6 +35,7 @@
 #include <qpair.h>
 #include <qvector.h>
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 namespace ito
 {
@@ -124,5 +125,6 @@ Q_DECLARE_OPERATORS_FOR_FLAGS ( ito::PlotDataTypes )
 Q_DECLARE_OPERATORS_FOR_FLAGS ( ito::PlotFeatures )
 Q_DECLARE_OPERATORS_FOR_FLAGS ( ito::PlotDataFormats )
 
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif //SHAREDSTRUCTURESGRAPHICS_H

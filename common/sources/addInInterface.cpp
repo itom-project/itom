@@ -77,13 +77,13 @@ namespace ito
     void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
     { 
         m_apiFunctionsBasePtr = apiFunctions;
-        importItomApi(apiFunctions);
+        this->importItomApi(apiFunctions);
     }
 
     void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph) 
     { 
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
-        importItomPlotApi(apiFunctionsGraph);
+        this->importItomApiGraph(apiFunctionsGraph);
     }
 
     bool AddInInterfaceBase::event(QEvent *e)
@@ -96,8 +96,8 @@ namespace ito
         //also is necessary if any methods of the plugin are directly called from itom).
         if (e->type() == (QEvent::User+123))
         {
-            importItomApi(m_apiFunctionsBasePtr);
-            importItomPlotApi(m_apiFunctionsGraphBasePtr);
+            this->importItomApi(m_apiFunctionsBasePtr);
+            this->importItomApiGraph(m_apiFunctionsGraphBasePtr);
         }   
         return QObject::event(e);
     }

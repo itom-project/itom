@@ -48,6 +48,21 @@
 #include <qevent.h>
 #include <qpluginloader.h>
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+//write this macro right after Q_INTERFACE(...) in your interface class definition
+#define ITOM_API protected: \
+                     void importItomApi(void** apiPtr); void importItomApiGraph(void** apiPtr); \
+                   public: \
+                     //.
+
+//use the following macro instead of Q_EXPORT_PLUGIN2. This macro also introduces the api-pointers of the itom api interface
+#define Q_EXPORT_PLUGIN2_ITOM(PLUGIN, PLUGINCLASS) Q_EXPORT_PLUGIN2(PLUGIN, PLUGINCLASS) \
+                                                    void PLUGINCLASS##::importItomApi(void** apiPtr) \
+                                                    {ito::ITOM_API_FUNCS = apiPtr;} \
+                                                    void PLUGINCLASS##::importItomApiGraph(void** apiPtr) \
+                                                    { ito::ITOM_API_FUNCS_GRAPH = apiPtr;}
+
 namespace ito
 {
 
@@ -172,6 +187,9 @@ namespace ito
             bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
             QPluginLoader *m_loader;
 
+            virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
+            virtual void importItomApiGraph(void** apiPtr) = 0;
+
         public:
             void **m_apiFunctionsBasePtr;
             void **m_apiFunctionsGraphBasePtr;
@@ -246,9 +264,7 @@ namespace ito
 
             bool event(QEvent *e);
 
-        //signals:
 
-        //public slots:
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1001,6 +1017,8 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
 } // namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 //###########################################################################################################
 //   Interface version:

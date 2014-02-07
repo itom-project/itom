@@ -89,6 +89,8 @@ class ITOMCOMMON_EXPORT ByteArray
 
         int size() const { if(d){ return strlen(d->m_pData); } return 0; }
 
+        bool empty() const { if(d) { return strlen(d->m_pData) == 0; } return true; }
+
         const char *data() const { return d ? d->m_pData : &emptyChar; };
 
         inline char &operator[](unsigned int i) const
