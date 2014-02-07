@@ -60,9 +60,9 @@ class UserOrganizer : QObject
         inline void setUserRole(const int role) { m_userRole = role; }
         void setUserRole(const QString role) 
         { 
-            if (role == "user")
+            if (role == "developer")
             {
-                m_userRole = 0;
+                m_userRole = 2;
             }
             else if (role == "admin")
             {
@@ -70,7 +70,7 @@ class UserOrganizer : QObject
             }
             else
             {
-                m_userRole = 2;
+                m_userRole = 0;
             }
         }
         inline int getUserRole() const { return m_userRole; }
