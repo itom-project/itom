@@ -29,6 +29,12 @@
 namespace ito
 {
 
+enum userTypes {
+    userTypeBasic = 0,
+    userTypeAdministrator = 1,
+    userTypeDeveloper = 2
+};    
+
 enum userFeatures {
     featDeveloper   =   1,
     featFileSystem  =   2,
@@ -39,6 +45,7 @@ enum userFeatures {
 };
 
 #define allFeatures ((userFeatures) (featDeveloper | featFileSystem | featUserManag | featPlugins | featConsole | featConsoleRW))
+
 
 class UserOrganizer : QObject
 {
@@ -54,11 +61,17 @@ class UserOrganizer : QObject
         void setUserRole(const QString role) 
         { 
             if (role == "user")
+            {
                 m_userRole = 0;
+            }
             else if (role == "admin")
+            {
                 m_userRole = 1;
+            }
             else
+            {
                 m_userRole = 2;
+            }
         }
         inline int getUserRole() const { return m_userRole; }
         QString getUserID(void) const;

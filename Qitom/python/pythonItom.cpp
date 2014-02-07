@@ -38,6 +38,7 @@
 #include "../AppManagement.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/addInManager.h"
+#include "../organizer/userOrganizer.h"
 
 #include <qdir.h>
 #include <qcoreapplication.h>
@@ -3007,6 +3008,147 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsAdmin_doc,"userIsAdmin() -> return True if USER has administrator status.\n\
+\n\
+This method returns a boolean expression. If the USER defined by the user managment has administrator status it is true, in other cases it is False. \n\
+\n\
+Returns \n\
+------- \n\
+isRequestedType : {boolean} \n\
+    Boolean return value \n\
+    \n\
+");
+PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
+{
+    UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
+    if (userOrg == NULL)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "userOrganizer not available");
+    }
+
+    if (userOrg->getUserRole() == ito::userTypeAdministrator)
+    {
+        return Py_True;
+    }
+
+    return Py_False;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsDeveloper_doc,"userIsDeveloper() -> return True if USER has developer status.\n\
+\n\
+This method returns a boolean expression. If the USER defined by the user managment has developer status it is true, in other cases it is False. \n\
+\n\
+Returns \n\
+------- \n\
+isRequestedType : {boolean} \n\
+    Boolean return value \n\
+    \n\
+");
+PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
+{
+    UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
+    if (userOrg == NULL)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "userOrganizer not available");
+    }
+
+    if (userOrg->getUserRole() == ito::userTypeDeveloper)
+    {
+        return Py_True;
+    }
+
+    return Py_False;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsUser_doc,"userIsUser() -> return True if USER has only user status.\n\
+\n\
+This method returns a boolean expression. If the USER defined by the user managment has only user status it is true, in other cases it is False. \n\
+\n\
+Returns \n\
+------- \n\
+isRequestedType : {boolean} \n\
+    Boolean return value \n\
+    \n\
+");
+PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
+{
+    UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
+    if (userOrg == NULL)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "userOrganizer not available");
+    }
+
+    if (userOrg->getUserRole() == ito::userTypeBasic)
+    {
+        return Py_True;
+    }
+
+    return Py_False;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGetUserInfo_doc,"userGetInfo() -> return a dictionary with the current user management information.\n\
+\n\
+This method returns a dictionary which contains the current user concerning system configuration. \n\
+\n\
+Returns \n\
+------- \n\
+isUser : {dict} \n\
+    dictionary with the following content is returned: \n\
+    \n\
+    * Name (string): The name of the current user \n\
+    * Type (string): The user type as string [user, administrator, developer] \n\
+    * ID (string): The user ID as a string \n\
+    * File (string): The location and name of the corresponding initialization file.");
+PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
+{
+
+    UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
+    if (userOrg == NULL)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "userOrganizer not available");
+    }
+
+    PyObject* returnDict = PyDict_New();
+
+    // Name
+    PyObject *item = PyUnicode_FromString(userOrg->getUserName().toAscii().data());
+    PyDict_SetItemString(returnDict, "Name", item);
+    Py_DECREF(item);
+    
+    // Type
+    switch(userOrg->getUserRole())
+    {
+        case ito::userTypeBasic:
+            item = PyUnicode_FromString("user");
+        break;
+        case ito::userTypeAdministrator:
+            item = PyUnicode_FromString("administrator");
+        break;
+        case ito::userTypeDeveloper:
+            item = PyUnicode_FromString("developer");
+        break;
+        default:
+            item = PyUnicode_FromString("D.A.U.");
+    }
+    
+    PyDict_SetItemString(returnDict, "Type", item);
+    Py_DECREF(item); 
+
+    // ID
+    item = PyUnicode_FromString(userOrg->getUserID().toAscii().data());
+    PyDict_SetItemString(returnDict, "ID", item);
+    Py_DECREF(item); 
+
+    // FILE
+    item = PyUnicode_FromString(userOrg->getSettingsFile().toAscii().data());
+    PyDict_SetItemString(returnDict, "File", item);
+    Py_DECREF(item); 
+
+    return returnDict;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
 \n\
 This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
@@ -3080,6 +3222,10 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
     {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compresses the given string using the method qCompress"},
     {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompresses the given string using the method qUncompress"},
+    {"userIsAdmin", (PyCFunction)PythonItom::userCheckIsAdmin, METH_NOARGS, pyCheckIsAdmin_doc},
+    {"userIsDeveloper", (PyCFunction)PythonItom::userCheckIsDeveloper, METH_NOARGS, pyCheckIsDeveloper_doc},
+    {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
+    {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
     {NULL, NULL, 0, NULL}
 };
 
