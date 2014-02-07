@@ -2225,14 +2225,16 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 {
                     if (i >= mo->methodOffset())
                     {
-                        signal.append(meth.signature());
+//                        signal.append(meth.signature());
+                        signal.append(meth.methodSignature());
                     }
                 }
                 else if (meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
                     if (i >= mo->methodOffset())
                     {
-                        slot.append(meth.signature());
+//                        slot.append(meth.signature());
+                        slot.append(meth.methodSignature());
                     }
                 }
             }
@@ -2787,8 +2789,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         *initSlotCount = fig2->metaObject()->methodOffset();
         *objectID = addObjectToList(fig2);
         containerItem.container = set;
-//        containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
-        containerItem.guardedHandle = QPointer<unsigned int>(*guardedFigureHandle);
+        containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
         m_dialogList[*handle] = containerItem;
     }
     

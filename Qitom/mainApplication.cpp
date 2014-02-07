@@ -213,7 +213,7 @@ void MainApplication::setupApplication()
         textCodec = QTextCodec::codecForName("UTF-8");
     }
 
-    QTextCodec::setCodecForCStrings(textCodec);
+//    QTextCodec::setCodecForCStrings(textCodec);
     QTextCodec::setCodecForLocale(textCodec);
 
     settings->beginGroup("CurrentStatus");

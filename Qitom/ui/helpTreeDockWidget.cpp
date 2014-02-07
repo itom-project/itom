@@ -13,7 +13,8 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
-#include <qtconcurrentrun.h>
+//#include <qtconcurrentrun.h>
+#include <QtConcurrent/qtconcurrentrun.h>
 #include <qtextdocument.h>
 #include <qtextstream.h>
 #include <QThread>
@@ -21,7 +22,10 @@
 #include <qtreeview.h>
 #include <stdio.h>
 #include <qclipboard.h>
-#include <common\addInInterface.h>
+#include <qsettings.h>
+#include <common/addInInterface.h>
+#include <QtSql/qsqldatabase.h>
+#include <QtSql/qsqlquery.h>
 
 #include "../widgets/helpDockWidget.h"
 #include "../models/leafFilterProxyModel.h"
@@ -29,7 +33,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // on_start
-HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WFlags flags)
+HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WindowFlags flags)
     : QWidget(parent, flags),
     m_historyIndex(-1),
     m_pMainModel(NULL),
@@ -278,11 +282,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
     }
     else
     {
@@ -328,11 +332,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else if (start == -1 || end == -1) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
     }
     else if (start > end) //one part is missing
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
     }
     else
     {
@@ -387,14 +391,14 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     }
                     newLink.append(")");
                     newLink.replace(", )",")");
-                    QByteArray a = newLink.toAscii();
+                    QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
                     exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filter).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filter).toLatin1().data());
                 }
                 break;
             }
@@ -432,14 +436,14 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     }
                     newLink.append(")");
                     newLink.replace(", )",")");
-                    QByteArray a = newLink.toAscii();
+                    QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
                     exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown widget name '%1'").arg(filter).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown widget name '%1'").arg(filter).toLatin1().data());
                 }
                 break;
             }
@@ -469,7 +473,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filter).toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filter).toLatin1().data());
                 }
                 break;
             }

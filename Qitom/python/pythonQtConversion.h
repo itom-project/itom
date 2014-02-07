@@ -141,7 +141,7 @@ public:
 
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
 
-    static PyObject* ConvertQtValueToPythonInternal(int type, const char* data); 
+    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
     static PyObject* convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg);
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");

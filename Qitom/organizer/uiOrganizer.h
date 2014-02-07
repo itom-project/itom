@@ -198,7 +198,7 @@ public:
         container = cpy.container;
     }
 
-    QPointer< unsigned int > guardedHandle;
+    QWeakPointer< unsigned int > guardedHandle;
     UiContainer *container;
 };
 
