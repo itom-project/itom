@@ -25,6 +25,7 @@
 #include "../global.h"
 
 #include <QClipboard>
+#include <qmessagebox.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)

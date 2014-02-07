@@ -33,8 +33,8 @@
     #include "vld.h"
 #endif
 
-#include <QtGui/QApplication>
-
+//#include <QtGui/QApplication>
+#include <qapplication.h>
 #include <qmap.h>
 #include <qhash.h>
 #include <qtextstream.h>
@@ -42,6 +42,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qmutex.h>
+
 
 //#include "benchmarks.h"
 
@@ -227,7 +228,7 @@ end:
 
     ito::UserOrganizer::closeInstance();
 
-    qInstallMsgHandler(0);
+    qInstallMessageHandler(0);
     delete messageStream;
     messageStream = NULL;
     logfile.close();

@@ -82,7 +82,7 @@ public:
     UiContainer(UserUiDialog *uiDialog) : 
         m_type(uiTypeUiDialog) 
     {
-        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(uiDialog));
+        m_weakDialog = QPointer<QWidget>(uiDialog);
     }
 
     //! creates new UiContainer from instance of QDialog
@@ -94,7 +94,7 @@ public:
     UiContainer(QDialog *dialog) : 
         m_type(uiTypeQDialog) 
     {
-        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(dialog));
+        m_weakDialog = QPointer<QDialog>(dialog);
     }
     
     //! creates new UiContainer from instance of QMainWindow
@@ -106,7 +106,7 @@ public:
     UiContainer(QMainWindow *mainWindow) : 
         m_type(uiTypeQMainWindow) 
     {
-        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(mainWindow));
+        m_weakDialog = QPointer<QWidget>(mainWindow);
     }
 
     //! creates new UiContainer from instance of QMainWindow
@@ -118,7 +118,7 @@ public:
     UiContainer(FigureWidget *figureWidget) : 
         m_type(uiTypeFigure) 
     {
-        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(figureWidget));
+        m_weakDialog = QPointer<QWidget>(figureWidget);
     }
 
     //! creates new UiContainer from instance of QDockWidget
@@ -130,7 +130,7 @@ public:
     UiContainer(QDockWidget *dockWidget) : 
         m_type(uiTypeQDockWidget) 
     {
-        m_weakDialog = QWeakPointer<QWidget>(qobject_cast<QWidget*>(dockWidget));
+        m_weakDialog = QPointer<QWidget>(dockWidget);
     }
     
     //! general constructor to create an instance of UiContainer from given QWidget*-pointer and type
@@ -143,13 +143,13 @@ public:
     UiContainer(QWidget *widget, tUiType type) : 
         m_type(type)
     {
-        m_weakDialog = QWeakPointer<QWidget>(widget);
+        m_weakDialog = QPointer<QWidget>(widget);
     }
     
     //! copy constructor
     UiContainer(const UiContainer &cpy)
     {
-        m_weakDialog = QWeakPointer<QWidget>(cpy.getUiWidget());
+        m_weakDialog = QPointer<QWidget>(cpy.getUiWidget());
         m_type = cpy.m_type;
     }
     
@@ -183,7 +183,7 @@ public:
     inline tUiType getType() const { return m_type; }
 
 private:
-    QWeakPointer<QWidget> m_weakDialog;        /*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then savely considered. */
+    QPointer<QWidget> m_weakDialog;        /*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then savely considered. */
     tUiType m_type;                            /*!< type of the user interface which is covered by this instance. \sa tUiType */
 };
 
@@ -198,7 +198,7 @@ public:
         container = cpy.container;
     }
 
-    QWeakPointer< unsigned int > guardedHandle;
+    QPointer< unsigned int > guardedHandle;
     UiContainer *container;
 };
 
@@ -289,7 +289,7 @@ private:
     //QHash<QString, PluginInfo> m_pluginInfoList;
 
     QHash<unsigned int, UiContainerItem> m_dialogList; /*!< Hash-Table mapping a handle to an user interface to its corresponding instance of UiDialogSet */
-    QHash<unsigned int, QWeakPointer<QObject> > m_objectList;  /*!< Hash-Table containing weak references to child-objects of any user interface which have recently been accessed. This hash-table helps for faster access to these objects */
+    QHash<unsigned int, QPointer<QObject> > m_objectList;  /*!< Hash-Table containing weak references to child-objects of any user interface which have recently been accessed. This hash-table helps for faster access to these objects */
     int m_garbageCollectorTimer;                    /*!< ID of the garbage collection timer. This timer regularly calls timerEvent in order to check m_dialogList and m_objectList for objects, which already have been destroyed. */
     QMap<QObject*, QThread*> m_watcherThreads;   /*!< map with opened watcher threads and their containing objects (e.g. UserInteractionWatcher) */
 

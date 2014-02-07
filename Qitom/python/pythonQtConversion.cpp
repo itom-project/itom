@@ -43,7 +43,7 @@
 */
 PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
 QByteArray PythonQtConversion::textEncodingName = "utf8";
-QHash<void*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<void*, PyObject*>();
+QHash<char*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<char*, PyObject*>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QStringList
@@ -1120,7 +1120,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     //baseObjectDeleter
                     Py_XINCREF(dataObj->base);
                     ito::DataObject *copy = new ito::DataObject(*dataObj->dataObject);
-                    m_pyBaseObjectStorage.insert((void*)copy, dataObj->base); //unique
+                    m_pyBaseObjectStorage.insert((char*)copy, dataObj->base); //unique
                     QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
                     v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
                 }
@@ -1384,7 +1384,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! tries to convert PyObject* to known data type and returns deep-copy of the value, given as void*
+//! tries to convert PyObject* to known data type and returns deep-copy of the value, given as char*
 /*!
     methods tries to convert PyObject* to QVariant. Type indicates the desired type of QVariant, given by the type-number of QMetaType.
     If type==-1, the right type is guessed by checking the PyObject*-type. If conversion failed, QVariant() is returned.
@@ -1392,7 +1392,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     The deep-copy is created using QMetaType::construct(...)
 
     \param val is the given python object
-    \param retPtr is the resulting pointer to type void*, containing the converted deep copy or NULL, if error
+    \param retPtr is the resulting pointer to type char*, containing the converted deep copy or NULL, if error
     \param retType is an integer-pointer, containing the type-id of the converted result (with respect to QMetaType) or -1, if failure
     \param type is the desired QMetaType-type-id or -1, if conversion-type should be guessed considering the type of val.
     \param strict decides whether the given PyObject should strictly be converted into the C-type or a cast like int->string is allowed, too.
@@ -1486,7 +1486,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             int d = PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1495,7 +1495,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned int d = (unsigned int)PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1505,7 +1505,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (ok)
             {
                 bool d2 = (d != 0);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d2));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d2));
             }
             break;
         }
@@ -1514,7 +1514,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             double d = PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }  
             break;
         }
@@ -1523,7 +1523,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             float d = (float) PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1532,7 +1532,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             long d = (long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1541,7 +1541,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned long d = (unsigned long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1550,7 +1550,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             qint64 d = (qint64) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1559,7 +1559,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             quint64 d = (quint64) PyObjGetULongLong(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1568,7 +1568,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             short d = (short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1577,7 +1577,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned short d = (unsigned short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1586,7 +1586,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             char d = (char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1595,7 +1595,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned char d = (unsigned char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&d));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1605,7 +1605,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QByteArray text = PyObjGetBytes(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
             }
             break;
         }
@@ -1614,7 +1614,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QString text = PyObjGetString(val, strict, ok);
             if (ok)
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&text));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
             }
             break;
         }
@@ -1624,7 +1624,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (ok)
             {
                 QUrl url = QUrl(text);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&url));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&url));
             }
             break;
         }
@@ -1649,7 +1649,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     }
                     Py_DECREF(items);
                 }
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&map));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&map));
             }
             break;
         }
@@ -1666,7 +1666,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 list.append(PyObjToQVariant(value, -1));
                 Py_XDECREF(value);
             }
-            *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&list));
+            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&list));
             break;
         }
         
@@ -1676,7 +1676,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QStringList l = PyObjToStringList(val, strict, ok);
             if (ok) 
             {
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&l));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
             }
             break;
         }
@@ -1687,7 +1687,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (reg && reg->r)
             {
                 QRegion r = *(reg->r);
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&r));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&r));
             }
             break;
         }
@@ -1701,7 +1701,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 {
                     //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
                     QColor c(rgba->rgba.argb());
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&c));
                 }
             }
             else
@@ -1710,7 +1710,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 if (ok)
                 {
                     QColor c(text);
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&c));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&c));
                 }
             }
             break;
@@ -1728,7 +1728,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 m.m_object = NULL;
                 m.m_objName = val2->objName;
                 m.m_className = val2->widgetClassName;
-                *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&m));
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&m));
             }
             else if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
             {
@@ -1736,7 +1736,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 if (val2 && val2->dataObject)
                 {
                     QSharedPointer<ito::DataObject> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(val2->dataObject, val);
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&sharedBuffer));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
                 }
             }
             else if (type == QMetaType::type("ito::DataObject"))
@@ -1744,7 +1744,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
                 if (val2 && val2->dataObject)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(val2->dataObject));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(val2->dataObject));
                 }
             }
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -1754,7 +1754,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPointCloud pcl = PyObjGetPointCloud(val, strict, ok);
                 if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pcl));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&pcl));
                 }
             }
             else if (type == QMetaType::type("ito::PCLPoint"))
@@ -1763,7 +1763,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPoint pt = PyObjGetPoint(val, strict, ok);
                 if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&pt));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&pt));
                 }
             }
             else if (type == QMetaType::type("ito::PCLPolygonMesh"))
@@ -1772,7 +1772,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPolygonMesh mesh = PyObjGetPolygonMesh(val, strict, ok);
                 if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&mesh));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&mesh));
                 }
             }
             else if (type == QMetaType::type("QVector<double>"))
@@ -1781,7 +1781,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 QVector<double> arr = PyObjGetDoubleArray(val, strict, ok);
                 if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&arr));
                 }
             }
             else if (type == QMetaType::type("QVector<int>"))
@@ -1790,7 +1790,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 QVector<int> arr = PyObjGetIntArray(val, strict, ok);
                 if (ok)
                 {
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<void*>(&arr));
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&arr));
                 }
             }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
@@ -1812,7 +1812,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (variantValue->isValid())
             {
                 *retType = QMetaType::QVariant;
-                *retPtr = (void*)variantValue; //here no QMetaType::construct is used since construct does not more than a copy constructor of QVariant casted to void*
+                *retPtr = (char*)variantValue; //here no QMetaType::construct is used since construct does not more than a copy constructor of QVariant casted to char*
             }
             else
             {
@@ -1934,7 +1934,7 @@ PyObject* PythonQtConversion::QStringListToPyList(const QStringList& list)
 */
 PyObject* PythonQtConversion::QVariantToPyObject(const QVariant& v)
 {
-    return ConvertQtValueToPythonInternal(v.userType(), (void*)v.constData());
+    return ConvertQtValueToPythonInternal(v.userType(), (char*)v.constData());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2051,18 +2051,18 @@ PyObject* PythonQtConversion::QVariantListToPyObject(const QVariantList& l)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method internally used for conversion from given type-id (QMetaType) and corresponding void*-pointer to PyObject*
+//! method internally used for conversion from given type-id (QMetaType) and corresponding char*-pointer to PyObject*
 /*!
-    This method is the opposite from \a PyObjToVoidPtr and converts a pair given by type-id (see QMetaType) and corresponding void*-pointer,
+    This method is the opposite from \a PyObjToVoidPtr and converts a pair given by type-id (see QMetaType) and corresponding char*-pointer,
     which to the variable's content to the appropriate python type.
 
     A python error is returned if conversion failed.
 
     \param type is given type-id (\a QMetaType)
-    \param data is the content, casted to void*
+    \param data is the content, casted to char*
     \return is the resulting PyObject* (new reference)
 */
-PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const void* data) 
+PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const char* data) 
 {
     switch (type) 
     {

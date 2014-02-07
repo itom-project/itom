@@ -27,6 +27,7 @@
 #include "../widgets/scriptEditorWidget.h"
 #include "../AppManagement.h"
 
+#include <qmessagebox.h>
 /*!
     \class ScriptEditorOrganizer
     \brief organizes script editors, independent on their appearance (docked or window-style)

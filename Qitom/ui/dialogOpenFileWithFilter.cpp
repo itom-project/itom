@@ -22,9 +22,11 @@
 
 #include "dialogOpenFileWithFilter.h"
 
-#include <qtconcurrentrun.h>
+#include <QtConcurrent/qtconcurrentrun.h>
+//#include <qtconcurrentrun.h>
 #include <qfileinfo.h>
 #include <qfileiconprovider.h>
+#include <qmessagebox.h>
 
 namespace ito {
 

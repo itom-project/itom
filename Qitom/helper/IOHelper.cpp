@@ -47,6 +47,8 @@
 #include <qprocess.h>
 #include <QtNetwork/qtcpsocket.h>
 #include <QtNetwork/qhostaddress.h>
+#include <qinputdialog.h>
+#include <qmessagebox.h>
 
 namespace ito {
 

@@ -395,7 +395,7 @@ MainWindow::~MainWindow()
         m_pHelpSystem = NULL;
     }
 
-    QMapIterator<QString, QWeakPointer<WidgetInfoBox> > i(m_infoBoxWidgets);
+    QMapIterator<QString, QPointer<WidgetInfoBox> > i(m_infoBoxWidgets);
     while (i.hasNext()) 
     {
         i.next();
@@ -1502,7 +1502,7 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
         m_contentLayout->insertWidget(0, w);
         if (winKey != "")
         {
-            m_infoBoxWidgets[winKey] = QWeakPointer<WidgetInfoBox>(w);
+            m_infoBoxWidgets[winKey] = QPointer<WidgetInfoBox>(w);
         }
     }
     else

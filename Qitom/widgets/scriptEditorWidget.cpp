@@ -31,6 +31,8 @@
 #include "../ui/dialogEditBreakpoint.h"
 
 #include <qsciprinter.h>
+#include <qmessagebox.h>
+#include <QtPrintSupport/qprintpreviewdialog.h>
 
 namespace ito 
 {

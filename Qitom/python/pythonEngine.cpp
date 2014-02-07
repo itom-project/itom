@@ -681,8 +681,9 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     PythonQtConversion::unicodeEncodings encodingType = PythonQtConversion::other;
     QByteArray encodingName = "";
     bool found = false;
-    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
-    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
+//    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
+//    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
+    QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
 
     //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
     if (qtCodecNames.contains("UTF-8"))

@@ -66,7 +66,7 @@ protected:
     QSignalMapper *m_pSignalMapper;
     QVector<ito::Param> m_params;
     QVector<void*> m_internalData;
-    QWeakPointer<QWidget> m_canvas;
+    QPointer<QWidget> m_canvas;
     QIcon m_iconInfo;
 
 private:

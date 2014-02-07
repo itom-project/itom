@@ -122,7 +122,7 @@ private:
     bool m_pythonInWaitingMode;         /*!<  if true, python is in debug mode but waiting for next user command (e.g. the debugger waits at a breakpoint) */
     bool m_isFullscreen;
 
-    QMap<QString, QWeakPointer<WidgetInfoBox> > m_infoBoxWidgets;
+    QMap<QString, QPointer<WidgetInfoBox> > m_infoBoxWidgets;
 
 signals:
     void mainWindowCloseRequest();  /*!<  signal emitted if user would like to close the main window and therefore the entire application */

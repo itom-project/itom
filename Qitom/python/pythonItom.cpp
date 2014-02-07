@@ -424,7 +424,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
     if (filterstring == NULL)
     {
-        namefilter.fromAscii(0);
+        namefilter.fromLatin1(0);
     }
     else
     {

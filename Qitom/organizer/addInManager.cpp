@@ -1839,7 +1839,7 @@ end:
     RetVal AddInManager::closeDeadPlugins()
     {
         RetVal retval(retOk);
-        QList< QWeakPointer< ito::AddInBase > >::iterator it;
+        QList< QPointer< ito::AddInBase > >::iterator it;
         it = m_deadPlugins.begin();
         ito::AddInBase *aib = NULL;
 
@@ -1872,7 +1872,7 @@ end:
     //----------------------------------------------------------------------------------------------------------------------------------
     RetVal AddInManager::registerPluginAsDeadPlugin(ito::AddInBase *addIn)
     {
-        QWeakPointer< ito::AddInBase > ptr(addIn);
+        QPointer<ito::AddInBase> ptr(addIn);
         m_deadPlugins.push_back(ptr);
 
         if (m_deadPluginTimer.isActive() == false)
@@ -1885,7 +1885,7 @@ end:
     //----------------------------------------------------------------------------------------------------------------------------------
     bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
     {
-        foreach (const QWeakPointer<ito::AddInBase> ptr, m_deadPlugins)
+        foreach (const QPointer<ito::AddInBase> ptr, m_deadPlugins)
         {
             if (!ptr.isNull() && ptr.data() == plugin)
             {

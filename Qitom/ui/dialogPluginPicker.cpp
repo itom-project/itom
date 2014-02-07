@@ -23,6 +23,7 @@
 #include "dialogPluginPicker.h"
 
 #include "dialogNewPluginInstance.h"
+#include <qmessagebox.h>
 
 namespace ito {
 

@@ -38,6 +38,7 @@
 #include <qtextcodec.h>
 #include <qsplashscreen.h>
 #include <qstylefactory.h>
+#include <qmessagebox.h>
 
 /*!
     \class MainApplication

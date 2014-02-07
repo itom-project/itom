@@ -138,7 +138,7 @@ public:
     inline int slotId()  const { return m_slotId; }
 
     // call the python callable with the given arguments (docs see source file)
-    void call(void ** arguments) const;
+    void call(char ** arguments) const;
 
     //! returns list of type-numbers of arguments
     inline IntList argTypeList() const { return m_argTypeList; };
@@ -208,7 +208,7 @@ public:
     bool addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList);
     bool removeSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable);
     void removeSignalHandlers();
-    virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
+    virtual int qt_metacall(QMetaObject::Call c, int id, char **arguments);
    
 private:
     QList<PythonQtSignalTarget> m_targets;    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection

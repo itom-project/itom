@@ -31,6 +31,7 @@
 #include <qapplication.h>
 #include <qurl.h>
 #include <qfileinfo.h>
+#include <qmimedata.h>
 
 namespace ito {
 

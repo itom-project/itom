@@ -24,15 +24,18 @@
         <tbody valign="top">
             <!--%PARAMMAND_START%-->
             <tr class="field">
-                <th class="field-name">%PARAMNAME% <div class="smaller"> %PARAMTYPE% </div></th>
-                <td class="field-body">%PARAMINFO%</td>
+                <th class="field-name">%PARAMNAME% <div class="smaller"> 
+                <div class="meta"> %PARAMTYPE%</div></div></th>
+                <td class="field-body">%PARAMINFO% <div class="smaller">
+                <div class="meta">%PARAMMETA%</div></div></td>
             </tr>
             <!--%PARAMMAND_END%-->
             <!--%PARAMMAND_INSERT%-->
             <!--%PARAMOPT_START%-->
             <tr class="field">
-                <th class="field-name">%PARAMNAME% <div class="smaller"> %PARAMTYPE% <br>(optional)</div></th>
-                <td class="field-body">%PARAMINFO%</td>
+                <th class="field-name">%PARAMNAME% <div class="smaller"> <div class="meta">%PARAMTYPE% <br>(optional)</div></div></th>
+                <td class="field-body">%PARAMINFO% <div class="smaller">
+                <div class="meta">%PARAMMETA%</div></div></td>
             </tr>
             <!--%PARAMOPT_END%-->
             <!--%PARAMOPT_INSERT%-->
@@ -57,7 +60,15 @@
     </tbody>
     </table>
     <!--%RETURNS_END%-->
-
+    
+    <!--%EXAMPLE_INSERT%-->
+    <!--%EXAMPLE_START%-->
+    <p class="rubric">Example</p></br>
+    </br>
+    <p><!--%EXAMPLEPLAIN%--></p>
+    <p><a id="HiLink" href="example://filter.html#<!--%EXAMPLELINK%-->">Copy example to clipboard</a></p>
+    <!--%EXAMPLE_END%-->
+    
 </div>
 </body>
 </html>

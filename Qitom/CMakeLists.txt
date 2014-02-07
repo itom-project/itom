@@ -262,14 +262,14 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
 )
 
-#QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
+QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
 
 
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-#QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp

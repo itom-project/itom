@@ -22,6 +22,11 @@
 
 #include "paramInputParser.h"
 #include <qmessagebox.h>
+#include <qspinbox.h>
+#include <qcombobox.h>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+#include <qregexp.h>
 #include "../global.h"
 #include "dialogPluginPicker.h"
 #include "../helper/paramHelper.h"
@@ -32,7 +37,7 @@ namespace ito {
 ParamInputParser::ParamInputParser(QWidget *canvas) :
     QObject(canvas)
 {
-    m_canvas = QWeakPointer<QWidget>(canvas);
+    m_canvas = QPointer<QWidget>(canvas);
     m_iconInfo = QIcon(":/plugins/icons/info.png");
 
     m_pSignalMapper = new QSignalMapper(this);

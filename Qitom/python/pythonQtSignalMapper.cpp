@@ -159,11 +159,11 @@ void PythonQtSignalMapper::removeSignalHandlers()
     \param [in] arguments is an array of different argument variables, whose types corresponds to the type-number list, passed when the
                 connection has been registered.
 */
-int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **arguments)
+int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, char **arguments)
 {
     if (c != QMetaObject::InvokeMetaMethod)
     {
-        QObject::qt_metacall(c, id, arguments);
+        QObject::qt_metacall(c, id, (void**)arguments);
     }
 
 //    bool found = false;
@@ -194,7 +194,7 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
 
     \param [in] arguments are the arguments of the emitted signal.
 */
-void PythonQtSignalTarget::call(void ** arguments) const
+void PythonQtSignalTarget::call(char ** arguments) const
 {
     //qDebug() << "signaltarget::call in thread: " << QThread::currentThreadId ();
 

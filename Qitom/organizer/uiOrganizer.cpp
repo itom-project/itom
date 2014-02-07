@@ -174,7 +174,7 @@ void UiOrganizer::execGarbageCollection()
     }
 
     //check m_objectList
-    QMutableHashIterator<unsigned int, QWeakPointer<QObject> > j(m_objectList);
+    QMutableHashIterator<unsigned int, QPointer<QObject> > j(m_objectList);
     while (j.hasNext())
     {
         j.next();
@@ -204,7 +204,7 @@ void UiOrganizer::execGarbageCollection()
 */
 unsigned int UiOrganizer::addObjectToList(QObject* objPtr)
 {
-    QHash<unsigned int, QWeakPointer<QObject> >::const_iterator i = m_objectList.constBegin();
+    QHash<unsigned int, QPointer<QObject> >::const_iterator i = m_objectList.constBegin();
     while (i != m_objectList.constEnd())
     {
         if (i.value().data() == objPtr)
@@ -213,7 +213,7 @@ unsigned int UiOrganizer::addObjectToList(QObject* objPtr)
         }
         ++i;
     }
-    m_objectList.insert(++UiOrganizer::autoIncObjectCounter, QWeakPointer<QObject>(objPtr));
+    m_objectList.insert(++UiOrganizer::autoIncObjectCounter, QPointer<QObject>(objPtr));
 
     return UiOrganizer::autoIncObjectCounter;
 }
@@ -221,7 +221,7 @@ unsigned int UiOrganizer::addObjectToList(QObject* objPtr)
 //----------------------------------------------------------------------------------------------------------------------------------
 QObject* UiOrganizer::getWeakObjectReference(unsigned int objectID)
 {
-    QWeakPointer<QObject> temp = m_objectList.value(objectID);
+    QPointer<QObject> temp = m_objectList.value(objectID);
     if (temp.isNull() == false)
     {
         return temp.data();
@@ -2787,7 +2787,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         *initSlotCount = fig2->metaObject()->methodOffset();
         *objectID = addObjectToList(fig2);
         containerItem.container = set;
-        containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
+//        containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
+        containerItem.guardedHandle = QPointer<unsigned int>(*guardedFigureHandle);
         m_dialogList[*handle] = containerItem;
     }
     

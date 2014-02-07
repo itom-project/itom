@@ -122,7 +122,7 @@ public:
 
     static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
 
-    //! convert python object to void* using QMetaType. if type is given it will try to create a void* of that type, otherwise
+    //! convert python object to char* using QMetaType. if type is given it will try to create a char* of that type, otherwise
     //! it will guess from the python type. If fails, NULL is returned
     static bool PyObjToVoidPtr(PyObject* val, void **retPtr, int *retType, int type = -1, bool strict = false);
 
@@ -141,7 +141,7 @@ public:
 
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
 
-    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
+    static PyObject* ConvertQtValueToPythonInternal(int type, const char* data); 
     static PyObject* convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg);
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");
@@ -160,10 +160,10 @@ private:
     if any PyObject is converted into a QVariant-object, dataObject or any other class, and if this
     PyObject has a base-pointer unequal to 
     */
-    static QHash<void*,PyObject*> m_pyBaseObjectStorage; 
+    static QHash<char*,PyObject*> m_pyBaseObjectStorage; 
     static void baseObjectDeleterDataObject(ito::DataObject *sharedObject)
     {
-        QHash<void*,PyObject*>::iterator i = m_pyBaseObjectStorage.find((void*)sharedObject);
+        QHash<char*,PyObject*>::iterator i = m_pyBaseObjectStorage.find((char*)sharedObject);
         if(i != m_pyBaseObjectStorage.end())
         {
             Py_XDECREF(i.value());

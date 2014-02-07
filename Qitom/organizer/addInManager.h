@@ -258,7 +258,7 @@ namespace ito
             //AddInModel m_addInModel;
             PlugInModel m_plugInModel;
 
-            QList< QWeakPointer<ito::AddInBase> > m_deadPlugins;
+            QList< QPointer<ito::AddInBase> > m_deadPlugins;
             QTimer m_deadPluginTimer;
 /*
             //!< singleton nach: http://www.oop-trainer.de/Themen/Singleton.html

@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include <qmetaobject.h>
+#include <qdialogbuttonbox.h>
 
 #include "widgetPropEditorAPI.h"
 #include "widgetPropEditorCalltips.h"

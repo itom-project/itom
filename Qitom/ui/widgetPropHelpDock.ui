@@ -23,16 +23,23 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QCheckBox" name="checkFilters">
+         <widget class="QCheckBox" name="checkModules">
           <property name="text">
-           <string>Show Filters</string>
+           <string>Show Modules and Packages</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="checkModules">
+         <widget class="QCheckBox" name="checkFilters">
           <property name="text">
-           <string>Show Modules and Packages</string>
+           <string>Show Algorithms</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkWidgets">
+          <property name="text">
+           <string>Show Widgets</string>
           </property>
          </widget>
         </item>
@@ -58,7 +65,7 @@
         <item>
          <widget class="QCheckBox" name="checkPlaintext">
           <property name="text">
-           <string>Display plaintext instead of html</string>
+           <string>Display Plaintext (html-source)</string>
           </property>
          </widget>
         </item>

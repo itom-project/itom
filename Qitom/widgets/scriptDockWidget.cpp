@@ -30,6 +30,7 @@
 #include <qfileinfo.h>
 #include <qdebug.h>
 #include <qboxlayout.h>
+#include <qmessagebox.h>
 #include "../ui/dialogGoto.h"
 #include "../ui/dialogReplace.h"
 

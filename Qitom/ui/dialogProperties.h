@@ -30,6 +30,11 @@
 #include <qmap.h>
 #include <qtreewidget.h>
 #include <qstringlist.h>
+#include <qstackedwidget.h>
+#include <qsplitter.h>
+#include <qdialogbuttonbox.h>
+#include <qlayout.h>
+#include <qlabel.h>
 
 namespace ito
 {
