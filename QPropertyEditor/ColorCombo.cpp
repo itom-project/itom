@@ -28,6 +28,7 @@
 #include <qcolordialog.h>
 #include <qdebug.h>
 
+
 ColorCombo::ColorCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
 {    
     QStringList colorNames = QColor::colorNames();
@@ -48,7 +49,8 @@ ColorCombo::~ColorCombo()
 
 QColor ColorCombo::color() const
 {
-    return qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole));
+//    return qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole));
+    return itemData(currentIndex(), Qt::DecorationRole).value<QColor>();
 }
 
 void ColorCombo::setColor(QColor color)
@@ -87,6 +89,7 @@ void ColorCombo::currentChanged(int index)
     }
     else
     {
-        emit colorChanged( qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole)) );
+//        emit colorChanged( qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole)) );
+        emit colorChanged( itemData(currentIndex(), Qt::DecorationRole).value<QColor>() );
     }
 }

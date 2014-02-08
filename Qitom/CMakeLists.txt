@@ -13,19 +13,25 @@ OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
+
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
+cmake_policy(SET CMP0020 NEW)
+
 include("../ItomBuildMacros.cmake")  
 
-set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOMOC ON)
   # As moc files are generated in the binary dir, tell CMake
   # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #find_package(Qt4 REQUIRED)
+find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5UiTools REQUIRED)
+find_package(Qt5PrintSupport REQUIRED) 
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV REQUIRED COMPONENTS core)
@@ -38,7 +44,7 @@ find_package(HTMLHelp)
 find_package(LATEX QUIET) 
         
            
-#ADD_DEFINITIONS(${QT_DEFINITIONS})  
+ADD_DEFINITIONS(${QT_DEFINITIONS})  
 #qt5_use_modules(Widgets Declarative)
 #QT += widgets declarative
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -227,6 +233,7 @@ set(qitom_HEADERS
 
 
 #QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
+QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
 
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
@@ -407,7 +414,8 @@ ADD_SOURCE_GROUP(widgets)
 
 if(MSVC)
     # Qt disables the native wchar_t type, do it too to avoid linking issues
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
+    # well that changed in qt5 so go back to built-in type
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t+" )
 endif(MSVC)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
@@ -487,6 +495,7 @@ set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
+qt5_use_modules(${target_name} Core Designer UiTools PrintSupport Widgets Sql Network Svg Xml Opengl Help)
 
 SET( WINICONRES "" )
 
@@ -521,10 +530,11 @@ ELSE(BUILD_WITH_PCL)
     SET(POINTCLOUD_LIBRARIES "")
 ENDIF(BUILD_WITH_PCL)
 
+#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
-#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${Qt5Widgets_LIBRARIES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
  
 BUILD_PARALLEL_LINUX(${target_name})
 

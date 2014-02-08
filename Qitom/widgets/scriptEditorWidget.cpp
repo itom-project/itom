@@ -30,7 +30,7 @@
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
 
-#include <qsciprinter.h>
+#include <Qsci/qsciprinter.h>
 #include <qmessagebox.h>
 #include <QtPrintSupport/qprintpreviewdialog.h>
 
