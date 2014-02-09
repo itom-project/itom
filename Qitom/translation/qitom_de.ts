@@ -54,7 +54,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+782"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+807"/>
         <source>script execution</source>
         <translation>Skript wird ausgeführt</translation>
     </message>
@@ -740,7 +740,7 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <location line="+4"/>
         <source>error while getting module list</source>
-        <translation>Fehler beim Erstellen der Modulliste</translation>
+        <translation>Fehler beim Lesen der Modulliste</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -991,20 +991,22 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+296"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+718"/>
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
     </message>
     <message>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="-26"/>
         <source>Database %s could not be opened</source>
-        <translation type="obsolete">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
+        <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
     </message>
     <message>
+        <location line="+6"/>
         <source>Database %s could not be found</source>
-        <translation type="obsolete">Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
+        <translation type="unfinished">Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+34"/>
+        <location line="+57"/>
         <source>No help database available</source>
         <translation>Keine Hilfedatenbank verfügbar</translation>
     </message>
@@ -1013,26 +1015,80 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Parser: Keine Hilfe verfügbar</translation>
     </message>
     <message>
+        <location line="-528"/>
+        <source>Template Error: Returns section is only defined by either the start or end tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Template Error: End tag of returns section comes before start tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Template Error: End tag of parameters section comes before start tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Unknown filter name &apos;%1&apos;</source>
+        <translation type="unfinished">Unbekannter Filtername &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Unknown widget name &apos;%1&apos;</source>
+        <translation type="unfinished">Unbekannter Widget-Name &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Unknown algorithm plugin with name &apos;%1&apos;</source>
+        <translation type="unfinished">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>unknown filter type</source>
+        <translation type="unfinished">Unbekannter Filtertyp</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Template Error: %s section is only defined by either the start or end tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Template Error: End tag of %s section comes before start tag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+689"/>
         <source>invalid Link</source>
-        <translation type="obsolete">ungültiger Link</translation>
+        <translation type="unfinished">ungültiger Link</translation>
     </message>
     <message>
+        <location line="+4"/>
         <source>unknown protocol</source>
-        <translation type="obsolete">Unbekanntes Protokoll</translation>
+        <translation type="unfinished">Unbekanntes Protokoll</translation>
     </message>
     <message>
+        <location line="+2"/>
         <source>The protocol of the link is unknown. </source>
-        <translation type="obsolete">Das Protokoll des Links ist unbekannt. </translation>
+        <translation type="unfinished">Das Protokoll des Links ist unbekannt. </translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Do you want to try with the external browser?</source>
-        <translation type="obsolete">Soll versucht werden den Link mit dem Browser zu öffnen?</translation>
+        <translation type="unfinished">Soll versucht werden den Link mit dem Browser zu öffnen?</translation>
     </message>
 </context>
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+121"/>
+        <location filename="../mainApplication.cpp" line="+120"/>
         <location line="+2"/>
         <source>Version %1
 %2</source>
@@ -1049,7 +1105,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+70"/>
         <source>load translations...</source>
         <translation>Übersetzungen wird geladen...</translation>
     </message>
@@ -1352,7 +1408,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="+50"/>
+        <location filename="../../common/helperCommon.cpp" line="+47"/>
         <source>parameter vector is not initialized</source>
         <translation>Parametervektor wurde nicht inizialisiert</translation>
     </message>
@@ -1372,7 +1428,7 @@ p, li { white-space: pre-wrap; }
         <translation>Ausgabeparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+30"/>
         <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
         <translation>Der Parameter &apos;%1&apos; wurde nicht im übergebenen Parametervektor gefunden</translation>
@@ -1514,22 +1570,22 @@ p, li { white-space: pre-wrap; }
         <location line="-49"/>
         <location line="+13"/>
         <source>value out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Value out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+118"/>
         <source>Index value is out of range [0, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+213"/>
         <source>index is ouf of range [0, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation>Index liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+68"/>
@@ -1608,23 +1664,23 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+141"/>
         <source>Pluginname undefined. No xml file loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+241"/>
-        <location line="+210"/>
+        <location line="+245"/>
+        <location line="+216"/>
         <source>Can&apos;t open xml file</source>
         <translation>XML-Datei konnte nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+72"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation>%1
@@ -1693,7 +1749,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+295"/>
+        <location line="+294"/>
         <source>Save object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1708,13 +1764,13 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location line="+95"/>
         <location line="+29"/>
         <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+36"/>
         <source>Load object failed: Number of dims smaller 2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1734,7 +1790,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Load object failed: dimY not specified</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1749,7 +1805,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+45"/>
         <source>Load object failed: file corrupted at metaData (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1769,7 +1825,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+34"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1794,7 +1850,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+35"/>
         <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1804,7 +1860,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
         <source>Load object failed: tags Space invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1820,7 +1876,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+39"/>
         <source>Load object failed: dataSpace missing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1855,7 +1911,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+25"/>
         <source>Load object failed: file not readable or does not exists</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1885,7 +1941,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+28"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1917,19 +1973,19 @@ Type conflict for %1</source>
         <location line="+22"/>
         <location line="+48"/>
         <source>Filter name empty</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filtername ist leer</translation>
     </message>
     <message>
         <location line="-84"/>
         <source>Filter not found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+22"/>
         <location line="+26"/>
         <location line="+48"/>
         <source>Filter &apos;%s&apos; not found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter &apos;%s&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-56"/>
@@ -1953,7 +2009,7 @@ Type conflict for %1</source>
     <message>
         <location line="-36"/>
         <source>No plugin name specified.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kein Plugin-Name vergeben.</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -1983,7 +2039,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../python/pythonPlugins.cpp" line="+562"/>
         <source>timeout while getting name parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameternamens</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -2003,12 +2059,12 @@ Type conflict for %1</source>
     <message>
         <location line="+24"/>
         <source>timeout while calling specific function in plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
     </message>
     <message>
         <location line="+125"/>
         <source>timeout while getting parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
     <message>
         <location line="+324"/>
@@ -2018,32 +2074,32 @@ Type conflict for %1</source>
     <message>
         <location line="+454"/>
         <source>timeout while calibration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung bei der Kalibrierung</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>timeout while setting origin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Setzen auf den Nullpunkt</translation>
     </message>
     <message>
         <location line="+85"/>
         <source>timeout while getting Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Status</translation>
     </message>
     <message>
         <location line="+120"/>
         <source>timeout while getting position values</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Positionswerte</translation>
     </message>
     <message>
         <location line="+257"/>
         <source>timeout while setting absolute position</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim setzen der absoluten Position</translation>
     </message>
     <message>
         <location line="+72"/>
         <source>timeout while setting relative position</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Setzten der relativen Position</translation>
     </message>
     <message>
         <location line="+51"/>
@@ -2053,7 +2109,7 @@ Type conflict for %1</source>
     <message>
         <location line="+890"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Funktion &apos;copyVal&apos; wurde nur für ADDA-Wandler und Grabber implementiert</translation>
     </message>
     <message>
         <location line="+497"/>
@@ -2068,52 +2124,52 @@ Type conflict for %1</source>
     <message>
         <location filename="../python/pythonUi.cpp" line="+2836"/>
         <source>no widget name specified</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>no addin-manager found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>the first parameter must contain the widget name as string</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erste Parameter muss einen String mit dem Widget-Name enthalten</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
     </message>
     <message>
         <location filename="../organizer/helpSystem.cpp" line="+191"/>
         <source>file could not be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Load XML file failed: file seems corrupt</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Datei scheint defekt zu sein</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Load XML file failed:  wrong xml version</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falsche XML-Version</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Load XML file failed: wrong document encoding</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Load XML file failed: could not intepret checksum content as uint</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Checksummenfehler</translation>
     </message>
     <message>
         <location line="+74"/>
@@ -2128,20 +2184,24 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+16"/>
+        <location line="+19"/>
         <source>Build from a clean version.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4"/>
-        <source>Warning: The version contains locally changed and uncomitted code!
-</source>
+        <location line="-6"/>
+        <source>The version contains locally changed code! </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>This version of itom not under version control (no GIT or SVN)!
+        <location line="+1"/>
+        <source>The version contains unversioned files (e.g. from pyCache-files)!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>This version of itom is not under version control (no GIT or SVN)!
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2279,9 +2339,34 @@ Type conflict for %1</source>
         <translation type="unfinished">Kanal ist bereits aktualisiert</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+260"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+261"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
+    </message>
+    <message>
+        <location line="+127"/>
+        <source>timeout while loading plugin widget</source>
+        <translation type="unfinished">Zeitüberschreitung beim Laden der Plugin-Widgets</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>error retrieving widget pointer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>error closing dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>timeout showing dialog</source>
+        <translation type="unfinished">Zeitüberschreitung beim Anzeigen des Dialogs</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>UI-Organizer is not available!</source>
+        <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
         <location filename="../../plot/AbstractDObjFigure.h" line="+66"/>
@@ -2315,7 +2400,7 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+172"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+176"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -2445,12 +2530,12 @@ Type conflict for %1</source>
     <message>
         <location line="+659"/>
         <source>no toolbox available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>plugin not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugin ist nicht verfügbar</translation>
     </message>
     <message>
         <source>no dock widget available</source>
@@ -2459,6 +2544,49 @@ Type conflict for %1</source>
     <message>
         <source>addin not available</source>
         <translation type="obsolete">AddIn ist nicht verfügbar</translation>
+    </message>
+    <message>
+        <location filename="../../common/helperActuator.cpp" line="+81"/>
+        <location filename="../../common/helperGrabber.cpp" line="+78"/>
+        <location line="+298"/>
+        <location line="+20"/>
+        <location line="+20"/>
+        <source>timeout while getting numaxis parameter</source>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des &apos;numaxis&apos;-Parameters</translation>
+    </message>
+    <message>
+        <location line="+54"/>
+        <source>Motor not correctly initialized</source>
+        <translation type="unfinished">Der Motor wurde nicht korrekt inizialisiert</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <location line="+179"/>
+        <location filename="../../common/helperGrabber.cpp" line="-271"/>
+        <source>Timeout while Waiting for Semaphore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-172"/>
+        <source>Semaphore contained error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <location line="+38"/>
+        <source>Error during setPosRel: Vectors differ in size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+96"/>
+        <location filename="../../common/helperGrabber.cpp" line="-5"/>
+        <source>Semaphore not correctly initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/helperGrabber.cpp" line="-22"/>
+        <source>Camera not correctly initialized</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2697,11 +2825,6 @@ Type conflict for %1</source>
     </message>
     <message>
         <location/>
-        <source>reg expr</source>
-        <translation>Reg. Ausdr.</translation>
-    </message>
-    <message>
-        <location/>
         <source>whole word</source>
         <translation>Ganzes Wort</translation>
     </message>
@@ -2714,6 +2837,11 @@ Type conflict for %1</source>
         <location/>
         <source>wrap around</source>
         <translation>Vom Ende zum Anfang</translation>
+    </message>
+    <message>
+        <location/>
+        <source>reg. expr.</source>
+        <translation>Reg. Ausdr.</translation>
     </message>
 </context>
 <context>
@@ -2752,9 +2880,8 @@ Type conflict for %1</source>
         <translation>Anzahl zu speichernde Befehle</translation>
     </message>
     <message>
-        <location/>
         <source>show time stamp</source>
-        <translation>Uhrzeit anzeigen</translation>
+        <translation type="obsolete">Uhrzeit anzeigen</translation>
     </message>
     <message>
         <location/>
@@ -2891,7 +3018,7 @@ Type conflict for %1</source>
         <translation>[existiert nicht]</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+93"/>
         <source>load python api file</source>
         <translation>Pyhton API-Dateien laden</translation>
     </message>
@@ -3166,7 +3293,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>Overall font size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Generelle Schriftgröße:</translation>
     </message>
 </context>
 <context>
@@ -3197,7 +3324,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../ui/widgetPropGeneralApplication.ui"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
@@ -3207,7 +3334,7 @@ Type conflict for %1</source>
     <message>
         <location/>
         <source>show message before closing the application</source>
-        <translation type="unfinished">Vor dem Schließen von itom fragen</translation>
+        <translation>Vor dem Schließen von itom fragen</translation>
     </message>
 </context>
 <context>
@@ -3266,9 +3393,23 @@ Type conflict for %1</source>
         <translation>Klartext statt HTML anzeigen</translation>
     </message>
     <message>
-        <location/>
         <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are loaded.</source>
-        <translation>Nach Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Je nach Anzahl der zu ladenden Datenbanken kann dies einige Sekunden benötigen.</translation>
+        <translation type="obsolete">Nach Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Je nach Anzahl der zu ladenden Datenbanken kann dies einige Sekunden benötigen.</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show Filters</source>
+        <translation>Filter anzeigen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show Modules and Packages</source>
+        <translation>Module und Packages anzeigen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many databases are selected.</source>
+        <translation>Nach dem Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Abhängig von der Anzahl der gewählten Datenbanken kann dies einige Sekunden in Anspruch nehmen.</translation>
     </message>
 </context>
 <context>
@@ -3332,6 +3473,11 @@ Type conflict for %1</source>
         <location line="+0"/>
         <source>Locals</source>
         <translation>Lokal</translation>
+    </message>
+    <message>
+        <location line="+238"/>
+        <source>timeout while asking python for detailed information</source>
+        <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>
 </context>
 <context>
@@ -3592,14 +3738,14 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="+114"/>
+        <location filename="../../plot/AbstractDObjFigure.cpp" line="+115"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Funktion &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+123"/>
         <source>Figure does not contain an input slot for live sources</source>
-        <translation>Grafik enthält keinen Input-Slot für Livequellen</translation>
+        <translation>Abbildung enthält keinen Input-Slot für Livequellen</translation>
     </message>
 </context>
 <context>
@@ -3645,7 +3791,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../../plot/AbstractFigure.cpp" line="-146"/>
         <source>Properties</source>
-        <translation type="unfinished">Optionen</translation>
+        <translation>Eigenschaften</translation>
     </message>
 </context>
 <context>
@@ -3691,19 +3837,19 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="+986"/>
+        <location filename="../../common/addInInterface.h" line="+997"/>
         <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
+        <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished">Nicht-Inizialisierte Vektoren bei optionalen Parametern!</translation>
+        <translation>Nicht inizialisierte Vektoren bei optionalen Parametern!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished">Nicht-Inizialisierte Vektoren bei Rückgabeparametern!</translation>
+        <translation>Nicht inizialisierte Vektoren bei Rückgabeparametern!</translation>
     </message>
 </context>
 <context>
@@ -3711,7 +3857,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../../common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation type="unfinished">Die Funktion wird in diesem Plugin nicht benutzt</translation>
+        <translation type="unfinished">Diese Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -3749,7 +3895,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+12"/>
         <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Timer konnte nicht gesetzt werden</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -3774,17 +3920,17 @@ Meldung: &apos;%1&apos;</translation>
         <location filename="../../common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Slot &apos;setSource&apos; des Live-Quellenknotens konnte nicht aktiviert werden</translation>
     </message>
     <message>
         <location line="+118"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Das Objekt hat mehr als eine Ebene. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
     </message>
 </context>
 <context>
@@ -3964,7 +4110,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+111"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -3978,16 +4124,21 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
-        <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget vererbtes QDesignerCustomWidgetInterface</translation>
+        <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget abgeleitetes QDesignerCustomWidgetInterface</translation>
     </message>
     <message>
         <source>DesignerWidget in file &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation type="obsolete">Designer-Widget in Datei &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="-8"/>
+        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbtractItomDesignerPlugin&apos;</source>
+        <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist ein Qt Designer-Widget, aber kein von &apos;ito.AbtractItomDesignerPlugin&apos; abgeleitetes itom-Plot-Widget</translation>
+    </message>
+    <message>
+        <location line="+44"/>
         <location line="+5"/>
         <location line="+5"/>
         <source>Figure &apos;%s&apos; does not correspond to the minimum requirements</source>
@@ -4301,12 +4452,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-49"/>
         <source>UserID is empty! Cannot create user!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzer-ID ist leer! Der Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>UserID already exists! Cannot create user!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -4323,42 +4474,42 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-82"/>
         <source>No or invalid group entered, setting to developer!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde keine oder eine ungültige Gruppe ausgewählt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>No user name entered, creating user with empty name!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde kein Benutzername eingegeben. Das Konto wurde mit einem leeren Namen erstellt!</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Standard itom ini file not found, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Standard-Ini-Datei von itom wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Could not copy standard itom ini file!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>User ID not found, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzer-ID wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>User ID and ini file name mismatch, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Ini-Datei wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>User name and ini file user name mismatch, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Benutzername und der Name in der Ini-Datei stimmen nicht überein! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Cannot delete current user, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der aktuelle Benutzer kann nicht gelöscht werden! Der Vorgang wurde abgebrochen!</translation>
     </message>
 </context>
 <context>
@@ -4366,12 +4517,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/figureWidget.cpp" line="+124"/>
         <source>subplot %1 (empty)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Subplot &apos;%1&apos; (leer)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>&amp;Subplots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Subplots</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -4382,28 +4533,28 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+68"/>
         <location line="+116"/>
         <source>designer widget of class &apos;%s&apos; cannot plot objects of type dataObject</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Designer-Widget der Klasse &apos;%s&apos; kann keine Objekte vom Typ DataObject anzeigen</translation>
     </message>
     <message>
         <location line="-100"/>
         <location line="+19"/>
         <source>designerWidgetOrganizer is not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>camera is not available any more</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Kamera ist nicht länger verfügbar</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>areaRow out of range [0,%i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;areaRow&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>arealCol out of range [0,%i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;areaCol&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+55"/>
@@ -4413,27 +4564,27 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+22"/>
         <source>could not create designer widget of class &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es kann kein Designer-Widget der Klasse &apos;%s&apos; erstellt werden</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>designerWidgetOrganizer or uiOrganizer is not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; oder &apos;uiOrganizer&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>addInBase pointer is NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Pointer auf &apos;addInBase&apos; ist NULL</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>timeout while getting parameter &apos;%s&apos; from plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameters &apos;%s&apos; vom Plugin</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>parameter &apos;%s&apos; is not defined in plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parameter &apos;%s&apos; wurde im Plugin nicht definiert</translation>
     </message>
 </context>
 <context>
@@ -4662,12 +4813,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../helper/IOHelper.cpp" line="+110"/>
-        <location line="+698"/>
+        <location line="+701"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-698"/>
+        <location line="-701"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4694,22 +4845,22 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Speichern der markierten Variablen als...</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <location line="+61"/>
-        <location line="+114"/>
+        <location line="+115"/>
         <source>python engine not available</source>
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-170"/>
-        <location line="+175"/>
+        <location line="-171"/>
+        <location line="+176"/>
         <source>variables cannot be imported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location line="-165"/>
+        <location line="-166"/>
         <source>timeout while getting value from workspace</source>
-        <translation type="unfinished">Zeitüberschreitung beim Holen der Werte aus dem Arbeitsbereich</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Werte aus dem Arbeitsbereich</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -4726,17 +4877,17 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+30"/>
-        <location line="+114"/>
+        <location line="+115"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="-102"/>
+        <location line="-103"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>timeout while pickling variables</source>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Pickeln&quot; von Variablen</translation>
     </message>
@@ -4747,12 +4898,12 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+113"/>
+        <location line="+114"/>
         <source>suffix must be *.idc or *.mat</source>
         <translation type="unfinished">Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location line="-88"/>
+        <location line="-89"/>
         <source>Import data</source>
         <translation type="unfinished">Daten importieren</translation>
     </message>
@@ -4762,7 +4913,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei nicht gefunden</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+40"/>
         <source>timeout while unpickling variables</source>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
     </message>
@@ -4789,7 +4940,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+209"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -4804,25 +4955,25 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>A timeout occurred while content of loaded file has been sent to python workspace</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Senden des Dateiinhalts der geladenen Datei an Python ist eine Zeitüberschreitung aufgetreten</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>An error occured while importing the loaded file into the python workspace.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Import der geladenen Datei in den Python-Workspace ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>A warning occured while importing the loaded file into the python workspace.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Import der geladenen Datei in den Python-Workspace ist eine Warnung aufgetreten.</translation>
     </message>
     <message>
         <location line="-4"/>
         <source>Error while sending values to python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-678"/>
+        <location line="-681"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -4832,44 +4983,44 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+599"/>
+        <location line="+602"/>
         <source>Warning while sending values to python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>AlgoInterfaceValidator not available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;AlgoInterfaceValidator&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>AddInManager or PythonEngine not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;AddInManager&apos; oder &apos;PythonEngine&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>There is no plugin interface able to save the requested file type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es gibt keine Plugin-Schnittstelle um diesen Dateityp zu speichern</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Multiple plugins provide methods to save the file of type &apos;%1&apos;. Please choose one.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diverse Plugins unterstützen Methoden um Dateien des Typs &apos;%1&apos; zu speichern. Bitte eines wählen.</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>algorithm interface not supported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Algorithmus-Schnittstelle wird nicht unterstützt</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>error while getting mand and out parameters from algorithm interface</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Lesen von Ausgabeparametern der Algorithmus-Schnittstelle</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>AlgoInterfaceValidator not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;AlgoInterfaceValidato&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -4920,7 +5071,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::LastCommandDockWidget</name>
     <message>
-        <location filename="../widgets/lastCommandDockWidget.cpp" line="+186"/>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+185"/>
         <source>clear list</source>
         <translation>Liste löschen</translation>
     </message>
@@ -5053,7 +5204,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+4"/>
         <source>Script Reference</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skriptreferenz</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5268,7 +5419,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ParamInputParser</name>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="+52"/>
+        <location filename="../ui/paramInputParser.cpp" line="+54"/>
         <location line="+90"/>
         <location line="+72"/>
         <source>Canvas widget does not exist any more</source>
@@ -5326,7 +5477,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+113"/>
         <source>%1 [Wildcard]</source>
         <translation type="unfinished">%1 [Maskenzeichen]</translation>
     </message>
@@ -5336,23 +5487,23 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">%1 [Regulärer Ausdruck]</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>[None]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <location line="+22"/>
+        <location line="+37"/>
+        <location line="+23"/>
         <source>QT error: Spin box widget could not be found</source>
         <translation type="unfinished">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>QT error: Double spin box widget could not be found</source>
         <translation type="unfinished">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>QT error: String input widget could not be found</source>
         <translation type="unfinished">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
     </message>
@@ -5437,7 +5588,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+2"/>
         <source>Widget</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+147"/>
@@ -5466,7 +5617,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+207"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+212"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -5496,7 +5647,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+510"/>
+        <location line="+513"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -6078,7 +6229,17 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+83"/>
+        <source>A widget inherited from QDialog cannot be docked into the main window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Main window not available for docking the user interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+126"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6231,7 +6392,38 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+315"/>
+        <location line="+59"/>
+        <location line="+188"/>
+        <source>figHandle %i is not handle for a figure window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-242"/>
+        <location line="+59"/>
+        <location line="+154"/>
+        <location line="+34"/>
+        <location line="+36"/>
+        <source>figHandle %i not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-172"/>
+        <source>figure window is not available any more</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>handle &apos;%i&apos; is no figure.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>handle &apos;0&apos; cannot be assigned.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Figure</source>
         <translation>Abbildung</translation>
     </message>
@@ -6241,7 +6433,13 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+5"/>
+        <location line="+70"/>
+        <source>figHandle %i is not a handle for a figure window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
         <location line="+37"/>
         <location line="+37"/>
         <source>The desired widget has no signals/slots defined that enable the pick points interaction</source>
@@ -6274,7 +6472,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::WidgetPropFigurePlugins</name>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="+72"/>
+        <location filename="../ui/widgetPropFigurePlugins.cpp" line="+73"/>
         <source>class name</source>
         <translation type="unfinished">Klassenname</translation>
     </message>
@@ -6304,133 +6502,133 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Plugin-Datei</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>DataObject - Line</source>
         <translation type="unfinished">Datenobjekt - Linie</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>DataObject - Plane</source>
         <translation type="unfinished">Datenobjekt - Fläche</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>DataObject - Plane Stack</source>
         <translation type="unfinished">Datenobjekt - Fläschenstapel</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Point Cloud</source>
         <translation type="unfinished">Punktewolke</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>PolygonMesh</source>
         <translation type="unfinished">Polygon</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+8"/>
         <source>Gray8</source>
         <translation type="unfinished">Grau8</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Gray16</source>
         <translation type="unfinished">Grau16</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Gray32</source>
         <translation type="unfinished">Grau32</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>RGB32</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>ARGB32</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>CMYK32</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Float32</source>
         <translation type="unfinished">Fließkomma32</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Float64</source>
         <translation type="unfinished">Fließkomma64</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Complex</source>
         <translation type="unfinished">Komplex</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+8"/>
         <source>Static</source>
         <translation type="unfinished">Statisch</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Live</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Cartesian</source>
         <translation type="unfinished">
 Katesisch</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Polar</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Cylindrical</source>
         <translation type="unfinished">Zylindrisch</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>OpenGl</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Cuda</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>X3D</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+8"/>
         <source>Line Plot</source>
         <translation type="unfinished">Linien-Plot</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Image Plot</source>
         <translation type="unfinished">Bild-Plot</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Isometric Plot</source>
         <translation type="unfinished">Isometrischer Plot</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>3D Plot</source>
         <translation></translation>
     </message>
@@ -6480,7 +6678,7 @@ Katesisch</translation>
     <message>
         <location line="+11"/>
         <source>Workspace</source>
-        <translation type="unfinished"></translation>
+        <translation>Arbeitsbereich</translation>
     </message>
     <message>
         <source>script editor</source>
@@ -6588,7 +6786,7 @@ Katesisch</translation>
     <message>
         <location/>
         <source>Main Application Features</source>
-        <translation type="unfinished">Hauptanwendung</translation>
+        <translation>Hauptanwendung</translation>
     </message>
     <message>
         <source>Script Editor</source>
@@ -6599,24 +6797,24 @@ Katesisch</translation>
         <source>Developer Tools
 (Workspace, Breakpoints,
  Ui-Designer, Call Stack)</source>
-        <translation type="unfinished">Entwickler-Tools
+        <translation>Entwickler-Tools
 (Workspace, Haltepunkte,
  Ui-Designer, Call Stack)</translation>
     </message>
     <message>
         <location/>
         <source>Edit Properties</source>
-        <translation type="unfinished">Eigentschaftseditor</translation>
+        <translation>Editor-Eigentschaften</translation>
     </message>
     <message>
         <location/>
         <source>File System Widget</source>
-        <translation type="unfinished">Dateisystem</translation>
+        <translation>Dateisystem</translation>
     </message>
     <message>
         <location/>
         <source>Addin Manager Widget</source>
-        <translation type="unfinished">Addin-Manager</translation>
+        <translation>AddIn-Manager</translation>
     </message>
     <message>
         <location/>
@@ -6666,7 +6864,7 @@ Katesisch</translation>
     <message>
         <location/>
         <source>Reset All In Group</source>
-        <translation type="unfinished">Gruppe zurücksetzen</translation>
+        <translation>Gruppe zurücksetzen</translation>
     </message>
     <message>
         <location/>
@@ -6696,7 +6894,7 @@ Katesisch</translation>
     <message>
         <location/>
         <source>User Management</source>
-        <translation type="unfinished">Benutzerverwaltung</translation>
+        <translation>Benutzerverwaltung</translation>
     </message>
 </context>
 </TS>

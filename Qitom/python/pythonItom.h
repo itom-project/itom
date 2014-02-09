@@ -125,6 +125,10 @@ public:
 
     static PyObject* setApplicationCursor(PyObject* pSelf, PyObject* pArgs);
 
+    static PyObject* userCheckIsAdmin(PyObject* pSelf);
+    static PyObject* userCheckIsDeveloper(PyObject* pSelf);
+    static PyObject* userCheckIsUser(PyObject* pSelf);
+    static PyObject* userGetUserInfo(PyObject* pSelf);
 
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
