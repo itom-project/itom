@@ -77,13 +77,15 @@ namespace ito
     void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
     { 
         m_apiFunctionsBasePtr = apiFunctions;
-        this->importItomApi(apiFunctions);
+        this->importItomApi(apiFunctions); //this is the virtual function call in order to also propagate the api pointer to the plugin dll
+        ito::ITOM_API_FUNCS = apiFunctions; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
     void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph) 
     { 
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
-        this->importItomApiGraph(apiFunctionsGraph);
+        this->importItomApiGraph(apiFunctionsGraph); //this is the virtual function call in order to also propagate the api pointer to the plugin dll
+        ito::ITOM_API_FUNCS_GRAPH = apiFunctionsGraph; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
     bool AddInInterfaceBase::event(QEvent *e)

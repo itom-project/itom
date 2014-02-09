@@ -74,6 +74,7 @@ void ByteArray::append(const char *str)
                 if (d->m_ref == 0) //this is the only user
                 {
                     d = static_cast<Data*>(realloc(d, sizeof(Data) + newlen + oldlen));
+                    d->m_pData = d->m_buffer;
                     memcpy(d->m_buffer + oldlen * sizeof(char), str, newlen+1);
                 }
                 else

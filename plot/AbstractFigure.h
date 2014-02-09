@@ -44,6 +44,16 @@ class QPropertyEditorWidget; //forward declaration
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
+//place this macro in the header file of the designer plugin widget class right before the first section (e.g. public:)
+#define DESIGNER_PLUGIN_ITOM_API \
+            protected: \
+                void importItomApi(void** apiPtr) \
+                {ito::ITOM_API_FUNCS = apiPtr;} \
+                void importItomApiGraph(void** apiPtr) \
+                { ito::ITOM_API_FUNCS_GRAPH = apiPtr;} \
+            public: \
+                //.
+
 namespace ito {
 
 class AbstractFigure;
@@ -103,6 +113,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
+        virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
+        virtual void importItomApiGraph(void** apiPtr) = 0;
 
         void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);

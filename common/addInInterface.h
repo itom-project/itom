@@ -51,17 +51,14 @@
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 //write this macro right after Q_INTERFACE(...) in your interface class definition
-#define ITOM_API protected: \
-                     void importItomApi(void** apiPtr); void importItomApiGraph(void** apiPtr); \
-                   public: \
-                     //.
-
-//use the following macro instead of Q_EXPORT_PLUGIN2. This macro also introduces the api-pointers of the itom api interface
-#define Q_EXPORT_PLUGIN2_ITOM(PLUGIN, PLUGINCLASS) Q_EXPORT_PLUGIN2(PLUGIN, PLUGINCLASS) \
-                                                    void PLUGINCLASS##::importItomApi(void** apiPtr) \
-                                                    {ito::ITOM_API_FUNCS = apiPtr;} \
-                                                    void PLUGINCLASS##::importItomApiGraph(void** apiPtr) \
-                                                    { ito::ITOM_API_FUNCS_GRAPH = apiPtr;}
+#define PLUGIN_ITOM_API \
+            protected: \
+                void importItomApi(void** apiPtr) \
+                {ito::ITOM_API_FUNCS = apiPtr;} \
+                void importItomApiGraph(void** apiPtr) \
+                { ito::ITOM_API_FUNCS_GRAPH = apiPtr;} \
+            public: \
+                //.
 
 namespace ito
 {
@@ -1062,10 +1059,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.21",//version until 2013-10-15 (outdated: getSize(..) and getTotalSize(..) return int now and -1 if error. Consistency to documented behaviour)
     "ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
     "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
+    "ito.AddIn.InterfaceBase/1.1.24",//version until 2014-02-09 (outdated: restructuring to itomCommonLib and itomCommonQtLib for a better binary compatibility)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.24";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.2.0";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

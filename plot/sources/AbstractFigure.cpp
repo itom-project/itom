@@ -442,15 +442,17 @@ void AbstractFigure::hideToolBar(const QString &key)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
 { 
-    //importItomPlotApi(apiFunctionGraphBasePtr);
+    this->importItomApiGraph(apiFunctionGraphBasePtr);
     m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr; 
+    ito::ITOM_API_FUNCS_GRAPH = apiFunctionGraphBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
 { 
-    //importItomApi(apiFunctionBasePtr);
+    this->importItomApi(apiFunctionBasePtr);
     m_apiFunctionsBasePtr = apiFunctionBasePtr; 
+    ito::ITOM_API_FUNCS = apiFunctionBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
