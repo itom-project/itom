@@ -54,6 +54,7 @@ RetVal & RetVal::operator += (const RetVal &rhs)
     {
         m_retCode = rhs.m_retCode;
         m_retMessage = rhs.m_retMessage;
+        m_retValue = rhs.m_retValue;
     }
     return *this;
 }
