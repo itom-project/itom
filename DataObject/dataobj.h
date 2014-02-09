@@ -231,6 +231,34 @@ class DataObjectTags;
 class DataObjectTagType;
 class DataObjectTagsPrivate;
 
+
+//! method which returns the value of enumeration ito::tDataType, which corresponds to the type of the given pointer parameter.
+/*!
+    If the parameter type cannot be transformed into a value of ito::tDataType, an exception is thrown.
+
+    \param any pointer, whose type should be transformed
+    \return ito::tDataType
+    \throws cv::Exception if the input data type is unknown
+    \sa getDataType2
+*/
+template<typename _Tp> static inline ito::tDataType getDataType(const _Tp* /*src*/)
+{
+    cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+    return ito::tInt8;
+}
+
+template<> inline ito::tDataType getDataType(const uint8* /*src*/)      { return ito::tUInt8; }
+template<> inline ito::tDataType getDataType(const int8* /*src*/)       { return ito::tInt8; }
+template<> inline ito::tDataType getDataType(const uint16* /*src*/)     { return ito::tUInt16; }
+template<> inline ito::tDataType getDataType(const int16* /*src*/)      { return ito::tInt16; }
+template<> inline ito::tDataType getDataType(const uint32* /*src*/)     { return ito::tUInt32; }
+template<> inline ito::tDataType getDataType(const int32* /*src*/)      { return ito::tInt32; }
+template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return ito::tFloat32; }
+template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
+template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
+template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
+template<> inline ito::tDataType getDataType(const Rgba32* /*src*/) { return ito::tRGBA32; }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class Range
@@ -1594,7 +1622,7 @@ DataObject DATAOBJ_EXPORT imag(const DataObject &dObj);             /*!< calcula
 
 DataObject DATAOBJ_EXPORT makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
 
-//template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
+template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
 
 //RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos = NULL, int *maxPos = NULL);
 
@@ -1806,32 +1834,7 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
     return ito::tInt8;
 }
 
-//! method which returns the value of enumeration ito::tDataType, which corresponds to the type of the given pointer parameter.
-/*!
-    If the parameter type cannot be transformed into a value of ito::tDataType, an exception is thrown.
 
-    \param any pointer, whose type should be transformed
-    \return ito::tDataType
-    \throws cv::Exception if the input data type is unknown
-    \sa getDataType2
-*/
-template<typename _Tp> static inline ito::tDataType getDataType(const _Tp* /*src*/)
-{
-    cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
-    return ito::tInt8;
-}
-
-template<> inline ito::tDataType getDataType(const uint8* /*src*/)      { return ito::tUInt8; }
-template<> inline ito::tDataType getDataType(const int8* /*src*/)       { return ito::tInt8; }
-template<> inline ito::tDataType getDataType(const uint16* /*src*/)     { return ito::tUInt16; }
-template<> inline ito::tDataType getDataType(const int16* /*src*/)      { return ito::tInt16; }
-template<> inline ito::tDataType getDataType(const uint32* /*src*/)     { return ito::tUInt32; }
-template<> inline ito::tDataType getDataType(const int32* /*src*/)      { return ito::tInt32; }
-template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return ito::tFloat32; }
-template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
-template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
-template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
-template<> inline ito::tDataType getDataType(const Rgba32* /*src*/) { return ito::tRGBA32; }
 
 
 //! method which returns the value of enumeration ito::tDataType, which corresponds to the template parameter (must be a pointer).
