@@ -14,14 +14,14 @@ endif (BUILD_TARGET64)
 IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
   IF (${CMAKE_PATCH_VERSION} GREATER 11)
     MESSAGE (STATUS "CMake > 2.8.11")
-    SET(CMAKE_VERSION_GT_020811 TRUE) #CMAKE <= 2.8.10 (changes in FindQt4)
+    SET(CMAKE_VERSION_GT_020811 "TRUE") #CMAKE <= 2.8.10 (changes in FindQt4)
   ELSE (${CMAKE_PATCH_VERSION} GREATER 11)
     MESSAGE (STATUS "CMake 2.8.0 - 2.8.11")
-    SET(CMAKE_VERSION_GT_020811 FALSE) #CMAKE <= 2.8.10 (changes in FindQt4)
+    SET(CMAKE_VERSION_GT_020811 "FALSE") #CMAKE <= 2.8.10 (changes in FindQt4)
   ENDIF (${CMAKE_PATCH_VERSION} GREATER 11)
 ELSE (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
   MESSAGE (STATUS "CMake < 2.8")
-  SET(CMAKE_VERSION_GT_020811 FALSE) #CMAKE <= 2.8.10 (changes in FindQt4)
+  SET(CMAKE_VERSION_GT_020811 "FALSE") #CMAKE <= 2.8.10 (changes in FindQt4)
 ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
 
 
@@ -83,11 +83,11 @@ ENDMACRO (BUILD_PARALLEL_LINUX)
 # This macro is copied and adapted from Qt4Macros.cmake (Copyright Kitware, Inc.).
 MACRO (QT4_WRAP_UI_ITOM outfiles)
     
-    IF(${CMAKE_VERSION_GT_020811})
+    IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(ui_files ui_options ui_target ${ARGN})
-    ELSE(${CMAKE_VERSION_GT_020811})
+    ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
-    ENDIF(${CMAKE_VERSION_GT_020811})
+    ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
 
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 
@@ -109,24 +109,29 @@ ENDMACRO (QT4_WRAP_UI_ITOM)
 MACRO (QT4_WRAP_CPP_ITOM outfiles )
     # get include dirs
     QT4_GET_MOC_FLAGS(moc_flags)
-
-    IF(${CMAKE_VERSION_GT_020811})
+    
+    #message(FATAL "${CMAKE_VERSION_GT_020811}")
+    #IF(${CMAKE_VERSION_GT_020811} STREQUAL "TRUE")
+    #    message(FATAL " ja ja")
+    #ENDIF()
+    
+    IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(moc_files moc_options moc_target ${ARGN})
-    ELSE(${CMAKE_VERSION_GT_020811})
+    ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
-    ENDIF(${CMAKE_VERSION_GT_020811})
+    ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
 
     #MESSAGE(STATUS "${moc_files} QT4_WRAP_CPP_ITOM")
 
     foreach (it ${moc_files})
         GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
         QT4_MAKE_OUTPUT_FILE(${it} moc_ cxx outfile)
-
-        IF(${CMAKE_VERSION_GT_020811})
+        
+        IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
             QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}" "${moc_target}")
-        ELSE(${CMAKE_VERSION_GT_020811})
+        ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
             QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}")
-        ENDIF(${CMAKE_VERSION_GT_020811})
+        ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
 
         set(${outfiles} ${${outfiles}} ${outfile})
     endforeach()

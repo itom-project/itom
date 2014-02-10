@@ -11,13 +11,12 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
-
 if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
- 
+
 #set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
 #if(NOT CMAKE_SIZEOF_VOID_P)
 #   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
