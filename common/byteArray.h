@@ -85,9 +85,9 @@ class ITOMCOMMON_EXPORT ByteArray
 
         ByteArray &append(const ByteArray &str);
 
-        int length() const { if(d){ return strlen(d->m_pData); } return 0; }
+        int length() const { if(d){ return (int)strlen(d->m_pData); } return 0; }
 
-        int size() const { if(d){ return strlen(d->m_pData); } return 0; }
+        int size() const { if(d){ return (int)strlen(d->m_pData); } return 0; }
 
         bool empty() const { if(d) { return strlen(d->m_pData) == 0; } return true; }
 
