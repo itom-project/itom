@@ -47,8 +47,7 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     FIND_PATH(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
     get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
     
-    #set(ITOM_SDK_LIB_COMPONENTS dataobject pointcloud qpropertyeditor)
-        
+    
     if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x86")
     else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
@@ -61,16 +60,16 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
         SET(SDK_COMPILER "vc9")
     ELSEIF(MSVC8)
         SET(SDK_COMPILER "vc8")
+    ELSEIF(MSVC)
+        SET(SDK_COMPILER "vc${MSVC_VERSION}$")
     ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-	SET(SDK_COMPILER "gnucxx")
+    SET(SDK_COMPILER "gnucxx")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
     
     SET(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
-	#message(STATUS "ITOM_SDK_LIBSUFFIX ${ITOM_SDK_LIBSUFFIX} ${CMAKE_SIZEOF_VOID_P}")
-    
-    
+
     
     #Initiate the variable before the loop
     set(GLOBAL ITOM_SDK_LIBS "")

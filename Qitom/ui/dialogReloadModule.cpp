@@ -85,7 +85,7 @@ void DialogReloadModule::loadModules()
         }
         else if(locker.getSemaphore()->returnValue != retOk)
         {
-            if(locker.getSemaphore()->returnValue.errorMessage())
+            if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
                 QMessageBox::critical(this, tr("error while getting module list"), locker.getSemaphore()->returnValue.errorMessage());
             }
@@ -159,7 +159,7 @@ void DialogReloadModule::dialogAccepted()
         }
         else if(locker.getSemaphore()->returnValue != retOk)
         {
-            if(locker.getSemaphore()->returnValue.errorMessage())
+            if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
                 QMessageBox::critical(this, tr("error while reloading modules"), locker.getSemaphore()->returnValue.errorMessage());
             }

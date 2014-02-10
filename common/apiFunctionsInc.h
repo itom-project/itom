@@ -233,13 +233,13 @@ namespace ito
     /** \} */
 
 
-#if defined(ITOM_IMPORT_API)
-static int importItomApi(void** apiArray)
-{
-    ito::ITOM_API_FUNCS = apiArray;
-    return 0;
-}
-#endif
+//#if defined(ITOM_IMPORT_API)
+//static int importItomApi(void** apiArray)
+//{
+//    ito::ITOM_API_FUNCS = apiArray;
+//    return 0;
+//}
+//#endif
 
 };
 

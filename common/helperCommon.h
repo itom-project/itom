@@ -36,23 +36,25 @@
 #include <qobject.h>
 #include <qhash.h>
 
-
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 namespace ito
 {
-    ito::RetVal checkParamVector(QVector<ito::Param> *params);
-    ito::RetVal checkParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+    ito::RetVal ITOMCOMMONQT_EXPORT checkParamVector(QVector<ito::Param> *params);
+    ito::RetVal ITOMCOMMONQT_EXPORT checkParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-    ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval = NULL);
-    ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval = NULL);
-    QHash<QString, ito::Param*> createParamHashTable(QVector<ito::Param> *paramVec);
+    ITOMCOMMONQT_EXPORT ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval = NULL);
+    ITOMCOMMONQT_EXPORT ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval = NULL);
+    ITOMCOMMONQT_EXPORT QHash<QString, ito::Param*> createParamHashTable(QVector<ito::Param> *paramVec);
 
-    bool checkNumericParamRange(const ito::Param &param, double &value, bool *ok = NULL);
+    bool ITOMCOMMONQT_EXPORT checkNumericParamRange(const ito::Param &param, double &value, bool *ok = NULL);
 
-    ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
+    ito::RetVal ITOMCOMMONQT_EXPORT parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
-    ito::RetVal getParamValue(const QMap<QString, Param> *m_params, const QString &key, ito::Param &value, QString &pkey, int &index);
-    ito::RetVal setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase &value, QString &pkey, int &index);
+    ito::RetVal ITOMCOMMONQT_EXPORT getParamValue(const QMap<QString, Param> *m_params, const QString &key, ito::Param &value, QString &pkey, int &index);
+    ito::RetVal ITOMCOMMONQT_EXPORT setParamValue(const QMap<QString, Param> *m_params, const QString &key, const ito::ParamBase &value, QString &pkey, int &index);
 };   // end namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif

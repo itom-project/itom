@@ -1032,7 +1032,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
     if(retValue.containsError())
     {
-        if(retValue.errorMessage())
+        if(retValue.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Error while getting property infos with error message: \n%s", retValue.errorMessage());
         }

@@ -561,32 +561,32 @@ namespace dObjHelper
     template<typename _Tp> RetVal minValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf = true);
     
     //! Find the min-value of this data object and the first position.
-    RetVal minValue(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf = true);
+    RetVal DATAOBJ_EXPORT minValue(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf = true);
        
     //! Find the max-value of this data object and the first position <Templated version>.
     template<typename _Tp> RetVal maxValueFunc(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
 
     //! Find the max-value of this data object and the first position.
-    RetVal maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
+    RetVal DATAOBJ_EXPORT maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
         
     //! <templated version> Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
     template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
     
     //! Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
-    RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
+    RetVal DATAOBJ_EXPORT minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
 
     template<typename _Tp, typename _BufTp> RetVal meanValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
-    RetVal meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
+    RetVal DATAOBJ_EXPORT meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
 
     template<typename _Tp, typename _BufTp> RetVal devValueFunc(const ito::DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
-    RetVal devValue(const DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
+    RetVal DATAOBJ_EXPORT devValue(const DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
 
-    RetVal calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise);
+    RetVal DATAOBJ_EXPORT calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise);
 
-    ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    ito::RetVal verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    ito::RetVal verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    ito::RetVal verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
+    ito::RetVal DATAOBJ_EXPORT verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    ito::RetVal DATAOBJ_EXPORT verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    ito::RetVal DATAOBJ_EXPORT verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    ito::RetVal DATAOBJ_EXPORT verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
     
     //-----------------------------------------------------------------------------------------------
     /*! \fn freeRowPointer
@@ -948,9 +948,9 @@ namespace dObjHelper
     }
 
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
-    ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
+    ito::RetVal DATAOBJ_EXPORT dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
 
-    ito::RetVal dObjSetScaleRectangle(ito::DataObject &DataObjectInOut, const double &x0, const double &x1, const double &y0, const double &y1);
+    ito::RetVal DATAOBJ_EXPORT dObjSetScaleRectangle(ito::DataObject &DataObjectInOut, const double &x0, const double &x1, const double &y0, const double &y1);
 }
 }
 

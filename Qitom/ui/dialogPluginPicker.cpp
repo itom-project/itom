@@ -146,7 +146,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if(retValue.containsError())
                 {
-                    char* msg = retValue.errorMessage();
+                    const char* msg = retValue.errorMessage();
                     QString message = tr("error while creating new instance. \nMessage: %1").arg(msg);
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                     return;
@@ -178,13 +178,13 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if(retValue.containsWarning())
                 {
-                    char* msg = retValue.errorMessage();
+                    const char* msg = retValue.errorMessage();
                     QString message = tr("warning while creating new instance. Message: %1").arg(msg);
                     QMessageBox::warning(this, tr("Warning while creating new instance"), message);
                 }
                 else if(retValue.containsError())
                 {
-                    char* msg = retValue.errorMessage();
+                    const char* msg = retValue.errorMessage();
                     QString message = tr("error while creating new instance. Message: %1").arg(msg);
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 }

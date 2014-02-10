@@ -28,6 +28,7 @@
 #ifndef SHAREDSTRUCTURES_QT_H
 #define SHAREDSTRUCTURES_QT_H
 
+#include "commonGlobal.h"
 #include <qmutex.h>
 #include <qsemaphore.h>
 #include <qdebug.h>
@@ -35,8 +36,12 @@
 
 #include "sharedStructures.h"
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
-class ItomSharedSemaphore
+//namespace ito
+//{
+
+class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 {
     private:
         QSemaphore *m_pSemaphore;        /*!< underlying instance of QSemaphore. This semaphore is created and destructed in the constructor and destructor respectively. */
@@ -220,5 +225,9 @@ class ItomSharedSemaphoreLocker
         inline ItomSharedSemaphoreLocker & operator = (const ItomSharedSemaphoreLocker & /*other*/ ) { return *this; /* forbidden */ }
         ItomSharedSemaphore* m_semaphore;  /*!< pointer to ItomSharedSemaphore */
 };
+
+//} //end namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif

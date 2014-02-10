@@ -28,6 +28,7 @@
 #ifndef PCLFUNCTIONS_H
 #define PCLFUNCTIONS_H
 
+#include "pclDefines.h"
 #include "pclStructures.h"
 
 #include "../common/sharedStructures.h"
@@ -39,29 +40,29 @@ class DataObject; //forward declaration
 
 namespace pclHelper
 {
-    void PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out);
-    void PointXYZRGBAtoXYZRGB (const pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
-    void PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
+    void POINTCLOUD_EXPORT PointXYZRGBtoXYZRGBA (const pcl::PointXYZRGB& in, pcl::PointXYZRGBA&  out);
+    void POINTCLOUD_EXPORT PointXYZRGBAtoXYZRGB (const pcl::PointXYZRGBA& in, pcl::PointXYZRGB&  out);
+    void POINTCLOUD_EXPORT PointCloudXYZRGBtoXYZRGBA(const pcl::PointCloud<pcl::PointXYZRGB>& in, pcl::PointCloud<pcl::PointXYZRGBA>& out);
 
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-    ito::RetVal pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointCloud *pc);
-    ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointCloud2 &msg);
-    ito::tPCLPointType guessPointType(const pcl::PCLPointCloud2 &msg);
+    ito::RetVal POINTCLOUD_EXPORT pointCloud2ToPCLPointCloud(const pcl::PCLPointCloud2 &msg, PCLPointCloud *pc);
+    ito::RetVal POINTCLOUD_EXPORT pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointCloud2 &msg);
+    ito::tPCLPointType POINTCLOUD_EXPORT guessPointType(const pcl::PCLPointCloud2 &msg);
 #else
-    ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc);
-    ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::PointCloud2 &msg);
-    ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg);
+    ito::RetVal POINTCLOUD_EXPORT pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLPointCloud *pc);
+    ito::RetVal POINTCLOUD_EXPORT pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::PointCloud2 &msg);
+    ito::tPCLPointType POINTCLOUD_EXPORT guessPointType(const sensor_msgs::PointCloud2 &msg);
 #endif
 
-    ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &out, bool deleteNaN = false);
-    ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject *mapI, PCLPointCloud &out, bool deleteNaN = false);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaN = false);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &out, bool deleteNaN = false);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject *mapI, PCLPointCloud &out, bool deleteNaN = false);
 
-    ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudToDObj(const PCLPointCloud *pc, DataObject &out);
 
-    ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out);
-    ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out);
+    ito::RetVal POINTCLOUD_EXPORT dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out);
+    ito::RetVal POINTCLOUD_EXPORT eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out);
 
     //template<typename _Tp, int _Rows, int _Cols> ito::RetVal eigenMatrixToDataObj(const Eigen::Matrix<_Tp,_Rows,_Cols> &mat, DataObject &out);
 

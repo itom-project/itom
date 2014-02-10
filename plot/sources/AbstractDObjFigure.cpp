@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "AbstractDObjFigure.h"
+#include "../AbstractDObjFigure.h"
 
 #include <qmetaobject.h>
 
@@ -33,7 +33,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::update(void)
+ito::RetVal AbstractDObjFigure::update(void)
 {
     ito::RetVal retval = ito::retOk;
 
@@ -61,7 +61,7 @@ ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::update(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
 {
     ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
     if (dObj)
@@ -72,7 +72,7 @@ ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::ge
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
+void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
 { 
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::DataObject> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
@@ -110,14 +110,14 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
+ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
 {
     return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toLatin1().data());
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {
     ito::DataObject *dObj = m_pOutput["displayed"]->getVal<ito::DataObject*>();
     if (dObj)
@@ -128,7 +128,7 @@ ITOMSHAREDDESIGNER_EXPORT QSharedPointer<ito::DataObject> AbstractDObjFigure::ge
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
+QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 {
     if (m_pInput.contains("liveSource") && m_cameraConnected)
     {
@@ -141,7 +141,7 @@ ITOMSHAREDDESIGNER_EXPORT QPointer<ito::AddInDataIO> AbstractDObjFigure::getCame
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
+void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 {
     ito::RetVal retval;
     if (camera && m_pInput.contains("liveSource"))
@@ -176,7 +176,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setCamera(QPointer<ito::AddIn
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //this source is invoked by any connected camera
-ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
+void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
 { 
     ito::RetVal retval = ito::retOk;
 
@@ -219,7 +219,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractDObjFigure::setSource(QSharedPointer<ito:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractDObjFigure::removeLiveSource()
+RetVal AbstractDObjFigure::removeLiveSource()
 {
     RetVal retval;
     if (m_pInput.contains("liveSource"))

@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "AbstractNode.h"
-#include "../common/addInInterface.h"
+#include "../AbstractNode.h"
+#include "../../common/addInInterface.h"
 
 using namespace ito;
 

@@ -99,13 +99,13 @@ namespace ito
 
     /** \} */
 
-    #if defined(ITOM_IMPORT_PLOTAPI)
+    /*#if defined(ITOM_IMPORT_PLOTAPI)
     static int importItomPlotApi(void** apiArray)
     {
         ito::ITOM_API_FUNCS_GRAPH = apiArray;
         return 0;
     }
-    #endif
+    #endif*/
 
 } //end namespace ito
 

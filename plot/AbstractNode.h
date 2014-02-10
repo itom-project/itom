@@ -28,6 +28,7 @@
 #ifndef AbstractNode_H
 #define AbstractNode_H
 
+#include "../common/commonGlobal.h"
 #include "../common/sharedStructures.h"
 
 #include <qlist.h>
@@ -40,7 +41,7 @@ class Channel; // forward declaration
 class AbstractNode;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-uint calculateChannelHash(AbstractNode *parent, ito::Param *parentParam, AbstractNode *child, ito::Param *childParam);
+ ITOMCOMMONQT_EXPORT uint calculateChannelHash(AbstractNode *parent, ito::Param *parentParam, AbstractNode *child, ito::Param *childParam);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 typedef enum 
@@ -58,7 +59,7 @@ typedef enum
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class Channel
+class ITOMCOMMONQT_EXPORT Channel
 {    
     public: 
        enum ChanDirection {
@@ -199,7 +200,7 @@ class Channel
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class AbstractNode
+class ITOMCOMMONQT_EXPORT AbstractNode
 {
     public:
         AbstractNode() : 

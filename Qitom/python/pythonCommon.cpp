@@ -986,7 +986,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         retval = checkAndSetParamVal(tempObj, &((*defaultParamListMand)[n]), paramListMandOut[n], &(mandPParsed[n]));
         if (retval.containsError())
         {
-            if (retval.errorMessage() == NULL)
+            if (retval.hasErrorMessage() == false)
             {
                 errOutInitParams(defaultParamListMand, n, "wrong parameter type");
             }
@@ -1014,7 +1014,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         retval = checkAndSetParamVal(tempObj, &((*defaultParamListMand)[n + len]), paramListMandOut[n + len], &(mandPParsed[n + len]));
         if (retval.containsError())
         {
-            if (retval.errorMessage() == NULL)
+            if (retval.hasErrorMessage() == false)
             {
                 errOutInitParams(defaultParamListMand, n, "wrong parameter type");
             }
@@ -1042,7 +1042,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         retval = checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n - numMandParams]), paramListOptOut[n - numMandParams], &(optPParsed[n - numMandParams]));
         if (retval.containsError())
         {
-            if (retval.errorMessage() == NULL)
+            if (retval.hasErrorMessage() == false)
             {
                 errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
             }
@@ -1292,7 +1292,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
     QByteArray msg;
     if (retVal.containsWarningOrError())
     {
-        char *temp = retVal.errorMessage();
+        const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
             msg = QObject::tr("- unknown message -").toLatin1();

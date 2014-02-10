@@ -27,6 +27,7 @@ In your main header file or your plugin, called **MyPlugin** in the following, y
     {
         Q_OBJECT
         Q_INTERFACES(ito::AddInInterfaceBase)
+        PLUGIN_ITOM_API
 
         public:
             MyPluginInterface(QObject *parent = 0);

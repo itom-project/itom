@@ -28,11 +28,14 @@
 #ifndef __DATAOBJH
 #define __DATAOBJH
 
+#include "defines.h"
+
 //#include <crtdbg.h>
 #include <cstdlib>
 #include <iostream>
 #include <complex>
 #include <limits>
+#include <string>
 
 #if !linux
     #pragma warning(disable:4996)
@@ -48,9 +51,7 @@
 
 #include "readWriteLock.h"
 
-#include <vector>
-#include <map>
-#include <string>
+
 
 namespace cv 
 {
@@ -228,13 +229,42 @@ class Range;
 struct Scalar;
 class DataObjectTags;
 class DataObjectTagType;
+class DataObjectTagsPrivate;
+
+
+//! method which returns the value of enumeration ito::tDataType, which corresponds to the type of the given pointer parameter.
+/*!
+    If the parameter type cannot be transformed into a value of ito::tDataType, an exception is thrown.
+
+    \param any pointer, whose type should be transformed
+    \return ito::tDataType
+    \throws cv::Exception if the input data type is unknown
+    \sa getDataType2
+*/
+template<typename _Tp> static inline ito::tDataType getDataType(const _Tp* /*src*/)
+{
+    cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+    return ito::tInt8;
+}
+
+template<> inline ito::tDataType getDataType(const uint8* /*src*/)      { return ito::tUInt8; }
+template<> inline ito::tDataType getDataType(const int8* /*src*/)       { return ito::tInt8; }
+template<> inline ito::tDataType getDataType(const uint16* /*src*/)     { return ito::tUInt16; }
+template<> inline ito::tDataType getDataType(const int16* /*src*/)      { return ito::tInt16; }
+template<> inline ito::tDataType getDataType(const uint32* /*src*/)     { return ito::tUInt32; }
+template<> inline ito::tDataType getDataType(const int32* /*src*/)      { return ito::tInt32; }
+template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return ito::tFloat32; }
+template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
+template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
+template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
+template<> inline ito::tDataType getDataType(const Rgba32* /*src*/) { return ito::tRGBA32; }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class Range
     \brief each range value has a start and end point. Optionally range can be marked as Range::all(), which indicates a full range
 */
-class Range
+class DATAOBJ_EXPORT Range
 {
     public:
         Range() : start(0), end(0) {}                           /*!< empty constructor. start = end = 0 */
@@ -248,21 +278,30 @@ class Range
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class DataObjectTagType
+class DATAOBJ_EXPORT DataObjectTagType
 {
+    public:
+        enum tTagType
+        {
+            typeInvalid     = 0x000000,
+            typeDouble      = 0x000008,
+            typeString      = 0x000020
+        };
+
     private:
         double m_dVal;
-        std::string m_strValue;
-        int m_type;        //!< parameter type, maybe int, char, double or pointer
+        tTagType m_type; //!< parameter type, maybe int, char, double or pointer
+        ByteArray m_strValue;
 
     public:
         //!< Constructor
         DataObjectTagType() : m_dVal(0), m_strValue(""), m_type(DataObjectTagType::typeInvalid){};
         DataObjectTagType(double dVal) : m_dVal(dVal), m_strValue(""), m_type(DataObjectTagType::typeDouble){};
-        DataObjectTagType(std::string strVal) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_strValue(strVal), m_type(DataObjectTagType::typeString){};
+        DataObjectTagType(const std::string &str) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str.data(); };
+        DataObjectTagType(const ByteArray &str) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str; };
         DataObjectTagType(const char* cVal) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ cVal == NULL ?  m_strValue = "" : m_strValue = cVal;};
         //!< Copy Constructor
-        DataObjectTagType(const DataObjectTagType& copyConstr) : m_dVal(copyConstr.m_dVal), m_strValue(copyConstr.m_strValue), m_type(copyConstr.m_type){};
+        DataObjectTagType(const DataObjectTagType& a) : m_dVal(a.m_dVal), m_type(a.m_type), m_strValue(a.m_strValue) {};
 
         DataObjectTagType & operator = (const DataObjectTagType &rhs)
         {
@@ -273,14 +312,8 @@ class DataObjectTagType
             return *this;
         }
 
-        enum tTagType
-        {
-            typeInvalid     = 0x000000,
-            typeDouble      = 0x000008,
-            typeString      = 0x000020
-        };
-
         inline int getType(void) const {return m_type;};
+
         inline bool isValid(void) const { return (m_type == DataObjectTagType::typeInvalid) ? false: true;};
 
         /** getVal_ToDouble  read parameter value and try to convert to double
@@ -311,11 +344,11 @@ class DataObjectTagType
         *
         *   returns the actual parameter value as std::string. If conversion from double failes it returns 'NaN' || 'Inf'
         */
-        inline std::string getVal_ToString(void)
+        inline ByteArray getVal_ToString(void)
         {
             if(m_type == DataObjectTagType::typeInvalid)
             {
-                return std::string();
+                return "";
             }
             else if(m_type == DataObjectTagType::typeString)
             {
@@ -323,16 +356,17 @@ class DataObjectTagType
             }
             else
             {
-                if (cvIsNaN(m_dVal)) return std::string("NaN");
-                if (cvIsInf(m_dVal)) return std::string("Inf");
+                if (cvIsNaN(m_dVal)) return "NaN";
+                if (cvIsInf(m_dVal)) return "Inf";
                 /*if(m_dVal == std::numeric_limits<double>::quiet_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::signaling_NaN()) return std::string("NaN");
                 if(m_dVal == std::numeric_limits<double>::infinity()) return std::string("Inf");*/
 
                 std::ostringstream strs;
                 strs << m_dVal;
+                ByteArray ba(strs.str().data());
 
-                return strs.str();
+                return ba;
             }
         }
 };
@@ -346,74 +380,28 @@ class DataObjectTagType
             To copy the tag-space, e.g. the protocol, use copyTagMapTo to copy m_tags.
     \sa     DataObject::copyTagMapTo, DataObject::copyAxisTagsTo
 */
-class DataObjectTags
-{
-private:
-    std::map<std::string, DataObjectTagType> m_tags;   /*!< map for tags with keyword (std::string) and value (either std::string or double) */
-    std::vector<double> m_axisOffsets;          /*!< vector with offset-values for each axis (offset in dataObject-Pixel). Describes the distance from pixel [0,0,..0] to coordiante system origin. Unit-Coordinate = ( px-Coordinate - Offset)* Scale*/
-    std::vector<double> m_axisScales;           /*!< vector with scale-values for each axis (unit / px). Unit-Coordinate = ( px-Coordinate - Offset)* Scale. Scale cannot be 0.0*/
-    std::vector<std::string> m_axisDescription; /*!< vector with axis-describtions */
-    std::vector<std::string> m_axisUnit;        /*!< vector with axis-units-description (e.g. 'mm') */
-    double m_valueOffset;                       /*!< offset of the values within the dataObject. Currently as read only with value 0.0 */
-    double m_valueScale;                        /*!< scale of the values within the dataObject. Currently as read only with value 1.0 */
-    std::string m_valueDescription;             /*!< descriptions for the values (e.g. 'Intensity' or 'Heigth') */
-    std::string m_valueUnit;                    /*!< unit description for the values (e.g. 'mm') */
-
-    double m_rotMatrix[9];                      /*!< array containing the rotiational matrix for the yx-plane */
-
-    friend class DataObject;
-
-
-public:
-    //!< Constructor
-    DataObjectTags(unsigned int totalAxisNum) : m_valueOffset(0.0), m_valueScale(1.0), m_valueDescription(""), m_valueUnit("")
-    {
-        m_tags.clear();
-        m_axisOffsets.resize(totalAxisNum, 0.0);
-        m_axisScales.resize(totalAxisNum, 1.0);
-        m_axisDescription.resize(totalAxisNum, "");
-        m_axisUnit.resize(totalAxisNum, "");
-        m_valueUnit = std::string();
-        memset(m_rotMatrix, 0, sizeof(double)*9);
-        m_rotMatrix[0] = 1; // r11
-        m_rotMatrix[4] = 1; // r22
-        m_rotMatrix[8] = 1; // r33
-    }
-
-    //!< Destructor
-    ~DataObjectTags()
-    {
-        m_tags.clear();
-        m_axisOffsets.clear();
-        m_axisScales.clear();
-        m_axisDescription.clear();
-        m_axisUnit.clear();
-    }
-
-    //!< Copy constructor
-    DataObjectTags(const DataObjectTags& copyConstr) : m_tags(copyConstr.m_tags), m_axisOffsets(copyConstr.m_axisOffsets),
-		m_axisScales(copyConstr.m_axisScales), m_axisDescription(copyConstr.m_axisDescription),
-		m_axisUnit(copyConstr.m_axisUnit), m_valueOffset(copyConstr.m_valueOffset), m_valueScale(copyConstr.m_valueScale),
-		m_valueDescription(copyConstr.m_valueDescription), m_valueUnit(copyConstr.m_valueUnit)
-    {	
-//        m_tags = copyConstr.m_tags;
-//        m_axisOffsets = copyConstr.m_axisOffsets;
-//        m_axisScales = copyConstr.m_axisScales;
-//        m_axisDescription = copyConstr.m_axisDescription;
-//        m_axisUnit = copyConstr.m_axisUnit;
-//        m_valueOffset = copyConstr.m_valueOffset;
-//        m_valueScale = copyConstr.m_valueScale;
-//        m_valueDescription = copyConstr.m_valueDescription;
-//        m_valueUnit = copyConstr.m_valueUnit;
-        memcpy(m_rotMatrix,copyConstr.m_rotMatrix, sizeof(double)*9);
-    }
-
-    //friend class DataObjectTags; //I am my best friend (my own and only friend, and therefore my copy-constr has access to my friends members. nice.)
-};
+//class DATAOBJ_EXPORT DataObjectTags
+//{
+//private:
+//    DataObjectTagsPrivate *d;
+//
+//    friend class DataObject;
+//
+//
+//public:
+//    //!< Constructor
+//    DataObjectTags(unsigned int totalAxisNum);
+//
+//    //!< Destructor
+//    ~DataObjectTags();
+//
+//    //!< Copy constructor
+//    DataObjectTags(const DataObjectTags& copyConstr);
+//};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-class DObjConstIterator
+class DATAOBJ_EXPORT DObjConstIterator
 {
 public:
      
@@ -465,7 +453,7 @@ protected:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class DObjIterator : public DObjConstIterator
+class DATAOBJ_EXPORT DObjIterator : public DObjConstIterator
 {
 public:
      
@@ -498,7 +486,7 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class DataObject
+class DATAOBJ_EXPORT DataObject
 {
     private:
 
@@ -701,7 +689,7 @@ class DataObject
            return 0;
         }
 
-        struct MSize
+        struct DATAOBJ_EXPORT MSize
         {
             inline MSize() : m_p(NULL) {}
             inline int operator [] (const int dim) const
@@ -739,7 +727,7 @@ class DataObject
             int *m_p;
         };
 
-        struct MROI
+        struct DATAOBJ_EXPORT MROI
         {
             inline MROI() : m_p(NULL) {};
             inline int operator [] (const int dim) const
@@ -787,43 +775,19 @@ class DataObject
         MSize   m_size;                              /*!< vector containing the "virtual" size of each dimension considering the ROI */
         uchar  **m_data;                             /*!< vector with references to each matrix-plane. array of char pointers */
         ReadWriteLock      *m_objSharedDataLock;     /*!< readWriteLock for data block, this lock is shared within every instance which is using the same data. */
-        DataObjectTags     *m_pDataObjectTags;       /*!< class containing the object metadata */
+        DataObjectTagsPrivate *m_pDataObjectTags;    /*!< class containing the object metadata */
         ReadWriteLock       m_objHeaderLock;         /*!< readWriteLock for this instance of dataObject. */
-        const static int m_sizeofs;
+        static const int m_sizeofs;
 
-        inline int mdata_realloc(const int size)
-        {
-            if (m_data)
-            {
-                m_data = static_cast<uchar **>(realloc(m_data - m_sizeofs, (size + m_sizeofs) * sizeof(uchar *)));
-            }
-            else
-            {
-                int numBytes = (size + m_sizeofs) * sizeof(uchar *);
-                m_data = static_cast<uchar **>(calloc(numBytes, 1));
-                memset( m_data, 0, numBytes );
-            }
-            (*reinterpret_cast<int*>(m_data)) = size;
-            m_data += m_sizeofs;
-            return 0;
-        }
-        inline int mdata_size(void) const
-        {
-            if (!m_data)
-                return 0;
-            else
-                return (*reinterpret_cast<int *>(m_data - m_sizeofs));
-        }
-        inline int mdata_free()
-        {
-            if (m_data)
-            {
-                uchar **ptr = m_data - m_sizeofs;
-                free(ptr);
-            }
-            m_data = NULL;
-            return 0;
-        }
+        int mdata_realloc(const int size);
+        
+        int mdata_size(void) const;
+        
+        int mdata_free();
+
+        RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY);  
+        RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
+        
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -853,181 +817,44 @@ class DataObject
         // TAGSPACEFUNCTIONS
 
         //!< Function return the offset of the values stored within the dataOject
-        inline double getValueOffset() const
-        {
-            if(!m_pDataObjectTags) return 0.0; // default
-            return m_pDataObjectTags->m_valueOffset;
-        }
+        double getValueOffset() const;
 
         //!< Function return the scaling of values stored within the dataOject
-        inline double getValueScale() const
-        {
-            if(!m_pDataObjectTags) return 1.0; // default
-            return m_pDataObjectTags->m_valueScale;
-        }
+        double getValueScale() const;
 
         //!< Function return the unit description for the values stoerd within the dataOject
-        inline const std::string getValueUnit() const
-        {
-            if(!m_pDataObjectTags) return std::string(); //default
-            return m_pDataObjectTags->m_valueUnit;
-        }
+        const std::string getValueUnit() const;
 
         //!< Function return the description for the values stored within the dataOject, if tagspace does not exist, NULL is returned.
-        inline std::string getValueDescription() const
-        {
-            if(!m_pDataObjectTags) return std::string(); //default
-            return m_pDataObjectTags->m_valueDescription;
-        }
+        std::string getValueDescription() const;
 
         //!< Function return the axis-offset for the existing axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline double getAxisOffset(const int axisNum) const
-        {
-            if(axisNum < 0 || axisNum >= m_dims)
-            {
-                cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
-            }
-            if(!m_pDataObjectTags) return 0.0; // default
-           
-            return m_pDataObjectTags->m_axisOffsets[axisNum] - m_roi[axisNum];
-        }
-
+        double getAxisOffset(const int axisNum) const;
+        
         //!< Function returns the axis-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline double getAxisScale(const int axisNum) const
-        {
-            if(axisNum < 0 || axisNum >= m_dims)
-            {
-                cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
-            }
-            if(!m_pDataObjectTags) return 1.0; // default
-
-            return m_pDataObjectTags->m_axisScales[axisNum];
-        }
-
+        double getAxisScale(const int axisNum) const;
+        
         //!< Function returns the axis-unit-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        inline const std::string getAxisUnit(const int axisNum, bool &validOperation) const
-        {
-            if(axisNum < 0 || axisNum >= m_dims)
-            {
-                validOperation = false;
-                cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
-            }
-            if(!m_pDataObjectTags)
-            {
-                validOperation = false;
-                return std::string(); //error
-            }
-            validOperation = true;            
-            return m_pDataObjectTags->m_axisUnit[axisNum];
-        }
-
+        const std::string getAxisUnit(const int axisNum, bool &validOperation) const;
+        
         //!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
-        const inline std::string getAxisDescription(const int axisNum, bool &validOperation) const
-        {
-            if(axisNum < 0 || axisNum >= m_dims)
-            {
-                validOperation = false;
-                cv::error(cv::Exception(CV_StsError, "Parameter axisNum out of range." ,"", __FILE__, __LINE__));
-            }
-            if(!m_pDataObjectTags)
-            {
-                validOperation = false;
-                return std::string(); //error
-            }
-
-            validOperation = true;          
-            return m_pDataObjectTags->m_axisDescription[axisNum];
-        }
-
-        inline DataObjectTagType getTag(const std::string &key, bool &validOperation) const
-        {
-            validOperation = false;
-            if(!m_pDataObjectTags)
-            {
-                return DataObjectTagType(); //error
-            }
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
-            if(it != m_pDataObjectTags->m_tags.end())
-            {
-                validOperation = true;
-                return it->second;
-            }
-            return DataObjectTagType();
-        }
-
-        inline bool getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const
-        {
-            if(!m_pDataObjectTags)
-            {
-                key = std::string();
-                value = std::string();
-                return false;
-            }
-
-            if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
-            {
-                key = std::string();
-                value = std::string();
-                return false;
-            }
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
-            for(int i = 0; i < tagNumber; i++)
-            {
-                ++it;
-            }
-
-            key = (*it).first;
-            value = (*it).second;
-            return true;
-        }
-
+        std::string getAxisDescription(const int axisNum, bool &validOperation) const;
+        
+        DataObjectTagType getTag(const std::string &key, bool &validOperation) const;
+        
+        bool getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const;
+        
         //!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap do not exist NULL is returned
-        inline std::string getTagKey(const int tagNumber, bool &validOperation) const
-        {
-            if(!m_pDataObjectTags)
-            {
-                validOperation = false;
-                return std::string(""); //error
-            }
-            if((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
-            {
-                validOperation = false;
-                return std::string(""); //does not exist
-            }
-            std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
-            validOperation = true;
-            for(int i = 0; i < tagNumber; i++)
-            {
-                ++it;
-            }
-            return (*it).first;
-        }
-
+        std::string getTagKey(const int tagNumber, bool &validOperation) const;
+        
         //!< Function returns the number of elements in the Tags-Maps
-        inline int getTagListSize() const
-        {
-            if(!m_pDataObjectTags) return 0; //error
-            return static_cast<int>(m_pDataObjectTags->m_tags.size());
-        }
-
-     //   inline void setValueOffset(double offset) { m_valueOffset =offset; }
-     //   inline void setValueScale(double scale) { m_valueScale =scale; }
+        int getTagListSize() const;
 
         //!<  Function to set the string-value of the value unit, return 1 if values does not exist
-        inline int setValueUnit(const std::string &unit)
-        {
-            if(!m_pDataObjectTags) return 1;    //error
-            m_pDataObjectTags->m_valueUnit = unit;
-            return 0;
-        }
+        int setValueUnit(const std::string &unit);
 
         //!<  Function to set the string-value of the value description, return 1 if values does not exist
-        inline int setValueDescription(const std::string &description)
-        {
-            if(!m_pDataObjectTags) return 1;    //error
-            m_pDataObjectTags->m_valueDescription = description;
-            return 0;
-        }
+        int setValueDescription(const std::string &description);
 
         //inline lead to a linker error on MSVC when calling from several methods
         int setAxisOffset(const unsigned int axisNum, const double offset);
@@ -1107,14 +934,7 @@ class DataObject
                         isInsideImageY = false;
                     }
 
-                    if(m_pDataObjectTags)
-                    {
-                        tPxX = physX / m_pDataObjectTags->m_axisScales[0] + m_pDataObjectTags->m_axisOffsets[0];
-                    }
-                    else
-                    {
-                        tPxX = physX;
-                    }
+                    tPxX = physX / getAxisScale(0) + getAxisOffset(0); //m_pDataObjectTags->m_axisScales[0] + m_pDataObjectTags->m_axisOffsets[0];
 
                     if(tPxX > m_size[0] - 1)
                     {
@@ -1126,8 +946,8 @@ class DataObject
             {             
                     if(m_pDataObjectTags)
                     {
-                        tPxX = physX / m_pDataObjectTags->m_axisScales[m_dims - 1] + m_pDataObjectTags->m_axisOffsets[m_dims - 1];
-                        tPxY = physY / m_pDataObjectTags->m_axisScales[m_dims - 2] + m_pDataObjectTags->m_axisOffsets[m_dims - 2];
+                        tPxX = physX / getAxisScale(m_dims - 1) + getAxisOffset(m_dims - 1);
+                        tPxY = physY / getAxisScale(m_dims - 2) + getAxisOffset(m_dims - 2);
                     }
                     else
                     {
@@ -1218,21 +1038,7 @@ class DataObject
         \param[in] r33  Lower rigth element
         \return ito::retOk || ito::retError
         */
-
-        inline RetVal setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33)
-        {
-            if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
-            m_pDataObjectTags->m_rotMatrix[0] = r11;
-            m_pDataObjectTags->m_rotMatrix[1] = r12;
-            m_pDataObjectTags->m_rotMatrix[2] = r13;
-            m_pDataObjectTags->m_rotMatrix[3] = r21;
-            m_pDataObjectTags->m_rotMatrix[4] = r22;
-            m_pDataObjectTags->m_rotMatrix[5] = r23;
-            m_pDataObjectTags->m_rotMatrix[6] = r31;
-            m_pDataObjectTags->m_rotMatrix[7] = r32;
-            m_pDataObjectTags->m_rotMatrix[8] = r33;
-            return retOk;
-        }
+        RetVal setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33);
 
         /**
         \brief Function to access (get) the rotiational matrix by each element
@@ -1247,21 +1053,7 @@ class DataObject
         \param[out] r33  Lower rigth element
         \return ito::retOk || ito::retError
         */
-
-        inline RetVal getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
-        {
-            if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
-            r11 = m_pDataObjectTags->m_rotMatrix[0];
-            r12 = m_pDataObjectTags->m_rotMatrix[1];
-            r13 = m_pDataObjectTags->m_rotMatrix[2];
-            r21 = m_pDataObjectTags->m_rotMatrix[3];
-            r22 = m_pDataObjectTags->m_rotMatrix[4];
-            r23 = m_pDataObjectTags->m_rotMatrix[5];
-            r31 = m_pDataObjectTags->m_rotMatrix[6];
-            r32 = m_pDataObjectTags->m_rotMatrix[7];
-            r33 = m_pDataObjectTags->m_rotMatrix[8];
-            return retOk;
-        }
+        RetVal getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const;
 
         RetVal copyTagMapTo(DataObject &rhs) const;  /*!< Deep copies the tagmap with all entries to rhs object */
         RetVal copyAxisTagsTo(DataObject &rhs) const;  /*!< Deep copies the axistags to rhs object */
@@ -1786,26 +1578,52 @@ class DataObject
         DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
         RetVal locateROI(int *wholeSizes, int *offsets);                              /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
         RetVal locateROI(int *lims);                                                  /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY);        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height);       //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal checkType(const _Tp *src);    //compares type of elements in this data objects and type of given argument (doc in source)
+
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        
+        //----------------------------------------------------------------------------------------------------------------------------------
+        //! verifies if the data type of elements in this data object is equal to the type of the argument.
+        /*
+            \param [in] src is any variable whose type is checked
+            \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
+        */
+        template<typename _Tp> RetVal checkType(const _Tp *src)    //must be inline since function template!
+        {
+            try
+            {
+                if(m_type == ito::getDataType(src))
+                {
+                    return ito::retOk;
+                }
+                return RetVal(retError,0,"CheckType failed: types are not equal");
+            }
+            catch(cv::Exception /*&ex*/)
+            {
+                return RetVal(retError,0,"Error during Type-Check. Type not templated");
+            }
+        }
 
         //
         template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
 
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
+
 };
+
+//template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::int8>(const ito::int8 /*start*/, const ito::int8 /*end*/, const ito::int8 /*inc*/, const int /*transposed*/);
+//template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::uint8>(const ito::uint8 /*start*/, const ito::uint8 /*end*/, const ito::uint8 /*inc*/, const int /*transposed*/);
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // functions for DataObject in namespace ITO, which are NOT member functions
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObject abs(const DataObject &dObj);              /*!< calculates the absolute values of each element in the given data object and returns the result as new data object */
-DataObject arg(const DataObject &dObj);              /*!< calculates the argument of each element in the given data object and returns the result as new data object */
-DataObject real(const DataObject &dObj);             /*!< calculates the real part of each element in the given data object and returns the result as new data object */
-DataObject imag(const DataObject &dObj);             /*!< calculates the imaginary part of each element in the given data object and returns the result as new data object */
+DataObject DATAOBJ_EXPORT abs(const DataObject &dObj);              /*!< calculates the absolute values of each element in the given data object and returns the result as new data object */
+DataObject DATAOBJ_EXPORT arg(const DataObject &dObj);              /*!< calculates the argument of each element in the given data object and returns the result as new data object */
+DataObject DATAOBJ_EXPORT real(const DataObject &dObj);             /*!< calculates the real part of each element in the given data object and returns the result as new data object */
+DataObject DATAOBJ_EXPORT imag(const DataObject &dObj);             /*!< calculates the imaginary part of each element in the given data object and returns the result as new data object */
 
-DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
+DataObject DATAOBJ_EXPORT makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
 
 template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha = 1.0, double beta = 0.0);
 
@@ -2019,32 +1837,7 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
     return ito::tInt8;
 }
 
-//! method which returns the value of enumeration ito::tDataType, which corresponds to the type of the given pointer parameter.
-/*!
-    If the parameter type cannot be transformed into a value of ito::tDataType, an exception is thrown.
 
-    \param any pointer, whose type should be transformed
-    \return ito::tDataType
-    \throws cv::Exception if the input data type is unknown
-    \sa getDataType2
-*/
-template<typename _Tp> static inline ito::tDataType getDataType(const _Tp* /*src*/)
-{
-    cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
-    return ito::tInt8;
-}
-
-template<> inline ito::tDataType getDataType(const uint8* /*src*/)      { return ito::tUInt8; }
-template<> inline ito::tDataType getDataType(const int8* /*src*/)       { return ito::tInt8; }
-template<> inline ito::tDataType getDataType(const uint16* /*src*/)     { return ito::tUInt16; }
-template<> inline ito::tDataType getDataType(const int16* /*src*/)      { return ito::tInt16; }
-template<> inline ito::tDataType getDataType(const uint32* /*src*/)     { return ito::tUInt32; }
-template<> inline ito::tDataType getDataType(const int32* /*src*/)      { return ito::tInt32; }
-template<> inline ito::tDataType getDataType(const float32* /*src*/)    { return ito::tFloat32; }
-template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
-template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
-template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
-template<> inline ito::tDataType getDataType(const Rgba32* /*src*/) { return ito::tRGBA32; }
 
 
 //! method which returns the value of enumeration ito::tDataType, which corresponds to the template parameter (must be a pointer).

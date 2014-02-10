@@ -164,7 +164,7 @@
      <item>
       <widget class="QCheckBox" name="checkRegExpr">
        <property name="text">
-        <string>reg expr</string>
+        <string>reg. expr.</string>
        </property>
       </widget>
      </item>

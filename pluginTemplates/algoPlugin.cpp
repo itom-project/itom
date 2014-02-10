@@ -1,3 +1,6 @@
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "algoPlugin.h"
 #include "pluginVersion.h"
 

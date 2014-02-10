@@ -74,7 +74,7 @@ bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
     {
         std::cerr << "Warning while loading plugin: " << pluginName.toLatin1().data() << "\n" << std::endl;
 
-        if (retval.errorMessage() != NULL)
+        if (retval.hasErrorMessage())
         {
             std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
         }
@@ -99,7 +99,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
     if (retval.containsError())
     {
         QByteArray name = functionName.toLatin1();
-        char* msg = retval.errorMessage();
+        const char* msg = retval.errorMessage();
         if (msg)
         {
             PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg);
@@ -114,7 +114,7 @@ bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
     if (retval.containsWarning())
     {
         std::cerr << "Warning invoking " << functionName.toLatin1().data() << "\n" << std::endl;
-        if (retval.errorMessage() != NULL)
+        if (retval.hasErrorMessage())
         {
             std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
         }
@@ -1278,7 +1278,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = AIM->getInitParams(pluginName, ito::typeActuator, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
@@ -1294,7 +1294,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
@@ -2471,7 +2471,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
@@ -3819,7 +3819,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     retval = AIM->getInitParams(pluginName, ito::typeAlgo, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }
@@ -3835,7 +3835,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
             PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
         }

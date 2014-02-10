@@ -474,13 +474,13 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
 
             if (retValue.containsWarning())
             {
-                char* msg = retValue.errorMessage();
+                const char* msg = retValue.errorMessage();
                 QString message = tr("warning while closing instance. Message: %1").arg(msg);
                 QMessageBox::warning(this, tr("Warning while closing instance"), message);
             }
             else if (retValue.containsError())
             {
-                char* msg = retValue.errorMessage();
+                const char* msg = retValue.errorMessage();
                 QString message = tr("error while closing instance. Message: %1").arg(msg);
                 QMessageBox::critical(this, tr("Error while closing instance"), message);
             }
@@ -567,7 +567,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsError())
             {
-                char* msg = retValue.errorMessage();
+                const char* msg = retValue.errorMessage();
                 QString message = tr("error while creating new instance. \nMessage: %1").arg(msg);
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 return;
@@ -599,13 +599,13 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsWarning())
             {
-                char* msg = retValue.errorMessage();
+                const char* msg = retValue.errorMessage();
                 QString message = tr("warning while creating new instance. Message: %1").arg(msg);
                 QMessageBox::warning(this, tr("Warning while creating new instance"), message);
             }
             else if (retValue.containsError())
             {
-                char* msg = retValue.errorMessage();
+                const char* msg = retValue.errorMessage();
                 QString message = tr("error while creating new instance. Message: %1").arg(msg);
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
             }
@@ -632,13 +632,13 @@ void AIManagerWidget::mnuCreateNewInstance()
 
                         if (retValue.containsWarning())
                         {
-                            char* msg = retValue.errorMessage();
+                            const char* msg = retValue.errorMessage();
                             QString message = tr("warning while sending instance to python. Message: %1").arg(msg);
                             QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                         }
                         else if (retValue.containsError())
                         {
-                            char* msg = retValue.errorMessage();
+                            const char* msg = retValue.errorMessage();
                             QString message = tr("error while sending instance to python. Message: %1").arg(msg);
                             QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                         }
@@ -731,13 +731,13 @@ void AIManagerWidget::mnuSendToPython()
 
                     if (retValue.containsWarning())
                     {
-                        char* msg = retValue.errorMessage();
+                        const char* msg = retValue.errorMessage();
                         QString message = tr("warning while sending instance to python. Message: %1").arg(msg);
                         QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                     }
                     else if (retValue.containsError())
                     {
-                        char* msg = retValue.errorMessage();
+                        const char* msg = retValue.errorMessage();
                         QString message = tr("error while sending instance to python. Message: %1").arg(msg);
                         QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                     }
@@ -855,7 +855,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     if (retValue.containsError())
     {
         msgBox.setText(tr("Error while opening user interface from plugin."));
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             msgBox.setDetailedText(retValue.errorMessage());
         }
@@ -865,7 +865,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     else if (retValue.containsWarning())
     {
         msgBox.setText(tr("Warning while opening user interface from plugin."));
-        if (retValue.errorMessage())
+        if (retValue.hasErrorMessage())
         {
             msgBox.setDetailedText(retValue.errorMessage());
         }

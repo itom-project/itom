@@ -159,7 +159,7 @@
        <property name="childrenCollapsible">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget1">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QTreeView" name="treeView">
@@ -191,7 +191,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget2">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="spacing">
           <number>4</number>

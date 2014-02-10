@@ -28,6 +28,8 @@
 #ifndef ADDININTERFACE_H
 #define ADDININTERFACE_H
 
+#include "commonGlobal.h"
+
 #include "apiFunctionsInc.h"
 #include "apiFunctionsGraphInc.h"
 
@@ -46,9 +48,21 @@
 #include <qevent.h>
 #include <qpluginloader.h>
 
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+//write this macro right after Q_INTERFACE(...) in your interface class definition
+#define PLUGIN_ITOM_API \
+            protected: \
+                void importItomApi(void** apiPtr) \
+                {ito::ITOM_API_FUNCS = apiPtr;} \
+                void importItomApiGraph(void** apiPtr) \
+                { ito::ITOM_API_FUNCS_GRAPH = apiPtr;} \
+            public: \
+                //.
+
 namespace ito
 {
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     /**
     * tPluginType enumeration
     * used to describe the plugin type and subtype (in case of DataIO main type)
@@ -86,7 +100,6 @@ namespace ito
         actRefSwitchMask        = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch,
         actSwitchesMask         = actEndSwitchMask | actRefSwitchMask,
         actStatusMask           = actuatorAvailable | actuatorEnabled
-
     };
 
     enum tAutoLoadPolicy {
@@ -142,7 +155,7 @@ namespace ito
     *   is obtained using one of the initAddIn \ref initAddIn methods. Which first create a new instance, move the instance to a new thread
     *   and at last call the classes init method
     */
-    class AddInInterfaceBase : public QObject
+    class ITOMCOMMONQT_EXPORT AddInInterfaceBase : public QObject
     {
         Q_OBJECT
 
@@ -169,6 +182,9 @@ namespace ito
             tAutoSavePolicy m_autoSavePolicy;               /*!< defines the auto-save policy for automatic saving of parameters in xml-file at shutdown of any instance */
             bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
             QPluginLoader *m_loader;
+
+            virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
+            virtual void importItomApiGraph(void** apiPtr) = 0;
 
         public:
             void **m_apiFunctionsBasePtr;
@@ -244,9 +260,7 @@ namespace ito
 
             bool event(QEvent *e);
 
-        //signals:
 
-        //public slots:
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -263,7 +277,7 @@ namespace ito
     *   The base functionality included in this base class is getting the plugin's parameter list, getting the classes uniqueID (which is
     *   used e.g. for saveing the parameter values) and optinally to bring up a configuration dialog.
     */
-    class AddInBase : public QObject
+    class ITOMCOMMONQT_EXPORT AddInBase : public QObject
     {
         Q_OBJECT
 
@@ -299,7 +313,10 @@ namespace ito
                 QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
                 if (rx.indexIn(name) == -1)
                 {
-                    if (nameCheckOk) *nameCheckOk = false;
+                    if (nameCheckOk)
+                    {
+                        *nameCheckOk = false;
+                    }
                     return Param();
                 }
                 else
@@ -307,12 +324,17 @@ namespace ito
                     QStringList pname = rx.capturedTexts();
                     if (pname.length() > 1)
                     {
-                        if (nameCheckOk) *nameCheckOk = true;
+                        if (nameCheckOk)
+                        {
+                            *nameCheckOk = true;
+                        }
                         ito::Param tempParam = m_params.value(pname[1]);
                         if (pname[2].length())
-                            tempParam.addNameSuffix(pname[2].toLatin1().data());
+                        {
+                        }
                         if (pname[4].length())
-                            tempParam.addNameSuffix(pname[4].toLatin1().data());
+                        {
+                        }
                         return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
                     }
                 }
@@ -516,7 +538,6 @@ namespace ito
             void parametersChanged(QMap<QString, ito::Param> params);
 
         public slots:
-
             //! method for the initialisation of a new instance of the class (must be overwritten)
             virtual ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! method for closing an instance (must be overwritten)
@@ -533,7 +554,6 @@ namespace ito
             // doc in source-file
             virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
        
-
         private slots:
             //! immediately emits the signal parametersChanged
             /*!
@@ -592,7 +612,7 @@ namespace ito
     *   If the user wants to change values in this image, he should make a deep copy first.
     *
     */
-    class AddInDataIO : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
     {
         Q_OBJECT
 
@@ -656,7 +676,7 @@ namespace ito
     *   This class is one step further down the line from \ref AddInBase. Actuator plugins must be derived from this class which
     *   is derived from AddInBase. In this class only the methods specific to actuator plugins are declared.
     */
-    class AddInActuator : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInActuator : public AddInBase
     {
         Q_OBJECT
 
@@ -687,7 +707,10 @@ namespace ito
             { 
                 foreach(const int &i, m_currentStatus) 
                 {
-                    if (i & ito::actuatorMoving) return true;
+                    if (i & ito::actuatorMoving)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -844,7 +867,6 @@ namespace ito
             virtual ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! increment/decrement a number of axis by position values. The axis' numbers are given in the axis vector
             virtual ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL) = 0;
-
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -856,7 +878,7 @@ namespace ito
     *   not have an init function or a close function. In the algo base class at the moment no further methods or variables are declared -
     *   it serves more as an organisation class, putting all actual plugins to the same level of inheritance.
     */
-    class AddInAlgo : public AddInBase
+    class ITOMCOMMONQT_EXPORT AddInAlgo : public AddInBase
     {
         Q_OBJECT
 
@@ -983,9 +1005,18 @@ namespace ito
 
             static ito::RetVal prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
             {
-                if (!paramsMand) return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toLatin1().data());
-                if (!paramsOpt) return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toLatin1().data());
-                if (!paramsOut) return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toLatin1().data());
+                if (!paramsMand)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toLatin1().data());
+                }
+                if (!paramsOpt)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toLatin1().data());
+                }
+                if (!paramsOut)
+                {
+                    return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toLatin1().data());
+                }
                 paramsMand->clear(); 
                 paramsOpt->clear(); 
                 paramsOut->clear();
@@ -999,6 +1030,8 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
 } // namespace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 //###########################################################################################################
 //   Interface version:
@@ -1042,10 +1075,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.21",//version until 2013-10-15 (outdated: getSize(..) and getTotalSize(..) return int now and -1 if error. Consistency to documented behaviour)
     "ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
     "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
+    "ito.AddIn.InterfaceBase/1.1.24",//version until 2014-02-09 (outdated: restructuring to itomCommonLib and itomCommonQtLib for a better binary compatibility)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.1.24";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.2.0";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

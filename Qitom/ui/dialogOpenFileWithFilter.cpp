@@ -209,7 +209,7 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
     if(retVal.containsError())
     {
         QString text = tr("An error occurred while loading the file.");
-        if(retVal.errorMessage()) text.append( "\n" ).append(retVal.errorMessage());
+        if(retVal.hasErrorMessage()) text.append( "\n" ).append(retVal.errorMessage());
         QMessageBox::critical( this, tr("Error while loading file"), text);
     }
     return retVal;
@@ -225,7 +225,7 @@ void DialogOpenFileWithFilter::filterCallFinished()
     {
         ui.treePreview->clear();
         QString text = tr("An error occurred while loading the file.");
-        if(retValue.errorMessage()) text.append( "\n" ).append(retValue.errorMessage());
+        if(retValue.hasErrorMessage()) text.append( "\n" ).append(retValue.errorMessage());
         QMessageBox::critical( this, tr("Error while loading file"), text);
         m_acceptedClicked = false;
 

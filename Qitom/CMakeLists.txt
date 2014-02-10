@@ -12,6 +12,7 @@ OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
 OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -28,10 +29,10 @@ include("../ItomBuildMacros.cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #find_package(Qt4 REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5UiTools REQUIRED)
-find_package(Qt5PrintSupport REQUIRED) 
+find_package(Qt5 COMPONENTS CORE WIDGETS DESIGNER UITOOLS PRINTSUPPORT REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5UiTools REQUIRED)
+#find_package(Qt5PrintSupport REQUIRED) 
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV REQUIRED COMPONENTS core)
@@ -105,12 +106,8 @@ LINK_DIRECTORIES(
 
 #INCLUDE(${QT_USE_FILE})
 
-set(qitom_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
@@ -125,10 +122,15 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
+    
+)
+
+
+set(qitom_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
@@ -228,7 +230,10 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.h
-    
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
 )
 
 
@@ -283,19 +288,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.cpp
 #    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
@@ -473,7 +466,7 @@ ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
 # END HANDLE VERSION
 
 #handle translations BEGIN
-set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_ui} ) #PARENT_SCOPE)
+set (FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui} ) #PARENT_SCOPE)
 set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
@@ -490,7 +483,7 @@ endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
 
-ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
@@ -525,16 +518,20 @@ else()
 endif()
 
 IF(BUILD_WITH_PCL)
-    SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    IF(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES pointcloud)
+    ELSE(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    ENDIF(BUILD_ITOMLIBS_SHARED)
 ELSE(BUILD_WITH_PCL)
     SET(POINTCLOUD_LIBRARIES "")
 ENDIF(BUILD_WITH_PCL)
 
 #TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
-#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
 
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
  
 BUILD_PARALLEL_LINUX(${target_name})
 
@@ -545,9 +542,9 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itomSettings/itomDefault.ini  DESTINATI
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include PATTERN ".svn" EXCLUDE)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include PATTERN ".svn" EXCLUDE)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGlut.cmake               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)

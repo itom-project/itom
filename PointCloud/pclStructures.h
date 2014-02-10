@@ -28,7 +28,7 @@
 #ifndef PCLSTRUCTURES_H
 #define PCLSTRUCTURES_H
 
-
+#include "pclDefines.h"
 #include "../common/typeDefs.h"
 
 #include <vector>
@@ -54,7 +54,7 @@ namespace ito
     #define PCLALPHA _unused
 #endif
 
-class PCLPoint
+class POINTCLOUD_EXPORT PCLPoint
 {
 public:
     PCLPoint() : m_genericPoint(NULL), m_type(ito::pclInvalid) {}
@@ -183,7 +183,7 @@ private:
     ito::tPCLPointType m_type;
 };
 
-class PCLPointCloud
+class POINTCLOUD_EXPORT PCLPointCloud
 {
 public:
     PCLPointCloud() : m_type(ito::pclInvalid) {};
@@ -349,7 +349,7 @@ private:
     ito::tPCLPointType m_type;
 };
 
-class PCLPolygonMesh
+class POINTCLOUD_EXPORT PCLPolygonMesh
 {
 public:
     PCLPolygonMesh();

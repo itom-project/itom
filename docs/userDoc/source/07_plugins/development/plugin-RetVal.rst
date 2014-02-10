@@ -5,7 +5,7 @@
 **RetVal** - The return type of |itom| methods
 ==============================================
 
-The class **RetVal** is used for creating, transmitting and handling return values of methods in |itom| and plugins. This class is defined in the file *sharedStructures.h* in the folder *common* of the |itom| base directory.
+The class **RetVal** is used for creating, transmitting and handling return values of methods in |itom| and plugins. This class is defined in the file *retVal.h* in the folder *include/common* of the |itom| SDK directory and its code is included in the library **itomCommonLib** also contained in the SDK (link against this library).
 
 Any return value consists of the following main components:
 
@@ -70,7 +70,8 @@ The actual status of the return value can be obtained using the following method
     
 .. cpp:function:: char *errorMessage()
     
-    Returns a zero-terminated string containing the actual error-message of this return value or NULL.
+    Returns a zero-terminated string containing the actual error-message of this return value or a zero-terminated, empty string
+    if no message has been set (Caution: in |itom| <= 1.1.0 this method returned NULL in the latter case).
     
 Additionally you can use the comparinson operators **==** or **!=** to compare the error state of two return values or the error state of one return value with a given error state.
 

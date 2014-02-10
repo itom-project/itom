@@ -23,20 +23,18 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-//!< must be defined before undef _DEBUG scheiß
+//!< must be defined before undef _DEBUG
 //#include <vector>
 //#include <map>
 //#include <deque>
 //#include <queue>
 //#include <algorithm>
 
-#include <qmutex.h>
-#include <qobject.h>
-#include "../common/sharedStructures.h"
-//#include "organizer/addInManager.h"
+#include "../common/param.h"
 
 #include <qmap.h>
 #include <qlist.h>
+#include <qvector.h>
 #include <qstring.h>
 #include <qsharedpointer.h>
 

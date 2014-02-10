@@ -52,24 +52,23 @@ Basic plugin structure
 
 .. highlight:: c
 
-Every plugin consists at least of two classes, which are both derived from two different base classes. All possible base classes are provided in the files::
+Every plugin consists at least of two classes, which are both derived from two different base classes. All possible base classes are provided in the file::
 
     addInInterface.h
-    addInInterface.cpp
 
-which are contained in the folder **common** of |itom|'s SDK. This folder contains further files which can be used in every plugin and contain interfaces and helper libaries with usefull functions for successfully and easily program a plugin. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
+which is contained in the folder **include/common** of |itom|'s SDK. This folder contains further header files which can be used in every plugin and contain interfaces and helper libaries with useful functions for successfully and easily program a plugin. For using these files you need to link your plugin agains the libraries **itomCommonLib** and **itomCommonQtLib**. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
 
 The two classes of the plugin are as follows:
 
 1. Interface- or factory-class (derived from class **AddInInterfaceBase**)
 
-    This class must be derived from the class **addInInterfaceBase** and is the communcation tunnel between |itom| and the plugin itself using the plugin-framework of |Qt|. The plugin framework creates one single instances of this class when the plugin DLL is loaded (that means at startup of |itom|). Therefore this class is considered to be a singleton instance and since it is always loaded by |itom| even if it is not really needed, this class is kept small and only provides basic information about the plugin itself.
+    This class must be derived from the class **addInInterfaceBase** and is the communication tunnel between |itom| and the plugin itself using the plugin-framework of |Qt|. The plugin framework creates one single instances of this class when the plugin DLL is loaded (that means at startup of |itom|). Therefore this class is considered to be a singleton instance and since it is always loaded by |itom| even if it is not really needed, this class is kept small and only provides basic information about the plugin itself.
     
     For further information about the structure of this interface class see :ref:`Plugin Interface Class <plugin-interface-class>`.
 
 2. Individual plugin class (derived from class **AddInDataIO**, **AddInGrabber**, **AddInActuator** or **AddInAlgo**)
 
-    This class is the main class of the plugin and should contain the main functionality of the plugin. Depending on the plugin type, this class is derived from any of the classes **AddInDataIO**, **AddInGrabber**, **AddInActuator** or **AddInAlgo**, which are also contained in the files mentioned above. All this classes internaly are derived from the base class **AddInBase**, which is the most general class used for plugin handling and organization in |itom|. Please do not directly derive from **AddInBase**.
+    This class is the main class of the plugin and should contain the main functionality of the plugin. Depending on the plugin type, this class is derived from any of the classes **AddInDataIO**, **AddInGrabber**, **AddInActuator** or **AddInAlgo**, which are also contained in the files mentioned above. All this classes internally are derived from the base class **AddInBase**, which is the most general class used for plugin handling and organization in |itom|. Please do not directly derive from **AddInBase**.
     
     In the case of an actuator, a camera or any other IO-device, every opened device is represented by one individual instance of its corresponding plugin class. Hence, it is possible to have multiple instances of every class opened in |itom|. The creation and deletion of any instance is at first requested by the **AddInManager** class (an internal class of |itom|) which itself redirects this request to the singleton instance of the interface class in the corresponding plugin (This is the interface class mentioned in point 1 above).
     

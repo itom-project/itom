@@ -64,10 +64,10 @@ TYPED_TEST(dataObjectTag_Test,set_getTag_Test)
 	bool vop2;
 	mat1_1d.setTag("creator1", "Shishir");
     ito::DataObjectTagType Tag1_ = mat1_1d.getTag("creator1",vop1);
-    std::string Tag1 = Tag1_.getVal_ToString();
+    ito::ByteArray Tag1 = Tag1_.getVal_ToString().data();
 
     ito::DataObjectTagType Tag2_ = mat1_1d.getTag("creator2",vop2);
-    std::string Tag2 = Tag2_.getVal_ToString();
+    ito::ByteArray Tag2 = Tag2_.getVal_ToString();
     
 	EXPECT_EQ(Tag1,"Shishir");
 	EXPECT_TRUE(vop1);
@@ -353,7 +353,8 @@ TYPED_TEST(dataObjectTag_Test,getTagbyIndex_Test)
 {	
 	mat1_1d.setTag("creator1","Shishir1");					//set the key1 and its correspondent value1 for mat1_1d
 	mat1_1d.setTag("creator2","Shishir2");					//set the key2 and its correspondent value2 for mat1_1d
-	std::string key1, key2, value1,value2;
+	std::string key1, key2;
+    ito::ByteArray value1, value2;
     ito::DataObjectTagType value1_, value2_;
 	bool test1 = mat1_1d.getTagByIndex(0,key1,value1_);		//get the key1 and value1 of mat1_1d by index value using "getTagByIndex" function
 	bool test2 = mat1_1d.getTagByIndex(1,key2,value2_);		//get the key2 and value2 of mat1_1d by index value using "getTagByIndex" function

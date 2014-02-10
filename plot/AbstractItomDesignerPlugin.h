@@ -28,21 +28,25 @@
 #ifndef ABSTRACTITOMDESIGNERPLUGIN_H
 #define ABSTRACTITOMDESIGNERPLUGIN_H
 
+#include "../common/commonGlobal.h"
 #include "../common/sharedStructuresGraphics.h"
 #include "AbstractFigure.h"
-#include <QtDesigner/QDesignerCustomWidgetInterface>
+#include <QDesignerCustomWidgetInterface>
+
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
     
 namespace ito {
 
-    class AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
+    class ITOMCOMMONQT_EXPORT AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
     {
-        Q_OBJECT
-        Q_INTERFACES(QDesignerCustomWidgetInterface)
+    Q_OBJECT
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
+    Q_INTERFACES(QDesignerCustomWidgetInterface)
         
         //! the classinfo ito.AbstractItomDesignerPlugin is the interface number of AbstractItomDesignerPlugin.
         //  increment this number if you changed something in this interface or other abstract classes of the
         //  plot designerPlugin system.
-        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.0.5")
+        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.2.0")
 
         public:
             AbstractItomDesignerPlugin(QObject *parent) :
@@ -93,5 +97,7 @@ namespace ito {
             QString m_itomSettingsFile;
     };
 } // namepsace ito
+
+#endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 #endif // ABSTRACTITOMDESIGNERPLUGIN_H

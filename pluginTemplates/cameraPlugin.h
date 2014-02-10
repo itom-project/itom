@@ -12,6 +12,7 @@ class CameraPluginInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this CameraPluginInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+    PLUGIN_ITOM_API
 
     public:
         CameraPluginInterface();                    /*!< Constructor */

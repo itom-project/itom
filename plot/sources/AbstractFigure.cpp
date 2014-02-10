@@ -25,9 +25,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define ITOM_IMPORT_PLOTAPI
-#define ITOM_IMPORT_API
-#include "AbstractFigure.h"
+//#define ITOM_IMPORT_PLOTAPI
+//#define ITOM_IMPORT_API
+#include "../AbstractFigure.h"
 
 #include <qaction.h>
 #include <qtoolbar.h>
@@ -35,16 +35,16 @@
 #include <qmenubar.h>
 #include <qsettings.h>
 
-#include "../common/typeDefs.h"
-#include "../common/addInInterface.h"
-#include "../common/apiFunctionsInc.h"
+#include "../../common/typeDefs.h"
+#include "../../common/addInInterface.h"
+#include "../../common/apiFunctionsInc.h"
 #include "QPropertyEditor/QPropertyEditorWidget.h"
 
 namespace ito 
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
+AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
     QMainWindow(parent),
     AbstractNode(),
     m_contextMenu(NULL),
@@ -65,7 +65,7 @@ ITOMSHAREDDESIGNER_EXPORT AbstractFigure::AbstractFigure(const QString &itomSett
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT AbstractFigure::~AbstractFigure()
+AbstractFigure::~AbstractFigure()
 {
     Channel *delChan;
     foreach(delChan, m_pChannels)
@@ -99,7 +99,7 @@ ITOMSHAREDDESIGNER_EXPORT AbstractFigure::~AbstractFigure()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::initialize()
+RetVal AbstractFigure::initialize()
 {
     //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
     switch (m_windowMode)
@@ -159,7 +159,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::initialize()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setPropertyObservedObject(QObject* obj)
+void AbstractFigure::setPropertyObservedObject(QObject* obj)
 {
     m_propertyObservedObject = obj;
     if (m_propertyEditorWidget)
@@ -169,7 +169,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setPropertyObservedObject(QObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::updatePropertyDock()
+void AbstractFigure::updatePropertyDock()
 {
     if (m_propertyEditorWidget && m_propertyObservedObject)
     {
@@ -178,7 +178,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::updatePropertyDock()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect)
+RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect)
 {
     ito::RetVal retVal;
     uint channelHash1 = ito::calculateChannelHash(this, parentParam, child, childParam);
@@ -220,7 +220,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(AbstractNode *child,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(Channel *newChannel)
+RetVal AbstractFigure::addChannel(Channel *newChannel)
 {
     if (newChannel->getChild() != this)
     {
@@ -244,7 +244,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::addChannel(Channel *newChannel)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
+RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
 {
     ito::RetVal retval = ito::retOk;
     int delBehaviour = m_pChannels[uniqueID]->getDeleteBehaviour((AbstractNode*)this);
@@ -274,7 +274,7 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannelFromList(unsigned 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannel(Channel *delChannel)
+RetVal AbstractFigure::removeChannel(Channel *delChannel)
 {
     if (!m_pChannels.contains(delChannel->getUniqueID()))
     {
@@ -314,14 +314,14 @@ ITOMSHAREDDESIGNER_EXPORT RetVal AbstractFigure::removeChannel(Channel *delChann
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::addMenu(QMenu *menu)
+void AbstractFigure::addMenu(QMenu *menu)
 {
     //never adds to menuBar()
     m_menus.append(menu);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT QList<QMenu*> AbstractFigure::getMenus() const
+QList<QMenu*> AbstractFigure::getMenus() const
 {
     if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
@@ -335,7 +335,7 @@ ITOMSHAREDDESIGNER_EXPORT QList<QMenu*> AbstractFigure::getMenus() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
+QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
 {
     if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
     {
@@ -349,7 +349,7 @@ ITOMSHAREDDESIGNER_EXPORT QList<AbstractFigure::ToolBarItem> AbstractFigure::get
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
+void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
 {
     ToolBarItem item;
     item.key = key;
@@ -383,7 +383,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::addToolBar(QToolBar *toolbar, con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/)
+void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/)
 {
     ToolBarItem item;
     item.key = key;
@@ -410,7 +410,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::addToolBarBreak(const QString &ke
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::showToolBar(const QString &key)
+void AbstractFigure::showToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
@@ -425,7 +425,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::showToolBar(const QString &key)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::hideToolBar(const QString &key)
+void AbstractFigure::hideToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
@@ -440,21 +440,23 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::hideToolBar(const QString &key)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
+void AbstractFigure::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
 { 
-    importItomPlotApi(apiFunctionGraphBasePtr);
+    this->importItomApiGraph(apiFunctionGraphBasePtr);
     m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr; 
+    ito::ITOM_API_FUNCS_GRAPH = apiFunctionGraphBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
+void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
 { 
-    importItomApi(apiFunctionBasePtr);
+    this->importItomApi(apiFunctionBasePtr);
     m_apiFunctionsBasePtr = apiFunctionBasePtr; 
+    ito::ITOM_API_FUNCS = apiFunctionBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT bool AbstractFigure::event(QEvent *e)
+bool AbstractFigure::event(QEvent *e)
 {
     //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
     //transmitted to the plugin. This assignment cannot be done directly, since 
@@ -464,15 +466,15 @@ ITOMSHAREDDESIGNER_EXPORT bool AbstractFigure::event(QEvent *e)
     //also is necessary if any methods of the plugin are directly called from itom).
     if (e->type() == (QEvent::User+123))
     {
-        importItomApi(m_apiFunctionsBasePtr);
-        importItomPlotApi(m_apiFunctionsGraphBasePtr);
+        //importItomApi(m_apiFunctionsBasePtr);
+        //importItomPlotApi(m_apiFunctionsGraphBasePtr);
         init();
     }   
     return QMainWindow::event(e);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setToolbarVisible(bool visible)
+void AbstractFigure::setToolbarVisible(bool visible)
 {
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
@@ -490,7 +492,7 @@ ITOMSHAREDDESIGNER_EXPORT void AbstractFigure::setToolbarVisible(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ITOMSHAREDDESIGNER_EXPORT bool AbstractFigure::getToolbarVisible() const 
+bool AbstractFigure::getToolbarVisible() const 
 { 
     return m_toolbarsVisible;
 }

@@ -1,0 +1,125 @@
+SET (target_name itomCommonQtLib)
+project(${target_name}) 
+
+cmake_minimum_required(VERSION 2.8)
+
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
+
+cmake_policy(SET CMP0020 NEW)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+
+include("../ItomBuildMacros.cmake")
+
+IF(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE SHARED)
+    
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
+ELSE(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE STATIC)
+    
+    #if itomCommon is static, add -fPIC as compiler flag for linux
+    IF(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    ENDIF(UNIX)
+    
+    ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
+                                               #published with void** only one (!) time. if this lib is statically linked to itom, it is already
+                                               #defined within itom and must not be defined in this lib but with extern void**. If this lib is
+                                               #shared, it also needs to be defined there.
+    
+ENDIF(BUILD_ITOMLIBS_SHARED)
+
+#find_package(Qt4 REQUIRED)
+find_package(Qt5 COMPONENTS DESIGNER REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
+#find_package(OpenCV REQUIRED COMPONENTS core)
+
+
+IF (BUILD_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+ENDIF (BUILD_UNICODE)
+
+ADD_DEFINITIONS(-DITOMCOMMONQT_MOC)
+
+#SET (QT_USE_QTXML TRUE)
+
+# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+IF (DEFINED CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+ELSE(CMAKE_BUILD_TYPE)
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+ENDIF (DEFINED CMAKE_BUILD_TYPE)
+
+
+INCLUDE_DIRECTORIES( 
+#    ${QT_QTCORE_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${OpenCV_DIR}/include
+)
+
+LINK_DIRECTORIES(
+    ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
+    ${OpenCV_DIR}/lib
+)
+
+#INCLUDE(${QT_USE_FILE})
+
+set(itomCommonQt_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/drawItem.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/multiPointPickerMachine.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
+)
+
+#QT5_WRAP_CPP(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
+
+set(itomCommonQt_SOURCES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/drawItem.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/multiPointPickerMachine.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/userInteractionPlotPicker.cpp
+)
+
+add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
+
+TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+
+qt5_use_modules(${target_name} Widgets Designer)
+
+# COPY SECTION
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
+ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -18,6 +18,7 @@ class AlgoPluginInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
         Q_INTERFACES(ito::AddInInterfaceBase)
+        PLUGIN_ITOM_API
 
     public:
         AlgoPluginInterface();       /*! <Class constructor */
