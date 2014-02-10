@@ -28,7 +28,7 @@
 #ifndef PCLFUNCTIONS_H
 #define PCLFUNCTIONS_H
 
-#include "defines.h"
+#include "pclDefines.h"
 #include "pclStructures.h"
 
 #include "../common/sharedStructures.h"

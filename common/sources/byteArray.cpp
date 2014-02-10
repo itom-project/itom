@@ -59,7 +59,7 @@ ByteArray &ByteArray::operator=(const ByteArray &rhs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ByteArray::append(const char *str)
+ByteArray &ByteArray::append(const char *str)
 {
     if (str)
     {
@@ -99,10 +99,12 @@ void ByteArray::append(const char *str)
             }
         }
     }
+
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ByteArray::append(const ByteArray &str)
+ByteArray &ByteArray::append(const ByteArray &str)
 {
     int newlen = str.length();
     Data *oldData = d;
@@ -122,6 +124,8 @@ void ByteArray::append(const ByteArray &str)
             decAndFree(oldData);
         }
     }
+
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

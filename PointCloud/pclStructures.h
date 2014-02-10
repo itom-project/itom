@@ -28,7 +28,7 @@
 #ifndef PCLSTRUCTURES_H
 #define PCLSTRUCTURES_H
 
-#include "defines.h"
+#include "pclDefines.h"
 #include "../common/typeDefs.h"
 
 #include <vector>

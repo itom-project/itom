@@ -81,9 +81,9 @@ class ITOMCOMMON_EXPORT ByteArray
 
         ByteArray &operator=(const ByteArray &rhs);
 
-        void append(const char *str);
+        ByteArray &append(const char *str);
 
-        void append(const ByteArray &str);
+        ByteArray &append(const ByteArray &str);
 
         int length() const { if(d){ return strlen(d->m_pData); } return 0; }
 
