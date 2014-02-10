@@ -5,7 +5,7 @@
 **RetVal** - The return type of |itom| methods
 ==============================================
 
-The class **RetVal** is used for creating, transmitting and handling return values of methods in |itom| and plugins. This class is defined in the file *sharedStructures.h* in the folder *common* of the |itom| base directory.
+The class **RetVal** is used for creating, transmitting and handling return values of methods in |itom| and plugins. This class is defined in the file *retVal.h* in the folder *include/common* of the |itom| SDK directory and its code is included in the library **itomCommonLib** also contained in the SDK (link against this library).
 
 Any return value consists of the following main components:
 

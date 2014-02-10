@@ -67,6 +67,8 @@ The bare framework of any plugin-class of type **DataIO**, **Actuator**, ... (bu
 .. code-block:: c++
     :linenos:
     
+    #include "common/addInInterface.h"
+    
     class MyPlugin : public ito::AddInActuator OR public ito::AddInDataIO OR public ito::AddInGrabber 
     {
         Q_OBJECT
@@ -92,6 +94,18 @@ The bare framework of any plugin-class of type **DataIO**, **Actuator**, ... (bu
         private slots:
             void dockWidgetVisibilityChanged(bool visible);
     };
+
+In the corresponding source file you need to write two defines before including the header file above:
+
+.. code-block:: c++
+    :linenos:
+    
+    #define ITOM_IMPORT_API
+    #define ITOM_IMPORT_PLOTAPI
+    
+    #include "myPluginHeaderFromAbove.h"
+    
+    //implement your code here
 
 In this chapter, hints about implementing the methods in the definitions above are given. In the detailed chapters about every type of plugin, these class definitions will then be extended by the type-specific methods.
 
@@ -414,7 +428,7 @@ An exemplary implementation of the method **execFunc** is
 .. code-block:: c++
     :linenos:
     
-    ito::RetVal AmmsMachine::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, ...
+    ito::RetVal MyPlugin::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, ...
         ...QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
     {
         ito::RetVal retValue = ito::retOk;

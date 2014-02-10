@@ -98,11 +98,6 @@ QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
 # in the same way than for the list plugin_HEADERS, fill in the following list
 # the source files of your plugin
 set(plugin_SOURCES 
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/dialogPluginName.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPluginName.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginName.cpp
@@ -125,7 +120,7 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 
 # here, all components of the plugin are linked. Add in this list external libraries
 # that your plugin must link against.
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)

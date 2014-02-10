@@ -52,6 +52,9 @@ A sample header file of the actuator's plugin class is illustrated in the follow
 .. code-block:: c++
     :linenos:
     
+    #define ITOM_IMPORT_API
+    #define ITOM_IMPORT_PLOTAPI
+
     #include "../../common/addInInterface.h"
 
     #include "dialogMyMotor.h"
@@ -115,6 +118,18 @@ A sample header file of the actuator's plugin class is illustrated in the follow
         private slots:
             void dockWidgetVisibilityChanged( bool visible ); /*!< this slot is invoked if the visibility of the dock widget has changed */
     };
+
+The corresponding source file should start with something like this:
+
+.. code-block:: c++
+    :linenos:
+    
+    #define ITOM_IMPORT_API
+    #define ITOM_IMPORT_PLOTAPI
+    
+    #include "yourHeaderFile.h"
+    
+    //implement your code here
     
 Signalling the current position and status of any axes
 -------------------------------------------------------

@@ -86,6 +86,18 @@ The raw scheme for your plugin-class is as follows:
     };
     
     #endif
+    
+**Source File (myPluginAlgo.cpp)**
+
+.. code-block:: c++
+    :linenos:
+    
+    #define ITOM_IMPORT_API
+    #define ITOM_IMPORT_PLOTAPI
+    
+    #include "myPluginAlgo.h"
+    
+    //implement your code here
 
 First of all, our algorithm plugin class is derived from the class **AddInAlgo** from within the **ito**-namespace. This base class is defined in the *addInInterface.h* header 
 that has to be included. Again, our plugin is ultimately derived from **QObject** and the *Q_OBJECT* macro must appear in the class definition in order to be able to use 
