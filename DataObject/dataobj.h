@@ -1611,6 +1611,9 @@ class DATAOBJ_EXPORT DataObject
 
 };
 
+//template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::int8>(const ito::int8 /*start*/, const ito::int8 /*end*/, const ito::int8 /*inc*/, const int /*transposed*/);
+//template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::uint8>(const ito::uint8 /*start*/, const ito::uint8 /*end*/, const ito::uint8 /*inc*/, const int /*transposed*/);
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // functions for DataObject in namespace ITO, which are NOT member functions

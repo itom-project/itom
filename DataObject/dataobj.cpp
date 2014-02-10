@@ -6280,14 +6280,14 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
 //template<> RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int, const int, const int, const int, const int);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template RetVal DataObject::linspace<int8>(const int8, const int8, const int8, const int);
-template RetVal DataObject::linspace<uint8>(const uint8, const uint8, const uint8, const int);
-template RetVal DataObject::linspace<int16>(const int16, const int16, const int16, const int);
-template RetVal DataObject::linspace<uint16>(const uint16, const uint16, const uint16, const int);
-template RetVal DataObject::linspace<int32>(const int32, const int32, const int32, const int);
-template RetVal DataObject::linspace<uint32>(const uint32, const uint32, const uint32, const int);
-template RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
-template RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<int8>(const int8, const int8, const int8, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<uint8>(const uint8, const uint8, const uint8, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<int16>(const int16, const int16, const int16, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<uint16>(const uint16, const uint16, const uint16, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<int32>(const int32, const int32, const int32, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<uint32>(const uint32, const uint32, const uint32, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
+template DATAOBJ_EXPORT RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
 
 template <class T>
 T Sum(T a, T b)
