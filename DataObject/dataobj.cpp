@@ -5108,11 +5108,16 @@ RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem
         retval = RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
         return retval;
     }
-    retval = checkType(src);
-    if (retval != ito::retOk)
-       return retval;
+    
+    //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
+    //if (retval != ito::retOk)
+    //   return retval;
 
     cv::Mat *cvMat = ((cv::Mat *)this->get_mdata()[this->seekMat(0)]);
+
+    if (cvMat->elemSize() !=  sizeOfElem)
+        return retval;
+
     if (cvMat->isContinuous())
     {
         memcpy(cvMat->ptr(0), src, sizeX * sizeY * sizeOfElem);
@@ -5138,11 +5143,14 @@ RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem
         retval = RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
         return retval;
     }
-    retval = checkType(src);
-    if (retval != ito::retOk)
-        return retval;
+    //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
+    //if (retval != ito::retOk)
+    //    return retval;
 
     cv::Mat *cvMat = ((cv::Mat *)this->get_mdata()[this->seekMat(0)]);
+
+    if (cvMat->elemSize() !=  sizeOfElem)
+        return retval;
     for (int y = 0; y < height; y++)
     {
         memcpy(cvMat->ptr(y), src + ((y0 + y) * sizeX + x0) * sizeOfElem , width * sizeOfElem);
