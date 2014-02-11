@@ -27,6 +27,11 @@
 //#include "../../designerPluginSource/qwt/src/qwt_global.h"
 #include "common/addInInterface.h"
 
+#include "common/commonVersion.h"
+#include "commonQt/commonQtVersion.h"
+#include "PointCloud/pclVersion.h"
+#include "DataObject/dataobjVersion.h"
+
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include <pcl/pcl_config.h>
 #endif
@@ -177,6 +182,13 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //itom_version
     items["itom_Version"] = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
+
+
+#if (defined ITOMLIBS_SHARED)
+    items["itom_sharedLibs"] = QString("dataobject v.%1; itomCommonLib v.%2; itomCommonQtLib v.%3; pointcloud v.%4").arg(DATAOBJ_VER_STRING, COMMON_VER_STRING , COMMON_QT_VER_STRING, PCL_WRAPPER_VER_STRING);
+#else
+    items["itom_sharedLibs"] = QObject::tr("none");
+#endif
 
     //itom_SysType
 #if (defined linux)
