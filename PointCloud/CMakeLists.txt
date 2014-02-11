@@ -55,6 +55,7 @@ INCLUDE_DIRECTORIES(
 )
 
 set(libSrcs 
+	${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pclFunctions.h
@@ -62,9 +63,14 @@ set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/impl/pclFunctionsImpl.h
 )
 
+if(MSVC)
+	list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
+
 add_library(pointcloud ${LIBRARY_TYPE} ${libSrcs}) # ../dataobject)
 
 IF(BUILD_ITOMLIBS_SHARED)
+
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} itomCommonLib dataobject)
 ENDIF(BUILD_ITOMLIBS_SHARED)
 

@@ -392,7 +392,12 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                         paramList.append(p.getName());
                     }
+<<<<<<< HEAD
+                    newLink.append(")");
+                    newLink.replace(", )",")");
+=======
                     QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
+>>>>>>> origin/master
                     QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
@@ -435,7 +440,12 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                         paramList.append(p.getName());
                     }
+<<<<<<< HEAD
+                    newLink.append(")");
+                    newLink.replace(", )",")");
+=======
                     QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
+>>>>>>> origin/master
                     QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);

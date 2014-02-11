@@ -80,7 +80,8 @@ IF (NOT USE_QT5)
 ENDIF (NOT USE_QT5)
 
 set(itomCommonQt_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
@@ -116,6 +117,10 @@ set(itomCommonQt_SOURCES
     #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/multiPointPickerMachine.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/userInteractionPlotPicker.cpp
 )
+
+if(MSVC)
+	list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 

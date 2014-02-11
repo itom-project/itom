@@ -52,22 +52,30 @@ LINK_DIRECTORIES(
 )
 
 set(libSrcs
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataobjVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
 )
 
+if(MSVC)
+	list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
+
 add_library(${target_name} ${LIBRARY_TYPE} ${libSrcs})
 
 IF(BUILD_ITOMLIBS_SHARED)
+
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} itomCommonLib)
 ENDIF(BUILD_ITOMLIBS_SHARED)
+
 
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/readWriteLock.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 
 # COPY SECTION
 set(COPY_SOURCES "")

@@ -41,7 +41,8 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 
 set(itomCommon_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/param.h
@@ -54,6 +55,10 @@ set(itomCommon_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp
 )
+
+if(MSVC)
+	list(APPEND itomCommon_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommon_SOURCES} ${itomCommon_HEADERS})
 
