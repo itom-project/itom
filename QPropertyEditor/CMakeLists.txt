@@ -4,7 +4,9 @@ project(${target_name})
 
 cmake_minimum_required(VERSION 2.8.8)
 
-cmake_policy(SET CMP0020 NEW)
+IF (USE_QT5)
+    cmake_policy(SET CMP0020 NEW)
+ENDIF (USE_QT5)
  
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
@@ -31,11 +33,14 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
-#find_package(Qt4 REQUIRED)
-find_package(Qt5Core REQUIRED)
+IF (USE_QT5)
+    find_package(Qt5 COMPONENTS CORE REQUIRED)
+#    add_definitions(${Qt5Widgets_DEFINITIONS})    
+ELSE (USE_QT5)
+    find_package(Qt4 REQUIRED)
+    #ADD_DEFINITIONS(${QT_DEFINITIONS})    
+ENDIF (USE_QT5)
 
-#ADD_DEFINITIONS(${QT_DEFINITIONS})
-add_definitions(${Qt5Widgets_DEFINITIONS})
 add_definitions(-DUNICODE -D_UNICODE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
@@ -49,7 +54,9 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 #    ${QT_QTSVG_INCLUDE_DIR}
 #)
 
-#INCLUDE(${QT_USE_FILE})
+IF (NOT USE_QT5)
+    INCLUDE(${QT_USE_FILE})
+ENDIF (NOT USE_QT5)
 
 set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.h
@@ -62,7 +69,12 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
 )
 
-QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
+IF (USE_QT5)
+    QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
+ELSE (USE_QT5)
+#    INCLUDE(${QT_USE_FILE})
+    QT4_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
+ENDIF (USE_QT5)
 
 set(qpropertyeditor_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.cpp
@@ -79,7 +91,9 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 
 #TARGET_LINK_LIBRARIES(${target_name} )
 
-qt5_use_modules(${target_name} PrintSupport UiTools Widgets Svg)
+IF (USE_QT5)
+    qt5_use_modules(${target_name} PrintSupport UiTools Widgets Svg)
+ENDIF (USE_QT5)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)

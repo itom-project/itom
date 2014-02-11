@@ -9,7 +9,9 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
-cmake_policy(SET CMP0020 NEW)
+IF (USE_QT5)
+    cmake_policy(SET CMP0020 NEW)
+ENDIF (USE_QT5)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -37,11 +39,12 @@ ELSE(BUILD_ITOMLIBS_SHARED)
                                                #shared, it also needs to be defined there.
     
 ENDIF(BUILD_ITOMLIBS_SHARED)
-
-#find_package(Qt4 REQUIRED)
-find_package(Qt5 COMPONENTS DESIGNER REQUIRED)
-#find_package(Qt5Widgets REQUIRED)
-#find_package(OpenCV REQUIRED COMPONENTS core)
+    
+IF (USE_QT5)
+    find_package(Qt5 COMPONENTS DESIGNER REQUIRED)
+ELSE (USE_QT5)
+    find_package(Qt4 REQUIRED)
+ENDIF (USE_QT5)
 
 
 IF (BUILD_UNICODE)
@@ -72,7 +75,9 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-#INCLUDE(${QT_USE_FILE})
+IF (NOT USE_QT5)
+    INCLUDE(${QT_USE_FILE})
+ENDIF (NOT USE_QT5)
 
 set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
@@ -114,9 +119,15 @@ set(itomCommonQt_SOURCES
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+IF (USE_QT5)
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+ELSE (USE_QT5)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+ENDIF (USE_QT5)
 
-qt5_use_modules(${target_name} Widgets Designer)
+IF (USE_QT5)
+    qt5_use_modules(${target_name} Widgets Designer)
+ENDIF (USE_QT5)
 
 # COPY SECTION
 set(COPY_SOURCES "")

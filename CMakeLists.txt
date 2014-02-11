@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
+OPTION(USE_QT5 "Use qt5 environment" OFF)
 SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -16,11 +17,10 @@ else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
 
-#set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
-#if(NOT CMAKE_SIZEOF_VOID_P)
-#   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}") 
-#   set(CMAKE_SIZEOF_VOID_P 4)  # replace 4 with 8 for 64-bit machine
-#endif()
+
+if (USE_QT5)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT5")
+endif (USE_QT5)
 
 ADD_SUBDIRECTORY(DataObject) 
 

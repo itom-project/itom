@@ -29,6 +29,7 @@
 #include "../../common/sharedStructuresGraphics.h"
 
 #include <qvariant.h>
+#include <qpointer.h>
 //#include <QWeakPointer>
 
 namespace ito 

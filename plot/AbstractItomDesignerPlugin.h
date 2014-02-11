@@ -31,7 +31,7 @@
 #include "../common/commonGlobal.h"
 #include "../common/sharedStructuresGraphics.h"
 #include "AbstractFigure.h"
-#include <QDesignerCustomWidgetInterface>
+#include <QtDesigner/QDesignerCustomWidgetInterface>
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
     

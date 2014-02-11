@@ -19,7 +19,9 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
-cmake_policy(SET CMP0020 NEW)
+IF (USE_QT5)
+    cmake_policy(SET CMP0020 NEW)
+ENDIF (USE_QT5)
 
 include("../ItomBuildMacros.cmake")  
 
@@ -28,11 +30,13 @@ include("../ItomBuildMacros.cmake")
   # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#find_package(Qt4 REQUIRED)
-find_package(Qt5 COMPONENTS CORE WIDGETS DESIGNER UITOOLS PRINTSUPPORT REQUIRED)
-#find_package(Qt5Widgets REQUIRED)
-#find_package(Qt5UiTools REQUIRED)
-#find_package(Qt5PrintSupport REQUIRED) 
+IF (USE_QT5)
+    find_package(Qt5 COMPONENTS CORE WIDGETS DESIGNER UITOOLS PRINTSUPPORT REQUIRED)
+ELSE (USE_QT5)
+    find_package(Qt4 REQUIRED)
+ENDIF (USE_QT5)
+
+
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV REQUIRED COMPONENTS core)
@@ -46,8 +50,6 @@ find_package(LATEX QUIET)
         
            
 ADD_DEFINITIONS(${QT_DEFINITIONS})  
-#qt5_use_modules(Widgets Declarative)
-#QT += widgets declarative
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
 IF (BUILD_UNICODE) 
@@ -64,11 +66,13 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-#SET (QT_USE_QTOPENGL TRUE)
-#SET (QT_USE_QTXML TRUE)
-#SET (QT_USE_QTSVG TRUE)
-#SET (QT_USE_QTSQL TRUE)
-#SET (QT_USE_QTNETWORK TRUE)
+IF (NOT USE_QT5)
+    SET (QT_USE_QTOPENGL TRUE)
+    SET (QT_USE_QTXML TRUE)
+    SET (QT_USE_QTSVG TRUE)
+    SET (QT_USE_QTSQL TRUE)
+    SET (QT_USE_QTNETWORK TRUE)
+ENDIF (NOT USE_QT5)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -97,6 +101,9 @@ INCLUDE_DIRECTORIES(
     ../DataObject/
     ../PointCloud/
 )
+IF (NOT USE_QT5)
+    #set(${INCLUDE_DIRECTORIES} ${INCLUDE_DIRECTORIES} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTSVG_INCLUDE_DIR})
+ENDIF (NOT USE_QT5)
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
@@ -104,7 +111,9 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-#INCLUDE(${QT_USE_FILE})
+IF (NOT USE_QT5)
+    INCLUDE(${QT_USE_FILE})
+ENDIF (NOT USE_QT5)
 
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
@@ -237,8 +246,11 @@ set(qitom_HEADERS
 )
 
 
-#QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
-QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
+IF (USE_QT5)
+    QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
+ELSE (USE_QT5)
+    QT4_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
+ENDIF (USE_QT5)
 
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
@@ -274,14 +286,22 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
 )
 
-QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
+IF (USE_QT5)
+    QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
+ELSE (USE_QT5)
+    QT4_WRAP_UI(qitom_ui_MOC ${qitom_ui})
+ENDIF (USE_QT5)
 
 
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+IF (USE_QT5)
+    QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+ELSE (USE_QT5)
+    QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+ENDIF (USE_QT5)
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
@@ -408,7 +428,11 @@ ADD_SOURCE_GROUP(widgets)
 if(MSVC)
     # Qt disables the native wchar_t type, do it too to avoid linking issues
     # well that changed in qt5 so go back to built-in type
+    if (USE_QT5)
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t+" )
+    else (USE_QT5)
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
+    endif (USE_QT5)
 endif(MSVC)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
@@ -488,7 +512,9 @@ set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
-qt5_use_modules(${target_name} Core Designer UiTools PrintSupport Widgets Sql Network Svg Xml Opengl Help)
+IF (USE_QT5)
+    qt5_use_modules(${target_name} Core Designer UiTools PrintSupport Widgets Sql Network Svg Xml Opengl Help)
+ENDIF (USE_QT5)
 
 SET( WINICONRES "" )
 
@@ -529,9 +555,11 @@ ENDIF(BUILD_WITH_PCL)
 
 #TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
-#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
-
+IF (USE_QT5)
 TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
+ELSE (USE_QT5)
+TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
+ENDIF (USE_QT5)
  
 BUILD_PARALLEL_LINUX(${target_name})
 

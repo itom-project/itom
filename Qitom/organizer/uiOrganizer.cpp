@@ -84,7 +84,8 @@ UiContainer::~UiContainer()
         }
 
         m_weakDialog.data()->deleteLater();
-        m_weakDialog.clear();
+//        m_weakDialog.clear();
+        delete m_weakDialog;
     }
 }
 
@@ -2225,16 +2226,22 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 {
                     if (i >= mo->methodOffset())
                     {
-//                        signal.append(meth.signature());
+                        #ifdef QT5
                         signal.append(meth.methodSignature());
+                        #else
+                        signal.append(meth.signature());
+                        #endif
                     }
                 }
                 else if (meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
                     if (i >= mo->methodOffset())
                     {
-//                        slot.append(meth.signature());
+                        #ifdef QT5
                         slot.append(meth.methodSignature());
+                        #else
+                        slot.append(meth.signature());
+                        #endif
                     }
                 }
             }

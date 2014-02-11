@@ -32,7 +32,11 @@
 
 #include <Qsci/qsciprinter.h>
 #include <qmessagebox.h>
+#ifdef QT5
 #include <QtPrintSupport/qprintpreviewdialog.h>
+#else
+#include <qprintpreviewdialog.h>
+#endif
 
 namespace ito 
 {

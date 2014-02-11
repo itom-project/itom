@@ -146,7 +146,11 @@ public:
     { 
         if(m_args[0]) QMetaType::destroy(m_argTypes[0], m_args[0]);
         m_argTypes[0] = type; 
-        m_args[0] = QMetaType::construct(type, NULL, NULL);
+#ifdef QT5
+        m_args[0] = QMetaType::create(type, NULL);
+#else
+        m_args[0] = QMetaType::construct(type, NULL);
+#endif
     };
 
     //! stores a pair of variable-type and corresponding void-pointer as parameter with given index number

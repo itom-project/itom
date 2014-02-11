@@ -13,8 +13,11 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
-//#include <qtconcurrentrun.h>
+#ifdef QT5
 #include <QtConcurrent/qtconcurrentrun.h>
+#else
+#include <qtconcurrentrun.h>
+#endif
 #include <qtextdocument.h>
 #include <qtextstream.h>
 #include <QThread>

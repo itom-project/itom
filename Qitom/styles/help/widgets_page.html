@@ -1,0 +1,80 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link rel='stylesheet' type='text/css' href='help_style.css'>
+</head>
+<body>
+
+<!-- Breadcrumb menu-->
+>>%BREADCRUMB%
+
+<div class="section" id="how-to-start-and-use-a-plugin">
+<h1>How to start and use a plugin</h1>
+
+<div class="document">
+
+<div class="section" id="hardware-plugins">
+<h2>Hardware Plugins</h2>
+<p>In this section you will learn how to create one instance of any hardware plugin (actuator, dataIO...) by a python script or the GUI of <strong>itom</strong>.</p>
+<p>Hardware plugins are mainly divided into the following main categories:</p>
+<ul>
+<li><p class="first"><strong>DataIO</strong> contains all plugins that are related with any data input/output operation. Short, these are mainly</p>
+<blockquote>
+<div><ul class="simple">
+<li>cameras and framegrabbers (organized in the subcategory <strong>Grabber</strong>),</li>
+<li>AD or DA converters (subcategory <strong>ADDA</strong>) or</li>
+<li>further input / output devices (subcategory <strong>Raw IO</strong>) like the serial port plugin</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Actuator</strong> contains all motor stages, piezo actuators or further actuator devices</p>
+</li>
+</ul>
+<p>All valid plugins are listed in the plugin toolbox of <strong>itom</strong></p>
+</div>
+
+<div class="section" id="script-based-startup">
+<h2>Script-based startup</h2>
+<p>In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember
+its plugin-name (case sensitive). Every plugin instance usually needs some mandatory and optional parameters for creating a new instance. Use the command <a class="reference internal" href="../../09_reference/itom_general.html#itom.pluginHelp" title="itom.pluginHelp"><tt class="xref py py-func docutils literal"><span class="pre">itom.pluginHelp()</span></tt></a>
+in order to get information about a plugin including descriptions of its mandatory and optional parameters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pluginHelp</span><span class="p">(</span><span class="s">"pluginName"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The information is then printed out in the command line of <strong>itom</strong>.</p>
+<p>Every hardware plugin is either represented by the class <a class="reference internal" href="../../09_reference/dataIO.html#itom.dataIO" title="itom.dataIO"><tt class="xref py py-class docutils literal"><span class="pre">itom.dataIO</span></tt></a> or <a class="reference internal" href="../../09_reference/actuator.html#itom.actuator" title="itom.actuator"><tt class="xref py py-class docutils literal"><span class="pre">itom.actuator</span></tt></a>. By creating a new instance of one of these classes, a new instance of
+the corresponding plugin is created. The syntax of the constructor is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myVar</span> <span class="o">=</span> <span class="n">dataIO</span><span class="p">(</span><span class="s">"pluginName"</span><span class="p">,</span> <span class="n">mandatoryParameters</span><span class="p">,</span> <span class="n">optionalParameters</span><span class="p">)</span>
+<span class="c">#or</span>
+<span class="n">myVar</span> <span class="o">=</span> <span class="n">actuator</span><span class="p">(</span><span class="s">"pluginName"</span><span class="p">,</span> <span class="n">mandatoryParameters</span><span class="p">,</span> <span class="n">optionalParameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <strong>mandatoryParameters</strong> are all mandatory parameters (just place one value after the other one separated by commas) followed by the optional parameters. If you only want to
+indicate some of the optional parameters use the keyword-based argument passing of python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">serial</span> <span class="o">=</span> <span class="n">dataIO</span><span class="p">(</span><span class="s">"SerialIO"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9600</span><span class="p">,</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c"># opens a serial port device at COM1 with 9600 bauds,</span>
+<span class="c"># an endline character '\n' and an odd parity as single optional parameters</span>
+</pre></div>
+</div>
+<p>Once an instance of a plugin is created, the corresponding entry in the plugin toolbox obtains a new child item. In <strong>Python</strong>, the variable you used for creating the plugin, is created and
+can now be used for controlling the plugin. As long as any variable(s) in <strong>Python</strong> still hold a reference to this plugin, its background color in the plugin toolbox is yellow.</p>
+<p>In order to close/delete an instance of a plugin you need to delete all variables in <strong>Python</strong> that are referencing this plugin, using the command <tt class="xref py py-func docutils literal"><span class="pre">del()</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">del</span> <span class="n">serial</span>
+</pre></div>
+</div>
+</div>
+
+
+<div class="section" id="script-based-startup">
+<h2>Notes</h2>
+<p class="last">Since <strong>Python</strong> has a garbage collection mechanism it is not assured that any object is immediately deleted once you delete the corresponding variable(s) in the <strong>Python</strong> workspace. It is
+really done if the garbage collection process is started which happens in periodical steps. You can force it using the method <a class="reference external" href="http://docs.python.org/3.2/library/gc.html#gc.collect" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">gc.collect()</span></tt></a> from the builtin module <a class="reference external" href="http://docs.python.org/3.2/library/gc.html#gc" title="(in Python v3.2)"><tt class="xref py py-mod docutils literal"><span class="pre">gc</span></tt></a>.</p>
+</div>
+
+
+</div>
+</div>
+
+</body>
+</html>

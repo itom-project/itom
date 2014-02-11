@@ -22,8 +22,11 @@
 
 #include "dialogSaveFileWithFilter.h"
 
-//#include <qtconcurrentrun.h>
+#ifdef QT5
 #include <QtConcurrent/qtconcurrentrun.h>
+#else
+#include <qtconcurrentrun.h>
+#endif
 #include <qfileinfo.h>
 #include <qfileiconprovider.h>
 

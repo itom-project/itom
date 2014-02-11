@@ -221,9 +221,11 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     self->timer = new QTimer();
     self->timer->setInterval(timeOut);
-//    int ret;
+    #ifdef QT5
     QMetaObject::Connection conn = QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()));
-//    if (!(ret=QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()))))
+    #else
+    int conn = QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()));
+    #endif
     if (!conn)
     {
         return -1;

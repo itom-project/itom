@@ -36,6 +36,7 @@
 #include <qhash.h>
 #include <qtimer.h>
 #include <qtranslator.h>
+#include <qpointer.h>
 
 // in the invokeMethod function parameters are passed with the Q_ARG macro, which works only with preregistered data types
 // the registration of "new" data types is done in two steps. First they are declared with the Q_DECLARE_METATYPE macro

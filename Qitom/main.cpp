@@ -228,7 +228,11 @@ end:
 
     ito::UserOrganizer::closeInstance();
 
+    #ifdef QT5
     qInstallMessageHandler(0);
+    #else
+    qInstallMsgHandler(0);
+    #endif
     delete messageStream;
     messageStream = NULL;
     logfile.close();
