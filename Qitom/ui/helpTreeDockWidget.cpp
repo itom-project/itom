@@ -423,15 +423,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     returnsSection = "";
 
                     // Example-Section
-                    QString newLink = awd->m_name+"(";
+                    QStringList paramList;
                     foreach(const ito::Param &p, params->paramsMand)
                     {
-                        QString para = p.getName();
-                        newLink.append(para+", ");
+                        paramList.append(p.getName());
                     }
-                    newLink.append(")");
-                    newLink.replace(", )",")");
-                    QByteArray a = newLink.toAscii();
+                    QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
+                    QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
                     exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
@@ -442,7 +440,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                 }
                 break;
             }
-            case typeFPlugin: case typeWPlugin: // DLL
+            case typeFPlugin: 
+            case typeWPlugin: // DLL
             {
                 const QList<QObject*> *algoPlugins = aim->getAlgList();
                 const ito::AddInInterfaceBase *aib = NULL;
