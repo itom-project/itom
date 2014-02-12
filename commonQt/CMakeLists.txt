@@ -13,9 +13,6 @@ IF (USE_QT5)
     cmake_policy(SET CMP0020 NEW)
 ENDIF (USE_QT5)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
@@ -42,18 +39,19 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
     
 IF (USE_QT5)
     find_package(Qt5 COMPONENTS DESIGNER REQUIRED)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
 ELSE (USE_QT5)
     find_package(Qt4 REQUIRED)
 ENDIF (USE_QT5)
 
+find_package(OpenCV REQUIRED COMPONENTS core)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
 ADD_DEFINITIONS(-DITOMCOMMONQT_MOC)
-
-#SET (QT_USE_QTXML TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -99,7 +97,9 @@ set(itomCommonQt_HEADERS
     #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
 )
 
-#QT5_WRAP_CPP(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
+IF(NOT USE_QT5)
+    QT4_WRAP_CPP_ITOM(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
+ENDIF(NOT USE_QT5)
 
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
