@@ -59,7 +59,7 @@ namespace cv
    {
        //return (float32)v;
        if(cvIsInf(v)) return std::numeric_limits<ito::float32>::infinity();
-       if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::signaling_NaN();
+       if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::quiet_NaN();
        return static_cast<ito::float32>(std::max ( (ito::float64)(- std::numeric_limits<ito::float32>::max()) ,  std::min ( v , (ito::float64) std::numeric_limits<ito::float32>::max() )));
    }
 
@@ -67,7 +67,7 @@ namespace cv
    {
        //return (float64)v;
        if(cvIsInf(v)) return std::numeric_limits<ito::float64>::infinity();
-       if(cvIsNaN(v)) return std::numeric_limits<ito::float64>::signaling_NaN();
+       if(cvIsNaN(v)) return std::numeric_limits<ito::float64>::quiet_NaN();
        return static_cast<ito::float64>(v);
    }
 
@@ -297,9 +297,9 @@ class DATAOBJ_EXPORT DataObjectTagType
         //!< Constructor
         DataObjectTagType() : m_dVal(0), m_strValue(""), m_type(DataObjectTagType::typeInvalid){};
         DataObjectTagType(double dVal) : m_dVal(dVal), m_strValue(""), m_type(DataObjectTagType::typeDouble){};
-        DataObjectTagType(const std::string &str) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str.data(); };
-        DataObjectTagType(const ByteArray &str) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str; };
-        DataObjectTagType(const char* cVal) : m_dVal(std::numeric_limits<double>::signaling_NaN()), m_type(DataObjectTagType::typeString){ cVal == NULL ?  m_strValue = "" : m_strValue = cVal;};
+        DataObjectTagType(const std::string &str) : m_dVal(std::numeric_limits<double>::quiet_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str.data(); };
+        DataObjectTagType(const ByteArray &str) : m_dVal(std::numeric_limits<double>::quiet_NaN()), m_type(DataObjectTagType::typeString){ m_strValue = str; };
+        DataObjectTagType(const char* cVal) : m_dVal(std::numeric_limits<double>::quiet_NaN()), m_type(DataObjectTagType::typeString){ cVal == NULL ?  m_strValue = "" : m_strValue = cVal;};
         //!< Copy Constructor
         DataObjectTagType(const DataObjectTagType& a) : m_dVal(a.m_dVal), m_type(a.m_type), m_strValue(a.m_strValue) {};
 
@@ -317,7 +317,7 @@ class DATAOBJ_EXPORT DataObjectTagType
         inline bool isValid(void) const { return (m_type == DataObjectTagType::typeInvalid) ? false: true;};
 
         /** getVal_ToDouble  read parameter value and try to convert to double
-        *   @return parameter value (numeric, casted) or signaling_NaN()
+        *   @return parameter value (numeric, casted) or quiet_NaN()
         *
         *   returns the actual parameter value as double. If conversion failes it returns a signaling_NaN()
         */
@@ -325,7 +325,7 @@ class DATAOBJ_EXPORT DataObjectTagType
         {
             if(m_type == DataObjectTagType::typeInvalid)
             {
-                return std::numeric_limits<double>::signaling_NaN();
+                return std::numeric_limits<double>::quiet_NaN();
             }
             else if(m_type == DataObjectTagType::typeDouble)
             {
@@ -333,7 +333,7 @@ class DATAOBJ_EXPORT DataObjectTagType
             }
             else
             {
-                double dVal = std::numeric_limits<double>::signaling_NaN();
+                double dVal = std::numeric_limits<double>::quiet_NaN();
                 //dVal = atof(m_strValue.c_str()); //sometimes the result of that line has been arbitrary, therefore this conversion should fail.
                 return dVal;
             }
