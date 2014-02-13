@@ -577,9 +577,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
-                QString min = QString::number(pMeta->getMin());
-                QString max = QString::number(pMeta->getMax());
-                meta = "Range: min: "+min+", max: "+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;
@@ -589,9 +587,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
-                QString min = pMeta->getMin();
-                QString max = pMeta->getMax();
-                meta = "Range: min:"+min+", max:"+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;
@@ -601,9 +597,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-                QString min = QString::number(pMeta->getMin());
-                QString max = QString::number(pMeta->getMax());
-                meta = "Range: min:"+min+", max:"+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;

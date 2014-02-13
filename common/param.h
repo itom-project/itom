@@ -130,7 +130,8 @@ namespace ito
         inline bool isNumeric(void) const
         {
             static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double;
-            return (numericTypeMask & getType()) > 0;
+            int type = getType();
+            return (type & numericTypeMask) && !(type & ito::ParamBase::Pointer);
         }
 
         inline ito::RetVal addNameSuffix(const char *suffix) 

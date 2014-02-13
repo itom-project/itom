@@ -25,10 +25,14 @@
 #include <qtreeview.h>
 #include <stdio.h>
 #include <qclipboard.h>
+<<<<<<< HEAD
 #include <qsettings.h>
 #include <common/addInInterface.h>
 #include <QtSql/qsqldatabase.h>
 #include <QtSql/qsqlquery.h>
+=======
+#include <common/addInInterface.h>
+>>>>>>> origin/master
 
 #include "../widgets/helpDockWidget.h"
 #include "../models/leafFilterProxyModel.h"
@@ -392,12 +396,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                         paramList.append(p.getName());
                     }
-<<<<<<< HEAD
-                    newLink.append(")");
-                    newLink.replace(", )",")");
-=======
                     QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
->>>>>>> origin/master
                     QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
@@ -440,12 +439,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                         paramList.append(p.getName());
                     }
-<<<<<<< HEAD
-                    newLink.append(")");
-                    newLink.replace(", )",")");
-=======
                     QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
->>>>>>> origin/master
                     QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
@@ -587,9 +581,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
-                QString min = QString::number(pMeta->getMin());
-                QString max = QString::number(pMeta->getMax());
-                meta = "Range: min: "+min+", max: "+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;
@@ -599,9 +591,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
-                QString min = pMeta->getMin();
-                QString max = pMeta->getMax();
-                meta = "Range: min:"+min+", max:"+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;
@@ -611,9 +601,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-                QString min = QString::number(pMeta->getMin());
-                QString max = QString::number(pMeta->getMax());
-                meta = "Range: min:"+min+", max:"+max+"";
+                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
             }
         }
         break;

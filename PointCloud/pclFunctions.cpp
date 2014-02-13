@@ -31,7 +31,7 @@
 #include "../DataObject/dataobj.h"
 #include "../DataObject/dataObjectFuncs.h"
 
-#include <pcl/io/pcd_io.h>
+#include <pcl/io/io.h>
 
 #if PCL_VERSION_COMPARE(>=,1,7,0)
     #include <pcl/conversions.h>
