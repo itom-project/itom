@@ -85,7 +85,7 @@ UiContainer::~UiContainer()
 
         m_weakDialog.data()->deleteLater();
 //        m_weakDialog.clear();
-        delete m_weakDialog;
+//        delete m_weakDialog;
     }
 }
 

@@ -31,10 +31,11 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 
-find_package(Qt5 COMPONENTS PrintSupport Widgets Svg REQUIRED)
-if (NOT ${Qt5_DIR} STREQUAL "") 
+set(QT5_INSTALLED FALSE)
+find_package(Qt5 COMPONENTS PrintSupport Widgets Svg)
+if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
     set(QT5_INSTALLED TRUE)
-endif (NOT ${Qt5_DIR} STREQUAL "") 
+endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
 if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
     #ADD_DEFINITIONS(${QT_DEFINITIONS})
