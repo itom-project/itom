@@ -565,6 +565,14 @@ end:
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
                 env.insert("QT_PLUGIN_PATH", appPath);
+
+#if linux
+#else
+                QString pathEnv = env.value("Path");
+                pathEnv.prepend(appPath + ";");
+                env.insert("Path", pathEnv);
+#endif
+
                 process->setProcessEnvironment(env);
 
                 if (errorSlotMemberOfParent != NULL)
@@ -586,6 +594,14 @@ end:
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
+
+#if linux
+#else
+                QString pathEnv = env.value("Path");
+                pathEnv.prepend(appPath + ";");
+                env.insert("Path", pathEnv);
+#endif
+
             process->setProcessEnvironment(env);
 
             if (errorSlotMemberOfParent != NULL)
