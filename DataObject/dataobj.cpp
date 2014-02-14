@@ -4872,9 +4872,9 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
         srcMat2 = (cv::Mat_<_Tp> *)(src2->get_mdata()[rhsMatNum]);     
         dstMat = (cv::Mat_<_Tp> *)(res->get_mdata()[resMatNum]);
 
-        if(std::numeric_limits<_Tp>::has_signaling_NaN)
+        if(std::numeric_limits<_Tp>::has_quiet_NaN)
         {
-            nanNumber = std::numeric_limits<_Tp>::signaling_NaN();
+            nanNumber = std::numeric_limits<_Tp>::quiet_NaN();
             infNumber = std::numeric_limits<_Tp>::infinity();
             epsilon = std::numeric_limits<_Tp>::epsilon();
 
