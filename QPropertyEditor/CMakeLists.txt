@@ -34,7 +34,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 IF (USE_QT5)
-    find_package(Qt5 COMPONENTS CORE REQUIRED)
+    find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 #    add_definitions(${Qt5Widgets_DEFINITIONS})    
 ELSE (USE_QT5)
     find_package(Qt4 REQUIRED)
@@ -73,7 +73,7 @@ IF (USE_QT5)
     QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
 ELSE (USE_QT5)
 #    INCLUDE(${QT_USE_FILE})
-    QT4_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
+    QT4_WRAP_CPP_ITOM(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
 ENDIF (USE_QT5)
 
 set(qpropertyeditor_SOURCES 
@@ -92,7 +92,7 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 #TARGET_LINK_LIBRARIES(${target_name} )
 
 IF (USE_QT5)
-    qt5_use_modules(${target_name} PrintSupport UiTools Widgets Svg)
+    qt5_use_modules(${target_name} PrintSupport Gui Widgets Svg)
 ENDIF (USE_QT5)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY

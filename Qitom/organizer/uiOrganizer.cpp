@@ -90,9 +90,6 @@ UiContainer::~UiContainer()
 }
 
 
-
-
-
 /*!
     \class UiOrganizer
     \brief The UiOrganizer is started as singleton instance within itom and organizes all main windows, dialogs, widgets,...

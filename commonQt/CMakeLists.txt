@@ -38,7 +38,7 @@ ELSE(BUILD_ITOMLIBS_SHARED)
 ENDIF(BUILD_ITOMLIBS_SHARED)
     
 IF (USE_QT5)
-    find_package(Qt5 COMPONENTS DESIGNER REQUIRED)
+    find_package(Qt5 COMPONENTS Widgets Gui REQUIRED)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 ELSE (USE_QT5)
@@ -131,7 +131,7 @@ ELSE (USE_QT5)
 ENDIF (USE_QT5)
 
 IF (USE_QT5)
-    qt5_use_modules(${target_name} Widgets Designer)
+    qt5_use_modules(${target_name} Widgets Gui)
 ENDIF (USE_QT5)
 
 # COPY SECTION

@@ -31,7 +31,7 @@ include("../ItomBuildMacros.cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 IF (USE_QT5)
-    find_package(Qt5 COMPONENTS CORE WIDGETS DESIGNER UITOOLS PRINTSUPPORT REQUIRED)
+    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Concurrent Xml OpenGL REQUIRED)
 ELSE (USE_QT5)
     find_package(Qt4 REQUIRED)
 ENDIF (USE_QT5)
@@ -249,7 +249,7 @@ set(qitom_HEADERS
 IF (USE_QT5)
     QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
 ELSE (USE_QT5)
-    QT4_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
+    QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
 ENDIF (USE_QT5)
 
 set(qitom_ui
@@ -289,7 +289,7 @@ set(qitom_ui
 IF (USE_QT5)
     QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
 ELSE (USE_QT5)
-    QT4_WRAP_UI(qitom_ui_MOC ${qitom_ui})
+    QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
 ENDIF (USE_QT5)
 
 
@@ -413,7 +413,11 @@ endif(MSVC)
 #    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
 #)
 
-#QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+if (USE_QT5)
+    QT5_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+else (USE_QT5)
+    QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+endif (USE_QT5)
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
@@ -495,14 +499,26 @@ set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
-#    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    if (USE_QT5)
+        QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    else (USE_QT5)
+        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    endif (USE_QT5)
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
-#    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+    if (USE_QT5)
+        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+    else (USE_QT5)    
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+    endif (USE_QT5)
 else (UPDATE_TRANSLATIONS)
-#    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+    if (USE_QT5)
+        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})    
+    else (USE_QT5)
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+    endif (USE_QT5)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
@@ -513,7 +529,7 @@ set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
 IF (USE_QT5)
-    qt5_use_modules(${target_name} Core Designer UiTools PrintSupport Widgets Sql Network Svg Xml Opengl Help)
+    qt5_use_modules(${target_name} Core Gui PrintSupport Widgets Sql Network Svg Xml OpenGL)
 ENDIF (USE_QT5)
 
 SET( WINICONRES "" )
