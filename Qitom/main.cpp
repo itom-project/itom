@@ -228,7 +228,7 @@ end:
 
     ito::UserOrganizer::closeInstance();
 
-    #ifdef QT5
+    #if QT_VERSION >= 0x050000
     qInstallMessageHandler(0);
     #else
     qInstallMsgHandler(0);

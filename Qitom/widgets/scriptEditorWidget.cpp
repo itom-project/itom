@@ -32,7 +32,7 @@
 
 #include <Qsci/qsciprinter.h>
 #include <qmessagebox.h>
-#ifdef QT5
+#if QT_VERSION >= 0x050000
 #include <QtPrintSupport/qprintpreviewdialog.h>
 #else
 #include <qprintpreviewdialog.h>

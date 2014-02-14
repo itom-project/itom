@@ -33,7 +33,7 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
-#ifdef QT5
+#if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprinter.h>
 #else
     #include <Qt/qprinter.h>

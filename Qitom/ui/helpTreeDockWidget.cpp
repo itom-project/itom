@@ -13,7 +13,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
-#ifdef QT5
+#if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
 #else
 #include <qtconcurrentrun.h>

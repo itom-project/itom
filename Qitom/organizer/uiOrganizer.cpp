@@ -2223,7 +2223,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #ifdef QT5
+                        #if QT_VERSION >= 0x050000
                         signal.append(meth.methodSignature());
                         #else
                         signal.append(meth.signature());
@@ -2234,10 +2234,10 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #ifdef QT5
-                        slot.append(meth.methodSignature());
+                        #if (QT_VERSION >= 0x050000)
+                            slot.append(meth.methodSignature());
                         #else
-                        slot.append(meth.signature());
+                            slot.append(meth.signature());
                         #endif
                     }
                 }

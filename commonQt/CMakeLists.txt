@@ -9,11 +9,9 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
-IF (USE_QT5)
-    cmake_policy(SET CMP0020 NEW)
-ENDIF (USE_QT5)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+cmake_policy(SET CMP0020 NEW)
 
 include("../ItomBuildMacros.cmake")
 
@@ -37,13 +35,18 @@ ELSE(BUILD_ITOMLIBS_SHARED)
     
 ENDIF(BUILD_ITOMLIBS_SHARED)
     
-IF (USE_QT5)
-    find_package(Qt5 COMPONENTS Widgets Gui REQUIRED)
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-ELSE (USE_QT5)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+find_package(Qt5 COMPONENTS Widgets Gui Xml REQUIRED)
+if (NOT ${Qt5_DIR} STREQUAL "") 
+    set(QT5_INSTALLED TRUE)
+endif (NOT ${Qt5_DIR} STREQUAL "") 
+if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
-ENDIF (USE_QT5)
+else (NOT QT5_INSTALLED)
+    set(CMAKE_AUTOMOC ON)
+endif (NOT QT5_INSTALLED)
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
@@ -73,9 +76,9 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-IF (NOT USE_QT5)
+IF (NOT QT5_INSTALLED)
     INCLUDE(${QT_USE_FILE})
-ENDIF (NOT USE_QT5)
+ENDIF (NOT QT5_INSTALLED)
 
 set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
@@ -97,9 +100,9 @@ set(itomCommonQt_HEADERS
     #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
 )
 
-IF(NOT USE_QT5)
+IF(NOT QT5_INSTALLED)
     QT4_WRAP_CPP_ITOM(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
-ENDIF(NOT USE_QT5)
+ENDIF(NOT QT5_INSTALLED)
 
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
@@ -124,15 +127,15 @@ endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
-IF (USE_QT5)
+IF (QT5_INSTALLED)
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-ELSE (USE_QT5)
+ELSE (QT5_INSTALLED)
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-ENDIF (USE_QT5)
+ENDIF (QT5_INSTALLED)
 
-IF (USE_QT5)
-    qt5_use_modules(${target_name} Widgets Gui)
-ENDIF (USE_QT5)
+IF (QT5_INSTALLED)
+    qt5_use_modules(${target_name} Widgets Gui Xml)
+ENDIF (QT5_INSTALLED)
 
 # COPY SECTION
 set(COPY_SOURCES "")

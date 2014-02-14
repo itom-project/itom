@@ -146,7 +146,7 @@ public:
     { 
         if(m_args[0]) QMetaType::destroy(m_argTypes[0], m_args[0]);
         m_argTypes[0] = type; 
-#ifdef QT5
+#if (QT_VERSION >= 0x050000)
         m_args[0] = QMetaType::create(type, NULL);
 #else
         m_args[0] = QMetaType::construct(type, NULL);

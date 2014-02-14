@@ -3,11 +3,8 @@ SET (target_name qpropertyeditor)
 project(${target_name})
 
 cmake_minimum_required(VERSION 2.8.8)
+cmake_policy(SET CMP0020 NEW)
 
-IF (USE_QT5)
-    cmake_policy(SET CMP0020 NEW)
-ENDIF (USE_QT5)
- 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -33,13 +30,15 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
-IF (USE_QT5)
-    find_package(Qt5 COMPONENTS Core Gui REQUIRED)
-#    add_definitions(${Qt5Widgets_DEFINITIONS})    
-ELSE (USE_QT5)
+
+find_package(Qt5 COMPONENTS PrintSupport Widgets Svg REQUIRED)
+if (NOT ${Qt5_DIR} STREQUAL "") 
+    set(QT5_INSTALLED TRUE)
+endif (NOT ${Qt5_DIR} STREQUAL "") 
+if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
-    #ADD_DEFINITIONS(${QT_DEFINITIONS})    
-ENDIF (USE_QT5)
+    #ADD_DEFINITIONS(${QT_DEFINITIONS})
+ENDIF (NOT QT5_INSTALLED)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
@@ -54,9 +53,9 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 #    ${QT_QTSVG_INCLUDE_DIR}
 #)
 
-IF (NOT USE_QT5)
+IF (NOT QT5_INSTALLED)
     INCLUDE(${QT_USE_FILE})
-ENDIF (NOT USE_QT5)
+ENDIF (NOT QT5_INSTALLED)
 
 set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.h
@@ -69,12 +68,12 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
 )
 
-IF (USE_QT5)
+IF (QT5_INSTALLED)
     QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ELSE (USE_QT5)
+ELSE (QT5_INSTALLED)
 #    INCLUDE(${QT_USE_FILE})
     QT4_WRAP_CPP_ITOM(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ENDIF (USE_QT5)
+ENDIF (QT5_INSTALLED)
 
 set(qpropertyeditor_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.cpp
@@ -91,9 +90,9 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 
 #TARGET_LINK_LIBRARIES(${target_name} )
 
-IF (USE_QT5)
-    qt5_use_modules(${target_name} PrintSupport Gui Widgets Svg)
-ENDIF (USE_QT5)
+IF (QT5_INSTALLED)
+    qt5_use_modules(${target_name} PrintSupport Widgets Svg)
+ENDIF (QT5_INSTALLED)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)

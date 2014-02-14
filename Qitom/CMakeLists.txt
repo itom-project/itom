@@ -18,10 +18,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-
-IF (USE_QT5)
-    cmake_policy(SET CMP0020 NEW)
-ENDIF (USE_QT5)
+cmake_policy(SET CMP0020 NEW)
 
 include("../ItomBuildMacros.cmake")  
 
@@ -30,11 +27,13 @@ include("../ItomBuildMacros.cmake")
   # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-IF (USE_QT5)
-    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Concurrent Xml OpenGL REQUIRED)
-ELSE (USE_QT5)
+find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)
+if (NOT ${Qt5_DIR} STREQUAL "") 
+    set(QT5_INSTALLED TRUE)
+endif (NOT ${Qt5_DIR} STREQUAL "") 
+if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
-ENDIF (USE_QT5)
+endif (NOT QT5_INSTALLED)
 
 
 find_package(PythonLibs 3.0 REQUIRED)  
@@ -66,13 +65,13 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-IF (NOT USE_QT5)
+IF (NOT QT5_INSTALLED)
     SET (QT_USE_QTOPENGL TRUE)
     SET (QT_USE_QTXML TRUE)
     SET (QT_USE_QTSVG TRUE)
     SET (QT_USE_QTSQL TRUE)
     SET (QT_USE_QTNETWORK TRUE)
-ENDIF (NOT USE_QT5)
+ENDIF (NOT QT5_INSTALLED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -101,9 +100,9 @@ INCLUDE_DIRECTORIES(
     ../DataObject/
     ../PointCloud/
 )
-IF (NOT USE_QT5)
+IF (NOT QT5_INSTALLED)
     #set(${INCLUDE_DIRECTORIES} ${INCLUDE_DIRECTORIES} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTSVG_INCLUDE_DIR})
-ENDIF (NOT USE_QT5)
+ENDIF (NOT QT5_INSTALLED)
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
@@ -111,9 +110,9 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-IF (NOT USE_QT5)
+IF (NOT QT5_INSTALLED)
     INCLUDE(${QT_USE_FILE})
-ENDIF (NOT USE_QT5)
+ENDIF (NOT QT5_INSTALLED)
 
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
@@ -246,11 +245,11 @@ set(qitom_HEADERS
 )
 
 
-IF (USE_QT5)
+IF (QT5_INSTALLED)
     QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
-ELSE (USE_QT5)
+ELSE (QT5_INSTALLED)
     QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
-ENDIF (USE_QT5)
+ENDIF (QT5_INSTALLED)
 
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
@@ -286,22 +285,22 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
 )
 
-IF (USE_QT5)
+IF (QT5_INSTALLED)
     QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
-ELSE (USE_QT5)
+ELSE (QT5_INSTALLED)
     QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
-ENDIF (USE_QT5)
+ENDIF (QT5_INSTALLED)
 
 
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-IF (USE_QT5)
+IF (QT5_INSTALLED)
     QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ELSE (USE_QT5)
+ELSE (QT5_INSTALLED)
     QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ENDIF (USE_QT5)
+ENDIF (QT5_INSTALLED)
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
@@ -413,11 +412,11 @@ endif(MSVC)
 #    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
 #)
 
-if (USE_QT5)
-    QT5_ADD_TRANSLATION(qitom_qm ${qitom_ts})
-else (USE_QT5)
+if (QT5_INSTALLED)
+    qt5_add_translation(qitom_qm ${qitom_ts})
+else (QT5_INSTALLED)
     QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
-endif (USE_QT5)
+endif (QT5_INSTALLED)
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
@@ -432,11 +431,11 @@ ADD_SOURCE_GROUP(widgets)
 if(MSVC)
     # Qt disables the native wchar_t type, do it too to avoid linking issues
     # well that changed in qt5 so go back to built-in type
-    if (USE_QT5)
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t+" )
-    else (USE_QT5)
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
-    endif (USE_QT5)
+    if (QT5_INSTALLED)
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t" )
+    else (QT5_INSTALLED)
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
+    endif (QT5_INSTALLED)
 endif(MSVC)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
@@ -499,26 +498,26 @@ set (TRANSLATION_OUTPUT_FILES)
 set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
-    if (USE_QT5)
+    if (QT5_INSTALLED)
         QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    else (USE_QT5)
+    else (QT5_INSTALLED)
         QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    endif (USE_QT5)
+    endif (QT5_INSTALLED)
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
-    if (USE_QT5)
+    if (QT5_INSTALLED)
         QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
-    else (USE_QT5)    
+    else (QT5_INSTALLED)
         QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
-    endif (USE_QT5)
+    endif (QT5_INSTALLED)
 else (UPDATE_TRANSLATIONS)
-    if (USE_QT5)
+    if (QT5_INSTALLED)
         QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})    
-    else (USE_QT5)
+    else (QT5_INSTALLED)
         QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
-    endif (USE_QT5)
+    endif (QT5_INSTALLED)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
@@ -528,9 +527,9 @@ set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
-IF (USE_QT5)
-    qt5_use_modules(${target_name} Core Gui PrintSupport Widgets Sql Network Svg Xml OpenGL)
-ENDIF (USE_QT5)
+IF (QT5_INSTALLED)
+    qt5_use_modules(${target_name} PrintSupport Widgets UiTools Sql Network Svg Xml OpenGL)
+ENDIF (QT5_INSTALLED)
 
 SET( WINICONRES "" )
 
@@ -571,11 +570,11 @@ ENDIF(BUILD_WITH_PCL)
 
 #TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
-IF (USE_QT5)
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
-ELSE (USE_QT5)
-TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
-ENDIF (USE_QT5)
+IF (QT5_INSTALLED)
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
+ELSE (QT5_INSTALLED)
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib)
+ENDIF (QT5_INSTALLED)
  
 BUILD_PARALLEL_LINUX(${target_name})
 
