@@ -27,6 +27,7 @@
 
 #ifndef APIFUNCTIONSGRAPHINC_H
 #define APIFUNCTIONSGRAPHINC_H
+#ifndef Q_MOC_RUN
 
 //#include "sharedStructures.h"
 //#include "sharedStructuresGraphics.h"
@@ -109,4 +110,5 @@ namespace ito
 
 } //end namespace ito
 
+#endif // Q_MOC_RUN
 #endif // APIFUNCTIONSGRAPHINC_H

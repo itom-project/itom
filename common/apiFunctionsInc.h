@@ -28,6 +28,7 @@
 #ifndef APIFUNCTIONSINC_H
 #define APIFUNCTIONSINC_H
 
+#ifndef Q_MOC_RUN
 namespace ito 
 {
 
@@ -242,5 +243,7 @@ namespace ito
 //#endif
 
 };
+
+#endif //Q_MOC_RUN
 
 #endif
