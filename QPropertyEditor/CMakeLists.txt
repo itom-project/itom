@@ -2,8 +2,8 @@ SET (target_name qpropertyeditor)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8.8)
-cmake_policy(SET CMP0020 NEW)
+cmake_minimum_required(VERSION 2.8.7)
+
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
@@ -32,11 +32,14 @@ include("../ItomBuildMacros.cmake")
 
 
 set(QT5_INSTALLED FALSE)
-find_package(Qt5 COMPONENTS PrintSupport Widgets Svg)
-if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+find_package(Qt5 COMPONENTS PrintSupport Widgets Svg QUIET)
+
+IF(QT5_FOUND) 
+    cmake_policy(SET CMP0020 NEW)
     set(QT5_INSTALLED TRUE)
     set(CMAKE_AUTOMOC ON)
-endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+endif (QT5_FOUND)
+ 
 if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
     #ADD_DEFINITIONS(${QT_DEFINITIONS})

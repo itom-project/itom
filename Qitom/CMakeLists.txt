@@ -3,7 +3,7 @@ set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -18,7 +18,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-cmake_policy(SET CMP0020 NEW)
+
 
 include("../ItomBuildMacros.cmake")  
 
@@ -28,11 +28,14 @@ include("../ItomBuildMacros.cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(QT5_INSTALLED FALSE)
-find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)
-if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
+
+IF(QT5_FOUND) 
+    cmake_policy(SET CMP0020 NEW)
     set(QT5_INSTALLED TRUE)
 #    set(CMAKE_AUTOMOC ON)
-endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+endif (QT5_FOUND)
+ 
 if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
 endif (NOT QT5_INSTALLED)

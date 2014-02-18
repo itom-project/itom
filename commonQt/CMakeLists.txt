@@ -11,7 +11,6 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-cmake_policy(SET CMP0020 NEW)
 
 include("../ItomBuildMacros.cmake")
 
@@ -39,11 +38,14 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(QT5_INSTALLED FALSE)
-find_package(Qt5 COMPONENTS Widgets Gui Xml)
-if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+find_package(Qt5 COMPONENTS Widgets Gui Xml QUIET)
+
+IF (QT5_FOUND) 
+    cmake_policy(SET CMP0020 NEW)
     set(QT5_INSTALLED TRUE)
     set(CMAKE_AUTOMOC ON)
-endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+endif (QT5_FOUND) 
+
 if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
 else (NOT QT5_INSTALLED)
