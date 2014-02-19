@@ -2,21 +2,20 @@ SET (target_name qpropertyeditor)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8.8)
-cmake_policy(SET CMP0020 NEW)
+cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
 
-if(CMAKE_HOST_WIN32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
-    else()
-        #ok
-    endif()
-endif()
+#if(CMAKE_HOST_WIN32)
+#    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+#        string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
+#    else()
+#        #ok
+#    endif()
+#endif()
   
 #compile as static library (always)
 SET(LIBRARY_TYPE STATIC)
@@ -30,17 +29,24 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
+set (QT5_FOUND FALSE)
+if (CMAKE_VERSION VERSION_GREATER 2.8.7)
+    cmake_policy(SET CMP0020 NEW)
+    if (WIN32)
+        find_package(WindowsSDK REQUIRED)
+        set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+        set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+    endif (WIN32)
+    find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
 
-set(QT5_INSTALLED FALSE)
-find_package(Qt5 COMPONENTS PrintSupport Widgets Svg)
-if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-    set(QT5_INSTALLED TRUE)
-    set(CMAKE_AUTOMOC ON)
-endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-if (NOT QT5_INSTALLED)
+    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+        set(QT5_FOUND TRUE)
+        set(CMAKE_AUTOMOC ON)
+    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
+if (NOT QT5_FOUND)
     find_package(Qt4 REQUIRED)
-    #ADD_DEFINITIONS(${QT_DEFINITIONS})
-ENDIF (NOT QT5_INSTALLED)
+endif (NOT QT5_FOUND)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
@@ -55,9 +61,9 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 #    ${QT_QTSVG_INCLUDE_DIR}
 #)
 
-IF (NOT QT5_INSTALLED)
+IF (NOT QT5_FOUND)
     INCLUDE(${QT_USE_FILE})
-ENDIF (NOT QT5_INSTALLED)
+ENDIF (NOT QT5_FOUND)
 
 set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.h
@@ -70,12 +76,12 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
 )
 
-IF (QT5_INSTALLED)
+IF (QT5_FOUND)
 #    QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ELSE (QT5_INSTALLED)
+ELSE (QT5_FOUND)
 #    INCLUDE(${QT_USE_FILE})
     QT4_WRAP_CPP_ITOM(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ENDIF (QT5_INSTALLED)
+ENDIF (QT5_FOUND)
 
 set(qpropertyeditor_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.cpp
@@ -92,9 +98,9 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 
 #TARGET_LINK_LIBRARIES(${target_name} )
 
-IF (QT5_INSTALLED)
+IF (QT5_FOUND)
     qt5_use_modules(${target_name} PrintSupport Widgets Svg)
-ENDIF (QT5_INSTALLED)
+ENDIF (QT5_FOUND)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)
