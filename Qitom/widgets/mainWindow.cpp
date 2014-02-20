@@ -6,6 +6,7 @@
 
     This file is part of itom.
   
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -210,6 +211,12 @@ MainWindow::MainWindow() :
         }
     }
 
+    if (m_pAIManagerWidget != NULL && m_helpDock != NULL)
+    {
+        connect(m_pAIManagerWidget, SIGNAL(showPluginInfo(QString, int)), m_helpDock, SLOT(mnuShowInfo(QString, int)));
+        connect(m_pAIManagerWidget, SIGNAL(showDockWidget()), this, SLOT(mnuShowScriptReference()));
+    }
+
     // connections
     if (pyEngine != NULL)
     {
@@ -239,7 +246,7 @@ MainWindow::MainWindow() :
     connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
 
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-    connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+    connect(m_console, SIGNAL(sendToLastCommand(QString, int)), m_lastCommandDock, SLOT(addLastCommand(QString, int)));
 
     //
     createActions();
@@ -526,6 +533,7 @@ void MainWindow::createActions()
 
     m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
     connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
+
 
     if (uOrg->hasFeature(featDeveloper))
     {
@@ -1517,6 +1525,5 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
 } //end namespace ito
 

@@ -67,11 +67,13 @@ namespace ito
             HelpTreeDockWidget *m_pHelpWidget;
 
         signals:
+            void showPluginInfo(QString name, int type);
 
         private slots:
             
 
         public slots:
+            void mnuShowInfo(QString name, int type);
 
     };
 

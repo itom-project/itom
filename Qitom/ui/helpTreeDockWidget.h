@@ -33,6 +33,7 @@ public slots:
     void showTreeview();
     void unshowTreeview();
     void propertiesChanged();
+    void showPluginInfo(QString name, int type);
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
