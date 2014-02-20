@@ -21,7 +21,7 @@ public:
     HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WFlags flags = 0);
     ~HelpTreeDockWidget();
 
-    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6};
+    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8};
 
 public slots:
     void navigateBackwards();
@@ -62,6 +62,7 @@ private:
         bool Filters;
         bool Widgets;
         bool Modules;
+        bool DataIO;
     };
 
     
