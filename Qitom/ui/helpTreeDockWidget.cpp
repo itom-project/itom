@@ -208,7 +208,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     // -------------------------------------
     QString linkNav;
     QStringList splittedLink;
-    const ito::AddInAlgo::FilterDef *fd = filterHashTable->value(filtername);
+    
 
     QString filter;
     // Hier wird der Filtername in Groß und Kleinschreibung übernommen
@@ -221,6 +221,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     {
         case typeFilter:
         {
+            const ito::AddInAlgo::FilterDef *fd = filterHashTable->value(filtername);
             splittedLink.append("Algorithms");
             splittedLink.append(fd->m_pBasePlugin->objectName());
             break;
@@ -428,7 +429,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                         paramList.append(p.getName());
                     }
-                    QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
+                    QString newLink = QString("filter(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
                     QByteArray a = newLink.toLatin1();
 
                     exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
