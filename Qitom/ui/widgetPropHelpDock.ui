@@ -44,6 +44,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="checkDataIO">
+          <property name="text">
+           <string>Show DataIO and Actuator</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QListWidget" name="listWidget"/>
         </item>
        </layout>

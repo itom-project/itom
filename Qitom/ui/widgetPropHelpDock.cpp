@@ -118,11 +118,12 @@ void WidgetPropHelpDock::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference"); //keep this name fix here!
 
-    ui.checkExtLinks->setChecked( settings.value("OpenExtLinks", true).toBool() );
-    ui.checkPlaintext->setChecked( settings.value("Plaintext", false).toBool() );
-    ui.checkFilters->setChecked( settings.value("ShowFilters", false).toBool() );
-    ui.checkWidgets->setChecked( settings.value("ShowWidgets", false).toBool() );
-    ui.checkModules->setChecked( settings.value("ShowModules", false).toBool() );
+    ui.checkExtLinks->setChecked( settings.value("openExtLinks", true).toBool() );
+    ui.checkPlaintext->setChecked( settings.value("plaintext", false).toBool() );
+    ui.checkFilters->setChecked( settings.value("showFilters", false).toBool() );
+    ui.checkWidgets->setChecked( settings.value("showWidgets", false).toBool() );
+    ui.checkDataIO->setChecked( settings.value("showDataIO", false).toBool() );
+    ui.checkModules->setChecked( settings.value("showModules", false).toBool() );
     if (ui.checkModules->isChecked())
         ui.listWidget->setEnabled(true);
     else
@@ -157,12 +158,13 @@ void WidgetPropHelpDock::writeSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference");
 
-    settings.setValue("OpenExtLinks", ui.checkExtLinks->isChecked() );
-    settings.setValue("Plaintext", ui.checkPlaintext->isChecked() );
-    settings.setValue("reLoadDBs", m_plistChanged );
-    settings.setValue("showFilters", ui.checkFilters->isChecked() );
-    settings.setValue("showWidgets", ui.checkWidgets->isChecked() );
-    settings.setValue("showModules", ui.checkModules->isChecked() );
+    settings.setValue("openExtLinks", ui.checkExtLinks->isChecked());
+    settings.setValue("plaintext"   , ui.checkPlaintext->isChecked());
+    settings.setValue("reLoadDBs"   , m_plistChanged );
+    settings.setValue("showFilters" , ui.checkFilters->isChecked());
+    settings.setValue("showWidgets" , ui.checkWidgets->isChecked());
+    settings.setValue("showDataIO"  , ui.checkDataIO->isChecked());
+    settings.setValue("showModules" , ui.checkModules->isChecked());
 
     // Write the checkstate with the List into the ini File
     settings.beginWriteArray("Databases");

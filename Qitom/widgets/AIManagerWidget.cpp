@@ -116,7 +116,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pContextMenu->addSeparator();
 
     m_pActInfo = new QAction(QIcon(":/plugins/icons/info.png"), tr("Info..."), this);
-//    connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
+    connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuShowInfo()));
     m_pContextMenu->addAction(m_pActInfo);
 
     m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
@@ -384,7 +384,7 @@ void AIManagerWidget::updateActions()
 
                 //m_pActCloseAllInstances->setEnabled(false);  // TODO
                 m_pActSnapDialog->setEnabled(false);  // TODO
-                m_pActInfo->setEnabled(false);  // TODO
+                m_pActInfo->setEnabled(true);  // TODO
             }
         }
     }
@@ -762,6 +762,7 @@ void AIManagerWidget::mnuOpenWidget()
 
     if (index.isValid())
     {
+
         ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)index.internalPointer();
         mnuShowAlgoWidget(awd);
     }
@@ -1002,6 +1003,51 @@ void AIManagerWidget::showDetails()
             m_pAIManagerView->setColumnWidth(i, m_pColumnWidth[i]);
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AIManagerWidget::mnuShowInfo()
+{
+    QModelIndex index = m_pAIManagerView->currentIndex();
+    if (index.isValid() && m_pSortFilterProxyModel)
+    {
+        index = m_pSortFilterProxyModel->mapToSource(index);
+    }
+
+    if (index.isValid())
+    {
+        emit(showDockWidget());
+        PlugInModel::tItemType itemType;
+        size_t itemInternalData;
+        
+        PlugInModel *plugInModel = (PlugInModel*)(index.model());
+        if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
+        {
+            if (itemType & PlugInModel::itemFilter)
+            {
+                ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
+                emit(showPluginInfo(awd->m_name, 2));
+            }
+            else if(itemType & PlugInModel::itemWidget)
+            {
+                ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
+                emit(showPluginInfo(awd->m_name, 3));
+            }
+            // TODO Activates the Info... Button for Plugins
+            /*else if(itemType & PlugInModel::itemPlugin)
+            {
+                ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
+                emit(showPluginInfo(awd->m_name, 4));
+            }
+            else if(itemType & PlugInModel::itemWidget)
+            {
+                ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
+                emit(showPluginInfo(awd->m_name, 5));
+            }*/
+        }
+    }
+
+    
 }
 
 } //end namespace ito

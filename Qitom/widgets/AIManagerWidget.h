@@ -102,6 +102,11 @@ namespace ito
             void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
             void showDetails();
+            void mnuShowInfo();
+
+        signals:
+            void showPluginInfo(QString name, int type);
+            void showDockWidget();
     };
 
 };  // namespace ito
