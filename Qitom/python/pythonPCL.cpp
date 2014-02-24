@@ -1640,7 +1640,31 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         paramsOpt.append( ito::ParamBase("mode", ito::ParamBase::String, "b") );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "pcd") );
 
-        ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval;
+
+        try
+        {
+            retval  = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+        }
+        catch(std::bad_alloc &ba)
+        {
+            retval += RetVal(retError, 0, "No more memory available when saving point cloud");
+        }
+        catch(std::exception &exc)
+        {
+            if (exc.what())
+            {
+                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown when saving a point cloud.", exc.what()); 
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when saving a point cloud."); 
+            }
+        }
+        catch (...)
+        {
+            retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when saving a point cloud.");  
+        }
 
         if( PythonCommon::transformRetValToPyException(retval) == false )
         {
@@ -1721,7 +1745,31 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toAscii().data() ) );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "pcd" ) );
 
-        ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval;
+
+        try
+        {
+            retval  = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+        }
+        catch(std::bad_alloc &ba)
+        {
+            retval += RetVal(retError, 0, "No more memory available when loading point cloud");
+        }
+        catch(std::exception &exc)
+        {
+            if (exc.what())
+            {
+                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown when loading a point cloud.", exc.what()); 
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when loading a point cloud."); 
+            }
+        }
+        catch (...)
+        {
+            retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when loading a point cloud.");  
+        }
 
         tempFile2.remove();
 
