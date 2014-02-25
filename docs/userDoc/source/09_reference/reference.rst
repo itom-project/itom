@@ -8,7 +8,7 @@ itom Script Reference
 This reference gives a full reference for all script commands that are contained in the python module |pyItom|.
 
 Content:
- 
+
 .. toctree::
    :maxdepth: 1
    

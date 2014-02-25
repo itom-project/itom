@@ -53,6 +53,11 @@ for buildername in buildernames:
 
     app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
                  confoverrides, sys.stdout, sys.stderr, freshenv)
+    
+    if("${BUILD_WITH_PCL}"=="ON"): #the first variable is automatically set by CMake
+        app.tags.add('PCL')
+    else:
+        app.tags.add('NOPCL')
 
     app.connect('autodoc-process-docstring',process_docstring)
     app.connect('autodoc-process-signature',process_signature)
