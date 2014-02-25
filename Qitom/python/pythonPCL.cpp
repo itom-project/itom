@@ -135,7 +135,23 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
     //0. check for call without arguments
     if( args == NULL )
     {
-        self->data = new ito::PCLPointCloud();
+        try
+        {
+            self->data = new ito::PCLPointCloud();
+        }
+        catch(std::bad_alloc &ba)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+            return -1;
+        }
+        catch(...)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+            return -1;
+        }
+
         done = true;
     }
 
@@ -187,7 +203,22 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
             if (pySeq == NULL)
             {
-                self->data = new ito::PCLPointCloud(*copyConstr2->data);
+                try
+                {
+                    self->data = new ito::PCLPointCloud(*copyConstr2->data);
+                }
+                catch(std::bad_alloc &ba)
+                {
+                    self->data = NULL;
+                    PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+                    return -1;
+                }
+                catch(...)
+                {
+                    self->data = NULL;
+                    PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+                    return -1;
+                }
             }
             else
             {
@@ -227,7 +258,22 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 
                         if (!PyErr_Occurred()) 
                         {
-                            self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
+                            try
+                            {
+                                self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
+                            }
+                            catch(std::bad_alloc &ba)
+                            {
+                                self->data = NULL;
+                                PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+                                return -1;
+                            }
+                            catch(...)
+                            {
+                                self->data = NULL;
+                                PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+                                return -1;
+                            }
                         }
                         
                     }
@@ -240,7 +286,22 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
         else
         {
-            self->data = new ito::PCLPointCloud(ito::pclInvalid);
+            try
+            {
+                self->data = new ito::PCLPointCloud(ito::pclInvalid);
+            }
+            catch(std::bad_alloc &ba)
+            {
+                self->data = NULL;
+                PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+                return -1;
+            }
+            catch(...)
+            {
+                self->data = NULL;
+                PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+                return -1;
+            }
         }
         done = true;
     }
@@ -257,7 +318,23 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
 
         done = true;
-        self->data = new ito::PCLPointCloud( (uint32_t)width, (uint32_t)height, point.getType(), point );
+
+        try
+        {
+            self->data = new ito::PCLPointCloud( (uint32_t)width, (uint32_t)height, point.getType(), point );
+        }
+        catch(std::bad_alloc &ba)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+            return -1;
+        }
+        catch(...)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+            return -1;
+        }
     }
 
     //4. check for single point
@@ -272,7 +349,23 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
 
         done = true;
-        self->data = new ito::PCLPointCloud( 1, 1, point.getType(), point );
+        
+        try
+        {
+            self->data = new ito::PCLPointCloud( 1, 1, point.getType(), point );
+        }
+        catch(std::bad_alloc &ba)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+            return -1;
+        }
+        catch(...)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+            return -1;
+        }
     }
 
     if (done == false)
@@ -2504,7 +2597,7 @@ PyObject* PythonPCL::PyPoint_repr(PyPoint *self)
         case ito::pclXYZINormal:
             {
                 const pcl::PointXYZINormal pt = self->point->getPointXYZINormal();
-                str = QString("Point (XYZ=[%1,%2,%3], Normal=[%4,%5,%6], curvature=%7, intensity=%8)").arg(pt.x, 0, 'G', 3).arg(pt.y, 0, 'G', 3).arg(pt.z, 0, 'G', 3).arg(pt.normal_x, 0, 'G', 3).arg(pt.normal_y, 0, 'G', 3).arg(pt.normal_z, 0, 'G', 3).arg(pt.curvature, 0, 'G', 3).arg(pt.intensity);
+                str = QString("Point (XYZ=[%1,%2,%3], Normal=[%4,%5,%6], curvature=%7, intensity=%8)").arg(pt.x, 0, 'G', 3).arg(pt.y, 0, 'G', 3).arg(pt.z, 0, 'G', 3).arg(pt.normal_x, 0, 'G', 3).arg(pt.normal_y, 0, 'G', 3).arg(pt.normal_z, 0, 'G', 3).arg(pt.curvature, 0, 'G', 3).arg(pt.intensity, 0, 'G', 3);
                 break;
             }
         case ito::pclXYZRGBNormal:
