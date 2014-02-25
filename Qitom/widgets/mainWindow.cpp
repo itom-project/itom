@@ -246,7 +246,7 @@ MainWindow::MainWindow() :
     connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
 
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-    connect(m_console, SIGNAL(sendToLastCommand(QString, int)), m_lastCommandDock, SLOT(addLastCommand(QString, int)));
+    connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
 
     //
     createActions();
