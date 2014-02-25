@@ -2438,7 +2438,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         }
         else
         {
-            ret += ito::RetVal::format(ito::retError,0,"The exception '<unknown>' has been thrown", exc.what()); 
+            ret += ito::RetVal(ito::retError,0,"The exception '<unknown>' has been thrown"); 
         }
 #if defined _DEBUG
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.

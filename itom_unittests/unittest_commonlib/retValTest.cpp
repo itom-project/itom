@@ -8,7 +8,7 @@ TEST(RetValTest, Constructor)
     EXPECT_EQ(ret1.containsError(),0);
     EXPECT_EQ(ret1.containsWarning(),0);
     EXPECT_EQ(ret1.containsWarningOrError(),0);
-    EXPECT_TRUE(ret1 == ito::retOk);
+    EXPECT_GT(ret1 == ito::retOk, 0);
     EXPECT_EQ(ret1.errorCode(),0);
     EXPECT_STREQ(ret1.errorMessage(), "");
 
@@ -16,7 +16,7 @@ TEST(RetValTest, Constructor)
     EXPECT_EQ(ret2.containsError(),0);
     EXPECT_EQ(ret2.containsWarning(),0);
     EXPECT_EQ(ret2.containsWarningOrError(),0);
-    EXPECT_TRUE(ret2 == ito::retOk);
+    EXPECT_GT(ret2 == ito::retOk, 0);
     EXPECT_EQ(ret2.errorCode(),0);
     EXPECT_STREQ(ret2.errorMessage(), "");
 
@@ -24,7 +24,7 @@ TEST(RetValTest, Constructor)
     EXPECT_EQ(ret3.containsError(),0);
     EXPECT_GE(ret3.containsWarning(),1);
     EXPECT_GE(ret3.containsWarningOrError(),1);
-    EXPECT_TRUE(ret3 == ito::retWarning);
+    EXPECT_GT(ret3 == ito::retWarning, 0);
     EXPECT_EQ(ret3.errorCode(),0);
     EXPECT_STREQ(ret3.errorMessage(), "");
 
@@ -32,7 +32,7 @@ TEST(RetValTest, Constructor)
     EXPECT_GE(ret4.containsError(),1);
     EXPECT_EQ(ret4.containsWarning(),0);
     EXPECT_GE(ret4.containsWarningOrError(),1);
-    EXPECT_TRUE(ret4 == ito::retError);
+    EXPECT_GT(ret4 == ito::retError, 0);
     EXPECT_EQ(ret4.errorCode(),0);
     EXPECT_STREQ(ret4.errorMessage(), "");
 
@@ -40,7 +40,7 @@ TEST(RetValTest, Constructor)
     EXPECT_GE(ret5.containsError(),1);
     EXPECT_EQ(ret5.containsWarning(),0);
     EXPECT_GE(ret5.containsWarningOrError(),1);
-    EXPECT_TRUE(ret5 == ito::retError);
+    EXPECT_GT(ret5 == ito::retError, 0);
     EXPECT_EQ(ret5.errorCode(),5);
     EXPECT_STREQ(ret5.errorMessage(), "test");
 }
@@ -54,7 +54,7 @@ TEST(RetValTest, Assignment)
     EXPECT_EQ(ret.containsError(),0);
     EXPECT_EQ(ret.containsWarning(),0);
     EXPECT_EQ(ret.containsWarningOrError(),0);
-    EXPECT_TRUE(ret == ito::retOk);
+    EXPECT_GT(ret == ito::retOk, 0);
     EXPECT_EQ(ret.errorCode(),0);
     EXPECT_STREQ(ret.errorMessage(), "");
 
@@ -62,7 +62,7 @@ TEST(RetValTest, Assignment)
     EXPECT_EQ(ret.containsError(),0);
     EXPECT_EQ(ret.containsWarning(),0);
     EXPECT_EQ(ret.containsWarningOrError(),0);
-    EXPECT_TRUE(ret == ito::retOk);
+    EXPECT_GT(ret == ito::retOk, 0);
     EXPECT_EQ(ret.errorCode(),0);
     EXPECT_STREQ(ret.errorMessage(), "");
 
@@ -70,7 +70,7 @@ TEST(RetValTest, Assignment)
     EXPECT_EQ(ret.containsError(),0);
     EXPECT_GE(ret.containsWarning(),1);
     EXPECT_GE(ret.containsWarningOrError(),1);
-    EXPECT_TRUE(ret == ito::retWarning);
+    EXPECT_GT(ret == ito::retWarning, 0);
     EXPECT_EQ(ret.errorCode(),0);
     EXPECT_STREQ(ret.errorMessage(), "");
 
@@ -78,7 +78,7 @@ TEST(RetValTest, Assignment)
     EXPECT_GE(ret.containsError(),1);
     EXPECT_EQ(ret.containsWarning(),0);
     EXPECT_GE(ret.containsWarningOrError(),1);
-    EXPECT_TRUE(ret == ito::retError);
+    EXPECT_GT(ret == ito::retError, 0);
     EXPECT_EQ(ret.errorCode(),0);
     EXPECT_STREQ(ret.errorMessage(), "");
 
@@ -86,7 +86,7 @@ TEST(RetValTest, Assignment)
     EXPECT_GE(ret.containsError(),1);
     EXPECT_EQ(ret.containsWarning(),0);
     EXPECT_GE(ret.containsWarningOrError(),1);
-    EXPECT_TRUE(ret == ito::retError);
+    EXPECT_GT(ret == ito::retError, 0);
     EXPECT_EQ(ret.errorCode(),0);
     EXPECT_STREQ(ret.errorMessage(), "");
 
@@ -94,7 +94,7 @@ TEST(RetValTest, Assignment)
     EXPECT_GE(ret.containsError(),1);
     EXPECT_EQ(ret.containsWarning(),0);
     EXPECT_GE(ret.containsWarningOrError(),1);
-    EXPECT_TRUE(ret == ito::retError);
+    EXPECT_GT(ret == ito::retError, 0);
     EXPECT_EQ(ret.errorCode(),5);
     EXPECT_STREQ(ret.errorMessage(), "test");
 }
@@ -176,29 +176,29 @@ TEST(RetValTest, Comparison)
     ito::RetVal ret4(ito::retError,0,"error1");
     ito::RetVal ret5(ito::retError,1,"error2");
 
-    EXPECT_TRUE(ret1 != ret2);
-    EXPECT_TRUE(ret1 != ret3);
-    EXPECT_TRUE(ret1 != ret4);
-    EXPECT_TRUE(ret1 != ret5);
+    EXPECT_GT(ret1 != ret2, 0);
+    EXPECT_GT(ret1 != ret3, 0);
+    EXPECT_GT(ret1 != ret4, 0);
+    EXPECT_GT(ret1 != ret5, 0);
 
-    EXPECT_TRUE(ret2 != ret1);
-    EXPECT_TRUE(ret2 == ret3);
-    EXPECT_TRUE(ret2 != ret4);
-    EXPECT_TRUE(ret2 != ret5);
+    EXPECT_GT(ret2 != ret1, 0);
+    EXPECT_GT(ret2 == ret3, 0);
+    EXPECT_GT(ret2 != ret4, 0);
+    EXPECT_GT(ret2 != ret5, 0);
 
-    EXPECT_TRUE(ret3 != ret1);
-    EXPECT_TRUE(ret3 == ret2);
-    EXPECT_TRUE(ret3 != ret4);
-    EXPECT_TRUE(ret3 != ret5);
+    EXPECT_GT(ret3 != ret1, 0);
+    EXPECT_GT(ret3 == ret2, 0);
+    EXPECT_GT(ret3 != ret4, 0);
+    EXPECT_GT(ret3 != ret5, 0);
 
-    EXPECT_TRUE(ret4 != ret1);
-    EXPECT_TRUE(ret4 != ret2);
-    EXPECT_TRUE(ret4 != ret3);
-    EXPECT_TRUE(ret4 == ret5);
+    EXPECT_GT(ret4 != ret1, 0);
+    EXPECT_GT(ret4 != ret2, 0);
+    EXPECT_GT(ret4 != ret3, 0);
+    EXPECT_GT(ret4 == ret5, 0);
 
-    EXPECT_TRUE(ret5 != ret1);
-    EXPECT_TRUE(ret5 != ret2);
-    EXPECT_TRUE(ret5 != ret3);
-    EXPECT_TRUE(ret5 == ret4);
+    EXPECT_GT(ret5 != ret1, 0);
+    EXPECT_GT(ret5 != ret2, 0);
+    EXPECT_GT(ret5 != ret3, 0);
+    EXPECT_GT(ret5 == ret4, 0);
     
 }

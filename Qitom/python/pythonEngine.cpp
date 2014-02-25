@@ -3606,7 +3606,31 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
     }
     else
     {
-        PyObject *result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
+        PyObject *result = NULL;
+        
+        try
+        {
+            result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
+        }
+        catch(std::bad_alloc &ba)
+        {
+            retval += RetVal(retError, 0, "No more memory available during pickling.");
+        }
+        catch(std::exception &exc)
+        {
+            if (exc.what())
+            {
+                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown during pickling.", exc.what()); 
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown."); 
+            }
+        }
+        catch (...)
+        {
+            retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown.");  
+        }
 
         if (result == NULL)
         {
@@ -3740,7 +3764,31 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
     }
     else
     {
-        PyObject *unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
+        PyObject *unpickledItem = NULL;
+        try
+        {
+            unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
+        }
+        catch(std::bad_alloc &ba)
+        {
+            retval += RetVal(retError, 0, "No more memory available during unpickling.");
+        }
+        catch(std::exception &exc)
+        {
+            if (exc.what())
+            {
+                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown during unpickling.", exc.what()); 
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"Unpickling error. An unspecified exception has been thrown."); 
+            }
+        }
+        catch (...)
+        {
+            retval += ito::RetVal(ito::retError,0,"Unpickling error. An unspecified exception has been thrown.");  
+        }
+
 
         if (unpickledItem == NULL)
         {
