@@ -68,7 +68,6 @@
 
 
 #include <stdio.h>
-
 #include <engine.h>
 
 #define PYMATLAB_VERSION "0.2"

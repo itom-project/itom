@@ -32,9 +32,9 @@ if (CMAKE_VERSION VERSION_GREATER 2.8.7)
         set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
     endif (WIN32)
     find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-    #    set(CMAKE_AUTOMOC ON)
     if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         set(QT5_FOUND TRUE)
+        set(CMAKE_AUTOMOC ON)
     endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
 endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
 
@@ -142,6 +142,7 @@ set(qitom_HEADERS_NOMOC
 
 
 set(qitom_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/aaa.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
@@ -253,7 +254,7 @@ set(qitom_HEADERS
 
 
 IF (QT5_FOUND)
-    QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
+#    QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
 ELSE (QT5_FOUND)
     QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
 ENDIF (QT5_FOUND)
@@ -359,7 +360,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/AbstractPropertyPageWidget.cpp
+#    ${CMAKE_CURRENT_SOURCE_DIR}/ui/AbstractPropertyPageWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.cpp

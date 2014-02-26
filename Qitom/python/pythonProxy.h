@@ -27,27 +27,28 @@
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
     #define NO_IMPORT_ARRAY
-//python
-// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
-    #undef _DEBUG
-    #if (defined linux) | (defined CMAKE)
-        #include "Python.h"
-        //#include "numpy/arrayobject.h"
+
+    //python
+    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+    #if (defined _DEBUG) && (!defined linux)
+        #undef _DEBUG
+        #if (defined linux) | (defined CMAKE)
+            #include "Python.h"
+            //#include "numpy/arrayobject.h"
+        #else
+            #include "Python.h"
+            //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        #endif
+        #define _DEBUG
     #else
-        #include "Python.h"
-        //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        #ifdef linux
+            #include "Python.h"
+            //#include "numpy/arrayobject.h"
+        #else
+            #include "Python.h"
+            //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
+        #endif
     #endif
-    #define _DEBUG
-#else
-    #ifdef linux
-        #include "Python.h"
-        //#include "numpy/arrayobject.h"
-    #else
-        #include "Python.h"
-        //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-    #endif
-#endif
 #endif
 
 namespace ito
@@ -65,8 +66,6 @@ public:
         PyObject* base;
     }
     PyProxy;
-
-    
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
@@ -87,9 +86,6 @@ public:
     static PyModuleDef PyProxyModule;
 
     static void PyProxy_addTpDict(PyObject *tp_dict);
-
-    
-
 };
 
 }; //end namespace ito

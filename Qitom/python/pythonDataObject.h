@@ -54,15 +54,13 @@
 #endif
 
 #include "../../DataObject/dataobj.h"
-#include <qobject.h>
+//#include <qobject.h>
 
 namespace ito 
 {
 class PythonDataObject
-    {
-
+{
     public:
-
         //-------------------------------------------------------------------------------------------------
         // typedefs
         //------------------------------------------------------------------------------------------------- 
@@ -73,8 +71,6 @@ class PythonDataObject
             PyObject* base;
         }
         PyDataObject;
-
-        
 
         typedef struct
         {
@@ -232,7 +228,6 @@ class PythonDataObject
         // iterator protocol
         //-------------------------------------------------------------------------------------------------
         static PyObject* PyDataObj_getiter(PyDataObject* self); //getiterfunc tp_iter;
-        
 
         //-------------------------------------------------------------------------------------------------
         // mapping protocol
@@ -310,9 +305,6 @@ class PythonDataObject
         //------------------------------------------------------------------------------------------------- 
         static PyMethodDef PyDataObjectIter_methods[];
         static PyTypeObject PyDataObjectIterType;
-
-
-
 };
 
 } //end namespace ito

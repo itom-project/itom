@@ -23,24 +23,6 @@
 #ifndef PYTHONCOMMON_H
 #define PYTHONCOMMON_H
 
-//python
-//// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-//#if (defined _DEBUG) && (!defined linux)
-//    #undef _DEBUG
-//    #ifdef linux
-//        #include "Python.h"
-//    #else
-//        #include "include\Python.h"
-//    #endif
-//    #define _DEBUG
-//#else
-//    #ifdef linux
-//        #include "Python.h"
-//    #else
-//        #include "include\Python.h"
-//    #endif
-//#endif
-
 #include "pythonPlugins.h"
 #include "pythonDataObject.h"
 #include "pythonPCL.h"

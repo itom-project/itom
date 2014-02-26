@@ -23,26 +23,24 @@
 #ifndef PYTHONRGBA
 #define PYTHONRGBA
 
-#include "../../common/typeDefs.h"
-#include "../../common/color.h"
-
 /* includes */
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
     #define NO_IMPORT_ARRAY
-//python
-// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
-    #undef _DEBUG
-    #include "Python.h" 
-    #define _DEBUG
-#else
-    #include "Python.h"   
-#endif
+    //python
+    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+    #if (defined _DEBUG) && (!defined linux)
+        #undef _DEBUG
+        #include "Python.h" 
+        #define _DEBUG
+    #else
+        #include "Python.h"   
+    #endif
 #endif
 
+#include "../../common/typeDefs.h"
+#include "../../common/color.h"
 #include "structmember.h"
-
 #include <qobject.h>
 
 namespace ito 

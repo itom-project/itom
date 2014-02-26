@@ -25,17 +25,16 @@
 
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
-#endif
 
-
-//python
-// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
-    #undef _DEBUG
-    #include "Python.h"
-    #define _DEBUG
-#else
-    #include "Python.h"
+    //python
+    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+    #if (defined _DEBUG) && (!defined linux)
+        #undef _DEBUG
+        #include "Python.h"
+        #define _DEBUG
+    #else
+        #include "Python.h"
+    #endif
 #endif
 
 #include "../global.h"

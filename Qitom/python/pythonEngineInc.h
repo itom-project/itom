@@ -19,11 +19,11 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */#ifndef PYTHONENGINEINC_H
+#ifndef Q_MOC_RUN
 #define PYTHONENGINEINC_H
-    #include <string>
-    #ifndef Q_MOC_RUN
+        #include <string>
         #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
         #define NO_IMPORT_ARRAY
-    #endif
     #include "./pythonEngine.h"
+#endif
 #endif

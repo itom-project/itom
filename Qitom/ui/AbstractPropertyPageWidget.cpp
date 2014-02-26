@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "abstractPropertyPageWidget.h"
+//#include "abstractPropertyPageWidget.h"
 
 /*!
     \class AbstractPropertyPageWidget
@@ -36,6 +36,7 @@
 /*!
     simply call this constructor in the constructor of your property page widget.
 */
+/*
 AbstractPropertyPageWidget::AbstractPropertyPageWidget(QWidget * parent, Qt::WindowFlags f) :
     QWidget(parent,f)
 {
@@ -44,5 +45,5 @@ AbstractPropertyPageWidget::AbstractPropertyPageWidget(QWidget * parent, Qt::Win
 //! destructor
 AbstractPropertyPageWidget::~AbstractPropertyPageWidget()
 {
-};
-
+}
+*/

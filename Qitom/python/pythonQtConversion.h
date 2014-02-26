@@ -23,20 +23,9 @@
 #ifndef PYTHONQTCONVERSION_H
 #define PYTHONQTCONVERSION_H
 
-//python
-// see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
-    #undef _DEBUG
-    #include "Python.h"
-    #define _DEBUG
-#else
-    #include "Python.h"
-#endif
-
 #include "pythonDataObject.h"
 #include "pythonPlugins.h"
 #include "pythonRegion.h"
-
 #include "pythonPCL.h"
 
 #include "../global.h"
