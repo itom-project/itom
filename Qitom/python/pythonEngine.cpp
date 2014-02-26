@@ -3612,7 +3612,7 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
         {
             result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             retval += RetVal(retError, 0, "No more memory available during pickling.");
         }
