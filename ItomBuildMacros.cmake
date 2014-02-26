@@ -4,6 +4,13 @@
 #set general things
 #########################################################################
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
+
+IF(BUILD_OPENCV_SHARED)
+    SET(OpenCV_STATIC FALSE)
+ELSE(BUILD_OPENCV_SHARED)
+    SET(OpenCV_STATIC TRUE)
+ENDIF(BUILD_OPENCV_SHARED)
 
 if (BUILD_TARGET64)
 	set(CMAKE_SIZEOF_VOID_P 8)
