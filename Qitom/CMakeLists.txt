@@ -22,7 +22,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set (QT5_FOUND FALSE)
 if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    cmake_policy(SET CMP0020 NEW)
+    if (POLICY CMP0020)
+        cmake_policy(SET CMP0020 NEW)
+    endif (POLICY CMP0020)
+    
     if (WIN32)
         find_package(WindowsSDK REQUIRED)
         set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
