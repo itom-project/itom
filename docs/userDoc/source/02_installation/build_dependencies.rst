@@ -44,13 +44,11 @@ QtCreator directly supports CMakeLists.txt-files. It is also possible to use the
 
 **CMake** (mandatory)
 
-Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it. If possible use any version higher than 2.8.8. CMake reads the platform-independent
-project files of |itom| (CMakeList.txt) and generates the corresponding project files for your compiler, IDE and platform.
+Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it. If possible use any version higher than 2.8.8. CMake reads the platform-independent project files of |itom| (CMakeList.txt) and generates the corresponding project files for your compiler, IDE and platform.
 
 **Qt-framework** (mandatory)
 
-Download the **Qt-framework** (version 4.7 or higher, branch 5 is not supported yet) from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler,
-you can directly install it. Otherwise, you need to configure and build **Qt** on your computer. This is also required if you want to compile |itom| with Visual Studio for 64bit (see box below).
+Download the **Qt-framework** (version 4.7 or higher, branch 5 is not supported yet) from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler, you can directly install it. Otherwise, you need to configure and build **Qt** on your computer. This is also required if you want to compile |itom| with Visual Studio for 64bit (see box below).
 
 Create the following environment variables (Windows only - you need to log-off from your computer in order to activate changes to environment variables):
 
@@ -119,6 +117,7 @@ project settings are not ready for a multi-configuration build in **Visual Studi
         CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
     
     (see also: http://www.mantidproject.org/Debugging_MantidPlot)
+    
     * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
     * Execute the following commands from the command-line::
         
@@ -139,7 +138,7 @@ Just execute the batch file **qscintilla_install.bat** and answer the given ques
 
 .. note::
     
-    If the batch file breaks with some strang error messages, please make sure, that the location where **QScintilla** is installed is writable by the batch file (e.g. the
+    If the batch file breaks with some strange error messages, please make sure, that the location where **QScintilla** is installed is writable by the batch file (e.g. the
     Windows program directory under Windows Vista or higher). Therefore it is recommended to locate **QScintilla** in another directory than the program-directory.
 
 .. _install-depend-opencv:
@@ -161,13 +160,12 @@ Finally, add the appropriate bin-folder of OpenCV to the windows environment var
 
 Changes to the environment variable only become active after a re-login to windows.
 
-**PointCloudLibrary** (mandatory, 1.6 or higher)
+**PointCloudLibrary** (optional, 1.6 or higher)
 
-The PointCloud-Library is a sister-project of OpenCV and is able to work with large point clouds.
+The PointCloud-Library is a sister-project of OpenCV and is able to work with large point clouds. You can compile |itom| with support for the point cloud library. Then the python classes **itom.pointCloud**, **itom.point** and **itom.polygonMesh** are available and algorithm plugins can use point cloud functionalities. If you don't need anything like this, don't install the point cloud library and uncheck the option **BUILD_WITH_PCL** in the CMake configurations of |itom|.
 
 The binaries can be loaded from the website http://www.pointclouds.org/downloads/windows.html. Depending on 32bit or 64bit execute the **AllInOne-Installer for Visual Studio 2010**. 
-The installation directory may for example be **C:\PCL1.6.0**. Information: Please install the PCL base software including all 3rd-party packages, besides OpenNI. 
-You don't have to install OpenNI, since this is only the binaries for the communication with commercial range sensors, like Kinect.
+The installation directory may for example be **C:\PCL1.6.0**. Information: Please install the PCL base software including all 3rd-party packages, besides OpenNI. You don't have to install OpenNI, since this is only the binaries for the communication with commercial range sensors, like Kinect.
 
 If you want to debug the point cloud library (not necessary, optional) unpack the appropriate zip-archive with the pdb-files into the bin-folder of the point cloud library. 
 This is the folder where the dll's are located as well.
@@ -187,21 +185,23 @@ Get a version of NumPy that fits to python 3.2 and install it. On Windows, binar
 **Sphinx** (optional)
 
 The Python package **Sphinx** is used for generating the user documentation of |itom|. You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However,
-sphinx is dependent on other packages, such that it is worth to get the package **distribute** (see below) first. Then open a command-line (cmd.exe) and move to the directory **[YourPythonPath]/Scripts**.
-Type the following command in order to download **sphinx** including dependecies from the internet and install it::
+sphinx is dependent on other packages, such that it is worth to install Sphinx using the |python| tool **pip** (If you don't have **pip** see the next section). Then open a command-line (cmd.exe) and switch to the directory **[YourPythonPath]/Scripts**. Type the following command in order to download **sphinx** including dependecies from the internet and install it::
     
-    easy_install -U sphinx
+    pip install sphinx
 
-**Distribute** (optional)
+For upgrading **sphinx**, type::
+    
+    pip install sphinx --upgrade
 
-Distribute is a python package, that can be used for easily downloading and installing other python packages, like *Sphinx*. Download the latest version (file ending with tar.gz) of
-**Distribute** from https://pypi.python.org/pypi/distribute and unpack it to any temporary directory on your hard drive. Open a command line and switch to the directory of **Distribute**.
+**pip** (optional)
+
+**Pip** is the new package installation tool for |python| packages. If you don't have **pip** already installed use the following hints to get **pip**. Download the file from https://raw.github.com/pypa/pip/master/contrib/get-pip.py and save it to any temporary directory. Then open the file **get-pip.py** with the python version used for compiling |itom| (e.g. python32.exe). As an alternative, open a command line and switch to the directory where you save the file **get-pip.py**.
 
 Assuming that Python is located under **C:\Python32**, execute the following command::
     
-    C:\python32\python.exe setup.py install
+    C:\python32\python.exe get-pip.py
 
-The **Distribute** is installed and you can use the **easy_install** tool (see **Sphinx** installation above).
+**pip** is installed and you can use the **pip** tool (see **Sphinx** installation above).
 
 **Other python packages** (optional)
 
