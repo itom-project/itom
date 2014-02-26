@@ -107,8 +107,8 @@ QtCreator project file of QScintilla finally copies the entire output to the **b
 project settings are not ready for a multi-configuration build in **Visual Studio**. As a result, you need to adapt the Qt-project file. To do this follow these steps:
 
     * Copy the downloaded files to a directory of your choise (preferably **NOT** the windows program directory, we are assuming in the following that you placed them in **C:\\QScintilla2**)
-    * Open the Visual-Studio 2010 32-bit commandline
-    * Open the file C:\\QScintilla2\\Qt4\\QScintilla.pro in a text editor and replace the line **CONFIG** with::
+    * Open the Visual-Studio 2010 32-bit commandline (or 64-bit if installed)
+    * Open the file **C:\\QScintilla2\\Qt4\\QScintilla.pro** or **C:\\QScintilla2\\Qt4Qt5\\QScintilla.pro** (version 2.8 or higher) in a text editor and replace the line **CONFIG** with::
         
         CONFIG += qt warn_off debug_and_release build_all dll thread
     
@@ -123,7 +123,7 @@ project settings are not ready for a multi-configuration build in **Visual Studi
         
         - cd C:\\QScintilla2\\Qt4
         - nmake distclean 
-        - QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
+        - %QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
         - nmake
         - nmake install
     
@@ -131,8 +131,8 @@ project settings are not ready for a multi-configuration build in **Visual Studi
 
 
 
-An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** (ITO only) and copy the folder **QScintilla2.6** 
-to a directory on your hard drive (e.g. **C:\QScintilla2.6**, avoid Windows program directory due to restrictions in write access). 
+An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** (ITO only) and copy the folder **QScintilla2.8** 
+to a directory on your hard drive (e.g. **C:\QScintilla2.8**, avoid Windows program directory due to restrictions in write access). 
 Open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
 Just execute the batch file **qscintilla_install.bat** and answer the given questions.
 
