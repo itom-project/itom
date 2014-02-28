@@ -39,7 +39,7 @@ if (CMAKE_VERSION VERSION_GREATER 2.8.7)
 
     if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC OFF) #does not work here
+        set(CMAKE_AUTOMOC ON)
     endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
 endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
 if (NOT QT5_FOUND)
@@ -113,10 +113,9 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.h
 )
 
+SET_SOURCE_FILES_PROPERTIES(pathLineEdit.h PROPERTIES SKIP_AUTOMOC TRUE)
+
 if (QT5_FOUND)
-    QT5_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
-    QT5_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
-    
     #these header files need to be moc'ed, but the moc file should not be added to the project
     #since it is included in another source file that actually compiles the moc'ed file.
     QT5_GENERATE_MOCS(
