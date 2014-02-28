@@ -31,7 +31,8 @@
 // Qt includes
 #include <QDebug>
 #include <QMouseEvent>
-#include <QWeakPointer>
+//#include <QWeakPointer>
+#include <QPointer>
 
 // CTK includes
 #include "popupWidget.h"
@@ -76,7 +77,7 @@ public:
   bool   BlockSetSliderValue;
   SliderWidget::SynchronizeSiblings SynchronizeMode;
   PopupWidget* SliderPopup;
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 };
 
 // --------------------------------------------------------------------------

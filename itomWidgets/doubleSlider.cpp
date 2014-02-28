@@ -25,6 +25,7 @@
 #include <QStyle>
 #include <QStyleOptionSlider>
 #include <QToolTip>
+#include <QPointer>
 
 #include "doubleSlider.h"
 #include "valueProxy.h"
@@ -76,7 +77,7 @@ public:
   double      PageStep;
   double      Value;
   /// Converts input value with displayed value
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 };
 
 // --------------------------------------------------------------------------

@@ -31,7 +31,8 @@
 // Qt includes
 #include <QDebug>
 #include <QMouseEvent>
-#include <QWeakPointer>
+//#include <QWeakPointer>
+#include <QPointer>
 
 // CTK includes
 #include "rangeWidget.h"
@@ -66,7 +67,7 @@ public:
   double        MaximumValueBeforeChange;
   bool          AutoSpinBoxWidth;
   Qt::Alignment SpinBoxAlignment;
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 };
 
 // --------------------------------------------------------------------------

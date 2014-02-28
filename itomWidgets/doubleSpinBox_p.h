@@ -33,7 +33,8 @@
 
 // Qt includes
 #include <QDoubleSpinBox>
-#include <QWeakPointer>
+//#include <QWeakPointer>
+#include <QPointer>
 class DoubleSpinBoxPrivate;
 class ValueProxy;
 
@@ -110,7 +111,7 @@ public:
   mutable QSize CachedSizeHint;
   bool ForceInputValueUpdate;
 
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 
   void init();
   /// Compare two double previously rounded according to the number of decimals

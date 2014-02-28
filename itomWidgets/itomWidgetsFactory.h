@@ -25,7 +25,6 @@
 
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 
-
 class ItomWidgetsFactory : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
     Q_OBJECT
