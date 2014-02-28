@@ -74,7 +74,7 @@ BEGIN
 #else
             VALUE   "OriginalFilename", "itomCommonLib.dll\0"
 #endif
-            VALUE   "ProductName",      "itom measurement programm\0"
+            VALUE   "ProductName",      "itom measurement software\0"
             VALUE   "ProductVersion",   COMMON_VER_STRING "\0"
         END
     END
