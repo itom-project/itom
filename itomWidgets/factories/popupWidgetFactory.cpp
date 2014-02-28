@@ -22,74 +22,78 @@
 
 
 #include <QtCore/QtPlugin>
-#include "rangeWidgetFactory.h"
-#include "rangeWidget.h"
+#include "popupWidgetFactory.h"
+#include "popupWidget.h"
 
 
 // --------------------------------------------------------------------------
-RangeWidgetFactory::RangeWidgetFactory(QObject *_parent)
+PopupWidgetFactory::PopupWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *RangeWidgetFactory::createWidget(QWidget *_parent)
+QWidget *PopupWidgetFactory::createWidget(QWidget *_parent)
 {
-    RangeWidget* widget = new RangeWidget(_parent);
-    return widget;
+    PopupWidget* newWidget = new PopupWidget(_parent);
+    // if the widget is a tooltip, it wouldn't accept children
+    newWidget->setWindowFlags(0);
+    // if the widget auto hides, it disappear from the workplace and don't allow
+    // children anymore.
+    newWidget->setAutoHide(false);
+    return newWidget;
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::domXml() const
+QString PopupWidgetFactory::domXml() const
 {
-  return "<widget class=\"RangeWidget\" name=\"RangeWidget\">\n"
-          "</widget>\n";
+  return "<widget class=\"PopupWidget\" name=\"PopupWidget\">\n</widget>\n";
 }
 
 // --------------------------------------------------------------------------
-QIcon RangeWidgetFactory::icon() const
+QIcon PopupWidgetFactory::icon() const
 {
-  return QIcon(":/icons/hrangeslider.png");
+  return QIcon(":/Icons/widget.png");
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::includeFile() const
+QString PopupWidgetFactory::includeFile() const
 {
-    return "rangeWidget.h";
+    return "popupWidget.h";
 }
 
 // --------------------------------------------------------------------------
-bool RangeWidgetFactory::isContainer() const
+bool PopupWidgetFactory::isContainer() const
 {
-    return false;
+    return true;
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::name() const
+QString PopupWidgetFactory::name() const
 {
-    return "RangeWidget";
+    return "PopupWidget";
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::group() const
+QString PopupWidgetFactory::group() const
 { 
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::toolTip() const
+QString PopupWidgetFactory::toolTip() const
 { 
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::whatsThis() const
+QString PopupWidgetFactory::whatsThis() const
 {
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-void RangeWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
+void PopupWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
 {
     Q_UNUSED(formEditor);
     if (initialized)

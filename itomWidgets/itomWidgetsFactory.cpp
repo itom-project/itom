@@ -30,9 +30,10 @@
 #include "factories/doubleSliderFactory.h"
 #include "factories/doubleSpinBoxFactory.h"
 #include "factories/rangeSliderFactory.h"
-//#include "factories/rangeWidgetFactory.h"
-//#include "factories/sliderWidgetFactory.h"
+#include "factories/rangeWidgetFactory.h"
+#include "factories/sliderWidgetFactory.h"
 #include "factories/pathLineEditFactory.h"
+#include "factories/popupWidgetFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -43,9 +44,10 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new DoubleSliderFactory(this));
     //widgets.append(new DoubleSpinBoxFactory(this));
     widgets.append(new RangeSliderFactory(this));
-    //widgets.append(new RangeWidgetFactory(this));
-    //widgets.append(new SliderWidgetFactory(this));
+    widgets.append(new RangeWidgetFactory(this));
+    widgets.append(new SliderWidgetFactory(this));
     widgets.append(new PathLineEditFactory(this));
+    widgets.append(new PopupWidgetFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------

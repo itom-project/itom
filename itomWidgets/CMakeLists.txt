@@ -39,7 +39,7 @@ if (CMAKE_VERSION VERSION_GREATER 2.8.7)
 
     if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTOMOC OFF) #does not work here
     endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
 endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
 if (NOT QT5_FOUND)
@@ -89,8 +89,11 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -106,38 +109,32 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.h
 )
 
-#this macro only generates the moc-file but does not compile it, since it is included in another source file.
-#this comes from the ctkCommon project
-macro(QT4_GENERATE_MOCS)
-  foreach(file ${ARGN})
-    set(moc_file moc_${file})
-    QT4_GENERATE_MOC(${file} ${moc_file})
-
-    get_filename_component(source_name ${file} NAME_WE)
-    get_filename_component(source_ext ${file} EXT)
-    if(${source_ext} MATCHES "\\.[hH]")
-      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
-        set(source_ext .cpp)
-      elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
-        set(source_ext .cxx)
-      endif()
-    endif()
-    set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
-  endforeach()
-endmacro()
-
-QT4_GENERATE_MOCS(
-    pathLineEdit.h
-)
-
-if (NOT QT5_FOUND)
+if (QT5_FOUND)
+    QT5_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
+    QT5_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
+    
+    #these header files need to be moc'ed, but the moc file should not be added to the project
+    #since it is included in another source file that actually compiles the moc'ed file.
+    QT5_GENERATE_MOCS(
+        pathLineEdit.h
+    )
+else (QT5_FOUND)
     QT4_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     QT4_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
-endif (NOT QT5_FOUND)
+    
+    #these header files need to be moc'ed, but the moc file should not be added to the project
+    #since it is included in another source file that actually compiles the moc'ed file.
+    QT4_GENERATE_MOCS(
+        pathLineEdit.h
+    )
+endif (QT5_FOUND)
 
-set(itomWidgets_HEADERS ${itomWidets_HEADERS} ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h)
+#append the separately moc'ed header to the list of headers
+LIST(APPEND itomWidgets_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h")
 
 set(itomWidgets_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgets.qrc
@@ -153,6 +150,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeSlider.cpp
@@ -161,6 +159,8 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.cpp
@@ -170,6 +170,18 @@ set(itomWidgets_SOURCES
 if(MSVC)
     list(APPEND itomWidgets_SOURCES version.rc)
 endif(MSVC)
+
+
+set(itomWidgets_UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/rangeWidget.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/sliderWidget.ui
+)
+
+IF (QT5_FOUND)
+    QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
+ELSE (QT5_FOUND)
+    QT4_WRAP_UI_ITOM(itomWidgets_UI_MOC ${itomWidgets_UI})
+ENDIF (QT5_FOUND)
 
 #handle translations BEGIN STEP 1
 set (FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_Factory_HEADERS} ${designer_ui})
@@ -189,16 +201,14 @@ endif (QT5_FOUND)
 ADD_SOURCE_GROUP(factories)
 #end add filters to visual studio
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_ui_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_UI_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
 
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES})
     qt5_use_modules(${target_name} UiTools Widgets Svg Designer)
 else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
 endif (QT5_FOUND)
-
-add_dependencies(${target_name} itomWidgets_SPECIAL_MOC)
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)
@@ -228,8 +238,8 @@ endif (UPDATE_TRANSLATIONS)
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
+ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_DESIGNERLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-#ADD_DESIGNER_QM_FILES_TO_COPY_LIST(QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 FOREACH(headerFile ${itomWidgets_HEADERS}) 

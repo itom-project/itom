@@ -20,13 +20,13 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef RANGEWIDGETFACTORY_H
-#define RANGEWIDGETFACTORY_H
+#ifndef POPUPWIDGETFACTORY_H
+#define POPUPWIDGETFACTORY_H
 
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 
 
-class RangeWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
+class PopupWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
 #if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
@@ -35,7 +35,7 @@ class RangeWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    RangeWidgetFactory(QObject *parent = 0);
+    PopupWidgetFactory(QObject *parent = 0);
 
     bool isContainer() const;
     bool isInitialized() const { return initialized; }
