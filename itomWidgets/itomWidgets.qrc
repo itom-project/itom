@@ -1,0 +1,18 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource>
+    <file>icons/combobox.png</file>
+    <file>icons/doublespinbox.png</file>
+    <file>icons/groupbox.png</file>
+    <file>icons/groupboxcollapsible.png</file>
+    <file>icons/hrangeslider.png</file>
+    <file>icons/hslider.png</file>
+    <file>icons/listbox.png</file>
+    <file>icons/listview.png</file>
+    <file>icons/pushbutton.png</file>
+    <file>icons/sliderspinbox.png</file>
+    <file>icons/table.png</file>
+    <file>icons/textedit.png</file>
+    <file>icons/vspacer.png</file>
+    <file>icons/widget.png</file>
+  </qresource>
+</RCC>
