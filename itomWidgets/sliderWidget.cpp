@@ -37,7 +37,7 @@
 #include "popupWidget.h"
 #include "sliderWidget.h"
 #include "valueProxy.h"
-#include "ui_SliderWidget.h"
+#include "ui_sliderWidget.h"
 
 // STD includes 
 #include <cmath>

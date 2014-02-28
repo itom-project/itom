@@ -26,9 +26,8 @@
 #include <QStyleOptionSlider>
 #include <QToolTip>
 
-// CTK includes
-#include "DoubleSlider.h"
-#include "ValueProxy.h"
+#include "doubleSlider.h"
+#include "valueProxy.h"
 
 // STD includes
 #include <limits>

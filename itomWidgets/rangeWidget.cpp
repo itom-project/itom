@@ -36,7 +36,7 @@
 // CTK includes
 #include "rangeWidget.h"
 #include "valueProxy.h"
-#include "ui_RangeWidget.h"
+#include "ui_rangeWidget.h"
 
 // STD includes
 #include <cmath>

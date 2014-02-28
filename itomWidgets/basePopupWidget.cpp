@@ -45,7 +45,7 @@
 #include <QTimer>
 
 // CTK includes
-#include "BasePopupWidget_p.h"
+#include "basePopupWidget_p.h"
 
 // -------------------------------------------------------------------------
 QGradient* duplicateGradient(const QGradient* gradient)
