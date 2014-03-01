@@ -357,9 +357,22 @@ namespace ito {
     {
         if (meta)
         {
-            if (value < meta->getMin() || value > meta->getMax())
+            double minVal = meta->getMin();
+            double maxVal = meta->getMax();
+
+            if (value < minVal || value > maxVal)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(meta->getMin()).arg(meta->getMax()).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+            }
+
+            double step = meta->getStepSize();
+            if (step != 1.0)   
+            {
+                double div = std::abs((value - minVal) / step);
+                if ((div - (double)(qRound(div))) > std::numeric_limits<double>::epsilon())
+                {
+                    return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                }
             }
         }
         return ito::retOk;
@@ -370,9 +383,18 @@ namespace ito {
     {
         if (meta)
         {
-            if (value < meta->getMin() || value > meta->getMax())
+            int minVal = meta->getMin();
+            int maxVal = meta->getMax();
+
+            if (value < minVal || value > maxVal)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg((int)meta->getMin()).arg((int)meta->getMax()).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+            }
+
+            int step = meta->getStepSize();
+            if (step != 1 && ((value - minVal) % step) != 0)
+            {
+                return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
             }
         }
         return ito::retOk;
@@ -383,9 +405,18 @@ namespace ito {
     {
         if (meta)
         {
-            if (value < meta->getMin() || value > meta->getMax())
+            char minVal = meta->getMin();
+            char maxVal = meta->getMax();
+
+            if (value < minVal || value > maxVal)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("Value out of range [%1, %2]").arg((char)meta->getMin()).arg((char)meta->getMax()).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+            }
+
+            char step = meta->getStepSize();
+            if (step != 1 && ((value - minVal) % step) != 0)
+            {
+                return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
             }
         }
         return ito::retOk;
