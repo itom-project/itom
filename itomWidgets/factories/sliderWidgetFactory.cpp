@@ -21,80 +21,80 @@
 *********************************************************************** */
 
 
-//#include <QtCore/QtPlugin>
-//#include "sliderWidgetFactory.h"
-//#include "sliderWidget.h"
-//
-//
-//// --------------------------------------------------------------------------
-//SliderWidgetFactory::SliderWidgetFactory(QObject *_parent)
-//  : QObject(_parent)
-//{
-//}
-//
-//// --------------------------------------------------------------------------
-//QWidget *SliderWidgetFactory::createWidget(QWidget *_parent)
-//{
-//    SliderWidget* widget = new SliderWidget(_parent);
-//    return widget;
-//}
-//
-//// --------------------------------------------------------------------------
-//QString SliderWidgetFactory::domXml() const
-//{
-//  return "<widget class=\"SliderWidget\" name=\"SliderWidget\">\n"
-//          "</widget>\n";
-//}
-//
-//// --------------------------------------------------------------------------
-//QIcon SliderWidgetFactory::icon() const
-//{
-//  return QIcon(":/icons/sliderspinbox.png");
-//}
-//
-//// --------------------------------------------------------------------------
-//QString SliderWidgetFactory::includeFile() const
-//{
-//    return "sliderWidget.h";
-//}
-//
-//// --------------------------------------------------------------------------
-//bool SliderWidgetFactory::isContainer() const
-//{
-//    return false;
-//}
-//
-//// --------------------------------------------------------------------------
-//QString SliderWidgetFactory::name() const
-//{
-//    return "SliderWidget";
-//}
-//
-////-----------------------------------------------------------------------------
-//QString SliderWidgetFactory::group() const
-//{ 
-//    return "itom [widgets]";
-//}
-//
-////-----------------------------------------------------------------------------
-//QString SliderWidgetFactory::toolTip() const
-//{ 
-//    return QString(); 
-//}
-//
-////-----------------------------------------------------------------------------
-//QString SliderWidgetFactory::whatsThis() const
-//{
-//    return QString(); 
-//}
-//
-////-----------------------------------------------------------------------------
-//void SliderWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
-//{
-//    Q_UNUSED(formEditor);
-//    if (initialized)
-//    {
-//    return;
-//    }
-//    initialized = true;
-//}
+#include <QtCore/QtPlugin>
+#include "sliderWidgetFactory.h"
+#include "sliderWidget.h"
+
+
+// --------------------------------------------------------------------------
+SliderWidgetFactory::SliderWidgetFactory(QObject *_parent)
+  : QObject(_parent)
+{
+}
+
+// --------------------------------------------------------------------------
+QWidget *SliderWidgetFactory::createWidget(QWidget *_parent)
+{
+    SliderWidget* widget = new SliderWidget(_parent);
+    return widget;
+}
+
+// --------------------------------------------------------------------------
+QString SliderWidgetFactory::domXml() const
+{
+  return "<widget class=\"SliderWidget\" name=\"SliderWidget\">\n"
+          "</widget>\n";
+}
+
+// --------------------------------------------------------------------------
+QIcon SliderWidgetFactory::icon() const
+{
+  return QIcon(":/icons/sliderspinbox.png");
+}
+
+// --------------------------------------------------------------------------
+QString SliderWidgetFactory::includeFile() const
+{
+    return "sliderWidget.h";
+}
+
+// --------------------------------------------------------------------------
+bool SliderWidgetFactory::isContainer() const
+{
+    return false;
+}
+
+// --------------------------------------------------------------------------
+QString SliderWidgetFactory::name() const
+{
+    return "SliderWidget";
+}
+
+//-----------------------------------------------------------------------------
+QString SliderWidgetFactory::group() const
+{ 
+    return "itom [widgets]";
+}
+
+//-----------------------------------------------------------------------------
+QString SliderWidgetFactory::toolTip() const
+{ 
+    return QString(); 
+}
+
+//-----------------------------------------------------------------------------
+QString SliderWidgetFactory::whatsThis() const
+{
+    return QString(); 
+}
+
+//-----------------------------------------------------------------------------
+void SliderWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
+{
+    Q_UNUSED(formEditor);
+    if (initialized)
+    {
+    return;
+    }
+    initialized = true;
+}

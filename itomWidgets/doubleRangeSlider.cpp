@@ -33,6 +33,7 @@
 #include <QHBoxLayout>
 #include <QVariant>
 #include <QWeakPointer>
+#include <qpointer.h>
 
 //  includes
 #include "rangeSlider.h"
@@ -75,7 +76,7 @@ public:
   double MinValue;
   double MaxValue;
 
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 
 private:
   Q_DISABLE_COPY(DoubleRangeSliderPrivate);

@@ -20,26 +20,37 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ITOMWIDGETSFACTORY_H
-#define ITOMWIDGETSFACTORY_H
+#ifndef POPUPWIDGETFACTORY_H
+#define POPUPWIDGETFACTORY_H
 
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 
-class ItomWidgetsFactory : public QObject, public QDesignerCustomWidgetCollectionInterface
+
+class PopupWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
 #if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface" )
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface" )
 #endif
-    Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
+    Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-     ItomWidgetsFactory(QObject *parent = 0);
+    PopupWidgetFactory(QObject *parent = 0);
 
-     virtual QList<QDesignerCustomWidgetInterface*> customWidgets() const;
+    bool isContainer() const;
+    bool isInitialized() const { return initialized; }
+    QIcon icon() const;
+    QString domXml() const;
+    QString group() const;
+    QString includeFile() const;
+    QString name() const;
+    QString toolTip() const;
+    QString whatsThis() const;
+    QWidget *createWidget(QWidget *parent);
+    void initialize(QDesignerFormEditorInterface *core);
 
- private:
-     QList<QDesignerCustomWidgetInterface*> widgets;
+private:
+    bool initialized;
 };
 
-#endif // ITOMWIDGETSFACTORY_H
+#endif // RANGEWIDGETFACTORY_H

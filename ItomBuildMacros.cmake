@@ -99,16 +99,15 @@ MACRO (QT4_WRAP_UI_ITOM outfiles)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 
     FOREACH (it ${ui_files})
-    GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
-    GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
-    SET(outfile ${CMAKE_CURRENT_BINARY_DIR}/ui_${outfile}.h) # Here we set output
-    ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
-            COMMAND ${QT_UIC_EXECUTABLE}
-            ARGS ${ui_options} -o ${outfile} ${infile}
-            MAIN_DEPENDENCY ${infile})
-    SET(${outfiles} ${${outfiles}} ${outfile})
+        GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
+        GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
+        SET(outfile ${CMAKE_CURRENT_BINARY_DIR}/ui_${outfile}.h) # Here we set output
+        ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+                COMMAND ${QT_UIC_EXECUTABLE}
+                ARGS ${ui_options} -o ${outfile} ${infile}
+                MAIN_DEPENDENCY ${infile})
+        SET(${outfiles} ${${outfiles}} ${outfile})
     ENDFOREACH (it)
-
     SOURCE_GROUP("GeneratedFiles" FILES ${${outfiles}})
 ENDMACRO (QT4_WRAP_UI_ITOM)
 
@@ -254,6 +253,51 @@ MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
         set(${_qm_files} ${${_qm_files}} ${qm})
     endforeach ()
 ENDMACRO()
+
+
+#this macro only generates the moc-file but does not compile it, since it is included in another source file.
+#this comes from the ctkCommon project
+#Creates a rule to run moc on infile and create outfile. Use this if for some reason QT5_WRAP_CPP() 
+#isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
+macro(QT4_GENERATE_MOCS)
+  foreach(file ${ARGN})
+    set(moc_file moc_${file})
+    QT4_GENERATE_MOC(${file} ${moc_file})
+
+    get_filename_component(source_name ${file} NAME_WE)
+    get_filename_component(source_ext ${file} EXT)
+    if(${source_ext} MATCHES "\\.[hH]")
+      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
+        set(source_ext .cpp)
+      elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
+        set(source_ext .cxx)
+      endif()
+    endif()
+    set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
+  endforeach()
+endmacro()
+
+#this macro only generates the moc-file but does not compile it, since it is included in another source file.
+#this comes from the ctkCommon project
+#Creates a rule to run moc on infile and create outfile. Use this if for some reason QT5_WRAP_CPP() 
+#isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
+macro(QT5_GENERATE_MOCS)
+  foreach(file ${ARGN})
+    set(moc_file moc_${file})
+    QT5_GENERATE_MOC(${file} ${moc_file})
+
+    get_filename_component(source_name ${file} NAME_WE)
+    get_filename_component(source_ext ${file} EXT)
+    if(${source_ext} MATCHES "\\.[hH]")
+      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
+        set(source_ext .cpp)
+      elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
+        set(source_ext .cxx)
+      endif()
+    endif()
+    set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
+  endforeach()
+endmacro()
 
 
 #use this macro in order to append to the sources and destinations

@@ -20,37 +20,37 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-//#ifndef RANGEWIDGETFACTORY_H
-//#define RANGEWIDGETFACTORY_H
-//
-//#include <QtDesigner/QDesignerCustomWidgetInterface>
-//
-//
-//class RangeWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
-//{
-//    Q_OBJECT
-//#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
-//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface" )
-//#endif
-//    Q_INTERFACES(QDesignerCustomWidgetInterface)
-//
-//public:
-//    RangeWidgetFactory(QObject *parent = 0);
-//
-//    bool isContainer() const;
-//    bool isInitialized() const { return initialized; }
-//    QIcon icon() const;
-//    QString domXml() const;
-//    QString group() const;
-//    QString includeFile() const;
-//    QString name() const;
-//    QString toolTip() const;
-//    QString whatsThis() const;
-//    QWidget *createWidget(QWidget *parent);
-//    void initialize(QDesignerFormEditorInterface *core);
-//
-//private:
-//    bool initialized;
-//};
-//
-//#endif // RANGEWIDGETFACTORY_H
+#ifndef RANGEWIDGETFACTORY_H
+#define RANGEWIDGETFACTORY_H
+
+#include <QtDesigner/QDesignerCustomWidgetInterface>
+
+
+class RangeWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
+{
+    Q_OBJECT
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface" )
+#endif
+    Q_INTERFACES(QDesignerCustomWidgetInterface)
+
+public:
+    RangeWidgetFactory(QObject *parent = 0);
+
+    bool isContainer() const;
+    bool isInitialized() const { return initialized; }
+    QIcon icon() const;
+    QString domXml() const;
+    QString group() const;
+    QString includeFile() const;
+    QString name() const;
+    QString toolTip() const;
+    QString whatsThis() const;
+    QWidget *createWidget(QWidget *parent);
+    void initialize(QDesignerFormEditorInterface *core);
+
+private:
+    bool initialized;
+};
+
+#endif // RANGEWIDGETFACTORY_H

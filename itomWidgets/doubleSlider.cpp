@@ -25,10 +25,10 @@
 #include <QStyle>
 #include <QStyleOptionSlider>
 #include <QToolTip>
+#include <QPointer>
 
-// CTK includes
-#include "DoubleSlider.h"
-#include "ValueProxy.h"
+#include "doubleSlider.h"
+#include "valueProxy.h"
 
 // STD includes
 #include <limits>
@@ -77,7 +77,7 @@ public:
   double      PageStep;
   double      Value;
   /// Converts input value with displayed value
-  QWeakPointer<ValueProxy> Proxy;
+  QPointer<ValueProxy> Proxy;
 };
 
 // --------------------------------------------------------------------------
