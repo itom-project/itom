@@ -139,7 +139,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
             self->data = new ito::PCLPointCloud();
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             self->data = NULL;
             PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -207,7 +207,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                 {
                     self->data = new ito::PCLPointCloud(*copyConstr2->data);
                 }
-                catch(std::bad_alloc &ba)
+                catch(std::bad_alloc &/*ba*/)
                 {
                     self->data = NULL;
                     PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -262,7 +262,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                             {
                                 self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
                             }
-                            catch(std::bad_alloc &ba)
+                            catch(std::bad_alloc &/*ba*/)
                             {
                                 self->data = NULL;
                                 PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -290,7 +290,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
             {
                 self->data = new ito::PCLPointCloud(ito::pclInvalid);
             }
-            catch(std::bad_alloc &ba)
+            catch(std::bad_alloc &/*ba*/)
             {
                 self->data = NULL;
                 PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -323,7 +323,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
             self->data = new ito::PCLPointCloud( (uint32_t)width, (uint32_t)height, point.getType(), point );
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             self->data = NULL;
             PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -354,7 +354,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
             self->data = new ito::PCLPointCloud( 1, 1, point.getType(), point );
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             self->data = NULL;
             PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
@@ -1739,7 +1739,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         {
             retval  = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             retval += RetVal(retError, 0, "No more memory available when saving point cloud");
         }
@@ -1844,7 +1844,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         {
             retval  = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             retval += RetVal(retError, 0, "No more memory available when loading point cloud");
         }

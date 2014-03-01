@@ -271,7 +271,7 @@ namespace ito
     private:
         char m_minVal;
         char m_maxVal;
-        char m_stepSize;
+        char m_stepSize; // >= 1
     };
 
     /*!
@@ -309,7 +309,7 @@ namespace ito
     private:
         int m_minVal;
         int m_maxVal;
-        int m_stepSize;
+        int m_stepSize; // >= 1
     };
 
     /*!
@@ -321,7 +321,7 @@ namespace ito
     {
     public:
         //! constructor with minimum and maximum value
-        explicit DoubleMeta(double minVal, double maxVal, double stepSize=1.0) : ParamMeta(ParamBase::Double), m_minVal(minVal), m_maxVal(maxVal), m_stepSize(stepSize) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
+        explicit DoubleMeta(double minVal, double maxVal, double stepSize=0.0 /*0.0 means no specific step size*/) : ParamMeta(ParamBase::Double), m_minVal(minVal), m_maxVal(maxVal), m_stepSize(stepSize) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
         static DoubleMeta* all() { return new DoubleMeta(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max() ); } //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double.
         inline double getMin() const { return m_minVal; } //!< returns minimum value
         inline double getMax() const { return m_maxVal; } //!< returns maximum value
@@ -347,7 +347,7 @@ namespace ito
     private:
         double m_minVal;
         double m_maxVal;
-        double m_stepSize;
+        double m_stepSize; // >= 0, 0.0 means no specific step size
     };
 
     /*!

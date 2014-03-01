@@ -366,7 +366,7 @@ namespace ito {
             }
 
             double step = meta->getStepSize();
-            if (step != 1.0)   
+            if (step > 0.0)   
             {
                 double div = std::abs((value - minVal) / step);
                 if ((div - (double)(qRound(div))) > std::numeric_limits<double>::epsilon())
@@ -392,7 +392,7 @@ namespace ito {
             }
 
             int step = meta->getStepSize();
-            if (step != 1 && ((value - minVal) % step) != 0)
+            if (step > 1 && ((value - minVal) % step) != 0)
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
             }
@@ -414,7 +414,7 @@ namespace ito {
             }
 
             char step = meta->getStepSize();
-            if (step != 1 && ((value - minVal) % step) != 0)
+            if (step > 1 && ((value - minVal) % step) != 0)
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
             }

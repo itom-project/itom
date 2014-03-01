@@ -287,12 +287,14 @@ QWidget* ParamInputParser::renderTypeInt(const ito::Param &param, int /*virtualI
         {
             box->setMinimum(meta->getMin());
             box->setMaximum(meta->getMax());
-            box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
+            box->setSingleStep(meta->getStepSize());
+            box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
         }
         else
         {
             box->setMinimum(std::numeric_limits<int>::min());
             box->setMaximum(std::numeric_limits<int>::max());
+            box->setSingleStep(1);
             box->setToolTip("unlimited");
         }
 
@@ -310,14 +312,16 @@ QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtual
     const ito::CharMeta *meta = static_cast<const ito::CharMeta*>(param.getMeta());
     if (meta)
     {
-        box->setMinimum(meta->getMin());
-        box->setMaximum(meta->getMax());
-        box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
+        box->setMinimum((int)meta->getMin());
+        box->setMaximum((int)meta->getMax());
+        box->setSingleStep((int)meta->getStepSize());
+        box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
     }
     else
     {
         box->setMinimum(std::numeric_limits<char>::min());
         box->setMaximum(std::numeric_limits<char>::max());
+        box->setSingleStep(1);
         box->setToolTip("unlimited");
     }
 
@@ -336,7 +340,15 @@ QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtu
     {
         box->setMinimum(meta->getMin());
         box->setMaximum(meta->getMax());
-        box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
+        if (meta->getStepSize() != 0.0)
+        {
+            box->setSingleStep(meta->getStepSize());
+            box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
+        }
+        else
+        {
+            box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
+        }
     }
     else
     {
