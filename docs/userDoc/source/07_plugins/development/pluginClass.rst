@@ -345,7 +345,7 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         
         if(isMotorMoving()) //this if-case is for actuators only.
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
         }
         
         if(!retValue.containsError())
@@ -447,7 +447,7 @@ An exemplary implementation of the method **execFunc** is
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError,0,tr("function name '%s' does not exist").toAscii().data(), funcName.toAscii().data());
+            retValue += ito::RetVal::format(ito::retError,0,tr("function name '%s' does not exist").toLatin1().data(), funcName.toLatin1().data());
         }
 
         if(waitCond)
@@ -469,9 +469,9 @@ output parameter. The corresponding registration of this method is integrated in
     
     //register exec functions
     QVector<ito::Param> pMand;
-    pMand << ito::Param("filename", ParamBase::String | ParamBase::In, NULL, tr("absolute filename to xml-parameter file").toAscii().data());
+    pMand << ito::Param("filename", ParamBase::String | ParamBase::In, NULL, tr("absolute filename to xml-parameter file").toLatin1().data());
     QVector<ito::Param> pOpt;
-    pOpt << ito::Param("overwriteIfExists", ParamBase::Int | ParamBase::In, 0, 1, 1, tr("parameter description").toAscii().data());
+    pOpt << ito::Param("overwriteIfExists", ParamBase::Int | ParamBase::In, 0, 1, 1, tr("parameter description").toLatin1().data());
     QVector<ito::Param> pOut;
     registerExecFunc("saveXMLParams", pMand, pOpt, pOut, tr("description"));
 

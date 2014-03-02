@@ -119,11 +119,11 @@ These default-parameter methods have the following implementation:
 		retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
 		if(retval.containsError()) return retval;
 
-		param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toAscii().data());
+		param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
 		paramsMand->append(param);
-		param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toAscii().data());
+		param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
 		paramsMand->append(param);
-		param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toAscii().data());
+		param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toLatin1().data());
 		paramsOpt->append(param);
 
         return retval;
@@ -242,7 +242,7 @@ method which follows this base structure:
         QWidget *widget = qobject_cast<QWidget*>(win); //cast it to QWidget, if it isn't already.
         if(widget == NULL)
         {
-            retValue += ito::RetVal(ito::retError,0,tr("The widget could not be loaded").toAscii().data());
+            retValue += ito::RetVal(ito::retError,0,tr("The widget could not be loaded").toLatin1().data());
         }
         return widget; //NULL in case of error
     }

@@ -73,12 +73,12 @@ In your main source file of your plugin you can implement the constructor of the
         
         //initialize mandatory parameters for creating an instance of MyPlugin
         m_initParamsMand.append( ito::Param("param1", ito::Param::String, \
-            "defaultValue", tr("translatable description").toAscii().data()) );
+            "defaultValue", tr("translatable description").toLatin1().data()) );
         ...
         
         //initialize optional parameters for creating an instance of MyPlugin
         m_initParamsOpt.append( ito::Param("optParam1", ito::Param::Int, 0, 10, 5, \
-           tr("translatable description of optParam1").toAscii().data()) )
+           tr("translatable description of optParam1").toLatin1().data()) )
         ...
     }
 

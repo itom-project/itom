@@ -47,7 +47,7 @@ plugin but relatively to the executable of |itom| itself. Therefore, you have th
     char *newpath = (char*)malloc(strlen(oldpath) + dllDir2.size() + 10);
     newpath[0] = 0;
     strcat(newpath, "path=");
-    strcat(newpath, dllDir2.toAscii().data());
+    strcat(newpath, dllDir2.toLatin1().data());
     strcat(newpath, ";");
     strcat(newpath, oldpath);
     _putenv(newpath);
