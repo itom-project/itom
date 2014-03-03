@@ -75,10 +75,12 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/..    
     ${QT_QTCORE_INCLUDE_DIR}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5Designer_INCLUDE_DIRS}
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR}    
 )
-
 
 if (NOT QT5_FOUND)
     INCLUDE(${QT_USE_FILE})
@@ -97,6 +99,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
+#    ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
@@ -118,15 +121,14 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.h
 )
 
-SET_SOURCE_FILES_PROPERTIES(pathLineEdit.h PROPERTIES SKIP_AUTOMOC TRUE)
 
 if (QT5_FOUND)
-    QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
+    QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     #these header files need to be moc'ed, but the moc file should not be added to the project
     #since it is included in another source file that actually compiles the moc'ed file.
     QT5_GENERATE_MOCS(
-        pathLineEdit.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h
     )
 else (QT5_FOUND)
     QT4_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})

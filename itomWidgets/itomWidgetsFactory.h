@@ -23,7 +23,7 @@
 #ifndef ITOMWIDGETSFACTORY_H
 #define ITOMWIDGETSFACTORY_H
 
-#include <QtDesigner/QDesignerCustomWidgetInterface>
+#include <QtDesigner/QDesignerCustomWidgetCollectionInterface>
 
 class ItomWidgetsFactory : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
