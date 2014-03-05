@@ -82,7 +82,7 @@ void HelpDockWidget::createActions()
     m_pActReload = new QAction(QIcon(":/application/icons/reload.png"), tr("reload database"), this);
     connect(m_pActReload, SIGNAL(triggered()), m_pHelpWidget, SLOT(reloadDB()));
 
-    connect(this, SIGNAL(showPluginInfo(QString, int)), m_pHelpWidget, SLOT(showPluginInfo(QString, int)));
+    connect(this, SIGNAL(showPluginInfo(QString, int, QModelIndex, bool)), m_pHelpWidget, SLOT(showPluginInfo(QString, int, QModelIndex, bool)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void HelpDockWidget::updateActions()
 
 void HelpDockWidget::mnuShowInfo(QString name, int type)
 {
-    emit(showPluginInfo(name, type));
+    emit(showPluginInfo(name, type, QModelIndex(), true));
 }
 
 

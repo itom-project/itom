@@ -33,7 +33,7 @@ public slots:
     void showTreeview();
     void unshowTreeview();
     void propertiesChanged();
-    void showPluginInfo(QString name, int type);
+    void showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink);
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
@@ -74,10 +74,10 @@ private:
     void CreateItem(QStandardItemModel& model, QStringList &items);
     void saveIni();
     void loadIni();
-    ito::RetVal displayHelp(const QString &path, const int newpage);
+    ito::RetVal displayHelp(const QString &path);
     QStringList separateLink(const QUrl &link);
     ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document);
-    QModelIndex findIndexByName(const QString &modelName);
+    QModelIndex findIndexByPath(const int type, QStringList path, QStandardItem* current);
 
     QString parseFilterWidgetContent(const QString &input);
     ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);
@@ -85,18 +85,20 @@ private:
 
     QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
+    // Const
+    static const int m_urPath = Qt::UserRole + 1;
+    static const int m_urType = Qt::UserRole + 2;
+
     // Variables
     Ui::HelpTreeDockWidget ui;
 
     QStandardItemModel        *m_pMainModel;
     LeafFilterProxyModel      *m_pMainFilterModel;
     ito::AbstractDockWidget   *m_pParent;
-    QStringList                m_history;
+    QList<QModelIndex>         m_history;
     QStringList                m_includedDBs;
     QString                    m_dbPath;
-
     QMovie                    *m_previewMovie;
-
     QMap<int, QIcon> m_iconGallery;
     DisplayBool m_showSelection;
     int m_historyIndex;
@@ -108,6 +110,7 @@ private:
     bool m_openLinks;
     bool m_autoCollTree;
     bool m_forced;
+    bool m_internalCall;
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };

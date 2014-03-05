@@ -1024,26 +1024,42 @@ void AIManagerWidget::mnuShowInfo()
         if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
         {
             if (itemType & PlugInModel::itemFilter)
-            {
+            { // Filter 
                 ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
-                emit(showPluginInfo(awd->m_name, 2));
+                emit(showPluginInfo("Algorithms."+awd->m_pBasePlugin->objectName()+"."+awd->m_name, 2));
             }
             else if(itemType & PlugInModel::itemWidget)
-            {
+            { // Widget 
                 ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
-                emit(showPluginInfo(awd->m_name, 3));
+                emit(showPluginInfo("Widgets."+awd->m_pBasePlugin->objectName()+"."+awd->m_name, 3));
             }
-            // TODO Activates the Info... Button for Plugins
-            /*else if(itemType & PlugInModel::itemPlugin)
-            {
-                ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
-                emit(showPluginInfo(awd->m_name, 4));
+            else if(itemType & PlugInModel::itemPlugin)
+            { // DataIO and Actuator and Plugins (eg BasicFilters)
+                ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)itemInternalData;
+                if (aib->getType() & ito::typeActuator)
+                {
+                    emit(showPluginInfo("Actuator."+aib->objectName(), 8));
+                }
+                else if (aib->getType() & ito::typeDataIO)
+                {
+                    if (aib->getType() & ito::typeADDA)
+                    {
+                        emit(showPluginInfo("DataIO.ADDA."+aib->objectName(), 7));
+                    }
+                    else if (aib->getType() & ito::typeGrabber)
+                    {
+                        emit(showPluginInfo("DataIO.Grabber."+aib->objectName(), 7));
+                    }
+                    else if (aib->getType() & ito::typeRawIO)
+                    {
+                        emit(showPluginInfo("DataIO.Raw IO."+aib->objectName(), 7));
+                    }
+                }  
+                else if (aib->getType() & ito::typeAlgo)
+                {
+                    emit(showPluginInfo("Algorithms."+aib->objectName(), 4));
+                }         
             }
-            else if(itemType & PlugInModel::itemWidget)
-            {
-                ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
-                emit(showPluginInfo(awd->m_name, 5));
-            }*/
         }
     }
 

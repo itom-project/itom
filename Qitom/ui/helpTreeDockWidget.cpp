@@ -13,11 +13,13 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
+
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
 #else
 #include <qtconcurrentrun.h>
 #endif
+
 #include <qtextdocument.h>
 #include <qtextstream.h>
 #include <QThread>
@@ -41,7 +43,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_historyIndex(-1),
     m_pMainModel(NULL),
     m_dbPath(qApp->applicationDirPath()+"/help"),
-    m_pParent(dock)
+    m_pParent(dock),
+    m_internalCall(false)
 {
     ui.setupUi(this);
 
@@ -113,14 +116,11 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     // Map der Plugin-Namen und Zeiger auf das Node des Plugins
     QMap <QString, QStandardItem*> plugins;
 
-    // Userrole der nodes in die der typ der Node gespeichert wird
-    int urPath = Qt::UserRole + 1;
-    int urType = Qt::UserRole + 2;
-    
     // AddInManager einbinden
     ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     QStandardItem *mainNode = new QStandardItem();
+    mainNode->setEditable(false);
 
     switch(fOrW)
     {
@@ -129,8 +129,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
             // Main Node zusammenbauen
             mainNode->setText("Algorithms");
-            mainNode->setData(typeCategory, urType);
-            mainNode->setData("Algorithms", urPath);
+            mainNode->setData(typeCategory, m_urType);
+            mainNode->setData("Algorithms", m_urPath);
             mainNode->setIcon(iconGallery->value(100));
             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
             while (i != filterHashTable->constEnd()) 
@@ -139,8 +139,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
-                    plugin->setData(typeFPlugin, urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), urPath);
+                    plugin->setData(typeFPlugin, m_urType);
+                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(101));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -149,8 +149,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 // Filter-Node anhängen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
-                filter->setData(typeFilter, urType);
-                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), urPath);
+                filter->setData(typeFilter, m_urType);
+                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
                 filter->setIcon(iconGallery->value(102));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -164,8 +164,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
             // Main Node zusammenbauen
             mainNode->setText("Widgets");
-            mainNode->setData(typeCategory, urType);
-            mainNode->setData("Widgets", urPath);
+            mainNode->setData(typeCategory, m_urType);
+            mainNode->setData("Widgets", m_urPath);
             mainNode->setIcon(iconGallery->value(100));
             QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
             while (i != widgetHashTable->constEnd()) 
@@ -174,8 +174,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
-                    plugin->setData(typeWPlugin, urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), urPath);
+                    plugin->setData(typeWPlugin, m_urType);
+                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(101));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -184,8 +184,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 // Filter-Node anhängen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
-                filter->setData(typeWidget, urType);
-                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), urPath);
+                filter->setData(typeWidget, m_urType);
+                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
                 filter->setIcon(iconGallery->value(103));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -198,29 +198,29 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             // Main Node zusammenbauen
             mainNode->setText("DataIO");
-            mainNode->setData(typeCategory, urType);
-            mainNode->setData(mainNode->text(), urPath);
+            mainNode->setData(typeCategory, m_urType);
+            mainNode->setData(mainNode->text(), m_urPath);
             mainNode->setIcon(iconGallery->value(104));
 
             // Subcategory Node "Grabber"
             QStandardItem *pluginGrabber = new QStandardItem("Grabber");
             pluginGrabber->setEditable(false);
-            pluginGrabber->setData(typeCategory, urType);
-            pluginGrabber->setData(mainNode->text()+"."+pluginGrabber->text(), urPath);
+            pluginGrabber->setData(typeCategory, m_urType);
+            pluginGrabber->setData(mainNode->text()+"."+pluginGrabber->text(), m_urPath);
             pluginGrabber->setIcon(iconGallery->value(105));
             
             // Subcategory Node "ADDA"
             QStandardItem *pluginAdda = new QStandardItem("ADDA");
             pluginAdda->setEditable(false);
-            pluginAdda->setData(typeCategory, urType);
-            pluginAdda->setData(mainNode->text()+"."+pluginAdda->text(), urPath);
+            pluginAdda->setData(typeCategory, m_urType);
+            pluginAdda->setData(mainNode->text()+"."+pluginAdda->text(), m_urPath);
             pluginAdda->setIcon(iconGallery->value(106));
             
             // Subcategory Node "Raw IO"
             QStandardItem *pluginRawIO = new QStandardItem("Raw IO");
             pluginRawIO->setEditable(false);
-            pluginRawIO->setData(typeCategory, urType);
-            pluginRawIO->setData(mainNode->text()+"."+pluginRawIO->text(), urPath);
+            pluginRawIO->setData(typeCategory, m_urType);
+            pluginRawIO->setData(mainNode->text()+"."+pluginRawIO->text(), m_urPath);
             pluginRawIO->setIcon(iconGallery->value(107));
 
             const QList<QObject*> *dataIOList = aim->getDataIOList();
@@ -232,27 +232,27 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 {
                     QStandardItem *plugin = new QStandardItem(aib->objectName());
                     plugin->setEditable(false);
-                    plugin->setData(typeDataIO, urType);
+                    plugin->setData(typeDataIO, m_urType);
                     switch (aib->getType())
                     {
                         case 129:
                         {// Grabber
                             plugin->setIcon(iconGallery->value(105));
-                            plugin->setData(pluginGrabber->data(urPath).toString()+"."+plugin->text(), urPath);
+                            plugin->setData(pluginGrabber->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginGrabber->appendRow(plugin);
                             break;
                         }
                         case 257:
                         {// ADDA
                             plugin->setIcon(iconGallery->value(106));
-                            plugin->setData(pluginAdda->data(urPath).toString()+"."+plugin->text(), urPath);
+                            plugin->setData(pluginAdda->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginAdda->appendRow(plugin);
                             break;
                         }
                         case 513:
                         {// Raw IO
                             plugin->setIcon(iconGallery->value(107));
-                            plugin->setData(pluginRawIO->data(urPath).toString()+"."+plugin->text(), urPath);
+                            plugin->setData(pluginRawIO->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginRawIO->appendRow(plugin);
                             break;
                         }
@@ -268,8 +268,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             // Main Node zusammenbauen
             mainNode->setText("Actuator");
-            mainNode->setData(typeCategory, urType);
-            mainNode->setData(mainNode->text(), urPath);
+            mainNode->setData(typeCategory, m_urType);
+            mainNode->setData(mainNode->text(), m_urPath);
             mainNode->setIcon(iconGallery->value(108));
             const QList<QObject*> *ActuatorList = aim->getActList();
             for(int i = 0; i < ActuatorList->length(); i++)
@@ -280,8 +280,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 {
                     QStandardItem *plugin = new QStandardItem(aib->objectName());
                     plugin->setEditable(false);
-                    plugin->setData(typeActuator, urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), urPath);
+                    plugin->setData(typeActuator, m_urType);
+                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(108));
                     mainNode->appendRow(plugin);             
                 }
@@ -327,7 +327,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         QStringList splittedLink = filterpath.split(".");
         QString linkNav;
         QString linkPath = filterpath;
-        linkNav.insert(0, ">>" + splittedLink[splittedLink.length() - 1]);
+        linkNav.insert(0, ">> " + splittedLink[splittedLink.length() - 1]);
         for (int i = splittedLink.length() - 2; i > -1; i--)
         {
             QString linkPath;
@@ -1023,8 +1023,8 @@ void HelpTreeDockWidget::propertiesChanged()
 /*static*/ void HelpTreeDockWidget::createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
 {
     SqlItem firstItem;
-    int urPath = Qt::UserRole + 1;
-    int urType = Qt::UserRole + 2;
+    int m_urPath = Qt::UserRole + 1;
+    int m_urType = Qt::UserRole + 2;
 
     while(items.count() > 0)
     {
@@ -1045,8 +1045,8 @@ void HelpTreeDockWidget::propertiesChanged()
                 node->setIcon((*iconGallery)[firstItem.type]); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
             }
             node->setEditable(false);
-            node->setData(firstItem.path, urPath);
-            node->setData(1, urType);
+            node->setData(firstItem.path, m_urPath);
+            node->setData(1, m_urType);
             node->setToolTip(firstItem.path);
             createItemRek(model, *node, firstItem.path, items, iconGallery);
             parent.appendRow(node);
@@ -1065,8 +1065,8 @@ void HelpTreeDockWidget::propertiesChanged()
                 node->setIcon(iconGallery->value(firstItem.type));
             }
             node->setEditable(false);
-            node->setData(firstItem.prefix, urPath); 
-            node->setData(1, urType); //typ 1 = docstring wird aus sql gelesen
+            node->setData(firstItem.prefix, m_urPath); 
+            node->setData(1, m_urType); //typ 1 = docstring wird aus sql gelesen
             createItemRek(model, *node, firstItem.prefix, items, iconGallery);  
             parent.appendRow(node);
         }
@@ -1338,7 +1338,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Display the Help-Text
-ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpage)
+ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
 { 
     ito::RetVal retval = ito::retOk;
 
@@ -1379,16 +1379,6 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
                             }
 
                             highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.textBrowser->document());
-
-                            if (newpage == 1)
-                            {
-                                m_historyIndex++;
-                                m_history.insert(m_historyIndex, path.toUtf8());
-                                for (int i = m_history.length(); i > m_historyIndex; i--)
-                                {
-                                    m_history.removeAt(i);
-                                }
-                            }
                         }
                         database.close();
                     }
@@ -1399,46 +1389,6 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const int newpa
     }
 
     return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// finds a Modelindex belonging to an Itemname
-QModelIndex HelpTreeDockWidget::findIndexByName(const QString &modelName)
-{
-    QStringList path = modelName.split('.');
-    QStandardItem *current = m_pMainModel->invisibleRootItem();
-    QStandardItem *temp;
-    int counts;
-    QString tempString;
-    QString firstPath;
-    bool found;
-
-    while (path.length() > 0)
-    {
-        firstPath = path.takeFirst();
-        counts = current->rowCount();
-        found = false;
-
-        for (int j = 0; j < counts; ++j)
-        {
-            temp = current->child(j,0);
-            tempString = temp->data().toString();
-
-            if (tempString.endsWith(firstPath) && tempString.split(".").last() == firstPath) //fast implementation, first compare will mostly fail, therefore the split is only executed few times
-            {
-                current = temp;
-                found = true;
-                break;
-            }
-
-            if (!found)
-            {
-                return QModelIndex(); //nothing found
-            }
-        }
-    }
-
-    return current->index();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1496,27 +1446,58 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // This is the Slot that can be externally called by other widgets to display filter or widget help ... i.a. AIManagerWidget
-void HelpTreeDockWidget::showPluginInfo(QString name, int type)
+void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink)
 {
+    // Check if it´s a click by the back or forward button
+    if (modelIndex.isValid())
+    {
+        m_historyIndex++;
+        m_history.insert(m_historyIndex, modelIndex);
+        for (int i = m_history.length(); i > m_historyIndex; i--)
+        {
+            m_history.removeAt(i);
+        }
+    }
+    // Check if it´s 
+    if (fromLink)
+    {
+        m_internalCall = true;
+        if (modelIndex.isValid())
+        {
+            ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(modelIndex));
+        }
+        else
+        {
+            if (type == 1)
+            {
+                ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(findIndexByPath(1, name.split("."), m_pMainModel->invisibleRootItem())));
+            }
+            else
+            {
+                ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(findIndexByPath(2, name.split("."), m_pMainModel->invisibleRootItem())));
+            }
+        }
+        m_internalCall = false;
+    }
     switch(type)
     {
         case 1:
         {
-            displayHelp(name , 1);
+            displayHelp(name);
             break;
         }
         case 2:
-        {
+        { // 2 Filter
             showFilterWidgetPluginHelp(name, typeFilter);
             break;
         }
         case 3:
-        {
+        { // 3 Widget
             showFilterWidgetPluginHelp(name, typeWidget);
             break;
         }
         case 4:
-        {
+        { // 
             showFilterWidgetPluginHelp(name, typeFPlugin);
             break;
         }
@@ -1542,6 +1523,51 @@ void HelpTreeDockWidget::showPluginInfo(QString name, int type)
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// finds a Modelindex related to MainModel (not FilterModel)belonging to an Itemname
+QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, QStandardItem* current)
+{
+    QStandardItem *temp;
+    int counts;
+    QString tempString;
+    QString firstPath;
+    firstPath = path.takeFirst();
+    if (current->hasChildren())
+    {
+        counts = current->rowCount();
+        for (int j = 0; j < counts; ++j)
+        {
+            temp = current->child(j,0);
+            QString Test = temp->text();
+            if (temp->data(m_urType) == 1)
+            {
+                if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
+                {
+                    return temp->index();
+                }
+                else if (path.length() > 0 && temp->text().toLower() == firstPath.toLower())
+                {
+                    return findIndexByPath(1, path, temp);
+                }
+            }
+            else
+            {
+                QString Test2 = temp->text();
+                if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
+                {
+                    return temp->index();
+                }
+                else if (path.length() > 0 && temp->text().toLower() == firstPath.toLower())
+                {
+                    return findIndexByPath(2, path, temp);
+                }
+            }
+        }
+        return QModelIndex();
+    }
+}
+
 
 /*************************************************************/
 /*****************GUI related methods*************************/
@@ -1586,20 +1612,16 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
         clip->setText(parts[1], QClipboard::Clipboard);
     }
     else if (parts[0] == "itom")
-    {//Internal ItomLink
-        displayHelp(parts[1], 1);
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(parts[1]));
-        //ui.treeView->setCurrentIndex(filteredIndex);
+    {//Internal ItomLink //TODO doppelten Aufruf von findIndexBy... rausnehmen
+        showPluginInfo(parts[1], 1, findIndexByPath(1, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[1].split(".").length() == 1 || (parts[1].split(".")[0] == "DataIO" && parts[1].split(".").length() == 2))
     {
-        showFilterWidgetPluginHelp(parts[1], typeCategory);
+        showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "algorithm")
     {//Filter
-        showFilterWidgetPluginHelp(parts[1], typeFPlugin);
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(parts[1]));
-        //ui.treeView->setCurrentIndex(filteredIndex);
+        showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "-1")
     {
@@ -1653,17 +1675,18 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
 // Show the Help in the right Memo
 void HelpTreeDockWidget::selectedItemChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
-    int urPath = Qt::UserRole + 1;
-    int urType = Qt::UserRole + 2;
-    int type = current.data(urType).toInt();
-    QString t = current.data(urPath).toString();
-    if (type == 1) 
+    if (m_internalCall == false)
     {
-        showPluginInfo(current.data(urPath).toString(), type);
-    }
-    else
-    {
-        showPluginInfo(current.data(urPath).toString(), type);
+        int type = current.data(m_urType).toInt();
+        QString t = current.data(m_urPath).toString();
+        if (type == 1) 
+        {
+            showPluginInfo(current.data(m_urPath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
+        }
+        else
+        {
+            showPluginInfo(current.data(m_urPath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
+        }
     }
 }
 
@@ -1674,11 +1697,16 @@ void HelpTreeDockWidget::navigateBackwards()
     if (m_historyIndex > 0)
     {
         m_historyIndex--;
-        displayHelp(m_history.at(m_historyIndex), 0);
-
-        // Highlight the entry in the tree
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
-        ui.treeView->setCurrentIndex(filteredIndex);
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));    
+        int type = filteredIndex.data(m_urType).toInt();
+        if (type == 1) 
+        {
+            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+        }
+        else
+        {
+            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+        }
     }
 }
 
@@ -1689,11 +1717,16 @@ void HelpTreeDockWidget::navigateForwards()
     if (m_historyIndex < m_history.length()-1)
     {
         m_historyIndex++;
-        displayHelp(m_history.at(m_historyIndex), 0);
-
-        // Highlight the entry in the tree
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(findIndexByName(m_history.at(m_historyIndex)));
-        ui.treeView->setCurrentIndex(filteredIndex);
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));
+        int type = filteredIndex.data(m_urType).toInt();
+        if (type == 1) 
+        {
+            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+        }
+        else
+        {
+            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+        }
     }
 }
 
