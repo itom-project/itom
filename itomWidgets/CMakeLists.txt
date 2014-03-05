@@ -127,13 +127,8 @@ if (QT5_FOUND)
     QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     #these header files need to be moc'ed, but the moc file should not be added to the project
     #since it is included in another source file that actually compiles the moc'ed file.
-    if (WIN32)
-        QT5_GENERATE_MOCS(
-            pathLineEdit.h)
-    else (WIN32)
-        QT5_GENERATE_MOCS(
-            ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h)
-    endif (WIN32)
+    QT5_GENERATE_MOCS(
+        pathLineEdit.h)
 else (QT5_FOUND)
     QT4_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     QT4_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
