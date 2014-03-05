@@ -151,11 +151,17 @@ RetVal ConsoleWidget::initEditor()
     setWrapMode(QsciScintilla::WrapWord);
     setWrapVisualFlags(QsciScintilla::WrapFlagByBorder, QsciScintilla::WrapFlagNone , 2);
 
-    markErrorLine = markerDefine(QsciScintilla::Background);
-    setMarkerBackgroundColor(QColor(255, 0, 0, 25), markErrorLine);
+    //with some QScintilla versions, there is a bug if the markerBackgroundColor contains transparancy. Then
+    //the marker gets a black border. Problem: PlatQt.cpp of QScintilla:
+    //
+    //no transparancy: void SurfaceImpl::RoundedRectangle is called -> sets painter->setPen(convertQColor(fore)) or setPen(NoPen)
+    //with transparancy: void SurfaceImpl::AlphaRectangle is called -> no impact on setPen, uses the lastly used settings
+
+    markErrorLine = markerDefine(QsciScintilla::Background) ;
+    setMarkerBackgroundColor(QColor(255, 192, 192), markErrorLine); //has been (255,0,0,25) -> equal to (255,192,192) on white background
 
     markCurrentLine = markerDefine(QsciScintilla::Background);
-    setMarkerBackgroundColor(QColor(255, 255, 0, 50), markCurrentLine);
+    setMarkerBackgroundColor(QColor(255, 255, 128), markCurrentLine); //has been (255, 255, 0, 50) -> equal to (255,255,128) on white background
 
     return RetVal(retOk);
 }
