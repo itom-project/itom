@@ -129,12 +129,9 @@ project settings are not ready for a multi-configuration build in **Visual Studi
     
     * copy the library files qscintilla2.dll and qscintilla2d.dll from %QTDIR%\\lib to %QTDIR%\\bin 
 
-
-
-An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** (ITO only) and copy the folder **QScintilla2.8** 
-to a directory on your hard drive (e.g. **C:\QScintilla2.8**, avoid Windows program directory due to restrictions in write access). 
-Open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. 
-Just execute the batch file **qscintilla_install.bat** and answer the given questions.
+.. note::
+    
+    This is for ITO only (internal use): An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** and copy the folder **QScintilla2.8** to a directory on your hard drive (e.g. **C:\QScintilla2.8**, avoid Windows program directory due to restrictions in write access). Open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. Just execute the batch file **qscintilla_install.bat** and answer the given questions.
 
 .. note::
     
