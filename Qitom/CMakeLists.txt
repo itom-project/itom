@@ -46,7 +46,7 @@ endif (NOT QT5_FOUND)
 
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
-find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(OpenCV COMPONENTS core REQUIRED)
 IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 ENDIF (BUILD_WITH_PCL)

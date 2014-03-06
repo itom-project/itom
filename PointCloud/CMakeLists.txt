@@ -28,7 +28,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 IF(MSVC)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 ELSE(MSVC)

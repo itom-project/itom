@@ -26,7 +26,7 @@ ENDIF(BUILD_SHARED_LIBS)
 # You can always add further library dependencies in this section.
 find_package(ITOM_SDK REQUIRED)
 find_package(Qt4 REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 #add here further packages, if you need some
 
 #This commands includes the important macro of itom's SDK.
