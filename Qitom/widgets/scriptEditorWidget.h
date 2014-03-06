@@ -64,7 +64,7 @@ public:
     inline QString getFilename() const {return filename; }
     inline bool hasNoFilename() const { return filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
-    inline bool isBookmarked() const { return !bookmarkHandles.empty(); }
+    inline bool isBookmarked() const { return !bookmarkErrorHandles.empty(); }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
 
     RetVal setCursorPosAndEnsureVisible(int line);
@@ -74,8 +74,8 @@ protected:
     bool canInsertFromMimeData(const QMimeData *source) const;
 //    void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-
     virtual void loadSettings();
+    bool event (QEvent * event);
 
 private:
     enum msgType
@@ -114,7 +114,7 @@ private:
     QMutex fileSystemWatcherMutex;
 
     //!< marker handling
-    std::list<int> bookmarkHandles;
+    QList<QPair<int,int>> bookmarkErrorHandles;
     int syntaxErrorHandle;
 
     std::list<QPair<int,int> > breakPointMap; //!< <int bpHandle, int lineNo>
@@ -125,6 +125,7 @@ private:
     unsigned int markCBreakPointDisabled;
     unsigned int markBookmark;
     unsigned int markSyntaxError;
+    unsigned int markBookmarkSyntaxError;
 
     unsigned int markCurrentLine;
     int markCurrentLineHandle;
@@ -167,6 +168,7 @@ signals:
 
 public slots:
     void menuToggleBookmark();
+    void createDummy(int line);
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();

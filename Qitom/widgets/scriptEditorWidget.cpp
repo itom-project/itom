@@ -23,6 +23,7 @@
 #include "../python/pythonEngineInc.h"
 #include "../widgets/mainWindow.h"
 #include "scriptEditorWidget.h"
+#include "qpair.h"
 
 #include "../global.h"
 #include "../Qitom/AppManagement.h"
@@ -46,6 +47,8 @@ const QString ScriptEditorWidget::lineBreak = QString("\n");
 
 int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent), 
@@ -60,7 +63,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     breakPointMap.clear();
 
-    bookmarkHandles.clear();
+    bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
 
     initEditor();
@@ -70,7 +73,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_pFileSysWatcher = new QFileSystemWatcher(this);
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
 
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
     if (pyEngine) 
@@ -182,13 +185,14 @@ RetVal ScriptEditorWidget::initEditor()
     markCBreakPointDisabled = markerDefine(QPixmap(":/breakpoints/icons/itomCBreakDisabled.png"));
     markBookmark = markerDefine(QPixmap(":/bookmark/icons/bookmark.png"));
     markSyntaxError = markerDefine(QPixmap(":/script/icons/syntaxError.png"));
+    markBookmarkSyntaxError = markerDefine(QPixmap(":/script/icons/bookmarkSyntaxError.png"));
 
     markCurrentLine = markerDefine(QPixmap(":/script/icons/currentLine.png"));
     markCurrentLineHandle = -1;
 
     markMaskBreakpoints = (1 << markBreakPoint) | (1 << markCBreakPoint)  | (1 << markBreakPointDisabled)  | (1 << markCBreakPointDisabled) | (1 << markCurrentLine);
     markMask1 = markMaskBreakpoints;
-    markMask2 = (1 << markBookmark) | (1 << markSyntaxError);
+    markMask2 = (1 << markBookmark) | (1 << markSyntaxError) | (1 << markBookmarkSyntaxError);
 
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
@@ -200,6 +204,8 @@ RetVal ScriptEditorWidget::initEditor()
     connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(marginClicked(int, int, Qt::KeyboardModifiers)));
 
     loadSettings();
+
+    createDummy(0);
 
     return RetVal(retOk);
 }
@@ -342,9 +348,9 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
     return RetVal(retOk);
 }
@@ -353,9 +359,9 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
 RetVal ScriptEditorWidget::preShowContextMenuMargin()
 {
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
     breakpointMenuActions["nextBP"]->setEnabled(!breakPointMap.empty());
     breakpointMenuActions["prevBP"]->setEnabled(!breakPointMap.empty());
@@ -982,32 +988,100 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     return RetVal(retOk);
 }
 
+
+void ScriptEditorWidget::createDummy(int line)
+{
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    
+
+
+    bookmarkErrorHandles.append(QPair<int,int>(2, markerAdd(line, markSyntaxError)));
+
+}
+
+bool ScriptEditorWidget::event (QEvent * event)
+{
+    if (event->type() == QEvent::ToolTip && !QToolTip::isVisible())
+    {
+        //see http://www.riverbankcomputing.com/pipermail/qscintilla/2008-November/000381.html
+        QHelpEvent *evt = static_cast<QHelpEvent*>(event);
+        QPoint point = evt->pos();
+        int sensAreaX = QsciScintilla::marginWidth(1);
+        int posX = point.rx();
+        int posY = point.ry();
+        // Check that it´s in the right column (margin)
+        if (posX <= sensAreaX)
+        {
+            point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
+            int line = QsciScintilla::lineAt(point);
+            
+            QList<QPair<int,int>>::iterator it;
+            it = bookmarkErrorHandles.begin();
+            while (it != bookmarkErrorHandles.end())
+            {
+                int l = markerLine(it->second);
+                if (l == line)
+                {
+                    point.rx() = posX;
+                    point = this->mapToGlobal(point);
+                    qDebug() << posX << "||" << posY << "tx" << point.rx() << "ty" << point.ry();
+                    QToolTip::showText(point, "Test", this);
+                }
+                ++it;
+            }
+        }
+    }
+    return QsciScintilla::event(event);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
 RetVal ScriptEditorWidget::toggleBookmark(int line)
 {
+    QList<QPair<int,int>>::iterator it;
+    bool createNew = true;
 
-    //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
-    std::list<int>::iterator it;
-    bool found = false;
-
-    for (it=bookmarkHandles.begin(); it != bookmarkHandles.end() && !found; ++it)
+    it = bookmarkErrorHandles.begin();
+    while (it != bookmarkErrorHandles.end())
     {
-        if (markerLine(*it) == line)
+        if (markerLine(it->second) == line)
         {
-            markerDeleteHandle(*it);
-            *it = -1; //!< in order to mark it for removal
-            found = true;
+            // Delete old Handle
+            markerDeleteHandle(it->second);
+
+            if (it->first == 1)
+            { // bookmark => leave it empty and delete entry in List
+                it = bookmarkErrorHandles.erase(it);
+                createNew = false;
+            }
+            else if (it->first == 2)
+            { // bug => create bug with bookmark
+                it->second = markerAdd(line, markBookmarkSyntaxError);
+                it->first = 3;
+                createNew = false;
+                ++it;
+            }
+            else if (it->first == 3)
+            { // bookmark and bug => create bug without bookmark
+                it->second = markerAdd(line, markSyntaxError);
+                it->first = 2;
+                createNew = false;
+                ++it;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        else
+        {
+            ++it;
         }
     }
-
-    bookmarkHandles.remove(-1);
-
-    if (!found)
-    {
-        bookmarkHandles.push_back(markerAdd(line, markBookmark));
+    if (createNew)
+    {    
+        bookmarkErrorHandles.append(QPair<int,int>(1, markerAdd(line, markBookmark)));
     }
-
     return RetVal(retOk);
 }
 
@@ -1015,7 +1089,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
 RetVal ScriptEditorWidget::clearAllBookmarks()
 {
     markerDeleteAll(markBookmark);
-    bookmarkHandles.clear();
+    bookmarkErrorHandles.clear();
 
     return RetVal(retOk);
 }
