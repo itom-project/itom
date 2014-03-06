@@ -125,12 +125,14 @@ public:
 
     inline PyObject *getGlobalDictionary()  { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
 
+    inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
+
     static const PythonEngine *getInstance();
 
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
 
 protected:
-    RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
+    //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     RetVal runPyFile(char* pythonFileName);         // run file pythonFileName
     RetVal debugFile(char* pythonFileName);         // debug file pythonFileName
     RetVal runString(const char *command);          // run string command
@@ -199,7 +201,8 @@ private:
     PyObject *itomDbgInstance;     //!< debugger instance
     PyObject *itomModule;          //!< itom module [new ref]
     PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
-    PyObject *gcModule;
+    PyObject *m_pyModGC;
+    PyObject *m_pyModSyntaxCheck;
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
     PyObject *dictUnicode;
@@ -256,6 +259,8 @@ public slots:
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
     void pythonInterruptExecution() const;
     void pythonDebugCommand(tPythonDbgCmd cmd);
+
+    void pythonSyntaxCheck(const QString &code);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 
