@@ -98,7 +98,8 @@ PythonEngine::PythonEngine() :
     itomDbgInstance(NULL),
     itomModule(NULL),
     itomFunctions(NULL),
-    gcModule(NULL),
+    m_pyModGC(NULL),
+    m_pyModSyntaxCheck(NULL),
     m_pyFuncWeakRefHashesAutoInc(0),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL)
@@ -205,7 +206,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 //            PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
             itomModule = PyImport_ImportModule("itom");
-            gcModule = PyImport_ImportModule("gc"); //new reference
+            m_pyModGC = PyImport_ImportModule("gc"); //new reference
+
             pythonAddBuiltinMethods();
             mainModule = PyImport_AddModule("__main__"); // reference to the module __main__ , where code above has been evaluated
 
@@ -427,6 +429,12 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 
             //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
+            //try to add the module 'frosted' for syntax check
+            m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
+            if (m_pyModSyntaxCheck == NULL)
+            {
+                PyErr_Clear();
+            }
 
             // import itoFunctions
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
@@ -556,8 +564,11 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         Py_XDECREF(itomFunctions);
         itomFunctions = NULL;
 
-        Py_XDECREF(gcModule);
-        gcModule = NULL;
+        Py_XDECREF(m_pyModSyntaxCheck);
+        m_pyModSyntaxCheck = NULL;
+
+        Py_XDECREF(m_pyModGC);
+        m_pyModGC = NULL;
 
         if (Py_IsInitialized())
         {
@@ -846,36 +857,36 @@ RetVal PythonEngine::runString(const char *command)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
-* checks syntax of python-file.
-* @param pythonFileName Name of Python-File
-*/
-RetVal PythonEngine::syntaxCheck(char* pythonFileName)
-{
-    RetVal retValue = RetVal(retOk);
-
-    PyObject* result = NULL;
-
-    if (itomDbgInstance == NULL)
-    {
-        return RetVal(retError);
-    }
-    else
-    {
-        result = PyObject_CallMethod(itomDbgInstance, "compileScript", "s", pythonFileName);
-
-        if (result == NULL) //!< syntax error
-        {
-            PyErr_Print();
-
-            retValue += RetVal(retError);
-            //printPythonError(std::cout);
-        }
-    }
-
-    return retValue;
-}
+////----------------------------------------------------------------------------------------------------------------------------------
+///**
+//* checks syntax of python-file.
+//* @param pythonFileName Name of Python-File
+//*/
+//RetVal PythonEngine::syntaxCheck(char* pythonFileName)
+//{
+//    RetVal retValue = RetVal(retOk);
+//
+//    PyObject* result = NULL;
+//
+//    if (itomDbgInstance == NULL)
+//    {
+//        return RetVal(retError);
+//    }
+//    else
+//    {
+//        result = PyObject_CallMethod(itomDbgInstance, "compileScript", "s", pythonFileName);
+//
+//        if (result == NULL) //!< syntax error
+//        {
+//            PyErr_Print();
+//
+//            retValue += RetVal(retError);
+//            //printPythonError(std::cout);
+//        }
+//    }
+//
+//    return retValue;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal PythonEngine::runPyFile(char* pythonFileName)
@@ -1288,6 +1299,42 @@ RetVal PythonEngine::debugString(const char *command)
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::pythonSyntaxCheck(const QString &code)
+{
+    if (m_pyModSyntaxCheck)
+    {
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", code.toLatin1().data());
+
+        if (result && PyTuple_Check(result) && PyTuple_Size(result) >= 2)
+        {
+            QString unexpectedErrors;
+            QString flakes;
+
+            bool ok;
+            unexpectedErrors = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,0), false, ok);
+            if (!ok)
+            {
+                unexpectedErrors = "<<error>>";
+            }
+
+            flakes = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,1), false, ok);
+            if (!ok)
+            {
+                flakes = "<<error>>";
+            }
+
+            QObject *s = sender();
+            if (s)
+            {
+                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
+            }
+        }
+
+        Py_XDECREF(result);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
