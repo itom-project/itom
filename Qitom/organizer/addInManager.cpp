@@ -265,7 +265,6 @@ namespace ito
         }
         else
         {
-
             QString absoluteAddInPath;
 
             foreach (const QString &folderName, pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
@@ -274,7 +273,14 @@ namespace ito
                 retValue += scanAddInDir(absoluteAddInPath);
             }
 
-            foreach (const QString &fileName, pluginsDir.entryList(QDir::Files))
+            QStringList filters;
+#if linux
+            filters << "*.a" << "*.so";
+#else
+            filters << "*.dll";
+#endif 
+
+            foreach (const QString &fileName, pluginsDir.entryList(filters, QDir::Files))
             {
                 absoluteAddInPath = QDir::cleanPath(pluginsDir.absoluteFilePath(fileName));
                 if (QLibrary::isLibrary(absoluteAddInPath))
@@ -1511,6 +1517,7 @@ end:
         id = qRegisterMetaType<char**>("char**");
         id = qRegisterMetaType<const char*>("const char*");
         id = qRegisterMetaType<const char**>("const char**");
+        id = qRegisterMetaType<const void *>("const void *");
         id = qRegisterMetaType<double>("double");
         id = qRegisterMetaType<double *>("double*");
         //id = qRegisterMetaType<const double>();

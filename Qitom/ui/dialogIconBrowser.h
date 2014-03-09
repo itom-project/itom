@@ -23,7 +23,7 @@
 #ifndef DIALOGICONBROWSER_H
 #define DIALOGICONBROWSER_H
 
-#include "qdialog.h"
+#include <qdialog.h>
 #include <qtreewidget.h>
 
 #include "ui_dialogIconBrowser.h"

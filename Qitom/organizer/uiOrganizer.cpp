@@ -40,7 +40,6 @@
 
 #include "common/sharedStructuresPrimitives.h"
 
-#include "qmainwindow.h"
 #include "widgets/mainWindow.h"
 
 #include <qinputdialog.h>
@@ -53,6 +52,7 @@
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 #include <qsettings.h>
 #include <qcoreapplication.h>
+#include <qmainwindow.h>
 
 
 

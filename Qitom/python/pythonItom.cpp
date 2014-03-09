@@ -955,28 +955,29 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         if (pluginName)
         {
             std::cout << "NAME:\t " << pluginName << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pluginName);
-            PyDict_SetItemString(result, "name", item); //PyUnicode_FromString(pluginName));
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pluginName); //new ref
+            PyDict_SetItemString(result, "name", item);
             Py_DECREF(item);
         }
         if (pTypeSTring)
         {
             std::cout << "TYPE:\t " << pTypeSTring << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pTypeSTring);
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pTypeSTring); //new ref
             PyDict_SetItemString(result, "type", item);
             Py_DECREF(item);
             free(pTypeSTring);
         }
 
-        std::cout << "VERSION:\t " << version << "\n";
-        item = PyFloat_FromDouble(version);
+        QString versionStr = QString("%1.%2.%3").arg(MAJORVERSION(version)).arg(MINORVERSION(version)).arg(PATCHVERSION(version));
+        std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
+        item = PythonQtConversion::QStringToPyObject(versionStr); //new ref
         PyDict_SetItemString(result, "version", item);
         Py_DECREF(item);
 
         if (pAuthor)
         {
             std::cout << "AUTHOR:\t " << pAuthor << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pAuthor);
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pAuthor); //new ref
             PyDict_SetItemString(result, "author", item);
             Py_DECREF(item);
             free(pAuthor);
@@ -984,7 +985,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         if (pDescription)
         {
             std::cout << "INFO:\t\t " << pDescription << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDescription);
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDescription); //new ref
             PyDict_SetItemString(result, "description", item);
             Py_DECREF(item);
             free(pDescription);
@@ -992,7 +993,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         if (pDetailDescription)
         {
             std::cout << "\nDETAILS:\n" << pDetailDescription << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDetailDescription);
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDetailDescription); //new ref
             PyDict_SetItemString(result, "detaildescription", item);
             Py_DECREF(item);
             free(pDetailDescription);
