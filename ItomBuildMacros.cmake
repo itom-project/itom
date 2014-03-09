@@ -625,4 +625,20 @@ MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at 
     SET(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     SET(PLUGIN_DOC_MAIN ${main_document})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.py)
+    
+    # create the directory with the generated files (if it does not exist, else the subsequent command will fail
+    ADD_CUSTOM_COMMAND (
+        TARGET ${target}
+        POST_BUILD
+        COMMAND    ${CMAKE_COMMAND}
+        ARGS       -E make_directory ${PLUGIN_DOC_GENERATED_DIR}
+    )
+    
+    ADD_CUSTOM_COMMAND (
+        TARGET ${target}
+        POST_BUILD
+        COMMAND    ${CMAKE_COMMAND}
+        ARGS       -E copy_directory ${PLUGIN_DOC_GENERATED_DIR} ${PLUGIN_DOC_INSTALL_DIR}
+    )
+
 ENDMACRO(PLUGIN_DOCUMENTATION)
