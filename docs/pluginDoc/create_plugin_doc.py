@@ -8,6 +8,7 @@ from os import path
 from sphinx.util import format_exception_cut_frames, save_traceback
 from sphinx.util.console import darkred, nocolor
 import distutils.dir_util
+import time
 
 from sphinx.application import Sphinx
 from docutils.utils import SystemMessage
@@ -93,14 +94,21 @@ if (not confFile is None):
             if (code == ui.MsgBoxYes):
                 #remove old files
                 pluginDocGeneratedDir = pluginDocGeneratedDir.replace("/","\\")
-                distutils.dir_util.remove_tree(pluginDocGeneratedDir)
-                #pattern = pluginDocGeneratedDir + "\\*"
-                #r = glob.glob(pattern)
-                #for i in r:
-                #    os.remove(i)
+                pluginDocInstallDir = pluginDocInstallDir.replace("/","\\")
+                
+                if (os.path.exists(pluginDocGeneratedDir)):
+                    distutils.dir_util.remove_tree(pluginDocGeneratedDir)
+                
+                if (os.path.exists(pluginDocInstallDir)):
+                    distutils.dir_util.remove_tree(pluginDocInstallDir)
                 
                 #copy files
                 fromDir = outdir
                 toDir = pluginDocGeneratedDir
-                distutils.dir_util.copy_tree(fromDir,toDir)
+                shutil.copytree(fromDir,toDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
+                
+                #copy content of qthelp subfolder to pluginDocInstallDir
+                fromDir = pluginDocGeneratedDir
+                toDir = pluginDocInstallDir
+                shutil.copytree(fromDir,toDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
                 
