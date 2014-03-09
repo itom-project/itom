@@ -58,9 +58,9 @@ if (not confFile is None):
         helpDict = itom.pluginHelp(pluginDocTarget,True)
         
         
-        confoverrides = {"project": helpDict["name"],
+        confoverrides = {"project": pluginDocTarget,
             "copyright": helpDict["author"],
-            "project": "itom plugin '" + helpDict["name"] + "'",
+            "project": helpDict["name"],
             "version": str(helpDict["version"]),
             "release": "",
             "master_doc": pluginDocMainDocument }
