@@ -56,6 +56,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CM
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_AllInOne.iss )

@@ -616,3 +616,13 @@ MACRO(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
 		endif(NOT ${in_file} MATCHES ".*svn.*")
 	ENDFOREACH(in_file)     
 ENDMACRO(COPY_DIRECTORY_IF_CHANGED)
+
+MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
+    SET(PLUGIN_NAME ${target})
+    SET(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
+    SET(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
+    SET(PLUGIN_DOC_GENERATED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs/generated)
+    SET(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
+    SET(PLUGIN_DOC_MAIN ${main_document})
+    configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.py)
+ENDMACRO(PLUGIN_DOCUMENTATION)

@@ -943,7 +943,7 @@ Param::Param(const char *name, const uint32 type, const double minVal, const dou
     ParamBase(name, type, val),
     m_info(info)
 {
-    assert((type & ParamBase::Double));
+    assert((type & ParamBase::Double)); //use this constructor only for type double
     m_pMeta = new DoubleMeta(minVal, maxVal);
 }
 
@@ -952,7 +952,7 @@ Param::Param(const char *name, const uint32 type, const int minVal, const int ma
     ParamBase(name, type, val),
     m_info(info)
 {
-    assert((type & ParamBase::Int));
+    assert((type & ParamBase::Int)); //use this constructor only for type integer
     m_pMeta = new IntMeta(minVal, maxVal);
 }
 
@@ -961,7 +961,7 @@ Param::Param(const char *name, const uint32 type, const char minVal, const char 
     ParamBase(name, type, val),
     m_info(info)
 {
-    assert((type & ParamBase::Char));
+    assert((type & ParamBase::Char)); //use this constructor only for type character
     m_pMeta = new CharMeta(minVal, maxVal);
 }
 

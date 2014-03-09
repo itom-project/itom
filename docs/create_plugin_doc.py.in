@@ -1,0 +1,81 @@
+# coding=iso-8859-15 
+
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+from os import path
+from sphinx.util import format_exception_cut_frames, save_traceback
+from sphinx.util.console import darkred, nocolor
+
+from sphinx.application import Sphinx
+from docutils.utils import SystemMessage
+import subprocess
+import itom
+import __main__
+import shutil
+import glob
+
+def process_docstring(app, what, name, obj, options, lines):
+    pass
+    
+def process_signature(app, what, name, obj, options, signature, return_annotation):
+    pass
+    
+confFile = itom.ui.getOpenFileName("plugin_doc_config.py file", "", "python file (*.py)")
+
+if (not confFile is None):
+    with(open(confFile, "r")) as infile:
+        pluginConfiguration = infile.readlines()
+        exec(pluginConfiguration)
+
+    all_files = True
+    filenames = False
+    confoverrides = {}
+    freshenv = False
+
+    basedir = getCurrentPath()
+    srcdir = pluginDocSourceDir #from pluginConfiguration
+    confdir = os.path.join(itom.getAppPath(), "SDK/docs/plugin_doc_conf.py"
+
+    buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
+
+    for buildername in buildernames:
+        outdir = os.path.join(pluginDocGeneratedDir,buildername)
+        doctreedir = os.path.join(pluginDocGeneratedDir,"doctrees")
+        
+        helpDict = itom.pluginHelp(pluginDocTarget,True)
+        
+        confoverrides = {"project": helpDict["name"],
+            "copyright": helpDict["author"],
+            "project": "itom plugin '" + helpDict["name"] + "'",
+            "version": helpDict["version"],
+            "release": "",
+            "master_doc": pluginDocMainDocument }
+        
+        try:
+            os.mkdir(outdir)
+        except:
+            pass
+
+
+        app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
+                     confoverrides, sys.stdout, sys.stderr, freshenv)
+
+        app.connect('autodoc-process-docstring',process_docstring)
+        app.connect('autodoc-process-signature',process_signature)
+
+        nocolor()
+
+        if not app.builder:
+            raise RuntimeError
+
+        if all_files:
+            app.builder.build_all()
+        elif filenames:
+            app.builder.build_specific(filenames)
+        else:
+            app.builder.build_update()
+                
+        else:
+            raise RuntimeError("currently only qthelp is supported for plugin documentation")
