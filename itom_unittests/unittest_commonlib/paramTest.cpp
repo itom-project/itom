@@ -37,13 +37,29 @@ void checkDouble(ito::ParamBase pb, const char* name, const ito::ParamBase::Type
 
     if (ckValue)
     {
-        EXPECT_EQ(pb.getVal<double>(), value);
+        EXPECT_DOUBLE_EQ(pb.getVal<double>(), value);
 
         double addDoubleValue = 1.112;
         double testVal = value + addDoubleValue;
         double pbVal = pb.getVal<double>() + addDoubleValue;
-        pb.setVal<int>(pbVal);
-        EXPECT_EQ(pb.getVal<double>(), testVal);
+        pb.setVal<double>(pbVal);
+        EXPECT_DOUBLE_EQ(pb.getVal<double>(), testVal);
+    }
+}
+
+void checkChar(ito::ParamBase pb, const char* name, const ito::ParamBase::Type type, const char value, const bool ckName, const bool ckType, const bool ckValue)
+{
+    checkParamBase(pb, name, type, ckName, ckType);
+
+    if (ckValue)
+    {
+        EXPECT_EQ(pb.getVal<char>(), value);
+
+        int addIntValue = 1;
+        int testVal = value + addIntValue;
+        int pbVal = pb.getVal<int>() + addIntValue;
+        pb.setVal<char>(pbVal);
+        EXPECT_EQ(pb.getVal<char>(), testVal);
     }
 }
 
@@ -55,7 +71,7 @@ TEST(ParamTest, Constructor)
     // integer
     const char *paramName = "pbInt";
     ito::ParamBase::Type paramType = ito::ParamBase::Int;
-    int paramValueInt = 42;
+    const int paramValueInt = 42;
 
     ito::ParamBase pbI1(paramName);
     checkInt(pbI1, paramName, paramType, paramValueInt, true, false, false);
@@ -66,13 +82,13 @@ TEST(ParamTest, Constructor)
     ito::ParamBase pbI3(paramName, paramType, paramValueInt);
     checkInt(pbI3, paramName, paramType, paramValueInt, true, true, true);
 
-    ito::ParamBase pbI4(paramBaInt, ito::ParamBase::IntArray, paramValueInt);
-    checkInt(pbI4, paramName, paramType, paramValueInt, true, true, true);
+//    ito::ParamBase pbI4(paramBaInt, ito::ParamBase::IntArray, paramValueInt);
+//    checkInt(pbI4, paramName, paramType, paramValueInt, true, true, true);
 
     // double
     paramName = "pbDouble";
     paramType = ito::ParamBase::Double;
-    int paramValueDouble = 1.321;
+    const double paramValueDouble = 1.321;
 
     ito::ParamBase pbD1(paramName);
     checkDouble(pbD1, paramName, paramType, paramValueDouble, true, false, false);
@@ -83,8 +99,25 @@ TEST(ParamTest, Constructor)
     ito::ParamBase pbD3(paramName, paramType, paramValueDouble);
     checkDouble(pbD3, paramName, paramType, paramValueDouble, true, true, true);
 
-    ito::ParamBase pbD4(paramBaInt, ito::ParamBase::DoubleArray, paramValueDouble);
-    checkDouble(pbD4, paramName, paramType, paramValueDouble, true, true, true);
+//    ito::ParamBase pbD4(paramBaInt, ito::ParamBase::DoubleArray, paramValueDouble);
+//    checkDouble(pbD4, paramName, paramType, paramValueDouble, true, true, true);
+
+    // char
+    paramName = "pbChar";
+    paramType = ito::ParamBase::Char;
+    const char paramValueChar = 42;
+
+    ito::ParamBase pbC1(paramName);
+    checkChar(pbC1, paramName, paramType, paramValueChar, true, false, false);
+
+    ito::ParamBase pbC2(paramName, paramType);
+    checkChar(pbC2, paramName, paramType, paramValueChar, true, true, false);
+
+    ito::ParamBase pbC3(paramName, paramType, paramValueChar);
+    checkChar(pbC3, paramName, paramType, paramValueChar, true, true, true);
+
+//    ito::ParamBase pbC4(paramBaInt, ito::ParamBase::DoubleArray, paramValueDouble);
+//    checkDouble(pbC4, paramName, paramType, paramValueDouble, true, true, true);
 
 /*    ito::ParamBase pb02("pbInt02", );
 
