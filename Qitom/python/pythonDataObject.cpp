@@ -365,8 +365,11 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                     }
 
-                    DELETE_AND_SET_NULL(sizes);
-                    DELETE_AND_SET_NULL(steps);
+                    //valgrind: mismatched delete
+//                    DELETE_AND_SET_NULL(sizes);
+//                    DELETE_AND_SET_NULL(steps);
+                    DELETE_AND_SET_NULL_ARRAY(sizes);
+                    DELETE_AND_SET_NULL_ARRAY(steps);
 
                     int retCode = copyNpDataObjTags2DataObj(copyObject, self->dataObject);
 
