@@ -25,7 +25,6 @@
 #include "popupWidgetFactory.h"
 #include "popupWidget.h"
 
-
 // --------------------------------------------------------------------------
 PopupWidgetFactory::PopupWidgetFactory(QObject *_parent)
   : QObject(_parent)
@@ -47,7 +46,7 @@ QWidget *PopupWidgetFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString PopupWidgetFactory::domXml() const
 {
-  return "<widget class=\"PopupWidget\" name=\"PopupWidget\">\n</widget>\n";
+  return "<widget class=\"PopupWidget\" name=\"popupWidget\">\n</widget>\n";
 }
 
 // --------------------------------------------------------------------------

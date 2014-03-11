@@ -42,7 +42,7 @@ QWidget *RangeWidgetFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString RangeWidgetFactory::domXml() const
 {
-  return "<widget class=\"RangeWidget\" name=\"RangeWidget\">\n"
+  return "<widget class=\"RangeWidget\" name=\"rangeWidget\">\n"
           "</widget>\n";
 }
 

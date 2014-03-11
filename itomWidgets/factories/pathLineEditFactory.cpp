@@ -43,7 +43,7 @@ QWidget *PathLineEditFactory::createWidget(QWidget *_parent)
 QString PathLineEditFactory::domXml() const
 {
   return "<widget class=\"PathLineEdit\" \
-          name=\"PathLineEdit\">\n"
+          name=\"pathLineEdit\">\n"
           "</widget>\n";
 }
 

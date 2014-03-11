@@ -43,7 +43,7 @@ QWidget *CollapsibleGroupBoxFactory::createWidget(QWidget *_parent)
 QString CollapsibleGroupBoxFactory::domXml() const
 {
   return "<widget class=\"CollapsibleGroupBox\" \
-          name=\"CollapsibleGroupBox\">\n"
+          name=\"collapsibleGroupBox\">\n"
           " <property name=\"geometry\">\n"
           "  <rect>\n"
           "   <x>0</x>\n"

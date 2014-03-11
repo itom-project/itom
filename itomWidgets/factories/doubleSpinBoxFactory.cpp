@@ -42,7 +42,7 @@ QWidget *DoubleSpinBoxFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString DoubleSpinBoxFactory::domXml() const
 {
-  return "<widget class=\"DoubleSpinBox\" name=\"DoubleSpinBox\">\n"
+  return "<widget class=\"DoubleSpinBox\" name=\"doubleSpinBox\">\n"
     "</widget>\n";
 }
 

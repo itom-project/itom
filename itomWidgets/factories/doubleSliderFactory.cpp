@@ -42,7 +42,7 @@ QWidget *DoubleSliderFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString DoubleSliderFactory::domXml() const
 {
-  return "<widget class=\"DoubleSlider\" name=\"DoubleSlider\">\n"
+  return "<widget class=\"DoubleSlider\" name=\"doubleSlider\">\n"
     "<property name=\"orientation\">\n"
     "  <enum>Qt::Horizontal</enum>\n"
     " </property>\n"

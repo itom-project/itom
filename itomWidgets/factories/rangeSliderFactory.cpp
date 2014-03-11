@@ -42,7 +42,7 @@ QWidget *RangeSliderFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString RangeSliderFactory::domXml() const
 {
-  return "<widget class=\"RangeSlider\" name=\"RangeSlider\">\n"
+  return "<widget class=\"RangeSlider\" name=\"rangeSlider\">\n"
     "<property name=\"orientation\">\n"
     "  <enum>Qt::Horizontal</enum>\n"
     " </property>\n"

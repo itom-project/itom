@@ -42,7 +42,7 @@ QWidget *SliderWidgetFactory::createWidget(QWidget *_parent)
 // --------------------------------------------------------------------------
 QString SliderWidgetFactory::domXml() const
 {
-  return "<widget class=\"SliderWidget\" name=\"SliderWidget\">\n"
+  return "<widget class=\"SliderWidget\" name=\"sliderWidget\">\n"
           "</widget>\n";
 }
 
