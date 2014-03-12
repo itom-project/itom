@@ -62,7 +62,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in $
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_AllInOne.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_AllInOne.iss )
-
+ 
 IF(WIN32)
     SET(CHMSource "${CMAKE_CURRENT_SOURCE_DIR}/docs/itom_doc.chm")
     SET(CHMDest "${CMAKE_CURRENT_BINARY_DIR}/docs")

@@ -619,7 +619,7 @@ ENDMACRO(COPY_DIRECTORY_IF_CHANGED)
 
 MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
     SET(PLUGIN_NAME ${target})
-    SET(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
+    SET(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     SET(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
     SET(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     SET(PLUGIN_DOC_MAIN ${main_document})
