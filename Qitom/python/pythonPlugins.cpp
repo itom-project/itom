@@ -358,15 +358,20 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
+        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
         {
-            retval += ito::RetVal(ito::retError,0,"timeout while showing toolbox");
+            if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                retval += ito::RetVal(ito::retError,0,"timeout while showing toolbox");
+            }
+            else
+            {
+                retval += locker.getSemaphore()->returnValue;
+            }
         }
         else
         {
-            retval += locker.getSemaphore()->returnValue;
+            retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
         }
     }
 
@@ -391,15 +396,20 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-
-        if (!locker.getSemaphore()->wait(5000))
+        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout while showing toolbox");
+            if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                retval += ito::RetVal(ito::retError, 0, "timeout while hiding toolbox");
+            }
+            else
+            {
+                retval += locker.getSemaphore()->returnValue;
+            }
         }
         else
         {
-            retval += locker.getSemaphore()->returnValue;
+            retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
         }
     }
 
@@ -562,18 +572,29 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String));
-    QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
     {
-        if (!addInObj->isAlive())
+        bool timeout = false;
+
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting name parameter").toLatin1().data());
-            break;
+            if (!addInObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting name parameter").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
         }
     }
-
-    ret += locker.getSemaphore()->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'getParam' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     if (!SetReturnValueMessage(ret, "getName"))
     {
@@ -636,18 +657,29 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
             if (!ret.containsError())
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-
-                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+                if (QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
                 {
-                    if (!aib->isAlive())
+                    bool timeout = false;
+
+                    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
                     {
-                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling specific function in plugin.").toLatin1().data());
-                        break;
+                        if (!aib->isAlive())
+                        {
+                            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling specific function in plugin.").toLatin1().data());
+                            timeout = true;
+                            break;
+                        }
+                    }
+
+                    if (!timeout)
+                    {
+                        ret += locker.getSemaphore()->returnValue;
                     }
                 }
-
-                ret += locker.getSemaphore()->returnValue;
+                else
+                {
+                    ret += ito::RetVal(ito::retError, 0, "Member 'execFunc' of plugin could not be invoked (error in signal/slot connection).");
+                }
             }
 
         }
@@ -762,17 +794,28 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 
     QSharedPointer<ito::Param> qsParam(new ito::Param(paramName)); //here it is sufficient to provide an empty param container with name only, the content will be filled by the plugin (including type)
     
-    QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
     {
-        if (!addInObj->isAlive())
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting parameter").toLatin1().data());
-            break;
+            if (!addInObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting parameter").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
         }
     }
-
-    ret += locker.getSemaphore()->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'getParam' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     result = ito::PythonParamConversion::ParamBaseToPyObject(*qsParam);
 
@@ -1086,20 +1129,27 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     {
         bool timeout = false;
         waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
-        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+        if (QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond)))
         {
-            if (!addInObj->isAlive())
+
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
-                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout.").toLatin1().data());
-                timeout = true;
-                break;
+                if (!addInObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout.").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += waitCond->returnValue;
             }
         }
-
-        if (!timeout)
+        else
         {
-            ret += waitCond->returnValue;
+            ret += ito::RetVal(ito::retError, 0, "Member 'setParam' of plugin could not be invoked (error in signal/slot connection).");
         }
 
          waitCond->deleteSemaphore();
@@ -1139,12 +1189,19 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             ito::AddInManager *aim = ito::AddInManager::getInstance();
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond));
-//            retval = aim->closeAddIn((ito::AddInBase**)&self->actuatorObj);
-            waitCond->wait(-1);
-            retval += waitCond->returnValue;
-             waitCond->deleteSemaphore();
-             waitCond = NULL;
+            
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            {
+                waitCond->wait(-1);
+                retval += waitCond->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "Member 'closeAddIn' of plugin could not be invoked (error in signal/slot connection).");
+            }
+
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
             
             PythonCommon::transformRetValToPyException(retval);
         }
@@ -1321,11 +1378,18 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         Py_DECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-        waitCond->wait(-1);
-        retval += waitCond->returnValue;
-         waitCond->deleteSemaphore();
-         waitCond = NULL;
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        {
+            waitCond->wait(-1);
+            retval += waitCond->returnValue;
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).");
+        }
+
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
 
         paramsMandCpy.clear();
         paramsOptCpy.clear();
@@ -1533,24 +1597,39 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool invokeOk;
     if (length == 1)
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
     else
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    }
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
-    {
-        if (!self->actuatorObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calibration").toLatin1().data());
-            break;
-        }
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (invokeOk)
+    {
+        bool timeout = false;
+
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calibration").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'calib' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     freeParams(length, cargt, cargs);
     axisVec.clear();
@@ -1642,24 +1721,37 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool invokeOk;
     if (length == 1)
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
     else
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    }
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
-    {
-        if (!self->actuatorObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting origin").toLatin1().data());
-            break;
-        }
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (invokeOk)
+    {
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting origin").toLatin1().data());
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'setOrigin' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     freeParams(length, cargt, cargs);
 
@@ -1734,21 +1826,31 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
         return NULL;
     }
 
-    QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+    if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
     {
-        if (!self->actuatorObj->isAlive())
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toLatin1().data());
-            break;
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
         }
     }
-
-    ret += locker.getSemaphore()->returnValue;
-
-    if (ret != ito::retOk)
+    else
     {
-        PyErr_Format(PyExc_RuntimeError, "error invoking getStatus with error message: \n%s\n", ret.errorMessage());
+        ret += ito::RetVal(ito::retError, 0, "Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).");
+    }
+
+    if (!SetReturnValueMessage(ret, "getStatus"))
+    {
         return NULL;
     }
 
@@ -1845,26 +1947,40 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool invokeOk;
 
     if (length == 1)
     {
         long axis = *(long *)cargs[0];
-        QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(const int, (const int) axis), Q_ARG(QSharedPointer<double>, pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(const int, (const int) axis), Q_ARG(QSharedPointer<double>, pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
     else
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    }
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
-    {
-        if (!self->actuatorObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting position values").toLatin1().data());
-            break;
-        }
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (invokeOk)
+    {
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting position values").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'getPos' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     if (length > 1)
     {
@@ -2103,25 +2219,40 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool invokeOk;
+
     if (length == 2)
     {
         long axis = *(long *)cargs[0];
-        QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
     else
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    }
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
-    {
-        if (!self->actuatorObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting absolute position").toLatin1().data());
-            break;
-        }
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (invokeOk)
+    {
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting absolute position").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'setPosAbs' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     freeParams(length, cargt, cargs);
     axisVec.clear();
@@ -2175,25 +2306,40 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool invokeOk;
+
     if (length == 2)
     {
         long axis = *(long *)cargs[0];
-        QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
     else
     {
-        QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-    }
-    while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
-    {
-        if (!self->actuatorObj->isAlive())
-        {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting relative position").toLatin1().data());
-            break;
-        }
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (invokeOk)
+    {
+        bool timeout = false;
+        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->actuatorObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting relative position").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'setPosRel' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     freeParams(length, cargt, cargs);
     axisVec.clear();
@@ -2315,10 +2461,16 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             ito::RetVal retval(ito::retOk);
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond));
-//            ito::RetVal retval = aim->closeAddIn((ito::AddInBase**)&self->dataIOObj);
-            waitCond->wait(-1);
-            retval += waitCond->returnValue;
+
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            {
+                waitCond->wait(-1);
+                retval += waitCond->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "Member 'closeAddIn' of plugin could not be invoked (error in signal/slot connection).");
+            }
             waitCond->deleteSemaphore();
             waitCond = NULL;
 
@@ -2497,10 +2649,17 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         Py_DECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInDataIO**, &self->dataIOObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-    //    retval = AIM->initAddIn(pluginNum, pluginName, &self->dataIOObj, paramsMand, paramsOpt, enableAutoLoadParams);
-        waitCond->wait(-1);
-        retval += waitCond->returnValue;
+
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInDataIO**, &self->dataIOObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        {
+            waitCond->wait(-1);
+            retval += waitCond->returnValue;
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).");
+        }
+
         waitCond->deleteSemaphore();
         waitCond = NULL;
 
@@ -2675,21 +2834,34 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
     }
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = NULL;
+    bool timeout = false;
 
     for (int i = 0 ; i < count ; i++)
     {
         waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
-
-        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore *, waitCond)))
         {
-            if (!self->dataIOObj->isAlive())
+
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
-                break;
+                if (!self->dataIOObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'startDevice'");
+                    timeout = true;
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += waitCond->returnValue;
             }
         }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, "Member 'startDevice' of plugin could not be invoked (error in signal/slot connection).");
+        }
 
-        ret += waitCond->returnValue;
         waitCond->deleteSemaphore();
         waitCond = NULL;
 
@@ -2745,24 +2917,35 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = NULL;
+    bool timeout = false;
 
     if (count >= 0)
     {
         for (int i = 0 ; i < count ; i++)
         {
             waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
-
-            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+            if (QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond)))
             {
-                if (!self->dataIOObj->isAlive())
+                while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
                 {
-                    ret += ito::RetVal(ito::retError,0,"timeout while stopping device");
-                    break;
+                    if (!self->dataIOObj->isAlive())
+                    {
+                        ret += ito::RetVal(ito::retError,0,"timeout while stopping device");
+                        timeout = true;
+                        break;
+                    }
+                }
+
+                if (!timeout)
+                {
+                    ret += waitCond->returnValue;
                 }
             }
+            else
+            {
+                ret += ito::RetVal(ito::retError, 0, "Member 'stopDevice' of plugin could not be invoked (error in signal/slot connection).");
+            }
 
-            ret += waitCond->returnValue;
             waitCond->deleteSemaphore();
             waitCond = NULL;
 
@@ -2853,17 +3036,29 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(self->dataIOObj, "acquire", Q_ARG(const int, trigger), Q_ARG(ItomSharedSemaphore *, waitCond));
-
-    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    bool timeout = false;
+    if (QMetaObject::invokeMethod(self->dataIOObj, "acquire", Q_ARG(const int, trigger), Q_ARG(ItomSharedSemaphore *, waitCond)))
     {
-        if (!self->dataIOObj->isAlive())
+
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
-            break;
+            if (!self->dataIOObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError,0,"timeout while calling 'acquire'");
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += waitCond->returnValue;
         }
     }
-
-    ret += waitCond->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'acquire' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     waitCond->deleteSemaphore();
     waitCond = NULL;
@@ -2991,15 +3186,21 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         return NULL;
     }
 
+    bool timeout = false;
     while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
         {
+            ret += ito::RetVal(ito::retError,0,"timeout while calling 'getVal'");
+            timeout = true;
             break;
         }
     }
 
-    ret += locker.getSemaphore()->returnValue;
+    if (!timeout)
+    {
+        ret += locker.getSemaphore()->returnValue;
+    }
     
     if (!SetReturnValueMessage(ret, "getVal"))
     {
@@ -3085,17 +3286,29 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-        QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-
-        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
         {
-            if (!self->dataIOObj->isAlive())
+            bool timeout = false;
+
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
-                break;
+                if (!self->dataIOObj->isAlive())
+                {
+                    timeout = true;
+                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'copyVal'");
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += locker.getSemaphore()->returnValue;
             }
         }
-
-        ret += locker.getSemaphore()->returnValue;
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, "Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).");
+        }
 
     }
     else if (self->dataIOObj->getBasePlugin()->getType() & ito::typeADDA)
@@ -3115,17 +3328,28 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
 
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
-
-        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        
+        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
         {
-            if (!self->dataIOObj->isAlive())
-            {
-                break;
-            }
-        }
+            bool timeout = false;
 
-        ret += locker.getSemaphore()->returnValue;
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                if (!self->dataIOObj->isAlive())
+                {
+                    timeout = true;
+                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'copyVal'");
+                    break;
+                }
+            }
+
+            ret += locker.getSemaphore()->returnValue;
+
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, "Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).");
+        }
     }
     else
     {
@@ -3200,17 +3424,29 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond));
-
-        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond)))
         {
-            if (!self->dataIOObj->isAlive())
+            bool timeout = false;
+
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
-                break;
+                if (!self->dataIOObj->isAlive())
+                {
+                    timeout = true;
+                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'setVal'");
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += waitCond->returnValue;
             }
         }
-
-        ret += waitCond->returnValue;
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, "Member 'setVal' of plugin could not be invoked (error in signal/slot connection).");
+        }
 
         waitCond->deleteSemaphore();
         waitCond = NULL;
@@ -3294,17 +3530,29 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond));
-
-        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
-        {
-            if (!self->dataIOObj->isAlive())
+        
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        {        
+            bool timeout = false;
+            while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
-                break;
+                if (!self->dataIOObj->isAlive())
+                {
+                    timeout = true;
+                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'setVal'");
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += waitCond->returnValue;
             }
         }
-
-        ret += waitCond->returnValue;
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, "Member 'setVal' of plugin could not be invoked (error in signal/slot connection).");
+        }
 
         waitCond->deleteSemaphore();
         waitCond = NULL;
@@ -3344,22 +3592,33 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
 {
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
-
-    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    if (QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond)))
     {
-        if (!self->dataIOObj->isAlive())
+        bool timeout = false;
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
-            break;
+            if (!self->dataIOObj->isAlive())
+            {
+                timeout = true;
+                ret += ito::RetVal(ito::retError,0,"timeout while calling 'enableAutoGrabbing'");
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += waitCond->returnValue;
         }
     }
-
-    ret += waitCond->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'enableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
-    if (!SetReturnValueMessage(ret, "setVal"))
+    if (!SetReturnValueMessage(ret, "enableAutoGrabbing"))
     {
         return NULL;
     }
@@ -3400,17 +3659,29 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
 {
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
-
-    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    
+    if (QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond)))
     {
-        if (!self->dataIOObj->isAlive())
+        bool timeout = false;
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
-            break;
+            if (!self->dataIOObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError,0,"timeout while calling 'disableAutoGrabbing'");
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += waitCond->returnValue;
         }
     }
-
-    ret += waitCond->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     waitCond->deleteSemaphore();
     waitCond = NULL;
@@ -3453,24 +3724,38 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    bool invokeOk;
     if (val)
     {
-        QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
     }
     else
     {
-        QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
     }
 
-    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    if (invokeOk)
     {
-        if (!self->dataIOObj->isAlive())
+        bool timeout = false;
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
         {
-            break;
+            if (!self->dataIOObj->isAlive())
+            {
+                timeout = true;
+                ret += ito::RetVal(ito::retError,0,"timeout while calling 'enable/disableAutoGrabbing'");
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += waitCond->returnValue;
         }
     }
-
-    ret += waitCond->returnValue;
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, "Member 'enableAutoGrabbing' or 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+    }
 
     waitCond->deleteSemaphore();
     waitCond = NULL;
