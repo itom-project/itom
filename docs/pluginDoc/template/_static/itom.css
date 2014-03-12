@@ -1,0 +1,522 @@
+/*
+ * itom.css_t
+ * ~~~~~~~~~~~
+ */
+
+@import url("basic.css");
+
+html {
+    margin: 0px;
+    padding: 0px;
+    background: #FFF url(bg-page.png) top left repeat-x;
+}
+
+body {
+    line-height: 1.5;
+    margin: auto;
+    padding: 0px;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    min-width: 59em;
+    max-width: 70em;
+    color: #000000;
+    border-style:double;
+    border-width: 0px;
+}
+
+/*Parameters, Returns, etc - Spalte*/
+col.field-name{ 
+    background-color: #F6E3CE;
+    overflow: hidden;
+	width: 115px;
+    border-left: 2px solid #000000;
+}
+
+/*class.itom ... Ueberschrift*/
+dl.class dt{
+   font-size: 19px; 
+}
+
+/*Das Wort "class" in der Klassenueberschrift*/
+dl.class dt em.property{
+	font-size: 1.05em  
+}
+
+
+/*Hinterlegung der gesamten Methoden*/
+dl.method, dl.staticmethod, dl.function{
+  background-color: #ffffff; /*#FBF8EF;*/
+  border: 0px solid #000000;
+}
+
+/*Hinterlegung des gesamten Attributes*/
+dl.attribute{
+  background-color: #F2FBff;
+  border: 1px solid;
+}
+
+/*Hinterlegung des Attributeheaders*/
+dl.attribute dt{
+ 	background-color: #E6E6E6;
+  font-size: 13px;
+  padding-left: 7px;
+}
+
+/*Hinterlegung des static- und Mehodenheaders*/
+dl.method dt, dl.staticmethod dt, dl.function dt{
+ 	background-color: #E6E6E6; 
+  border-top: 1px solid #000000; /*#B40404*/
+  font-size: 13px;
+  padding-left: 7px;
+}
+
+div.footer {
+    padding: 10px;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* link colors and text decoration */
+
+a:link {
+    font-weight: bold;
+    text-decoration: none;
+    color: #dc3c01;
+}
+
+a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    color: #892601;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+    color: #ff4500;
+}
+
+/* Some headers act as anchors, don't give them a hover effect */
+
+h1 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h2 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h3 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h4 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+a.headerlink {
+    color: #a7ce38;
+    padding-left: 5px;
+}
+
+a.headerlink:hover {
+    color: #a7ce38;
+}
+
+/* basic text elements */
+
+div.content {
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 50px;
+    font-size: 0.9em;
+}
+
+/* heading and navigation */
+
+div.content.div#dataobject.section.dl.class.dd.table.docutils.field-list.tbody.tr.field-odd.field.th.field-name{
+  backround: #0000FF;
+}
+
+div.header {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    height: 85px;
+    background: #efefef; */
+    padding: 0 40px;
+}
+div.header h1 {
+    font-size: 1.6em;
+    font-weight: normal;
+    letter-spacing: 3px;
+    color: #0c3762;
+    border: 0;
+    margin: 0;
+    padding-top: 15px;
+    padding-left: 10px;
+}
+div.header h1 a {
+    font-weight: normal;
+    color: #0c3762;
+}
+div.header h2 {
+    font-size: 1.3em;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #aaa;
+    border: 0;
+    margin-top: -3px;
+    padding: 0;
+    padding-left: 20px;
+}
+
+div.header img.rightlogo {
+    float: right;
+}
+
+
+div.title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    margin-bottom: 25px;
+}
+div.topnav {
+    background: #e0e0e0; */
+}
+div.topnav p {
+    margin-top: 0;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 0px;
+    text-align: right;
+    font-size: 0.8em;
+}
+div.bottomnav {
+    background: #e0e0e0;
+}
+div.bottomnav p {
+    margin-right: 40px;
+    text-align: right;
+    font-size: 0.8em;
+}
+
+a.uplink {
+    font-weight: normal;
+}
+
+
+/* contents box */
+
+table.index {
+    margin: 0px 0px 30px 30px;
+    padding: 1px;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: #e0e0e0;
+}
+table.index tr.heading {
+    background-color: #e0e0e0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+table.index tr.index {
+    background-color: #eeeeee;
+}
+table.index td {
+    padding: 5px 20px;
+}
+
+table.index a:link, table.index a:visited {
+    font-weight: normal;
+    text-decoration: none;
+    color: #dc3c01;
+}
+table.index a:hover, table.index a:active {
+    text-decoration: underline;
+    color: #ff4500;
+}
+
+
+/* Haiku User Guide styles and layout */
+
+/* Rounded corner boxes */
+/* Common declarations */
+/*div.admonition {
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border-style: dotted;
+    border-width: thin;
+    border-color: #dcdcdc;
+    padding: 10px 15px 10px 15px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}*/
+
+
+/*div.warning {
+    padding: 10px 15px 10px 80px;
+    background: #fffbc6 url(alert_warning_32.png) 15px 15px no-repeat;
+    min-height: 42px;
+}*/
+
+div.admonition.note, div.warning, 
+div.admonition.seealso{
+    font-size: 0.9em;
+    margin: 1em 0 1em 0;
+    border: 1px solid #86989B;
+    background-color: #f7f7f7;
+    padding: 0;
+}
+
+div.admonition p, div.warning p {
+    margin: 0.5em 1em 0.5em 1em;
+    padding: 0;
+}
+
+div.admonition pre, div.warning pre {
+    margin: 0.4em 1em 0.4em 1em;
+}
+
+/*Note, Warning etc. Kasten ueberschrift*/
+div.admonition p.admonition-title,
+div.warning p.admonition-title {
+    margin: 0 0 0 0;
+    padding: 0.1em 0 0.1em 0.5em;
+    color: white;
+    border-bottom: 1px solid #86989B;
+    font-weight: bold;
+    background-color: #AFC1C4;
+}
+
+div.warning {
+    border: 1px solid #940000;
+}
+
+div.warning p.admonition-title {
+    background-color: #CF0000;
+    border-bottom-color: #940000;
+}
+
+div.admonition ul, div.admonition ol,
+div.warning ul, div.warning ol {
+    margin: 0.1em 0.5em 0.5em 3em;
+    padding: 0;
+}
+
+div.versioninfo {
+    margin: 1em 0 0 0;
+    border: 1px solid #ccc;
+    background-color: #DDEAF0;
+    padding: 8px;
+    line-height: 1.3em;
+    font-size: 0.9em;
+}
+
+div.seealso {
+    background: #e4ffde;
+}
+
+/* More layout and styles */
+h1 {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    margin-top: 30px;
+}
+
+h2 {
+    font-size: 1.2em;
+    font-weight: normal;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    margin-top: 30px;
+}
+
+h3 {
+    font-size: 1.1em;
+    font-weight: normal;
+    color: #0c3762;
+    margin-top: 30px;
+}
+
+h4 {
+    font-size: 1.0em;
+    font-weight: normal;
+    color: #0c3762;
+    margin-top: 30px;
+}
+
+p {
+    text-align: justify;
+}
+
+p.last {
+    margin-bottom: 0;
+}
+
+ol {
+    padding-left: 20px;
+}
+
+ul {
+    padding-left: 5px;
+    margin-top: 3px;
+}
+
+li {
+    line-height: 1.3;
+}
+
+/*div.content ul > li {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    background: transparent url(bullet_orange.png) no-repeat scroll left 0.45em;
+    list-style-image: none;
+    list-style-type: none;
+    padding: 0 0 0 1.666em;
+    margin-bottom: 3px;
+}*/
+
+div.content ul > li {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    list-style-image: none;
+    list-style-type: disc;
+    padding: 0 0 0 1em;
+    margin-bottom: 3px;
+    margin-left: 10px;
+}
+
+td {
+    vertical-align: top;
+}
+
+/*Groesse aller Links*/
+/*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
+tt {
+    background-color: #e2e2e2;
+    font-size: 1.2em;
+    font-family: monospace;
+}
+
+pre {
+    border-color: #0c3762;
+    border-style: dotted;
+    border-width: thin;
+    margin: 0 0 12px 0;
+    padding: 0.8em;
+    background-color: #f0f0f0;
+}
+
+hr {
+    border-top: 1px solid #ccc;
+    border-bottom: 0;
+    border-right: 0;
+    border-left: 0;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+
+
+/* printer only pretty stuff */
+@media print {
+    .noprint {
+        display: none;
+    }
+    /* for acronyms we want their definitions inlined at print time */
+    acronym[title]:after {
+        font-size: small;
+        content: " (" attr(title) ")";
+        font-style: italic;
+    }
+    /* and not have mozilla dotted underline */
+    acronym {
+        border: none;
+    }
+    div.topnav, div.bottomnav, div.header, table.index {
+        display: none;
+    }
+    div.content {
+        margin: 0px;
+        padding: 0px;
+    }
+    html {
+        background: #FFF;
+    }
+}
+
+.viewcode-back {
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+}
+
+div.viewcode-block:target {
+    background-color: #f4debf;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+    margin: -1px -12px;
+    padding: 0 12px;
+}
+
+/* -- tables ---------------------------------------------------------------- */
+
+table.docutils {
+    border: 0;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1px 8px 1px 5px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #aaa;
+}
+
+table.field-list td, table.field-list th {
+    border: 0 !important;
+}
+
+table.footnote td, table.footnote th {
+    border: 0 !important;
+}
+
+th {
+    text-align: left;
+    padding-right: 5px;
+}
+
+table.citation {
+    border-left: solid 1px gray;
+    margin-left: 1px;
+}
+
+table.citation td {
+    border-bottom: none;
+}
+
+/* -- breathe specific styles ----------------------------------------------- */
+
+/* So enum value descriptions are displayed inline to the item */
+.breatheenumvalues li tt + p {
+    display: inline;
+}
+
+/* So parameter descriptions are displayed inline to the item */
+.breatheparameterlist li tt + p {
+    display: inline;
+}

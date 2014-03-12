@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QtHelpProject version="1.0">
+    <namespace>org.sphinx.itomplugindoc</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <customFilter name="itom plugin documentation">
+        <filterAttribute>itomPluginDocumentation</filterAttribute>
+    </customFilter>
+    <filterSection>
+        <filterAttribute>itomPluginDocumentation</filterAttribute>
+        <toc>
+            <section title="itom Documentation" ref="serialIO.html">
+                
+            </section>
+        </toc>
+        <keywords>
+
+        </keywords>
+        <files>
+            <file>nix.html</file>
+            <file>search.html</file>
+            <file>serialIO.html</file>
+            <file>_static\ajax-loader.gif</file>
+            <file>_static\alert_info_32.png</file>
+            <file>_static\alert_warning_32.png</file>
+            <file>_static\basic.css</file>
+            <file>_static\bg-page.png</file>
+            <file>_static\bullet_orange.png</file>
+            <file>_static\comment-bright.png</file>
+            <file>_static\comment-close.png</file>
+            <file>_static\comment.png</file>
+            <file>_static\down-pressed.png</file>
+            <file>_static\down.png</file>
+            <file>_static\file.png</file>
+            <file>_static\itom.css</file>
+            <file>_static\minus.png</file>
+            <file>_static\plus.png</file>
+            <file>_static\pygments.css</file>
+            <file>_static\up-pressed.png</file>
+            <file>_static\up.png</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

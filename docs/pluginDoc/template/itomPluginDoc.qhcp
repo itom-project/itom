@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+        <title>itom</title>
+        <homePage>qthelp://org.sphinx.itomplugindoc/index.html</homePage>
+        <startPage>qthelp://org.sphinx.itomplugindoc/index.html</startPage>
+    </assistant>
+    <docFiles>
+        <generate>
+            <file>
+                <input>itomPluginDoc.qhp</input>
+                <output>itomPluginDoc.qch</output>
+            </file>
+        </generate>
+        <register>
+            <file>itomPluginDoc.qch</file>
+        </register>
+    </docFiles>
+</QHelpCollectionProject>
