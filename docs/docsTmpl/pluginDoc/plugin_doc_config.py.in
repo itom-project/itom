@@ -4,6 +4,5 @@
 pluginDocTarget       = "${PLUGIN_NAME}"
 pluginDocSourceDir    = "${PLUGIN_DOC_SOURCE_DIR}"
 pluginDocBuildDir    = "${PLUGIN_DOC_BUILD_DIR}"
-pluginDocGeneratedDir = "${PLUGIN_DOC_GENERATED_DIR}"
 pluginDocInstallDir   = "${PLUGIN_DOC_INSTALL_DIR}"
 pluginDocMainDocument = "${PLUGIN_DOC_MAIN}"

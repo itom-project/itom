@@ -7,8 +7,6 @@ import sys
 from os import path
 from sphinx.util import format_exception_cut_frames, save_traceback
 from sphinx.util.console import darkred, nocolor
-import distutils.dir_util
-import time
 
 from sphinx.application import Sphinx
 from docutils.utils import SystemMessage
@@ -23,59 +21,56 @@ def process_docstring(app, what, name, obj, options, lines):
     
 def process_signature(app, what, name, obj, options, signature, return_annotation):
     pass
-
-
-try:
-    defaultFile = confFile
-except:
-    defaultFile = ""
-
-if (defaultFile is None):
-    defaultFile = ""
     
-confFile = itom.ui.getOpenFileName("plugin_doc_config.py file", defaultFile, "python file (*.py)")
 
-if (not confFile is None):
+buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
+
+def createPluginDoc(confFile, buildernames):
+
     with(open(confFile, "r")) as infile:
         pluginConfiguration = infile.readlines()
-        exec("\n".join(pluginConfiguration))
+        pluginConfiguration = "".join(pluginConfiguration)
+        
+        cfgDict = {}
+        
+        if (not "pluginDocInstallDir" in pluginConfiguration):
+            raise RuntimeError("config file " + confFile + "seems not to be a plugin documentation config file")
+        exec("".join(pluginConfiguration), globals(), cfgDict)
 
     all_files = True
     filenames = False
     confoverrides = {}
     freshenv = False
 
-    basedir = getCurrentPath()
-    srcdir = pluginDocSourceDir #from pluginConfiguration
-    confdir = os.path.join(itom.getAppPath(), "SDK/docs/pluginDoc")
-
-    buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
-
+    basedir = itom.getCurrentPath()
+    srcdir = cfgDict["pluginDocSourceDir"] #from pluginConfiguration
+    confdir = os.path.join(itom.getAppPath(), "SDK\\docs\\pluginDoc")
+    confdir = confdir.replace("/","\\")
+    
     for buildername in buildernames:
-        outdir = os.path.join(pluginDocBuildDir,buildername)
-        doctreedir = os.path.join(pluginDocBuildDir,"doctrees")
+        outdir = os.path.join(cfgDict["pluginDocBuildDir"],buildername)
+        outdir = outdir.replace("/","\\")
+        doctreedir = os.path.join(cfgDict["pluginDocBuildDir"],"doctrees")
         
-        helpDict = itom.pluginHelp(pluginDocTarget,True)
+        helpDict = itom.pluginHelp(cfgDict["pluginDocTarget"],True)
         
-        
-        confoverrides = {"project": pluginDocTarget,
+        confoverrides = {"project": helpDict["name"],
             "copyright": helpDict["author"],
-            "project": helpDict["name"],
-            "version": str(helpDict["version"]),
+            "project": "itom plugin '" + helpDict["name"] + "'",
+            "version": helpDict["version"],
             "release": "",
-            "master_doc": pluginDocMainDocument }
+            "master_doc": cfgDict["pluginDocMainDocument"] }
+        
+        app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
+                     confoverrides, sys.stdout, sys.stderr, freshenv)
+        
+        app.connect('autodoc-process-docstring',process_docstring)
+        app.connect('autodoc-process-signature',process_signature)
         
         try:
             os.mkdir(outdir)
         except:
             pass
-
-
-        app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
-                     confoverrides, sys.stdout, sys.stderr, freshenv)
-
-        app.connect('autodoc-process-docstring',process_docstring)
-        app.connect('autodoc-process-signature',process_signature)
 
         nocolor()
 
@@ -90,25 +85,24 @@ if (not confFile is None):
             app.builder.build_update()
         
         if (buildername == "qthelp"):
-            [code,text] = itom.ui.msgQuestion("publish","Should the generated source files be copied to the source directory of the plugin", itom.ui.MsgBoxYes | itom.ui.MsgBoxNo)
-            if (code == ui.MsgBoxYes):
-                #remove old files
-                pluginDocGeneratedDir = pluginDocGeneratedDir.replace("/","\\")
-                pluginDocInstallDir = pluginDocInstallDir.replace("/","\\")
-                
-                if (os.path.exists(pluginDocGeneratedDir)):
-                    distutils.dir_util.remove_tree(pluginDocGeneratedDir)
-                
-                if (os.path.exists(pluginDocInstallDir)):
-                    distutils.dir_util.remove_tree(pluginDocInstallDir)
-                
-                #copy files
-                fromDir = outdir
-                toDir = pluginDocGeneratedDir
-                shutil.copytree(fromDir,toDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
-                
-                #copy content of qthelp subfolder to pluginDocInstallDir
-                fromDir = pluginDocGeneratedDir
-                toDir = pluginDocInstallDir
-                shutil.copytree(fromDir,toDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
-                
+            #copy important files from qthelp subfolder to pluginDocInstallDir
+            pluginDocInstallDir = cfgDict["pluginDocInstallDir"].replace("/","\\")
+            
+            if (os.path.exists(pluginDocInstallDir)):
+                shutil.rmtree(pluginDocInstallDir)
+                    
+            shutil.copytree(outdir, pluginDocInstallDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
+            
+
+if (__name__ == "__main__"):
+    try:
+        if (defaultConfFile is None):
+            defaultConfFile = ""
+    except:
+        defaultConfFile = ""
+
+    confFile = itom.ui.getOpenFileName("plugin_doc_config.cfg file", defaultConfFile, "plugin doc config (*.cfg)")
+    if (not confFile is None):
+        defaultConfFile = confFile
+        
+        createPluginDoc(confFile, buildernames)

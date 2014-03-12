@@ -13,9 +13,9 @@ ELSE(BUILD_OPENCV_SHARED)
 ENDIF(BUILD_OPENCV_SHARED)
 
 if (BUILD_TARGET64)
-	set(CMAKE_SIZEOF_VOID_P 8)
+    set(CMAKE_SIZEOF_VOID_P 8)
 else (BUILD_TARGET64)
-	set(CMAKE_SIZEOF_VOID_P 4)
+    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
 IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
@@ -34,27 +34,27 @@ ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
 
 #on windows systems, replace WIN32 preprocessor by _WIN64 if on 64bit
 if(CMAKE_HOST_WIN32)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
-	else() 
-		#ok
-	endif()
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
+    else() 
+        #ok
+    endif()
 endif()
 
 #on MSVC enable build using OpenMP for compiling
 if(MSVC)
-	ADD_DEFINITIONS(/MP)
+    ADD_DEFINITIONS(/MP)
 
-	# set some optimization compiler flags
-	# i.e.:
-	#   - Ox full optimization (replaces standard O2 set by cmake)
-	#	- Oi enable intrinsic functions
-	#	- Ot favor fast code
-	#	- Oy omit frame pointers
-	#	- GL whole program optimization
-	# 	- GT fibre safe optimization
-	#	- openmp enable openmp support, isn't enabled globally here as it breaks opencv
-	SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
+    # set some optimization compiler flags
+    # i.e.:
+    #   - Ox full optimization (replaces standard O2 set by cmake)
+    #    - Oi enable intrinsic functions
+    #    - Ot favor fast code
+    #    - Oy omit frame pointers
+    #    - GL whole program optimization
+    #     - GT fibre safe optimization
+    #    - openmp enable openmp support, isn't enabled globally here as it breaks opencv
+    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
     SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
     SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 endif (MSVC)
@@ -76,8 +76,8 @@ ENDIF (BUILD_ITOMLIBS_SHARED OR ITOM_SDK_SHARED_LIBS)
 
 MACRO (BUILD_PARALLEL_LINUX targetName)
   if(CMAKE_COMPILER_IS_GNUCXX)
-	  message(STATUS "GNUCXX pipe flag enabled")
-	  set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
+      message(STATUS "GNUCXX pipe flag enabled")
+      set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
   endif(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO (BUILD_PARALLEL_LINUX)
 
@@ -153,8 +153,8 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     ELSE(${CMAKE_VERSION_GT_020811})
         QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options ${ARGN})
     ENDIF(${CMAKE_VERSION_GT_020811})
-	
-	
+    
+    
     set(_my_sources)
     set(_my_dirs)
     set(_my_tsfiles)
@@ -246,9 +246,9 @@ MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
                                  )
 
         #add_custom_command(OUTPUT ${qm}
-        #	COMMAND ${QT_LRELEASE_EXECUTABLE}
-        #	ARGS ${_abs_FILE} -qm ${qm}
-        #	DEPENDS ${_abs_FILE} VERBATIM
+        #    COMMAND ${QT_LRELEASE_EXECUTABLE}
+        #    ARGS ${_abs_FILE} -qm ${qm}
+        #    DEPENDS ${_abs_FILE} VERBATIM
         #)
         set(${_qm_files} ${${_qm_files}} ${qm})
     endforeach ()
@@ -316,11 +316,11 @@ MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
     IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
-	
-	LIST(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
-	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)	
+    LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+    LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
+    
+    LIST(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
+    LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer)    
 ENDMACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
 
 #use this macro in order to append to the sources and destinations
@@ -339,7 +339,7 @@ MACRO (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
     IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	
+    
     MESSAGE(STATUS "header-target: " ${target})
     foreach(_hfile ${${headerfiles}})
             LIST(APPEND ${sources} ${_hfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
@@ -360,41 +360,41 @@ ENDMACRO (ADD_DESIGNERHEADER_TO_COPY_LIST)
 # and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
 #
 MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
-	IF(${ITOM_APP_DIR} STREQUAL "")
+    IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	
-    #GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
-	#STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
-	#SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
-	LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
     
-	LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
+    #GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
+    #STRING(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
+    #SET(VAR_LOCATION "$<TARGET_FILE:${target}>")
+    LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+    
+    LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
 
 ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
 
 
 MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
-	IF(${ITOM_APP_DIR} STREQUAL "")
+    IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	
-	foreach(_qmfile ${${qm_files}})
-		LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-		LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
-	endforeach()
+    
+    foreach(_qmfile ${${qm_files}})
+        LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+        LIST(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
+    endforeach()
 ENDMACRO (ADD_QM_FILES_TO_COPY_LIST)
 
 
 MACRO (ADD_DESIGNER_QM_FILES_TO_COPY_LIST qm_files sources destinations)
-	IF(${ITOM_APP_DIR} STREQUAL "")
+    IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
-	
-	foreach(_qmfile ${${qm_files}})
-		LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-		LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer/translation)
-	endforeach()
+    
+    foreach(_qmfile ${${qm_files}})
+        LIST(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+        LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer/translation)
+    endforeach()
 ENDMACRO (ADD_DESIGNER_QM_FILES_TO_COPY_LIST)
 
 
@@ -417,7 +417,7 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
     ELSEIF(MSVC8)
         SET(SDK_COMPILER "vc8")
     ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-	SET(SDK_COMPILER "gnucxx")
+    SET(SDK_COMPILER "gnucxx")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
@@ -425,7 +425,7 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
     SET( destination "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
     
     LIST(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-	LIST(APPEND ${destinations} ${destination}) 
+    LIST(APPEND ${destinations} ${destination}) 
 ENDMACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
 
 MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
@@ -477,49 +477,49 @@ ENDMACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
 
 
 MACRO (POST_BUILD_COPY_FILES target sources destinations)
-	list(LENGTH ${sources} temp)
-	math(EXPR len1 "${temp} - 1")
-	list(LENGTH ${destinations} temp)
-	math(EXPR len2 "${temp} - 1")
-	
+    list(LENGTH ${sources} temp)
+    math(EXPR len1 "${temp} - 1")
+    list(LENGTH ${destinations} temp)
+    math(EXPR len2 "${temp} - 1")
+    
         #message(STATUS "sources LEN: ${len1}")
         #message(STATUS "destinations LEN: ${len2}")
 
-	IF( NOT len1 EQUAL len2 )
-		message(SEND_ERROR "POST_BUILD_COPY_FILES len(sources) must be equal to len(destinations)")
-	ENDIF( NOT len1 EQUAL len2 )
-	
-	SET (destPathes "")
-	foreach(dest ${${destinations}})
-		#if dest is a full name to a file:
-		#GET_FILENAME_COMPONENT(destPath ${dest} PATH)
-		#LIST(APPEND destPathes ${destPath})
-		LIST(APPEND destPathes ${dest})
-	endforeach(dest ${${destinations}})
-	LIST(REMOVE_DUPLICATES destPathes)
-	
-#	message(STATUS "destPathes: ${destPathes}")
-	
-	#try to create all pathes
-	foreach(destPath ${destPathes})
-		#first try to create the directory
-		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory
-				"${destPath}"
-		)
-	endforeach(destPath ${destPathes})
-	
-	foreach(val RANGE ${len1})
-		list(GET ${sources} ${val} val1)
-		list(GET ${destinations} ${val} val2)
-#		message(STATUS "POST_BUILD: COPY ${val1} TO ${val2}")
-		
-		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different  			   # which executes "cmake - E copy_if_different..."
-				"${val1}"      										   # <--this is in-file
-				"${val2}"                 				               # <--this is out-file path
-		)
-	endforeach()
+    IF( NOT len1 EQUAL len2 )
+        message(SEND_ERROR "POST_BUILD_COPY_FILES len(sources) must be equal to len(destinations)")
+    ENDIF( NOT len1 EQUAL len2 )
+    
+    SET (destPathes "")
+    foreach(dest ${${destinations}})
+        #if dest is a full name to a file:
+        #GET_FILENAME_COMPONENT(destPath ${dest} PATH)
+        #LIST(APPEND destPathes ${destPath})
+        LIST(APPEND destPathes ${dest})
+    endforeach(dest ${${destinations}})
+    LIST(REMOVE_DUPLICATES destPathes)
+    
+#    message(STATUS "destPathes: ${destPathes}")
+    
+    #try to create all pathes
+    foreach(destPath ${destPathes})
+        #first try to create the directory
+        ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${destPath}"
+        )
+    endforeach(destPath ${destPathes})
+    
+    foreach(val RANGE ${len1})
+        list(GET ${sources} ${val} val1)
+        list(GET ${destinations} ${val} val2)
+#        message(STATUS "POST_BUILD: COPY ${val1} TO ${val2}")
+        
+        ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different                 # which executes "cmake - E copy_if_different..."
+                "${val1}"                                                 # <--this is in-file
+                "${val2}"                                                # <--this is out-file path
+        )
+    endforeach()
 ENDMACRO (POST_BUILD_COPY_FILES target sources destinations)
 
 
@@ -529,29 +529,29 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
     
-	list(LENGTH ${sources} temp)
-	math(EXPR len1 "${temp} - 1")
-	
-	#message(STATUS "sources LEN: ${len1}")
-	#message(STATUS "destinations LEN: ${len2}")
-	
-	#create lib folder (for safety only, if it does not exist some cmake versions do not copy the files in the 
-	#desired way using copy_if_different below
-	ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory
-			"${ITOM_APP_DIR}/lib"
-	)
+    list(LENGTH ${sources} temp)
+    math(EXPR len1 "${temp} - 1")
+    
+    #message(STATUS "sources LEN: ${len1}")
+    #message(STATUS "destinations LEN: ${len2}")
+    
+    #create lib folder (for safety only, if it does not exist some cmake versions do not copy the files in the 
+    #desired way using copy_if_different below
+    ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${ITOM_APP_DIR}/lib"
+    )
 
-	foreach(val RANGE ${len1})
-		list(GET ${sources} ${val} val1)
-		#message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
-		
-		ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different  			   # which executes "cmake - E copy_if_different..."
-				"${val1}"      										   # <--this is in-file
-				"${ITOM_APP_DIR}/lib"                 				               # <--this is out-file path
-		)
-	endforeach()
+    foreach(val RANGE ${len1})
+        list(GET ${sources} ${val} val1)
+        #message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
+        
+        ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different                 # which executes "cmake - E copy_if_different..."
+                "${val1}"                                                 # <--this is in-file
+                "${ITOM_APP_DIR}/lib"                                                # <--this is out-file path
+        )
+    endforeach()
 ENDMACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 
 
@@ -573,58 +573,57 @@ ENDMACRO (ADD_SOURCE_GROUP subfolder)
 
 MACRO(COPY_FILE_IF_CHANGED in_file out_file target)
 #  MESSAGE(STATUS "copy command: " ${in_file} " " ${out_file} " " ${target})
-	IF(${in_file} IS_NEWER_THAN ${out_file})    
+    IF(${in_file} IS_NEWER_THAN ${out_file})    
   #    message("COpying file: ${in_file} to: ${out_file}")
-		ADD_CUSTOM_COMMAND (
-	#    OUTPUT     ${out_file}
-			TARGET ${target}
-			POST_BUILD
-			COMMAND    ${CMAKE_COMMAND}
-			ARGS       -E copy ${in_file} ${out_file}
-	#    DEPENDS 	qitom
-	#    DEPENDS	${in_file}
-	#    MAIN_DEPENDENCY ${in_file}
-		)
-	ENDIF(${in_file} IS_NEWER_THAN ${out_file})
+        ADD_CUSTOM_COMMAND (
+    #    OUTPUT     ${out_file}
+            TARGET ${target}
+            POST_BUILD
+            COMMAND    ${CMAKE_COMMAND}
+            ARGS       -E copy ${in_file} ${out_file}
+    #    DEPENDS     qitom
+    #    DEPENDS    ${in_file}
+    #    MAIN_DEPENDENCY ${in_file}
+        )
+    ENDIF(${in_file} IS_NEWER_THAN ${out_file})
 ENDMACRO(COPY_FILE_IF_CHANGED)
 
 
 MACRO(COPY_FILE_INTO_DIRECTORY_IF_CHANGED in_file out_dir target)
-	GET_FILENAME_COMPONENT(file_name ${in_file} NAME) 
-	COPY_FILE_IF_CHANGED(${in_file} ${out_dir}/${file_name} ${target})
+    GET_FILENAME_COMPONENT(file_name ${in_file} NAME) 
+    COPY_FILE_IF_CHANGED(${in_file} ${out_dir}/${file_name} ${target})
 ENDMACRO(COPY_FILE_INTO_DIRECTORY_IF_CHANGED)
 
 
 #Copies all the files from in_file_list into the out_dir. 
 # sub-trees are ignored (files are stored in same out_dir)
 MACRO(COPY_FILES_INTO_DIRECTORY_IF_CHANGED in_file_list out_dir target)
-	FOREACH(in_file ${in_file_list})
-		COPY_FILE_INTO_DIRECTORY_IF_CHANGED(${in_file} ${out_dir} ${target})
-	ENDFOREACH(in_file)     
+    FOREACH(in_file ${in_file_list})
+        COPY_FILE_INTO_DIRECTORY_IF_CHANGED(${in_file} ${out_dir} ${target})
+    ENDFOREACH(in_file)     
 ENDMACRO(COPY_FILES_INTO_DIRECTORY_IF_CHANGED)
 
 
 #Copy all files and directories in in_dir to out_dir. 
 # Subtrees remain intact.
 MACRO(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
-	#message("Copying directory ${in_dir}")
-	FILE(${recurse} in_file_list ${in_dir}/${pattern})
-	FOREACH(in_file ${in_file_list})
-		if(NOT ${in_file} MATCHES ".*svn.*")
-			STRING(REGEX REPLACE ${in_dir} ${out_dir} out_file ${in_file}) 
-			COPY_FILE_IF_CHANGED(${in_file} ${out_file} ${target})
-		endif(NOT ${in_file} MATCHES ".*svn.*")
-	ENDFOREACH(in_file)     
+    #message("Copying directory ${in_dir}")
+    FILE(${recurse} in_file_list ${in_dir}/${pattern})
+    FOREACH(in_file ${in_file_list})
+        if(NOT ${in_file} MATCHES ".*svn.*")
+            STRING(REGEX REPLACE ${in_dir} ${out_dir} out_file ${in_file}) 
+            COPY_FILE_IF_CHANGED(${in_file} ${out_file} ${target})
+        endif(NOT ${in_file} MATCHES ".*svn.*")
+    ENDFOREACH(in_file)     
 ENDMACRO(COPY_DIRECTORY_IF_CHANGED)
 
 MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
     SET(PLUGIN_NAME ${target})
     SET(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
     SET(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
-    SET(PLUGIN_DOC_GENERATED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs/generated)
     SET(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     SET(PLUGIN_DOC_MAIN ${main_document})
-    configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.py)
+    configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
     
     # create the directory with the generated files (if it does not exist, else the subsequent command will fail
     ADD_CUSTOM_COMMAND (
