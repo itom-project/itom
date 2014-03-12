@@ -73,7 +73,7 @@ HelpSystem::HelpSystem() :
     m_helpDirectory = appPath;
 
 
-
+    //buildPluginHelp();
 }
 
 //-----------------------------------------------------------------------------------------
@@ -430,6 +430,229 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
 
 
     return RetVal(retOk);
+}
+
+//-------------------------------------------------------------------------------------------
+RetVal HelpSystem::buildPluginHelp()
+{
+    RetVal retval;
+    QDir templateDir;
+    QDir buildDir;
+    QDir pluginDir;
+
+    templateDir = QDir(QCoreApplication::applicationDirPath());
+    if (!templateDir.cd("docs/pluginDoc/template"))
+    {
+        retval += ito::RetVal(ito::retError,0,"templates for plugin documentation not found. Directory 'docs/pluginDoc/template' not available");
+    }
+
+    buildDir = QDir(QCoreApplication::applicationDirPath());
+    buildDir.cd("docs/pluginDoc");
+
+    if (!buildDir.exists("build"))
+    {
+        //create empty build folder
+        if (buildDir.mkdir("build"))
+        {
+            buildDir.cd("build");
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"folder 'build' as subfolder of 'docs/pluginDoc' could not be created");
+        }
+    }
+    else
+    {
+        buildDir.cd("build");
+
+        //clear content of build folder
+        if (!HelpSystem::removeDir(buildDir))
+        {
+            retval += ito::RetVal(ito::retError,0,"could not clear folder 'docs/pluginDoc/build'");
+        }
+        
+    }
+
+    pluginDir = QDir(QCoreApplication::applicationDirPath());
+    if (!pluginDir.cd("plugins"))
+    {
+        retval += ito::RetVal(ito::retWarning,0,"no plugin directory available. No plugin documentation will be built");
+    }
+
+    if (!retval.containsError())
+    {
+        //copy content of _static folder of template folder to build/_static
+        if (!copyDir(templateDir.filePath("_static"), buildDir.filePath("_static")))
+        {
+            retval += ito::RetVal(ito::retError,0,"could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'");
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        QDir thisPluginDir;
+        QDir thisPluginDocsDir;
+        QDir thisPluginBuildDir;
+
+        QString tocs;
+        QString keywords;
+        QString files;
+
+        //scan all folders in pluginDir and check if they have a docs subfolder containing a qhp-file
+        foreach(QFileInfo info, pluginDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot))
+        {
+            if (info.isDir())
+            {
+                qDebug() << info.absoluteFilePath();
+                thisPluginDir = info.absoluteFilePath();
+                thisPluginDocsDir = thisPluginDir;
+                if (thisPluginDocsDir.cd("docs"))
+                {
+                    if (thisPluginDocsDir.entryInfoList(QStringList() << "*.qhp", QDir::Files).size() > 0)
+                    {
+                        if (buildDir.mkdir(thisPluginDir.dirName()))
+                        {
+                            thisPluginBuildDir = buildDir;
+                            thisPluginBuildDir.cd(thisPluginDir.dirName());
+                            retval += buildSinglePluginHelp(thisPluginBuildDir, thisPluginDocsDir, tocs, keywords, files);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------
+RetVal HelpSystem::buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files)
+{
+    ito::RetVal retval;
+
+    //check if there is an _image folder in sourceDir and copy it to buildDir
+    if (sourceDir.exists("_image"))
+    {
+        copyDir(sourceDir.absoluteFilePath("_image"), buildDir.absoluteFilePath("_image"));
+    }
+
+    foreach(QFileInfo info, sourceDir.entryInfoList(QDir::Files))
+    {
+        if (QString::compare(info.suffix(),"qhp",Qt::CaseInsensitive) == 0)
+        {
+            //analyze qhp file and return content in
+            retval += analyzeQhpFile(QFile(info.absoluteFilePath()), tocs, keywords, files);
+        }
+    }
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------
+RetVal HelpSystem::analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywords, QString &files)
+{
+    if (qhpFile.open(QIODevice::ReadOnly))
+    {
+        QByteArray content = qhpFile.readAll();
+        int start = content.indexOf("<toc>",0) + qstrlen("<toc>");
+        int end = content.indexOf("</toc>",start);
+
+        if (end > start)
+        {
+            tocs += content.mid(start,end-start);
+        }
+
+        start = content.indexOf("<keywords>",0) + qstrlen("<keywords>");
+        end = content.indexOf("</keywords>",start);
+
+        if (end > start)
+        {
+            keywords += content.mid(start,end-start);
+        }
+
+        start = content.indexOf("<files>",0) + qstrlen("<files>");
+        end = content.indexOf("</files>",start);
+
+        if (end > start)
+        {
+            files += content.mid(start,end-start);
+        }
+        qhpFile.close();
+    }
+
+    return ito::retOk;
+}
+
+
+//-------------------------------------------------------------------------------------------
+/*static*/ bool HelpSystem::removeDir(const QDir &directory)
+{
+    bool result = true;
+
+    Q_FOREACH(QFileInfo info, directory.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) 
+    {
+        if (info.isDir()) 
+        {
+            result = removeDir(info.absoluteFilePath());
+            if (result)
+            {
+                result = info.absoluteDir().rmdir(info.fileName());
+            }
+        }
+        else
+        {
+            result = QFile::remove(info.absoluteFilePath());
+        }
+
+        if (!result) 
+        {
+            return result;
+        }
+    }
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ bool HelpSystem::copyDir(const QDir &src, const QDir &dst)
+{
+    removeDir(dst);
+
+    if (!dst.exists())
+    {
+        QDir dstTmp = dst;
+        if (dstTmp.cdUp())
+        {
+            dstTmp.mkdir(dst.dirName());
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    foreach(const QFileInfo &info, src.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) 
+    {
+        QString srcItemPath = src.filePath(info.fileName());
+        QString dstItemPath = dst.filePath(info.fileName());
+        if (info.isDir()) 
+        {
+            if (!copyDir(srcItemPath, dstItemPath)) 
+            {
+                return false;
+            }
+        } else if (info.isFile()) 
+        {
+            if (!QFile::copy(srcItemPath, dstItemPath)) 
+            {
+                return false;
+            }
+        } else 
+        {
+            qDebug() << "Unhandled item" << info.filePath() << "in cpDir";
+        }
+    }
+    return true;
 }
 
 

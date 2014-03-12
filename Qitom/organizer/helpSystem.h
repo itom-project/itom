@@ -54,6 +54,12 @@ private:
 
     RetVal rebuildHelpCollection(QStringList &qchFiles, quint16 checksum, QDir &helpDir);
 
+    RetVal buildPluginHelp();
+    RetVal buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files);
+    RetVal analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywords, QString &files);
+    static bool removeDir(const QDir &directory);
+    static bool copyDir(const QDir &src, const QDir &dst);
+
 
     QDir m_helpDirectory;
     QMap<QString, quint16> m_registeredFilesQCH;
