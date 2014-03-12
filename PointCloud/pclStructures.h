@@ -245,6 +245,39 @@ public:
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
 
+    //The following functions have been added without destroying the binary compatibility of older versions (magro11: 12.03.2014)
+    inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr toPointXYZConst() const                   
+    { 
+        if(m_type == ito::pclXYZ) return m_pcXYZ;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZ",__FILE__, "toPointXYZ", __LINE__);
+    };
+    inline pcl::PointCloud<pcl::PointXYZI>::ConstPtr toPointXYZIConst() const                 
+    { 
+        if(m_type == ito::pclXYZI) return m_pcXYZI;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZI",__FILE__, "toPointXYZI", __LINE__);
+    };
+    inline pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr toPointXYZRGBAConst() const           
+    { 
+        if(m_type == ito::pclXYZRGBA) return m_pcXYZRGBA;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZRGBA",__FILE__, "toPointXYZRGBA", __LINE__);
+    };
+    inline pcl::PointCloud<pcl::PointNormal>::ConstPtr toPointXYZNormalConst() const          
+    { 
+        if(m_type == ito::pclXYZNormal) return m_pcXYZNormal;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZNormal",__FILE__, "toPointXYZNormal", __LINE__);
+    };
+    inline pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr toPointXYZINormalConst() const     
+    { 
+        if(m_type == ito::pclXYZINormal) return m_pcXYZINormal;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZINormal",__FILE__, "toPointXYZINormal", __LINE__);
+    };
+    inline pcl::PointCloud<pcl::PointXYZRGBNormal>::ConstPtr toPointXYZRGBNormalConst() const 
+    { 
+        if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
+        throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
+    };
+    //end of inclusion from 12.03.2014
+
     PCLPointCloud & operator+= (const PCLPointCloud &rhs);
     const PCLPointCloud operator+ (const PCLPointCloud &rhs);
     PCLPointCloud & operator= (const PCLPointCloud &copy);
