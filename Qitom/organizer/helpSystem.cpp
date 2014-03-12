@@ -40,6 +40,7 @@ using namespace ito;
 namespace ito
 {
 
+//-----------------------------------------------------------------------------------------
 HelpSystem* HelpSystem::m_pHelpSystem = NULL;
 
 /*static*/ HelpSystem * HelpSystem::getInstance(void)
@@ -52,11 +53,15 @@ HelpSystem* HelpSystem::m_pHelpSystem = NULL;
     return HelpSystem::m_pHelpSystem;
 }
 
+//-----------------------------------------------------------------------------------------
 HelpSystem::HelpSystem() :
-    m_upToDate(false)
+    m_upToDate(false),
+    m_upToDatePlugins(false)
 {
     m_helpCollectionName = "itomHelpProject.qhc";
     m_helpCollectionProject = "itomHelpProject.qhcp";
+    m_pluginHelpCollectionName = "pluginHelpProject.qhc";
+    m_pluginHelpCollectionProject = "pluginHelpProject.qhcp";
     QDir appPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
 
     if(!appPath.exists("help"))
@@ -71,17 +76,21 @@ HelpSystem::HelpSystem() :
 
 }
 
+//-----------------------------------------------------------------------------------------
 HelpSystem::~HelpSystem()
 {
     HelpSystem::m_pHelpSystem = NULL;
 }
 
+//-----------------------------------------------------------------------------------------
 RetVal HelpSystem::rebuildHelpIfNotUpToDate()
 {
     RetVal retValue(retOk);
     quint16 checksum1 = 0;
     quint16 checksum2 = 0;
     QStringList documentationFiles;
+
+    //check itom documentation
     getCheckSumOfBuild(m_helpDirectory, m_helpCollectionProject, checksum1);
     scanDocumentationFiles(documentationFiles,checksum2);
 
@@ -94,13 +103,28 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
         m_upToDate = false;
         retValue += rebuildHelpCollection(documentationFiles, checksum2, m_helpDirectory);
         m_upToDate = true;
-
     }
 
+    //check plugin documentation
+    checksum1 = 0;
+    checksum2 = 0;
+    getCheckSumOfBuild(m_helpDirectory, m_pluginHelpCollectionProject, checksum1);
+    scanPluginQhpFiles(checksum2);
+
+    if(checksum1 == checksum2 && checksum1 != 0)
+    {
+        m_upToDatePlugins = true;
+    }
+    else
+    {
+        m_upToDatePlugins = false;
+        retValue += rebuildHelpCollection(documentationFiles, checksum2, m_helpDirectory);
+        m_upToDatePlugins = true;
+    }
     return retValue;
 }
 
-
+//-----------------------------------------------------------------------------------------
 QString HelpSystem::getHelpCollectionAbsFileName() const
 {
     if(m_upToDate)
@@ -114,7 +138,7 @@ QString HelpSystem::getHelpCollectionAbsFileName() const
 }
 
 
-
+//-----------------------------------------------------------------------------------------
 RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checksum)
 {
     QStringList baseFolders;
@@ -140,19 +164,19 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
         baseFolders << appPath.filePath("docs/userDoc");
     }
     
-    //plugin base folder
-    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
-    i=1;
-    while(appPath.exists("plugins") == false && i > 0)
-    {
-        appPath.cdUp();
-        --i;
-    }
+    ////plugin base folder
+    //appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    //i=1;
+    //while(appPath.exists("plugins") == false && i > 0)
+    //{
+    //    appPath.cdUp();
+    //    --i;
+    //}
 
-    if(appPath.exists("plugins"))
-    {
-        baseFolders << appPath.filePath("plugins");
-    }
+    //if(appPath.exists("plugins"))
+    //{
+    //    baseFolders << appPath.filePath("plugins");
+    //}
 
     qchFiles.clear();
     checksum = 0;
@@ -175,6 +199,54 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
     return RetVal(retOk);
 }
 
+//-----------------------------------------------------------------------------------------
+RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
+{
+    QStringList baseFolders;
+
+    QDir appPath;
+    QDir folder;
+    QString temp;
+    QString checksumString;
+    QFileInfo fileInfo;
+    int i;
+
+    //documentation folder
+    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    
+    //plugin base folder
+    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    i=1;
+    while(appPath.exists("plugins") == false && i > 0)
+    {
+        appPath.cdUp();
+        --i;
+    }
+
+    if(appPath.exists("plugins"))
+    {
+        baseFolders << appPath.filePath("plugins");
+    }
+
+    checksum = 0;
+
+    foreach(const QString &baseFolder, baseFolders)
+    {
+        QDirIterator it(baseFolder, QStringList("*.qhp"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while(it.hasNext())
+        {
+            temp = it.next();
+            fileInfo.setFile(temp);
+            checksumString.append(fileInfo.fileName()).append(fileInfo.lastModified().toString());
+        }
+    }
+
+    checksum = qChecksum(checksumString.toLatin1().data(), checksumString.size());
+
+    return RetVal(retOk);
+}
+
+//-----------------------------------------------------------------------------------------
 RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, quint16 &checksum)
 {
     if(helpDir.exists(projectFileName) == false)
@@ -257,7 +329,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
     return RetVal(retOk);
 }
 
-
+//-----------------------------------------------------------------------------------------
 RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum, QDir &helpDir)
 {
     helpDir.setNameFilters(QStringList("*.qch"));

@@ -49,6 +49,7 @@ private:
     ~HelpSystem(void);
 
     RetVal scanDocumentationFiles(QStringList &qchFiles, quint16 &checksum);
+    RetVal scanPluginQhpFiles(quint16 &checksum);
     RetVal getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, quint16 &checksum);
 
     RetVal rebuildHelpCollection(QStringList &qchFiles, quint16 checksum, QDir &helpDir);
@@ -58,7 +59,10 @@ private:
     QMap<QString, quint16> m_registeredFilesQCH;
     QString m_helpCollectionName;
     QString m_helpCollectionProject;
+    QString m_pluginHelpCollectionName;
+    QString m_pluginHelpCollectionProject;
     bool m_upToDate;
+    bool m_upToDatePlugins;
 
 
     static HelpSystem *m_pHelpSystem;
