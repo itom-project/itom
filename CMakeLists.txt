@@ -35,7 +35,7 @@ ADD_SUBDIRECTORY(commonQt)
 ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(itomWidgets)
 ADD_SUBDIRECTORY(Qitom)
-
+ 
 IF(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
     ADD_SUBDIRECTORY(gtest-1.6.0)
