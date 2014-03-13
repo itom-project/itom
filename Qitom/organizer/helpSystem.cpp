@@ -55,8 +55,7 @@ HelpSystem* HelpSystem::m_pHelpSystem = NULL;
 
 //-----------------------------------------------------------------------------------------
 HelpSystem::HelpSystem() :
-    m_upToDate(false),
-    m_upToDatePlugins(false)
+    m_upToDate(false)
 {
     m_helpCollectionName = "itomHelpProject.qhc";
     m_helpCollectionProject = "itomHelpProject.qhcp";
@@ -71,9 +70,6 @@ HelpSystem::HelpSystem() :
 
     appPath.cd("help");
     m_helpDirectory = appPath;
-
-
-    //buildPluginHelp();
 }
 
 //-----------------------------------------------------------------------------------------
@@ -90,7 +86,18 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
     quint16 checksum2 = 0;
     QStringList documentationFiles;
 
+    //check if qch file of plugins need to be build or rebuild
+    getCheckSumOfPluginBuild(checksum1);
+    scanPluginQhpFiles(checksum2);
+
+    if (checksum1 != checksum2)
+    {
+        retValue += buildPluginHelp(checksum2);
+    }
+
     //check itom documentation
+    checksum1 = 0;
+    checksum2 = 0;
     getCheckSumOfBuild(m_helpDirectory, m_helpCollectionProject, checksum1);
     scanDocumentationFiles(documentationFiles,checksum2);
 
@@ -105,22 +112,6 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
         m_upToDate = true;
     }
 
-    //check plugin documentation
-    checksum1 = 0;
-    checksum2 = 0;
-    getCheckSumOfBuild(m_helpDirectory, m_pluginHelpCollectionProject, checksum1);
-    scanPluginQhpFiles(checksum2);
-
-    if(checksum1 == checksum2 && checksum1 != 0)
-    {
-        m_upToDatePlugins = true;
-    }
-    else
-    {
-        m_upToDatePlugins = false;
-        retValue += rebuildHelpCollection(documentationFiles, checksum2, m_helpDirectory);
-        m_upToDatePlugins = true;
-    }
     return retValue;
 }
 
@@ -163,20 +154,11 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
     {
         baseFolders << appPath.filePath("docs/userDoc");
     }
-    
-    ////plugin base folder
-    //appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
-    //i=1;
-    //while(appPath.exists("plugins") == false && i > 0)
-    //{
-    //    appPath.cdUp();
-    //    --i;
-    //}
 
-    //if(appPath.exists("plugins"))
-    //{
-    //    baseFolders << appPath.filePath("plugins");
-    //}
+    if (appPath.exists("docs/pluginDoc/build"))
+    {
+        baseFolders << appPath.filePath("docs/pluginDoc/build");
+    }
 
     qchFiles.clear();
     checksum = 0;
@@ -244,6 +226,41 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
     checksum = qChecksum(checksumString.toLatin1().data(), checksumString.size());
 
     return RetVal(retOk);
+}
+
+//---------------------------------------------------------------------------
+RetVal HelpSystem::getCheckSumOfPluginBuild(quint16 &checksum)
+{
+    ito::RetVal retval;
+    checksum = 0; //not valid
+    //documentation folder
+    QDir appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+
+    if (appPath.exists("docs/pluginDoc/build"))
+    {
+        appPath.cd("docs/pluginDoc/build");
+
+        if (appPath.exists(".checksum"))
+        {
+            QFile file(appPath.absoluteFilePath(".checksum"));
+            if (file.open(QIODevice::ReadOnly))
+            {
+                QString checksumStr = file.readAll();
+                bool ok;
+                checksum = checksumStr.toInt(&ok);
+
+                if (!ok)
+                {
+                    checksum = 0;
+                }
+
+                file.close();
+            }
+        }
+
+    }
+
+    return retval;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -428,17 +445,24 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     process.start(app.toLatin1().data() , args);
     process.waitForFinished(60000);
 
+    
 
     return RetVal(retOk);
 }
 
 //-------------------------------------------------------------------------------------------
-RetVal HelpSystem::buildPluginHelp()
+RetVal HelpSystem::buildPluginHelp(quint16 checksum)
 {
     RetVal retval;
     QDir templateDir;
     QDir buildDir;
     QDir pluginDir;
+
+    QString tocs;
+    QString keywords;
+    QString files;
+    QPair<QString,QString> mainFileInfo;
+    QList< QPair<QString, QString> > mainFileInfos;
 
     templateDir = QDir(QCoreApplication::applicationDirPath());
     if (!templateDir.cd("docs/pluginDoc/template"))
@@ -476,16 +500,7 @@ RetVal HelpSystem::buildPluginHelp()
     pluginDir = QDir(QCoreApplication::applicationDirPath());
     if (!pluginDir.cd("plugins"))
     {
-        retval += ito::RetVal(ito::retWarning,0,"no plugin directory available. No plugin documentation will be built");
-    }
-
-    if (!retval.containsError())
-    {
-        //copy content of _static folder of template folder to build/_static
-        if (!copyDir(templateDir.filePath("_static"), buildDir.filePath("_static")))
-        {
-            retval += ito::RetVal(ito::retError,0,"could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'");
-        }
+        retval += ito::RetVal(ito::retWarning,0,"no plugin directory available. No plugin documentation will be built.");
     }
 
     if (!retval.containsError())
@@ -493,10 +508,6 @@ RetVal HelpSystem::buildPluginHelp()
         QDir thisPluginDir;
         QDir thisPluginDocsDir;
         QDir thisPluginBuildDir;
-
-        QString tocs;
-        QString keywords;
-        QString files;
 
         //scan all folders in pluginDir and check if they have a docs subfolder containing a qhp-file
         foreach(QFileInfo info, pluginDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot))
@@ -510,11 +521,17 @@ RetVal HelpSystem::buildPluginHelp()
                 {
                     if (thisPluginDocsDir.entryInfoList(QStringList() << "*.qhp", QDir::Files).size() > 0)
                     {
+                        //create subfolder for the plugin and copy/modify necessary files inside of this folder
                         if (buildDir.mkdir(thisPluginDir.dirName()))
                         {
                             thisPluginBuildDir = buildDir;
                             thisPluginBuildDir.cd(thisPluginDir.dirName());
-                            retval += buildSinglePluginHelp(thisPluginBuildDir, thisPluginDocsDir, tocs, keywords, files);
+                            ito::RetVal pluginRetVal = buildSinglePluginHelp(thisPluginDir.dirName(), thisPluginBuildDir, thisPluginDocsDir, tocs, keywords, files, mainFileInfo);
+
+                            if (pluginRetVal == ito::retOk)
+                            {
+                                mainFileInfos.append(mainFileInfo);
+                            }
                         }
                     }
                 }
@@ -522,11 +539,138 @@ RetVal HelpSystem::buildPluginHelp()
         }
     }
 
+    if (mainFileInfos.size() > 0)
+    {
+
+        QByteArray mainIndexFile;
+        QByteArray mainQhpFile;
+        QFile file;
+
+        if (!retval.containsError())
+        {
+
+            //index.html
+            file.setFileName(templateDir.absoluteFilePath("index.html"));
+            if (file.open(QIODevice::ReadOnly))
+            {
+                mainIndexFile = file.readAll();
+                file.close();
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"error opening index.html of template folder");
+            }
+
+            //itomPluginDoc.qhp
+            file.setFileName(templateDir.absoluteFilePath("itomPluginDoc.qhp"));
+            if (file.open(QIODevice::ReadOnly))
+            {
+                mainQhpFile = file.readAll();
+                file.close();
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"error opening itomPluginDoc.qhp of template folder");
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            mainQhpFile.replace("$tocInsert$", tocs.toLatin1());
+            mainQhpFile.replace("$keywordsInsert$", keywords.toLatin1());
+            mainQhpFile.replace("$filesInsert$", files.toLatin1());
+
+            mainIndexFile.replace("$firstDocTitle$", mainFileInfos[0].first.toLatin1());
+            mainIndexFile.replace("$firstDocHref$", mainFileInfos[0].second.toLatin1());
+
+            QString sectionEntry;
+            int start = mainIndexFile.indexOf("<!--$toctree_item begin$");
+            int end = mainIndexFile.indexOf("$toctree_item end$-->");
+
+            if (end > start)
+            {
+                start += qstrlen("<!--$toctree_item begin$");
+                sectionEntry = mainIndexFile.mid(start, end-start);
+                QString sectionEntries;
+
+                for (int i = 0; i < mainFileInfos.size(); ++i)
+                {
+                    sectionEntry.replace("$toctreeItemHref$", mainFileInfos[i].second.toLatin1());
+                    sectionEntry.replace("$toctreeItemTitle$", mainFileInfos[i].first.toLatin1());
+                    sectionEntries += sectionEntry;
+                    sectionEntries += "\n";
+                }
+        
+                mainIndexFile.replace("<!--$toctree_item insert$-->", sectionEntries.toLatin1());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            //index.html
+            file.setFileName(buildDir.absoluteFilePath("index.html"));
+            if (file.open(QIODevice::WriteOnly))
+            {
+                file.write(mainIndexFile);
+                file.close();
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"error writing index.html of template folder");
+            }
+
+            //itomPluginDoc.qhp
+            file.setFileName(buildDir.absoluteFilePath("itomPluginDoc.qhp"));
+            if (file.open(QIODevice::WriteOnly))
+            {
+                file.write(mainQhpFile);
+                file.close();
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,"error writing itomPluginDoc.qhp of template folder");
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            //copy content of _static folder of template folder to build/_static
+            if (!copyDir(templateDir.filePath("_static"), buildDir.filePath("_static")))
+            {
+                retval += ito::RetVal(ito::retError,0,"could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'");
+            }
+        }
+
+
+        if (!retval.containsError())
+        {
+            QProcess process;
+            QStringList args;
+            args << buildDir.absoluteFilePath("itomPluginDoc.qhp");
+
+            QString app = ProcessOrganizer::getAbsQtToolPath( "qhelpgenerator" );
+
+            process.start(app.toLatin1().data() , args);
+            process.waitForFinished(60000);
+
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        QFile checksumFile(buildDir.absoluteFilePath(".checksum"));
+        if (checksumFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            checksumFile.write(QString::number(checksum).toLatin1());
+            checksumFile.close();
+        }
+    }
+
     return retval;
 }
 
 //-------------------------------------------------------------------------------------------
-RetVal HelpSystem::buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files)
+RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files, QPair<QString,QString> &mainFileInfo)
 {
     ito::RetVal retval;
 
@@ -542,7 +686,30 @@ RetVal HelpSystem::buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QStrin
         {
             //analyze qhp file and return content in
             QFile qhpFile(info.absoluteFilePath());
-            retval += analyzeQhpFile(qhpFile, tocs, keywords, files);
+            QStringList filesToCopy;
+            QString _tocs;
+            QString _kwds;
+            QString _files;
+            QPair<QString,QString> _mainFileInfo;
+            retval += analyzeQhpFile(pluginFolder,qhpFile, _tocs, _kwds, _files, filesToCopy, _mainFileInfo);
+
+            if (retval == ito::retOk)
+            {
+                tocs += _tocs;
+                keywords += _kwds;
+                files += _files;
+                mainFileInfo = _mainFileInfo;
+                foreach(const QString &fileToCopy, filesToCopy)
+                {
+                    if (copyFile( sourceDir.absoluteFilePath(fileToCopy), buildDir))
+                    {
+                        if (fileToCopy.endsWith(".html")) 
+                        {
+                            modifyHrefInHtmlFile(buildDir.absoluteFilePath(fileToCopy), ".."); //_static folder is one directory up
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -550,33 +717,21 @@ RetVal HelpSystem::buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QStrin
 }
 
 //-------------------------------------------------------------------------------------------
-RetVal HelpSystem::analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywords, QString &files)
+RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
+    QRegExp regExp("^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$");
     if (qhpFile.open(QIODevice::ReadOnly))
     {
         QByteArray content = qhpFile.readAll();
-        int start = content.indexOf("<toc>",0) + qstrlen("<toc>");
-        int end = content.indexOf("</toc>",start);
 
-        if (end > start)
+        if (regExp.indexIn(content) != -1)
         {
-            tocs += content.mid(start,end-start);
-        }
-
-        start = content.indexOf("<keywords>",0) + qstrlen("<keywords>");
-        end = content.indexOf("</keywords>",start);
-
-        if (end > start)
-        {
-            keywords += content.mid(start,end-start);
-        }
-
-        start = content.indexOf("<files>",0) + qstrlen("<files>");
-        end = content.indexOf("</files>",start);
-
-        if (end > start)
-        {
-            files += content.mid(start,end-start);
+            QString mainFile;
+            tocs += modifyTocs(regExp.cap(1), pluginFolder, mainFile);
+            mainFileInfo.first = pluginFolder;
+            mainFileInfo.second = mainFile;
+            keywords += modifyKeywords(regExp.cap(2), pluginFolder);
+            files += modifyFiles(regExp.cap(3), pluginFolder, QStringList() << "search.html" << "_static", filesToCopy);
         }
         qhpFile.close();
     }
@@ -584,6 +739,133 @@ RetVal HelpSystem::analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywor
     return ito::retOk;
 }
 
+//-------------------------------------------------------------------------------------------
+QString HelpSystem::modifyTocs(const QString &in, const QString &hrefPrefix, QString &mainFile)
+{
+
+    //this file searches all ref="..." substrings and replaces ... by hrefPrefix/...
+    QString tocs;
+    QString href;
+    int start = 0;
+    int end = 0;
+    QString startstr = "ref=\"";
+    QString endstr = "\"";
+
+    while ((start = in.indexOf(startstr, start)) != -1)
+    {
+        start += startstr.size();
+        tocs += in.mid(end,start-end); //from last end
+        end = in.indexOf("\"",start);
+        href = in.mid(start, end -  start);
+#if linux
+        href.prepend(hrefPrefix + "/");
+#else
+        href.prepend(hrefPrefix + "\\");
+#endif
+        if (mainFile.isEmpty())
+        {
+            mainFile = href;
+        }
+        tocs += href;
+    }
+
+    tocs += in.mid(end);
+    return tocs.trimmed();
+}
+
+//-------------------------------------------------------------------------------------------
+QString HelpSystem::modifyKeywords(const QString &in, const QString &hrefPrefix)
+{
+
+    //this file searches all ref="..." substrings and replaces ... by hrefPrefix\...
+    QString keywords;
+    QString href;
+    int start = 0;
+    int end = 0;
+    QString startstr = "ref=\"";
+    QString endstr = "\"";
+
+    while ((start = in.indexOf(startstr, start)) != -1)
+    {
+        start += startstr.size();
+        keywords += in.mid(end,start-end); //from last end
+        end = in.indexOf("\"",start);
+        href = in.mid(start, end -  start);
+#if linux
+        href.prepend(hrefPrefix + "/");
+#else
+        href.prepend(hrefPrefix + "\\");
+#endif
+        keywords += href;
+    }
+
+    keywords += in.mid(end);
+    return keywords.trimmed();
+}
+
+//-------------------------------------------------------------------------------------------
+QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, const QStringList &excludeContent, QStringList &filesToCopy)
+{
+    //this file searches all ref="..." substrings and replaces ... by hrefPrefix\...
+    QString files;
+    QRegExp regExp("<file>([a-zA-Z0-9#.?%&]*)</file>");
+    QString cap;
+    
+#if linux
+    QString delimiter = "/";
+#else
+    QString delimiter = "\\";
+#endif
+
+    int pos = 0;
+    bool take;
+
+    while ((pos = regExp.indexIn(in, pos)) != -1) 
+    {
+        take = true;
+        cap = regExp.cap(1);
+        foreach(const QString &str, excludeContent)
+        {
+            if (cap.contains(str))
+            {
+                take = false;
+                break;
+            }
+        }
+
+        if (take)
+        {
+            filesToCopy.append(cap);
+            files += "<file>" + hrefPrefix + delimiter + cap+ "</file>\n";
+        }
+
+        pos += regExp.matchedLength();
+    }
+
+    return files;
+}
+
+RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &prefix)
+{
+    ito::RetVal retval;
+    QFile file(htmlFile);
+    QByteArray searchString = "href=\"_static";
+    QByteArray replaceString = "href=\"" + prefix.toLatin1() + "/_static";
+
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QByteArray ba = file.readAll();
+        ba.replace(searchString,replaceString);
+        file.close();
+
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            file.write(ba);
+        }
+    }
+
+    return retval;
+}
 
 //-------------------------------------------------------------------------------------------
 /*static*/ bool HelpSystem::removeDir(const QDir &directory)
@@ -654,6 +936,24 @@ RetVal HelpSystem::analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywor
         }
     }
     return true;
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ bool HelpSystem::copyFile(const QFileInfo &srcFileInfo, QDir &dstFolder)
+{
+    //check if dstFolder exists
+    QDir tempFolder = dstFolder;
+
+    if (tempFolder.exists() == false)
+    {
+        while(!tempFolder.cdUp())
+        {
+        }
+
+        tempFolder.mkdir(dstFolder.absolutePath());
+    }
+
+    return QFile::copy( srcFileInfo.canonicalFilePath(), dstFolder.absoluteFilePath(srcFileInfo.fileName()));
 }
 
 

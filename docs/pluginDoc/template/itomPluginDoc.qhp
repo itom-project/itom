@@ -8,17 +8,16 @@
     <filterSection>
         <filterAttribute>itomPluginDocumentation</filterAttribute>
         <toc>
-            <section title="itom Documentation" ref="serialIO.html">
-                
+            <section title="itom Plugin Documentation" ref="index.html">
+                $tocInsert$
             </section>
         </toc>
         <keywords>
-
+            $keywordsInsert$
         </keywords>
         <files>
-            <file>nix.html</file>
-            <file>search.html</file>
-            <file>serialIO.html</file>
+            $filesInsert$
+            <file>index.html</file>
             <file>_static\ajax-loader.gif</file>
             <file>_static\alert_info_32.png</file>
             <file>_static\alert_warning_32.png</file>

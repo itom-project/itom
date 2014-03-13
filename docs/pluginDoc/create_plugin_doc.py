@@ -59,6 +59,8 @@ def createPluginDoc(confFile, buildernames):
             "project": "itom plugin '" + helpDict["name"] + "'",
             "version": helpDict["version"],
             "release": "",
+            "html_title": helpDict["name"] + " (" + helpDict["type"] + ")",
+            "html_short_title": helpDict["name"],
             "master_doc": cfgDict["pluginDocMainDocument"] }
         
         app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,

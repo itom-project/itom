@@ -28,6 +28,7 @@
 #include <qdir.h>
 #include <qstring.h>
 #include <qmap.h>
+#include <qpair.h>
 
 namespace ito
 {
@@ -51,14 +52,21 @@ private:
     RetVal scanDocumentationFiles(QStringList &qchFiles, quint16 &checksum);
     RetVal scanPluginQhpFiles(quint16 &checksum);
     RetVal getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, quint16 &checksum);
+    RetVal getCheckSumOfPluginBuild(quint16 &checksum);
 
     RetVal rebuildHelpCollection(QStringList &qchFiles, quint16 checksum, QDir &helpDir);
 
-    RetVal buildPluginHelp();
-    RetVal buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files);
-    RetVal analyzeQhpFile(QFile &qhpFile, QString &tocs, QString &keywords, QString &files);
+    RetVal buildPluginHelp(quint16 checksum);
+    RetVal buildSinglePluginHelp(const QString &pluginFolder, QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files, QPair<QString,QString> &mainFileInfo);
+    RetVal analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo);
+    QString modifyTocs(const QString &in, const QString &hrefPrefix, QString &mainFile);
+    QString modifyKeywords(const QString &in, const QString &hrefPrefix);
+    QString modifyFiles(const QString &in, const QString &hrefPrefix, const QStringList &excludeContent, QStringList &filesToCopy);
+    RetVal modifyHrefInHtmlFile(const QString &htmlFile, const QString &prefix);
+
     static bool removeDir(const QDir &directory);
     static bool copyDir(const QDir &src, const QDir &dst);
+    static bool copyFile(const QFileInfo &srcFileInfo, QDir &dstFolder);
 
 
     QDir m_helpDirectory;
@@ -68,7 +76,8 @@ private:
     QString m_pluginHelpCollectionName;
     QString m_pluginHelpCollectionProject;
     bool m_upToDate;
-    bool m_upToDatePlugins;
+
+
 
 
     static HelpSystem *m_pHelpSystem;
