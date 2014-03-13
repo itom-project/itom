@@ -541,7 +541,8 @@ RetVal HelpSystem::buildSinglePluginHelp(QDir &buildDir, QDir &sourceDir, QStrin
         if (QString::compare(info.suffix(),"qhp",Qt::CaseInsensitive) == 0)
         {
             //analyze qhp file and return content in
-            retval += analyzeQhpFile(QFile(info.absoluteFilePath()), tocs, keywords, files);
+            QFile qhpFile(info.absoluteFilePath());
+            retval += analyzeQhpFile(qhpFile, tocs, keywords, files);
         }
     }
 
