@@ -25,6 +25,11 @@ def process_signature(app, what, name, obj, options, signature, return_annotatio
 
 buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
 
+def pathConv(p):
+    if (os.sep == "\\"):
+        return p.replace("/","\\")
+    return p
+
 def createPluginDoc(confFile, buildernames):
 
     with(open(confFile, "r")) as infile:
@@ -44,12 +49,10 @@ def createPluginDoc(confFile, buildernames):
 
     basedir = itom.getCurrentPath()
     srcdir = cfgDict["pluginDocSourceDir"] #from pluginConfiguration
-    confdir = os.path.join(itom.getAppPath(), "SDK\\docs\\pluginDoc")
-    confdir = confdir.replace("/","\\")
+    confdir = pathConv(os.path.join(itom.getAppPath(), "SDK" + os.sep + "docs" + os.sep + "pluginDoc"))
     
     for buildername in buildernames:
-        outdir = os.path.join(cfgDict["pluginDocBuildDir"],buildername)
-        outdir = outdir.replace("/","\\")
+        outdir = pathConv(os.path.join(cfgDict["pluginDocBuildDir"],buildername))
         doctreedir = os.path.join(cfgDict["pluginDocBuildDir"],"doctrees")
         
         helpDict = itom.pluginHelp(cfgDict["pluginDocTarget"],True)
@@ -88,7 +91,7 @@ def createPluginDoc(confFile, buildernames):
         
         if (buildername == "qthelp"):
             #copy important files from qthelp subfolder to pluginDocInstallDir
-            pluginDocInstallDir = cfgDict["pluginDocInstallDir"].replace("/","\\")
+            pluginDocInstallDir = pathConv(cfgDict["pluginDocInstallDir"])
             
             if (os.path.exists(pluginDocInstallDir)):
                 shutil.rmtree(pluginDocInstallDir)

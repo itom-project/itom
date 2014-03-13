@@ -23,7 +23,7 @@ import __main__
 #directory of this file
 thisDir = os.path.dirname( os.path.abspath (inspect.getfile(inspect.currentframe())))
 
-sys.path.append(os.path.join(thisDir,'..\\sphinxext'))
+sys.path.append(os.path.join(thisDir,'..' + os.sep + 'sphinxext'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -123,7 +123,7 @@ html_theme = 'itom'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['..\\_themes']
+html_theme_path = ['..' + os.sep + '_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
