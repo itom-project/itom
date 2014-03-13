@@ -87,8 +87,8 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
     QStringList documentationFiles;
 
     //check if qch file of plugins need to be build or rebuild
-    getCheckSumOfPluginBuild(checksum1);
-    scanPluginQhpFiles(checksum2);
+    retValue += getCheckSumOfPluginBuild(checksum1); //the checksum of the latest built plugin documentation is in the file .checksum in itom/docs/pluginDoc/build
+    retValue += scanPluginQhpFiles(checksum2); //this checksum is built of the change-date and the filename of all qhp-files found in itom/plugins directory
 
     if (checksum1 != checksum2)
     {
@@ -98,8 +98,8 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
     //check itom documentation
     checksum1 = 0;
     checksum2 = 0;
-    getCheckSumOfBuild(m_helpDirectory, m_helpCollectionProject, checksum1);
-    scanDocumentationFiles(documentationFiles,checksum2);
+    retValue += getCheckSumOfBuild(m_helpDirectory, m_helpCollectionProject, checksum1);
+    retValue += scanDocumentationFiles(documentationFiles,checksum2);
 
     if(checksum1 == checksum2 && checksum1 != 0)
     {
@@ -277,7 +277,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         if(!file.open(QIODevice::ReadOnly))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("file could not be opened.").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("file could not be opened.").toLatin1().data());
         }
 
         QXmlStreamReader stream(&file);
@@ -287,21 +287,21 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         if(stream.atEnd())
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed: file seems corrupt").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("Load XML file failed: file seems corrupt").toLatin1().data());
         }
 
         ReadSigns = stream.documentVersion();
         if(!ReadSigns.compare("1.0"))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
         }
 
         ReadSigns = stream.documentEncoding();
         if(!ReadSigns.compare("UTF-8"))
         {
             file.close();
-            return RetVal(retError, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
         }
 
         while(stream.readNextStartElement())
@@ -315,8 +315,9 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
                 checksum = ReadSigns.toString().toUInt(&ok);
                 if(!ok)
                 {
+                    checksum = 0;
                     file.close();
-                    return RetVal(retError, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toLatin1().data());
+                    return RetVal(retWarning, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toLatin1().data());
                 }
                 else
                 {
@@ -327,18 +328,6 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
             {
                 stream.skipCurrentElement();
             }
-
-            /*if(stream.qualifiedName().compare("itomChecksum"))
-            {
-                bool ok = false;
-                checksum = stream.readElementText().toUInt(&ok);
-                if(!ok)
-                {
-                    file.close();
-                    return RetVal(retError, 0, "Load XML file failed: could not intepret checksum content as uint");
-                }
-                break;
-            }*/
         }
         file.close();
     }
@@ -443,7 +432,10 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     QString app = ProcessOrganizer::getAbsQtToolPath( "qcollectiongenerator" );
 
     process.start(app.toLatin1().data() , args);
-    process.waitForFinished(60000);
+    if (!process.waitForFinished(30000))
+    {
+        return RetVal(retError,0,QObject::tr("error calling qcollectiongenerator").toLatin1().data());
+    }
 
     
 
@@ -467,7 +459,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
     templateDir = QDir(QCoreApplication::applicationDirPath());
     if (!templateDir.cd("docs/pluginDoc/template"))
     {
-        retval += ito::RetVal(ito::retError,0,"templates for plugin documentation not found. Directory 'docs/pluginDoc/template' not available");
+        retval += ito::RetVal(ito::retWarning,0,QObject::tr("templates for plugin documentation not found. Directory 'docs/pluginDoc/template' not available. Plugin documentation will not be built.").toLatin1().data());
     }
 
     buildDir = QDir(QCoreApplication::applicationDirPath());
@@ -482,7 +474,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"folder 'build' as subfolder of 'docs/pluginDoc' could not be created");
+            retval += ito::RetVal(ito::retWarning,0,QObject::tr("folder 'build' as subfolder of 'docs/pluginDoc' could not be created. Plugin documentation will not be built.").toLatin1().data());
         }
     }
     else
@@ -492,7 +484,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         //clear content of build folder
         if (!HelpSystem::removeDir(buildDir))
         {
-            retval += ito::RetVal(ito::retError,0,"could not clear folder 'docs/pluginDoc/build'");
+            retval += ito::RetVal(ito::retWarning,0,QObject::tr("could not clear folder 'docs/pluginDoc/build'. Plugin documentation will not be built.").toLatin1().data());
         }
         
     }
@@ -500,14 +492,15 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
     pluginDir = QDir(QCoreApplication::applicationDirPath());
     if (!pluginDir.cd("plugins"))
     {
-        retval += ito::RetVal(ito::retWarning,0,"no plugin directory available. No plugin documentation will be built.");
+        retval += ito::RetVal(ito::retWarning,0,QObject::tr("no plugin directory available. No plugin documentation will be built.").toLatin1().data());
     }
 
-    if (!retval.containsError())
+    if (!retval.containsWarningOrError())
     {
         QDir thisPluginDir;
         QDir thisPluginDocsDir;
         QDir thisPluginBuildDir;
+        QString warnings;
 
         //scan all folders in pluginDir and check if they have a docs subfolder containing a qhp-file
         foreach(QFileInfo info, pluginDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot))
@@ -532,10 +525,24 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
                             {
                                 mainFileInfos.append(mainFileInfo);
                             }
+                            else if (pluginRetVal == ito::retError)
+                            {
+                                retval += pluginRetVal;
+                                break;
+                            }
+                            else //warning
+                            {
+                                warnings += "\nPlugin " + thisPluginDir.dirName() + ": " + pluginRetVal.errorMessage();
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if (warnings.isEmpty() == false)
+        {
+            retval += ito::RetVal(ito::retWarning,0,warnings.toLatin1().data());
         }
     }
 
@@ -546,7 +553,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         QByteArray mainQhpFile;
         QFile file;
 
-        if (!retval.containsError())
+        if (!retval.containsWarningOrError())
         {
 
             //index.html
@@ -558,7 +565,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"error opening index.html of template folder");
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error opening index.html of template folder").toLatin1().data());
             }
 
             //itomPluginDoc.qhp
@@ -570,11 +577,11 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"error opening itomPluginDoc.qhp of template folder");
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error opening itomPluginDoc.qhp of template folder").toLatin1().data());
             }
         }
 
-        if (!retval.containsError())
+        if (!retval.containsWarningOrError())
         {
             mainQhpFile.replace("$tocInsert$", tocs.toLatin1());
             mainQhpFile.replace("$keywordsInsert$", keywords.toLatin1());
@@ -605,7 +612,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
         }
 
-        if (!retval.containsError())
+        if (!retval.containsWarningOrError())
         {
             //index.html
             file.setFileName(buildDir.absoluteFilePath("index.html"));
@@ -616,7 +623,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"error writing index.html of template folder");
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error writing index.html of template folder").toLatin1().data());
             }
 
             //itomPluginDoc.qhp
@@ -628,21 +635,21 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"error writing itomPluginDoc.qhp of template folder");
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error writing itomPluginDoc.qhp of template folder").toLatin1().data());
             }
         }
 
-        if (!retval.containsError())
+        if (!retval.containsWarningOrError())
         {
             //copy content of _static folder of template folder to build/_static
             if (!copyDir(templateDir.filePath("_static"), buildDir.filePath("_static")))
             {
-                retval += ito::RetVal(ito::retError,0,"could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'");
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'").toLatin1().data());
             }
         }
 
 
-        if (!retval.containsError())
+        if (!retval.containsWarningOrError())
         {
             QProcess process;
             QStringList args;
@@ -651,12 +658,15 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             QString app = ProcessOrganizer::getAbsQtToolPath( "qhelpgenerator" );
 
             process.start(app.toLatin1().data() , args);
-            process.waitForFinished(60000);
+            if (process.waitForFinished(30000))
+            {
+                retval += RetVal(retWarning,0,QObject::tr("error calling qhelpgenerator for creating the plugin documentation.").toLatin1().data());
+            }
 
         }
     }
 
-    if (!retval.containsError())
+    if (!retval.containsWarningOrError())
     {
         QFile checksumFile(buildDir.absoluteFilePath(".checksum"));
         if (checksumFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
@@ -845,6 +855,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
     return files;
 }
 
+//-----------------------------------------------------------------------------------
 RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &prefix)
 {
     ito::RetVal retval;
