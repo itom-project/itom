@@ -1517,7 +1517,8 @@ end:
         id = qRegisterMetaType<char**>("char**");
         id = qRegisterMetaType<const char*>("const char*");
         id = qRegisterMetaType<const char**>("const char**");
-        id = qRegisterMetaType<const void *>("const void *");
+        // incomplete type, i.e. void* are illegal in Qt5!
+        //id = qRegisterMetaType<const void *>("const void *");
         id = qRegisterMetaType<double>("double");
         id = qRegisterMetaType<double *>("double*");
         //id = qRegisterMetaType<const double>();
