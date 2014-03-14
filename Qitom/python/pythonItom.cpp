@@ -411,10 +411,10 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     char **kwlist = getWidgetHelp ? const_cast<char**>(kwlistWidget) : const_cast<char**>(kwlistFilter);
 
     const char *filterstring = NULL;
-    int output = 0; //dictionary
+    int retDict = 0; //dictionary
     int userwithinfos = 0; //furtherInfos
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds,"|sii", kwlist, &filterstring, &output, &userwithinfos))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds,"|sii", kwlist, &filterstring, &retDict, &userwithinfos))
     {
         return NULL;
     }
@@ -490,11 +490,17 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
     if (keyList.size() < 1)
     {
-        std::cout << "No "<< contextName.toLatin1().data() <<" defined\n";
+        if (!retDict)
+        {
+            std::cout << "No "<< contextName.toLatin1().data() <<" defined\n";
+        }
     }
     else
     {
-        std::cout << "\n";
+        if (!retDict)
+        {
+            std::cout << "\n";
+        }
         QString filteredKey;
 
         //! first try to catch a perfect match with existing filters
@@ -508,10 +514,16 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 //QVector<ito::Param> paramsMand, paramsOpt, paramsOut;
                 const ito::FilterParams *filterParams;
 
-                std::cout << contextName.toUpper().toLatin1().data() << "NAME:    "<< filteredKey.toLatin1().data() << "\n";
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toLatin1());
-                PyDict_SetItemString(resulttemp, "name", item);
-                Py_DECREF(item);
+                if (!retDict)
+                {
+                    std::cout << contextName.toUpper().toLatin1().data() << "NAME:    "<< filteredKey.toLatin1().data() << "\n";
+                }
+                else
+                {
+                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toLatin1());
+                    PyDict_SetItemString(resulttemp, "name", item);
+                    Py_DECREF(item);
+                }
 
                 if (getWidgetHelp)
                 {
@@ -519,10 +531,16 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     filterParams = AIM->getHashedFilterParams(wFunc->m_paramFunc);
                     //(*(wFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
-                    std::cout << "DESCRIPTION    " << wFunc->m_description.toLatin1().data() << "\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(wFunc->m_description.toLatin1());
-                    PyDict_SetItemString(resulttemp, "description", item);      
-                    Py_DECREF(item);
+                    if (!retDict)
+                    {
+                        std::cout << "DESCRIPTION    " << wFunc->m_description.toLatin1().data() << "\n";
+                    }
+                    else
+                    {
+                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(wFunc->m_description.toLatin1());
+                        PyDict_SetItemString(resulttemp, "description", item);      
+                        Py_DECREF(item);
+                    }
                 }
                 else
                 {
@@ -530,70 +548,109 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                     filterParams = AIM->getHashedFilterParams(fFunc->m_paramFunc);
                     //(*(fFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
-                    std::cout << "DESCRIPTION    " << fFunc->m_description.toLatin1().data() << "\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(fFunc->m_description.toLatin1());
-                    PyDict_SetItemString(resulttemp, "description", item);
-                    Py_DECREF(item);
+                    if (!retDict)
+                    {
+                        std::cout << "DESCRIPTION    " << fFunc->m_description.toLatin1().data() << "\n";
+                    }
+                    else
+                    {
+                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(fFunc->m_description.toLatin1());
+                        PyDict_SetItemString(resulttemp, "description", item);
+                        Py_DECREF(item);
+                    }
                 }
 
                 if (filterParams)
                 {
-
-                    std::cout << "PARAMETERS:\n";
+                    if (!retDict)
+                    {
+                        std::cout << "PARAMETERS:\n";
+                    }
                     if (filterParams->paramsMand.size())
                     {
-                        std::cout << "\nMandatory parameters:\n";
-                        resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
-                        PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
-                        Py_DECREF(resultmand);
+                        if (!retDict)
+                        {
+                            std::cout << "\nMandatory parameters:\n";
+                            resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
+                            Py_DECREF(resultmand);
+                        }
+                        else
+                        {
+                            resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1, false);
+                            Py_DECREF(resultmand);
+                            PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
+                        }
+                        
                     }
-                    else
+                    else if(!retDict)
                     {
                         std::cout << "\nMandatory parameters: " <<  contextName.toLatin1().data()  << " function has no mandatory parameters \n";
                     }
+
                     if (filterParams->paramsOpt.size())
                     {
-                        std::cout << "\nOptional parameters:\n";
-                        resultopt = ito::PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
-                        PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
-                        Py_DECREF(resultopt);
+                        if (!retDict)
+                        {
+                            std::cout << "\nOptional parameters:\n";
+                            resultopt = ito::PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
+                            Py_DECREF(resultopt);
+                        }
+                        else
+                        {
+                            resultopt = ito::PrntOutParams(&(filterParams->paramsOpt), false, true, -1, false);
+                            PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
+                            Py_DECREF(resultopt);
+                        }
                     }
-                    else
+                    else if(!retDict)
                     {
                         std::cout << "\nOptional parameters: " <<  contextName.toLatin1().data()  << " function has no optional parameters \n";
                     }
+
                     if (filterParams->paramsOut.size())
                     {
-                        std::cout << "\nOutput parameters:\n";
-                        resultopt = ito::PrntOutParams(&(filterParams->paramsOut), false, true, -1);
-                        PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
-                        Py_DECREF(resultopt);
+                        if (!retDict)
+                        {
+                            std::cout << "\nOutput parameters:\n";
+                            resultopt = ito::PrntOutParams(&(filterParams->paramsOut), false, true, -1);
+                            Py_DECREF(resultopt);
+                        }
+                        else
+                        {
+                            PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
+                            Py_DECREF(resultopt);
+                        }
                     }
-                    else
+                    else if (!retDict)
                     {
                         std::cout << "\nOutput parameters: " <<  contextName.toLatin1().data()  << " function has no output parameters \n";
                     }
                 }
-                else
+                else if (!retDict)
                 {
                     std::cout << "PARAMETERS:\nError while loading parameter info.";
                 }
                 
-                std::cout << "\n";
+                if (!retDict)
+                {
+                    std::cout << "\n";
+                }
                 PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
                 Py_DECREF(resulttemp);
             }
             else
+            {
                 continue;
+            }
         }
 
         //! Now get the complete filterlist
 
-        if (namefilter.length())
+        if (namefilter.length() && !retDict)
         {
             std::cout << contextName.toLatin1().data() << ", which contain the given string: " << namefilter.toLatin1().data() << "\n";
         }
-        else
+        else if (!retDict)
         {
             std::cout << "Complete "<< contextName.toLatin1().data() << "list\n";
         }
@@ -615,7 +672,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
         {
             keyList.sort();
             
-            if (!userwithinfos)
+            if (!userwithinfos && !retDict)
             {
                 std::cout <<"\n" << contextName.append("name").leftJustified(longest_name +1, ' ', false).toLatin1().data() << " \tInfo-String\n";
             }
@@ -632,10 +689,13 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
                 QString descriptionString("");
 
-                if (userwithinfos)
-                    std::cout << contextName.toUpper().toLatin1().data() << "NAME:    " << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
-                else
-                    std::cout << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
+                if (!retDict)
+                {
+                    if (userwithinfos)
+                        std::cout << contextName.toUpper().toLatin1().data() << "NAME:    " << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
+                    else
+                        std::cout << filteredKey.leftJustified(longest_name, ' ', false).toLatin1().data() << " ";
+                }
 
                 item = PythonQtConversion::QByteArrayToPyUnicodeSecure(filteredKey.toLatin1());
                 PyDict_SetItemString(resulttemp, "name", item);
@@ -672,63 +732,108 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         desString = desString.left(linebreakIdx);
                     }
 
-                    std::cout << "\t'" << desString.toLatin1().data() << "'\n";
-                    item = PythonQtConversion::QByteArrayToPyUnicodeSecure(descriptionString.toLatin1());
-                    PyDict_SetItemString(resulttemp, "description", item);
-                    Py_DECREF(item);
+                    if (!retDict)
+                    {
+                        std::cout << "\t'" << desString.toLatin1().data() << "'\n";
+                    }
+                    else
+                    {
+                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(descriptionString.toLatin1());
+                        PyDict_SetItemString(resulttemp, "description", item);
+                        Py_DECREF(item);
+                    }
                 }
                 else
                 {
-                    std::cout <<"\t' No description '\n";
-                    item = PyUnicode_FromString("No description");
-                    PyDict_SetItemString(resulttemp, "description", item);
-                    Py_DECREF(item);
+                    if (!retDict)
+                    {
+                        std::cout <<"\t' No description '\n";
+                    }
+                    else
+                    {
+                        item = PyUnicode_FromString("No description");
+                        PyDict_SetItemString(resulttemp, "description", item);
+                        Py_DECREF(item);
+                    }
                 }
 
                 if (userwithinfos)
                 {
-                    std::cout << "PARAMETERS:\n";
+                    if (!retDict)
+                    {
+                        std::cout << "PARAMETERS:\n";
+                    }
+
                     if (filterParams)
                     {
                         if (filterParams->paramsMand.size())
                         {
-                            std::cout << "\nMandatory parameters:\n";
-                            resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
-                            PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
-                            Py_DECREF(resultmand);
+                            if (!retDict)
+                            {
+                                std::cout << "\nMandatory parameters:\n";
+                                resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
+                                Py_DECREF(resultmand);
+                            }
+                            else
+                            {
+                                resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1, false);
+                                PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
+                                Py_DECREF(resultmand);
+                            }
                         }
-                        else
+                        else if (!retDict)
                         {
                             std::cout << "\nMandatory parameters: " <<  contextName.toLatin1().data()  << " function has no mandatory parameters \n";
                         }
                         if (filterParams->paramsOpt.size())
                         {
-                            std::cout << "\nOptional parameters:\n";
-                            resultopt = PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
-                            PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
-                            Py_DECREF(resultopt);
+                            if (!retDict)
+                            {
+                                std::cout << "\nOptional parameters:\n";
+                                resultopt = PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
+                                Py_DECREF(resultopt);
+                            }
+                            else
+                            {
+                                resultopt = PrntOutParams(&(filterParams->paramsOpt), false, true, -1, false);
+                                PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
+                                Py_DECREF(resultopt);
+                            }
                         }
-                        else
+                        else if (!retDict)
                         {
                             std::cout << "\nOptional parameters: " <<  contextName.toLatin1().data()  << " function has no optional parameters \n";
                         }
                         if (filterParams->paramsOut.size())
                         {
-                            std::cout << "\nOutput parameters:\n";
-                            resultopt = PrntOutParams(&(filterParams->paramsOut), false, true, -1);
-                            PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
-                            Py_DECREF(resultopt);
+                            if (!retDict)
+                            {
+                                std::cout << "\nOutput parameters:\n";
+                                resultopt = PrntOutParams(&(filterParams->paramsOut), false, true, -1);
+                                Py_DECREF(resultopt);
+                            }
+                            else
+                            {
+                                resultopt = PrntOutParams(&(filterParams->paramsOut), false, true, -1, false);
+                                PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
+                                Py_DECREF(resultopt);
+                            }
                         }
-                        else
+                        else if (!retDict)
                         {
                             std::cout << "\nOutput parameters: " <<  contextName.toLatin1().data()  << " function has no output parameters \n";
                         }
                     }
-                    else
+                    else if (!retDict)
                     {
                         std::cout << "Errors while loading parameter info";
                     }
-                    std::cout << "\n";
+
+                    if (!retDict)
+                    {
+                        std::cout << "\n";
+                    }
+
                     PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
                     Py_DECREF(resulttemp);
                 }
@@ -738,9 +843,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
         }
     }
 
-    std::cout << "\n";
+    if (!retDict)
+    {
+        std::cout << "\n";
+    }
 
-    if (output)
+    if (retDict)
     {
         return result;
     }
@@ -763,7 +871,7 @@ filterName : {str}, optional \n\
     is the fullname or a part of any filter-name which should be displayed. \n\
     If filterName is empty or no filter matches filterName (case sensitive) a list with all suitable filters is given. \n\
 dictionary : {dict}, optional \n\
-    if dictionary == 1, a dictionary with all relevant components of the filter's documentation is returned [default: 0] \n\
+    if dictionary == 1, a dictionary with all relevant components of the filter's documentation is returned and nothing is printed to the command line [default: 0] \n\
 furtherInfos : {int}, optional \n\
     Usually, filters or algorithms whose name only contains the given filterName are only listed at the end of the information text. \n\
     If this parameter is set to 1 [default: 0], the full information for all these filters is printed as well. \n\
@@ -792,7 +900,7 @@ widgetName : {str}, optional \n\
     is the fullname or a part of any widget-name which should be displayed. \n\
     If widgetName is empty or no widget matches widgetName (case sensitive) a list with all suitable widgets is given. \n\
 dictionary : {dict}, optional \n\
-    if dictionary == 1, a dictionary with all relevant components of the widget's documentation is returned [default: 0] \n\
+    if dictionary == 1, a dictionary with all relevant components of the widget's documentation is returned and nothing is printed to the command line [default: 0] \n\
 furtherInfos : {int}, optional \n\
     Usually, widgets whose name only contains the given widgetName are only listed at the end of the information text. \n\
     If this parameter is set to 1 [default: 0], the full information for all these widgets is printed as well. \n\
@@ -867,34 +975,34 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.\n\
                               Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
-If dictionary is True, a dict with all plugin parameters is returned.\n\
+If `dictionary == True`, a dict with all plugin parameters is returned and nothing is printed to the console.\n\
 \n\
 Parameters \n\
 ----------- \n\
 pluginName : {str} \n\
     is the fullname of a plugin as specified in the plugin window.\n\
 dictionary : {bool}, optional \n\
-    if `dictionary == True`, function returns a dict with plugin parameters (default: False)\n\
+    if `dictionary == True`, function returns a dict with plugin parameters and does not print anything to the console (default: False)\n\
 \n\
 Returns \n\
 ------- \n\
 out : {None or dict} \n\
-    Returns None or a dict depending on the value of parameter dictionary.");
+    Returns None or a dict depending on the value of parameter `dictionary`.");
 PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"pluginName", "dictionary", NULL};
     const char* pluginName = NULL;
 #if PY_VERSION_HEX < 0x03030000
-    unsigned char output = 0;
+    unsigned char retDict = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &output))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &retDict))
     {
         return NULL;
     }
 #else //only python 3.3 or higher has the 'p' (bool, int) type string
     int output = 0; //this must be int, not bool!!! (else crash)
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &output))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &retDict))
     {
         return NULL;
     }
@@ -950,59 +1058,94 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     {
         result = PyDict_New();
 
-        std::cout << "\n";
+        if (!retDict) std::cout << "\n";
 
         if (pluginName)
         {
-            std::cout << "NAME:\t " << pluginName << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pluginName); //new ref
-            PyDict_SetItemString(result, "name", item);
-            Py_DECREF(item);
+            if (retDict)
+            {
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pluginName); //new ref
+                PyDict_SetItemString(result, "name", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "NAME:\t " << pluginName << "\n";
+            }
         }
         if (pTypeSTring)
         {
-            std::cout << "TYPE:\t " << pTypeSTring << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pTypeSTring); //new ref
-            PyDict_SetItemString(result, "type", item);
-            Py_DECREF(item);
+            if (retDict)
+            {
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pTypeSTring); //new ref
+                PyDict_SetItemString(result, "type", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "TYPE:\t " << pTypeSTring << "\n";
+            }
             free(pTypeSTring);
         }
 
         QString versionStr = QString("%1.%2.%3").arg(MAJORVERSION(version)).arg(MINORVERSION(version)).arg(PATCHVERSION(version));
-        std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
-        item = PythonQtConversion::QStringToPyObject(versionStr); //new ref
-        PyDict_SetItemString(result, "version", item);
-        Py_DECREF(item);
+        
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(versionStr); //new ref
+            PyDict_SetItemString(result, "version", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
+        }
+        
 
         if (pAuthor)
         {
-            std::cout << "AUTHOR:\t " << pAuthor << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pAuthor); //new ref
-            PyDict_SetItemString(result, "author", item);
-            Py_DECREF(item);
+            if (retDict)
+            {
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pAuthor); //new ref
+                PyDict_SetItemString(result, "author", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "AUTHOR:\t " << pAuthor << "\n";
+            }
             free(pAuthor);
         }
         if (pDescription)
         {
-            std::cout << "INFO:\t\t " << pDescription << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDescription); //new ref
-            PyDict_SetItemString(result, "description", item);
-            Py_DECREF(item);
+            if (retDict)
+            {
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDescription); //new ref
+                PyDict_SetItemString(result, "description", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "INFO:\t\t " << pDescription << "\n";
+            }
             free(pDescription);
+                
         }
         if (pDetailDescription)
         {
-            std::cout << "\nDETAILS:\n" << pDetailDescription << "\n";
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDetailDescription); //new ref
-            PyDict_SetItemString(result, "detaildescription", item);
-            Py_DECREF(item);
+            if (retDict)
+            {
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDetailDescription); //new ref
+                PyDict_SetItemString(result, "detaildescription", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "\nDETAILS:\n" << pDetailDescription << "\n";
+            }  
             free(pDetailDescription);
         }
     }
-
-    
-
-    PyObject *noneText = PyUnicode_FromString("None");
 
     switch(plugtype)
     {
@@ -1025,45 +1168,71 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 }
             }
 
-            std::cout << "\nINITIALISATION PARAMETERS:\n";
+            if (retDict == 0)
+            {
+                std::cout << "\nINITIALISATION PARAMETERS:\n";
+            }
+
             if (paramsMand)
             {
-               if ((*paramsMand).size())
-               {
-                  std::cout << "\n Mandatory parameters:\n";
-                  resultmand = PrntOutParams(paramsMand, false, true, -1);
-                  PyDict_SetItemString(result, "Mandatory Parameters", resultmand);
-                  Py_DECREF(resultmand);
-               }
-               else
-               {
-                   std::cout << "  Initialisation function has no mandatory parameters \n";
-               }
+                if ((*paramsMand).size())
+                {
+                    if (retDict)
+                    {
+                        resultmand = PrntOutParams(paramsMand, false, true, -1, false);
+                        PyDict_SetItemString(result, "Mandatory Parameters", resultmand);
+                        Py_DECREF(resultmand);
+                    }
+                    else
+                    {
+                        std::cout << "\n Mandatory parameters:\n";
+                        resultmand = PrntOutParams(paramsMand, false, true, -1);
+                        Py_DECREF(resultmand);
+                    }
+                  
+                }
+                else if (!retDict)
+                {
+                    std::cout << "  Initialisation function has no mandatory parameters \n";
+                }
             }
-            else
+            else if (!retDict)
             {
                    std::cout << "  Initialisation function has no mandatory parameters \n";
             }
+
             if (paramsOpt)
             {
                 if ((*paramsOpt).size())
                 {
-                    std::cout << "\n Optional parameters:\n";
-                    resultopt = PrntOutParams(paramsOpt, false, true, -1);
-                    PyDict_SetItemString(result, "Optional Parameters", resultopt);
-                    Py_DECREF(resultopt);
+                    if (retDict)
+                    {
+                        resultopt = PrntOutParams(paramsOpt, false, true, -1, false);
+                        PyDict_SetItemString(result, "Optional Parameters", resultopt);
+                        Py_DECREF(resultopt);
+                    }
+                    else
+                    {
+                        std::cout << "\n Optional parameters:\n";
+                        resultopt = PrntOutParams(paramsOpt, false, true, -1);
+                        Py_DECREF(resultopt);
+                    }                    
                 }
-                else
+                else if (!retDict)
                 {
                     std::cout << "  Initialisation function has no optional parameters \n";
                 }
             }
-            else
+            else if (!retDict)
             {
                     std::cout << "  Initialisation function has no optional parameters \n";
             }
-            std::cout << "\n";
-            std::cout << "\nFor more information use the member functions 'getParamListInfo()' and 'getExecFuncInfo()'\n\n";
+
+            if (!retDict)
+            {
+                std::cout << "\n";
+                std::cout << "\nFor more information use the member functions 'getParamListInfo()' and 'getExecFuncInfo()'\n\n";
+            }
             break;
 
         case ito::typeAlgo:
@@ -1080,25 +1249,40 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 
                 if (funcList.size() > 0)
                 {
-                    std::cout << "\nThis is the container for following filters:\n";
+                    if (!retDict)
+                    {
+                        std::cout << "\nThis is the container for following filters:\n";
+                    }
                     QStringList keyList = funcList.keys();
                     keyList.sort();
 
-                    PyObject *algorithmlist = PyDict_New();
-                    for (int algos = 0; algos < keyList.size(); algos++)
+                    if (retDict)
                     {
-                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toLatin1());
-                        PyDict_SetItemString(algorithmlist, keyList.value(algos).toLatin1().data(), item);
-                        Py_DECREF(item);
-                        std::cout << "> " << algos << "  " << keyList.value(algos).toLatin1().data() << "\n";
+                        PyObject *algorithmlist = PyDict_New();
+                        for (int algos = 0; algos < keyList.size(); algos++)
+                        {
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toLatin1());
+                            PyDict_SetItemString(algorithmlist, keyList.value(algos).toLatin1().data(), item);
+                            Py_DECREF(item);
+                        }
+                        PyDict_SetItemString(result, "filter", algorithmlist);
+                        Py_DECREF(algorithmlist);
                     }
-                    PyDict_SetItemString(result, "filter", algorithmlist);
-                    Py_DECREF(algorithmlist);
-                    std::cout << "\nFor more information use 'filterHelp(\"filterName\")'\n\n";
+                    else
+                    {
+                        for (int algos = 0; algos < keyList.size(); algos++)
+                        {
+                            std::cout << "> " << algos << "  " << keyList.value(algos).toLatin1().data() << "\n";
+                        }
+
+                        std::cout << "\nFor more information use 'filterHelp(\"filterName\")'\n\n";
+                    }
                 }
-                else
+                else if (retDict)
                 {
+                    PyObject *noneText = PyUnicode_FromString("None");
                     PyDict_SetItemString(result, "filter", noneText);
+                    Py_DECREF(noneText);
                 }
 
                 QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
@@ -1106,39 +1290,54 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 
                 if (widgetList.size() > 0)
                 {
-                    std::cout << "\nThis is the container for following widgets:\n";
+                    if (!retDict)
+                    {
+                        std::cout << "\nThis is the container for following widgets:\n";
+                    }
+
                     QStringList keyList = widgetList.keys();
                     keyList.sort();
 
-                    PyObject *widgetlist = PyDict_New();
-                    for (int widgets = 0; widgets < keyList.size(); widgets++)
+                    if (retDict)
                     {
-                        item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toLatin1());
-                        PyDict_SetItemString(widgetlist, keyList.value(widgets).toLatin1().data(), item);
-                        Py_DECREF(item);
-                        std::cout << "> " << widgets << "  " << keyList.value(widgets).toLatin1().data() << "\n";
+                        PyObject *widgetlist = PyDict_New();
+                        for (int widgets = 0; widgets < keyList.size(); widgets++)
+                        {
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toLatin1());
+                            PyDict_SetItemString(widgetlist, keyList.value(widgets).toLatin1().data(), item);
+                            Py_DECREF(item);
+                        }
+                        PyDict_SetItemString(result, "widgets", widgetlist);
+                        Py_DECREF(widgetlist);
                     }
-                    PyDict_SetItemString(result, "widgets", widgetlist);
-                    Py_DECREF(widgetlist);
-                    std::cout << "\nFor more information use 'widgetHelp(\"widgetName\")'\n";
+                    else
+                    {
+                        for (int widgets = 0; widgets < keyList.size(); widgets++)
+                        {
+                            std::cout << "> " << widgets << "  " << keyList.value(widgets).toLatin1().data() << "\n";
+                        }
+                        std::cout << "\nFor more information use 'widgetHelp(\"widgetName\")'\n";
+                    }
                 }
                 else
                 {
+                    PyObject *noneText = PyUnicode_FromString("None");
                     PyDict_SetItemString(result, "widgets", noneText);
+                    Py_DECREF(noneText);
                 }
 
             }
             else
             {
+                PyObject *noneText = PyUnicode_FromString("None");
                 PyDict_SetItemString(result, "widgets", noneText);
+                Py_DECREF(noneText);
             }
         }
         break;
     }
 
-    Py_DECREF(noneText);
-
-    if (output > 0)
+    if (retDict > 0)
     {
         return result;
     }

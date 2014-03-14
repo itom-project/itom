@@ -231,8 +231,8 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
 }
 
 
-
-PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num)
+//--------------------------------------------------------------------------------------------------------------
+PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream /*= true*/)
 {
     PyObject *p_pyDic = NULL;
     PyObject *p_pyLine = NULL;
@@ -572,13 +572,16 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         output.append("\n");
     }
 
-    if (asErr)
+    if (printToStdStream)
     {
-        std::cerr << output.toLatin1().data() << std::endl;
-    }
-    else
-    {
-        std::cout << output.toLatin1().data() << std::endl;
+        if (asErr)
+        {
+            std::cerr << output.toLatin1().data() << std::endl;
+        }
+        else
+        {
+            std::cout << output.toLatin1().data() << std::endl;
+        }
     }
 
     return p_pyDic;
@@ -822,7 +825,7 @@ ito::RetVal parseInitParams(QVector<ito::Param> *initParamListMand, QVector<ito:
     return ito::retOk;
 }
 
-
+//-----------------------------------------------------------------------------------------------------
 ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, const QVector<ito::Param> *defaultParamListOpt, PyObject *args, PyObject *kwds, QVector<ito::ParamBase> &paramListMandOut, QVector<ito::ParamBase> &paramListOptOut)
 {
     int len;
