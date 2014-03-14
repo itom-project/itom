@@ -662,13 +662,13 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal AddInDataIO::setVal(const void * /*data*/, const int /*length*/, ItomSharedSemaphore *waitCond)
+    ito::RetVal AddInDataIO::setVal(const char * /*data*/, const int /*length*/, ItomSharedSemaphore *waitCond)
     {
-        Q_ASSERT_X(1, "AddInDataIO::setVal(const void *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
+        Q_ASSERT_X(1, "AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method setVal(const void*, const int, ItomSharedSemaphore*) is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError,0,"method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin");
             waitCond->release();
             
             return waitCond->returnValue;

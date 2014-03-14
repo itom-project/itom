@@ -652,7 +652,7 @@ namespace ito
             virtual ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
 
             //! write data, e.g. to the DA part of an ADDA card
-            virtual ito::RetVal setVal(const void *data, const int length, ItomSharedSemaphore *waitCond = NULL);
+            virtual ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
 
             //! enables the timer for auto grabbing (live image), if any live image has signed on (usually this method must not be overwritten)
             ito::RetVal enableAutoGrabbing(ItomSharedSemaphore *waitCond = NULL); //consider this method as final
@@ -1076,10 +1076,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
     "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
     "ito.AddIn.InterfaceBase/1.1.24",//version until 2014-02-09 (outdated: restructuring to itomCommonLib and itomCommonQtLib for a better binary compatibility)
+    "ito.AddIn.InterfaceBase/1.2.0", //outdated on 2014-03-14 due to change in AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL); (const void *data changed to const char *data) (Qt5 bugfix)
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.2.0";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.2.1";
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

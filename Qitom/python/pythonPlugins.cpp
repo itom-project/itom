@@ -3424,7 +3424,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond)))
         {
             bool timeout = false;
 
@@ -3531,7 +3531,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const void *, (const void *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond)))
         {        
             bool timeout = false;
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
