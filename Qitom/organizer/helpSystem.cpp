@@ -602,9 +602,10 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
 
                 for (int i = 0; i < mainFileInfos.size(); ++i)
                 {
-                    sectionEntry.replace("$toctreeItemHref$", mainFileInfos[i].second.toLatin1());
-                    sectionEntry.replace("$toctreeItemTitle$", mainFileInfos[i].first.toLatin1());
-                    sectionEntries += sectionEntry;
+                    QString temp = sectionEntry;
+                    temp.replace("$toctreeItemHref$", mainFileInfos[i].second.toLatin1());
+                    temp.replace("$toctreeItemTitle$", mainFileInfos[i].first.toLatin1());
+                    sectionEntries += temp;
                     sectionEntries += "\n";
                 }
         
@@ -658,7 +659,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             QString app = ProcessOrganizer::getAbsQtToolPath( "qhelpgenerator" );
 
             process.start(app.toLatin1().data() , args);
-            if (process.waitForFinished(30000))
+            if (!process.waitForFinished(30000))
             {
                 retval += RetVal(retWarning,0,QObject::tr("error calling qhelpgenerator for creating the plugin documentation.").toLatin1().data());
             }
