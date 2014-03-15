@@ -945,31 +945,17 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
         return PyErr_Format(PyExc_RuntimeError, "no addin-manager found");
     }
 
-    int pluginNum = -1;
-    int plugtype = -1;
-    int version = -1;
-    char * pTypeSTring = NULL;
-    char * pAuthor = NULL;
-    char * pDescription = NULL;
-    char * pDetailDescription = NULL;
+    int ptype, pnum, pversion;
+    QString pauthor, pdescription, pdetaileddescription, plicense, pabout, ptypestr;
 
-    retval = AIM->getPlugInInfo(pluginName, &plugtype, &pluginNum, &pTypeSTring, &pAuthor, &pDescription, &pDetailDescription, &version);
-
-    if (pTypeSTring)
-        free(pTypeSTring);
-    if (pAuthor)
-        free(pAuthor);
-    if (pDescription)
-        free(pDescription);
-    if (pDetailDescription)
-        free(pDetailDescription);
+    retval = AIM->getPluginInfo(pluginName, ptype, pnum, pversion, ptypestr, pauthor, pdescription, pdetaileddescription, plicense, pabout);
 
     if (retval.containsWarningOrError())
     {
-        return Py_False;
+        Py_RETURN_FALSE;
     }
 
-    return Py_True;
+    Py_RETURN_TRUE;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -1015,15 +1001,16 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     int pluginNum = -1;
     int plugtype = -1;
     int version = -1;
-    char * pTypeSTring = NULL;
-    char * pAuthor = NULL;
-    char * pDescription = NULL;
-    char * pDetailDescription = NULL;
+    QString pTypeString;
+    QString pAuthor;
+    QString pDescription;
+    QString pDetailDescription;
+    QString pLicense;
+    QString pAbout;
     PyObject *result = NULL;
     PyObject *resultmand = NULL;
     PyObject *resultopt = NULL;
-    PyObject *item = NULL;
-    
+    PyObject *item = NULL;    
 
 
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
@@ -1032,18 +1019,9 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         return PyErr_Format(PyExc_RuntimeError, "no addin-manager found");
     }
 
-    retval = AIM->getPlugInInfo(pluginName, &plugtype, &pluginNum, &pTypeSTring, &pAuthor, &pDescription, &pDetailDescription, &version);
+    retval = AIM->getPluginInfo(pluginName, plugtype, pluginNum, version, pTypeString, pAuthor, pDescription, pDetailDescription, pLicense, pAbout);
     if (retval.containsWarningOrError())
     {
-        if (pTypeSTring)
-            free(pTypeSTring);
-        if (pAuthor)
-            free(pAuthor);
-        if (pDescription)
-            free(pDescription);
-        if (pDetailDescription)
-            free(pDetailDescription);
-
         if (retval.hasErrorMessage())
         {
             return PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName, retval.errorMessage());
@@ -1073,19 +1051,16 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 std::cout << "NAME:\t " << pluginName << "\n";
             }
         }
-        if (pTypeSTring)
+
+        if (retDict)
         {
-            if (retDict)
-            {
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pTypeSTring); //new ref
-                PyDict_SetItemString(result, "type", item);
-                Py_DECREF(item);
-            }
-            else
-            {
-                std::cout << "TYPE:\t " << pTypeSTring << "\n";
-            }
-            free(pTypeSTring);
+            item = PythonQtConversion::QStringToPyObject(pTypeString); //new ref
+            PyDict_SetItemString(result, "type", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "TYPE:\t " << pTypeString.toLatin1().data() << "\n";
         }
 
         QString versionStr = QString("%1.%2.%3").arg(MAJORVERSION(version)).arg(MINORVERSION(version)).arg(PATCHVERSION(version));
@@ -1102,50 +1077,63 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         }
         
 
-        if (pAuthor)
+        if (retDict)
         {
-            if (retDict)
-            {
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pAuthor); //new ref
-                PyDict_SetItemString(result, "author", item);
-                Py_DECREF(item);
-            }
-            else
-            {
-                std::cout << "AUTHOR:\t " << pAuthor << "\n";
-            }
-            free(pAuthor);
+            item = PythonQtConversion::QStringToPyObject(pAuthor); //new ref
+            PyDict_SetItemString(result, "author", item);
+            Py_DECREF(item);
         }
-        if (pDescription)
+        else
         {
-            if (retDict)
-            {
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDescription); //new ref
-                PyDict_SetItemString(result, "description", item);
-                Py_DECREF(item);
-            }
-            else
-            {
-                std::cout << "INFO:\t\t " << pDescription << "\n";
-            }
-            free(pDescription);
+            std::cout << "AUTHOR:\t " << pAuthor.toLatin1().data() << "\n";
+        }
+
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(pDescription); //new ref
+            PyDict_SetItemString(result, "description", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "INFO:\t\t " << pDescription.toLatin1().data() << "\n";
+        }
+
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(pLicense); //new ref
+            PyDict_SetItemString(result, "license", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "LICENSE:\t\t " << pLicense.toLatin1().data() << "\n";
+        }
+
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(pAbout); //new ref
+            PyDict_SetItemString(result, "about", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "ABOUT:\t\t " << pAbout.toLatin1().data() << "\n";
+        }
                 
-        }
-        if (pDetailDescription)
+        if (retDict)
         {
-            if (retDict)
-            {
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(pDetailDescription); //new ref
-                PyDict_SetItemString(result, "detaildescription", item);
-                Py_DECREF(item);
-            }
-            else
-            {
-                std::cout << "\nDETAILS:\n" << pDetailDescription << "\n";
-            }  
-            free(pDetailDescription);
+            item = PythonQtConversion::QStringToPyObject(pDetailDescription); //new ref
+            PyDict_SetItemString(result, "detaildescription", item);
+            Py_DECREF(item);
         }
+        else
+        {
+            std::cout << "\nDETAILS:\n" << pDetailDescription.toLatin1().data() << "\n";
+        }  
     }
+
+    PyObject *noneText = PyUnicode_FromString("None");
 
     switch(plugtype)
     {
@@ -1280,9 +1268,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 }
                 else if (retDict)
                 {
-                    PyObject *noneText = PyUnicode_FromString("None");
                     PyDict_SetItemString(result, "filter", noneText);
-                    Py_DECREF(noneText);
                 }
 
                 QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
@@ -1321,21 +1307,19 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 }
                 else
                 {
-                    PyObject *noneText = PyUnicode_FromString("None");
                     PyDict_SetItemString(result, "widgets", noneText);
-                    Py_DECREF(noneText);
                 }
 
             }
             else
             {
-                PyObject *noneText = PyUnicode_FromString("None");
                 PyDict_SetItemString(result, "widgets", noneText);
-                Py_DECREF(noneText);
             }
         }
         break;
     }
+
+    Py_DECREF(noneText);
 
     if (retDict > 0)
     {

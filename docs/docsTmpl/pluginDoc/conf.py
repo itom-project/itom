@@ -32,8 +32,7 @@ sys.path.append(os.path.join(thisDir,'..' + os.sep + 'sphinxext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'sphinx.ext.intersphinx']
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'sphinx.ext.intersphinx', 'itom_extension']
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')

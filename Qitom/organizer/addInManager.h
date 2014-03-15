@@ -49,11 +49,9 @@ Q_DECLARE_METATYPE(char *)
 Q_DECLARE_METATYPE(char **)
 Q_DECLARE_METATYPE(double)
 Q_DECLARE_METATYPE(double *)
-//Q_DECLARE_METATYPE(const double)
 Q_DECLARE_METATYPE(const double *)
 Q_DECLARE_METATYPE(int *)
 Q_DECLARE_METATYPE(const int *)
-//Q_DECLARE_METATYPE(int)
 Q_DECLARE_METATYPE(ito::AddInInterfaceBase *)
 Q_DECLARE_METATYPE(ito::AddInBase *)
 Q_DECLARE_METATYPE(ito::AddInBase **)
@@ -216,7 +214,7 @@ namespace ito
             const RetVal saveParamVals(ito::AddInBase *plugin);
             const RetVal loadParamVals(ito::AddInBase *plugin);
             const RetVal getInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
-            const RetVal getPlugInInfo(const QString &name, int *pluginType, int *pluginNum, char **pluginTypeString, char ** author, char ** discription, char ** detaildiscription, int * version);
+            const RetVal getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about);
             const RetVal incRef(ito::AddInBase *plugin);
             const RetVal decRef(ito::AddInBase **plugin);
 

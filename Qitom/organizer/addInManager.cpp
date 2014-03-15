@@ -789,109 +789,70 @@ namespace ito
     *   plugin is found its information about number, name ... returned. For all parameters of type char** provide the address to a char*-variable.
     *   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
     */
-    const RetVal AddInManager::getPlugInInfo(const QString &name, int *pluginType, int *pluginNum, char **pluginTypeString, char ** author, char ** description, char ** detaildescription, int *version)
+    const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about)
     {
         ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toLatin1().data());
         int found = 0;
+        ito::AddInInterfaceBase *aib = NULL;
 
+        //test actuator
         for (int n=0; n < m_addInListAct.size(); n++)
         {
-            if ((m_addInListAct[n])->objectName() == name)
+            if (QString::compare(m_addInListAct[n]->objectName(),name,Qt::CaseInsensitive) == 0)
             {
-                *pluginNum = n;
-                *pluginType = ito::typeActuator;
+                pluginNum = n;
+                pluginType = ito::typeActuator;
 
-                if (pluginTypeString)
-                    *pluginTypeString = _strdup("Actuator");
-
-                if (author)
-                {
-                    *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getAuthor()).toLatin1());
-                }
-                if (description)
-                {
-                    *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDescription()).toLatin1());
-                }
-                if (detaildescription)
-                {
-                    *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getDetailDescription()).toLatin1());
-                }
-                if (version)
-                {
-                    *version = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getVersion();
-                }
+                typeString = "Actuator";
+                aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]);
                 found = 1;
-                ret = ito::retOk;
+                break;
             }
         }
 
-        if (!found)
+        if (!found) //test dataIO
         {
             for (int n=0; n < m_addInListDataIO.size(); n++)
             {
-                QString st = (m_addInListDataIO[n])->objectName();
-                if ((m_addInListDataIO[n])->objectName() == name)
+                if (QString::compare(m_addInListDataIO[n]->objectName(),name,Qt::CaseInsensitive) == 0)
                 {
-                    *pluginNum = n;
-                    *pluginType = ito::typeDataIO;
-                    found = 1;
-                    ret = ito::retOk;
-                    if (pluginTypeString)
-                        *pluginTypeString = _strdup("DataIO");
+                    pluginNum = n;
+                    pluginType = ito::typeDataIO;
 
-                    if (author)
-                    {
-                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getAuthor()).toLatin1());
-                    }
-                    if (description)
-                    {
-                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDescription()).toLatin1());
-                    }
-                    if (detaildescription)
-                    {
-                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getDetailDescription()).toLatin1());
-                    }
-                    if (version)
-                    {
-                        *version = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getVersion();
-                    }
+                    typeString = "DataIO";
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]);
+                    found = 1;
+                    break;
                 }
             }
         }
 
-        if (!found)
+        if (!found) //test Algorithm
         {
             for (int n=0; n < m_addInListAlgo.size(); n++)
             {
-                QString st = (m_addInListAlgo[n])->objectName();
-                if ((m_addInListAlgo[n])->objectName() == name)
+                if (QString::compare(m_addInListAlgo[n]->objectName(),name,Qt::CaseInsensitive) == 0)
                 {
-                    *pluginNum = n;
-                    *pluginType = ito::typeAlgo;
-//                    found = 1;
-                    ret = ito::retOk;
+                    pluginNum = n;
+                    pluginType = ito::typeAlgo;
 
-                    if (pluginTypeString)
-                        *pluginTypeString = _strdup("Algorithm");
-
-                    if (author)
-                    {
-                        *author = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getAuthor()).toLatin1());
-                    }
-                    if (description)
-                    {
-                        *description = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDescription()).toLatin1());
-                    }
-                    if (detaildescription)
-                    {
-                        *detaildescription = _strdup(((qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getDetailDescription()).toLatin1());
-                    }
-                    if (version)
-                    {
-                        *version = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]))->getVersion();
-                    }
+                    typeString = "Algorithm";
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]);
+                    found = 1;
+                    break;
                 }
             }
+        }
+
+        if (aib)
+        {
+            author = aib->getAuthor();
+            description = aib->getDescription();
+            detaildescription =aib->getDetailDescription();
+            version = aib->getVersion();
+            license = aib->getLicenseInfo();
+            about = aib->getAboutInfo();
+            ret = ito::retOk;
         }
 
         return ret;
