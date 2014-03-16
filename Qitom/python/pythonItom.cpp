@@ -577,8 +577,8 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         else
                         {
                             resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1, false);
-                            Py_DECREF(resultmand);
                             PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
+                            Py_DECREF(resultmand);
                         }
                         
                     }
@@ -617,6 +617,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         }
                         else
                         {
+                            resultopt = ito::PrntOutParams(&(filterParams->paramsOut), false, true, -1, false);
                             PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
                             Py_DECREF(resultopt);
                         }
