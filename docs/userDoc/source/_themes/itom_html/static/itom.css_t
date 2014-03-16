@@ -63,7 +63,7 @@ dl.class dt em.property{
 
 
 /*Hinterlegung der gesamten Methoden*/
-dl.method, dl.staticmethod, dl.function{
+dl.method, dl.staticmethod, dl.function, dl.filter{
   background-color: #ffffff; /*#FBF8EF;*/
   border: 0px solid #000000;
 }
@@ -82,7 +82,7 @@ dl.attribute dt{
 }
 
 /*Hinterlegung des static- und Mehodenheaders*/
-dl.method dt, dl.staticmethod dt, dl.function dt{
+dl.method dt, dl.staticmethod dt, dl.function dt, dl.filter dt{
  	background-color: #E6E6E6; 
   border-top: 1px solid #000000; /*#B40404*/
   font-size: 13px;
