@@ -182,7 +182,8 @@ class PluginSummaryExtended(Directive):
         return []
 
 class PluginInitParams(Directive):
-    """."""
+    """puts the list with all mandatory and optional parameters for initializing the dataIO or actuator
+    plugin into the rst-code for further parsing"""
     has_content = False
     required_arguments = 0
     optional_arguments = 1
@@ -203,15 +204,13 @@ class PluginInitParams(Directive):
         textlist = ["\n"]
         
         if ("Mandatory Parameters" in pluginInfo):
-            for n in pluginInfo["Mandatory Parameters"]:
-                p = pluginInfo["Mandatory Parameters"][n]
-                text = "* **%s**: {%s}\n    %s" % (p["name"],p["type"],p["info"])
+            for p in pluginInfo["Mandatory Parameters"]:
+                text = "* **%s**: {%s} %s\n    %s" % (p["name"],p["type"],self.parseContent(p),p["info"])
                 textlist .append(text)
         
         if ("Optional Parameters" in pluginInfo):
-            for n in pluginInfo["Optional Parameters"]:
-                p = pluginInfo["Optional Parameters"][n]
-                text = "* **%s**: {%s, optional}\n    %s" % (p["name"],p["type"],p["info"])
+            for p in pluginInfo["Optional Parameters"]:
+                text = "* **%s**: {%s, optional} %s\n    %s" % (p["name"],p["type"],self.parseContent(p),p["info"])
                 textlist .append(text)
         
         textlist.append("\n")
@@ -219,7 +218,59 @@ class PluginInitParams(Directive):
         lines = statemachine.string2lines(text, tab_width, convert_whitespace=True)
         self.state_machine.insert_input(lines, source)
         return []
+    
+    def parseContent(self,param):
+        if ("min" in param and "max" in param):
+            if ("step" in param and not (param["step"] is None)):
+                content = "[%s,%s], default: %s, step: %s" % (param["min"],param["max"],param["value"],param["step"])
+            else:
+                content = "[%s,%s], default: %s" % (param["min"],param["max"],param["value"])
+        elif ("value" in param):
+            content = "default: %s" % param["value"]
+        else:
+            content = ""
+        return content
 
+class PluginFilterList(Directive):
+    """."""
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 1
+    option_spec = {"plugin":directives.unchanged_required, "overviewonly":directives.flag}
+
+    def run(self):
+        tab_width = self.options.get('tab-width', self.state.document.settings.tab_width)
+        source = self.state_machine.input_lines.source(self.lineno - self.state_machine.input_offset - 1)
+        
+        if (not "plugin" in self.options):
+            return [self.state.document.reporter.warning('option "plugin" is missing', line=self.lineno)]
+        
+        try:
+            pluginInfo = getPluginInfo(self.state.document.settings.env, self.options["plugin"])
+        except Exception:
+            return [self.state.document.reporter.warning('Error getting plugin information from plugin "%s"' % (self.options["plugin"]), line=self.lineno)]
+        
+        if (not "filter" in pluginInfo):
+            return [self.state.document.reporter.warning('given plugin is no algorithm plugin', line=self.lineno)]
+        
+        textlist = []
+        if (pluginInfo["filter"] is None):
+            textlist.append("The plugin does not contain any filters")
+        else:
+            if ("overviewonly" in self.options):
+                for f in pluginInfo["filter"]:
+                    textlist.append("#. %s" % f)
+            else:
+                for f in pluginInfo["filter"]:
+                    t = ".. py:function:: %s(...)" % f
+                    t += "\n    \n    ...\n"
+                    textlist.append(t)
+        
+        text = "\n".join(textlist)
+        lines = statemachine.string2lines(text, tab_width, convert_whitespace=True)
+        self.state_machine.insert_input(lines, source)
+        return []
+    
 
 
 def setup(app):
@@ -236,4 +287,5 @@ def setup(app):
     
     app.add_directive('pluginsummaryextended', PluginSummaryExtended)
     app.add_directive('plugininitparams', PluginInitParams)
+    app.add_directive('pluginfilterlist', PluginFilterList)
 

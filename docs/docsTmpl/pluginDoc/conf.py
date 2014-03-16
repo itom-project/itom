@@ -266,4 +266,4 @@ autosummary_generate = True
 #todo_include_todos = True
 
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}
+#intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}

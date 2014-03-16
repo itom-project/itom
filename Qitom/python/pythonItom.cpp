@@ -1268,7 +1268,8 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 }
                 else if (retDict)
                 {
-                    PyDict_SetItemString(result, "filter", noneText);
+                    Py_INCREF(Py_None);
+                    PyDict_SetItemString(result, "filter", Py_None);
                 }
 
                 QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
@@ -1307,13 +1308,10 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 }
                 else
                 {
-                    PyDict_SetItemString(result, "widgets", noneText);
+                    Py_INCREF(Py_None);
+                    PyDict_SetItemString(result, "widgets", Py_None);
                 }
 
-            }
-            else
-            {
-                PyDict_SetItemString(result, "widgets", noneText);
             }
         }
         break;

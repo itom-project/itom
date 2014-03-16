@@ -234,7 +234,6 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
 //--------------------------------------------------------------------------------------------------------------
 PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream /*= true*/)
 {
-    PyObject *p_pyDic = NULL;
     PyObject *p_pyLine = NULL;
     PyObject *item = NULL;
     QString type;
@@ -246,7 +245,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     values["values"] = QStringList();
     values["description"] = QStringList();
 
-    p_pyDic = PyDict_New(); // new reference
+    PyObject *pVector = PyTuple_New( params->size() ); // new reference
 
     for (int n = 0; n < params->size(); n++)
     {
@@ -257,35 +256,35 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             switch(((*params)[n]).getType())
             {
                 case ito::ParamBase::Char & ito::paramTypeMask:
-                    type = ("char");
+                    type = ("int (char)");
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
-                    type = ("int");
+                    type = ("int (int)");
                 break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    type = ("double");
+                    type = ("float (double)");
                 break;
 
                 case ito::ParamBase::String & ito::paramTypeMask:
-                    type = ("string (char*)");
+                    type = ("str (char*)");
                 break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    type = ("char*");
+                    type = ("int seq. (char*)");
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
-                    type = ("int*");
+                    type = ("int seq. (int*)");
                 break;
 
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-                    type = ("double*");
+                    type = ("float seq. (double*)");
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef) & ito::paramTypeMask):
-                    type = ("Plugin");
+                    type = ("dataIO|actuator");
                 break;
 
                 case (ito::ParamBase::Pointer & ito::paramTypeMask):
@@ -309,7 +308,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 break;
 
                 default:
-                    type = ("type error");
+                    type = ("unknown type");
                 break;
             }
 
@@ -350,11 +349,12 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     case ito::ParamBase::Int & ito::paramTypeMask:
                         {
                         const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>((*params)[n].getMeta());
-                        int mi, ma;
+                        int mi, ma, step;
                         if (intMeta)
                         {
                             mi = intMeta->getMin();
                             ma = intMeta->getMax();
+                            step = intMeta->getStepSize();
                         }
                         else
                         {
@@ -363,16 +363,25 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                             {
                                 mi = static_cast<int>(charMeta->getMin());
                                 ma = static_cast<int>(charMeta->getMax());
+                                step = static_cast<int>(charMeta->getStepSize());
                             }
                             else
                             {
                                 mi = std::numeric_limits<int>::min();
                                 ma = std::numeric_limits<int>::max();
+                                step = 1;
                             }
                         }
                         int va =  ((*params)[n]).getVal<int>();
 
-                        temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+                        if (step == 1)
+                        {
+                            temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+                        }
+                        else
+                        {
+                            temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
+                        }
                         values["values"].append(temp);
 
                         item = PyLong_FromLong(mi);
@@ -384,26 +393,38 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         item = PyLong_FromLong(va);
                         PyDict_SetItemString(p_pyLine, "value", item);
                         Py_DECREF(item);
+                        item = PyLong_FromLong(step);
+                        PyDict_SetItemString(p_pyLine, "step", item);
+                        Py_DECREF(item);
                         }
                     break;
 
                     case ito::ParamBase::Double & ito::paramTypeMask:
                         {
                         const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>((*params)[n].getMeta());
-                        double mi, ma;
+                        double mi, ma, step;
                         if (dblMeta)
                         {
                             mi = dblMeta->getMin();
                             ma = dblMeta->getMax();
+                            step = dblMeta->getStepSize();
                         }
                         else
                         {
                             ma = std::numeric_limits<double>::max();
                             mi = -ma;
+                            step = 0.0;
                         }
                         double va =  ((*params)[n]).getVal<double>();
 
-                        temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+                        if (step == 0.0)
+                        {
+                            temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+                        }
+                        else
+                        {
+                            temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
+                        }
                         values["values"].append(temp);
 
                         item = PyFloat_FromDouble(mi);
@@ -416,6 +437,18 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 
                         item = PyFloat_FromDouble(va);
                         PyDict_SetItemString(p_pyLine, "value", item);
+                        Py_DECREF(item);
+
+                        if (step != 0.0)
+                        {
+                            item = PyFloat_FromDouble(step);
+                        }
+                        else
+                        {
+                            Py_INCREF(Py_None);
+                            item = Py_None;
+                        }
+                        PyDict_SetItemString(p_pyLine, "step", item);
                         Py_DECREF(item);
                         }
                     break;
@@ -480,8 +513,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 Py_DECREF(item);
             }
             
-            PyDict_SetItemString(p_pyDic, (*params)[n].getName(), p_pyLine);    // Add reference
-            Py_DECREF(p_pyLine);    // Reduce reference
+            PyTuple_SetItem(pVector, n, p_pyLine); //steals reference to p_pyLine
         }
     }
 
@@ -584,7 +616,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         }
     }
 
-    return p_pyDic;
+    return pVector;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

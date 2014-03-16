@@ -415,6 +415,7 @@ namespace ito
                         {
                             int i = 0;
                             const char* oldName = ito_AddInInterface_OldVersions[0];
+                            
                             while(oldName != NULL)
                             {
                                 if (obj->qt_metacast(oldName) != NULL)
@@ -728,7 +729,7 @@ namespace ito
             case ito::typeActuator:
                 for (int n=0; n < m_addInListAct.size(); n++)
                 {
-                    if ((m_addInListAct[n])->objectName() == name)
+                    if (QString::compare(m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                     {
                         *pluginNum = n;
                         paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getInitParamsMand();
@@ -742,8 +743,7 @@ namespace ito
             case ito::typeDataIO:
                 for (int n=0; n < m_addInListDataIO.size(); n++)
                 {
-                    QString st = (m_addInListDataIO[n])->objectName();
-                    if ((m_addInListDataIO[n])->objectName() == name)
+                    if (QString::compare(m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                     {
                         *pluginNum = n;
                         paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getInitParamsMand();
@@ -757,8 +757,7 @@ namespace ito
             case ito::typeAlgo:
                 for (int n=0; n < m_addInListAlgo.size(); n++)
                 {
-                    QString st = (m_addInListAlgo[n])->objectName();
-                    if ((m_addInListAlgo[n])->objectName() == name)
+                    if (QString::compare(m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                     {
                         *pluginNum = n;
                         ret = ito::retOk;
@@ -837,7 +836,7 @@ namespace ito
                     pluginType = ito::typeAlgo;
 
                     typeString = "Algorithm";
-                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]);
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]);
                     found = 1;
                     break;
                 }
