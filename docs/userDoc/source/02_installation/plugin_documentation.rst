@@ -19,7 +19,7 @@ be written in the so called reStructured-Text format rst (see http://sphinx-doc.
 
 2. The file **CMakeLists.txt** of the specific plugin must contain the following line in order to register the rst-file as plugin documentation file::
     
-    PLUGIN_DOCUMENTATION(${target_name} <filenameOfTheRstFile>) #the filename must not contain the suffix *.rst*.
+    PLUGIN_DOCUMENTATION(${target_name} <filenameOfTheRstFile>) #the filename must not contain the suffix .rst.
 
 3. If the plugin is build, its build folder with have a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
 
@@ -28,7 +28,7 @@ If these requirements are given, start |itom| and execute the script **create_pl
 Then select the *.cfg-file describing the plugin documentation in its specific build folder.
 
 In order to simultaneously create the documentations of many plugins, execute **create_all_plugin_docs.py** and indicate the build folder that contains the build-subfolders
-of many plugins. These subfolders are searched for appropriate *.cfg files and all sub-documentations are created.
+of many plugins. These subfolders are searched for appropriate \*.cfg files and all sub-documentations are created.
     
     
 plugin documentation source files
