@@ -16,9 +16,10 @@ Required:
 * **Qt 4** (libqtcore4, libqt4-dev, libqt4-...)
 * Editor **QScintilla** (libqscintilla2-8 or similar, libqscintilla2-dev)
 * **OpenCV** (libopencv-core2.3 or libopencv-core2.4, libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
-* **Python3** (python3, python3-dbg)
+* **Python3** (python3, python3-dev, python3-dbg)
 * **Numpy** (python3-numpy, python3-numpy-dbg)
 * **git** (git)
+* **Cmake** (cmake, cmake-gui)
 
 Recommended (optional):
 
@@ -29,6 +30,14 @@ Recommended (optional):
 * Any git client (e.g. SmartGit (requires java) or git-cola)
 * glew (libglew1.6-dev or something similar, required by some plugins)
 * fftw (libfftw3-dev or something similar, required by some plugins)
+
+for Ubuntu 12.04 based distributions the following command should install all necessary packages and its dependencies:
+
+.. code-block:: bash
+
+	sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
+
+
 
 Recommended folder structure
 -----------------------------
