@@ -987,7 +987,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         return NULL;
     }
 #else //only python 3.3 or higher has the 'p' (bool, int) type string
-    int output = 0; //this must be int, not bool!!! (else crash)
+    int retDict = 0; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &retDict))
     {
