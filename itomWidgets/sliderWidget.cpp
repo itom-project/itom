@@ -332,8 +332,10 @@ void SliderWidget::startChanging()
     {
     return;
     }
-  d->Changing = true;
+  //itom bugfix: d->ValueBeforeChange will never be changed if d->Changing is set to true before.
+  //bugfix: the two following lines have been swapped
   d->ValueBeforeChange = this->value();
+  d->Changing = true;
 }
 
 // --------------------------------------------------------------------------

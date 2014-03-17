@@ -508,9 +508,11 @@ void RangeWidget::startChanging()
     {
     return;
     }
-  d->Changing = true;
+  //itom bugfix: d->MinimumValueBeforeChange and d->MaximumValueBeforeChange will never be changed if d->Changing is set to true before.
+  //bugfix: the two following lines have been swapped
   d->MinimumValueBeforeChange = this->minimumValue();
   d->MaximumValueBeforeChange = this->maximumValue();
+  d->Changing = true;
 }
 
 // --------------------------------------------------------------------------
