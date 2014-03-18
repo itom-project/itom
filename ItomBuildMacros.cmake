@@ -5,6 +5,7 @@
 #########################################################################
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
+SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
 
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
@@ -80,6 +81,148 @@ MACRO (BUILD_PARALLEL_LINUX targetName)
       set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
   endif(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO (BUILD_PARALLEL_LINUX)
+
+
+MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
+    #call this macro to find the qt4 package (either version qt4 or qt5).
+    #
+    # call example FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
+    #
+    # this will detect Qt with all given packages (packages given as Qt5 package names, Qt4 is automatically
+    # back-translated) and automoc for Qt5 is set to ON (ignored for Qt4)
+    #
+    # If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected and if not found Qt4 is detected
+    # Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt4' or 'Qt5'
+    #
+    # For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0
+    #
+    SET(Components ${ARGN}) #all arguments after SetAutomoc are components for Qt
+
+    IF(${BUILD_QTVERSION} STREQUAL "Qt4")
+        SET(DETECT_QT5 FALSE)
+    ELSEIF(${BUILD_QTVERSION} STREQUAL "Qt5")
+        if (CMAKE_VERSION VERSION_GREATER 2.8.7)
+            if (POLICY CMP0020)
+                cmake_policy(SET CMP0020 NEW)
+            endif (POLICY CMP0020)
+        else ()
+            MESSAGE(SEND_ERROR "with cmake <= 2.8.7 Qt5 cannot be detected.")
+        endif ()
+        SET(DETECT_QT5 TRUE)
+    ELSEIF(${BUILD_QTVERSION} STREQUAL "auto")
+        if (CMAKE_VERSION VERSION_GREATER 2.8.7)
+            if (POLICY CMP0020)
+                cmake_policy(SET CMP0020 NEW)
+            endif (POLICY CMP0020)
+            SET(DETECT_QT5 TRUE)
+        else ()
+            MESSAGE(STATUS "with cmake <= 2.8.7 no Qt4 auto-detection is possible. Search for Qt4")
+            SET(DETECT_QT5 FALSE)
+        endif ()
+    ELSE()
+        MESSAGE(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt4 or Qt5 allowed")
+    ENDIF()
+    set (QT5_FOUND FALSE)
+        
+    IF (DETECT_QT5)
+        #TRY TO FIND QT4
+        find_package(Qt5 COMPONENTS Core QUIET)
+        
+        if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+	        #maybe Qt5.0 is installed that does not support the overall FindQt5 script
+            find_package(Qt5Core QUIET)
+            IF (NOT Qt5Core_FOUND)
+                IF(${BUILD_QTVERSION} STREQUAL "auto")
+                    SET(DETECT_QT5 FALSE)
+                ELSE()
+                    MESSAGE(SEND_ERROR "Qt5 could not be found on this computer")
+                ENDIF()
+            ELSE (NOT Qt5Core_FOUND)
+                set(QT5_FOUND TRUE)
+                
+                if (WIN32)
+                    find_package(WindowsSDK REQUIRED)
+                    set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+                    set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+                endif (WIN32)
+                
+                set(QT5_FOUND TRUE)
+                
+                IF (${SET_AUTOMOC})
+                    set(CMAKE_AUTOMOC ON)
+                ELSE (${SET_AUTOMOC})
+                    set(CMAKE_AUTOMOC OFF)
+                ENDIF (${SET_AUTOMOC})
+                
+                FOREACH (comp ${Components})
+                    message(STATUS "FIND_PACKAGE FOR COMPONENT ${comp}")
+                    find_package(Qt5${comp} REQUIRED)
+                    IF (${comp} STREQUAL "Widgets")
+                        add_definitions(${Qt5Widgets_DEFINITIONS})
+                    ENDIF ()
+                ENDFOREACH (comp)
+            ENDIF (NOT Qt5Core_FOUND)
+            
+        else (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+            #QT5 could be found with component based find_package command
+            if (WIN32)
+              find_package(WindowsSDK REQUIRED)
+              set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+              set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+            endif (WIN32)
+            
+            find_package(Qt5 COMPONENTS ${Components} REQUIRED)
+            set(QT5_FOUND TRUE)
+            
+            IF (${SET_AUTOMOC})
+                set(CMAKE_AUTOMOC ON)
+            ELSE (${SET_AUTOMOC})
+                set(CMAKE_AUTOMOC OFF)
+            ENDIF (${SET_AUTOMOC})
+            
+            FOREACH (comp ${Components})
+                IF (${comp} STREQUAL "Widgets")
+                    add_definitions(${Qt5Widgets_DEFINITIONS})
+                ENDIF ()
+            ENDFOREACH (comp)
+        endif (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+        
+    ENDIF (DETECT_QT5)
+
+    if (NOT DETECT_QT5)
+        #TRY TO FIND QT4
+        SET(QT5_FOUND FALSE)
+        find_package(Qt4 REQUIRED)
+        SET (QT_USE_CORE TRUE)
+        
+        FOREACH (comp ${Components})
+            IF (${comp} STREQUAL "OpenGL")
+                SET (QT_USE_OPENGL TRUE)
+            ELSEIF (${comp} STREQUAL "Core")
+                SET (QT_USE_CORE TRUE)
+            ELSEIF (${comp} STREQUAL "Designer")
+                SET (QT_USE_DESIGNER TRUE)
+            ELSEIF (${comp} STREQUAL "Xml")
+                SET (QT_USE_XML TRUE)
+            ELSEIF (${comp} STREQUAL "Svg")
+                SET (QT_USE_SVG TRUE)
+            ELSEIF (${comp} STREQUAL "Sql")
+                SET (QT_USE_SQL TRUE)
+            ELSEIF (${comp} STREQUAL "Network")
+                SET (QT_USE_NETWORK TRUE)
+            ELSEIF (${comp} STREQUAL "UiTools")
+            ELSEIF (${comp} STREQUAL "Widgets")
+                SET (QT_USE_GUI TRUE)
+            ELSEIF (${comp} STREQUAL "PrintSupport")
+            ELSEIF (${comp} STREQUAL "LinguistTools")
+            ELSE ()
+                message (SEND_ERROR "Qt component ${comp} unknown")
+            ENDIF ()
+        ENDFOREACH (comp)
+        
+        INCLUDE(${QT_USE_FILE})
+    endif (NOT DETECT_QT5)
+ENDMACRO (FIND_PACKAGE_QT)
 
 
 ###########################################################################

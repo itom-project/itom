@@ -31,35 +31,11 @@ ELSE(BUILD_ITOMLIBS_SHARED)
                                                #published with void** only one (!) time. if this lib is statically linked to itom, it is already
                                                #defined within itom and must not be defined in this lib but with extern void**. If this lib is
                                                #shared, it also needs to be defined there.
-    
 ENDIF(BUILD_ITOMLIBS_SHARED)
     
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set (QT5_FOUND FALSE)
-if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if (POLICY CMP0020)
-        cmake_policy(SET CMP0020 NEW)
-    endif (POLICY CMP0020)
-    
-    find_package(Qt5 COMPONENTS Core QUIET)
-    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-	if (WIN32)
-	  find_package(WindowsSDK REQUIRED)
-	  set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
-	  set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-	endif (WIN32)
-        find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-        set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC ON)
-    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
-if (NOT QT5_FOUND)
-    find_package(Qt4 REQUIRED)
-endif (NOT QT5_FOUND)
-
-
+FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 IF (BUILD_UNICODE)
@@ -77,7 +53,6 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 
 INCLUDE_DIRECTORIES( 
-#    ${QT_QTCORE_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${OpenCV_DIR}/include
@@ -87,10 +62,6 @@ LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${OpenCV_DIR}/lib
 )
-
-IF (NOT QT5_FOUND)
-    INCLUDE(${QT_USE_FILE})
-ENDIF (NOT QT5_FOUND)
 
 set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
@@ -141,12 +112,9 @@ add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQ
 
 IF (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+    qt5_use_modules(${target_name} Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-ENDIF (QT5_FOUND)
-
-IF (QT5_FOUND)
-    qt5_use_modules(${target_name} Widgets Gui Xml)
 ENDIF (QT5_FOUND)
 
 # COPY SECTION
