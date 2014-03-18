@@ -114,7 +114,15 @@ private:
     QMutex fileSystemWatcherMutex;
 
     //!< marker handling
-    QList<QPair<int,int>> bookmarkErrorHandles;
+    struct bookmarkErrorEntry
+    {
+        int handle;
+        int type;
+        QString errorMessage;
+        QString errorComment;
+        int errorPos;
+    };
+    QList<bookmarkErrorEntry> bookmarkErrorHandles;
     int syntaxErrorHandle;
 
     std::list<QPair<int,int> > breakPointMap; //!< <int bpHandle, int lineNo>
@@ -153,8 +161,11 @@ private:
     int unnamedNumber;
 
     bool pythonBusy; //!< true: python is executing or debugging a script, a command...
+    bool m_pythonExecutable;
 
     bool canCopy;
+
+    bool m_syntaxCheckerEnabled;
 
     static const QString lineBreak;
     static int unnamedAutoIncrement;
@@ -168,7 +179,9 @@ signals:
 
 public slots:
     void menuToggleBookmark();
-    void createDummy(int line);
+    void checkSyntax();
+    void syntaxCheckResult(QString a, QString b);
+    void errorListChange(QStringList errorList);
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();

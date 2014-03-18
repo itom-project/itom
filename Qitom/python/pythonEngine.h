@@ -85,6 +85,7 @@
 #include <qstringlist.h>
 #include <qqueue.h>
 #include <qset.h>
+#include <qpointer.h>
 
 
 /* definition and macros */
@@ -260,7 +261,7 @@ public slots:
     void pythonInterruptExecution() const;
     void pythonDebugCommand(tPythonDbgCmd cmd);
 
-    void pythonSyntaxCheck(const QString &code);
+    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 

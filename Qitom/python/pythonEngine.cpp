@@ -130,6 +130,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QStringList> >("QSharedPointer<QStringList>");
     qRegisterMetaType<QSharedPointer<QVariantMap> >("QSharedPointer<QVariantMap>");
     qRegisterMetaType<QSharedPointer<QObject*> >("QSharedPointer<QObject*>");
+    qRegisterMetaType<QPointer<QObject> >("QPointer<QObject>");
     qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>"); 
     qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int>>"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
     qRegisterMetaType<PyObject*>("PyObject*");
@@ -1302,35 +1303,40 @@ RetVal PythonEngine::debugString(const char *command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonSyntaxCheck(const QString &code)
+void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
 {
     if (m_pyModSyntaxCheck)
     {
         PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", code.toLatin1().data());
 
-        if (result && PyTuple_Check(result) && PyTuple_Size(result) >= 2)
+        if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {
             QString unexpectedErrors;
             QString flakes;
 
             bool ok;
-            unexpectedErrors = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,0), false, ok);
+            unexpectedErrors = PythonQtConversion::PyObjGetString( PyList_GetItem(result,0), false, ok);
             if (!ok)
             {
                 unexpectedErrors = "<<error>>";
             }
 
-            flakes = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,1), false, ok);
+            flakes = PythonQtConversion::PyObjGetString( PyList_GetItem(result,1), false, ok);
             if (!ok)
             {
                 flakes = "<<error>>";
             }
 
-            QObject *s = sender();
+            QObject *s = sender.data();
             if (s)
             {
                 QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
             }
+        }
+        else if (!result)
+        {
+            std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
+            PyErr_Print();
         }
 
         Py_XDECREF(result);

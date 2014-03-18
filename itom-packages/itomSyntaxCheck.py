@@ -23,5 +23,5 @@ class ItomReporter():
 def check(codestring):
     from frosted import api
     reporter = ItomReporter()
-    api.check("code", filename, reporter = reporter)
+    api.check(codestring, "code", reporter = reporter)
     return reporter.results()

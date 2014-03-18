@@ -148,25 +148,45 @@
      <property name="title">
       <string>End-of-line (EOL) mode</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioEOL3">
+          <property name="text">
+           <string>Mac</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioEOL1">
+          <property name="text">
+           <string>Windows</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioEOL2">
+          <property name="text">
+           <string>Unix</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Python Syntax-Checker</string>
+     </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QRadioButton" name="radioEOL1">
+       <widget class="QCheckBox" name="checkSyntaxChecker">
         <property name="text">
-         <string>Windows</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="radioEOL2">
-        <property name="text">
-         <string>Unix</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="radioEOL3">
-        <property name="text">
-         <string>Mac</string>
+         <string>enable Syntax-Checker (uses Python-Module &quot;frosted&quot;)</string>
         </property>
        </widget>
       </item>
