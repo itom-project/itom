@@ -38,6 +38,7 @@
 #else
 #include <qprintpreviewdialog.h>
 #endif
+#include <qtooltip.h>
 
 namespace ito 
 {
