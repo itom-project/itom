@@ -25,7 +25,7 @@ def evaluate():
 
 
 #open camera (make it before you start this script)
-cam = dataIO("OpenCVGrabber")
+cam = dataIO("OpenCVGrabber", colorMode = "gray")
 #cam = dataIO("FileGrabber","*.tif","samples",8,2)
 
 #start camera

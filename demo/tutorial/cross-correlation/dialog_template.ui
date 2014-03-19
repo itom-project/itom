@@ -139,17 +139,14 @@
      </item>
     </layout>
    </widget>
-   <widget class="itom2DGVFigure" name="plotLive">
+   <widget class="GraphicViewPlot" name="plotLive">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>60</y>
-      <width>631</width>
-      <height>281</height>
+      <x>40</x>
+      <y>10</y>
+      <width>641</width>
+      <height>341</height>
      </rect>
-    </property>
-    <property name="toolbarVisible">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -167,14 +164,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>itom2DGVFigure</class>
-   <extends>QMainWindow</extends>
-   <header>itom2DGVFigure.h</header>
-  </customwidget>
-  <customwidget>
    <class>Itom2dQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom2dqwtplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GraphicViewPlot</class>
+   <extends>QMainWindow</extends>
+   <header>graphicViewPlot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
