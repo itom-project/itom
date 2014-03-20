@@ -39,6 +39,7 @@
 #include <qprintpreviewdialog.h>
 #endif
 #include <qtooltip.h>
+#include <qtimer.h>
 
 namespace ito 
 {
@@ -57,7 +58,8 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     contextMenuLine(-1), 
     pythonBusy(false), 
     m_pythonExecutable(true),
-    canCopy(false)
+    canCopy(false),
+    m_syntaxTimer(NULL)
 {
     filename = QString();
 
@@ -67,6 +69,10 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
+
+    m_syntaxTimer = new QTimer(this);
+    connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
+    m_syntaxTimer->setInterval(1000);
 
     initEditor();
 
@@ -107,7 +113,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
             }
 
         }
-    }
+    }    
 
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -225,11 +231,20 @@ void ScriptEditorWidget::loadSettings()
         setWhitespaceVisibility(QsciScintilla::WsInvisible);
     }
 
+    // SyntaxChecker
     m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
-    if (m_syntaxCheckerEnabled == false)
+    m_syntaxCheckerIntervall = (int)(settings.value("syntaxIntervall", 1).toDouble()*1000);
+    m_syntaxTimer->stop();
+    m_syntaxTimer->setInterval(m_syntaxCheckerIntervall);
+    if (m_syntaxCheckerEnabled)
+    { // empy call: all bugs disappear
+        checkSyntax();
+    }
+    else
     {
         errorListChange(QStringList());
     }
+
     AbstractPyScintillaWidget::loadSettings();
 }
 
@@ -994,7 +1009,6 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 }
 
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< Syntax Checker
 void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
@@ -1040,8 +1054,8 @@ void ScriptEditorWidget::errorListChange(QStringList errorList)
         it = bookmarkErrorHandles.begin();
         while (it != bookmarkErrorHandles.end())
         {
-            if (line == markerLine(it->handle)+1)
-            { // this entry exists!, has to be bookmark, so make it 3
+            if (line == markerLine(it->handle) + 1 && it->type == 1)
+            { // this entry exists and is a bookmark, so make it 3 (BM & Err)
                 markerDeleteHandle(it->handle);
                 it->type = 3;
                 it->handle = markerAdd(line-1, markBookmarkSyntaxError);
@@ -1073,9 +1087,16 @@ void ScriptEditorWidget::checkSyntax()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::updateSyntaxCheck()
+{
+    m_syntaxTimer->stop();
+    checkSyntax();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::event (QEvent * event)
 { // This function is called when staying over an error icon to display the hint
-    if (event->type() == QEvent::ToolTip && !QToolTip::isVisible())
+    if (event->type() == QEvent::ToolTip)
     {
         //see http://www.riverbankcomputing.com/pipermail/qscintilla/2008-November/000381.html
         QHelpEvent *evt = static_cast<QHelpEvent*>(event);
@@ -1106,6 +1127,7 @@ bool ScriptEditorWidget::event (QEvent * event)
     }
     return QsciScintilla::event(event);
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
@@ -1681,10 +1703,10 @@ void ScriptEditorWidget::nrOfLinesChanged()
         }
     }
 
-    // SyntaxCheck
+    // SyntaxCheck   
     if (m_pythonExecutable && m_syntaxCheckerEnabled)
     {
-        checkSyntax();
+        m_syntaxTimer->start();
     }
 }
 
