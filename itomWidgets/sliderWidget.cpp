@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 //#include <QWeakPointer>
 #include <QPointer>
+#include <QDoubleSpinBox>
 
 // CTK includes
 #include "popupWidget.h"
@@ -563,6 +564,7 @@ void SliderWidget::setTracking(bool enable)
 {
   Q_D(SliderWidget);
   d->Tracking = enable;
+  d->SpinBox->spinBox()->setKeyboardTracking(enable);
 }
 
 // -------------------------------------------------------------------------
