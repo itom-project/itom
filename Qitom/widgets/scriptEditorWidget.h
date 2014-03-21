@@ -33,6 +33,7 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
+
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprinter.h>
 #else
@@ -125,6 +126,11 @@ private:
     QList<bookmarkErrorEntry> bookmarkErrorHandles;
     int syntaxErrorHandle;
 
+    bool m_syntaxCheckerEnabled;
+    int m_syntaxCheckerIntervall;
+    QTimer *m_syntaxTimer;
+    int m_lastTipLine;
+
     std::list<QPair<int,int> > breakPointMap; //!< <int bpHandle, int lineNo>
 
     unsigned int markBreakPoint;
@@ -164,8 +170,6 @@ private:
     bool m_pythonExecutable;
 
     bool canCopy;
-
-    bool m_syntaxCheckerEnabled;
 
     static const QString lineBreak;
     static int unnamedAutoIncrement;
@@ -212,6 +216,8 @@ public slots:
     void breakPointAdd(BreakPointItem bp, int row);
     void breakPointDelete(QString filename, int lineNo, int pyBpNumber);
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
+
+    void updateSyntaxCheck();
 
     void print();
 

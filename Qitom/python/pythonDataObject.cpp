@@ -5000,8 +5000,11 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char &typekind, int &itemsi
         typekind = 'c';
         itemsize = sizeof(complex128);
         break;
+    case ito::tRGBA32:
+        return RetVal(retError, 0, "rgba32 cannot be converted to a numpy type");
+        break;
     default:
-        return RetVal(retError);
+        return RetVal(retError, 0, "type conversion failed");
     }
 
     return RetVal(retOk);
@@ -5226,7 +5229,18 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
         return NULL;
     }
 
-    parseTypeNumber(selfDO->getType(), inter->typekind, inter->itemsize);
+    RetVal ret = parseTypeNumber(selfDO->getType(), inter->typekind, inter->itemsize);
+    if (ret.containsError())
+    {
+        DELETE_AND_SET_NULL(inter)
+        selfDO->unlock();
+        if (ret.errorMessage())
+        {
+            return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+        }
+        return PyErr_Format(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+    }
+
 #if (NPY_FEATURE_VERSION < 0x00000007)
     inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)
 #else
@@ -5303,10 +5317,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         selfDO->lockRead();
     }*/
 
-    PyObject *retDict = PyDict_New();
-    item = PyLong_FromLong(3);
-    PyDict_SetItemString(retDict, "version", item);
-    Py_DECREF(item);
+    
 
     int itemsize;
     char typekind;
@@ -5329,7 +5340,22 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     //    return NULL;
     //}
 
-    parseTypeNumber(selfDO->getType(), typekind, itemsize);
+    RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
+    if (ret.containsError())
+    {
+        selfDO->unlock();
+        if (ret.errorMessage())
+        {
+            return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+        }
+        return PyErr_Format(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+    }
+
+    PyObject *retDict = PyDict_New();
+    item = PyLong_FromLong(3);
+    PyDict_SetItemString(retDict, "version", item);
+    Py_DECREF(item);
+
     typekind2[0]=typekind;
 
     PyObject *typestr = PyUnicode_FromFormat("|%s%d", &typekind2, itemsize);
