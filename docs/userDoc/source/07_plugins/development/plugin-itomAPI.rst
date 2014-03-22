@@ -24,8 +24,21 @@ file **apiFunctionsGraphInc.h**.
 Initialization
 --------------
 
-If your plugin or designer plugin widget is derived from classes **AddInBase** or **AbstractFigure**, which is usually the case,
-you can use the **API** methods without further steps or includes.
+If your plugin or designer plugin widget is derived from classes **AddInBase** or **AbstractFigure**, which is usually the case, you need to do the
+following steps in order to use the **API** methods:
+
+Write
+
+.. code-block:: c++
+    
+    #define ITOM_IMPORT_API
+    #define ITOM_IMPORT_PLOTAPI
+
+at the top of the main *cpp*-file of your plugin. This definition must be before the include of the corresponding header-file and any other includes.
+
+The **API** methods then become accessible through the files **apiFunctionsInc.h** or **apiFunctionsGraphInc.h** included in the SDK of |itom|. These files
+already are included in the file **addInInterface.h**. If this is included in your source file, you don't need to include the other header files. If you use
+**API** functions for instance in a dialog or dock widget class include **apiFunctionsInc.h** or **apiFunctionsGraphInc.h** one more time.
 
 When you are programming a plugin, derived from **AddInBase**, you can access any **API**-method at any time in your plugin (even in the constructor).
 When programming a designer plugin widget that is handled as plotting plugin (derived from **AbstractFigure**) the APIs only become valid after the
