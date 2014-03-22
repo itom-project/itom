@@ -32,6 +32,7 @@
 #include <qdebug.h>
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
+#include "abstractAddInDockWidget.h"
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -245,7 +246,25 @@ namespace ito
         m_dockWidget->setFeatures(features);
         m_dockWidget->setAllowedAreas(allowedAreas);
 
-        if (content) m_dockWidget->setWidget(content);
+        if (content) 
+        {
+            m_dockWidget->setWidget(content);
+            content->setParent(m_dockWidget);
+        }
+    }
+
+    void AddInBase::setIdentifier(const QString &identifier)
+    {
+        m_identifier = identifier;
+
+        if (m_dockWidget)
+        {
+            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(m_dockWidget->widget());
+            if (adw)
+            {
+                QMetaObject::invokeMethod(adw, "identifierChanged", Q_ARG(const QString &, identifier));
+            }
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

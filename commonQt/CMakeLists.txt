@@ -11,7 +11,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
- 
+   
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)
@@ -67,6 +67,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
@@ -90,6 +91,7 @@ ENDIF(NOT QT5_FOUND)
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp

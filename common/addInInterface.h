@@ -475,6 +475,9 @@ namespace ito
             // destructor (doc in source)
             virtual ~AddInBase();
 
+            //! sets the identifier of the plugin. The slot AbstractAddInDockWidget::identifierChanged is invoked if a corresponding dock widget is available.
+            void setIdentifier(const QString &identifier);
+
             //doc in source
             void createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas = Qt::AllDockWidgetAreas, QWidget *content = NULL);
 
