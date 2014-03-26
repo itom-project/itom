@@ -60,6 +60,46 @@
             public: \
                 //.
 
+//! macro to create a new plugin instance in the method getAddInInst of any plugin
+/*!
+    Insert this macro at the first line of the method getAddInInst of your plugin.
+    Pass the name of the corresponding plugin class (not its interface class)
+*/
+#define NEW_PLUGININSTANCE(PluginClass) \
+    PluginClass* newInst = new PluginClass(); \
+    newInst->setBasePlugin(this); \
+    *addInInst = qobject_cast<ito::AddInBase*>(newInst); \
+    m_InstList.append(*addInInst);
+
+//! macro to delete a plugin instance in the method closeThisInst of any plugin
+/*!
+    Insert this macro at the first line of the method closeThisInst of your plugin.
+    Pass the name of the corresponding plugin class (not its interface class).
+    This macro is the opposite of NEW_PLUGININSTANCE
+*/
+#define REMOVE_PLUGININSTANCE(PluginClass) \
+   if (*addInInst) \
+   { \
+      delete ((PluginClass *)*addInInst); \
+      m_InstList.removeOne(*addInInst); \
+   } 
+
+//! macro to set the pointer of the plugin to all its defined filters and widgets
+/*!
+    Insert this macro right after NEW_PLUGININSTANCE in all plugins that are
+    algo plugins.
+*/
+#define REGISTER_FILTERS_AND_WIDGETS \
+    foreach(ito::AddInAlgo::FilterDef *f, newInst->m_filterList) \
+    { \
+        f->m_pBasePlugin = this; \
+    } \
+    foreach(ito::AddInAlgo::AlgoWidgetDef *w, newInst->m_algoWidgetList) \
+    { \
+        w->m_pBasePlugin = this; \
+    }
+
+
 namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------

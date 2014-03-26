@@ -7,6 +7,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
 SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
 
+
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
 ELSE(BUILD_OPENCV_SHARED)
@@ -125,7 +126,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     set (QT5_FOUND FALSE)
         
     IF (DETECT_QT5)
-        #TRY TO FIND QT4
+        #TRY TO FIND QT5
         find_package(Qt5 COMPONENTS Core QUIET)
         
         if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
@@ -222,7 +223,38 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
         
         INCLUDE(${QT_USE_FILE})
     endif (NOT DETECT_QT5)
+    
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
 ENDMACRO (FIND_PACKAGE_QT)
+
+
+MACRO (PLUGIN_TRANSLATION target force_translation_update existing_translation_files languages files_to_translate)
+    SET(TRANSLATIONS_FILES)
+    SET(TRANSLATION_OUTPUT_FILES)
+
+    if (${force_translation_update})
+        if (QT5_FOUND)
+            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        else (QT5_FOUND)
+            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        endif (QT5_FOUND)
+        
+        add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target} _${target}_translation)
+        
+        if (QT5_FOUND)
+            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+        else (QT5_FOUND)
+            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+        endif (QT5_FOUND)
+    else (${force_translation_update})
+        if (QT5_FOUND)
+            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+        else (QT5_FOUND)
+            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+        endif (QT5_FOUND)
+    endif (${force_translation_update})
+ENDMACRO (PLUGIN_TRANSLATION)
 
 
 ###########################################################################

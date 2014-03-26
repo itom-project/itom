@@ -11,7 +11,7 @@
 # The following are set after configuration is done: 
 #  
 #  ITOM_SDK_FOUND
-#  ITOM_SDK_LIBS
+#  ITOM_SDK_LIBRARIES
 #  ITOM_SDK_INCLUDE_DIR
 #
 #
@@ -102,10 +102,23 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
             endif()
             
             #Add to the general list
-            if(ITOM_SDK_${__ITOMLIB}_LIBRARY)
-                    set(ITOM_SDK_LIBS ${ITOM_SDK_LIBS} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
-            endif(ITOM_SDK_${__ITOMLIB}_LIBRARY)
+            #if(ITOM_SDK_${__ITOMLIB}_LIBRARY)
+            #        set(ITOM_SDK_LIBS ${ITOM_SDK_LIBS} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
+            #endif(ITOM_SDK_${__ITOMLIB}_LIBRARY)
             
+    endforeach(__ITOMLIB)
+    
+    if(NOT ITOM_SDK_FIND_COMPONENTS)
+        set(ITOM_SDK_FIND_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS})
+    endif(NOT ITOM_SDK_FIND_COMPONENTS)
+    
+    SET (ITOM_SDK_LIBRARIES)
+    foreach(__ITOMLIB ${ITOM_SDK_FIND_COMPONENTS})
+        if (ITOM_SDK_${__ITOMLIB}_LIBRARY)
+            set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
+        else()
+            message(SEND_ERROR "Required component ${__ITOMLIB} could not be found in itom SDK")
+        endif()
     endforeach(__ITOMLIB)
 
 
