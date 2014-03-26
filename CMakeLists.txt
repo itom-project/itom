@@ -17,10 +17,6 @@ else (BUILD_TARGET64)
 endif (BUILD_TARGET64) 
  
 
-#if (USE_QT5)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#endif (USE_QT5)
-
 ADD_SUBDIRECTORY(DataObject) 
 
 IF(BUILD_WITH_PCL)

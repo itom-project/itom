@@ -35,7 +35,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
     
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
+FIND_PACKAGE_QT(ON Core)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 IF (BUILD_UNICODE)
@@ -114,7 +114,7 @@ add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQ
 
 IF (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-    qt5_use_modules(${target_name} Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
+    qt5_use_modules(${target_name} Core)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
 ENDIF (QT5_FOUND)
