@@ -60,7 +60,6 @@ AbstractAddInDockWidget::~AbstractAddInDockWidget()
     delete d;
 }
 
-
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
 {
@@ -76,21 +75,21 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"slot 'setParam' could not be invoked since it does not exist.");
+            retval += ito::RetVal(ito::retError, 0, tr("slot 'setParam' could not be invoked since it does not exist.").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"pointer to plugin is invalid.");
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
     
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText("Error while setting parameter");
+        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
         if (retval.errorMessage())
         {
-            msgBox.setInformativeText( retval.errorMessage() );
+            msgBox.setInformativeText(retval.errorMessage());
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -98,10 +97,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText("Warning while setting parameter");
+        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
         if (retval.errorMessage())
         {
-            msgBox.setInformativeText( retval.errorMessage() );
+            msgBox.setInformativeText(retval.errorMessage());
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -119,27 +118,27 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     {
         bool success = false;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG( const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"slot 'setParamVector' could not be invoked since it does not exist.");
+            retval += ito::RetVal(ito::retError, 0, tr("slot 'setParamVector' could not be invoked since it does not exist.").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"pointer to plugin is invalid.");
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
     
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText("Error while setting parameter");
+        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
         if (retval.errorMessage())
         {
-            msgBox.setInformativeText( retval.errorMessage() );
+            msgBox.setInformativeText(retval.errorMessage());
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -147,10 +146,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText("Warning while setting parameter");
+        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
         if (retval.errorMessage())
         {
-            msgBox.setInformativeText( retval.errorMessage() );
+            msgBox.setInformativeText(retval.errorMessage());
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -175,7 +174,7 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
             {
                 if (d->m_pPlugin->isAlive() == false)
                 {
-                    retval += ito::RetVal(ito::retError, 0, "Timeout while waiting for answer from plugin instance.");
+                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while waiting for answer from plugin instance.").toLatin1().data());
                     timeout = true;
                 }
                 time.restart();
@@ -190,10 +189,10 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText("Error while execution");
+            msgBox.setText(tr("Error while execution").toLatin1().data());
             if (retval.errorMessage())
             {
-                msgBox.setInformativeText( retval.errorMessage() );
+                msgBox.setInformativeText(retval.errorMessage());
             }
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
@@ -201,10 +200,10 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
         else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText("Warning while execution");
+            msgBox.setText(tr("Warning while execution").toLatin1().data());
             if (retval.errorMessage())
             {
-                msgBox.setInformativeText( retval.errorMessage() );
+                msgBox.setInformativeText(retval.errorMessage());
             }
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();
