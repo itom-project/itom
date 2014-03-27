@@ -213,3 +213,29 @@ void WidgetPropEditorStyles::on_btnFontSizeInc_clicked()
     setFontSizeGeneral(1);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnReset_clicked()
+{
+    qSciLex = new QsciLexerPython(this);
+    int selectedRow = ui.listWidget->currentIndex().row();
+    int noOfStyles = qSciLex->styleBitsNeeded();
+    int pos = 0;
+
+    for (int i = 0; i < (2 << noOfStyles); i++)
+    {
+        if (!qSciLex->description(i).isEmpty())
+        {
+            m_styles[pos].m_fillToEOL = qSciLex->defaultEolFill(i);
+            m_styles[pos].m_backgroundColor = qSciLex->defaultPaper(i);
+            m_styles[pos].m_foregroundColor = qSciLex->defaultColor(i);
+            m_styles[pos].m_font = qSciLex->defaultFont(i);
+
+            if (pos == selectedRow)
+            {
+                on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+            }
+
+            ++pos;
+        }
+    }
+}
