@@ -610,9 +610,9 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 {
     ito::RetVal ret = ito::retOk;
     QMap<QString, ExecFuncParams> *funcList;
-    QSharedPointer<QVector<ito::ParamBase> > paramsMand(new QVector<ito::ParamBase>());
-    QSharedPointer<QVector<ito::ParamBase> > paramsOpt(new QVector<ito::ParamBase>());
-    QSharedPointer<QVector<ito::ParamBase> > paramsOut(new QVector<ito::ParamBase>());
+    QSharedPointer<QVector<ito::ParamBase> > paramsMand(new QVector<ito::ParamBase>(), PythonPlugins::paramBaseVectorDeleter); //the deleter are important, else it crashes sometimes if the execFunc of the plugin releases the waitCond much earlier (nobody knows why)
+    QSharedPointer<QVector<ito::ParamBase> > paramsOpt(new QVector<ito::ParamBase>(), PythonPlugins::paramBaseVectorDeleter); //the deleter are important, else it crashes sometimes if the execFunc of the plugin releases the waitCond much earlier (nobody knows why)
+    QSharedPointer<QVector<ito::ParamBase> > paramsOut(new QVector<ito::ParamBase>(), PythonPlugins::paramBaseVectorDeleter); //the deleter are important, else it crashes sometimes if the execFunc of the plugin releases the waitCond much earlier (nobody knows why)
     QString name;
     int argsLength = PyTuple_Size(args);
     PyObject *pyObj = NULL;
