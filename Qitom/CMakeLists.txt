@@ -4,7 +4,7 @@ set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
 project(${target_name})
 
 cmake_minimum_required(VERSION 2.8.7)
-
+  
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
