@@ -227,33 +227,48 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     ADD_DEFINITIONS(${QT_DEFINITIONS})
 ENDMACRO (FIND_PACKAGE_QT)
 
-
-MACRO (PLUGIN_TRANSLATION target force_translation_update existing_translation_files languages files_to_translate)
+#use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
+#
+# example:
+# set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
+# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+#
+# Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
+# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
+# is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
+#
+# Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
+# ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST
+#
+MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
     SET(TRANSLATIONS_FILES)
     SET(TRANSLATION_OUTPUT_FILES)
 
     if (${force_translation_update})
         if (QT5_FOUND)
-            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
         else (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
         endif (QT5_FOUND)
         
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${target} _${target}_translation)
         
         if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         endif (QT5_FOUND)
     else (${force_translation_update})
         if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         endif (QT5_FOUND)
     endif (${force_translation_update})
+    
+    SET(${qm_files} ${${qm_files}} ${QMFILES})
+    
 ENDMACRO (PLUGIN_TRANSLATION)
 
 
