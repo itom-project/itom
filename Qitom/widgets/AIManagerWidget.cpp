@@ -509,7 +509,20 @@ void AIManagerWidget::mnuShowConfdialog()
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais && ais->hasConfDialog())
         {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, ais));
+            ito::RetVal retValue = ais->showConfDialog();
+            
+            if (retValue.containsWarning())
+            {
+                const char* msg = retValue.errorMessage();
+                QString message = tr("Warning while showing configuration dialog. Message: %1").arg(msg);
+                QMessageBox::warning(this, tr("Warning while showing configuration dialog"), message);
+            }
+            else if (retValue.containsError())
+            {
+                const char* msg = retValue.errorMessage();
+                QString message = tr("Error while showing configuration dialog. Message: %1").arg(msg);
+                QMessageBox::critical(this, tr("Error while showing configuration dialog"), message);
+            }
         }
     }
 }

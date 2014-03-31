@@ -328,16 +328,27 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* plugin_showConfiguration(ito::AddInBase *aib)
 {
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retval;
+
     if (aib)
     {
         if (aib->hasConfDialog())
         {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib));
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+            locker.getSemaphore()->wait(-1);
+            retval += locker.getSemaphore()->returnValue;
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError, "actuator has no configuration dialog");
+            retval += ito::RetVal(ito::retError,0,"plugin has no configuration dialog");
         }
+    }
+
+    if (!SetReturnValueMessage(retval, "showConfiguration"))
+    {
+        return NULL;
     }
 
     Py_RETURN_NONE;

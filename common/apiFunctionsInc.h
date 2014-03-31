@@ -201,6 +201,18 @@ namespace ito
 
     #define apiGetParam \
         (*(ito::Param (*)(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)) ito::ITOM_API_FUNCS[20])
+    
+    //! update all values in paramMap
+    /*!
+        For each value in vector values, their corresponding entry in paramMap is searched and if available set to the value given in the
+        values vector. No validation besides a general type validation is done.
+
+        \param paramMap is the map with parameters to set
+        \param values are the new values, their name is used as keyword for paramMap
+        \return ito::RetVal (ito::retOk if all parameters could be set, else ito::retError)
+    */
+    #define apiUpdateParameters \
+        (*(ito::RetVal (*)(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[23])
 
     #define apiSaveQLIST2XML \
         (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[17])
@@ -230,6 +242,19 @@ namespace ito
 
     #define apiGetCurrentWorkingDir \
         (* (QString (*)(void)) ito::ITOM_API_FUNCS[21])
+    
+    //! helper function to show and process a configuration dialog of a plugin
+    /*!
+        Use this simple api method in the method showConfDialog of a plugin to show and process
+        the configuration dialog, whose instance is passed by configDialogInstance. This api function
+        shows the dialog, passes the current parameters of the plugin and processes the changes. The given
+        dialog instance is automatically deleted at the end.
+
+        \param plugin the instance of the plugin itself
+        \param configDialogInstance a new instance of the configuration dialog inherited from ito::AbstractAddInConfigDialog
+    */
+    #define apiShowConfigurationDialog \
+        (* (ito::RetVal (*)(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)) ito::ITOM_API_FUNCS[22])
 
     /** \} */
 

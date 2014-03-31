@@ -1737,7 +1737,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
 
         try
         {
-            retval  = ito::apiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            retval  = ito::ApiFunctions::mfilterCall( "savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -1842,7 +1842,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 
         try
         {
-            retval  = ito::apiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            retval  = ito::ApiFunctions::mfilterCall( "loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -3635,7 +3635,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
 
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String, "obj") );
 
-        ito::RetVal retval = ito::apiFunctions::mfilterCall( "savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval = ito::ApiFunctions::mfilterCall( "savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
 
         if( PythonCommon::transformRetValToPyException(retval) == false )
         {
@@ -3716,7 +3716,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         paramsMand.append( ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data() ) );
         paramsOpt.append( ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj" ) );
 
-        ito::RetVal retval = ito::apiFunctions::mfilterCall( "loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval = ito::ApiFunctions::mfilterCall( "loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
 
         tempFile2.remove();
 

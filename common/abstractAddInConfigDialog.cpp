@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "abstractAddInDockWidget.h"
+#include "abstractAddInConfigDialog.h"
 
 #include "addInInterface.h"
 
@@ -38,30 +38,30 @@
 namespace ito
 {
 
-class AbstractAddInDockWidgetPrivate 
+class AbstractAddInConfigDialogPrivate 
 {
 public:
-    AbstractAddInDockWidgetPrivate() : m_pPlugin(NULL)
+    AbstractAddInConfigDialogPrivate() : m_pPlugin(NULL)
     {}
     
     ito::AddInBase *m_pPlugin;
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractAddInDockWidget::AbstractAddInDockWidget(ito::AddInBase *plugin) : d(NULL)
+AbstractAddInConfigDialog::AbstractAddInConfigDialog(ito::AddInBase *plugin) : QDialog(), d(NULL)
 {
-    d = new AbstractAddInDockWidgetPrivate();
+    d = new AbstractAddInConfigDialogPrivate();
     d->m_pPlugin = plugin;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractAddInDockWidget::~AbstractAddInDockWidget()
+AbstractAddInConfigDialog::~AbstractAddInConfigDialog()
 {
     delete d;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
+ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel /*= msgLevelWarningAndError*/)
 {
     ito::RetVal retval;
 
@@ -82,6 +82,12 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
+
+    if (!retval.containsError())
+    {
+        QVector<QSharedPointer<ito::ParamBase> > vec(1, param);
+        retval += apiUpdateParameters(m_currentParameters, vec);
+    }
     
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
@@ -110,7 +116,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
+ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel /*= msgLevelWarningAndError*/)
 {
     ito::RetVal retval;
 
@@ -131,6 +137,11 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
+
+    if (!retval.containsError())
+    {
+        retval += apiUpdateParameters(m_currentParameters, params);
+    }
     
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
@@ -159,7 +170,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
+ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
     bool timeout = false;
@@ -211,16 +222,6 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
     }
     
     return retval;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void AbstractAddInDockWidget::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition)
-{
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void AbstractAddInDockWidget::targetChanged(QVector<double> targetPositions)
-{
 }
 
 } //namespace ito

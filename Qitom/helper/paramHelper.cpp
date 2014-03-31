@@ -822,4 +822,27 @@ namespace ito {
         return ito::Param();
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*static*/ ito::RetVal ParamHelper::updateParameters(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values)
+    {
+        ito::RetVal retval;
+        QString name;
+
+        for (int i = 0; i < values.size(); ++i)
+        {
+            name = values[i]->getName();
+
+            if (paramMap.contains( name ))
+            {
+                retval += paramMap[name].copyValueFrom(values[i].data());
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "Parameter '%s' does not exist", name.toLatin1().data());
+            }
+        }
+
+        return retval;
+    }
+
 } //end namespace ito

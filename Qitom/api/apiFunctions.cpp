@@ -25,23 +25,24 @@
 #include "apiFunctions.h"
 #include "../Qitom/AppManagement.h"
 #include "../organizer/paletteOrganizer.h"
-#include "../common/sharedFunctionsQt.h"
+#include "common/sharedFunctionsQt.h"
+#include "common/abstractAddInConfigDialog.h"
 #include "../Qitom/organizer/uiOrganizer.h"
 
-static ito::apiFunctions singleApiFunctions;
+static ito::ApiFunctions singleApiFunctions; //singleton instance, forces the construction where the ITOM_API_FUNCS_ARR pointer is propagated to ITOM_API_FUNCS
 
 namespace ito
 {
     void **ITOM_API_FUNCS;
 
     void *ITOM_API_FUNCS_ARR[] = {
-        (void*)&singleApiFunctions.mfilterGetFunc,      /* [0] */
-        (void*)&singleApiFunctions.mfilterCall,         /* [1] */
-        (void*)&singleApiFunctions.mfilterParam,        /* [2] */
-        (void*)&singleApiFunctions.mfilterParamBase,    /* [3] */
-        (void*)&singleApiFunctions.maddInGetInitParams, /* [4] */
-        (void*)&singleApiFunctions.maddInOpenActuator,  /* [5] */
-        (void*)&singleApiFunctions.maddInOpenDataIO,    /* [6] */
+        (void*)&ApiFunctions::mfilterGetFunc,           /* [0] */
+        (void*)&ApiFunctions::mfilterCall,              /* [1] */
+        (void*)&ApiFunctions::mfilterParam,             /* [2] */
+        (void*)&ApiFunctions::mfilterParamBase,         /* [3] */
+        (void*)&ApiFunctions::maddInGetInitParams,      /* [4] */
+        (void*)&ApiFunctions::maddInOpenActuator,       /* [5] */
+        (void*)&ApiFunctions::maddInOpenDataIO,         /* [6] */
         (void*)&ParamHelper::validateStringMeta,        /* [7] */
         (void*)&ParamHelper::validateDoubleMeta,        /* [8] */
         (void*)&ParamHelper::validateIntMeta,           /* [9] */
@@ -54,20 +55,22 @@ namespace ito
         (void*)&ParamHelper::getItemFromArray,          /* [16] */
         (void*)&saveQLIST2XML,                          /* [17] */
         (void*)&loadXML2QLIST,                          /* [18] */
-        (void*)&singleApiFunctions.mcreateFromDataObject,/* [19] */
+        (void*)&ApiFunctions::mcreateFromDataObject,    /* [19] */
         (void*)&ParamHelper::getParam,                  /* [20] */
-        (void*)&singleApiFunctions.getCurrentWorkingDir, /* [21] */
+        (void*)&ApiFunctions::getCurrentWorkingDir,     /* [21] */
+        (void*)&ApiFunctions::mshowConfigurationDialog, /* [22] */
+        (void*)&ParamHelper::updateParameters,           /* [23] */
         NULL
     };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-apiFunctions::apiFunctions() : m_loadFPointer(0)
+ApiFunctions::ApiFunctions() : m_loadFPointer(0)
 { 
     ITOM_API_FUNCS = ITOM_API_FUNCS_ARR;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-apiFunctions::~apiFunctions()
+ApiFunctions::~ApiFunctions()
 {}
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -223,13 +226,13 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctions::setFPointer()
+ito::RetVal ApiFunctions::setFPointer()
 {
     return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)
+ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)
 {
     if (name.length() < 1)
     {
@@ -251,7 +254,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal apiFunctions::mfilterCall(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+/*static*/ ito::RetVal ApiFunctions::mfilterCall(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -275,7 +278,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal apiFunctions::mfilterParamBase(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+/*static*/ ito::RetVal ApiFunctions::mfilterParamBase(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     if (name.length() < 1)
     {
@@ -323,7 +326,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal apiFunctions::mfilterParam(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+/*static*/ ito::RetVal ApiFunctions::mfilterParam(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     if (name.length() < 1)
     {
@@ -358,7 +361,7 @@ ito::RetVal apiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctions::maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
+ito::RetVal ApiFunctions::maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
 {
     *pluginNum = -1;
 
@@ -377,7 +380,7 @@ ito::RetVal apiFunctions::maddInGetInitParams(const QString &name, const int plu
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctions::maddInOpenActuator(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&actuator)
+ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&actuator)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -399,7 +402,7 @@ ito::RetVal apiFunctions::maddInOpenActuator(const QString &name, const int plug
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&dataIO)
+ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&dataIO)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -421,7 +424,7 @@ ito::RetVal apiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
+ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
 {
     ito::DataObject *output = NULL;
     ito::RetVal ret;
@@ -476,9 +479,43 @@ ito::DataObject* apiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 *   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
 *   value if it is possible. If the paramter cannot be set an error is returned.
 */
-QString apiFunctions::getCurrentWorkingDir(void)
+QString ApiFunctions::getCurrentWorkingDir(void)
 {
     return QDir::cleanPath(QDir::currentPath());
+}
+
+
+ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)
+{
+    ito::RetVal retval;
+
+    if (QObject::connect(plugin, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), configDialogInstance, SLOT(parametersChanged(QMap<QString, ito::Param>))))
+    {
+        if (!QMetaObject::invokeMethod(plugin, "sendParameterRequest"))
+        {
+            retval += ito::RetVal(ito::retError, 0, "error invoking 'sendParameterRequest' of the plugin");
+        }
+        else
+        {
+            if (configDialogInstance->exec())
+            {
+                QObject::disconnect(plugin, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), configDialogInstance, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+                configDialogInstance->applyParameters(); //retval is not checked since the messages should be displayed via the configuration dialog itself.
+            }
+            else
+            {
+                QObject::disconnect(plugin, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), configDialogInstance, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "the signal/slot 'parametersChanged' could not be connected");
+    }
+
+    configDialogInstance->deleteLater();
+
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -282,7 +282,7 @@ namespace ito
             void splashLoadMessage(const QString &message, int alignment = Qt::AlignLeft, const QColor &color = Qt::black);
 
         public slots:
-            ito::RetVal showConfigDialog(ito::AddInBase *addin);
+            ito::RetVal showConfigDialog(ito::AddInBase *addin, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal showDockWidget(ito::AddInBase *addin, int visible, ItomSharedSemaphore *waitCond = NULL);
 
             ito::RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);

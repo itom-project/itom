@@ -11,7 +11,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-   
+       
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)
@@ -65,9 +65,10 @@ LINK_DIRECTORIES(
 
 set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
@@ -79,9 +80,6 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/drawItem.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/multiPointPickerMachine.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
 )
 
 IF(NOT QT5_FOUND)
@@ -91,7 +89,8 @@ ENDIF(NOT QT5_FOUND)
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
@@ -101,9 +100,6 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/drawItem.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/multiPointPickerMachine.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/userInteractionPlotPicker.cpp
 )
 
 if(MSVC)

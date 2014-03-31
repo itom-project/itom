@@ -27,6 +27,7 @@
 
 #include <qmap.h>
 #include <qstring.h>
+#include <qsharedpointer.h>
 
 namespace ito 
 {
@@ -51,6 +52,8 @@ namespace ito
 
         static ito::RetVal getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam);
         static ito::Param getParam(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret);
+
+        static ito::RetVal updateParameters(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
     private:
         ParamHelper(){};
