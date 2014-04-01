@@ -7,21 +7,22 @@
 Plugin interface class
 ========================
 
-In order to give |itom| by the help of the |Qt|-plugin system access to your plugin, you must create a class which is inherited from the class **AddInInterfaceBase**. This base class is part of the **ito**-namespace and is defined in the files::
+Every |itom| plugin must consist of at least two classes. One class is the real plugin class, that represents one device. Therefore it is possible to create multiple instances of this class, hence, open multiple devices of the same plugin. The other class is a necessary structure in order to allow the communication between |itom| and the plugin. This is the so-called interface class, inherited from the abstract base class **AddInInterfaceBase**.
+
+This base class is part of the **ito**-namespace and is defined in the file::
 
     addInInterface.h
-    addInInterface.cpp
 
-These files lie in the **common** folder.
+This file is located in the *common* directory of the include directory of the |itom| SDK. You need to link against the library **itomCommonQtLib** in the SDK.
 
-In your main header file or your plugin, called **MyPlugin** in the following, you can use the following code example in order to create that class:
-    
+In the main header file of your plugin (with the exemplary name **MyPlugin**), use the following demo code in order to create that class:
+
 .. code-block:: c++
     :linenos:
     
     //myPlugin.h
     
-    #include "../../common/addInInterface.h" //adapt the path depending on the location of your plugin
+    #include "common/addInInterface.h" //adapt the path depending on the location of your plugin
 
     class MyPluginInterface : public ito::AddInInterfaceBase
     {
@@ -46,7 +47,7 @@ The destructor in line 12 usually does not require further implementation, such 
 
 Finally, there are also the methods *getAddInInst* and *closeThisInst* which are the most important methods. If an user or some other part of |itom| request an instance of this plugin (that means not an instance of the interface we are talking in this section, but of the real plugin), the AddInManager of |itom| calls the method *getAddInInst* of the corresponding interface class. Then this interface has to create an instance of the plugin and set the given double-pointer parameter to the pointer of this newly created instance.
 
-Inversely, the AddInManager of |itom| will call *closeThisInst* of an interface in order to force the plugin interface class to delete the plugin instance, given by the *addInInst* parameter. This mechanism is usually used by so-called factory-classes. Therefore we can consider the interface class to be a factory for one or more instances of the plugin itself (For information about the plugin class see :ref:`plugin-class`).    
+Inversely, the AddInManager of |itom| will call *closeThisInst* of an interface in order to force the plugin interface class to delete the plugin instance, given by the *addInInst* parameter. This mechanism is usually used by so-called factory-classes. Therefore we can consider the interface class to be a factory for one or more instances of the plugin itself (For information about the plugin class see :ref:`plugin-class`).  
 
 .. _plugin-interface-class-constructor:
 
@@ -221,15 +222,23 @@ As default implementation, you can copy the following code block for your implem
     
     ito::RetVal MyPluginInterface::getAddInInst(ito::AddInBase **addInInst)
     {
-        MyPlugin* newInst = new MyPlugin();
-        newInst->setBasePlugin(this);
-        *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-        m_InstList.append(*addInInst);
+        NEW_PLUGININSTANCE(MyPlugin)
         return ito::retOk;
     }
 
-Since your plugin instance (**MyPlugin**) is finally derived from **AddInBase**, its private member **m_uniqueID** is automatically given an auto-incremented, unique number. Additionally you can also assign a unique
-identification string (member **m_identifier** of class **AddInBase**) to your instance which is then displayed in |itom|. Please only change **m_identifier** in the constructor or **init**-method of your actual plugin.
+In case of an algorithm plugin use:
+
+.. code-block:: c++
+    :linenos:
+    
+    ito::RetVal MyPluginInterface::getAddInInst(ito::AddInBase **addInInst)
+    {
+        NEW_PLUGININSTANCE(MyPlugin)
+        REGISTER_FILTERS_AND_WIDGETS
+        return ito::retOk;
+    }
+
+Since your plugin instance (**MyPlugin**) is finally derived from **AddInBase**, its private member **m_uniqueID** is automatically given an auto-incremented, unique number. Additionally if possible assign a string identifier that helps to identify the opened device. Set the identifier using the method **setIdentifier**. Please only set the identifier in the constructor or in the **init**-method of the plugin itself. The identifier is saved in the member **m_identifier**.
 
 In the method above, it is assumed that your main class of your plugin *MyPlugin* is called *MyPlugin*, too. Then in line 3, a new instance of that class is created and this new instance is noticed about its own factory class in line 4. The factory class is hereby the pointer to this singleton interface class instance. Finally the given double pointer is set to the pointer of the newly created plugin instance. Finally, every plugin interface class has a protected member vector called *m_InstList* which contains a list of plugin instances opened by this interface (or factory). The newly created plugin is added to this list in line 6.
 
@@ -248,11 +257,7 @@ For this method, you can basically copy the following default implementation:
     
     ito::RetVal MyPluginInterface::closeThisInst(ito::AddInBase **addInInst)
     {
-        if (*addInInst)
-        {
-            m_InstList.removeOne(*addInInst);
-            delete ((MyPlugin *)*addInInst);
-        }
+        REMOVE_PLUGININSTANCE(MyPlugin)
         return ito::retOk;
     }
 
