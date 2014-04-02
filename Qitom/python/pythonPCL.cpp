@@ -1933,13 +1933,13 @@ PointCloud.");
             ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
             ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            X = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() ) );
 
             ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            Y = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() )  );
 
             ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            Z = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() ) );
 
         }
     }
