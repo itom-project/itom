@@ -12,7 +12,7 @@
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
-#include "ui_dialogMyAcutator.h"
+#include "ui_dialogMyActuator.h"
 
 #include <qstring.h>
 #include <qmap.h>

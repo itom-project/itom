@@ -15,29 +15,33 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetMyAcutator.h"
+#include "ui_dockWidgetMyActuator.h"
 
 class DockWidgetMyActuator : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetMyActuator(ito::AddInDataIO *grabber);
+        DockWidgetMyActuator(ito::AddInActuator *actuator);
         ~DockWidgetMyActuator() {};
 
     private:
         Ui::DockWidgetMyActuator ui;
         bool m_inEditing;
         bool m_firstRun;
+        ito::AddInActuator *m_actuator;
+        
+        void enableWidget(bool enabled);
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
+        
+        void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
+        void targetChanged(QVector<double> targetPositions);
 
     private slots:
-        //add here slots connected to changes of any widget
-        //example:
-        //void on_contrast_valueChanged(int i);
+
 };
 
 #endif

@@ -15,6 +15,8 @@
 #include <qstringlist.h>
 #include <qplugin.h>
 #include <qmessagebox.h>
+#include <qdatetime.h>
+#include <qwaitcondition.h>
 
 #include "dockWidgetMyActuator.h"
 
@@ -23,16 +25,16 @@
 /*!
     \todo add necessary information about your plugin here.
 */
-MyGrabberInterface::MyGrabberInterface()
+MyActuatorInterface::MyActuatorInterface()
 {
-    m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
-    setObjectName("MyGrabber");
+    m_type = ito::typeActuator;
+    setObjectName("MyActuator");
 
-    m_description = QObject::tr("MyGrabber");
+    m_description = QObject::tr("MyActuator");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+"This template can be used for implementing a new type of actuator plugin \n\
 \n\
 Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
     m_detaildescription = QObject::tr(docstring);
@@ -53,27 +55,27 @@ Put a detailed description about what the plugin is doing, what is needed to get
 /*!
     
 */
-MyGrabberInterface::~MyGrabberInterface()
+MyActuatorInterface::~MyActuatorInterface()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal MyActuatorInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(MyGrabber) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(MyActuator) //the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal MyActuatorInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(MyGrabber) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(MyActuator) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(mygrabberinterface, MyGrabberInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
+    Q_EXPORT_PLUGIN2(myactuatorinterface, MyActuatorInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
 
@@ -85,31 +87,20 @@ ito::RetVal MyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
+MyActuator::MyActuator() : AddInActuator(), m_async(0), m_nrOfAxes(3)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyGrabber", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyActuator", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert( "async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+    
+    //initialize the current position vector, the status vector and the target position vector
+    m_currentPos.fill(0.0,m_nrOfAxes);
+    m_currentStatus.fill(0,m_nrOfAxes);
+    m_targetPos.fill(0.0,m_nrOfAxes);
     
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetMyGrabber *dw = new DockWidgetMyGrabber(this);
+    DockWidgetMyActuator *dw = new DockWidgetMyActuator(this);
     
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -117,7 +108,7 @@ MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MyGrabber::~MyGrabber()
+MyActuator::~MyActuator()
 {
 }
 
@@ -126,7 +117,7 @@ MyGrabber::~MyGrabber()
 /*!
     \sa close
 */
-ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -137,14 +128,11 @@ ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     // - establish a connection to the device
     // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
     // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
+    // - set m_nrOfAxes to the number of axes
+    // - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding values
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
     
-    if (!retValue.containsError())
-    {        
-        retValue += checkData();
-    }
     
     if (!retValue.containsError())
     {
@@ -166,7 +154,7 @@ ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 /*!
     \sa init
 */
-ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -185,7 +173,7 @@ ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -222,7 +210,7 @@ ito::RetVal MyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -237,7 +225,7 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
     if(isMotorMoving()) //this if-case is for actuators only.
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set.").toLatin1().data());
     }
 
     if(!retValue.containsError())
@@ -256,8 +244,9 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
     if(!retValue.containsError())
     {
-        if(key == "demoKey1")
+        if(key == "async")
         {
+            m_async = val->getVal<int>();
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
         }
@@ -289,201 +278,265 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::startDevice(ItomSharedSemaphore *waitCond)
+//! calib
+/*!
+    the given axis should be calibrated (e.g. by moving to a reference switch).
+*/
+ito::RetVal MyActuator::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    
-    incGrabberStarted(); //increment a counter to see how many times startDevice has been called
-    
-    //todo:
-    // if this function has been called for the first time (grabberStartedCount() == 1),
-    // start the camera, allocate necessary buffers or do other work that is necessary
-    // to prepare the camera for image acquisitions.
-    
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
+    return calib(QVector<int>(1,axis), waitCond);
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
+//! calib
+/*!
+    the given axes should be calibrated (e.g. by moving to a reference switch).
+*/
+ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
 
-    decGrabberStarted(); //decrements the counter (see startDevice)
-
-    if (grabberStartedCount() < 0)
+    if(isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
-        setGrabberStarted(0);
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
     
-    //todo:
-    // if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera, free all allocated
-    // image buffers of the camera... (it is the opposite from all things that have been started, allocated... in startDevice)
+    if (!retValue.containsError())
+    {
+        //todo:
+        //start calibrating the given axes and don't forget to regularily call setAlive().
+        //this is important if the calibration needs more time than the timeout time of itom (e.g. 5sec).
+        //itom regularily checks the alive flag and only drops to a timeout if setAlive() is not regularily called (at least all 3-4 secs).
+    }
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-    }
-    return ito::retOk;
-}
-         
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
-
-    if (grabberStartedCount() <= 0)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire an image without having started the device.").toLatin1().data());
-    }
-    else
-    {
-        m_isgrabbing = true;
-    }
-    
-    //todo:
-    // trigger the camera for starting the acquisition of a new image (software trigger or make hardware trigger ready (depending on trigger (0: software trigger, default))
-    
-    //now the wait condition is released, such that itom (caller) stops waiting and continuous with its own execution.
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();  
-    }
-    
-    //todo:
-    // it is possible now, to wait here until the acquired image is ready
-    // if you want to do this here, wait for the finished image, get it and save it
-    // to any accessible buffer, for instance the m_data dataObject that is finally delivered
-    // via getVal or copyVal.
-    // 
-    // you can also implement this waiting and obtaining procedure in retrieveImage.
-    // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
-    // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
-{
-    //todo: this is just a basic example for getting the buffered image to m_data or the externally given data object
-    //enhance it and adjust it for your needs
-    ito::RetVal retValue(ito::retOk);
-
-    ito::DataObject *dataObj = externalDataObject ? externalDataObject : &m_data;
-
-    bool hasListeners = false;
-    if (m_autoGrabbingListeners.size() > 0)
-    {
-        hasListeners = true;
-    }
-
-    if (m_isgrabbing == false)
-    {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
-    }
-    else
-    {
-        //step 1: create m_data (if not yet available)
-        if (externalDataObject && hasListeners)
-        {
-            retValue += checkData(NULL); //update m_data
-            retValue += checkData(externalDataObject); //update external object
-        }
-        else
-        {
-            retValue += checkData(externalDataObject); //update external object or m_data
-        }
         
-        if (!retValue.containsError())
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setOrigin
+/*!
+    the given axis should be set to origin. That means (if possible) its current position should be
+    considered to be the new origin (zero-position). If this operation is not possible, return a
+    warning.
+*/
+ito::RetVal MyActuator::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
+{
+    return setOrigin(QVector<int>(1,axis), waitCond);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setOrigin
+/*!
+    the given axes should be set to origin. That means (if possible) their current position should be
+    considered to be the new origin (zero-position). If this operation is not possible, return a
+    warning.
+*/
+ito::RetVal MyActuator::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+
+    if(isMotorMoving())
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+    }
+    else
+    {
+        foreach(const int &i,axis)
         {
-            if (m_data.getType() == ito::tUInt8)
+            if (i >= 0 && i < m_nrOfAxes)
             {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-            }
-            else if (m_data.getType() == ito::tUInt16)
-            {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+                //todo: set axis i to origin (current position is considered to be the 0-position).
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
+                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
             }
         }
 
-        m_isgrabbing = false;
+        retValue += updateStatus();
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! getStatus
+/*!
+    re-checks the status (current position, available, end switch reached, moving, at target...) of all axes and
+    returns the status of each axis as vector. Each status is an or-combination of the enumeration ito::tActuatorStatus.
+*/
+ito::RetVal MyActuator::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+
+    retValue += updateStatus();
+    *status = m_currentStatus;
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! getPos
+/*!
+    returns the current position (in mm or degree) of the given axis
+*/
+ito::RetVal MyActuator::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    QSharedPointer<QVector<double> > pos2(new QVector<double>(1,0.0));
+    ito::RetVal retValue = getPos(QVector<int>(1,axis), pos2, NULL); //forward to multi-axes version
+    *pos = (*pos2)[0];
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
     }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// usually it is not necessary to implement the checkData method, since the default implementation from AddInGrabber is already
-// sufficient.
-//
-// What is does:
-// - it obtains the image size from sizex, sizey, bpp
-// - it checks whether the rows, cols and type of m_data are unequal to the requested dimensions and type
-// - if so, m_data is reallocated, else nothing is done
-// - if an external data object is given (from copyVal), this object is checked in place of m_data
-// - the external data object is only reallocated if it is empty, else its size or its region of interest must exactly
-//    fit to the given size restrictions
-//
-// if you need to do further things, overload checkData and implement your version there
-/*ito::RetVal MyGrabber::checkData(ito::DataObject *externalDataObject)
-{
-    return ito::retOk;
-}*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as reference.
+//! getPos
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
-    DataObject.
-    
-    This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
-    in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
-    \sa retrieveImage, copyVal
+    returns the current position (in mm or degree) of all given axes
 */
-ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::getPos(QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     
-    //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
-    retValue += retrieveData();
-
-    if (!retValue.containsError())
+    foreach (const int i, axis)
     {
-        //send newly acquired image to possibly connected live images
-        sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
-
-        if (dObj)
+        if (i >= 0 && i < m_nrOfAxes)
         {
-            (*dObj) = m_data; //copy reference to externally given object
+            //obtain current position of axis i
+            //transform tempPos to angle
+            m_currentPos[i] = 0.0; //set m_currentPos[i] to the obtained position
+            (*pos)[i] = m_currentPos[i];
+        }
+        else
+        {
+            retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(),i);
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setPosAbs
+/*!
+    starts moving the given axis to the desired absolute target position
+    
+    depending on m_async this method directly returns after starting the movement (async = 1) or
+    only returns if the axis reached the given target position (async = 0)
+    
+    In some cases only relative movements are possible, then get the current position, determine the
+    relative movement and call the method relatively move the axis.
+*/
+ito::RetVal MyActuator::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+{
+    return setPosAbs(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setPosAbs
+/*!
+    starts moving all given axes to the desired absolute target positions
+    
+    depending on m_async this method directly returns after starting the movement (async = 1) or
+    only returns if all axes reached their given target positions (async = 0)
+    
+    In some cases only relative movements are possible, then get the current position, determine the
+    relative movement and call the method relatively move the axis.
+*/
+ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    bool released = false;
+
+    if(isMotorMoving())
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+    }
+    else
+    {
+        foreach(const int i, axis)
+        {
+            if (i < 0 || i >= m_nrOfAxes)
+            {
+                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            }
+            else
+            {
+                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree
+            }
+        }
+
+        if (!retValue.containsError())
+        {
+            //set status of all given axes to moving and keep all flags related to the status and switches
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            
+            //todo: start the movement
+            
+            //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
+            sendTargetUpdate();
+            
+            //emit the signal sendStatusUpdate such that all connected slots gets informed about changes in m_currentStatus and m_currentPos.
+            sendStatusUpdate();
+            
+            //release the wait condition now, if async is true (itom considers this method to be finished now due to the threaded call)
+            if(m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                released = true;
+            }
+            
+            //call waitForDone in order to wait until all axes reached their target or a given timeout expired
+            //the m_currentPos and m_currentStatus vectors are updated within this function
+            retValue += waitForDone(60000, axis); //WaitForAnswer(60000, axis);
+            
+            //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
+            if(!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                released = true;
+            }
+        }
+    }
+    
+    //if the wait condition has not been released yet, do it now
+    if (waitCond && !released)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -493,51 +546,222 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Returns the grabbed camera frame as a deep copy.
+//! setPosRel
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
+    starts moving the given axis by the given relative distance
     
-    The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
-    interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
-    an image stack is possible then)
-
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
+    depending on m_async this method directly returns after starting the movement (async = 1) or
+    only returns if the axis reached the given target position (async = 0)
     
-    \sa retrieveImage, getVal
+    In some cases only absolute movements are possible, then get the current position, determine the
+    new absolute target position and call setPosAbs with this absolute target position.
 */
-ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal MyActuator::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+{
+    return setPosRel(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! setPosRel
+/*!
+    starts moving the given axes by the given relative distances
+    
+    depending on m_async this method directly returns after starting the movement (async = 1) or
+    only returns if all axes reached the given target positions (async = 0)
+    
+    In some cases only absolute movements are possible, then get the current positions, determine the
+    new absolute target positions and call setPosAbs with these absolute target positions.
+*/
+ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
-    if (!dObj)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
-    }
-    
-    if (!retValue.containsError())
-    {
-        //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
-        //by the camera directly into the given, external dataObject
-        retValue += retrieveData(dObj);  //checkData is executed inside of retrieveData
-    }
+    bool released = false;
 
-    if (!retValue.containsError())
+    if(isMotorMoving())
     {
-        //send newly acquired image to possibly connected live images
-        sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
+    }
+    else
+    {
+        foreach(const int i, axis)
+        {
+            if (i < 0 || i >= m_nrOfAxes)
+            {
+                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            }
+            else
+            {
+                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree 
+                                      //(obtain the absolute position with respect to the given relative distances)
+            }
+        }
+
+        if (!retValue.containsError())
+        {
+            //set status of all given axes to moving and keep all flags related to the status and switches
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            
+            //todo: start the movement
+            
+            //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
+            sendTargetUpdate();
+            
+            //emit the signal sendStatusUpdate such that all connected slots gets informed about changes in m_currentStatus and m_currentPos.
+            sendStatusUpdate();
+            
+            //release the wait condition now, if async is true (itom considers this method to be finished now due to the threaded call)
+            if(m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                released = true;
+            }
+            
+            //call waitForDone in order to wait until all axes reached their target or a given timeout expired
+            //the m_currentPos and m_currentStatus vectors are updated within this function
+            retValue += waitForDone(60000, axis); //WaitForAnswer(60000, axis);
+            
+            //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
+            if(!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                released = true;
+            }
+        }
     }
     
-    if (waitCond) 
+    //if the wait condition has not been released yet, do it now
+    if (waitCond && !released)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
+//! method must be overwritten from ito::AddInActuator
+/*!
+    WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
+    occurred. The timeout can be given in milliseconds, or -1 if no timeout should be considered. The flag-parameter can be used for your own purpose.
+*/
+ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
+{
+    ito::RetVal retVal(ito::retOk);
+    bool done = false;
+    bool timeout = false;
+    char motor;
+    QTime timer;
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+    long delay = 100; //[ms]
+
+    timer.start();
+    
+    //if axis is empty, all axes should be observed by this method
+    QVector<int> _axis = axis;
+    if (_axis.size() == 0) //all axis
+    {
+        for (int i=0;i<m_nrOfAxes;i++) 
+        {
+            _axis.append(i);
+        }
+    }
+
+    while (!done && !timeout)
+    {
+        //todo: obtain the current position, status... of all given axes
+
+        done = true; //assume all axes at target
+        motor = 0;
+        foreach(const int &i,axis)
+        {
+            m_currentPos[i] = 0.0; //todo: if possible, set the current position if axis i to its current position
+            
+            if (1 /*axis i is still moving*/)
+            {
+                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                done = false; //not done yet
+            }
+            else if (1 /*axis i is at target*/)
+            {
+                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                done = false; //not done yet
+            }
+        }
+
+        //emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
+        sendStatusUpdate(false);
+        
+        //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
+        if (!done && isInterrupted())
+        {
+            //todo: force all axes to stop
+            
+            //set the status of all axes from moving to interrupted (only if moving was set before)
+            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            sendStatusUpdate(true);
+            
+            retVal += ito::RetVal(ito::retError,0,"interrupt occurred");
+            done = true;
+            return retVal;
+        }
+
+        //short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, delay);
+        waitMutex.unlock();
+        
+        //raise the alive flag again, this is necessary such that itom does not drop into a timeout if the
+        //positioning needs more time than the allowed timeout time.
+        setAlive();
+
+        if (timeoutMS > -1)
+        {
+            if (timer.elapsed() > timeoutMS) timeout = true;
+        }
+    }
+
+    if (timeout)
+    {
+        //timeout occured, set the status of all currently moving axes to timeout
+        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
+        retVal += ito::RetVal(ito::retError,9999,"timeout occurred");
+        sendStatusUpdate(true);
+    }
+    
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! method obtains the current position, status of all axes
+/*!
+    This is a helper function, it is not necessary to implement a function like this, but it might help.
+*/
+ito::RetVal MyActuator::updateStatus()
+{
+    for (int i=0;i<m_nrOfAxes;i++)
+    {
+        m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable; //set this if the axis i is available, else use
+        //m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable;
+
+        m_currentPos[i] = 0.0; //todo fill in here the current position of axis i in mm or degree
+        
+        //if you know that the axis i is at its target position, change from moving to target if moving has been set, therefore:
+        replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget); 
+        
+        //if you know that the axis i is still moving, set this bit (all other moving-related bits are unchecked, but the status bits and switches bits
+        //kept unchanged
+        setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask); 
+    }
+
+    //emit actuatorStatusChanged with m_currentStatus and m_currentPos in order to inform connected slots about the current status and position 
+    sendStatusUpdate();
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -547,7 +771,7 @@ ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
     a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
 */
-void MyGrabber::dockWidgetVisibilityChanged(bool visible)
+void MyActuator::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -555,12 +779,18 @@ void MyGrabber::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            connect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
 
             emit parametersChanged(m_params);
+            sendTargetUpdate();
+            sendStatusUpdate(false);
         }
         else
         {
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            disconnect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
         }
     }
 }
@@ -585,7 +815,7 @@ void MyGrabber::dockWidgetVisibilityChanged(bool visible)
     
     \sa hasConfDialog
 */
-const ito::RetVal MyGrabber::showConfDialog(void)
+const ito::RetVal MyActuator::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogMyGrabber(this));
+    return apiShowConfigurationDialog(this, new DialogMyActuator(this));
 }

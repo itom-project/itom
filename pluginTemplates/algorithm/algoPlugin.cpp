@@ -42,7 +42,7 @@ AlgoPluginInterface::AlgoPluginInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+"This template can be used for implementing a new type of algorithm plugin \n\
 \n\
 Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
     m_detaildescription = QObject::tr(docstring);

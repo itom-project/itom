@@ -7,7 +7,7 @@
 ###################################################################
 ###################################################################
 
-SET (target_name MyGrabber) #->replace MyGrabber by the name of your plugin (one word)
+SET (target_name MyActuator) #->replace MyActuator by the name of your plugin (one word)
 
 project(${target_name})
 
@@ -130,17 +130,17 @@ LINK_DIRECTORIES(
 #
 #################################################################
 set(plugin_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/myGrabber.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyGrabber.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/myActuator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/myGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/myActuator.cpp
     #add further source files here
 )
 
@@ -151,8 +151,8 @@ if(MSVC)
 endif(MSVC)
 
 set(plugin_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyGrabber.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyGrabber.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.ui
 )
 
 set(plugin_RCC
@@ -224,7 +224,7 @@ endif (QT5_FOUND)
 # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 #################################################################
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 #################################################################
 # Plugin Documentation

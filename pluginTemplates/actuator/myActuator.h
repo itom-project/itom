@@ -62,19 +62,38 @@ class MyActuator : public ito::AddInActuator
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
+        int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
+        int m_nrOfAxes;
 
+        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
+        
+        ito::RetVal updateStatus(); //optional method to obtain the status and position of all connected axes
         
     public slots:
-        //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
-        //!< Set Camera-Parameter
+
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
-        //!< Initialise board, load dll, allocate buffer
+
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-        //!< Free buffer, delete board, unload dll
+
         ito::RetVal close(ItomSharedSemaphore *waitCond);
-
-
+        
+        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        
+        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        
+        ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
+        
+        ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
+        ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
+        
+        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+        
+        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
