@@ -235,11 +235,6 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(isMotorMoving()) //this if-case is for actuators only.
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
-    }
-
     if(!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
@@ -383,11 +378,8 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     ito::DataObject *dataObj = externalDataObject ? externalDataObject : &m_data;
 
-    bool hasListeners = false;
-    if (m_autoGrabbingListeners.size() > 0)
-    {
-        hasListeners = true;
-    }
+    bool hasListeners = (m_autoGrabbingListeners.size() > 0);
+    bool copyExternal = (externalDataObject != NULL);
 
     if (m_isgrabbing == false)
     {

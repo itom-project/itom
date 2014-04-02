@@ -130,13 +130,13 @@ LINK_DIRECTORIES(
 #
 #################################################################
 set(plugin_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/alogPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/alogPlugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.cpp
     #add further source files here
 )
 
@@ -219,7 +219,7 @@ endif (QT5_FOUND)
 # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 #################################################################
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 #################################################################
 # Plugin Documentation

@@ -81,13 +81,13 @@ AlgoPlugin::~AlgoPlugin()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AlgoPlugin::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
+ito::RetVal AlgoPlugin::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
     
     //register each algorithm with the following code snippet
-    filter = new FilterDef(AlgoPlugin::algo1, FittingFilters::algo1Params, tr(algo1doc));
+    filter = new FilterDef(AlgoPlugin::algo1, AlgoPlugin::algo1Params, tr(algo1doc));
     m_filterList.insert("algo1Name", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -95,7 +95,7 @@ RetVal AlgoPlugin::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::P
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AlgoPlugin::close(ItomSharedSemaphore * /*waitCond*/)
+ito::RetVal AlgoPlugin::close(ItomSharedSemaphore * waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
 
@@ -117,11 +117,11 @@ You can use line breaks here, but always start in the first column.";
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+ito::RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     paramsMand->clear();
@@ -136,7 +136,7 @@ RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito::Par
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AlgoPlugin::algo1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+ito::RetVal AlgoPlugin::algo1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     

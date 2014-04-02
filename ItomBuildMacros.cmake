@@ -233,7 +233,7 @@ ENDMACRO (FIND_PACKAGE_QT)
 #
 # example:
 # set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
-# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 #
 # Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
 # EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
@@ -248,9 +248,9 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
 
     if (${force_translation_update})
         if (QT5_FOUND)
-            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
+            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         else (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
+            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         endif (QT5_FOUND)
         
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
