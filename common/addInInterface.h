@@ -586,9 +586,9 @@ namespace ito
             //! method for closing an instance (must be overwritten)
             virtual ito::RetVal close(ItomSharedSemaphore *waitCond) = 0;
 
-            //! method for the retrieval of a parameter. The actual value is always passed as ito::Param (must be overwritten). See also \ref getParam
+            //! method for the retrieval of a parameter. The actual value is always passed as ito::Param (must be overwritten). See also \ref setParam
             virtual ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL) = 0;
-            //! method to set a parameter. The actual value is always passed as ito::tParam (must be overwritten). See also \ref getParam
+            //! method to set a parameter. The actual value is always passed as ito::ParamBase (must be overwritten). See also \ref getParam
             virtual ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) = 0;
 
             // doc in source-file

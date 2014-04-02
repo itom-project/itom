@@ -25,7 +25,8 @@
 
 #include "../global.h"
 
-#include "../common/addInInterface.h"
+#include "common/addInInterface.h"
+#include "DataObject/dataobj.h"
 #include "../models/PlugInModel.h"
 #include "algoInterfaceValidator.h"
 
@@ -76,6 +77,8 @@ Q_DECLARE_METATYPE(QSharedPointer<ito::ParamBase>)
 
 Q_DECLARE_METATYPE(QVector<QSharedPointer<ito::ParamBase> >)
 Q_DECLARE_METATYPE(StringMap)
+
+Q_DECLARE_METATYPE(ito::DataObject)
 
 //Q_DECLARE_METATYPE(ito::PCLPointCloud)
 //Q_DECLARE_METATYPE(ito::PCLPoint)

@@ -1510,6 +1510,8 @@ end:
         id = qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");
         id = qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
 
+        id = qRegisterMetaType<ito::DataObject>("ito::DataObject");
+
         m_deadPlugins.clear();
 
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
