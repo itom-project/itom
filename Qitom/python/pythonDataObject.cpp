@@ -2504,13 +2504,13 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     if (self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
-        Py_RETURN_NONE;
+        return NULL;
     }
 
     if (other == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "compare object is empty.");
-        Py_RETURN_NONE;
+        return NULL;
     }
 
     //check type of other
@@ -2522,8 +2522,8 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     {
         if (otherDataObj->dataObject == NULL)
         {
-            PyErr_SetString(PyExc_TypeError, "data object is empty.");
-            Py_RETURN_NONE;
+            PyErr_SetString(PyExc_TypeError, "internal data object of compare object is empty.");
+            return NULL;
         }
 
         self->dataObject->lockRead();
@@ -2557,8 +2557,8 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "data object is empty.");
-        Py_RETURN_NONE;
+        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object.");
+		return NULL;
     }
 }
 
