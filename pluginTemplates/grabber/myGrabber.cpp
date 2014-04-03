@@ -198,13 +198,13 @@ ito::RetVal MyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //put your switch-case.. for getting the right value here
 
@@ -235,13 +235,13 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -249,14 +249,14 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(key == "demoKey1")
+        if (key == "demoKey1")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
         }
-        else if(key == "demoKey2")
+        else if (key == "demoKey2")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
@@ -269,7 +269,7 @@ ito::RetVal MyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -402,13 +402,25 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
         {
             if (m_data.getType() == ito::tUInt8)
             {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+                if (copyExternal)
+				{
+					retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+				}
+                if (!copyExternal || hasListeners)
+				{
+					retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+				}
             }
             else if (m_data.getType() == ito::tUInt16)
             {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+                if (copyExternal)
+				{
+					retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
+				}
+                if (!copyExternal || hasListeners)
+				{
+					retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+				}
             }
             else
             {
