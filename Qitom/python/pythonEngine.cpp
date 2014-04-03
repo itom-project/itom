@@ -3651,7 +3651,21 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    
+    PyObject* pyMode = PyUnicode_FromString("wb\0");
+    PyObject* fileHandle = NULL;
+
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    
+    if(pyFileName != NULL)
+    {
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        Py_DECREF(pyFileName);
+    }
+    
+    if(pyMode) Py_DECREF(pyMode);
+
 
     if (fileHandle == NULL)
     {
@@ -3809,7 +3823,20 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    
+    PyObject* pyMode = PyUnicode_FromString("rb\0");
+    PyObject* fileHandle = NULL;
+
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    
+    if(pyFileName != NULL)
+    {
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        Py_DECREF(pyFileName);
+    }
+    
+    if(pyMode) Py_DECREF(pyMode);
 
     if (fileHandle == NULL)
     {
