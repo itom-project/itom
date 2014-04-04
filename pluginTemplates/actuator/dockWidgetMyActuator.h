@@ -26,12 +26,18 @@ class DockWidgetMyActuator : public ito::AbstractAddInDockWidget
         ~DockWidgetMyActuator() {};
 
     private:
-        Ui::DockWidgetMyActuator ui;
+        Ui::DockWidgetMyActuator ui; //! Handle to the ui
         bool m_inEditing;
         bool m_firstRun;
-        ito::AddInActuator *m_actuator;
-        
-        void enableWidget(bool enabled);
+
+        void enableWidgets(bool enabled);
+
+        QVector<QPushButton*> m_btnRelDec;
+        QVector<QPushButton*> m_btnRelInc;
+        QVector<QDoubleSpinBox*> m_spinCurrentPos;
+        QVector<QDoubleSpinBox*> m_spinTargetPos;
+        QVector<QLabel*> m_labels;
+
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -41,6 +47,13 @@ class DockWidgetMyActuator : public ito::AbstractAddInDockWidget
         void targetChanged(QVector<double> targetPositions);
 
     private slots:
+
+        void btnRelDecClicked();    //slot if any button for a relative, negative movement is clicked
+        void btnRelIncClicked();    //slot if any button for a relative, positive movement is clicked
+
+        void on_btnRefresh_clicked();       //slot if the refresh button is clicked
+        void on_btnStart_clicked(); //slot if the start button is clicked
+        void on_btnStop_clicked();  //slot if the stop button is clicked
 
 };
 

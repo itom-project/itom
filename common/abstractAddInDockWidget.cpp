@@ -214,6 +214,197 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVector<double> positions, bool relNotAbs, MessageLevel msgLevel) const
+{
+    ito::RetVal retval;
+
+    QByteArray funcName = relNotAbs ? "setPosRel" : "setPosAbs";
+
+    if (d->m_pPlugin)
+    {
+        if (qobject_cast<ito::AddInActuator*>(d->m_pPlugin) == NULL)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setActuatorPosition can only be called for actuator plugins").toLatin1().data());
+        }
+        else
+        {
+            bool success = false;
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(const QVector<int>, axes), Q_ARG(QVector<double>, positions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(funcName.data()).toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
+    }
+    
+    if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error while calling %1").arg(funcName.data()).toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Warning while calling %1").arg(funcName.data()).toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+    
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double position, bool relNotAbs, MessageLevel msgLevel) const
+{
+    ito::RetVal retval;
+
+    QByteArray funcName = relNotAbs ? "setPosRel" : "setPosAbs";
+
+    if (d->m_pPlugin)
+    {
+        if (qobject_cast<ito::AddInActuator*>(d->m_pPlugin) == NULL)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setActuatorPosition can only be called for actuator plugins").toLatin1().data());
+        }
+        else
+        {
+            bool success = false;
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(const int, axis), Q_ARG(const double, position), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(funcName.data()).toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
+    }
+    
+    if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error while calling %1").arg(funcName.data()).toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Warning while calling %1").arg(funcName.data()).toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+    
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool sendCurrentPos, bool sendTargetPos, MessageLevel msgLevel) const
+{
+    ito::RetVal retval;
+
+    if (d->m_pPlugin)
+    {
+        if (qobject_cast<ito::AddInActuator*>(d->m_pPlugin) == NULL)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setActuatorPosition can only be called for actuator plugins").toLatin1().data());
+        }
+        else
+        {
+            if (!QMetaObject::invokeMethod(d->m_pPlugin, "requestStatusAndPosition", Qt::QueuedConnection, Q_ARG(bool, sendCurrentPos), Q_ARG(bool, sendTargetPos)))
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("slot 'requestStatusAndPosition' could not be invoked since it does not exist.").toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
+    }
+    
+    if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error while calling 'requestStatusAndPosition'").toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Warning while calling 'requestStatusAndPosition'").toLatin1().data());
+        if (retval.errorMessage())
+        {
+            msgBox.setInformativeText(retval.errorMessage());
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+    
+    return retval;
+}
+
+ito::RetVal AbstractAddInDockWidget::setActuatorInterrupt() const
+{
+    ito::RetVal retval;
+
+    if (d->m_pPlugin)
+    {
+        if (qobject_cast<ito::AddInActuator*>(d->m_pPlugin) == NULL)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setActuatorInterrupt can only be called for actuator plugins").toLatin1().data());
+        }
+        else
+        {
+            qobject_cast<ito::AddInActuator*>(d->m_pPlugin)->setInterrupt();
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
+    }
+    
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void AbstractAddInDockWidget::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition)
 {
 }

@@ -840,7 +840,7 @@ namespace ito
             */
             bool isInterrupted() 
             {
-//                QMutexLocker locker(&m_interruptMutex);
+                QMutexLocker locker(&m_interruptMutex);
                 bool res = m_interruptFlag;
                 m_interruptFlag = false;
                 return res;
@@ -857,7 +857,7 @@ namespace ito
             */
             void setInterrupt()
             {
-//                QMutexLocker locker(&m_interruptMutex);
+                QMutexLocker locker(&m_interruptMutex);
                 m_interruptFlag = true;
             }
 
@@ -910,6 +910,9 @@ namespace ito
             virtual ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! increment/decrement a number of axis by position values. The axis' numbers are given in the axis vector
             virtual ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL) = 0;
+
+            //! overload this function to update the current status and position values, followed by calling sendStatusUpdate and/or sendTargetUpdate
+            virtual ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos); //added 2014-03-04
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
