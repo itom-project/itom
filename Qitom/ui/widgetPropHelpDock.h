@@ -28,6 +28,8 @@
 #include <QtGui>
 
 #include "ui_widgetPropHelpDock.h"
+#include "helper\fileDownloader.h"
+#include <qlist.h>
 
 class WidgetPropHelpDock: public AbstractPropertyPageWidget
 {
@@ -36,26 +38,81 @@ class WidgetPropHelpDock: public AbstractPropertyPageWidget
 public:
     WidgetPropHelpDock(QWidget *parent = NULL);
     ~WidgetPropHelpDock();
-    void readSettings();
-    void writeSettings();
-    void getHelpList();
-    void refreshDBs();
 
 protected:
+    bool event (QEvent * event);
 
 private:
     Ui::WidgetPropHelpDock ui;
+
+    struct databaseInfo
+    {
+        bool    isChecked;
+        int     updateState;
+        QString name;
+        QString version;
+        QString date;
+        QString schemeID;
+        QString path;
+    };
+
+    enum updateState
+    {
+        unknown = 0,
+        upToDate,
+        updateAvailable,
+        downloadAvailable,
+        wrongScheme,
+    };
+
+
+    // Functions
+    void readSettings();
+    void writeSettings();
+    void getHelpList();
+    void refreshExistingDBs();
+    void contextMenuEvent (QContextMenuEvent * event);
+    void initMenus();
+    void preShowContextMenuMargin(); 
+    void compareDatabaseVersions();
+    void updateCheckedIdList();
+    void setExistingDBsChecks();
+    QPair<int, databaseInfo> parseFile(QXmlStreamReader& xml);
+    void updateTreeWidget();
+    void refreshUpdatableDBs();
+    void setUpdateColumnText(QTreeWidgetItem *widget);
+
+
+    // Variables
     QString m_pdbPath;
-    bool m_plistChanged;
+    bool m_listChanged;
+    std::map<QString,QAction*> updateMenuActions;
+    QMenu *updateMenu;
+    FileDownloader *m_pXmlCtrl;
+    FileDownloader *m_pSqlCtrl;
+    bool m_treeIsUpdating;
+
+    // Lists and Co
+    QMap< int, databaseInfo > existingDBs;
+    QMap< int, databaseInfo > updatableDBs;
+    QList< int > checkedIdList;
+
+    // Consts
+    static const int m_urID = Qt::UserRole + 1; // ID
+    static const int m_urUD = Qt::UserRole + 2; // Update available
+    static const int SCHEME_ID = 1; // Update available
 
 signals:
 
 public slots:
+    
 
 private slots:
-    void on_listWidget_itemChanged(QListWidgetItem * item);
+    void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);
     void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
+    void xmlDownloaded();
+    void refreshButtonClicked();
 };
 
 #endif

@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include <qmenu.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
@@ -118,6 +119,4 @@ void WidgetPropEditorGeneral::writeSettings()
 
     settings.endGroup();
 }
-
-
 

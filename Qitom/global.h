@@ -31,6 +31,7 @@
 //#include <algorithm>
 
 #include "../common/param.h"
+#include "common/sharedStructures.h"
 
 #include <qmap.h>
 #include <qlist.h>
