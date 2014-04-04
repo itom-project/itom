@@ -46,7 +46,8 @@ namespace ito
             char *value = param.getVal<char*>();
             if(value)
             {
-                result = PyUnicode_FromString(param.getVal<char*>());
+                //result = PyUnicode_FromString(param.getVal<char*>());
+                result = PyUnicode_DecodeLatin1(param.getVal<char*>(), param.getLen(), NULL);
             }
             else
             {

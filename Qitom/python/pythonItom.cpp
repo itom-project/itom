@@ -2324,7 +2324,8 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
     Py_INCREF(Py_True);
     Py_INCREF(Py_False);
-    if (!PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("savemat"), PyUnicode_FromString(filename), saveDict, Py_True, PyUnicode_FromString("5"), Py_True, Py_False, PyUnicode_FromString("row"), NULL))
+    //if (!PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("savemat"), PyUnicode_FromString(filename), saveDict, Py_True, PyUnicode_FromString("5"), Py_True, Py_False, PyUnicode_FromString("row"), NULL))
+    if (!PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("savemat"), PyUnicode_DecodeLatin1(filename, strlen(filename), NULL), saveDict, Py_True, PyUnicode_FromString("5"), Py_True, Py_False, PyUnicode_FromString("row"), NULL))
     {
         Py_XDECREF(saveDict);
         Py_DECREF(Py_True);
@@ -2441,7 +2442,8 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
     PyObject *kwdDict = PyDict_New();
     PyObject *argTuple = PyTuple_New(1);
-    PyTuple_SetItem(argTuple, 0, PyUnicode_FromString(filename));
+    //PyTuple_SetItem(argTuple, 0, PyUnicode_FromString(filename));
+    PyTuple_SetItem(argTuple, 0, PyUnicode_DecodeLatin1(filename, strlen(filename), NULL));
     PyDict_SetItemString(kwdDict, "squeeze_me",Py_True);
     PyObject *callable = PyObject_GetAttr(scipyIoModule, PyUnicode_FromString("loadmat"));
     resultLoadMat = PyObject_Call(callable, argTuple, kwdDict);
@@ -2825,6 +2827,7 @@ See Also \n\
 scaleValueAndUnit");
 PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 {
+    /*
     PyObject *myList = PyList_New(0);
     PyList_Append(myList, PyUnicode_FromString("mm"));
     PyList_Append(myList, PyUnicode_FromString("m"));
@@ -2835,7 +2838,16 @@ PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
     PyList_Append(myList, PyUnicode_FromString("A"));
     PyList_Append(myList, PyUnicode_FromString("%"));
 
+   
+
     return myList;
+
+    */
+
+    PyObject * errText = PyUnicode_DecodeLatin1("Hällo Wörl", 10, NULL);
+    PyErr_Format(PyExc_RuntimeError, "%U", errText);
+    Py_DECREF(errText);
+    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3295,7 +3307,8 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     PyObject* returnDict = PyDict_New();
 
     // Name
-    PyObject *item = PyUnicode_FromString(userOrg->getUserName().toLatin1().data());
+    //PyObject *item = PyUnicode_FromString(userOrg->getUserName().toLatin1().data());
+    PyObject *item = PyUnicode_DecodeLatin1(userOrg->getUserName().toLatin1().data(), userOrg->getUserName().length(), NULL);
     PyDict_SetItemString(returnDict, "Name", item);
     Py_DECREF(item);
     
@@ -3319,12 +3332,14 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     Py_DECREF(item); 
 
     // ID
-    item = PyUnicode_FromString(userOrg->getUserID().toLatin1().data());
+    //item = PyUnicode_FromString(userOrg->getUserID().toLatin1().data());
+    item = PyUnicode_DecodeLatin1(userOrg->getUserID().toLatin1().data(), userOrg->getUserID().length(), NULL);
     PyDict_SetItemString(returnDict, "ID", item);
     Py_DECREF(item); 
 
     // FILE
-    item = PyUnicode_FromString(userOrg->getSettingsFile().toLatin1().data());
+    //item = PyUnicode_FromString(userOrg->getSettingsFile().toLatin1().data());
+    item = PyUnicode_DecodeLatin1(userOrg->getSettingsFile().toLatin1().data(), userOrg->getSettingsFile().length(), NULL);
     PyDict_SetItemString(returnDict, "File", item);
     Py_DECREF(item); 
 

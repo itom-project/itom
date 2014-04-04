@@ -699,6 +699,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                             {
                                 //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
                                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                                //ToDo check this for unicode
+                                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
+                                
                                 delete self->dataObject;
                                 self->dataObject = NULL;
                                 retValue += RetVal(retError);
@@ -1514,7 +1517,8 @@ PyObject* PythonDataObject::PyDataObject_getAxisDescriptions(PyDataObject *self,
         temp = self->dataObject->getAxisDescription(i, valid);
         if (valid)
         {
-            PyObject *string = PyUnicode_FromString(temp.data());
+            //PyObject *string = PyUnicode_FromString(temp.data());
+            PyObject *string = PyUnicode_DecodeLatin1(temp.data(), temp.length(), NULL);
             if (string == NULL)
             {
                 string = PyUnicode_FromString("<encoding error>"); //TODO
@@ -1601,7 +1605,8 @@ PyObject* PythonDataObject::PyDataObject_getAxisUnits(PyDataObject *self, void *
         temp = self->dataObject->getAxisUnit(i, valid);
         if (valid)
         {
-            PyTuple_SetItem(ret, i, PyUnicode_FromString(temp.data()));
+            //PyTuple_SetItem(ret, i, PyUnicode_FromString(temp.data()));
+            PyTuple_SetItem(ret, i, PyUnicode_DecodeLatin1(temp.data(), temp.length(), NULL));
         }
         else
         {
@@ -1665,7 +1670,10 @@ Notes \n\
 read / write");
 PyObject* PythonDataObject::PyDataObject_getValueUnit(PyDataObject *self, void * /*closure*/)
 {
-    return PyUnicode_FromString(self->dataObject->getValueUnit().data());
+    
+    //return PyUnicode_FromString(self->dataObject->getValueUnit().data());
+    std::string temp = self->dataObject->getValueUnit().data();
+    return PyUnicode_DecodeLatin1(temp.data(), temp.length(), NULL);
 }
 
 int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *value, void * /*closure*/)
@@ -1702,7 +1710,10 @@ Notes \n\
 read / write");
 PyObject* PythonDataObject::PyDataObject_getValueDescription(PyDataObject *self, void * /*closure*/)
 {
-    PyObject *temp = PyUnicode_FromString(self->dataObject->getValueDescription().data());
+
+    std::string tempString = self->dataObject->getValueDescription().data();
+    //PyObject *temp = PyUnicode_FromString(self->dataObject->getValueDescription().data());
+    PyObject *temp = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
     if (temp)
     {
         return temp;
@@ -2545,6 +2556,8 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         {
             //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             return NULL;
         }
 
@@ -2678,6 +2691,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         if (dobj1) dobj1->dataObject->unlock();
         if (dobj2) dobj2->dataObject->unlock();
         return NULL;
@@ -2758,6 +2773,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         if (dobj1) dobj1->dataObject->unlock();
         if (dobj2) dobj2->dataObject->unlock();
         return NULL;
@@ -2795,6 +2812,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));            
             dobj1->dataObject->unlock();
             dobj2->dataObject->unlock();
             return NULL;
@@ -2827,6 +2846,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));  
             dobj1->dataObject->unlock();
             return NULL;
         }
@@ -2857,6 +2878,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj2->dataObject->unlock();
             return NULL;
         }
@@ -2912,6 +2935,8 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
@@ -2945,6 +2970,8 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
     catch(cv::Exception exc)
     {
         Py_DECREF(retObj);
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         dobj1->dataObject->unlock();
         return NULL;
@@ -2982,6 +3009,8 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         return NULL;
     }
@@ -3013,6 +3042,8 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         return NULL;
     }
@@ -3060,6 +3091,8 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         return NULL;
     }
@@ -3103,6 +3136,8 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         return NULL;
     }
@@ -3136,6 +3171,8 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3171,6 +3208,8 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3206,6 +3245,8 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3241,6 +3282,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             dobj2->dataObject->unlock();
             return NULL;
@@ -3262,6 +3305,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             return NULL;
         }
@@ -3301,6 +3346,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             dobj2->dataObject->unlock();
             return NULL;
@@ -3322,6 +3369,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             return NULL;
         }
@@ -3366,6 +3415,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             dobj2->dataObject->unlock();
             return NULL;
@@ -3391,6 +3442,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             dobj1->dataObject->unlock();
             return NULL;
         }
@@ -3492,6 +3545,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3525,6 +3580,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3558,6 +3615,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
         return NULL;
@@ -3669,6 +3728,8 @@ PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -3714,6 +3775,8 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -3761,6 +3824,8 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
     {
         self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -3806,6 +3871,8 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -3849,6 +3916,8 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -4031,6 +4100,8 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         return NULL;
     }
@@ -4077,6 +4148,8 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         obj2->dataObject->unlock();
         return NULL;
@@ -4124,6 +4197,8 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         self->dataObject->unlock();
         obj2->dataObject->unlock();
         return NULL;
@@ -4201,6 +4276,8 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         return NULL;
     }
 
@@ -4283,6 +4360,8 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
         return NULL;
     }
 
@@ -4439,6 +4518,8 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
             error = true;
         }
 
@@ -4643,6 +4724,8 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             catch(cv::Exception exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
                 Py_DECREF(retObj2);
                 retObj2 = NULL;
             }
@@ -4766,6 +4849,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             catch(cv::Exception exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
                 error = true;
             }
         }
@@ -4812,6 +4897,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 catch(cv::Exception exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                    //ToDo check this for unicode
+                    //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
                     error = true;
                 }
             }
@@ -4881,6 +4968,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 catch(cv::Exception exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                    //ToDo check this for unicode
+                    //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
                     error = true;
                 }
 
@@ -4942,6 +5031,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             catch(cv::Exception exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1((exc.err).c_str(), strlen((exc.err).c_str()), NULL));
                 error = true;
             }
 

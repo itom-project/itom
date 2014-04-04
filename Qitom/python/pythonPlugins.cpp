@@ -241,32 +241,33 @@ int freeParams(int length, char *&cargt, char **&cargs)
 */
 PyObject * getParamList(ito::AddInBase *aib)
 {
-   PyObject *result = NULL;
-   QMap<QString, ito::Param> *paramList = NULL;
-   const char *name;
+    PyObject *result = NULL;
+    QMap<QString, ito::Param> *paramList = NULL;
+    const char *name;
 
-   aib->getParamList(&paramList);
+    aib->getParamList(&paramList);
 
-   if (paramList)
-   {
-      result = PyList_New(0);
-      QMap<QString, ito::Param>::const_iterator paramIt;
+    if (paramList)
+    {
+        result = PyList_New(0);
+        QMap<QString, ito::Param>::const_iterator paramIt;
 
-      for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); paramIt++)
-      {
-          name = paramIt.value().getName();
-          if (name)
-          {
-            PyList_Append(result, PyUnicode_FromString(name));
-          }
-          else
-          {
-            PyList_Append(result, PyUnicode_FromString("<invalid name>"));
-          }
-      }
-   }
+        for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); paramIt++)
+        {
+            name = paramIt.value().getName();
+            if (name)
+            {
+                //PyList_Append(result, PyUnicode_FromString(name));
+                PyList_Append(result, PyUnicode_DecodeLatin1(name, strlen(name), NULL));
+            }
+            else
+            {
+                PyList_Append(result, PyUnicode_FromString("<invalid name>"));
+            }
+        }
+    }
 
-   return result;
+    return result;
 }
 
 
@@ -612,7 +613,9 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
         return NULL;
     }
 
-    return PyUnicode_FromString((*qsParam).getVal<char*>());
+    //return PyUnicode_FromString((*qsParam).getVal<char*>());
+    char* val = (*qsParam).getVal<char*>();
+    return PyUnicode_DecodeLatin1(val, strlen(val), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

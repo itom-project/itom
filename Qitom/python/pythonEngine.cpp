@@ -2684,7 +2684,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
             {
                 PyErr_Clear();
                 retVal = false;
@@ -2874,7 +2875,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
+            
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
@@ -2890,7 +2893,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
                 }
                 else
                 {
-                    PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    
+                    //PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    PyList_Append(keyList , PyUnicode_DecodeLatin1(varNames.at(i).toLatin1().data(), varNames.at(i).length(), NULL));
                     PyList_Append(valueList, tempElem);
                 }
             }
@@ -2963,7 +2968,8 @@ RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, 
         }
         else
         {
-            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
@@ -3301,7 +3307,8 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(varname2, strlen(varname2), NULL)))
             {
                 PyErr_Clear();
                 QString ErrStr = tr("variable name '%1' is no valid python variable name.").arg(varname);

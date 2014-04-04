@@ -259,6 +259,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             //std::string tempString;
             DataObjectTagType tempTag;
             std::string tempKey;
+            std::string tempString;
             bool validOp;
 
             //1. tags
@@ -280,7 +281,9 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
                 }
                 else
                 {
-                    item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    //item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    tempString = tempTag.getVal_ToString().data();
+                    item =  PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
                     PyDict_SetItemString(self->tags, tempKey.data(), item);
                     Py_DECREF(item);
                 }
@@ -304,21 +307,27 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             self->axisDescriptions = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisDescriptions, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisDescription(i,validOp);
+                PyList_SetItem(self->axisDescriptions, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //5. axisUnits
             self->axisUnits = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisUnits, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisUnit(i,validOp);
+                PyList_SetItem(self->axisUnits, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //6. valueUnit
-            self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            //self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            tempString = dObj->getValueUnit();
+            self->valueUnit = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //7. valueDescription
-            self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            //self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            tempString = dObj->getValueDescription();
+            self->valueDescription = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //8.
             self->valueOffset = dObj->getValueOffset();

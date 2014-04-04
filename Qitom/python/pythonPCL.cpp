@@ -401,6 +401,9 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
+        
         return NULL;
     }
 
@@ -465,6 +468,8 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -497,6 +502,8 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));;
         return NULL;
     }
 
@@ -529,6 +536,8 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -558,6 +567,8 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -588,6 +599,8 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -618,6 +631,8 @@ PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -643,6 +658,8 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
         catch(pcl::PCLException exc)
         {
             PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
             return -1;
         }
     }
@@ -660,6 +677,8 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return -1;
     }
 
@@ -689,6 +708,8 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -699,7 +720,8 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     for(int i = 0 ; i < a.size() ; i++)
     {
         ba = a[i].toLatin1();
-        PyList_SetItem(result,i, PyUnicode_FromStringAndSize( ba.data(), ba.size() ) );
+        //PyList_SetItem(result,i, PyUnicode_FromStringAndSize( ba.data(), ba.size() ) );
+        PyList_SetItem(result,i, PyUnicode_DecodeLatin1( ba.data(), ba.size(), NULL ) );
     }
     
     return result;
@@ -1146,6 +1168,8 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        //ToDo check this for unicode
+        //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
         return NULL;
     }
 
@@ -1194,6 +1218,8 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
             catch(pcl::PCLException exc)
             {
                 PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
                 return NULL;
             }
             return (PyObject*)result;
@@ -1228,6 +1254,8 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
             catch(pcl::PCLException exc)
             {
                 PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
                 return NULL;
             }
             
@@ -1265,6 +1293,8 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
             catch(pcl::PCLException exc)
             {
                 PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
                 return NULL;
             }
             
@@ -1314,6 +1344,8 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
         catch (pcl::PCLException exc)
         {
             PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
             return -1;
         }
     }
@@ -1340,6 +1372,8 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         catch(pcl::PCLException exc)
         {
             PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
             return NULL;
         }
         
@@ -1586,6 +1620,8 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
         catch(pcl::PCLException exc)
         {
             PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+            //ToDo check this for unicode
+            //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
             return NULL;
         }
     }
@@ -1613,6 +1649,8 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
             {
                 Py_DECREF(sequence);
                 PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+                //ToDo check this for unicode
+                //PyErr_SetObject(PyExc_TypeError, PyUnicode_DecodeLatin1(exc.detailedMessage().c_str(), strlen(exc.detailedMessage().c_str()), NULL));
                 return NULL;
             }
         }

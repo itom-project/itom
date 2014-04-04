@@ -394,7 +394,8 @@ static PyObject * PyMatlabSessionObject_getString(PyMatlabSessionObject *self, P
         //char *string = new char[sizebuf+1];
         char *string = (char*)malloc(sizeof(char)*(sizebuf+1));
         mxGetString(variable, string, sizebuf+1);
-        pyString = PyUnicode_FromString(string);
+        //pyString = PyUnicode_FromString(string);
+        pyString = PyUnicode_DecodeLatin1(string, strlen(string), NULL);
         free ((void*)string);
         return pyString;
     }
