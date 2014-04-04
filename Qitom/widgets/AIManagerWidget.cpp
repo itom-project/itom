@@ -908,8 +908,23 @@ void AIManagerWidget::mnuShowLiveImage()
             QSharedPointer<unsigned int> figHandle(new unsigned int);
             *figHandle = 0; //new figure will be requested
 
-            uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
-        }
+            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
+
+			if (retval.containsError())
+			{
+				QMessageBox msgBox;
+				msgBox.setText(retval.errorMessage());
+				msgBox.setIcon(QMessageBox::Warning);
+				msgBox.exec();
+		    }
+			else if (retval.containsWarning())
+			{
+				QMessageBox msgBox;
+				msgBox.setText(retval.errorMessage());
+				msgBox.setIcon(QMessageBox::Warning);
+				msgBox.exec();
+		    }
+		}
         else
         {
             QMessageBox msgBox;

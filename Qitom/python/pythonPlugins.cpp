@@ -582,7 +582,7 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
     ito::RetVal ret = ito::retOk;
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String));
+    QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String, "", NULL));
     if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
     {
         bool timeout = false;
