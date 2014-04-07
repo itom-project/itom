@@ -65,7 +65,7 @@ void AbstractPyScintillaWidget::init()
     qSciLex->setAPIs(m_pApiManager->getQsciAPIs());
     setLexer(qSciLex);
 
-    setUtf8(true); //utf8 can display special characters, false -> latin1 (default) can not
+    setUtf8(false); //utf8 can display special characters, false -> latin1 (default) can not
 
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
     setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);

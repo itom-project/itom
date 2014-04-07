@@ -165,6 +165,7 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
             v = PyUnicode_AsLatin1String(text); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
             if (v == NULL)
             {
+                const char* test = PyUnicode_AS_DATA(text);
                 v = PyBytes_FromString("Display error: error parsing the data stream");
             }
         }

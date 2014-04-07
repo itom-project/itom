@@ -134,10 +134,10 @@ public:
 
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
-    RetVal runPyFile(char* pythonFileName);         // run file pythonFileName
-    RetVal debugFile(char* pythonFileName);         // debug file pythonFileName
-    RetVal runString(const char *command);          // run string command
-    RetVal debugString(const char *command);        // debug string command
+    RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
+    RetVal debugFile(const QString &pythonFileName);         // debug file pythonFileName
+    RetVal runString(const QString &command);          // run string command
+    RetVal debugString(const QString &command);        // debug string command
     RetVal debugFunction(PyObject *callable, PyObject *argTuple);
     RetVal runFunction(PyObject *callable, PyObject *argTuple);
 
