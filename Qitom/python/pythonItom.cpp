@@ -2827,7 +2827,6 @@ See Also \n\
 scaleValueAndUnit");
 PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 {
-    /*
     PyObject *myList = PyList_New(0);
     PyList_Append(myList, PyUnicode_FromString("mm"));
     PyList_Append(myList, PyUnicode_FromString("m"));
@@ -2842,12 +2841,7 @@ PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 
     return myList;
 
-    */
 
-    PyObject * errText = PyUnicode_DecodeLatin1("Hällo Wörl", 10, NULL);
-    PyErr_Format(PyExc_RuntimeError, "%U", errText);
-    Py_DECREF(errText);
-    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

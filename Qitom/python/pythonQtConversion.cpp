@@ -41,8 +41,11 @@
 
         Parts of this class are taken from the project PythonQt (http://pythonqt.sourceforge.net/)
 */
-PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
-QByteArray PythonQtConversion::textEncodingName = "utf8";
+//PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
+PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
+
+//QByteArray PythonQtConversion::textEncodingName = "utf8";
+QByteArray PythonQtConversion::textEncodingName = "latin_1";
 QHash<char*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<char*, PyObject*>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
