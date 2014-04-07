@@ -162,7 +162,7 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         PyObject *v = NULL;
         if (PyUnicode_Check(text))
         {
-            v = PyUnicode_AsUTF8String(text);
+            v = PyUnicode_AsLatin1String(text); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
             if (v == NULL)
             {
                 v = PyBytes_FromString("Display error: error parsing the data stream");
@@ -183,7 +183,7 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
             else
             {
                 PyObject *temp = v;
-                v = PyUnicode_AsUTF8String(temp);
+                v = PyUnicode_AsLatin1String(temp); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
                 Py_DECREF(temp);
                 if (v == NULL)
                 {
@@ -199,7 +199,6 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         }
         else
         {
-            //qDebug() << PyBytes_AsString(v);
             std::cerr << PyBytes_AsString(v); // endl is added directly by Python
         }
 
