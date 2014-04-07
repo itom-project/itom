@@ -2837,7 +2837,7 @@ PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
     PyList_Append(myList, PyUnicode_FromString("A"));
     PyList_Append(myList, PyUnicode_FromString("%"));
 
-   
+    PyErr_SetString(PyExc_TypeError, QString("µ").toLatin1().data());
 
     return myList;
 

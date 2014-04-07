@@ -695,55 +695,66 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     bool found = false;
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
-    QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+    //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+
+    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
 
     //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
-    if (qtCodecNames.contains("UTF-8"))
+    //if (qtCodecNames.contains("UTF-8"))
+    if (curQtCodec.contains("UTF-8"))
     {
         encodingType = PythonQtConversion::utf_8;
         encodingName = "utf_8";
     }
-    else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    //else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    else if (curQtCodec.contains("ISO-8859-1") || curQtCodec.contains("latin1"))
     {
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
-    else if (qtCodecNames.contains("US-ASCII"))
+    //else if (qtCodecNames.contains("US-ASCII"))
+    else if (curQtCodec.contains("US-ASCII"))
     {
         encodingType = PythonQtConversion::ascii;
         encodingName = "ascii";
     }
-    else if (qtCodecNames.contains("UTF-16"))
+    //else if (qtCodecNames.contains("UTF-16"))
+    else if (curQtCodec.contains("UTF-16"))
     {
         encodingType = PythonQtConversion::utf_16;
         encodingName = "utf_16";
     }
-    else if (qtCodecNames.contains("UTF-16LE"))
+    //else if (qtCodecNames.contains("UTF-16LE"))
+    else if (curQtCodec.contains("UTF-16LE"))
     {
         encodingType = PythonQtConversion::utf_16_LE;
         encodingName = "utf_16_le";
     }
-    else if (qtCodecNames.contains("UTF-16BE"))
+    //else if (qtCodecNames.contains("UTF-16BE"))
+    else if (curQtCodec.contains("UTF-16BE"))
     {
         encodingType = PythonQtConversion::utf_16_BE;
         encodingName = "utf_16_be";
     }
-    else if (qtCodecNames.contains("UTF-32"))
+    //else if (qtCodecNames.contains("UTF-32"))
+    else if (curQtCodec.contains("UTF-32"))
     {
         encodingType = PythonQtConversion::utf_32;
         encodingName = "utf_32";
     }
-    else if (qtCodecNames.contains("UTF-32BE"))
+    //else if (qtCodecNames.contains("UTF-32BE"))
+    else if (curQtCodec.contains("UTF-32BE"))
     {
         encodingType = PythonQtConversion::utf_32_BE;
         encodingName = "utf_32_be";
     }
-    else if (qtCodecNames.contains("UTF-32LE"))
+    //else if (qtCodecNames.contains("UTF-32LE"))
+    else if (curQtCodec.contains("UTF-32LE"))
     {
         encodingType = PythonQtConversion::utf_32_LE;
         encodingName = "utf_32_le";
     }
-    else
+    /*else
     {
         encodingType = PythonQtConversion::other;
         found = false;
@@ -765,7 +776,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
             encodingName = "utf_8";
         }
     }
-
+    */
     PythonQtConversion::textEncoding = encodingType;
     PythonQtConversion::textEncodingName = encodingName;
 
