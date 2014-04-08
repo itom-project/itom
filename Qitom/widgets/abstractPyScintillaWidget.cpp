@@ -65,7 +65,7 @@ void AbstractPyScintillaWidget::init()
     qSciLex->setAPIs(m_pApiManager->getQsciAPIs());
     setLexer(qSciLex);
 
-    setUtf8(true); //default encoding is latin1 in order to also display special characters
+    setUtf8(true); //usually the default encoding is latin1, but the scintilla editor is still utf8 since qscintilla < 2.8 does not accept special characters in the keypressevent coming from non utf8 ecodings.
 
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
     setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);
