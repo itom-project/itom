@@ -31,6 +31,7 @@
 #include "../AppManagement.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
+#include "plot/AbstractDObjPclFigure.h"
 #include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
 
@@ -116,6 +117,8 @@ UiOrganizer::UiOrganizer() :
     m_objectList.clear();
 
     m_widgetWrapper = new WidgetWrapper();
+
+    qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2581,7 +2584,8 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+//RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal UiOrganizer::figurePlot(struct ito::UiDataContainer dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -2615,8 +2619,19 @@ RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedP
             if (fig)
             {
                 QWidget *destWidget;
-                retval += fig->plot(dataObj, areaRow, areaCol, className, &destWidget);
-                
+#if ITOM_POINTCLOUDLIBRARY > 0
+                if (dataCont.m_dataType == ito::ParamBase::PointCloudPtr)
+                    retval += fig->plot(dataCont.m_dPCPtr, areaRow, areaCol, className, &destWidget);
+                else if (dataCont.m_dataType == ito::ParamBase::PolygonMeshPtr)
+                    retval += fig->plot(dataCont.m_dPMPtr, areaRow, areaCol, className, &destWidget);
+                else if (dataCont.m_dataType == ito::ParamBase::DObjPtr)
+#else
+                if (dataCont.m_dataType == ito::ParamBase::DObjPtr)
+#endif
+                    retval += fig->plot(dataCont.m_dObjPtr, areaRow, areaCol, className, &destWidget);
+                else
+                    retval += ito::RetVal(ito::retError, 0, tr("unsupported data type").toLatin1().data());
+                                
                 *objectID = addObjectToList(destWidget);
             }
             else

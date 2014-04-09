@@ -27,6 +27,7 @@
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "plot/AbstractDObjFigure.h"
+#include "plot/AbstractDObjPclFigure.h"
 
 #include <qlayoutitem.h>
 
@@ -171,6 +172,106 @@ void FigureWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
+#if ITOM_POINTCLOUDLIBRARY > 0
+RetVal FigureWidget::plot(QSharedPointer<ito::PCLPointCloud> pc, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+{
+    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+    RetVal retval;
+    QString plotClassName;
+    int idx = areaCol + areaRow * m_cols;
+
+    *canvasWidget = NULL;
+
+    if (dwo)
+    {
+        plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+
+        QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
+
+        if (!retval.containsError() && destWidget)
+        {
+            if (destWidget->inherits("ito::AbstractDObjPclFigure"))
+            {
+                ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
+                dObjPclFigure = (ito::AbstractDObjPclFigure*)(destWidget);
+                dObjPclFigure->setPointCloud(pc);
+                *canvasWidget = destWidget;
+            }
+            else
+            {
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                DELETE_AND_SET_NULL(destWidget);
+            }
+
+            if (idx == m_curIdx)
+            {
+                changeCurrentSubplot(idx);
+            }
+        }
+        else if (retval.containsError())
+        {
+            DELETE_AND_SET_NULL(destWidget);
+        }
+    }
+    else
+    {
+        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+{
+    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+    RetVal retval;
+    QString plotClassName;
+    int idx = areaCol + areaRow * m_cols;
+
+    *canvasWidget = NULL;
+
+    if (dwo)
+    {
+        plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+
+        QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
+
+        if (!retval.containsError() && destWidget)
+        {
+            if (destWidget->inherits("ito::AbstractDObjPclFigure"))
+            {
+                ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
+                dObjPclFigure = (ito::AbstractDObjPclFigure*)(destWidget);
+                dObjPclFigure->setPolygonMesh(pm);
+                *canvasWidget = destWidget;
+            }
+            else
+            {
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                DELETE_AND_SET_NULL(destWidget);
+            }
+
+            if (idx == m_curIdx)
+            {
+                changeCurrentSubplot(idx);
+            }
+        }
+        else if (retval.containsError())
+        {
+            DELETE_AND_SET_NULL(destWidget);
+        }
+    }
+    else
+    {
+        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toLatin1().data());
+    }
+
+    return retval;
+}
+#endif // #if ITOM_POINTCLOUDLIBRARY > 0
+
+//----------------------------------------------------------------------------------------------------------------------------------------
 RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
@@ -200,9 +301,9 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 
         if (!retval.containsError() && destWidget)
         {
-            ito::AbstractDObjFigure *dObjFigure = NULL;
             if (destWidget->inherits("ito::AbstractDObjFigure"))
             {
+                ito::AbstractDObjFigure *dObjFigure = NULL;
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
                 dObjFigure->setSource(dataObj);
                 *canvasWidget = destWidget;

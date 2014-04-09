@@ -27,6 +27,9 @@
 
 #include "common/sharedStructures.h"
 #include "DataObject/dataobj.h"
+#if ITOM_POINTCLOUDLIBRARY > 0
+#include "../../PointCloud/pclStructures.h"
+#endif
 #include "common/addInInterface.h"
 
 #include <qgridlayout.h>
@@ -51,6 +54,10 @@ public:
     ~FigureWidget();
 
     RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+#if ITOM_POINTCLOUDLIBRARY > 0
+    RetVal plot(QSharedPointer<ito::PCLPointCloud> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+    RetVal plot(QSharedPointer<ito::PCLPolygonMesh> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+#endif
     RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
 
     QWidget *getSubplot(int index) const;

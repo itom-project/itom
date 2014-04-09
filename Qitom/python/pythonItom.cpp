@@ -216,10 +216,36 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
 
-    QSharedPointer<ito::DataObject> newDataObj(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+    ito::UiDataContainer dataCont;
+//    QSharedPointer<ito::DataObject> newDataObj(PythonQtConversion::PyObjGetDataObjectNewPtr(data, true, ok));
+    dataCont.m_dObjPtr = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, true, ok));
     if (!ok)
     {
-        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+#if ITOM_POINTCLOUDLIBRARY > 0
+        dataCont.m_dPCPtr = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+        if (!ok)
+        {
+            dataCont.m_dPMPtr = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+            if (!ok)
+            {
+#endif
+                return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+#if ITOM_POINTCLOUDLIBRARY > 0
+            }
+            else
+            {
+                dataCont.m_dataType = ito::ParamBase::PolygonMeshPtr;
+            }
+        }
+        else
+        {
+            dataCont.m_dataType = ito::ParamBase::PointCloudPtr;
+        }
+#endif
+    }
+    else
+    {
+        dataCont.m_dataType = ito::ParamBase::DObjPtr;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -234,7 +260,8 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+//    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer, dataCont), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
