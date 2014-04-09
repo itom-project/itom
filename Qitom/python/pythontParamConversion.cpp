@@ -231,24 +231,24 @@ namespace ito
                         }
                         else if( ptr2->getBasePlugin()->getType() & ito::typeAlgo )
                         {
-                            PyErr_Format(PyExc_TypeError, "parameter of type 'hardware reference' is a reference to an algorithm plugin, which cannot be returned.");
+                            PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' is a reference to an algorithm plugin, which cannot be returned.");
                             return NULL;
                         }
                         else
                         {
-                            PyErr_Format(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
+                            PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
                             return NULL;
                         }
                     }
                     else
                     {
-                        PyErr_Format(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
+                        PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
                         return NULL;
                     }
                 }
                 else
                 {
-                    PyErr_Format(PyExc_TypeError, "parameter of type 'hardware reference' is NULL");
+                    PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' is NULL");
                     return NULL;
                 }
                 
@@ -257,7 +257,7 @@ namespace ito
         break;
 
         default:
-            PyErr_Format(PyExc_TypeError, "undefined parameter type");
+            PyErr_SetString(PyExc_TypeError, "undefined parameter type");
             return NULL;
         break;
     }

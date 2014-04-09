@@ -131,7 +131,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     
     if (!locker.getSemaphore()->wait(60000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while opening figure");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while opening figure");
         return -1;
     }
     
@@ -204,12 +204,14 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     QSharedPointer<ito::DataObject> newDataObj(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
     if (!ok)
     {
-        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+        return NULL;
     }
 
     if (areaIndex > self->cols * self->rows)
     {
-        return PyErr_Format(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -227,7 +229,8 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        return PyErr_Format(PyExc_RuntimeError, "timeout while plotting data object");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting data object");
+        return NULL;
     }
 
     if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
@@ -282,7 +285,8 @@ className : {str}, optional \n\
 
     if (areaIndex > self->cols * self->rows)
     {
-        return PyErr_Format(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -300,7 +304,8 @@ className : {str}, optional \n\
     QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        return PyErr_Format(PyExc_RuntimeError, "timeout while showing live image");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image");
+        return NULL;
     }
 
     if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
@@ -362,7 +367,7 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
     
     if (!locker.getSemaphore()->wait(30000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
         return NULL;
     }
     
@@ -409,7 +414,7 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     
     if (!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while hiding figure");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while hiding figure");
         return NULL;
     }
     
@@ -474,7 +479,8 @@ PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
 {
     if (self->guardedFigHandle.isNull())
     {
-        return PyErr_Format(PyExc_RuntimeError,"invalid figure");
+        PyErr_SetString(PyExc_RuntimeError,"invalid figure");
+        return NULL;
     }
     return Py_BuildValue("i", *(self->guardedFigHandle));
 }
@@ -509,7 +515,7 @@ of itom, else it is a independent window. \n\
     
     if (!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while getting dock status");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
         return NULL;
     }
     
@@ -605,12 +611,14 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
         text = PythonQtConversion::PyObjGetString(arg,false,ok);
         if (!ok || text != "all")
         {
-            return PyErr_Format(PyExc_RuntimeError, "argument must be either a figure handle or 'all'");
+            PyErr_SetString(PyExc_RuntimeError, "argument must be either a figure handle or 'all'");
+            return NULL;
         }
     }
     else if (handle <= 0)
     {
-        return PyErr_Format(PyExc_RuntimeError, "figure handle must be bigger than zero");
+        PyErr_SetString(PyExc_RuntimeError, "figure handle must be bigger than zero");
+        return NULL;
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -627,7 +635,7 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
     
     if (!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while closing figures");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while closing figures");
         return NULL;
     }
     

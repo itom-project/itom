@@ -2445,7 +2445,8 @@ void PythonEngine::pythonInterruptExecution() const
 //        {
 //            return PyErr_Occurred();
 //        }
-//        return PyErr_Format(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        PyErr_SetString(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        return NULL;
 //    }
 //}
 

@@ -189,7 +189,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     //argument must be a PyObject
     if(!PyArg_ParseTuple(args, "O", &obj)) //obj is borrowed reference
     {
-        PyErr_Format(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
+        PyErr_SetString(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
         return NULL;
     }
 
@@ -200,7 +200,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == NULL)
         {
             Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "ndarray argument is invalid");
+            PyErr_SetString(PyExc_ValueError, "ndarray argument is invalid");
             return NULL;
         }
 
@@ -233,7 +233,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == Py_NotImplemented)
         {
             //Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
+            PyErr_SetString(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
             return NULL;
         }
         else
@@ -339,7 +339,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     else
     {
         //Py_XDECREF(obj);
-        PyErr_Format(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
+        PyErr_SetString(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
         return NULL;
     }
 

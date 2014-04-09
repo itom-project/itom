@@ -186,7 +186,7 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     if (timeOut < 1)
     {
-        PyErr_Format(PyExc_TypeError, "minimum timeout is 1ms.");
+        PyErr_SetString(PyExc_TypeError, "minimum timeout is 1ms.");
         DELETE_AND_SET_NULL(self->callbackFunc);
         return -1;
     }
@@ -214,7 +214,7 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     else
     {
         Py_XDECREF(self->callbackFunc->m_callbackArgs);
-        PyErr_Format(PyExc_TypeError, "given method reference is not callable.");
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         delete self->callbackFunc;
         return -1;
     }
@@ -292,7 +292,7 @@ PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
     }
     else
     {
-        PyErr_Format(PyExc_RuntimeError, "timer is not available.");
+        PyErr_SetString(PyExc_RuntimeError, "timer is not available.");
         return NULL;
     }
 }

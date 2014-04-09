@@ -29,6 +29,7 @@
 #endif
 #include "../global.h"
 
+#include "pythonCommon.h"
 #include "pythonNpDataObject.h"
 #include "pythonRgba.h"
 
@@ -249,7 +250,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         if (! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
         {
             retValue += RetVal(retError);
-            PyErr_Format(PyExc_TypeError,"Given ndarray or ndDataObject has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+            PyErr_SetString(PyExc_TypeError,"Given ndarray or ndDataObject has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
             done = true;
         }
         else
@@ -293,7 +294,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     if (ndArray == NULL)
                     {
                         retValue += RetVal(retError);
-                        PyErr_Format(PyExc_TypeError,"An error occurred while transforming the given ndArray (or ndDataObject) to a c-contiguous array with a compatible type.");
+                        PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given ndArray (or ndDataObject) to a c-contiguous array with a compatible type.");
                         done = true;
                     }
                     else
@@ -305,7 +306,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         if (typeno == -1)
                         {
                             retValue += RetVal(retError);
-                            PyErr_Format(PyExc_TypeError,"While converting the given ndarray or ndDataObject to a compatible data type with respect to data object, an error occurred.");
+                            PyErr_SetString(PyExc_TypeError,"While converting the given ndarray or ndDataObject to a compatible data type with respect to data object, an error occurred.");
                             done = true;
                         }
                     }
@@ -380,7 +381,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     if (retCode != 0)
                     {
                         retValue += RetVal(retError);
-                        PyErr_Format(PyExc_TypeError,"error while copying tags from npDataObject to this dataObject.");
+                        PyErr_SetString(PyExc_TypeError,"error while copying tags from npDataObject to this dataObject.");
                     }
                     else
                     {
@@ -408,12 +409,12 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 if (dims < 0)
                 {
                     retValue += RetVal(retError);
-                    PyErr_Format(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
+                    PyErr_SetString(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
                 }
                 else if (dims > 255)
                 {
                     retValue += RetVal(retError);
-                    PyErr_Format(PyExc_TypeError,"Number of dimensions must be lower than 256.");
+                    PyErr_SetString(PyExc_TypeError,"Number of dimensions must be lower than 256.");
                 }
 
                 intDims = Py_SAFE_DOWNCAST(dims, Py_ssize_t, int);
@@ -441,7 +442,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         }
                         else if (tempSizes <= 0)
                         {
-                            PyErr_Format(PyExc_TypeError,"Element %d must be bigger than 1");
+                            PyErr_SetString(PyExc_TypeError,"Element %d must be bigger than 1");
                             retValue += RetVal(retError);
                             break;
                         }
@@ -456,12 +457,12 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     {
                         if (PySequence_Check(data) && PySequence_Length(data) != totalElems)
                         {
-                            PyErr_Format(PyExc_TypeError,"The sequence provided by data must have the same length than the total number of elements of the data object.");
+                            PyErr_SetString(PyExc_TypeError,"The sequence provided by data must have the same length than the total number of elements of the data object.");
                             retValue += RetVal(retError);
                         }
                         else if (!PySequence_Check(data) && PyFloat_Check(data) == false && PyLong_Check(data) == false && PyComplex_Check(data) == false)
                         {
-                            PyErr_Format(PyExc_TypeError,"The single value provided by data must be a numeric type.");
+                            PyErr_SetString(PyExc_TypeError,"The single value provided by data must be a numeric type.");
                             retValue += RetVal(retError);
                         }
                     }
@@ -712,26 +713,26 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
             }
             else
             {
-                PyErr_Format(PyExc_TypeError,"dtype name is unknown.");
+                PyErr_SetString(PyExc_TypeError,"dtype name is unknown.");
                 retValue += RetVal(retError);
             }
         }
         else
         {
-            PyErr_Format(PyExc_TypeError, "dimensions must be of type list(int size1, int size2, ...) or type tuple(int size1, int size2, ...)");
+            PyErr_SetString(PyExc_TypeError, "dimensions must be of type list(int size1, int size2, ...) or type tuple(int size1, int size2, ...)");
             retValue += RetVal(retError);
         }
     }
 
     if (!done && retValue.containsError())
     {
-        PyErr_Format(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
         retValue += RetVal(retError);
     }
     else if (!done && !retValue.containsError())
     {
         PyErr_Clear();
-        PyErr_Format(PyExc_TypeError,"number or arguments are invalid.");
+        PyErr_SetString(PyExc_TypeError,"number or arguments are invalid.");
         retValue += RetVal(retError);
     }
 
@@ -1039,12 +1040,12 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
             if (dims < 0)
             {
                 retValue += RetVal(retError);
-                PyErr_Format(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
+                PyErr_SetString(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
             }
             else if (dims > 255)
             {
                 retValue += RetVal(retError);
-                PyErr_Format(PyExc_TypeError,"Number of dimensions must be lower than 256.");
+                PyErr_SetString(PyExc_TypeError,"Number of dimensions must be lower than 256.");
             }
 
             if (!retValue.containsError())
@@ -1067,7 +1068,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
                     }
                     else if (tempSizes <= 0)
                     {
-                        PyErr_Format(PyExc_TypeError,"Element %d must be bigger than 1");
+                        PyErr_SetString(PyExc_TypeError,"Element %d must be bigger than 1");
                         retValue += RetVal(retError);
                         break;
                     }
@@ -1078,13 +1079,13 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
         }
         else
         {
-            PyErr_Format(PyExc_TypeError,"dtype name is unknown.");
+            PyErr_SetString(PyExc_TypeError,"dtype name is unknown.");
             retValue += RetVal(retError);
         }
     }
     else
     {
-        PyErr_Format(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
         retValue += RetVal(retError);
     }
 
@@ -1691,7 +1692,7 @@ int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *va
 
     if (self->dataObject->setValueUnit(unit))
     {
-        PyErr_Format(PyExc_RuntimeError, "set value unit failed");
+        PyErr_SetString(PyExc_RuntimeError, "set value unit failed");
         return -1;
     }
 
@@ -1737,7 +1738,7 @@ int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObj
 
     if (self->dataObject->setValueDescription(unit))
     {
-        PyErr_Format(PyExc_RuntimeError, "set value unit failed");
+        PyErr_SetString(PyExc_RuntimeError, "set value unit failed");
         return -1;
     }
 
@@ -1885,7 +1886,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         }
         default:
             Py_XDECREF(OutputTuple);
-            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+            PyErr_SetString(PyExc_NotImplementedError, "Type not implemented yet");
             return NULL;
     }
 
@@ -1897,7 +1898,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
 {
     if (self->dataObject == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "dataObject is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "dataObject is NULL");
         return -1;
     }
     
@@ -1940,7 +1941,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         typenum = NPY_COMPLEX128;
         break;
     default:
-        PyErr_Format(PyExc_RuntimeError, "type of dataObject is unknown.");
+        PyErr_SetString(PyExc_RuntimeError, "type of dataObject is unknown.");
         return -1;
     }
 
@@ -2032,7 +2033,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
         }
         default:
             Py_XDECREF(arr);
-            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+            PyErr_SetString(PyExc_NotImplementedError, "Type not implemented yet");
             return -1;
     }
 
@@ -2056,13 +2057,13 @@ int PythonDataObject::PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyO
 {
     if (self == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "dataObject is NULL");
         return -1;
     }
 
     if (self->dataObject == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "content of dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "content of dataObject is NULL");
         return -1;
     }
 
@@ -2070,7 +2071,7 @@ int PythonDataObject::PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyO
 
     if (PyList_Size(value) != 3)
     {
-        PyErr_Format(PyExc_ValueError, "row number do not match, matrix must be 3x3");
+        PyErr_SetString(PyExc_ValueError, "row number do not match, matrix must be 3x3");
         return -1;
     }
 
@@ -2082,7 +2083,7 @@ int PythonDataObject::PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyO
 
         if (PyList_Size(slice) != 3)
         {
-            PyErr_Format(PyExc_ValueError, "col number do not match, matrix must be 3x3");
+            PyErr_SetString(PyExc_ValueError, "col number do not match, matrix must be 3x3");
             return -1;
         }
 
@@ -2101,13 +2102,13 @@ PyObject* PythonDataObject::PyDataObject_getXYRotationalMatrix(PyDataObject *sel
 {
     if (self == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "dataObject is NULL");
         return NULL;
     }
 
     if (self->dataObject == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "content of dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "content of dataObject is NULL");
         return NULL;
     }
 
@@ -2173,25 +2174,25 @@ PyObject* PythonDataObject::PyDataObj_SetAxisOffset(PyDataObject *self, PyObject
     }
     if (length < 2)
     {
-        PyErr_Format(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
+        PyErr_SetString(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
         return NULL;
     }
     else if (length == 2)
     {
         if (!PyArg_ParseTuple(args, "id", &axisnum, &axisOffset))
         {
-            PyErr_Format(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
+            PyErr_SetString(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
             return NULL;
         }
     }
     else
     {
-        PyErr_Format(PyExc_ValueError, "to many input parameters specified");
+        PyErr_SetString(PyExc_ValueError, "to many input parameters specified");
         return NULL;
     }
     if (self->dataObject->setAxisOffset(axisnum, axisOffset))
     {
-        PyErr_Format(PyExc_RuntimeError, "Set axisoffset failed");
+        PyErr_SetString(PyExc_RuntimeError, "Set axisoffset failed");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2230,13 +2231,13 @@ PyObject* PythonDataObject::PyDataObj_SetAxisScale(PyDataObject *self, PyObject 
 
     if (!PyArg_ParseTuple(args, "id", &axisnum, &axisscale))
     {
-        PyErr_Format(PyExc_ValueError, "inputparameters are (int) axisnumber and (double) axis scale");
+        PyErr_SetString(PyExc_ValueError, "inputparameters are (int) axisnumber and (double) axis scale");
         return NULL;
     }
 
     if (self->dataObject->setAxisScale(axisnum, axisscale))
     {
-        PyErr_Format(PyExc_RuntimeError, "Set axis scale failed");
+        PyErr_SetString(PyExc_RuntimeError, "Set axis scale failed");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2275,14 +2276,14 @@ PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject *self, PyO
 
     if (!PyArg_ParseTuple(args, "is", &axisNum, &tagvalue))
     {
-        PyErr_Format(PyExc_ValueError, "Inputarguments are axisnumber and  value description");
+        PyErr_SetString(PyExc_ValueError, "Inputarguments are axisnumber and  value description");
         return NULL;
     }
 
     std::string tagValString(tagvalue);
     if (self->dataObject->setAxisDescription(axisNum, tagValString))
     {
-        PyErr_Format(PyExc_RuntimeError, "set axis description failed");
+        PyErr_SetString(PyExc_RuntimeError, "set axis description failed");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2327,7 +2328,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
     std::string tagValString(tagvalue);
     if (self->dataObject->setAxisUnit(axisNum, tagValString))
     {
-        PyErr_Format(PyExc_RuntimeError, "set axis unit failed");
+        PyErr_SetString(PyExc_RuntimeError, "set axis unit failed");
     }
     Py_RETURN_NONE;
 }
@@ -2362,7 +2363,7 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
         dType = false;
         if (!PyArg_ParseTuple(args, "ss", &tagName, &tagvalue))
         {
-            PyErr_Format(PyExc_ValueError, "input must be key (string) of tag and new tagvalue (str or double)");
+            PyErr_SetString(PyExc_ValueError, "input must be key (string) of tag and new tagvalue (str or double)");
             return NULL;
         }
     }
@@ -2372,7 +2373,7 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
     {
         if (self->dataObject->setTag(tagNameString, tagvalueD))
         {
-            PyErr_Format(PyExc_RuntimeError, "set tag value as double failed");
+            PyErr_SetString(PyExc_RuntimeError, "set tag value as double failed");
             return NULL;
         }
     }
@@ -2381,7 +2382,7 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
         std::string tagValString(tagvalue);
         if (self->dataObject->setTag(tagNameString, tagValString))
         {
-            PyErr_Format(PyExc_RuntimeError, "set tag value string failed");
+            PyErr_SetString(PyExc_RuntimeError, "set tag value string failed");
             return NULL;
         }
     }
@@ -2500,7 +2501,7 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject
     std::string unitString(unit);
     if (self->dataObject->addToProtocol(unitString))
     {
-        PyErr_Format(PyExc_RuntimeError, "Add line to protocol unit failed");
+        PyErr_SetString(PyExc_RuntimeError, "Add line to protocol unit failed");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2644,8 +2645,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         }
         else
         {
-//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
-            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            return NULL;
         }
     }
     else if (PyDataObject_Check(o2))
@@ -2657,14 +2658,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         }
         else
         {
-//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
-            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            return NULL;
         }
     }
     else
     {
-//        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
-        return PyErr_Format(PyExc_RuntimeError, "at least one operand must be a dataObject");
+        PyErr_SetString(PyExc_RuntimeError, "at least one operand must be a dataObject");
+        return NULL;
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
@@ -2720,8 +2721,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else
         {
-//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
-            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            return NULL;
         }
     }
     else if (PyDataObject_Check(o2))
@@ -2733,14 +2734,14 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else
         {
-//            return PyErr_Format(PyExc_RuntimeError,0,"second operand must be a dataObject, integer of float");
-            return PyErr_Format(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            return NULL;
         }
     }
     else
     {
-//        return PyErr_Format(PyExc_RuntimeError,0,"at least one operand must be a dataObject");
-        return PyErr_Format(PyExc_RuntimeError, "at least one operand must be a dataObject");
+        PyErr_SetString(PyExc_RuntimeError, "at least one operand must be a dataObject");
+        return NULL;
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
@@ -3279,7 +3280,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        return NULL;
     }
 
     Py_INCREF(o1);
@@ -3339,7 +3341,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        return NULL;
     }
 
     Py_INCREF(o1);
@@ -3871,7 +3874,8 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
 
     return (PyObject*)retObj;
 
-    //return PyErr_Format(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
+    // PyErr_SetString(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
+    // return NULL;
     //if (self->dataObject == NULL)
     //{
     //    PyErr_SetString(PyExc_ValueError, "data object is NULL");
@@ -4016,7 +4020,7 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
 
     if (!PyArg_ParseTuple(args, "|b", &regionOnly))
     {
-        PyErr_Format(PyExc_TypeError,"the region only flag must be 0 or 1");
+        PyErr_SetString(PyExc_TypeError,"the region only flag must be 0 or 1");
         return NULL;
     }
 
@@ -4069,7 +4073,8 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     PyObject *pyDataObject = NULL;
     if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
     {
-        return PyErr_Format(PyExc_RuntimeError,"argument is no data object");
+        PyErr_SetString(PyExc_RuntimeError,"argument is no data object");
+        return NULL;
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
@@ -4116,7 +4121,8 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     PyObject *pyDataObject = NULL;
     if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
     {
-        return PyErr_Format(PyExc_RuntimeError,"argument is no data object");
+        PyErr_SetString(PyExc_RuntimeError,"argument is no data object");
+        return NULL;
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
@@ -4154,7 +4160,7 @@ Not implemented yet.\n\
 ");
 PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args)
 {
-    PyErr_Format(PyExc_NotImplementedError,"Not implemented yet");
+    PyErr_SetString(PyExc_NotImplementedError,"Not implemented yet");
     return NULL;
 }
 
@@ -5098,13 +5104,13 @@ PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /
 
     if (self == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "dataObject is NULL");
         return NULL;
     }
 
     if (self->dataObject == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "content of dataObject is NULL");
+        PyErr_SetString(PyExc_ValueError, "content of dataObject is NULL");
         return NULL;
     }
 
@@ -5207,7 +5213,8 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     if (selfDO->getContinuous() == false)
     {
-        return PyErr_Format(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        return NULL;
     }
 
     selfDO->lockRead();
@@ -5245,9 +5252,12 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
         selfDO->unlock();
         if (ret.errorMessage())
         {
-            return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+            PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
+            return NULL;
+            //return PyErr_Format(PyExc_TypeError, ret.errorMessage());
         }
-        return PyErr_Format(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+        PyErr_SetString(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+        return NULL;
     }
 
 #if (NPY_FEATURE_VERSION < 0x00000007)
@@ -5312,7 +5322,8 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 
     if (selfDO->getContinuous() == false)
     {
-        return PyErr_Format(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        return NULL;
     }
 
     selfDO->lockRead();
@@ -5355,9 +5366,12 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         selfDO->unlock();
         if (ret.errorMessage())
         {
-            return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+            PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
+            return NULL;
+            //return PyErr_Format(PyExc_TypeError, ret.errorMessage());
         }
-        return PyErr_Format(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+        PyErr_SetString(PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
+        return NULL;
     }
 
     PyObject *retDict = PyDict_New();
@@ -6485,14 +6499,14 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
 
     if (length < 1)
     {
-        PyErr_Format(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
+        PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
         return NULL;
     }
     else if (length == 1)
     {
         if (!PyArg_ParseTuple(args, "i", &size))
         {
-            PyErr_Format(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
+            PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
             return NULL;
         }
     }
@@ -6500,13 +6514,13 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
     {
         if (!PyArg_ParseTuple(args, "is", &size, &type))
         {
-            PyErr_Format(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
+            PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
             return NULL;
         }
     }
     else
     {
-        PyErr_Format(PyExc_TypeError,"Argument of Eye-Method must be: int size [, char dtype (optional)]");
+        PyErr_SetString(PyExc_TypeError,"Argument of Eye-Method must be: int size [, char dtype (optional)]");
         return NULL;
     }
 
@@ -6530,13 +6544,13 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
         }
         else
         {
-            PyErr_Format(PyExc_TypeError,"size must be bigger than zero.");
+            PyErr_SetString(PyExc_TypeError,"size must be bigger than zero.");
             return NULL;
         }
     }
     else
     {
-        PyErr_Format(PyExc_TypeError,"unknown dtype");
+        PyErr_SetString(PyExc_TypeError,"unknown dtype");
         return NULL;
     }
 
@@ -6823,7 +6837,7 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
             break;
         }
         default:
-            PyErr_Format(PyExc_NotImplementedError, "Type not implemented yet");
+            PyErr_SetString(PyExc_NotImplementedError, "Type not implemented yet");
     }
 
     self->it++;

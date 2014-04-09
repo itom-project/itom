@@ -55,85 +55,6 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
-{
-    if (retval.containsError())
-    {
-        if (retval.errorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toLatin1().data());
-        }
-        return false;
-    }
-
-    if (retval.containsWarning())
-    {
-        std::cerr << "Warning while loading plugin: " << pluginName.toLatin1().data() << "\n" << std::endl;
-
-        if (retval.hasErrorMessage())
-        {
-            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
-        }
-    }
-    return true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool SetLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName)
-{
-    QString pName(pluginName);
-    return SetLoadPluginReturnValueMessage(retval, pName);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool SetReturnValueMessage(ito::RetVal &retval, QString &functionName)
-{
-    if (retval.containsError())
-    {
-        QByteArray name = functionName.toLatin1();
-        const char* msg = retval.errorMessage();
-        if (msg)
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg);
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s.", name.data());
-        }
-        return false;
-    }
-
-    if (retval.containsWarning())
-    {
-        std::cerr << "Warning invoking " << functionName.toLatin1().data() << "\n" << std::endl;
-        if (retval.hasErrorMessage())
-        {
-            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
-        }
-    }
-    return true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool SetReturnValueMessage(ito::RetVal &retval, const char *functionName)
-{
-    QString fName(functionName);
-    return SetReturnValueMessage(retval, fName);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 /** Helper function that accepts a python parameter list and returns pointers to the parameters' values and a list with their types
 *   @param [in]   args      list with python parameters
 *   @param [in]   length    number of parameters passed
@@ -291,13 +212,13 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
     {
         if (!PyArg_ParseTuple(args, "i", &output))
         {
-            PyErr_Format(PyExc_ValueError, "wrong input parameter");
+            PyErr_SetString(PyExc_ValueError, "wrong input parameter");
             return NULL;
         }
     }
     else if (length > 1)
     {
-        PyErr_Format(PyExc_ValueError, "wrong number of input arguments");
+        PyErr_SetString(PyExc_ValueError, "wrong number of input arguments");
         return NULL;
     }
 
@@ -347,7 +268,7 @@ PyObject* plugin_showConfiguration(ito::AddInBase *aib)
         }
     }
 
-    if (!SetReturnValueMessage(retval, "showConfiguration"))
+    if (!PythonCommon::setReturnValueMessage(retval, "showConfiguration", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -386,8 +307,7 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
             retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
         }
     }
-
-    if (!SetReturnValueMessage(retval, "showToolbox"))
+    if (!PythonCommon::setReturnValueMessage(retval, "showToolbox", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -424,8 +344,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
             retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
         }
     }
-
-    if (!SetReturnValueMessage(retval, "hideToolbox"))
+    if (!PythonCommon::setReturnValueMessage(retval, "hideToolbox", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -608,7 +527,7 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
         ret += ito::RetVal(ito::retError, 0, "Member 'getParam' of plugin could not be invoked (error in signal/slot connection).");
     }
 
-    if (!SetReturnValueMessage(ret, "getName"))
+    if (!PythonCommon::setReturnValueMessage(ret, "getName", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -698,8 +617,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
         }
     }
-
-    if (!SetReturnValueMessage(ret, "exec"))
+    if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
     {
         return NULL;
     }
@@ -712,7 +630,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         else if (paramsOut->size() == 1)
         {
             PyObject* out = PythonParamConversion::ParamBaseToPyObject((*paramsOut)[0]); //new ref
-            if (!SetReturnValueMessage(ret, "exec"))
+            if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
             {
                 return NULL;
             }
@@ -741,8 +659,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     break;
                 }
             }
-
-            if (!SetReturnValueMessage(ret, "exec"))
+            if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
             {
                 Py_DECREF(out);
                 return NULL;
@@ -778,7 +695,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 
     if (!PyArg_ParseTuple(args, "s", &paramName))
     {
-        PyErr_Format(PyExc_ValueError, "no parameter name specified");
+        PyErr_SetString(PyExc_ValueError, "no parameter name specified");
         return NULL;
     }
 
@@ -789,7 +706,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     QString additionalTag;
     if(ito::ParamHelper::parseParamName(paramName, nameOnly, hasIndex, index, additionalTag).containsError())
     {
-        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
+        PyErr_SetString(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
         return NULL;
     }
 
@@ -833,7 +750,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 
     result = ito::PythonParamConversion::ParamBaseToPyObject(*qsParam);
 
-    if (!SetReturnValueMessage(ret, "getParam"))
+    if (!PythonCommon::setReturnValueMessage(ret, "getParam", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -1083,7 +1000,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
 
     if(!PyArg_ParseTuple(args, "sO", &key, &value))
     {
-        PyErr_Format(PyExc_ValueError, "Parameter name and its value required.");
+        PyErr_SetString(PyExc_ValueError, "Parameter name and its value required.");
         return NULL;
     }
 
@@ -1094,7 +1011,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     QString additionalTag;
     if(ito::ParamHelper::parseParamName(key, paramName, hasIndex, index, additionalTag).containsError())
     {
-        PyErr_Format(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
+        PyErr_SetString(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
         return NULL;
     }
 
@@ -1170,7 +1087,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
          waitCond = NULL;
     }
 
-    if (!SetReturnValueMessage(ret, "setParam"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setParam", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -1292,7 +1209,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, "no plugin specified");
+        PyErr_SetString(PyExc_ValueError, "no plugin specified");
         return -1;
     }
     else if (length == 1) //!< copy constructor or name only
@@ -1329,7 +1246,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        PyErr_Format(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
         return -1;
     }
 
@@ -1341,7 +1258,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     }
     else
     {
-        PyErr_Format(PyExc_TypeError, "invalid parameters");
+        PyErr_SetString(PyExc_TypeError, "invalid parameters");
         return -1;
     }
 
@@ -1349,14 +1266,8 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = AIM->getInitParams(pluginName, ito::typeActuator, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if (retval.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
+
         return -1;
     }
 
@@ -1365,14 +1276,8 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
+
         return -1;
     }
 
@@ -1386,7 +1291,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
-            PyErr_Format(PyExc_RuntimeError, "error while parsing parameters.");
+            PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
             return -1;
         }
         Py_DECREF(params);
@@ -1409,7 +1314,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         paramsOptCpy.clear();
     }
 
-    if (!SetLoadPluginReturnValueMessage(retval, pluginName))
+    if (!PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin))
     {
         return -1;
     }
@@ -1573,14 +1478,14 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, "no axis specified");
+        PyErr_SetString(PyExc_ValueError, "no axis specified");
         return NULL;
     }
     else
     {
         if (parseParams(args, length, cargs, cargt) < 0)
         {
-            //PyErr_Format(PyExc_TypeError, "invalid parameters"); //message already set
+            //PyErr_SetString(PyExc_TypeError, "invalid parameters"); //message already set
             freeParams(length, cargt, cargs);
             return NULL;
         }
@@ -1590,7 +1495,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         if (cargt[0] != 'l')
         {
-            PyErr_Format(PyExc_TypeError, "invalid parameter type");
+            PyErr_SetString(PyExc_TypeError, "invalid parameter type");
             freeParams(length, cargt, cargs);
             return NULL;
         }
@@ -1601,7 +1506,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
         {
             if (cargt[n] != 'l')
             {
-                PyErr_Format(PyExc_TypeError, "invalid parameter type");
+                PyErr_SetString(PyExc_TypeError, "invalid parameter type");
                 axisVec.clear();
                 freeParams(length, cargt, cargs);
                 return NULL;
@@ -1648,7 +1553,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     freeParams(length, cargt, cargs);
     axisVec.clear();
 
-    if (!SetReturnValueMessage(ret, "calib"))
+    if (!PythonCommon::setReturnValueMessage(ret, "calib", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -1697,7 +1602,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, "no axis specified");
+        PyErr_SetString(PyExc_ValueError, "no axis specified");
         return NULL;
     }
     else
@@ -1714,7 +1619,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         if (cargt[0] != 'l')
         {
-            PyErr_Format(PyExc_TypeError, "invalid parameter type");
+            PyErr_SetString(PyExc_TypeError, "invalid parameter type");
             freeParams(length, cargt, cargs);
             return NULL;
         }
@@ -1725,7 +1630,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
         {
             if (cargt[n] != 'l')
             {
-                PyErr_Format(PyExc_TypeError, "invalid parameter type");
+                PyErr_SetString(PyExc_TypeError, "invalid parameter type");
                 freeParams(length, cargt, cargs);
                 axisVec.clear();
                 return NULL;
@@ -1769,7 +1674,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
 
     freeParams(length, cargt, cargs);
 
-    if (!SetReturnValueMessage(ret, "setOrigin"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setOrigin", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -1836,7 +1741,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
 
     if (length != 0)
     {
-        PyErr_Format(PyExc_ValueError, "too many parameters");
+        PyErr_SetString(PyExc_ValueError, "too many parameters");
         return NULL;
     }
 
@@ -1863,7 +1768,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
         ret += ito::RetVal(ito::retError, 0, "Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).");
     }
 
-    if (!SetReturnValueMessage(ret, "getStatus"))
+    if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -1921,14 +1826,14 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
 
     if (length < 1)
     {
-        PyErr_Format(PyExc_ValueError, "no axis specified");
+        PyErr_SetString(PyExc_ValueError, "no axis specified");
         return NULL;
     }
     else
     {
         if (parseParams(args, length, cargs, cargt) < 0)
         {
-            //PyErr_Format(PyExc_TypeError, "invalid parameters"); //message already set
+            //PyErr_SetString(PyExc_TypeError, "invalid parameters"); //message already set
             freeParams(length, cargt, cargs);
             return NULL;
         }
@@ -1938,7 +1843,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         if (cargt[0] != 'l')
         {
-            PyErr_Format(PyExc_TypeError, "invalid parameter type");
+            PyErr_SetString(PyExc_TypeError, "invalid parameter type");
             freeParams(length, cargt, cargs);
             return NULL;
         }
@@ -1949,7 +1854,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
         {
             if (cargt[n] != 'l')
             {
-                PyErr_Format(PyExc_TypeError, "invalid parameter type");
+                PyErr_SetString(PyExc_TypeError, "invalid parameter type");
                 freeParams(length, cargt, cargs);
                 axisVec.clear();
                 posVec.clear();
@@ -2012,7 +1917,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     freeParams(length, cargt, cargs);
     axisVec.clear();
 
-    if (!SetReturnValueMessage(ret, "getPos"))
+    if (!PythonCommon::setReturnValueMessage(ret, "getPos", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -2121,19 +2026,19 @@ ito::RetVal parsePosParams(PyObject *args, char **&cargs, char *&cargt, QVector<
 
     if (length < 2)
     {
-        PyErr_Format(PyExc_ValueError, "no axis specified of position");
+        PyErr_SetString(PyExc_ValueError, "no axis specified of position");
         return ito::retError;
     }
     else if ((length % 2) != 0)
     {
-        PyErr_Format(PyExc_ValueError, "number of axis and position values are not equal");
+        PyErr_SetString(PyExc_ValueError, "number of axis and position values are not equal");
         return ito::retError;
     }
     else
     {
         if (parseParams(args, length, cargs, cargt) < 0)
         {
-            //PyErr_Format(PyExc_TypeError, "invalid parameters"); //message already set
+            //PyErr_SetString(PyExc_TypeError, "invalid parameters"); //message already set
             freeParams(length, cargt, cargs);
             return ito::retError;
         }
@@ -2143,7 +2048,7 @@ ito::RetVal parsePosParams(PyObject *args, char **&cargs, char *&cargt, QVector<
     {
         if ((cargt[0] != 'l') || ((cargt[1] != 'f') && (cargt[1] != 'l')))
         {
-            PyErr_Format(PyExc_TypeError, "invalid parameter type");
+            PyErr_SetString(PyExc_TypeError, "invalid parameter type");
             freeParams(length, cargt, cargs);
             return ito::retError;
         }
@@ -2162,7 +2067,7 @@ ito::RetVal parsePosParams(PyObject *args, char **&cargs, char *&cargt, QVector<
         {
             if (cargt[n * 2] != 'l')
             {
-                PyErr_Format(PyExc_TypeError, "invalid parameter type");
+                PyErr_SetString(PyExc_TypeError, "invalid parameter type");
                 freeParams(length, cargt, cargs);
                 axisVec.clear();
                 posVec.clear();
@@ -2172,7 +2077,7 @@ ito::RetVal parsePosParams(PyObject *args, char **&cargs, char *&cargt, QVector<
 
             if ((cargt[n * 2 + 1] != 'f') && (cargt[n * 2 + 1] != 'l'))
             {
-                PyErr_Format(PyExc_TypeError, "invalid parameter type");
+                PyErr_SetString(PyExc_TypeError, "invalid parameter type");
                 freeParams(length, cargt, cargs);
                 axisVec.clear();
                 posVec.clear();
@@ -2272,7 +2177,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     axisVec.clear();
     posVec.clear();
 
-    if (!SetReturnValueMessage(ret, "setPosAbs"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setPosAbs", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -2359,7 +2264,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     axisVec.clear();
     posVec.clear();
 
-    if (!SetReturnValueMessage(ret, "setPosRel"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setPosRel", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -2467,7 +2372,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
         if (!aib)
         {
             std::cerr << "error closing plugin" << std::endl;
-            //PyErr_Format(PyExc_RuntimeError, "error closing plugin");
+            //PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
         }
         else
         {
@@ -2491,7 +2396,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             PythonCommon::transformRetValToPyException(retval);
             /*if (retval != ito::retOk)
             {
-                PyErr_Format(PyExc_RuntimeError, "error closing plugin");
+                PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
             }*/
         }
     }
@@ -2566,7 +2471,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, "no plugin specified");
+        PyErr_SetString(PyExc_ValueError, "no plugin specified");
         return -1;
     }
     else if (length == 1) //!< copy constructor or name only
@@ -2603,7 +2508,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        PyErr_Format(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
         return -1;
     }
 
@@ -2615,21 +2520,14 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     }
     else
     {
-        PyErr_Format(PyExc_TypeError, "invalid parameters");
+        PyErr_SetString(PyExc_TypeError, "invalid parameters");
         return -1;
     }
 
     retval = AIM->getInitParams(pluginName, ito::typeDataIO, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if (retval.errorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
         return -1;
     }
 
@@ -2637,14 +2535,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
         return -1;
     }
 
@@ -2657,7 +2548,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     {
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
-            PyErr_Format(PyExc_ValueError, "error while parsing parameters.");
+            PyErr_SetString(PyExc_ValueError, "error while parsing parameters.");
             return -1;
         }
         Py_DECREF(params);
@@ -2681,7 +2572,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         paramsOptCpy.clear();
     }
 
-    if (!SetLoadPluginReturnValueMessage(retval, pluginName))
+    if (!PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin))
     {
         return -1;
     }
@@ -2844,7 +2735,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 
     if (count < 0)
     {
-        return PyErr_Format(PyExc_ValueError, "argument 'count' must be >= 0");
+        PyErr_SetString(PyExc_ValueError, "argument 'count' must be >= 0");
+        return NULL;
     }
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = NULL;
@@ -2878,8 +2770,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 
         waitCond->deleteSemaphore();
         waitCond = NULL;
-
-        if (!SetReturnValueMessage(ret, "startDevice"))
+        if (!PythonCommon::setReturnValueMessage(ret, "startDevice", PythonCommon::invokeFunc))
         {
             return NULL;
         }
@@ -2963,7 +2854,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             waitCond->deleteSemaphore();
             waitCond = NULL;
 
-            if (!SetReturnValueMessage(ret, "stopDevice"))
+            if (!PythonCommon::setReturnValueMessage(ret, "stopDevice", PythonCommon::invokeFunc))
             {
                 return NULL;
             }
@@ -2998,7 +2889,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 
         if (timeout)
         {
-            if (!SetReturnValueMessage(ret, "stopDevice"))
+            if (!PythonCommon::setReturnValueMessage(ret, "stopDevice", PythonCommon::invokeFunc))
             {
                 return NULL;
             }
@@ -3012,7 +2903,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
     }
     else
     {
-        return PyErr_Format(PyExc_ValueError, "argument 'count' must be >= 0 or -1");
+        PyErr_SetString(PyExc_ValueError, "argument 'count' must be >= 0 or -1");
+        return NULL;
     }
 }
 
@@ -3077,7 +2969,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
-    if (!SetReturnValueMessage(ret, "acquire"))
+    if (!PythonCommon::setReturnValueMessage(ret, "acquire", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3149,7 +3041,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 
         if (dObj == NULL)
         {
-            PyErr_Format(PyExc_RuntimeError, "given data object is empty (internal dataObject-pointer is NULL)");
+            PyErr_SetString(PyExc_RuntimeError, "given data object is empty (internal dataObject-pointer is NULL)");
             return NULL;
         }
 
@@ -3179,13 +3071,13 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "arguments of method must be a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) - in the case that a length value is provided");
+            PyErr_SetString(PyExc_RuntimeError, "arguments of method must be a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) - in the case that a length value is provided");
             return NULL;
         }
 
         if (*maxLength <= 0)
         {
-            PyErr_Format(PyExc_RuntimeError, "length of given buffer is zero.");
+            PyErr_SetString(PyExc_RuntimeError, "length of given buffer is zero.");
             return NULL;
         }
 
@@ -3196,7 +3088,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     else
     {
         PyErr_Clear();
-        PyErr_Format(PyExc_RuntimeError, "arguments of method must be either one data object or a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) followed by an optional maximum length.");
+        PyErr_SetString(PyExc_RuntimeError, "arguments of method must be either one data object or a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) followed by an optional maximum length.");
         return NULL;
     }
 
@@ -3216,7 +3108,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         ret += locker.getSemaphore()->returnValue;
     }
     
-    if (!SetReturnValueMessage(ret, "getVal"))
+    if (!PythonCommon::setReturnValueMessage(ret, "getVal", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3288,13 +3180,13 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
         else
         {
-            PyErr_Format(PyExc_TypeError, "invalid parameters");
+            PyErr_SetString(PyExc_TypeError, "invalid parameters");
             return NULL;
         }
 
         if (dObj == NULL)
         {
-            PyErr_Format(PyExc_ValueError, "invalid dataObject");
+            PyErr_SetString(PyExc_ValueError, "invalid dataObject");
             return NULL;
         }
 
@@ -3329,7 +3221,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
     {
         if (length != 1)
         {
-            PyErr_Format(PyExc_ValueError, "too many parameters");
+            PyErr_SetString(PyExc_ValueError, "too many parameters");
             return NULL;
         }
 
@@ -3370,7 +3262,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         ret += ito::RetVal(ito::retError, 0, QObject::tr("copyVal function only implemented for typeADDA and typeGrabber").toLatin1().data());
     }
 
-    if (!SetReturnValueMessage(ret, "copyVal"))
+    if (!PythonCommon::setReturnValueMessage(ret, "copyVal", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3412,7 +3304,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 
     if (length == 0 || length > 2)
     {
-        PyErr_Format(PyExc_ValueError, "invalid number of parameters (1 or 2 arguments requested)");
+        PyErr_SetString(PyExc_ValueError, "invalid number of parameters (1 or 2 arguments requested)");
         return NULL;
     }
 
@@ -3427,7 +3319,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             datalen = PyLong_AsLong(tempObj1);
             if (datalen != 1)
             {
-                PyErr_Format(PyExc_ValueError, "only one dataobject can be passed");
+                PyErr_SetString(PyExc_ValueError, "only one dataobject can be passed");
                 return NULL;
             }
         }
@@ -3526,7 +3418,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            PyErr_Format(PyExc_TypeError, "wrong parameter type (char buffer | byte array)");
+            PyErr_SetString(PyExc_TypeError, "wrong parameter type (char buffer | byte array)");
             return NULL;
         }
 
@@ -3538,7 +3430,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             }
             else
             {
-                PyErr_Format(PyExc_RuntimeError, "given length parameter must be a fixed-point number");
+                PyErr_SetString(PyExc_RuntimeError, "given length parameter must be a fixed-point number");
                 return NULL;
             }
         }
@@ -3572,7 +3464,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         waitCond = NULL;
     }
 
-    if (!SetReturnValueMessage(ret, "setVal"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setVal", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3632,7 +3524,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
-    if (!SetReturnValueMessage(ret, "enableAutoGrabbing"))
+    if (!PythonCommon::setReturnValueMessage(ret, "enableAutoGrabbing", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3700,7 +3592,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
-    if (!SetReturnValueMessage(ret, "disableAutoGrabbing"))
+    if (!PythonCommon::setReturnValueMessage(ret, "disableAutoGrabbing", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -3774,7 +3666,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
-    if (!SetReturnValueMessage(ret, "setAutoGrabbing"))
+    if (!PythonCommon::setReturnValueMessage(ret, "setAutoGrabbing", PythonCommon::invokeFunc))
     {
         return NULL;
     }
@@ -4003,7 +3895,7 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
         ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
         if (!aib)
         {
-            PyErr_Format(PyExc_RuntimeError, "error closing plugin");
+            PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
         }
         else
         {
@@ -4063,7 +3955,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, "no plugin specified");
+        PyErr_SetString(PyExc_ValueError, "no plugin specified");
         return -1;
     }
     else if (length == 1) //!< copy constructor or name only
@@ -4099,7 +3991,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        PyErr_Format(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
         return -1;
     }
 
@@ -4111,21 +4003,14 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     }
     else
     {
-        PyErr_Format(PyExc_TypeError, "invalid parameters");
+        PyErr_SetString(PyExc_TypeError, "invalid parameters");
         return -1;
     }
 
     retval = AIM->getInitParams(pluginName, ito::typeAlgo, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        if (retval.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setLoadPluginReturnValueMessage(retval, pluginName);
         return -1;
     }
 
@@ -4134,14 +4019,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
     retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
     if (retval.containsWarningOrError())
     {
-        if (retval.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s\n", pluginName.toLatin1().data(), retval.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s\n", pluginName.toLatin1().data());
-        }
+        PythonCommon::setLoadPluginReturnValueMessage(retval, pluginName);
         return -1;
     }
 
@@ -4155,7 +4033,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
 
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
-            PyErr_Format(PyExc_RuntimeError, "error while parsing parameters.");
+            PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
             return -1;
         }
         Py_DECREF(params);

@@ -184,17 +184,19 @@ static PyObject * PyMatlabSessionObject_run(PyMatlabSessionObject *self, PyObjec
         return NULL;
     sprintf(command,function_wrap,stringarg);
     if (engEvalString(self->ep,command)!=0)
-        return PyErr_Format(PyExc_RuntimeError,
-                "Was not able to evaluate command: %s",command);
+    {
+        return PyErr_Format(PyExc_RuntimeError, "Was not able to evaluate command: %s",command);
+    }
     if ((mxresult = engGetVariable(self->ep,"pymatlaberrstring"))==NULL)
-        return PyErr_Format(PyExc_RuntimeError,"%s",
-                "can't get internal variable: pymatlaberrstring");
+    {
+        PyErr_SetString(PyExc_RuntimeError,"%s", "can't get internal variable: pymatlaberrstring");
+        return NULL;
+    }
     if (strcmp( mxArrayToString(mxresult),"")!=0)
     {
         /*make sure 'pymatlaberrstring' is empty or not exist until next call*/
         status = engEvalString(self->ep,"clear pymatlaberrstring");
-        return PyErr_Format(PyExc_RuntimeError,"Error from Matlab: %s end.",
-                mxArrayToString(mxresult));
+        return PyErr_Format(PyExc_RuntimeError,"Error from Matlab: %s end.", mxArrayToString(mxresult));
     }
     free((void*)command);
     Py_RETURN_NONE;
@@ -228,7 +230,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxINT64_CLASS , mxREAL)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((long*)mxGetData(mxarray))[0] = PyLong_AsLong(obj);
@@ -237,7 +240,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxDOUBLE_CLASS , mxREAL)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((double*)mxGetData(mxarray))[0] = PyFloat_AsDouble(obj);
@@ -246,7 +250,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxDOUBLE_CLASS , mxCOMPLEX)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((double*)mxGetData(mxarray))[0] = PyComplex_RealAsDouble(obj);
@@ -487,7 +492,7 @@ static PyObject * PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, P
                         (npy_intp*) mxGetDimensions(mx), mxtonpy[mxGetClassID(mx)],
                         NULL, mxGetData(mx), NULL, NPY_F_CONTIGUOUS, NULL)))
         {
-            return PyErr_Format(PyExc_AttributeError,"Couldn't convert to PyArray");
+            return PyErr_SetString(PyExc_AttributeError,"Couldn't convert to PyArray");
         }
 
          return (PyObject*)PyArray_GETCONTIGUOUS((PyArrayObject*)result); //make array c-contiguous
@@ -600,7 +605,7 @@ PyMODINIT_FUNC init_matlab()
 
     if (module == NULL)
     {
-        PyErr_Format(PyExc_AttributeError,"fail in init: module is zero");
+        PyErr_SetString(PyExc_AttributeError,"fail in init: module is zero");
         goto fail;
     }
 
@@ -608,7 +613,7 @@ PyMODINIT_FUNC init_matlab()
 
     if (PyType_Ready(&PyMatlabSessionObjectType) < 0)
     {
-        //PyErr_Format(PyExc_AttributeError,"fail in init: pyMatlabSessionObjectType is not ready");
+        //PyErr_SetString(PyExc_AttributeError,"fail in init: pyMatlabSessionObjectType is not ready");
         goto fail;
     }
     Py_INCREF(&PyMatlabSessionObjectType);
