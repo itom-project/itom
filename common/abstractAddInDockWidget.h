@@ -99,7 +99,7 @@ namespace ito
 
                 \sa observeInvocation
             */
-            virtual ito::RetVal setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel = msgLevelWarningAndError) const;
+            ito::RetVal setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel = msgLevelWarningAndError) const;
 
             //! invokes AddInBase::setParamVector of plugin in order to set multiple given parameters
             /*!
@@ -112,7 +112,7 @@ namespace ito
 
                 \sa observeInvocation
             */
-            virtual ito::RetVal setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel = msgLevelWarningAndError) const;
+            ito::RetVal setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel = msgLevelWarningAndError) const;
             
             //! observes the status of the given semaphore and returns after the semaphore has been released or a timeout occurred
             /*!
@@ -129,7 +129,58 @@ namespace ito
 
                 \sa setPluginParameter, setPluginParameters
             */
-            virtual ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
+            ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
+
+            //! invokes AddInActuator::setPosRel or AddInActuator::setPosAbs of plugin in order to force a movement of one or multiple axes
+            /*!
+                Use this method to thread-safely position one or multiple axes of an actuator plugin. Do not directly call setPosRel
+                or setPosAbs of the plugin, since this is not thread safe.
+
+                This method waits until the movement ended (if the movement has been configured to by synchronous, plugin parameter)
+
+                \param axes is a vector of axes indices (zero-based)
+                \param positions are the relative or absolute positions (vector with the same length than axes) in mm or degree
+                \param relNotAbs indicates a relative movement if true, else an absolute movement
+                \param msgLevel defines if any warnings or errors should be displayed within an appropriate message box.
+                \return RetVal returns retOk or any other warning or error depending on success (error as well if the plugin is no actuator plugin).
+
+                \sa observeInvocation
+            */
+            ito::RetVal setActuatorPosition(QVector<int> axes, QVector<double> positions, bool relNotAbs, MessageLevel msgLevel = msgLevelWarningAndError) const;
+
+            //! invokes AddInActuator::setPosRel or AddInActuator::setPosAbs of plugin in order to force a movement of one axis
+            /*!
+                Use this method to thread-safely position one axis of an actuator plugin. Do not directly call setPosRel
+                or setPosAbs of the plugin, since this is not thread safe.
+
+                This method waits until the movement ended (if the movement has been configured to by synchronous, plugin parameter)
+
+                \param axis is the index of the axis (zero-based)
+                \param position is the relative or absolute position in mm or degree
+                \param relNotAbs indicates a relative movement if true, else an absolute movement
+                \param msgLevel defines if any warnings or errors should be displayed within an appropriate message box.
+                \return RetVal returns retOk or any other warning or error depending on success (error as well if the plugin is no actuator plugin).
+
+                \sa observeInvocation
+            */
+            ito::RetVal setActuatorPosition(int axis, double position, bool relNotAbs, MessageLevel msgLevel = msgLevelWarningAndError) const;
+
+            //! method to immediately set the interrupt flag of the actuator
+            /*!
+                Call this method in order to thread-safely and intermediately set the interrupt flag of the actuator.
+
+                The actuator should check this flag with isInterrupted() and stop the movement if possible.
+            */
+            ito::RetVal setActuatorInterrupt() const;
+
+            //! method to request the current status, positions and target positions from the actuator plugin
+            /*!
+                This method invokes the slot requestStatusAndPosition of the actuator plugin, that should get the
+                current status, positions and target positions and emit these. Finally, the slots targetChanged and
+                actuatorStatusChanged (depending on the boolean arguments) of this dock widget are called by means
+                of a callback.
+            */
+            ito::RetVal requestActuatorStatusAndPositions(bool sendCurrentPos, bool sendTargetPos, MessageLevel msgLevel = msgLevelWarningAndError) const;
 
         private:
             AbstractAddInDockWidgetPrivate* d; /*! private data pointer of this class. */
@@ -155,8 +206,28 @@ namespace ito
             */
             virtual void identifierChanged(const QString &identifier) = 0;
         
-            //slots for actuator plugins
+            //! slot invoked if the status or current position of an actuator plugin has been changed
+            /*!
+                overload this method if you want to react on such changes.
+                Usually this slot is only connected in the dockWidgetVisibilityChanged method of an actuator plugin.
+
+                You don't need to overload this in non-actuator plugin based dock widgets.
+
+                \param status vector with status values for each axis (usually corresponds to ito::AddInActuator::m_currentStatus)
+                \param actPosition vector with current position values (absolute in mm or degree). This vector can also be empty, if only status values have been changed.
+                        (usually corresponds to ito::AddInActuator::m_currentPos)
+            */
             virtual void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
+
+            //! slot invoked if the target position of an actuator plugin has been changed
+            /*!
+                overload this method if you want to react on such changes.
+                Usually this slot is only connected in the dockWidgetVisibilityChanged method of an actuator plugin.
+
+                You don't need to overload this in non-actuator plugin based dock widgets.
+
+                \param targetPositions is the vector of target positions (in mm or degree). Usually this corresponds to the member ito::AddInActuator::m_targetPos
+            */
             virtual void targetChanged(QVector<double> targetPositions);
     };
 } //end namespace ito

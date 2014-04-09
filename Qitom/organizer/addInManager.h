@@ -27,6 +27,9 @@
 
 #include "common/addInInterface.h"
 #include "DataObject/dataobj.h"
+#if ITOM_POINTCLOUDLIBRARY > 0
+    #include "PointCloud/pclStructures.h"
+#endif
 #include "../models/PlugInModel.h"
 #include "algoInterfaceValidator.h"
 
@@ -80,9 +83,6 @@ Q_DECLARE_METATYPE(StringMap)
 
 Q_DECLARE_METATYPE(ito::DataObject)
 
-//Q_DECLARE_METATYPE(ito::PCLPointCloud)
-//Q_DECLARE_METATYPE(ito::PCLPoint)
-//Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 
 namespace ito
 {

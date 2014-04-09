@@ -32,8 +32,8 @@ class MyGrabberInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
     public:
-        MSMediaFoundationInterface();
-        ~MSMediaFoundationInterface();
+        MyGrabberInterface();
+        ~MyGrabberInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:

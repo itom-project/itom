@@ -1330,16 +1330,17 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            msg = QObject::tr("- unknown message -").toLatin1();
+            //msg = QObject::tr("- unknown message -").toUtf8();
+            msg = QString("- unknown message -").toUtf8();
         }
         else
         {
-            msg = retVal.errorMessage();
+            msg = QString(retVal.errorMessage()).toUtf8();
         }
 
         if (retVal.containsError())
         {
-            PyErr_Format(exceptionIfError, msg.data());
+            PyErr_SetString(exceptionIfError, msg.data());
             return false;
         }
         else
@@ -1350,6 +1351,178 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
 
     return true;
 }
+/*
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonCommon::setLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
+{
+    if (retval.containsError())
+    {
+        QString errMSG(retval.errorMessage());
+        if (!errMSG.isEmpty())
+        {
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toUtf8().data(), errMSG.toUtf8().data());
+        }
+        else
+        {
+            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toUtf8().data());
+        }
+        return false;
+    }
 
+    if (retval.containsWarning())
+    {
+        std::cerr << "Warning while loading plugin: " << pluginName.toLatin1().data() << "\n" << std::endl;
+
+        if (retval.hasErrorMessage())
+        {
+            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
+        }
+        else
+        {
+            std::cerr << " Message: No warning message indicated.\n" << std::endl;
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonCommon::setLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName)
+{
+    QString pName(pluginName);
+    return PythonCommon::setLoadPluginReturnValueMessage(retval, pName);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retval, QString &functionName)
+{
+    if (retval.containsError())
+    {
+        QByteArray name = functionName.toUtf8();
+        QString msg(retval.errorMessage());
+        if (!msg.isEmpty())
+        {
+            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg.toUtf8().data());
+        }
+        else
+        {
+            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s.", name.data());
+        }
+        return false;
+    }
+
+    if (retval.containsWarning())
+    {
+        std::cerr << "Warning invoking " << functionName.toLatin1().data() << "\n" << std::endl;
+        if (retval.hasErrorMessage())
+        {
+            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
+        }
+        else
+        {
+            std::cerr << " Message: No warning message indicated.\n" << std::endl;
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retval, const char *functionName)
+{
+    QString fName(functionName);
+    return PythonCommon::setReturnValueMessage(retval, fName);
+}*/
+
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const int &errorMSG, PyObject *exceptionIfError)
+{
+    char predefMSG0[100] = {0};
+    char predefMSG1[100] = {1};
+
+    if (retVal.containsError())
+    {
+
+        switch(errorMSG)
+        {
+            case PythonCommon::noMsg:
+            default:
+                sprintf(predefMSG0, "%s with message: \n%s");
+                sprintf(predefMSG1, "%s with unspecified error.");
+                break;
+
+            case PythonCommon::loadPlugin:
+                sprintf(predefMSG0, "Could not load plugin %s with error message: \n%s");
+                sprintf(predefMSG1, "Could not load plugin %s with unspecified error.");
+                break;
+            case PythonCommon::runFunc:
+                sprintf(predefMSG0, "Error executing function %s with error message: \n%s");
+                sprintf(predefMSG1, "Error executing function %s with unspecified error.");
+                break;
+            case PythonCommon::invokeFunc:
+                sprintf(predefMSG0, "Error invoking function %s with error message: \n%s");
+                sprintf(predefMSG1, "Unspecified Error invoking function %s.");
+                break;
+            case PythonCommon::getProperty:
+                sprintf(predefMSG0, "Error while getting property info %s with error message: \n%s");
+                sprintf(predefMSG0, "Unspecified error while getting property info %s.");
+                break;
+            case PythonCommon::execFunc:
+                sprintf(predefMSG0, "Error invoke exec-function %s with error message: \n%s");
+                sprintf(predefMSG1, "Error invoke exec-function %s with unspecified error.");
+                break;
+        }
+
+        QString errMSG(retVal.errorMessage());
+        if (!errMSG.isEmpty())
+        {
+            PyErr_Format(exceptionIfError, predefMSG0, objName.toUtf8().data(), errMSG.toUtf8().data());
+        }
+        else
+        {
+            PyErr_Format(exceptionIfError, predefMSG1, objName.toUtf8().data());
+        }
+        return false;
+    }
+
+    if (retVal.containsWarning())
+    {
+        switch(errorMSG)
+        {
+            case PythonCommon::noMsg:
+            default:
+                sprintf(predefMSG0, "Warning : ");
+                break;
+
+            case PythonCommon::loadPlugin:
+                sprintf(predefMSG0, "Warning while loading plugin: ");
+                break;
+            case PythonCommon::execFunc:
+                sprintf(predefMSG0, "Warning while invoke exec-function: ");
+                break;
+            case PythonCommon::invokeFunc:
+                sprintf(predefMSG0, "Warning while invoke function: ");
+                break;
+            case PythonCommon::getProperty:
+                sprintf(predefMSG0, "Warning while getting property info: ");
+                break;   
+        }
+
+        std::cerr << predefMSG0 << objName.toLatin1().data() << "\n" << std::endl;
+
+        if (retVal.hasErrorMessage())
+        {
+            std::cerr << " Message: " << retVal.errorMessage() << "\n" << std::endl;
+        }
+        else
+        {
+            std::cerr << " Message: No warning message indicated.\n" << std::endl;
+        }
+    }
+    return true;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const int &errorMSG, PyObject *exceptionIfError)
+{
+    QString pName(objName);
+    return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError);
+}
 //------------------------------------------------------------------------------------------------------------------
 } //end namespace ito

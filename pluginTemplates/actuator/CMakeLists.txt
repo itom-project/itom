@@ -7,7 +7,7 @@
 ###################################################################
 ###################################################################
 
-SET (target_name AlgoPlugin) #->replace AlgoPlugin by the name of your plugin (one word)
+SET (target_name MyActuator) #->replace MyActuator by the name of your plugin (one word)
 
 project(${target_name})
 
@@ -130,13 +130,17 @@ LINK_DIRECTORIES(
 #
 #################################################################
 set(plugin_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/myActuator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/myActuator.cpp
     #add further source files here
 )
 
@@ -147,7 +151,8 @@ if(MSVC)
 endif(MSVC)
 
 set(plugin_UI
-    #add absolute pathes to any *.ui files
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyActuator.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.ui
 )
 
 set(plugin_RCC
@@ -232,7 +237,7 @@ PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TR
 # 
 # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 #################################################################
-PLUGIN_DOCUMENTATION(${target_name} algoPlugin)
+PLUGIN_DOCUMENTATION(${target_name} myGrabber)
 
 #################################################################
 # Post-Build Copy Operations

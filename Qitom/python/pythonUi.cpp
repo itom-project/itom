@@ -146,7 +146,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         if(*objectID == 0)
         {
-            PyErr_Format(PyExc_RuntimeError, "attribute is no widget name of this user interface");
+            PyErr_SetString(PyExc_RuntimeError, "attribute is no widget name of this user interface");
             return -1;
         }
         else
@@ -165,7 +165,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     else
     {
         PyErr_Clear();
-        PyErr_Format(PyExc_TypeError, "Arguments must be an object of type ui followed by an object name (string).");
+        PyErr_SetString(PyExc_TypeError, "Arguments must be an object of type ui followed by an object name (string).");
         return -1;
     }
 
@@ -173,7 +173,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     //if the following if-block is commented, the methodDescriptionList will be delay-loaded at the time when it is needed for the first time.
     /*if(loadMethodDescriptionList(self) == false)
     {
-        PyErr_Format(PyExc_TypeError, "MethodDescriptionList for this UiItem could not be loaded");
+        PyErr_SetString(PyExc_TypeError, "MethodDescriptionList for this UiItem could not be loaded");
         return -1;
     }*/
 
@@ -225,7 +225,7 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while getting number of properties");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting number of properties");
         return 0;
     }
 
@@ -241,7 +241,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     QString propName = PythonQtConversion::PyObjGetString(key,false,ok);
     if(!ok)
     {
-        PyErr_Format(PyExc_RuntimeError, "property name string could not be parsed.");
+        PyErr_SetString(PyExc_RuntimeError, "property name string could not be parsed.");
         return NULL;
     }
     propNames << propName;
@@ -271,7 +271,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while reading property/properties");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while reading property/properties");
         return NULL;
     }
 
@@ -293,7 +293,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 
     if(!ok)
     {
-        PyErr_Format(PyExc_RuntimeError, "key must be a string");
+        PyErr_SetString(PyExc_RuntimeError, "key must be a string");
         return -1;
     }
 
@@ -304,7 +304,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     }
     else
     {
-        PyErr_Format(PyExc_ValueError, "property value could not be transformed to QVariant.");
+        PyErr_SetString(PyExc_ValueError, "property value could not be transformed to QVariant.");
         return -1;
     } 
 
@@ -327,7 +327,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while writing property");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while writing property");
         return -1;
     }
 
@@ -531,13 +531,13 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     }
     else
     {
-        PyErr_Format(PyExc_RuntimeError, "unknown method type.");
+        PyErr_SetString(PyExc_RuntimeError, "unknown method type.");
         return NULL;
     }
 
     if(!locker2.getSemaphore()->wait(50000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while calling slot");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while calling slot");
         return NULL;
     }
 
@@ -594,12 +594,12 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 
     if(!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
     {
-        PyErr_Format(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
     }
     if(!PyCallable_Check(callableMethod))
     {
-        PyErr_Format(PyExc_TypeError, "given method reference is not callable.");
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         return NULL;
     }
 
@@ -630,13 +630,13 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while analysing signal signature");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
     }
 
     if(*sigId == -1)
     {
-        PyErr_Format(PyExc_RuntimeError, "signal signature is invalid.");
+        PyErr_SetString(PyExc_RuntimeError, "signal signature is invalid.");
         return NULL;
     }
 
@@ -645,7 +645,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     {
         if(!signalMapper->addSignalHandler(*objPtr, signalSignature, *sigId, callableMethod, *argTypes))
         {
-            PyErr_Format(PyExc_RuntimeError, "the connection could not be established.");
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
         }
     }
@@ -683,7 +683,7 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
 
     if(!PyArg_ParseTuple(args, "s", &signalSignature))
     {
-        PyErr_Format(PyExc_TypeError, "Arguments must be a signal signature");
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature");
         return NULL;
     }
 
@@ -709,7 +709,7 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while analysing signal signature");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
     }
 
@@ -744,12 +744,12 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 
     if(!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
     {
-        PyErr_Format(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
     }
     if(!PyCallable_Check(callableMethod))
     {
-        PyErr_Format(PyExc_TypeError, "given method reference is not callable.");
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         return NULL;
     }
 
@@ -780,13 +780,13 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while analysing signal signature");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
     }
 
     if(*sigId == -1)
     {
-        PyErr_Format(PyExc_RuntimeError, "signal signature is invalid.");
+        PyErr_SetString(PyExc_RuntimeError, "signal signature is invalid.");
         return NULL;
     }
 
@@ -795,7 +795,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
     {
         if(signalMapper->removeSignalHandler(*objPtr, signalSignature, *sigId, callableMethod))
         {
-            PyErr_Format(PyExc_RuntimeError, "the connection could not be disconnected.");
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be disconnected.");
             return NULL;
         }
     }
@@ -850,7 +850,8 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError, "property name string could not be parsed.");
+            PyErr_SetString(PyExc_RuntimeError, "property name string could not be parsed.");
+            return NULL;
         }
     }
     else if(PySequence_Check(propertyNames))
@@ -1024,7 +1025,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while getting property information");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting property information");
         return NULL;
     }
 
@@ -1032,14 +1033,9 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
     if(retValue.containsError())
     {
-        if(retValue.hasErrorMessage())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error while getting property infos with error message: \n%s", retValue.errorMessage());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error while getting property infos.");
-        }
+
+        if(propertyName) PythonCommon::setReturnValueMessage(retValue, propertyName, PythonCommon::getProperty);
+        else PythonCommon::setReturnValueMessage(retValue, "???", PythonCommon::getProperty);
         return NULL;
     }
     else if(retValue.containsWarning())
@@ -1094,7 +1090,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
     else
     {
-        PyErr_Format(PyExc_RuntimeError, QString("the property '%1' does not exist.").arg(propNameString).toLatin1());
+        PyErr_SetString(PyExc_RuntimeError, QString("the property '%1' does not exist.").arg(propNameString).toUtf8().data());
         return NULL;
     }
 
@@ -1618,7 +1614,7 @@ void PythonUi::PyUi_dealloc(PyUi* self)
         if(!locker.getSemaphore()->wait(5000))
         {
             std::cerr << "timeout while closing dialog" << std::endl;
-            //PyErr_Format(PyExc_RuntimeError, "timeout while closing dialog");
+            //PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
         }
     }
 
@@ -1702,7 +1698,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bb", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose))
     {
-        //PyErr_Format(PyExc_TypeError,"Arguments does not fit to required list of arguments. See help(ui)."); //message is already set by method above and the text is more specific.
+        //PyErr_SetString(PyExc_TypeError,"Arguments does not fit to required list of arguments. See help(ui)."); //message is already set by method above and the text is more specific.
         //Py_XDECREF(bytesFilename); //error: crash if bytesFilename is deleted here. Why?
         return -1;
     }
@@ -1710,14 +1706,14 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     //check values:
     if(self->winType < 0 || self->winType > 2)
     {
-        PyErr_Format(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1) or TYPEDOCKWIDGET (2)");
+        PyErr_SetString(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1) or TYPEDOCKWIDGET (2)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
 
     if(self->buttonBarType < 0 || self->buttonBarType > 2)
      {
-        PyErr_Format(PyExc_ValueError,"Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
+        PyErr_SetString(PyExc_ValueError,"Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
@@ -1779,7 +1775,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     
     if(!locker.getSemaphore()->wait(60000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while opening dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while opening dialog");
         return -1;
     }
     
@@ -1879,7 +1875,7 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     {
         if(!locker.getSemaphore()->wait(30000))
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
             return NULL;
         }
     }
@@ -1925,7 +1921,7 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     
     if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while hiding dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while hiding dialog");
         return NULL;
     }
     
@@ -1966,7 +1962,7 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
     
     if(!locker.getSemaphore()->wait(5000))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while getting visible status");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting visible status");
         return NULL;
     }
     
@@ -2067,13 +2063,13 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 
         if (timeout >= 0 && counter > (timeout / 100) && c>=0)
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
     /*if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
     }*/
     
@@ -2168,13 +2164,13 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 
         if (timeout >= 0 && counter > (timeout / 100) && c>=0)
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
     /*if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
     }*/
     
@@ -2296,13 +2292,13 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
         if (timeout >= 0 && counter > (timeout / 100) && c>=0)
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
     /*if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
     }*/
     
@@ -2387,13 +2383,13 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
         if (timeout >= 0 && counter > (timeout / 100) && c>=0)
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
     /*if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing input dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
         return NULL;
     }*/
     
@@ -2558,13 +2554,13 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
         if (timeout >= 0 && counter > (timeout / 100) && c>=0)
         {
-            PyErr_Format(PyExc_RuntimeError, "timeout while showing message box");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing message box");
             return NULL;
         }
     }
     /*if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing message box");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing message box");
         return NULL;
     }*/
 
@@ -2631,7 +2627,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     
     if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
         return NULL;
     }
 
@@ -2709,7 +2705,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     
     if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
         return NULL;
     }
 
@@ -2789,7 +2785,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     
     if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while showing dialog");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
         return NULL;
     }
 
@@ -2833,7 +2829,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
     if (length == 0)
     {
-        PyErr_Format(PyExc_ValueError, QObject::tr("no widget name specified").toLatin1());
+        PyErr_SetString(PyExc_ValueError, QObject::tr("no widget name specified").toUtf8().data());
         return NULL;
     }
     
@@ -2848,7 +2844,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     ito::AddInManager *AIM = ito::AddInManager::getInstance();
     if (!AIM)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("no addin-manager found").toLatin1());
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
         return NULL;
     }
 
@@ -2856,21 +2852,21 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     algoWidgetName = PythonQtConversion::PyObjGetString(pnameObj, true, ok);
     if(!ok)
     {
-        PyErr_Format(PyExc_TypeError, QObject::tr("the first parameter must contain the widget name as string").toLatin1());
+        PyErr_SetString(PyExc_TypeError, QObject::tr("the first parameter must contain the widget name as string").toUtf8().data());
         return NULL;
     }
 
     const ito::AddInAlgo::AlgoWidgetDef *def = AIM->getAlgoWidgetDef( algoWidgetName );
     if(def == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toLatin1().data());
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toUtf8().data());
         return NULL;
     }
 
     const ito::FilterParams *filterParams = AIM->getHashedFilterParams(def->m_paramFunc);
     if(!filterParams)
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toLatin1().data());
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
         return NULL;
     }
 
@@ -2879,7 +2875,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     retVal = def->m_paramFunc(&paramsMand, &paramsOpt);
     if (retVal.containsWarningOrError())
     {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toLatin1(), QObject::tr(retVal.errorMessage()).toLatin1().data());
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toLatin1(), QObject::tr(retVal.errorMessage()).toLatin1().data());
         return NULL;
     }*/
 
@@ -2887,7 +2883,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)
     //if (parseInitParams(&paramsMand, &paramsOpt, params, kwds) != ito::retOk)
     {
-        PyErr_Format(PyExc_RuntimeError, "error while parsing parameters.");
+        PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
     }
     Py_DECREF(params);
@@ -2913,7 +2909,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     
     if(!locker.getSemaphore()->wait(-1))
     {
-        PyErr_Format(PyExc_RuntimeError, "timeout while loading plugin widget");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while loading plugin widget");
         return NULL;
     }
 
@@ -2935,11 +2931,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     
             if(!locker2.getSemaphore()->wait(5000))
             {
-                PyErr_Format(PyExc_RuntimeError, "timeout while closing dialog");
+                PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
             }
         }
 
-        PyErr_Format(PyExc_RuntimeError, "could not create a new instance of class ui.");
+        PyErr_SetString(PyExc_RuntimeError, "could not create a new instance of class ui.");
         return NULL;
     }
 

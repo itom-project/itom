@@ -5,6 +5,7 @@ from docutils.parsers.rst.roles import set_classes
 from docutils.parsers.rst import directives
 from sphinx.util.compat import Directive
 import itom
+import __main__
 
 def getPluginInfo(env, plugin):
     
@@ -13,7 +14,16 @@ def getPluginInfo(env, plugin):
     
     p = str(plugin)
     if (not p in env.itom_plugin_infos):
-        env.itom_plugin_infos[p] = itom.pluginHelp(p,True)
+        if (itom.pluginLoaded(p)):
+            env.itom_plugin_infos[p] = itom.pluginHelp(p,True)
+        else:
+            dummy = {"license":"unknown license", "author":"unknown author", "description":"no description","type":"unknown type","version":"unknown version", "detaildescription":"no description"}
+            if ("pluginOverloads" in __main__.__dict__):
+                if p in __main__.__dict__["pluginOverloads"]:
+                    dummy.update(__main__.__dict__["pluginOverloads"][p])
+                    return dummy
+                else:
+                    raise RuntimeError("Plugin not available")
     
     return env.itom_plugin_infos[p]
 

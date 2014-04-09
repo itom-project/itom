@@ -1512,6 +1512,12 @@ end:
 
         id = qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
+#if ITOM_POINTCLOUDLIBRARY > 0    
+        id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
+        id = qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
+        id = qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
+
         m_deadPlugins.clear();
 
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
