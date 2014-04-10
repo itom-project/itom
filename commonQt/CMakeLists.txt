@@ -114,7 +114,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPclFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
 )
