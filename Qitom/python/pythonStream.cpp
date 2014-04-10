@@ -200,6 +200,7 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         }
         else
         {
+            char* test = PyBytes_AsString(v);
             std::cerr << PyBytes_AsString(v); // endl is added directly by Python
         }
 

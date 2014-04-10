@@ -189,7 +189,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     //argument must be a PyObject
     if(!PyArg_ParseTuple(args, "O", &obj)) //obj is borrowed reference
     {
-        PyErr_Format(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
+        PyErr_SetString(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
         return NULL;
     }
 
@@ -200,7 +200,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == NULL)
         {
             Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "ndarray argument is invalid");
+            PyErr_SetString(PyExc_ValueError, "ndarray argument is invalid");
             return NULL;
         }
 
@@ -233,7 +233,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == Py_NotImplemented)
         {
             //Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
+            PyErr_SetString(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
             return NULL;
         }
         else
@@ -259,6 +259,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             //std::string tempString;
             DataObjectTagType tempTag;
             std::string tempKey;
+            std::string tempString;
             bool validOp;
 
             //1. tags
@@ -280,7 +281,9 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
                 }
                 else
                 {
-                    item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    //item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    tempString = tempTag.getVal_ToString().data();
+                    item =  PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
                     PyDict_SetItemString(self->tags, tempKey.data(), item);
                     Py_DECREF(item);
                 }
@@ -304,21 +307,27 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             self->axisDescriptions = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisDescriptions, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisDescription(i,validOp);
+                PyList_SetItem(self->axisDescriptions, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //5. axisUnits
             self->axisUnits = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisUnits, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisUnit(i,validOp);
+                PyList_SetItem(self->axisUnits, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //6. valueUnit
-            self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            //self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            tempString = dObj->getValueUnit();
+            self->valueUnit = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //7. valueDescription
-            self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            //self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            tempString = dObj->getValueDescription();
+            self->valueDescription = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //8.
             self->valueOffset = dObj->getValueOffset();
@@ -330,7 +339,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     else
     {
         //Py_XDECREF(obj);
-        PyErr_Format(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
+        PyErr_SetString(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
         return NULL;
     }
 

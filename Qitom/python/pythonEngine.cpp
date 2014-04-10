@@ -695,55 +695,66 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     bool found = false;
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
-    QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+    //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+
+    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
 
     //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
-    if (qtCodecNames.contains("UTF-8"))
+    //if (qtCodecNames.contains("UTF-8"))
+    if (curQtCodec.contains("UTF-8"))
     {
         encodingType = PythonQtConversion::utf_8;
         encodingName = "utf_8";
     }
-    else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    //else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    else if (curQtCodec.contains("ISO-8859-1") || curQtCodec.contains("latin1"))
     {
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
-    else if (qtCodecNames.contains("US-ASCII"))
+    //else if (qtCodecNames.contains("US-ASCII"))
+    else if (curQtCodec.contains("US-ASCII"))
     {
         encodingType = PythonQtConversion::ascii;
         encodingName = "ascii";
     }
-    else if (qtCodecNames.contains("UTF-16"))
+    //else if (qtCodecNames.contains("UTF-16"))
+    else if (curQtCodec.contains("UTF-16"))
     {
         encodingType = PythonQtConversion::utf_16;
         encodingName = "utf_16";
     }
-    else if (qtCodecNames.contains("UTF-16LE"))
+    //else if (qtCodecNames.contains("UTF-16LE"))
+    else if (curQtCodec.contains("UTF-16LE"))
     {
         encodingType = PythonQtConversion::utf_16_LE;
         encodingName = "utf_16_le";
     }
-    else if (qtCodecNames.contains("UTF-16BE"))
+    //else if (qtCodecNames.contains("UTF-16BE"))
+    else if (curQtCodec.contains("UTF-16BE"))
     {
         encodingType = PythonQtConversion::utf_16_BE;
         encodingName = "utf_16_be";
     }
-    else if (qtCodecNames.contains("UTF-32"))
+    //else if (qtCodecNames.contains("UTF-32"))
+    else if (curQtCodec.contains("UTF-32"))
     {
         encodingType = PythonQtConversion::utf_32;
         encodingName = "utf_32";
     }
-    else if (qtCodecNames.contains("UTF-32BE"))
+    //else if (qtCodecNames.contains("UTF-32BE"))
+    else if (curQtCodec.contains("UTF-32BE"))
     {
         encodingType = PythonQtConversion::utf_32_BE;
         encodingName = "utf_32_be";
     }
-    else if (qtCodecNames.contains("UTF-32LE"))
+    //else if (qtCodecNames.contains("UTF-32LE"))
+    else if (curQtCodec.contains("UTF-32LE"))
     {
         encodingType = PythonQtConversion::utf_32_LE;
         encodingName = "utf_32_le";
     }
-    else
+    /*else
     {
         encodingType = PythonQtConversion::other;
         found = false;
@@ -765,7 +776,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
             encodingName = "utf_8";
         }
     }
-
+    */
     PythonQtConversion::textEncoding = encodingType;
     PythonQtConversion::textEncodingName = encodingName;
 
@@ -2434,7 +2445,8 @@ void PythonEngine::pythonInterruptExecution() const
 //        {
 //            return PyErr_Occurred();
 //        }
-//        return PyErr_Format(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        PyErr_SetString(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        return NULL;
 //    }
 //}
 
@@ -2684,7 +2696,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
             {
                 PyErr_Clear();
                 retVal = false;
@@ -2874,7 +2887,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
+            
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
@@ -2890,7 +2905,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
                 }
                 else
                 {
-                    PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    
+                    //PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    PyList_Append(keyList , PyUnicode_DecodeLatin1(varNames.at(i).toLatin1().data(), varNames.at(i).length(), NULL));
                     PyList_Append(valueList, tempElem);
                 }
             }
@@ -2963,7 +2980,8 @@ RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, 
         }
         else
         {
-            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
@@ -3301,7 +3319,8 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(varname2, strlen(varname2), NULL)))
             {
                 PyErr_Clear();
                 QString ErrStr = tr("variable name '%1' is no valid python variable name.").arg(varname);

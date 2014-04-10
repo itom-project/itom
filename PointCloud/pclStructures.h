@@ -199,9 +199,9 @@ public:
     PCLPointCloud(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclPtr) : m_pcXYZRGBNormal(pclPtr), m_type(ito::pclXYZRGBNormal) {};
 
     PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_, const PCLPoint &value_ = PCLPoint());
-    PCLPointCloud (PCLPointCloud &pc);
-     PCLPointCloud (const PCLPointCloud &pc);
-     PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices);
+    PCLPointCloud(PCLPointCloud &pc);
+    PCLPointCloud(const PCLPointCloud &pc);
+    PCLPointCloud(const PCLPointCloud &pc, const std::vector< int > &indices);
 
     ~PCLPointCloud(){};
 

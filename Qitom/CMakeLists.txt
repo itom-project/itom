@@ -509,19 +509,19 @@ IF(MSVC)
 ENDIF(MSVC)
 
 if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-        #set(PYTHON_LIBRARY_ITOM debug ${PYTHON_LIBRARY_DEBUG} optimized ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
-        set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+    #set(PYTHON_LIBRARY_ITOM debug ${PYTHON_LIBRARY_DEBUG} optimized ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
+    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
 #only debug
 elseif(PYTHON_LIBRARY_DEBUG)
-        message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
+    message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
 elseif(PYTHON_LIBRARY_RELEASE)
-        set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
 elseif(PYTHON_LIBRARY)
     set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY})
 #no library found
 else()
-        message(STATUS "Python could not be found")
+    message(STATUS "Python could not be found")
 endif()
 
 IF(BUILD_WITH_PCL)
