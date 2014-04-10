@@ -21,7 +21,6 @@
 *********************************************************************** */
 
 #include "widgetPropHelpDock.h"
-//#include "../global.h"
 #include "../AppManagement.h"
 
 #include <qsettings.h>
@@ -32,8 +31,7 @@
 #include <qxmlstream.h>
 #include <global.h>
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
     m_pdbPath(qApp->applicationDirPath()+"/help/")
@@ -42,6 +40,10 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     m_listChanged = false;
     m_treeIsUpdating = false;
     ui.label->hide();
+    
+    // init consts
+     m_xmlFileName = ""; //updateInfo.xml";
+
     initMenus();
     connect(ui.pushRefreshUpdates, SIGNAL(clicked()), this, SLOT(refreshButtonClicked()));
     QStringList headers;
@@ -50,13 +52,18 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     ui.treeWidgetDB->setColumnWidth(0, 200);
     ui.treeWidgetDB->setColumnWidth(1,  50);
     ui.treeWidgetDB->setColumnWidth(2,  60);
+    ui.treeWidgetDB->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui.treeWidgetDB, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropHelpDock::~WidgetPropHelpDock()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
 {
     if (ui.checkModules->isChecked())
@@ -65,23 +72,25 @@ void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
         ui.treeWidgetDB->setEnabled(false);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkFilters_stateChanged (int state)
 {
-    m_listChanged = true;
     ui.label->show();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int column)
 {
     if (!m_treeIsUpdating && item->data(0, m_urID).isValid())
     {
+        m_listChanged = true;
         updateCheckedIdList();
         setExistingDBsChecks();
-        m_listChanged = true;
         ui.label->show();
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -105,14 +114,16 @@ void WidgetPropHelpDock::readSettings()
     for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
-        int id = settings.value("DB", QString()).toInt();
+        QString nameID = settings.value("DB", QString()).toString();
+        int id = nameID.mid(nameID.indexOf("§")+1, -1).toInt();
         checkedIdList.append(id);
         settings.remove("DB");
     }
     settings.endGroup();
-    refreshButtonClicked();
+    //refreshButtonClicked();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -129,28 +140,28 @@ void WidgetPropHelpDock::writeSettings()
 
     // Write the checkstate with the List into the ini File
     settings.beginWriteArray("Databases");
-    QMap<int, WidgetPropHelpDock::databaseInfo>::iterator it;
+    QMap<int, WidgetPropHelpDock::DatabaseInfo>::iterator it;
     int i = 0;
     for (it = existingDBs.begin(); it != existingDBs.end(); ++it)
     {
-        settings.setArrayIndex(i);
         if (it->isChecked)
         {
-            settings.setValue("DB", it.key());
+            settings.setArrayIndex(i);
+            settings.setValue("DB", it->name + "§" + QString::number(it.key()));
+            ++i;
         }
-        ++i;
     }
     settings.endArray();
     settings.endGroup();
 }
 
 
-
 // All about the Databases and online updates
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::refreshButtonClicked()
 {// This button is also automatically clicked when the option dialog is started
-    
+    m_serverAdress = ui.lineEdit->text();
+
     // Update both Databases
     refreshExistingDBs();
     refreshUpdatableDBs();
@@ -162,6 +173,7 @@ void WidgetPropHelpDock::refreshButtonClicked()
 }
 
 // refreshes the existingDBs Map
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::refreshExistingDBs()
 {
     QDirIterator it(m_pdbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -173,7 +185,7 @@ void WidgetPropHelpDock::refreshExistingDBs()
         fileName = path.right(path.length() - path.lastIndexOf('/') - 1);
         // open SQL-Database and take a look into the info-table to read further information
         QFile f(path);
-        WidgetPropHelpDock::databaseInfo *item = new WidgetPropHelpDock::databaseInfo();
+        WidgetPropHelpDock::DatabaseInfo *item = new WidgetPropHelpDock::DatabaseInfo();
         if (f.exists())
         {
             QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", path); //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
@@ -181,16 +193,16 @@ void WidgetPropHelpDock::refreshExistingDBs()
             bool ok = database.open();
             if (ok)
             {
-                QSqlQuery query("SELECT id, name, version, date, itomMinVersion FROM databaseInfo ORDER BY id", database);
+                QSqlQuery query("SELECT id, name, version, date, itomMinVersion FROM DatabaseInfo ORDER BY id", database);
                 query.exec();
                 query.next();
                 int id                = query.value(0).toInt();
                 item->name            = query.value(1).toString();
-                item->version         = query.value(2).toString();
+                item->version         = query.value(2).toInt();
                 item->date            = query.value(3).toString();
-                item->schemeID        = query.value(4).toString();
+                item->schemeID        = query.value(4).toInt();
                 item->path            = path;
-                item->updateState     = updateState::unknown;
+                item->updateState     = stateUnknown;
                 // add to Map
                 existingDBs.insert(id, *item);
             }
@@ -202,58 +214,137 @@ void WidgetPropHelpDock::refreshExistingDBs()
 }
 
 // This block downlaods and refreshes the updatableDBs Map
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::refreshUpdatableDBs()
 {
-    // Get information of online DBs
-    m_pXmlCtrl = new FileDownloader(QUrl(ui.lineEdit->text()), this);
-    connect(m_pXmlCtrl, SIGNAL(downloaded()), SLOT(xmlDownloaded()));
-}
-void WidgetPropHelpDock::xmlDownloaded()
-{
+    QProgressDialog progress("Remote database update...", tr("Cancel"), 0, 100, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setMinimumDuration(0);
+
+    FileDownloader *downloader = new FileDownloader(QUrl(m_serverAdress + m_xmlFileName), 5, this);
+    FileDownloader::Status status = FileDownloader::sRunning; //0: still running, 1: ok, 2: error, 3: cancelled
+    QString errorMsg;
+    bool dbFound = false;
+    QString dbError;
+
+    while(status == FileDownloader::sRunning)
+    {
+        if (progress.wasCanceled())
+        {
+            downloader->abortDownload();
+            status = FileDownloader::sAborted;
+        }
+        else
+        {
+            progress.setValue(downloader->getDownloadProgress());
+            status = downloader->getStatus(errorMsg);
+        }
+
+        QCoreApplication::processEvents();
+
+    }
     // first of all, clear the old List
     updatableDBs.clear();
 
     // now start parsing the new List
-    QXmlStreamReader xml;
-    xml.addData(m_pXmlCtrl->downloadedData());
-    while(!xml.atEnd() && !xml.hasError()) 
+    if (status == FileDownloader::sFinished)
     {
-        QXmlStreamReader::TokenType token = xml.readNext();
-        /* If token is just StartDocument, we'll go to next.*/
-        if(token == QXmlStreamReader::StartDocument) 
+        QXmlStreamReader xml;
+        xml.addData(downloader->downloadedData());
+        while(!xml.atEnd() && !xml.hasError()) 
         {
-            continue;
-        }
-        /* If token is StartElement, we'll see if we can read it.*/
-        if(token == QXmlStreamReader::StartElement) 
-        {
-            /* If it's named persons, we'll go to the next.*/
-            if(xml.name() == "databases") 
+            QXmlStreamReader::TokenType token = xml.readNext();
+            /* If token is just StartDocument, we'll go to next.*/
+            if(token == QXmlStreamReader::StartDocument) 
             {
                 continue;
             }
-            
-            if(xml.name() == "file") 
+            /* If token is StartElement, we'll see if we can read it.*/
+            if(token == QXmlStreamReader::StartElement) 
             {
-                QPair <int, WidgetPropHelpDock::databaseInfo> p = this->parseFile(xml);
-                updatableDBs.insert(p.first, p.second);
+                /* If it's named persons, we'll go to the next.*/
+                if(xml.name() == "databases") 
+                {
+                    if (xml.attributes().hasAttribute("type"))
+                    {
+                        if (xml.attributes().value("type") == "itom.repository.helpDatabase")
+                        {
+                            dbFound = true;
+                        }
+                        else
+                        {
+                            dbError = tr("Invalid type attribute of xml file");
+                        }
+                    }
+                    else
+                    {
+                        dbError = tr("Type attribute node 'database' of xml file is missing.");
+                    }
+                }
+                else if(dbFound && xml.name() == "file") 
+                {
+                    QPair <int, WidgetPropHelpDock::DatabaseInfo> p = this->parseFile(xml);
+                    if (updatableDBs.contains(p.first))
+                    {
+                        if (p.second.schemeID == SCHEME_ID)
+                        {
+                            if (updatableDBs[p.first].version < p.second.version)
+                            {
+                                updatableDBs.insert(p.first, p.second);
+                            }
+                        }
+                    }   
+                    else
+                    {
+                        updatableDBs.insert(p.first, p.second);
+                    }
+                }
             }
         }
+
+        if (xml.hasError())
+        {
+            dbFound = false;
+            dbError = tr("xml parsing error: %1").arg(xml.errorString());
+        }
+        else if (!dbFound && dbError == "")
+        {
+            dbError = tr("xml error: node 'database' is missing.");
+        }
+
+        if (!dbFound)
+        {
+            status = FileDownloader::sError;
+            errorMsg = dbError;
+        } 
     }
-    // Now Compare the two Lists in
+
+      
+    
+    if (status == FileDownloader::sError)
+    {
+        showErrorMessage(errorMsg);
+    }
+    
+    // Clean up
+    downloader->deleteLater();
+
+    // Now continue to Compare the two Lists in
     compareDatabaseVersions();
 }
-QPair<int, WidgetPropHelpDock::databaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml) 
+
+
+QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml) 
 {
-    QPair<int, WidgetPropHelpDock::databaseInfo> file;
+    QPair<int, WidgetPropHelpDock::DatabaseInfo> file;
     int id = 0;
     /* Let's check that we're really getting a person. */
     if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file") 
     {
         return file;
     }
-    WidgetPropHelpDock::databaseInfo *appendedItem = new WidgetPropHelpDock::databaseInfo();
-    appendedItem->updateState = updateState::unknown;
+    WidgetPropHelpDock::DatabaseInfo *appendedItem = new WidgetPropHelpDock::DatabaseInfo();
+    appendedItem->updateState = stateUnknown;
 
     // Check for ID-Attribute
     QXmlStreamAttributes attributes = xml.attributes();
@@ -275,7 +366,7 @@ QPair<int, WidgetPropHelpDock::databaseInfo> WidgetPropHelpDock::parseFile(QXmlS
             else if(xml.name() == "version")
             {
                 xml.readNext();
-                appendedItem->version = xml.text().toString();
+                appendedItem->version = xml.text().toString().toInt();
             }
             else if(xml.name() == "date")
             {
@@ -285,7 +376,7 @@ QPair<int, WidgetPropHelpDock::databaseInfo> WidgetPropHelpDock::parseFile(QXmlS
             else if(xml.name() == "schemeID")
             {
                 xml.readNext();
-                appendedItem->schemeID = xml.text().toString();
+                appendedItem->schemeID = xml.text().toString().toInt();
             }
             else if(xml.name() == "path")
             {
@@ -301,40 +392,42 @@ QPair<int, WidgetPropHelpDock::databaseInfo> WidgetPropHelpDock::parseFile(QXmlS
     return file;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
 {
     QString infoText = "";
     int ID = widget->data(0, m_urID).toInt();
     switch(widget->data(0, m_urUD).toInt()) 
     {
-        case  updateState::unknown: 
+        case  stateUnknown: 
         {
             widget->setText(3, "unknown (lokal build Database)");
-            widget->setIcon(0, QIcon(":/helpTreeDockWidget/pluginRawIO.png"));
+            widget->setIcon(3, QIcon(":/helpTreeDockWidget/localDatabase")); // OK!
             break;
         }
-        case  updateState::upToDate: 
+        case  stateUpToDate: 
         {
-            widget->setText(3, "Up to date");
-            widget->setIcon(0, QIcon(":/helpTreeDockWidget/masterProject.png"));
+            widget->setText(3, tr("Up to date"));
+            widget->setIcon(3, QIcon(":/helpTreeDockWidget/upToDate"));
             break;
         }
-        case  updateState::updateAvailable: 
+        case  stateUpdateAvailable: 
         {
-            widget->setText(3, "Update to version: " + updatableDBs[ID].version + " (" + updatableDBs[ID].date + ")");
-            widget->setIcon(0, QIcon(":/application/dialog-error-4.png"));
+            widget->setText(3, tr("Update to version: %1 (%2)").arg(QString::number(updatableDBs[ID].version)).arg(updatableDBs[ID].date));
+            widget->setIcon(3, QIcon(":/helpTreeDockWidget/downloadUpdate"));
             break;
         }
-        case  updateState::downloadAvailable: 
+        case  stateDownloadAvailable: 
         {
-            widget->setText(3, "Download version: " + updatableDBs[ID].version + " (" + updatableDBs[ID].date + ")");
-            widget->setIcon(0, QIcon(":/helpTreeDockWidget/downloadUpdate.png"));
+            widget->setText(3, tr("Download version: %1 (%2)").arg(QString::number(updatableDBs[ID].version)).arg(updatableDBs[ID].date));
+            widget->setIcon(3, QIcon(":/helpTreeDockWidget/downloadUpdate"));
             break;
         }
-        case  updateState::wrongScheme: 
+        case  stateWrongScheme: 
         {
-            widget->setText(3, "wrong Scheme: " + updatableDBs[ID].schemeID + " (your Scheme "+existingDBs[ID].schemeID+")");
-            widget->setIcon(0, QIcon(":/application/dialog-error-4.png"));
+            widget->setText(3, tr("wrong Scheme: %1 (your scheme%2)").arg(QString::number(existingDBs[ID].schemeID)).arg(QString::number(SCHEME_ID)));
+            widget->setIcon(3, QIcon(":/helpTreeDockWidget/wrongScheme"));
+            widget->setFlags(widget->flags() ^ Qt::ItemIsEnabled);
             break;
         }
         default: 
@@ -345,6 +438,7 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::updateTreeWidget()
 {
     // surpress the itemChanged() event of the tree View
@@ -357,6 +451,7 @@ void WidgetPropHelpDock::updateTreeWidget()
     // new Toplevel-Item (local)
     QTreeWidgetItem *topItem = new QTreeWidgetItem();
     topItem->setText(0, "Local");
+    topItem->setIcon(0, QIcon(":/helpTreeDockWidget/localDatabase"));
     if (topItem->flags().testFlag(Qt::ItemIsUserCheckable))
     {
         topItem->setFlags( topItem->flags() ^ Qt::ItemIsUserCheckable);
@@ -365,15 +460,16 @@ void WidgetPropHelpDock::updateTreeWidget()
     ui.treeWidgetDB->addTopLevelItem(topItem);
 
     // Create Local-Subitems
-    QMap<int, WidgetPropHelpDock::databaseInfo>::iterator i;
+    QMap<int, WidgetPropHelpDock::DatabaseInfo>::iterator i;
     for (i = existingDBs.begin(); i != existingDBs.end(); ++i)
     {
         QTreeWidgetItem *newWidget = new QTreeWidgetItem();
         newWidget->setText(0, i->name);
-        newWidget->setText(1, i->version);
+        newWidget->setText(1, QString::number(i->version));
         newWidget->setText(2, i->date);
         newWidget->setData(0, m_urID, i.key());
         newWidget->setData(0, m_urUD, i->updateState);
+        newWidget->setData(0, m_urFD, i->path);
         if (i->isChecked == true)
         {
             newWidget->setCheckState(0, Qt::Checked);
@@ -391,7 +487,8 @@ void WidgetPropHelpDock::updateTreeWidget()
 
     // new Toplevel-Item (remote)
     topItem = new QTreeWidgetItem();
-    topItem->setText(0, "Remote");
+    topItem->setText(0, tr("Remote"));
+    topItem->setIcon(0, QIcon(":/helpTreeDockWidget/downloadUpdate"));
     if (topItem->flags().testFlag(Qt::ItemIsUserCheckable))
     {
         topItem->setFlags( topItem->flags() ^ Qt::ItemIsUserCheckable);
@@ -400,12 +497,12 @@ void WidgetPropHelpDock::updateTreeWidget()
     // Create Remote-Subitems
     for (i = updatableDBs.begin(); i != updatableDBs.end(); ++i)
     {
-        if (i->updateState == updateState::downloadAvailable)
-        {
+        if (i->updateState == stateDownloadAvailable)
+        { // This code snipet added to the if would add wrong schemes, too:  "|| i->updateState == updateState::wrongScheme"
             QTreeWidgetItem *newWidget = new QTreeWidgetItem();
             newWidget->setFlags(newWidget->flags() ^ Qt::ItemIsUserCheckable);
             newWidget->setText(0, i->name);
-            newWidget->setText(1, i->version);
+            newWidget->setText(1, QString::number(i->version));
             newWidget->setText(2, i->date);
             newWidget->setData(0, m_urID, i.key());
             newWidget->setData(0, m_urUD, i->updateState);
@@ -422,41 +519,50 @@ void WidgetPropHelpDock::updateTreeWidget()
     m_treeIsUpdating = false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::compareDatabaseVersions()
 {
     // All existingDBs-elements are set to unknown
     // now compare them all to the downloadlist an decide which state they get
-    QMap<int, WidgetPropHelpDock::databaseInfo>::iterator i;
+    QMap<int, WidgetPropHelpDock::DatabaseInfo>::iterator i;
     for (i = updatableDBs.begin(); i != updatableDBs.end(); ++i)
     {
         if (existingDBs.contains(i.key()))
         {
-            if (i->schemeID.toDouble() == SCHEME_ID)
+            if (i->schemeID == SCHEME_ID)
             {
-                if (i->version.toDouble() > existingDBs.value(i.key()).version.toDouble())
+                if (i->version > existingDBs.value(i.key()).version)
                 {
-                    existingDBs[i.key()].updateState = updateState::updateAvailable;
+                    existingDBs[i.key()].updateState = stateUpdateAvailable;
                 }
                 else
                 {
-                    existingDBs[i.key()].updateState = updateState::upToDate;
+                    existingDBs[i.key()].updateState = stateUpToDate;
                 }
             }
             else
-            {
-                i->updateState = updateState::wrongScheme;
+            { // Version with other Scheme is available, but has wrong Scheme
+                existingDBs[i.key()].updateState = stateUpToDate;
             }
         }
         else
         {
-            if (updatableDBs.value(i.key()).schemeID.toDouble() == SCHEME_ID)
+            if (updatableDBs.value(i.key()).schemeID == SCHEME_ID)
             {
-                i->updateState = updateState::downloadAvailable;
+                i->updateState = stateDownloadAvailable;
             }
             else
-            {
-                i->updateState = updateState::wrongScheme;
+            { // Not Downloadable because of wrong Scheme ... don´t display
+                i->updateState = stateWrongScheme;
             }
+        }
+    }
+    // detect all the unknown DBs with wrong Scheme
+    for (i = existingDBs.begin(); i != existingDBs.end(); ++i)
+    {
+        if (i->updateState == stateUnknown && i->schemeID != SCHEME_ID)
+        {
+            i->updateState = stateWrongScheme;
         }
     }
     // update the ListWidget
@@ -484,7 +590,7 @@ void WidgetPropHelpDock::updateCheckedIdList()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::setExistingDBsChecks()
 {
-    QMap<int, WidgetPropHelpDock::databaseInfo>::iterator i;
+    QMap<int, WidgetPropHelpDock::DatabaseInfo>::iterator i;
     for (i = existingDBs.begin(); i != existingDBs.end(); ++i)
     {
         if (checkedIdList.contains(i.key()))
@@ -501,55 +607,176 @@ void WidgetPropHelpDock::setExistingDBsChecks()
 
 
 // Hint-Information (path and url)
+//----------------------------------------------------------------------------------------------------------------------------------
 bool WidgetPropHelpDock::event (QEvent * event)
 {
-    if (false)//(event->type() == QEvent::ToolTip)
+    if (event->type() == QEvent::ToolTip)
     {
         QHelpEvent *evt = static_cast<QHelpEvent*>(event);
-        // TODO zuviele point
-        QPoint point  = evt->pos();
-        QPoint point2 = ui.treeWidgetDB->mapFrom(this, point);
-        QTreeWidgetItem *selItem = ui.treeWidgetDB->itemAt(point2);
+        // Maybe this mapping is too much, but it works!
+        QPoint pos = ui.treeWidgetDB->viewport()->mapFromGlobal(evt->globalPos());
+        QPoint global = ui.treeWidgetDB->viewport()->mapToGlobal(pos);
+        QTreeWidgetItem *selItem = ui.treeWidgetDB->itemAt(ui.treeWidgetDB->viewport()->mapFromGlobal(global));
         if (selItem != NULL)
         {
-            QString message = "Path: " + existingDBs.value(selItem->data(0, m_urID).toInt()).path
-                            +"\nUrl: " + updatableDBs.value(selItem->data(0, m_urID).toInt()).path; 
-            QToolTip::showText(evt->globalPos(), message, this);
+            QString message = selItem->data(0, m_urFD).toString();
+            QToolTip::showText(global, message, this);
         }
     }
     return AbstractPropertyPageWidget::event(event);
 }
 
 
-
 // Update-Context-Menu
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::initMenus()
 {
-   /* updateMenu = new QMenu(this);
-    updateMenuActions["update"] = updateMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&update"), this, SLOT(updateHelpFiles(QStringList files)));
-    updateMenuActions["update all"] = updateMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("update all"), this, SLOT(updateHelpFiles(QStringList files)));
-    updateMenuActions["info"] = updateMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("info"), this, SLOT(updateHelpFiles(QStringList files)));
+    m_pContextMenu = new QMenu(this);
+    contextMenuActions["update"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/downloadUpdate"), tr("&update"), this, SLOT(mnuDownloadUpdate()));
+    contextMenuActions["locateOnDisk"] = m_pContextMenu->addAction(QIcon(":/files/icons/browser.png"), tr("locate on disk"), this, SLOT(mnuLocateOnDisk()));
 
-    connect(updateMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));*/
+    connect(m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
+}
+
+// This Block downloads/updates a single database
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::mnuDownloadUpdate()
+{
+    QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
+    if (item != NULL)
+    {
+        QString localPath = existingDBs[item->data(0, m_urID).toInt()].path;
+        QProgressDialog progress(tr("Remote database update..."), tr("Cancel"), 0, 100, this);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.setMinimumDuration(0);
+
+        QString url = /*m_serverAdress + */updatableDBs[item->data(0, m_urID).toInt()].path;
+        FileDownloader *downloader = new FileDownloader(QUrl(url), 5, this);
+        FileDownloader::Status status = FileDownloader::sRunning; //0: still running, 1: ok, 2: error, 3: cancelled
+        QString errorMsg;
+
+        while(status == FileDownloader::sRunning)
+        {
+            if (progress.wasCanceled())
+            {
+                downloader->abortDownload();
+                status = FileDownloader::sAborted;
+            }
+            else
+            {
+                progress.setValue(downloader->getDownloadProgress());
+                status = downloader->getStatus(errorMsg);
+            }
+            QCoreApplication::processEvents();
+        }
+
+        // Replace old Database with Downloaded
+        if (status == FileDownloader::sFinished)
+        {
+            QString newLocalPath;
+            url = url.left(url.lastIndexOf("/"));
+            // Downlaod Finished, Safe File
+            if (QFile::exists(localPath))
+            {
+                newLocalPath = localPath.left(localPath.lastIndexOf("/"))+url.right(url.length()-url.lastIndexOf("/"));
+                if (!QFile::remove(localPath))
+                {
+                    showErrorMessage(tr("Could not delete old local version of Database"));
+                }
+            }
+            else 
+            {
+                newLocalPath = m_pdbPath + url.right(url.length()-url.lastIndexOf("/")-1);
+            }
+            QFile file(newLocalPath);
+            file.open(QIODevice::WriteOnly);
+            // save new Database to old Path
+            file.write(downloader->downloadedData());
+            file.close();
+            // Sucessful update, refresh TreeWidget:
+            refreshButtonClicked();
+        }
+        else if (status == FileDownloader::sError)
+        {
+            showErrorMessage(errorMsg);
+        }
+        downloader->deleteLater();
+    }
+}
+
+void WidgetPropHelpDock::showErrorMessage(const QString &error)
+{
+    QMessageBox::warning(this, tr("download error"), error);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropHelpDock::preShowContextMenuMargin()
+void WidgetPropHelpDock::mnuLocateOnDisk()
 {
-    //// if this item is updatable
-    //updateMenuActions["update"]->setEnabled(true);
-    //
-    //// if List has more than one entry
-    //updateMenuActions["update all"]->setEnabled(true);
-
-    //// Always
-    //updateMenuActions["info"]->setEnabled(true);
+    QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
+    if (item != NULL)
+    {
+        showInGraphicalShell(item->data(0, m_urFD).toString());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropHelpDock::contextMenuEvent (QContextMenuEvent * event)
+void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 {
-    /*event->accept();*/
+
+    #ifdef Q_WS_MAC
+    QStringList args;
+    args << "-e";
+    args << "tell application \"Finder\"";
+    args << "-e";
+    args << "activate";
+    args << "-e";
+    args << "select POSIX file \""+filePath+"\"";
+    args << "-e";
+    args << "end tell";
+    QProcess::startDetached("osascript", args);
+#endif
+
+#ifdef Q_WS_WIN
+    QStringList args;
+    args << "/select," << QDir::toNativeSeparators(filePath);
+    QProcess::startDetached("explorer", args);
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
+{
+    //pos is relative to viewport of treeWidget
+    QPoint global = ui.treeWidgetDB->viewport()->mapToGlobal(pos); //map pos to global, screen coordinates
+    QTreeWidgetItem *selItem = ui.treeWidgetDB->itemAt(pos); //itemAt requires position relative to viewport
+     //event->globalPos());
+    if (selItem != NULL)
+    {
+        if (selItem->data(0, m_urUD) == stateDownloadAvailable)
+        {
+            contextMenuActions["locateOnDisk"]->setEnabled(false);
+            contextMenuActions["update"]->setEnabled(true);
+            contextMenuActions["update"]->setText("downlaod");
+            m_pContextMenu->exec(global);
+        }
+        else if (selItem->data(0, m_urUD) == stateUpdateAvailable)
+        {
+            contextMenuActions["locateOnDisk"]->setEnabled(true);
+            contextMenuActions["update"]->setEnabled(true);
+            contextMenuActions["update"]->setText("update");
+            m_pContextMenu->exec(global);
+        }
+        else if (selItem->data(0, m_urUD) == stateUnknown ||
+                 selItem->data(0, m_urUD) == stateUpdateAvailable ||
+                 selItem->data(0, m_urUD) == stateUpToDate)
+        {
+            contextMenuActions["locateOnDisk"]->setEnabled(true);
+            contextMenuActions["update"]->setEnabled(false);
+            contextMenuActions["update"]->setText("update");
+            m_pContextMenu->exec(global);
+        }
+    }
+
+    // event am ende wieder loeschen
 }

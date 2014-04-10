@@ -45,62 +45,65 @@ protected:
 private:
     Ui::WidgetPropHelpDock ui;
 
-    struct databaseInfo
+    enum UpdateState
     {
-        bool    isChecked;
-        int     updateState;
-        QString name;
-        QString version;
-        QString date;
-        QString schemeID;
-        QString path;
+        stateUnknown = 0,
+        stateUpToDate,
+        stateUpdateAvailable,
+        stateDownloadAvailable,
+        stateWrongScheme,
     };
 
-    enum updateState
+    struct DatabaseInfo
     {
-        unknown = 0,
-        upToDate,
-        updateAvailable,
-        downloadAvailable,
-        wrongScheme,
+        bool        isChecked;
+        UpdateState updateState;
+        int         version;
+        int         schemeID;
+        QString     name;
+        QString     date;
+        QString     path;
     };
-
 
     // Functions
     void readSettings();
     void writeSettings();
     void getHelpList();
     void refreshExistingDBs();
-    void contextMenuEvent (QContextMenuEvent * event);
     void initMenus();
-    void preShowContextMenuMargin(); 
     void compareDatabaseVersions();
     void updateCheckedIdList();
     void setExistingDBsChecks();
-    QPair<int, databaseInfo> parseFile(QXmlStreamReader& xml);
+    QPair<int, DatabaseInfo> parseFile(QXmlStreamReader& xml);
     void updateTreeWidget();
     void refreshUpdatableDBs();
     void setUpdateColumnText(QTreeWidgetItem *widget);
+    void showInGraphicalShell(const QString & filePath);
+    void showErrorMessage(const QString &error);
+
 
 
     // Variables
     QString m_pdbPath;
     bool m_listChanged;
-    std::map<QString,QAction*> updateMenuActions;
-    QMenu *updateMenu;
-    FileDownloader *m_pXmlCtrl;
-    FileDownloader *m_pSqlCtrl;
     bool m_treeIsUpdating;
+    QString m_serverAdress;
 
     // Lists and Co
-    QMap< int, databaseInfo > existingDBs;
-    QMap< int, databaseInfo > updatableDBs;
+    QMap< int, DatabaseInfo > existingDBs;
+    QMap< int, DatabaseInfo > updatableDBs;
     QList< int > checkedIdList;
+
+    // Menu
+    QMenu* m_pContextMenu;
+    std::map<QString,QAction*> contextMenuActions;
 
     // Consts
     static const int m_urID = Qt::UserRole + 1; // ID
-    static const int m_urUD = Qt::UserRole + 2; // Update available
+    static const int m_urUD = Qt::UserRole + 2; // UpdateState
+    static const int m_urFD = Qt::UserRole + 3; // Path (FileDir)
     static const int SCHEME_ID = 1; // Update available
+    QString m_xmlFileName;
 
 signals:
 
@@ -111,8 +114,10 @@ private slots:
     void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);
     void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
-    void xmlDownloaded();
     void refreshButtonClicked();
+    void mnuDownloadUpdate();
+    void mnuLocateOnDisk();
+    void treeWidgetContextMenuRequested(const QPoint &pos);
 };
 
 #endif

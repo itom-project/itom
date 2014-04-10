@@ -27,6 +27,12 @@
         <file alias="pluginAdda">icons/pluginADDA.png</file>
         <file alias="pluginRawIO">icons/pluginRawIO.png</file>
         <file alias="pluginActuator">icons/pluginActuator.png</file>
+      
+        <file alias="wrongScheme">icons/wrongScheme.png</file>
+        <file alias="localDatabase">icons/localDatabase.png</file>
+        <file alias="upToDate">icons/upToDate.png</file>
+        <file alias="downloadUpdate">icons/downloadUpdate.png</file>
+
     </qresource>
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
