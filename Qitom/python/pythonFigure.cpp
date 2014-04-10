@@ -217,8 +217,8 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
             if (!ok)
             {
 #endif
-	        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
-	        return NULL;
+                PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+                return NULL;
 #if ITOM_POINTCLOUDLIBRARY > 0
             }
             else

@@ -237,8 +237,8 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
             if (!ok)
             {
 #endif
-	        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
-        	return NULL;
+                PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
+                return NULL;
 #if ITOM_POINTCLOUDLIBRARY > 0
             }
             else
