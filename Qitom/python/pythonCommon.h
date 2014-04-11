@@ -56,16 +56,8 @@ namespace ito
     class PythonCommon
     {
         public:
-            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const int &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const int &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
-            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName);
-            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName);
-            //static bool setReturnValueMessage(ito::RetVal &retval, QString &functionName);
-            //static bool setReturnValueMessage(ito::RetVal &retval, const char *functionName);
 
-
-            enum tErrMsg
+			enum tErrMsg
             {
                 noMsg = 0,
                 loadPlugin = 1,
@@ -75,6 +67,17 @@ namespace ito
                 runFunc = 5
             
             };
+
+            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
+            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName);
+            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName);
+            //static bool setReturnValueMessage(ito::RetVal &retval, QString &functionName);
+            //static bool setReturnValueMessage(ito::RetVal &retval, const char *functionName);
+
+
+            
 
     };
 

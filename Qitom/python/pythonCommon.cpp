@@ -1432,52 +1432,49 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retval, const char *functi
     return PythonCommon::setReturnValueMessage(retval, fName);
 }*/
 
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const int &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
 {
-    char predefMSG0[100] = {0};
-    char predefMSG1[100] = {1};
+	QByteArray msgSpecified;
+	QByteArray msgUnspecified;
 
     if (retVal.containsError())
     {
-
         switch(errorMSG)
         {
             case PythonCommon::noMsg:
             default:
-                sprintf(predefMSG0, "%s with message: \n%s");
-                sprintf(predefMSG1, "%s with unspecified error.");
+                msgSpecified = "%s with message: \n%s";
+                msgUnspecified = "%s with unspecified error.";
                 break;
-
             case PythonCommon::loadPlugin:
-                sprintf(predefMSG0, "Could not load plugin %s with error message: \n%s");
-                sprintf(predefMSG1, "Could not load plugin %s with unspecified error.");
+                msgSpecified = "Could not load plugin %s with error message: \n%s";
+                msgUnspecified = "Could not load plugin %s with unspecified error.";
                 break;
             case PythonCommon::runFunc:
-                sprintf(predefMSG0, "Error executing function %s with error message: \n%s");
-                sprintf(predefMSG1, "Error executing function %s with unspecified error.");
+                msgSpecified = "Error executing function %s with error message: \n%s";
+                msgUnspecified = "Error executing function %s with unspecified error.";
                 break;
             case PythonCommon::invokeFunc:
-                sprintf(predefMSG0, "Error invoking function %s with error message: \n%s");
-                sprintf(predefMSG1, "Unspecified Error invoking function %s.");
+                msgSpecified = "Error invoking function %s with error message: \n%s";
+                msgUnspecified = "Unspecified error invoking function %s.";
                 break;
             case PythonCommon::getProperty:
-                sprintf(predefMSG0, "Error while getting property info %s with error message: \n%s");
-                sprintf(predefMSG0, "Unspecified error while getting property info %s.");
+                msgSpecified = "Error while getting property info %s with error message: \n%s";
+                msgUnspecified = "Unspecified error while getting property info %s.";
                 break;
             case PythonCommon::execFunc:
-                sprintf(predefMSG0, "Error invoke exec-function %s with error message: \n%s");
-                sprintf(predefMSG1, "Error invoke exec-function %s with unspecified error.");
+                msgSpecified = "Error invoking exec-function %s with error message: \n%s";
+                msgUnspecified = "Error invoking exec-function %s with unspecified error.";
                 break;
         }
 
-        QString errMSG(retVal.errorMessage());
-        if (!errMSG.isEmpty())
+        if (retVal.hasErrorMessage())
         {
-            PyErr_Format(exceptionIfError, predefMSG0, objName.toUtf8().data(), errMSG.toUtf8().data());
+            PyErr_Format(exceptionIfError, msgSpecified.data(), objName.toUtf8().data(), retVal.errorMessage());
         }
         else
         {
-            PyErr_Format(exceptionIfError, predefMSG1, objName.toUtf8().data());
+            PyErr_Format(exceptionIfError, msgUnspecified.data(), objName.toUtf8().data());
         }
         return false;
     }
@@ -1488,24 +1485,24 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         {
             case PythonCommon::noMsg:
             default:
-                sprintf(predefMSG0, "Warning : ");
+                msgSpecified = "Warning : ";
                 break;
 
             case PythonCommon::loadPlugin:
-                sprintf(predefMSG0, "Warning while loading plugin: ");
+                msgSpecified = "Warning while loading plugin: ";
                 break;
             case PythonCommon::execFunc:
-                sprintf(predefMSG0, "Warning while invoke exec-function: ");
+                msgSpecified = "Warning while invoking exec-function: ";
                 break;
             case PythonCommon::invokeFunc:
-                sprintf(predefMSG0, "Warning while invoke function: ");
+                msgSpecified = "Warning while invoking function: ";
                 break;
             case PythonCommon::getProperty:
-                sprintf(predefMSG0, "Warning while getting property info: ");
+                msgSpecified = "Warning while getting property info: ";
                 break;   
         }
 
-        std::cerr << predefMSG0 << objName.toLatin1().data() << "\n" << std::endl;
+        std::cerr << msgSpecified.data() << objName.toLatin1().data() << "\n" << std::endl;
 
         if (retVal.hasErrorMessage())
         {
@@ -1519,7 +1516,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
     return true;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const int &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
 {
     QString pName(objName);
     return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError);
