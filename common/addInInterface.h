@@ -42,11 +42,17 @@
 #include <qset.h>
 #include <qthread.h>
 #include <qsharedpointer.h>
-#include <qwidget.h>
-#include <qdockwidget.h>
+//#include <qwidget.h>
 #include <qmutex.h>
-#include <qevent.h>
+//#include <qevent.h>
+
+#if QT_VERSION < 0x050000
 #include <qpluginloader.h>
+#include <qdockwidget.h>
+#else
+#include <QtCore/qpluginloader.h>
+#include <QtWidgets/qdockwidget.h>
+#endif
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 

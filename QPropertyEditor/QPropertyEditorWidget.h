@@ -25,7 +25,11 @@
 #ifndef QPROPERTYEDITORWIDGET_H_
 #define QPROPERTYEDITORWIDGET_H_
 
+#if QT_VERSION < 0x050000
 #include <qtreeview.h>
+#else
+#include <QtWidgets/qtreeview.h>
+#endif
 
 class QPropertyModel;
 class Property;

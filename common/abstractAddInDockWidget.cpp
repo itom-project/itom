@@ -29,7 +29,11 @@
 
 #include "addInInterface.h"
 
+#if QT_VERSION < 0x050000
 #include <qmessagebox.h>
+#else
+#include <QtWidgets/qmessagebox.h>
+#endif
 #include <qmetaobject.h>
 #include <qdebug.h>
 #include <QTime>

@@ -34,11 +34,19 @@
 #include "../common/apiFunctionsGraphInc.h"
 #include "../common/apiFunctionsInc.h"
 
+#if QT_VERSION < 0x050000
 #include <qmainwindow.h>
 #include <qlabel.h>
 #include <qtoolbar.h>
 #include <qevent.h>
 #include <qdockwidget.h>
+#else
+#include <QtWidgets/qmainwindow.h>
+//#include <QtWidgets/qlabel.h>
+#include <QtWidgets/qtoolbar.h>
+#include <QtWidgets/qdockwidget.h>
+//#include <QtGui/qevent.h>
+#endif
 
 class QPropertyEditorWidget; //forward declaration
 
