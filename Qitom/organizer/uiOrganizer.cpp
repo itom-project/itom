@@ -31,7 +31,7 @@
 #include "../AppManagement.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
-#include "plot/AbstractDObjPclFigure.h"
+#include "plot/AbstractDObjPCLFigure.h"
 #include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
 

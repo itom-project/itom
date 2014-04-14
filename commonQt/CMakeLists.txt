@@ -92,7 +92,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPclFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPCLFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h

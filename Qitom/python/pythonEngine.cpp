@@ -62,6 +62,10 @@
 #include "pythonMatlab.h"
 #endif
 
+#if linux
+#include <langinfo.h>
+#endif
+
 //using namespace std;
 
 QMutex PythonEngine::instatiated;
