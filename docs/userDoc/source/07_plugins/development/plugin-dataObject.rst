@@ -7,8 +7,8 @@ DataObject
 ================================
 
 The class **DataObject** (part of the library **dataObject**) provides a *n*-dimensional matrix that is used both in the core of |itom| as well as
-in any plugins. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
-in the file *typeDefs.h* and are as follows.
+in any plugin. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
+in the file *typeDefs.h* and are as follows:
 
 ================ ================ =========================================
 Typedef          Enumeration      Description
@@ -25,43 +25,25 @@ ito::complex64   ito::tComplex64  real and imaginary part is float32 each
 ito::complex128  ito::tComplex128 real and imaginary part is float64 each
 ================ ================ =========================================
 
-The last two dimensions of each dataObject are denoted *plane* and physically correspond to images. In order to also handle huge matrices in memory, 
-The entire matrix is divided into planes, where each plane can be allocated at arbitrary positions and memory and is of type **cv::Mat_<type>**,
-derived from **cv::Mat** of the **OpenCV** library. Therefore every plane can be used with every operator given by the **OpenCV**-framework (version 2.3.1
-or higher). If available, the first *(n-2)* are allocated as one vector of pointers, each pointing to its corresponding plane. This kind of
-dataObject and its way of allocating memory is called *unorganized*.
+The last two dimensions of each DataObject are denoted *plane* and physically correspond to images. Since no one-dimensional DataObject is available, each DataObject at least consists of one plane. In order to also handle huge matrices in memory, 
+usually the different planes are stored at different locations in memory. Internally, each plane is an OpenCV matrix of type **cv::Mat_<type>**,
+derived from **cv::Mat**. Therefore every plane can be used with every operator given by the **OpenCV**-framework (version 2.3.1
+or higher). This kind of DataObject and its way of allocating memory is called *non-continuous*. 
 
-In order to make the *dataObject* compatible to matrices that are allocated in one huge memory block (like Numpy arrays), it is also possible to
-make any *dataObject* continuous. Then, a huge data block is allocated, such that all planes lie consecutively in memory. Nevertheless, the pointer-tree
-is still available, pointing to the starting points of all planes. This reallocation is implicitly done, when creating a Numpy-array from a dataObject.
+In order to make the *DataObject* compatible to matrices that are allocated in one huge memory block (like Numpy arrays), it is also possible to
+make any *DataObject* continuous. Then, a huge data block is allocated, such that all planes lie consecutively in memory. This reallocation is implicitly done, when creating a Numpy-array from a non-continuous DataObject.
     
 DataObject can be declared in different possible ways with different dimensions and different data types.
-Various possible implementations of declaring DataObject are listed below.
-        
-#. DataObject();
-#. DataObject(const size_t size, const int type);
-#. DataObject(const size_t sizeY, const size_t sizeX, const int type);
-#. DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type ,const unsigned char continuous = (unsigned char)'\000');
-#. DataObject(const unsigned char diimesions, const size_t *sizes, const int type, const unsigned char continuous = (unsigned char)'\000');
-#. DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const uchar "continousouDataPtr, const size_t *steps = (const size_t *)0);
-#. DataObject(const size_t sizeZ, const size_t sizeY, const size_t sizeX, const int type, const uchar*continuousDataPtr, const size_t *steps = (const size_t *)0);
-#. DataObject(const ito::DataObject &copyConstr);
-#. DataObject(const unsigned char dimensions, const size_t *sizes, const int type, const cv::Mat *planes, const unsigned int nrOfPlanes);
-#. DataObject(const ito::DataObject dObj);
 
-Let's take an example of a data object with a dimensions 3x2x5. It can be imagined as shown in the figure below.
+Let's take an example of a 3x2x5 data object. It can be imagined as shown in the figure below.
 
 .. image:: images/DataObject.png
     :height: 369
     :width: 812
     :scale: 100
 
-As we can see in this figure, each plane is of a type **cv::Mat** class from **openCV** library which we know.
-**m_data** corresponds to the zero-based two-dimensional matrix-index for a particular plane. 
-This matrix-index can be retrieved using **seekMat()** method and later on with the use of **get_mdata()** method, we can have the matrix pointer of the whole plane. The return type of **get_mdata()** method is **int*** which can be type-casted by **cv:Mat*** easily.
+As we can see in this figure, each plane is of a type **cv::Mat** class from **OpenCV** library which we know. The internal index of a specific plane can safely be retrieved using the method **seekMat()**. Usually the i-th plane has got the index *i*, however in case of data objects representing a subpart or region of interest of another data object, the i-th plane with respect to the current region of interest can in reality have a bigger index than *i*. The pointers to all planes are stored in one linear vector, represented by the array member **m_data**. It is accessible via **get_mdata()** and is of type **int***. However, it can directly and safely be type-casted to **cv:Mat*** or **cv::Mat_<Type>**.
 Please read the section `Direct Access to the underlying cv::Mat`_ to understand this concept in detail with a working example.
- 
-Following are some sample codes to get one quickly understand *basic programming structure of Data Objects*.
 
 The following code creates an empty data object with no dimensions (0) and no type (0).
 
@@ -72,14 +54,10 @@ The following code creates an empty data object with no dimensions (0) and no ty
     std::cout << "empty data object: \n";
     std::cout << " dimensions: " << d0.getDims() << "\n";
     std::cout << " type: " << d0.getType() << "\n" << std::endl;
-    
-.. note::
 
-    Here **getDims()** method returns the dimensions of data object d0, whereas **getType()** method returns the type of d0.
+The number of dimensions of this data object are obtained by **getDims()**, whereas its type value in terms of the enumeration above is returned via **getType()**.
 
-Now, lets take an example of creating a two dimensional data object.
-
-The following code creates such 2 dimensional data object of dimensions Y=2, X=5 and of type float32.
+The following code creates a 2 dimensional data object of dimensions Y=2, X=5 and of type *float32*.
     
 .. code-block:: c++
     :linenos:
@@ -92,12 +70,54 @@ The following code creates such 2 dimensional data object of dimensions Y=2, X=5
     std::cout << " total: " << d1.getTotal() << "\n";
     std::cout << d1 << std::endl;
 
-.. note::
+The size of the specific dimensions is obtained by **getSize** where the argument is the index of the dimensions (*x* is always the last dimension with the biggest index value). **getTotal** returns the total number of elements within this data object.
 
-    Here, **getSize()** method returns the size of each dimension of a data object d1.
-    **getDims()** method returns the number of dimensions of d1.
-    **getType()** method returns the type of d1.
-    **getTotal()** method returns total number of elements in d1.
+Creating a data object
+===========================================================
+
+For creating a data object in *C++*, there are different constructors available. They are discussed in this section.
+
+An empty data object is created using the argument-less, default constructor:
+
+.. code-block:: c++
+    
+    ito::DataObject d1;
+
+It has no dimensions and contains no elements. For creating a two or three dimensional data object of a desired type, filled with arbitrary, but not random values, use one of the following constructors:
+
+.. code-block:: c++
+    
+    ito::DataObject(const int sizeY, const int sizeX, const int type); //type is one of the enumeration values
+    ito::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0);
+
+The optional *continuous* parameter indicates, whether a continuous object (one block in memory) should be allocated (1), or not (0, default). 
+For higher dimensional objects, there is a constructors that requires an allocated integer array that contains the sizes of all dimensions:
+
+.. code-block:: c++
+    
+    ito::DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);
+    //e.g.
+    int sizes[] = {3,4,5,2};
+    ito::DataObject d1(4,sizes,ito::tFloat32);
+
+One other important constructor is - of course - the copy constructor. It creates a shallow copy of an existing data object. A shallow copy means, that both data objects share the same data (hence the array itself), but
+the header information is separated (dimensions, sizes...). All meta information is shared as well (axes descriptions, scales, protocol...). If a value of the one object is changed, the corresponding value in the other
+object is changed as well. The principle of using shallow copies is a common principle in C programming and highly used in OpenCV. It speeds up the calculation and requires less memory. On the other hand, you need to take
+care about the values. If you want to have a so called deep copy of an object, use the **copy** method.
+
+If you know what you do, you can also create a data object from multiple *cv:Mat* of the same type and size. If so, you need to have an array of all cv::Mat (each corresponding to one plane). The created data object then
+creates a fast shallow copy of all planes and uses them:
+
+.. code-block:: c++
+    
+    ito::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes);
+    
+    //e.g.
+    cv::Mat planes[] = { cv::Mat::ones(50,50,CV_8U), cv::Mat::zeros(50,50,CV_8U)};
+    int sizes[] = {50,50};
+    ito::DataObject d1(2, sizes, ito::tUInt8, planes, 2);
+
+Furthermore, there are several constructors to create data objects whose values are already set to the values of a given array. The reader is referred to the detailed documentation of class **ito::DataObject** for this.
     
     
 Addressing the elements of a data object 
@@ -107,7 +127,7 @@ Now, we know how to create a data object, so lets have a look at how can one add
 Sometimes it is necessary to read or set single values in one matrix, sometimes one want to access all elements
 in the matrix or a certain subregion. Therefore, the addressing can be done in one of the following ways:
 
-Direct access of one single element of a Data Object using **at()** method
+Direct access of one single element of a Data Object using **at<_Tp>()** method
 -----------------------------------------------------------------------------------------    
 
 .. code-block:: c++
@@ -117,8 +137,8 @@ Direct access of one single element of a Data Object using **at()** method
     d1.at<ito::float32>(0,1) = 5.2;
     std::cout << "d1(0,1) = " << d1.at<ito::float32>(0,1) << "\n" << std::endl;
     
-Here, the addressing is done by the method **at()** under the class ito::DataObject, which is pretty similar to the same method
-under the **OpenCV** class **cv::Mat**. The **at()** method can either be used to get the value at a certain position or
+Here, the addressing is done by the member method **at()**, which is pretty similar to the same method
+of the **OpenCV** class **cv::Mat**. The **at()** method can either be used to get the value at a certain position or
 to set value at that position in a data object. There are special implementations of **at()** for addressing values in a two- or three-dimensional
 data object, where the first argument always is the **z-index** (3D), followed by the **y-index** and the **x-index**.
 All indices are zero-based, hence the first element can be referred by addressing **0th position** in every dimension.
@@ -132,33 +152,32 @@ Let's try to summarize some pros and cons of this method.
     
 **Advantages**
 
-* This method gives flexibility to a developer to access any element of a data object directly.
+* This method gives flexibility to a developer to directly access any element of a data object.
 * A developer can also access a part of a data object as well using **at()** method as described in `Direct Access to the underlying cv::Mat`_.
 
 **Drawbacks**
 
 * Developer has to implement the code under the nest of **if...else** conditions if one needs to access the whole data object.
-* It is a slower method to execute performance wise if compared to the other methods of accessing the data object.
+* It is slow for accessing a lot of values of the matrix compared to the other possible methods.
     
 Addressing elements of a data object using row pointer
 ----------------------------------------------------------------------------------
 
-When one needs to iterate through certain region of a data object, then the previous method of accessing a data object using **at** method seems quite insufficient.
-In such case, one can define a row pointer for each row in matrix and work with row pointer to address elements of a data object in a following way.
+When one needs to iterate through certain regions of a data object, then the previous method of accessing a data object using **at** method seems quite insufficient. In such case, one can define a row pointer for each row in matrix and work with row pointer to address elements of a data object in the following way.
 
 .. code-block:: c++
     :linenos:
     
     ito::DataObject d1(3,5, ito::tInt16);
-    size_t planeID = d1.seekMat(0);   //get internal plane number for the first plane
-    ito::int16 *rowPtr = (ito::int16*)d1.rowPtr(planeID,0);
-    size_t height = d1.getSize(0);
-    size_t width = d1.getSize(1);    
-    for(size_t m = 0 ; m< height ; m++)
+    int planeID = d1.seekMat(0);   //get internal plane number for the first plane
+    ito::int16 *rowPtr = NULL;
+    int height = d1.getSize(0);
+    int width = d1.getSize(1);    
+    for(int m = 0; m < height; m++)
     {
         rowPtr = (ito::int16*)d1.rowPtr(planeID,m);
         std::cout << "Row " << m << ":";
-        for(size_t n=0 ; n < width; n++)
+        for(int n=0; n < width; n++)
         {
             rowPtr[n] = m;                 //accessing each element of data object with row pointer
         }
@@ -166,8 +185,8 @@ In such case, one can define a row pointer for each row in matrix and work with 
     std::cout << d1 << std::endl;
   
 Here, **seekMat()** method gets the internal plane number of the 1st plane in line #2. 
-In line #3, dynamic array rowPtr is defined as row pointer to the 0th plane of the data object d1. 
-Now accessing each element of row pointer will access each element of the data object in that row. 
+In line #8, the pointer to the data array of the m-th row in the 2D-plane is obtained and safed in *rowPtr*.
+By iterating through the array given by the *rowPtr*, each element in this row can be read and set to a specific value.
 
 To use this row pointer method for data objects more than 2 dimensions, following code can be used. 
 
@@ -180,21 +199,21 @@ To use this row pointer method for data objects more than 2 dimensions, followin
     int dim3 = d1.getSize(2);
     int dim4 = d1.getSize(3);
     int dim5 = d1.getSize(4);
-    size_t dataIdx = 0;
+    int dataIdx = 0;
     for(int i=0; i<dim1; i++)
     {
-        for(int j=0; j<dim2;j++)
+        for(int j=0; j<dim2; j++)
         {
-            for(int k=0; k<dim3;k++)
+            for(int k=0; k<dim3; k++)
             {
-                dataIdx = i*(dim2*dim3) + j*dim3 + k;
-                for(int l=0; l<dim4;l++)
+                dataIdx = d1.seekMat(i*(dim2*dim3) + j*dim3 + k);
+                for(int l=0; l<dim4; l++)
                 {
-                    rowPtr1= (TypeParam*)d1.rowPtr(dataIdx,l);
-                    for(int m=0; m<dim5;m++)
+                    rowPtr1= (ito::int16*)d1.rowPtr(dataIdx,l);
+                    for(int m=0; m<dim5; m++)
                     {
                         //Assigning unique value to each element of d1.
-                        rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));
+                        rowPtr1[m] = yourValue;
                     }
                 }
             }
@@ -206,43 +225,43 @@ To use this row pointer method for data objects more than 2 dimensions, followin
     Here **dataIdx** represents the number of the plane in the matrix.
     The formula in line #14 assigns a non repeating increasing value to dataIdx such that each plane of the data object can be pointed out without any overlapping.
 
+.. note::
+    
+    Usually it is not allowed to use the *rowPtr* to access the items of one of the following rows,
+    since it is not sure if the elements of the next row directly follow to the last value of this row. 
+    For instance, this is not the case, if the current plane represents a region of interest of a bigger plane.
+    You can only iterate through one entire plane using the row-pointer of the first row if the plane is continuous.
+    This can be checked by the continuous property of the *cv::Mat* that represents this plane.
+
 Some advantages and disadvantages of using this method are given in the section below.
     
-Advantages
-"""""""""""""""
+**Advantages**
 
 * This method is the most efficient way to access the data object.
 * This method gives flexibility to access some rows or the full data object at once.
 
-Drawbacks
-"""""""""""""""
+**Drawbacks**
 
 * Complex implementation. One needs deep understanding of pointers to implement this method to access data object. 
 * This is not an advisable method if one needs to access a few elements of the data object which are not in sequence.
 
-Assigning a single value to all elements of a Data Object
+Assigning a single value to all elements of a data object
 --------------------------------------------------------------------
 
-One can assign a single value to all elements of a data object using assignment operator "=" in the following way. 
+One can assign a single value to all elements of a data object using the assignment operator "=" in the following way. 
 Here we will also have a look on how to declare a 5 dimensional data object and assign a single floating point value to each element of the data object.
 
 .. code-block:: c++
     :linenos:
     
-    size_t *temp_size = new size_t[5];
-    temp_size[0] = 10;
-    temp_size[1] = 12;
-    temp_size[2] = 16;
-    temp_size[3] = 18;
-    temp_size[4] = 10;
-    ito::DataObject d1 = ito::DataObject(5,temp_size,ito::tFloat32);
+    int temp_size[] = {10, 12, 16, 18, 10};
+    ito::DataObject d1(5,temp_size,ito::tFloat32);
     d1 = 3.7;
     std::cout << d1 << std::endl;
-    delete[] temp_size;
 
-Here line #7 uses implementation #4 for declaring 5 dimensional data object d1.
 
-Direct Access to the underlying cv::Mat
+
+Direct access to the underlying cv::Mat
 -----------------------------------------------
 
 In some cases, one needs to assign values of elements of a data objects based on some portion of another data object. 
@@ -257,7 +276,7 @@ Following example shows the method to access underlying planes in multidimension
     std::cout << "DataObject (4x5x3), int16 \n" << std::endl;
     d4 = 3;        //assign value 3 to all elements
     //access to the third plane (index 2)
-    planeID = d4.seekMat(2);
+    int planeID = d4.seekMat(2);
     cv::Mat *plane3 = (cv::Mat*)d4.get_mdata()[planeID];
     std::cout << "OpenCV plane" << std::endl;
     std::cout << *plane3 << std::endl;
@@ -285,14 +304,20 @@ The other way to perform the same operation of line #14 is shown below.
     ranges[0] = ito::Range(1,3);
     ranges[1] = ito::Range(0,2);
     ranges[2] = ito::Range::all();
+    delete ranges;
     
-This code shows the way to modify ranges individually, which can be very useful if one needs to modify this range later in this code to work on other data objects perhaps.
+This code shows the way to modify ranges individually, which can be very useful if one needs to modify this range later in this code to work on other data objects perhaps. 
+
+..note::
+    
+    Please consider, that the first index of the range is the first zero-based index inside of the selected range. The second value is always **one** index after the last index 
+    inside of the region of interest. This is very important!! This behaviour is somehow unintuitive, however similar to OpenCV and Python. 
 
 .. note::
     
     **get_mdata()** is a function declared under *DataObject* class. It returns pointer to vector of *cv::_Mat-matrices*.
     
-Accessing all elements of a Data Object using iterators
+Accessing all elements of a data object using iterators
 --------------------------------------------------------------------
 
 There are two classes defined, called **DObjIterator** and **DObjConstIterator** respectively, under the namespace **ITOM**, which support the developer with an easy way to iterate through 
@@ -308,7 +333,7 @@ Following code snippet shows the example of this method.
     ito::DObjIterator it;    // Declaration of DObjIterator
     for(it=d6.begin();it!=d6.end();++it)
     {
-        *((ito::int16*)(*it_2d)) = cv::saturate_cast<TypeParam>(temp++);     // Assigning a unique value to each element of a data object using iterator.
+        *((ito::int16*)(*it_2d)) = cv::saturate_cast<ito::int16>(temp++);     // Assigning a unique value to each element of a data object using iterator.
     }
 
 As can be seen in the code above, line #2 declares a 21x31 data object d6 of type int16. Line #3 declares an iterator object **it** of class **DObjIterator**.
@@ -318,19 +343,17 @@ Line #4 makes a meaningful use of these methods in for loop to iterate through t
 **d6.begin()**, iterate through the whole data object increasing the iterator value by one in each iteration till the pointer value in iterator **it** reaches the pointer value of the 
 last element of the data object checking the condition **it!=d6.end()**.
 
-Advantages
-"""""""""""""""
+**Advantages**
 
 * This method is a compromise between its usability with ease and performance on execution level. Integration of this method in code is fast and easy.
 * Developer does not think about **if...else** conditions to decide the boundaries of Region of Interest to access any data object.
 
-Drawbacks
-"""""""""""""""
+**Drawbacks**
 
 * Performance degrades against the method `Addressing elements of a data object using row pointer`_.
 * It is not advisable to use this method if one needs to access some part or a single element of a data object.
 
-Working with Data Objects
+Working with data objects
 =============================== 
 
 Now, lets have a look on various methods to work with data objects.
@@ -338,7 +361,7 @@ Now, lets have a look on various methods to work with data objects.
 Creating Eye Matrix
 ------------------------------------
 
-Any square Data Object might need to be converted in eye matrix during many operations in matrix calculations. 
+Any square data object might need to be converted in eye matrix during many operations in matrix calculations. 
 This can be quickly done using function **eye()** declared under *DataObject* class.
 Syntax for the function **eye()** is shown below.
 
@@ -383,7 +406,7 @@ Syntax for the function **ones()** is shown below.
     delete d3;
     d3 = NULL;
     
-Here, the function ones() has been used in Line #2 with pointer variable d3 to convert the data object d3 into ones matrix of dimension 2x3x4. 
+Here, the function ones() has been used in line #2 with pointer variable d3 to convert the data object d3 into ones matrix of dimension 2x3x4. 
     
 Creating Zeros Matrix
 -----------------------
@@ -553,12 +576,68 @@ Following exemplary code can explain the usage of these functions in a better wa
 As shown in line #2-4, **setAxisScale()** function is used to assign scales of 5, -0.5 and 3.24 on Axis 0, 1 and 2 respectively of data object d9. Line #5-7 explains how the axis scales can be retrieved using the function **getAxisScale()**.
 Line #8 prints down these retrieved axis values at the end of this code snippet.
 
-Operations on Data Objects
+Copy data into an existing data object
+===========================================================
+
+Often, it is necessary to copy external data arrays into a region of interest, an entire plane or an entire data object. Of course this can be done using the methods from the accessing and assigning section above.
+However for the common case of copying 2D matrices into a two-dimensional region of interest or a 2D-plane of a data object, there exists the method **copyFromData2D**. The main requirement is, that the size of the
+data object exactly fits to the given size of the external array. Additionally, the types of the data must fit as well. Let's describe the method using two examples:
+
+.. code-block:: c++
+    
+    //example for method
+    ito::RetVal copyFromData2D(const _Tp *data, int sizeX, int sizeY);
+    
+    //create 6 uint16 values
+    ito::uint16 arr[] = {1,2,3,4,5,6};
+    
+    //create a 3x2x3, uint16 data object filled with 0
+    ito::DataObject b;
+    b.zeros(3,2,3,ito::tUInt16);
+    
+    //get a slice of the second plane (careful: index (1,2) only selects one! plane)
+    ito::Range ranges2[] = {ito::Range(1,2),ito::Range::all(), ito::Range::all()};
+    ito::DataObject c = b.at(ranges2);
+    
+    //let all values of c set to the values given by the first argument
+    //3,2 indicates the width and height of data, since arr is a one dimensional array.
+    ito::RetVal ret = c.copyFromData2D(arr,3,2);
+    
+    //prints the resulting overall object b, where the second plane is [1,2,3;4,5,6]
+    std::cout << b << std::endl;
+
+The second example allows to only copy a subpart of the given data block into the data object
+
+.. code-block:: c++
+    
+    //example for method
+    ito::RetVal copyFromData2D(const _Tp *data, int sizeX, int sizeY, \
+        const int x0, const int y0, const int width, const int height);
+    
+    //create 6 uint16 values
+    ito::uint16 arr[] = {1,2,3,4,5,6};
+    
+    //create a 3x2x3, uint16 data object filled with 0
+    ito::DataObject b;
+    b.zeros(3,2,3,ito::tUInt16);
+    
+    //let the values 2,3 and 5,6 be copied into the second and third column of the second plane
+    //of b.
+    ito::Range ranges2[] = {ito::Range(1,2),ito::Range::all(), ito::Range(1,3)};
+    ito::DataObject c = b.at(ranges2);
+    ito::RetVal ret = c.copyFromData2D(arr,3,2,1,0,2,2);
+    
+    //prints the resulting overall object b, where the second plane is [0,2,3;0,5,6]
+    std::cout << b << std::endl;
+
+The *copyFromData2D* is often used for copying camera data inside an internal or an externally given data object.
+
+Operations on data objects
 ===========================================================
 
 In this section, we will learn some basic operations which can be performed using data objects.
 
-Adjugate the Data Object
+Adjugate of a data object
 -----------------------------------------------
 
 In many matrix calculations, there occurs a need to adjugate a matrix. Here, we also have a function **adj()** declared under *DataObject* class, which returns an adjugated matrix of the original data object.
@@ -583,7 +662,7 @@ Following code snippet explains the use of **adj()** function.
 In the code above, a 6x5x3 data object d10 of data type *ito::tComplex128* is created. Later on, in line #2-4, some complex values are assigned at data object elements (0,1,2), (1,0,1) and (2,2,1). 
 In line #5, an adjugated matrix of data object d10 is created using **adj()** function and stored in new data object called **adjugatedDataObj**. Line #6 prints out this adjugated matrix.
 
-Transpose the Data Object
+Transpose a data object
 -------------------------------------------
 
 Transposing a data object is also one of the very important techniques in matrix calculations. With the use of *trans()* function, we can achieve a transposed matrix of the original data object.
@@ -617,7 +696,44 @@ In the code above, a 2x2 data object d11 of type *ito::tInt16* is created. This 
     
     Transposing the data object also transposes the axis related informations.
 
-Basic Operators with Data Objects
+Squeeze a data object
+------------------------------------------------------------------------------
+The squeeze method of a data object is a convenient function to return a shallow copy of the data object where all dimensions with a size of 1 are eliminated. This does not have any impact on the underlying data of
+the data object but only the header information is changed. Therefore, a shallow copy is possible. The squeeze operations is often used, if another function requires for instance a two dimensional data object, but
+a three dimensional is given. Even, if only one plane of the three dimensional object is selected using any slicing operation (region of interest...), it is still three dimensional. After the squeeze-method however,
+a two dimensional object is obtained.
+
+Example:
+
+.. code-block:: c++
+    
+    //3 x 3 x 2, float32 data object, all values = 0
+    ito::DataObject a(3,3,2, ito::tFloat32);
+    a = 0;
+    
+    //create view or shallow copy of the first plane, using the range objects
+    ito::Range ranges[] = {ito::Range(1,2),ito::Range::all(), ito::Range::all()};
+    ito::DataObject secondPlane = a.at(ranges);
+    
+    //secondPlane has a size of 1 x 3 x 2, this is squeezed
+    ito::DataObject squeezed = secondPlane.squeeze();
+    
+    //squeezed has now a size of 3 x 2, set its first element to 2
+    squeezed.at<ito::float32>(0,0) = 2;
+    
+    //print out the original object
+    std::cout << a << std::endl;
+    
+    //the result is:
+    /* [[0,0,0;0,0,0];[2,0,0;0,0,0];[0,0,0;0,0,0]]
+
+.. note::
+    
+    The last two dimensions belonging to planes are never squeezed, since this would require a full recreation of the
+    data object including a deep copy of the data.
+
+
+Basic operators with data objects
 -------------------------------------------------------------------------------
 
 (Same syntax can be used for other operators like '+','-','=+','=-', div, cross multiplication (!=), <<(shift left), >> ( shift right))
@@ -635,323 +751,120 @@ Let us start with basic Add "+" operator. Following is one example shown to add 
     d14= d12 + d13;
     std::cout << "Addition of two matrix is:" << d14 << std::endl;
 
-Here, two data objects d12 and d13 are added element-wise and the resultant data object is stored in d14. In the same way many other arithmetic, compare, bitwise operators can work with data objects.
-Following is the explanation of each possible operator to work with data object.
+Here, two data objects *d12* and *d13* are added element-wise and the resultant data object is stored in *d14*. In the same way many other arithmetic, compare or bitwise operators can work with data objects.
+In the following, many operators are introduced that are overloaded for working with data objects as argument.
 
-**Arithmetic Operators**
+Arithmetic operators
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
             
-**Add Operator '+'**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+**addition and subtraction**
 
-If mat1, mat2 and mat3 are data objects of same size and same type, then "+" operator can be used to perform element-wise addition in the following way. 
+Using the *+* or *-* operator, two data objects of the same size and same type can be added/subtracted by means of an element-wise addition/subtraction:
 
-*mat3 = mat1 + mat2;*
+.. code-block:: c++
+    
+    ito::DataObject mat3 = mat1 + mat2;
+    mat3 = mat1 - mat2;
 
-"+" operator performs element-wise addition on mat1 and mat2 and returns a resultant data object. This operator returns the resultant data object of same size and type which needs to be stored in some other data object of same size and type (mat3) as shown in the statement above.
+The same operations can also be done inplace, such that one data object is added to or subtracted from another data object, that is directly modified:
 
-**Add and Assign Operator '+='**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.. code-block:: c++
+    
+    mat2 += mat1;
+    mat2 -= mat1;
+    
+**multiplication and division**
 
-If mat1 and mat2 are data objects of same size and same type, then "+=" operator can be used to perform element-wise add and assign operation in the following way. 
+At first, the star-operator "*" is overloaded, such it is possible to multiply a constant factor to all values of the given data object. This can also be done inplace:
 
-*mat2 += mat1;*
+.. code-block:: c++
+    
+    ito::DataObject mat2 = mat1 * 2.0;
+    mat1 *= 2.0; //inplace
 
-"+=" operator performs element-wise addition operation on mat1 and mat2 and stores the resulting data object leftside of this it.
+When using the star-operator with two data objects, one needs to know that this indicates a matrix-multiplication in the mathematical sense, hence a **m x n** matrix multiplied
+with a **n x k** matrix results in a **m x k** matrix:
 
-**Subtract Operator '-'** 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-If mat1, mat2 and mat3 are data objects of same size and type, then "-" operator can be used to perform element-wise subtraction between these data objects in the following way.
-
-*mat3 = mat1 - mat2;*
-
-In the statement above, mat2 is subtracted from mat1 element-wise and the resultant data object is stored in mat3. 
-
-**Subtract and Assign Operator '-='**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-If mat1 and mat2 are data objects of same size and type, then "-=" operator can be used to perform element-wise subtraction between these data objects in the following way.
-
-*mat2 -= mat1;*
-
-In the statement above, mat1 is subtracted from mat2 element-wise and the resultant data object is stored back to mat2. 
- 
-**Multiplication with Constant Factor '*'**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-Operator "*" is overloaded to perform multiplication of a data object with constant factor in the following way. 
-
-*mat2 = mat1 * x;*
-
-Here, the data type of mat2 must proper enough to store the correct resultant data object obtained from multiplication of each element of mat1 with constant factor **"x"**.
-
-**Multiplication with Constant Factor and Assign '*='**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-One can multiply all elements of a data object with a constant factor and assign the result back to the same data object as shown in the following statement. 
-
-*mat1 *= x;*
-
-Here each element of the data object **mat1** gets multiplied with a constant factor **"x"** and the result is stored back into data object `mat1`.
-
-**Cross Multiplication Operator '*'**
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-One can use the operator "*" to perform a cross multiplication between two data objects with adequate dimensions in the following way.
-
-*crossMul_mat = mat1 * mat2;*
-
-In the statement above, operator **"*"** is used to perform cross multiplication between data objects mat1 and mat2. If sizes of mat1 and mat2 are `axb` and `bxc` respectively, then the size of crossMul_mat should be declared `axc` according to the principle of cross multiplication of matrices.
-
-.. note::
-
-    This operator is defined only for "float32" and "float64" datatypes.
-
-**Dot Multiplication Operator 'mul'**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-With the use of "mul" operator, one can perform dot product (element-wise multiplication) between two data objects in the following way.
-
-*mul_mat=mat1.mul(mat2);*
-
-Here, "mul" operator takes two data objects mat1 and mat2 of same type and same size as arguments and perform dot product between them. The result of this dot product is saved in data object of same size mul_mat. Here, the size of mul_mat should be big enough to store correct result of dot product. 
-
-**Division Operator 'div'**
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""+
-
-This operator is used to perform element-wise division between two data objects in the following way.
-
-*div_mat = mat1.div(mat2);*
-
-Here, data object **mat1** is divided from data object **mat2** element-wise using **"div"** operator and the result is stored in data object **div_mat**. Sizes and data types of mat1, mat2 and mat2 should be same.
+.. code-block:: c++
+    
+    ito::DataObject mat3 = mat1 * mat2;
 
 .. note::
     
-    **"div"** operator can not be used to calculate inverse matrix. 
+    This operation is only defined for *float32* and *float64* datatypes.
 
-**Compare Operators**
+An element-wise multiplication of two data objects of same size and type is obtained by using the **mul** method of the first data object:
+
+.. code-block:: c++
+    
+    ito::DataObject mat3 = mat1.mul(mat2);
+
+The element-wise division is finally obtained by the corresponding **div** method:
+
+.. code-block:: c++
+    
+    ito::DataObject mat3 = mat1.div(mat2);
+    
+.. note::
+    
+    The **"div"** operator can not be used to calculate inverse matrix. 
+
+Comparison operators
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Compare operations are frequently needed while working with data objects. Keeping this in mind, we have developed some overloaded compare operators as well which we will discuss in this section.
+The comparison operators can be used to element-wisely compare the elements of two data objects of same size and type. The result of all comparisons is a data object with the same size
+than the compared objects but with the fixed type *uint8*. Depending on the comparison, this resulting matrix contains a value of **0** or **1**. The comparison operators are not
+supported for the **int8** and **int32** data types (OpenCV restriction). Available operators are:
 
-**== (Equal to)  (Elementwise operator)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.. code-block:: c++
+    
+    ito::DataObject result = (mat1 == mat2); //equal to
+    ito::DataObject result = (mat1 != mat2); //unequal to
+    ito::DataObject result = (mat1 < mat2); //lower than
+    mat1 <= mat2; //lower or equal than
+    mat1 > mat2; //bigger than
+    mat1 >= mat2; //bigger or equal than
 
-This operator compares the element values of two different data objects on respective positions and returns a resultant data object with **0s** and **1s** according to the comparison result.
-If two values on the respective positions match in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
-The way to use this **== (Equal to)** operator is shown as follows.
-
-*mat3 = mat1 == mat2;*
-
-Here, a comparison between data objects mat1 and mat2 is done with **==** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are equal, otherwise '0' where the values are unequal.
-Sizes of mat1, mat2 and mat3 should be equal.
-
-**!= (unEqual to) (Elementwise operator)** 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator compares the element values of two different data objects on respective positions and returns a resultant data object with **0s** and **1s** according to the comparison result.
-If two values on the respective positions differ in two data objects, then a **1** is returned, otherwise a **0** is returned for that position in the resultant data object. 
-The way to use this **!= (unEqual to)** operator is shown as follows.
-
-*mat3 = mat1 != mat2;*
-
-Here, a comparison between data objects mat1 and mat2 is done with **!=** operator and the result is stored in the data object mat3. As a result, mat3 contains '1' at the positions where the values in mat1 and mat2 are unequal, otherwise '0' where the values are equal.
-Sizes of mat1, mat2 and mat3 should be equal.
-
-**< (lower than) (Elementwise operator)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator performs "lower than" comparison operation between the element values of two data objects. The way to perform this comparison is shown in the following statement.
-
-*mat3 = mat1 < mat2;*
-
-In the statement above, elements of **mat1 are** compared with elements of mat2 for **lower than** operation with use of **<** operator. The resultant data object **mat3** contains **'1'** at the positions where the element values in data object mat1 are lower than those of mat2 at respective positions, otherwise it contains **'0'** where this condition doesn't satisfy.
-Sizes of all three data objects mat1, mat2 and mat3 should be the same.
-
-**<= (lower or equal to) (Element-wise operator)** 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator compares two data objects and helps us to find out which elements in one data object are **"lower or equal to"** the respective elements in the other data object in the following way.
-
-*mat3 = mat1 <= mat2;*
-
-Here, **"<="** operator compares data object **mat1** with **mat2** and generates a resultant data object mat3 such as, mat3 contains **1s** at the positions where elements in **mat1** are lower or equal to the respective elements in **mat2**, otherwise contains **0s** where the condition doesn't satisfy.
-Sizes of mat1, mat2 and mat3 should be equal.
-
-**> (bigger than) (Element-wise operator)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-With the use of this over loaded operator, one can easily find out at which positions the values of elements in one data object are **bigger than** the values of the other data object in the following way.
-
-*mat3 = mat1 > mat2;*
-
-Here in the above statement, comparison operation between **mat1** and **mat2** is done with **">"** operator and the final result is stored in data object **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are bigger than the element values on the respective positions in **mat2**.
-Data sizes of mat1, mat2 and mat3 should be the same for the successful comparison with this operator.
-
-**>= (bigger or equal to) (Element-wise operator)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator is used to find out if the element values of one data objects are **bigger or equal to** the element values of the other data object.
-
-Syntax to use this operator with data objects is shown below.
-
-*mat3 = mat1 >= mat2;*
-
-As shown above, element values of **mat1** are compared with the element values of **mat2** and the result is stored in **mat3**. As a result, **mat3** contains **1s** at the positions where the element values in **mat1** are **bigger or equal to** the element values in **mat2**, otherwise contains **0s** at the positions where the condition doesn't satisfy.
-Sizes of mat1, mat2 and mat3 should be equal.
-
-**Shift Operators**
+Shift operators
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Shift operators play a significant role during some arithmetic operations (i.e. division/multiplication by 2), bit level calculations, etc. With the over loading of some shift operators to let them be used for data objects, many matrix calculations can be made much easier. 
-We will go through such over loaded shift operators in this section.
+Shift operators play a significant role during some arithmetic operations (i.e. division/multiplication by 2), bit level calculations, etc. The shift operators are only defined for
+signed or unsigned fixed point data types. A left shift can either return the resulting data object or can be done in-place. The left shift moves every element in a data object by
+*x* places to the left such that the resulting number is multiplied by two to the power of *x*:
 
-**<< (shift left)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.. code-block:: c++
+    
+    unsigned int x = 2;
+    ito::DataObject result = mat1 << x; //left-shift
+    mat <<= x; //in-place
 
-**<<** or in words **"Shift Left"** operator is overloaded to work with data objects. It shifts the element values of the data object at the bit level by a required amount on left.
+The right-shift is similar but it moves the binary number by *x* places to the right, hence, the number is divided by two to the power of *x*.
 
-Syntax to use this operator with data objects is shown below.
+.. code-block:: c++
+    
+    unsigned int x = 2;
+    ito::DataObject result = mat1 >> x; //right-shift
+    mat >>= x; //in-place
 
-*mat2 = mat1 << 'x';*
-
-Here **'x'** is the Shiftbits number.
-The values of the elements in mat1 are shifted left by 'x' number of times and the resultant data object is stored in mat2d. Data type of the Shiftbits 'x' is const unsigned int.  
-
-**<<= (shift left and assign)** 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator is used to **shift left** the element values on a data object at a bit level and **assign back** these values to the same data object.
-
-Syntax to use this operator with data objects is shown below.
-
-*mat1 <<= 'x';*
-
-Here 'x' is the Shiftbits number.
-The values of the elements in mat1 are shifted left by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
-
-**>> (shift right)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator is used to **shift right** the elements of a data object at a bit level. As a result, this operation returns a data object with shifted element values which needs to be stored in some data object with same size and type.
-
-Syntax to use this operator with data objects is shown below.
-
-*mat2 = mat1 >> 'x';*
-
-Here 'x' is the Shiftbits number.
-The values of the elements in mat1 are shifted right by 'x' number of times and the resultant data object is stored in mat2. Data type of the Shiftbits 'x' is const unsigned int.  
-
-**>>= (shift right and assign)**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator is used to **shift right** the elements of a data object at a bit level and **assign back** the shifted values to the same data object.
-
-Syntax to use this operator with data objects is shown below.
-
-*mat1 >>= 'x';*
-
-Here 'x' is the Shiftbits number.
-The values of the elements in mat1are shifted right by 'x' number of times and assigned to the same data object. Data type of the Shiftbits 'x' is const unsigned int. 
-
-**Bitwise Operations**
+Bitwise operations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Bitwise operators play important role in logical operations such as AND, OR and NOT. In this section, some of such over loaded logical operators for data objects are described. 
+The bitwise operators are also executed as an element-wise operation and are defined for all data types. The participating data objects must again have the same size and type.
+Examples are:
 
-**'&' (Bitwise AND) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator performs a **bitwise AND** operation between the elements of two data objects. 
-
-Syntax to use this operator with data objects is shown below.
-
-*d3 = d1 & d2 ;* 
-
-As shown in the statement above, with the use of **'&'** operator, **elementwise AND** operation occurs at the bit level between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
-
-.. note:: 
+.. code-block:: c++
     
-    Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
-
-**"|" (Bitwise OR) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator performs a **bitwise OR** operation between the elements of two data objects.
-
-Syntax to use this operator with data objects is shown below.
-
-*d3 = d1 | d2 ;* 
-
-With the use of **'|'** operator, **elementwise OR** operation occurs at the bit level between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
-
-.. note:: 
+    ito::DataObject result = mat1 & mat2; //bitwise and-combination
+    result = mat1 | mat2; //bitwise or-combination
+    result = mat1 ^ mat2; //bitwise nor-combination
     
-    Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
-
-**"^" (Bitwise NOT) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-This operator performs a **bitwise NOT** operation between the elements of two data objects.
-
-Syntax to use this operator with data objects is shown below.
-
-*d3 = d1 ^ d2 ;* 
-
-With the use of **'^'** operator, **elementwise NOT** operation at the bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are stored at the respective locations of d3.
-
-.. note:: 
+    //inplace:
+    mat1 &= mat2;
+    mat1 |= mat2;
+    mat1 ^= mat2;
     
-    Sizes and data types of data objects d1, d2 and d3 should be same, otherwise exception is thrown.
-
-**"&=" (Bitwise AND and Assign) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    
-This operator performs a **bitwise AND** operation between the elements of two data objects and **assigns back** the result into the first data object. 
-    
-Syntax to use this operator with data objects is given below.    
-    
-*d2 &= d1;*
-
-With the use of **'&='** operator, **elementwise AND** operation occurs at bit level between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 back.
-
-.. note:: 
-    
-    Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
-    
-**"|=" (Bitwise OR and Assign) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    
-This operator performs a **bitwise OR** operation between the elements of two data objects and **assigns back** the result into the first data objects.    
-    
-Syntax to use this operator with data objects is given below.
-    
-*d2 |= d1;*
-
-With the use of **'|='** operator, **elementwise OR** operation  at bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
-
-.. note:: 
-    
-    Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
-
-**"^=" (Bitwise NOT and Assign) Operator**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    
-This operator performs a **bitwise NOT** operation between the elements of two data objects and **assign back** the result into the first data object.
-    
-Syntax to use this operator with data objects is given below.    
-    
-*d2 ^= d1;*
-
-With the use of **'^='** operator, **elementwise NOT** operation at bit level occurs between the elements on the same locations of d1 and d2 and the resultant values are assigned at the respective locations of d1 again.
-
-.. note:: 
-    
-    Sizes and data types of data objects d1 and d2 should be same, otherwise exception is thrown.
-
-**Combination of Different Operators**
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Combination of different operators
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Different operators (explained above) can be used in different possible combinations with data objects for speedy calculations.
 
