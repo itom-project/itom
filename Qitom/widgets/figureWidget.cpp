@@ -27,7 +27,7 @@
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "plot/AbstractDObjFigure.h"
-#include "plot/AbstractDObjPclFigure.h"
+#include "plot/AbstractDObjPCLFigure.h"
 
 #include <qlayoutitem.h>
 
