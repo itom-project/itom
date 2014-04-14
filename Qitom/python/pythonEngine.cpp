@@ -697,7 +697,17 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
     //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
 
+#if linux
+    // google says this should work on linux ... didn't test it
+    QByteArray curQtCodec = QTextCodec::codecForName(nl_langinfo(CODESET))->name();
+#else
     QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
+    if (curQtCodec == "System" || curQtCodec == "system")
+    {
+        curQtCodec = "ISO-8859-1";
+    }
+#endif
+//    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
 
     //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
     //if (qtCodecNames.contains("UTF-8"))
