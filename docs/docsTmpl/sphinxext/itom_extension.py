@@ -259,58 +259,11 @@ class PluginFilterList(Directive):
         else:
             if ("overviewonly" in self.options):
                 for f in pluginInfo["filter"]:
-                    textlist.append("#. :pyitom:filt:`%s`" % f)
+                    textlist.append("#. %s" % f)
             else:
                 for f in pluginInfo["filter"]:
-                    help = itom.filterHelp(f, True)
-                    help = help[f]
-                    mands = ""
-                    params = []
-                    opts = ""
-                    if ("Mandatory Parameters" in help):
-                        mands = ", ".join([h["name"] for h in help["Mandatory Parameters"]])
-                        for item in help["Mandatory Parameters"]:
-                            itemText = ":parammand %s: %s" % (item["name"], item["info"])
-                            params.append(itemText)
-                            itemText = ":parammandtype %s: %s" % (item["name"], item["type"])
-                            params.append(itemText)
-                            
-                    if ("Optional Parameters" in help):
-                        opts = ", ".join([h["name"] for h in help["Optional Parameters"]])
-                        for item in help["Optional Parameters"]:
-                            itemText = ":paramopt %s: %s" % (item["name"], item["info"])
-                            params.append(itemText)
-                            itemText = ":paramopttype %s: %s" % (item["name"], item["type"])
-                            params.append(itemText)
-                    
-                    if ("Output Parameters" in help):
-                        for item in help["Output Parameters"]:
-                            itemText = ":return %s: %s" % (item["name"], item["info"])
-                            params.append(itemText)
-                            itemText = ":rtype %s: %s" % (item["name"], item["type"])
-                            params.append(itemText)
-                            
-                    
-                    if (mands == "" and opts == ""):
-                        args = ""
-                    elif (mands == ""):
-                        args = "[%s]" % opts
-                    elif (opts == ""):
-                        args = mands
-                    else:
-                        args = "%s [,%s]" % (mands,opts)
-                    
-                    t = ".. pyitom:filter:: %s(%s)" % (f,args)
-                    
-                    if (help["description"] != ""):
-                        d = help["description"]
-                        d = d.replace("\n","\n    ")
-                        t += "\n    \n    %s" % d
-                    
-                    if (len(params) > 0):
-                        t += "\n    \n    " + "\n    ".join(params)
-                        
-                    t += "\n\n"
+                    t = ".. py:function:: %s(...)" % f
+                    t += "\n    \n    ...\n"
                     textlist.append(t)
         
         text = "\n".join(textlist)
