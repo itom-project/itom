@@ -1952,7 +1952,11 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject *self, void * /*c
     }
 
     //try to convert value to a numpy-array
-    PyObject* arr = PyArray_FromObject(value, typenum, 1, 1);  //new ref
+    #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+        PyObject* arr = PyArray_FromObject(value, typenum, 1, 1);  //new ref
+    #else
+        PyArrayObject *arr = (PyArrayObject*)PyArray_FromObject(value, typenum, 1, 1);  //new ref
+    #endif
 
     if (arr == NULL)
     {

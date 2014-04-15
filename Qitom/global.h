@@ -53,10 +53,6 @@
 
 #define ITOM_PYTHONMATLAB 0
 
-#ifndef ITOM_NPDATAOBJECT
-    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#endif
-
 #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};
 #define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != NULL) { delete[] pointer; pointer = NULL;};
 

@@ -3514,7 +3514,12 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
             }
 
             //try to convert polygons into a numpy-array of desired type
-            PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+                PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #else
+                PyArrayObject *polygonArray = (PyArrayObject*)PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #endif
+            
 
             if(polygonArray)
             {
@@ -3951,7 +3956,11 @@ polygons : {array-like, MxN} \n\
     }
 
     //try to convert polygons into a numpy-array of desired type
-    PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+        PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #else
+        PyArrayObject *polygonArray = (PyArrayObject*)PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #endif
 
     if(polygonArray)
     {

@@ -31,7 +31,9 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
-//#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
+#ifndef ITOM_NPDATAOBJECT
+    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
+#endif
 
 #ifndef Q_MOC_RUN
     //python

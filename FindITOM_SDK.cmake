@@ -156,6 +156,11 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
             
         endif()
         
+        #itomWidgets often requires the SDK_INCLUDE_DIR/itomWidgets directory as further include directory
+        if (${__ITOMLIB} STREQUAL "itomWidgets")
+            SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
+        endif()
+        
     endforeach(__ITOMLIB)
 
 
