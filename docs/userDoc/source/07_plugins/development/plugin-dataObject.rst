@@ -308,7 +308,7 @@ The other way to perform the same operation of line #14 is shown below.
     
 This code shows the way to modify ranges individually, which can be very useful if one needs to modify this range later in this code to work on other data objects perhaps. 
 
-..note::
+.. note::
     
     Please consider, that the first index of the range is the first zero-based index inside of the selected range. The second value is always **one** index after the last index 
     inside of the region of interest. This is very important!! This behaviour is somehow unintuitive, however similar to OpenCV and Python. 
