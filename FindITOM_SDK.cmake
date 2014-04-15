@@ -122,11 +122,17 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
         #dataobject has a dependency to OpenCV, therefore adapt ITOM_SDK_INCLUDE_DIRS
         #and add the core library of OpenCV to the ITOM_SDK_LIBRARIES
         if (${__ITOMLIB} STREQUAL "dataobject")
-            if(ITOM_SDK_FIND_QUIETLY)
-                find_package(OpenCV QUIET COMPONENTS core)
-            else(ITOM_SDK_FIND_QUIETLY)
-                find_package(OpenCV COMPONENTS core)
-            endif(ITOM_SDK_FIND_QUIETLY)
+            
+            #check if OpenCV was already found. If not, detect its core component,
+            #else use the results from the previous search, since it is probable that
+            #more components have been detected there (and core should be part of it).
+            if (NOT OpenCV_FOUND) 
+                if(ITOM_SDK_FIND_QUIETLY)
+                    find_package(OpenCV QUIET COMPONENTS core)
+                else(ITOM_SDK_FIND_QUIETLY)
+                    find_package(OpenCV COMPONENTS core)
+                endif(ITOM_SDK_FIND_QUIETLY)
+            endif (NOT OpenCV_FOUND)
             
             if(OpenCV_FOUND)
                 SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
@@ -140,11 +146,17 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
         #pointcloud has a dependency to the core component of the point cloud library, 
         #therefore adapt ITOM_SDK_INCLUDE_DIRS and add the core library of PCL to the ITOM_SDK_LIBRARIES
         if (${__ITOMLIB} STREQUAL "pointcloud")
-            if(ITOM_SDK_FIND_QUIETLY)
-                find_package(PCL 1.5.1 QUIET COMPONENTS common)
-            else(ITOM_SDK_FIND_QUIETLY)
-                find_package(PCL 1.5.1 COMPONENTS common)
-            endif(ITOM_SDK_FIND_QUIETLY)
+        
+            #check if PCL was already found. If not, detect its core component,
+            #else use the results from the previous search, since it is probable that
+            #more components have been detected there (and core should be part of it).
+            if (NOT PCL_FOUND)
+                if(ITOM_SDK_FIND_QUIETLY)
+                    find_package(PCL 1.5.1 QUIET COMPONENTS common)
+                else(ITOM_SDK_FIND_QUIETLY)
+                    find_package(PCL 1.5.1 COMPONENTS common)
+                endif(ITOM_SDK_FIND_QUIETLY)
+            endif (NOT PCL_FOUND)
             
             if(PCL_FOUND)
                 SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
