@@ -754,6 +754,8 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
         return -1;
     }
 
+#if ITOM_NPDATAOBJECT
+
     if (npDataObject->ob_type != &PythonNpDataObject::PyNpDataObjectType) //if no npDataObject (numpy-array e.g.) no tags are available, therefore quit here
     {
         return 0;
@@ -907,6 +909,10 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
     //8. valueOffset (ignored)
     //9. valueScale (ignored)
     return error ? -1 : 0;
+
+#else
+    return 0; //no npDataObject -> do nothing
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
+OPTION(BUILD_WITH_NPDATAOBJECT "Build with the python class itom.npDataObject. This is deprecated and will be removed in coming versions since it is incompatible with Numpy 1.7 or higher" OFF)
  
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
@@ -39,6 +40,10 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 IF (BUILD_UNICODE) 
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
+
+IF (BUILD_WITH_NPDATAOBJECT)
+    ADD_DEFINITIONS(-DITOM_NPDATAOBJECT -D_ITOM_NPDATAOBJECT)
+ENDIF (BUILD_WITH_NPDATAOBJECT)
 
 IF (BUILD_WITH_PCL)
     ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)

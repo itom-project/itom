@@ -305,6 +305,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 #endif
 
+//#if ITOM_NPDATAOBJECT //right now, npDataObject exists but raises a python exception if ITOM_NPDATAOBJECT is not defined
             PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
             PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
             PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
@@ -313,6 +314,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
                 PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
             }
+//#endif //ITOM_NPDATAOBJECT
 
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
@@ -3882,7 +3884,7 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
         {
             unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             retval += RetVal(retError, 0, "No more memory available during unpickling.");
         }
