@@ -123,16 +123,18 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
         #and add the core library of OpenCV to the ITOM_SDK_LIBRARIES
         if (${__ITOMLIB} STREQUAL "dataobject")
             
-            #check if OpenCV was already found. If not, detect its core component,
-            #else use the results from the previous search, since it is probable that
-            #more components have been detected there (and core should be part of it).
-            if (NOT OpenCV_FOUND) 
-                if(ITOM_SDK_FIND_QUIETLY)
-                    find_package(OpenCV QUIET COMPONENTS core)
-                else(ITOM_SDK_FIND_QUIETLY)
-                    find_package(OpenCV COMPONENTS core)
-                endif(ITOM_SDK_FIND_QUIETLY)
-            endif (NOT OpenCV_FOUND)
+            if (OpenCV_FOUND) 
+                #store the current value of OpenCV_LIBS and reset it afterwards
+                SET(__OpenCV_LIBS "${OpenCV_LIBS}")
+            else(OpenCV_FOUND)
+                SET(__OpenCV_LIBS "")
+            endif (OpenCV_FOUND)
+            
+            if(ITOM_SDK_FIND_QUIETLY)
+                find_package(OpenCV QUIET COMPONENTS core)
+            else(ITOM_SDK_FIND_QUIETLY)
+                find_package(OpenCV COMPONENTS core)
+            endif(ITOM_SDK_FIND_QUIETLY)
             
             if(OpenCV_FOUND)
                 SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
@@ -141,23 +143,32 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 set(ITOM_SDK_FOUND_TMP false)
                 SET(ERR_MSG "OpenCV not found. Use OpenCV_DIR to indicate the (build-)folder of OpenCV.")
             endif(OpenCV_FOUND)
+            
+            IF(__OpenCV_LIBS)
+                #reset OpenCV_LIBS
+                SET(OpenCV_LIBS "${__OpenCV_LIBS}")
+            ENDIF()
         endif()
         
         #pointcloud has a dependency to the core component of the point cloud library, 
         #therefore adapt ITOM_SDK_INCLUDE_DIRS and add the core library of PCL to the ITOM_SDK_LIBRARIES
         if (${__ITOMLIB} STREQUAL "pointcloud")
         
-            #check if PCL was already found. If not, detect its core component,
-            #else use the results from the previous search, since it is probable that
-            #more components have been detected there (and core should be part of it).
-            if (NOT PCL_FOUND)
-                if(ITOM_SDK_FIND_QUIETLY)
-                    find_package(PCL 1.5.1 QUIET COMPONENTS common)
-                else(ITOM_SDK_FIND_QUIETLY)
-                    find_package(PCL 1.5.1 COMPONENTS common)
-                endif(ITOM_SDK_FIND_QUIETLY)
-            endif (NOT PCL_FOUND)
+            if (PCL_FOUND)
+                #store the current value of PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS and reset it afterwards
+                SET(__PCL_INCLUDE_DIRS "${PCL_INCLUDE_DIRS}")
+                SET(__PCL_LIBRARY_DIRS "${PCL_LIBRARY_DIRS}")
+            else(PCL_FOUND)
+                SET(__PCL_INCLUDE_DIRS "")
+                SET(__PCL_LIBRARY_DIRS "")
+            endif (PCL_FOUND)
             
+            if(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 QUIET COMPONENTS common)
+            else(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 COMPONENTS common)
+            endif(ITOM_SDK_FIND_QUIETLY)
+                
             if(PCL_FOUND)
                 SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
                 set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
@@ -165,6 +176,12 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 set(ITOM_SDK_FOUND_TMP false)
                 SET(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
             endif(PCL_FOUND)
+            
+            IF(__PCL_INCLUDE_DIRS)
+                #reset PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS
+                SET(PCL_INCLUDE_DIRS "${__PCL_INCLUDE_DIRS}")
+                SET(PCL_LIBRARY_DIRS "${__PCL_LIBRARY_DIRS}")
+            ENDIF(__PCL_INCLUDE_DIRS)
             
         endif()
         
