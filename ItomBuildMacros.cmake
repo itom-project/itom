@@ -464,7 +464,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                     #message(STATUS "...ist aber nicht da")
                     #create new ts file
                     add_custom_command(OUTPUT ${_abs_FILE}_new
-                            COMMAND ${QT_LUPDATE_EXECUTABLE}
+                            COMMAND ${Qt5_LUPDATE_EXECUTABLE}
                             ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
                             DEPENDS ${_my_sources} VERBATIM)
                     list(APPEND _my_tsfiles ${_abs_FILE})
@@ -494,7 +494,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                     file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
             endif()
             add_custom_command(OUTPUT ${_ts_file}_update
-                    COMMAND ${QT_LUPDATE_EXECUTABLE}
+                    COMMAND ${Qt5_LUPDATE_EXECUTABLE}
                     ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
                     DEPENDS ${_my_sources} ${_ts_pro} VERBATIM)
             set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
@@ -529,10 +529,9 @@ MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
 
         file(MAKE_DIRECTORY "${output_location}")
         set(qm "${output_location}/${qm}.qm")
-
         add_custom_command(TARGET ${target}
              PRE_BUILD
-             COMMAND ${QT_LRELEASE_EXECUTABLE}
+             COMMAND ${Qt5_LRELEASE_EXECUTABLE}
              ARGS ${_abs_FILE} -qm ${qm}
              VERBATIM
              )
