@@ -1510,6 +1510,14 @@ end:
         id = qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");
         id = qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
 
+        id = qRegisterMetaType<ito::DataObject>("ito::DataObject");
+
+#if ITOM_POINTCLOUDLIBRARY > 0    
+        id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
+        id = qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
+        id = qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
+
         m_deadPlugins.clear();
 
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
@@ -1693,17 +1701,27 @@ end:
     *   in the addInModel list or using showConfiguration command in python. An implementation of a configuration dialog is not mandatory, 
     *   so in case there is no dialog implemented nothing happens.
     */
-    ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin)
+    ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin, ItomSharedSemaphore *waitCond /*= NULL*/)
     {
+        ItomSharedSemaphoreLocker locker(waitCond);
+        ito::RetVal retval;
+
         if (addin && addin->hasConfDialog())
         {
-            addin->showConfDialog();
-            return ito::retOk;
+            retval += addin->showConfDialog();
         }
         else
         {
-            return ito::retError;
+            retval += ito::RetVal(ito::retWarning,0,tr("no configuration dialog available").toLatin1().data());
         }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+
+        return retval;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

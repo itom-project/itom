@@ -724,7 +724,7 @@ namespace ito
                     return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
 
                 default:
-                    throw std::logic_error("Non-matching type!");
+                    throw std::logic_error("Param::getVal<_Tp>: Non-matching type!");
                     return (_Tp)0;
             }
         }
@@ -763,7 +763,7 @@ namespace ito
                     return dVal;
 
                 default:
-                    throw std::logic_error("Non-matching type!");
+                    throw std::logic_error("Param::getVal<double>: Non-matching type!");
                     return 0;
             }
         }
@@ -802,11 +802,11 @@ namespace ito
                     return static_cast<int>(dVal);
 
                 case 0:
-                    throw std::invalid_argument("non existent parameter");
+                    throw std::invalid_argument("Param::getVal<int>: non existent parameter");
                     return 0;
 
                 default:
-                    throw std::logic_error("Non-matching type!");
+                    throw std::logic_error("Param::getVal<int>: Non-matching type!");
                     return 0;
             }
         }
@@ -845,11 +845,11 @@ namespace ito
                     return static_cast<char>(dVal);
 
                 case 0:
-                    throw std::invalid_argument("non existent parameter");
+                    throw std::invalid_argument("Param::getVal<char>: non existent parameter");
                     return 0;
 
                 default:
-                    throw std::logic_error("Non-matching type!");
+                    throw std::logic_error("Param::getVal<char>: Non-matching type!");
                     return 0;
             }
         }
@@ -888,11 +888,11 @@ namespace ito
                     return static_cast<unsigned char>(dVal);
 
                 case 0:
-                    throw std::invalid_argument("non existent parameter");
+                    throw std::invalid_argument("Param::getVal<uchar>: non existent parameter");
                     return 0;
 
                 default:
-                    throw std::logic_error("Non-matching type!");
+                    throw std::logic_error("Param::getVal<uchar>: Non-matching type!");
                     return 0;
             }
         }

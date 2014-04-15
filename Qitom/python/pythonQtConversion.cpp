@@ -41,8 +41,11 @@
 
         Parts of this class are taken from the project PythonQt (http://pythonqt.sourceforge.net/)
 */
-PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
-QByteArray PythonQtConversion::textEncodingName = "utf8";
+//PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
+PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
+
+//QByteArray PythonQtConversion::textEncodingName = "utf8";
+QByteArray PythonQtConversion::textEncodingName = "latin_1";
 QHash<char*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<char*, PyObject*>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2331,22 +2334,25 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             QSharedPointer<ito::DataObject> *sharedPtr = (QSharedPointer<ito::DataObject>*)data;
             if (sharedPtr == NULL)
             {
-                return PyErr_Format(PyExc_TypeError, "The given QSharedPointer is NULL");
+                PyErr_SetString(PyExc_TypeError, "The given QSharedPointer is NULL");
+                return NULL;
             }
             if (sharedPtr->data() == NULL)
             {
                 Py_RETURN_NONE;
-                //return PyErr_Format(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
+                //return PyErr_SetString(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
             }
             return DataObjectToPyObject(*(sharedPtr->data()));
         }
     }
     else
     {
-        return PyErr_Format(PyExc_TypeError, "The given Qt-type is not registered in the Qt-MetaType system.");
+        PyErr_SetString(PyExc_TypeError, "The given Qt-type is not registered in the Qt-MetaType system.");
+        return NULL;
     }
 
-    return PyErr_Format(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
+    PyErr_SetString(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
+    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2396,7 +2402,7 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
         {
             if (dataObj->dataObject == NULL)
             {
-                PyErr_Format(PyExc_ValueError, "internal dataObject is NULL");
+                PyErr_SetString(PyExc_ValueError, "internal dataObject is NULL");
             }
             else
             {
@@ -2404,18 +2410,18 @@ PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVar
                 qVarArg = QVariant::fromValue(value);
                 if (qVarArg.isNull())
                 {
-                    PyErr_Format(PyExc_ValueError, "dataObject could not be converted to QVariant (QSharedPointer<ito::DataObject>)");
+                    PyErr_SetString(PyExc_ValueError, "dataObject could not be converted to QVariant (QSharedPointer<ito::DataObject>)");
                 }
             }
         }
         else
         {
-            PyErr_Format(PyExc_ValueError, "Cannot cast to python dataObject instance");
+            PyErr_SetString(PyExc_ValueError, "Cannot cast to python dataObject instance");
         }
     }
     else
     {
-        PyErr_Format(PyExc_ValueError, "argument does not fit to char*, int, long or double");
+        PyErr_SetString(PyExc_ValueError, "argument does not fit to char*, int, long or double");
         qVarArg = QVariant();
     }
 

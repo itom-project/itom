@@ -8,10 +8,10 @@ SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-
+    
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
- 
+       
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)
@@ -31,36 +31,16 @@ ELSE(BUILD_ITOMLIBS_SHARED)
                                                #published with void** only one (!) time. if this lib is statically linked to itom, it is already
                                                #defined within itom and must not be defined in this lib but with extern void**. If this lib is
                                                #shared, it also needs to be defined there.
-    
 ENDIF(BUILD_ITOMLIBS_SHARED)
     
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set (QT5_FOUND FALSE)
-if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if (POLICY CMP0020)
-        cmake_policy(SET CMP0020 NEW)
-    endif (POLICY CMP0020)
-    
-    find_package(Qt5 COMPONENTS Core QUIET)
-    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-	if (WIN32)
-	  find_package(WindowsSDK REQUIRED)
-	  set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
-	  set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-	endif (WIN32)
-        find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-        set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC ON)
-    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
-if (NOT QT5_FOUND)
-    find_package(Qt4 REQUIRED)
-endif (NOT QT5_FOUND)
-
-
+FIND_PACKAGE_QT(ON Core Xml)
 find_package(OpenCV COMPONENTS core REQUIRED)
+IF(BUILD_WITH_PCL)
+    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
+ENDIF(BUILD_WITH_PCL)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -75,27 +55,35 @@ ELSE(CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
+IF(BUILD_WITH_PCL)
+    IF(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES pointcloud)
+    ELSE(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    ENDIF(BUILD_ITOMLIBS_SHARED)
+ELSE(BUILD_WITH_PCL)
+    SET(POINTCLOUD_LIBRARIES "")
+ENDIF(BUILD_WITH_PCL)
 
 INCLUDE_DIRECTORIES( 
-#    ${QT_QTCORE_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${OpenCV_DIR}/include
+    ${PCL_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
+    ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${OpenCV_DIR}/lib
 )
 
-IF (NOT QT5_FOUND)
-    INCLUDE(${QT_USE_FILE})
-ENDIF (NOT QT5_FOUND)
-
 set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
@@ -104,12 +92,10 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPCLFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/drawItem.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/multiPointPickerMachine.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/userInteractionPlotPicker.h
 )
 
 IF(NOT QT5_FOUND)
@@ -119,6 +105,8 @@ ENDIF(NOT QT5_FOUND)
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
@@ -126,11 +114,9 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/drawItem.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/multiPointPickerMachine.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/userInteractionPlotPicker.cpp
 )
 
 if(MSVC)
@@ -140,13 +126,10 @@ endif(MSVC)
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
 IF (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
+    qt5_use_modules(${target_name} Core Xml)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-ENDIF (QT5_FOUND)
-
-IF (QT5_FOUND)
-    qt5_use_modules(${target_name} Widgets Gui Xml)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
 ENDIF (QT5_FOUND)
 
 # COPY SECTION

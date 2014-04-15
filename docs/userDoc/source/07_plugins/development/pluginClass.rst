@@ -469,9 +469,9 @@ output parameter. The corresponding registration of this method is integrated in
     
     //register exec functions
     QVector<ito::Param> pMand;
-    pMand << ito::Param("filename", ParamBase::String | ParamBase::In, NULL, tr("absolute filename to xml-parameter file").toLatin1().data());
+    pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("absolute filename to xml-parameter file").toLatin1().data());
     QVector<ito::Param> pOpt;
-    pOpt << ito::Param("overwriteIfExists", ParamBase::Int | ParamBase::In, 0, 1, 1, tr("parameter description").toLatin1().data());
+    pOpt << ito::Param("overwriteIfExists", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("parameter description").toLatin1().data());
     QVector<ito::Param> pOut;
     registerExecFunc("saveXMLParams", pMand, pOpt, pOut, tr("description"));
 
@@ -502,15 +502,15 @@ To sum this description up, let us assume that the parameter in **m_params** has
 
 It is the programmer's responsibility to split the given parameter name in the three components **PARAMNAME**, **INDEX** and **ADDITIONALTAG** if the corresponding parameter has the ability to handle indexed-values or even additional information (encoded in **ADDITIONALTAG**).
 
-In order to execute this split you can use the method
+In order to execute this split you can use the api-method
 
 .. code-block:: c++
     
-    ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)
+    ito::RetVal apiParseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)
     
-defined in **helperCommon.h** and **helperCommon.cpp**.
+defined in **apiFunctionsInc.h**.
 
-Furthermore you can use the following regular expression:
+As an alternative you can use the following regular expression:
 
 .. code-block:: c++
     :linenos:

@@ -14,6 +14,7 @@ that are available for python 3.2 or higher. On the other hand, the entire measu
 These plugins are separated into three main groups:
 
 * Type **actuator**: Plugins of this basic type should be used if you want to connect any actuator, like motor stages, piezo actuators, focussing systems, ... to |itom| (see :ref:`plugin-class` and :ref:`plugin-class-actuator`)
+
 * Type **dataIO**: Plugins of this basic type should be used for connecting any input or output device to |itom|. The main representative of this group are cameras as input device or the serial port as an input/ouput device (see :ref:`plugin-class` and :ref:`plugin-class-dataio`). This group is subdivided into the following sub-types:
     
     * **grabber** for cameras (Please consider that the class of the camera-plugin should not directly derive from *AddInDataIO* but from *AddInGrabber*, which is derived from the first.
@@ -28,12 +29,12 @@ Each plugin is a different project in your programming environment and is finall
 Plugin load mechanism of |itom|
 -------------------------------
 
-The |itom|-base directory contains a folder **plugins**. This folder itsself usually consists of different subfolders each having the name of a specific plugin. The folder can then
+The |itom|-base directory contains a folder **plugins**. This folder itself usually consists of different subfolders each having the name of a specific plugin. The folder can then
 contain a release and/or debug-version of the specific plugin DLL as well as further files which are necessary for running the plugin. If your plugin is dependent on other files,
 please consider to read the specific information about how to publish dependencies of each plugin.
 
 At the startup of |itom|, the application recursively scans the **plugins** folder and looks for any *DLL*-file on Windows machines or *a*-file on a Linux operating system. Then each
-DLL is tried to be loaded using the plugin system provided by the |Qt|-framework. The *DLL* can successfully be loaded if the following prerequisites are fullfilled:
+DLL is tried to be loaded using the plugin system provided by the |Qt|-framework. The *DLL* can successfully be loaded if the following prerequisites are fulfilled:
 
 * The plugin is a release version if |itom| is started in release mode OR
 * The plugin is a debug version (this can for example be seen if the DLL-name ends with *...d.dll*) if |itom| is started in debug mode
@@ -62,7 +63,7 @@ The two classes of the plugin are as follows:
 
 1. Interface- or factory-class (derived from class **AddInInterfaceBase**)
 
-    This class must be derived from the class **addInInterfaceBase** and is the communication tunnel between |itom| and the plugin itself using the plugin-framework of |Qt|. The plugin framework creates one single instances of this class when the plugin DLL is loaded (that means at startup of |itom|). Therefore this class is considered to be a singleton instance and since it is always loaded by |itom| even if it is not really needed, this class is kept small and only provides basic information about the plugin itself.
+    This class must be derived from the class **AddInInterfaceBase** and is the communication tunnel between |itom| and the plugin itself using the plugin-framework of |Qt|. The plugin framework creates one single instance of this class when the plugin DLL is loaded (that means at startup of |itom|). Therefore this class is considered to be a singleton instance and since it is always loaded by |itom| even if it is not really needed, this class is kept small and only provides basic information about the plugin itself.
     
     For further information about the structure of this interface class see :ref:`Plugin Interface Class <plugin-interface-class>`.
 
@@ -79,4 +80,4 @@ The two classes of the plugin are as follows:
 Communication between |itom|, Python and each plugin
 ----------------------------------------------------
 
-The communcation to plugins of type **actuator** and **dataIO** is only possible by calling the public methods defined in the base classes **AddInActuator** or **AddInDataIO**. In Python, there exist two classes **dataIO** and **actuator**. Both have an interface that is analog to the corresponding interface **AddInActuator** or **AddInDataIO** in C++. Therefore, if a certain method of these classes is called in python, the call is redirected to the corresponding plugin-method. However, this call is executed across a thread-change, since both python and each plugin (besides the algorith-plugins) "live" in their own thread.
+The communication to plugins of type **actuator** and **dataIO** is only possible by calling the public methods defined in the base classes **AddInActuator** or **AddInDataIO**. In Python, there exist two classes **dataIO** and **actuator**. Both have an interface that is analog to the corresponding interface **AddInActuator** or **AddInDataIO** in C++. Therefore, if a certain method of these classes is called in python, the call is redirected to the corresponding plugin-method. However, this call is executed across a thread-change, since both python and each plugin (besides the algorith-plugins) "live" in their own thread.

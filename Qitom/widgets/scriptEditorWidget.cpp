@@ -23,6 +23,7 @@
 #include "../python/pythonEngineInc.h"
 #include "../widgets/mainWindow.h"
 #include "scriptEditorWidget.h"
+#include "qpair.h"
 
 #include "../global.h"
 #include "../Qitom/AppManagement.h"
@@ -37,6 +38,8 @@
 #else
 #include <qprintpreviewdialog.h>
 #endif
+#include <qtooltip.h>
+#include <qtimer.h>
 
 namespace ito 
 {
@@ -46,13 +49,17 @@ const QString ScriptEditorWidget::lineBreak = QString("\n");
 
 int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent), 
     m_pFileSysWatcher(NULL), 
     contextMenuLine(-1), 
     pythonBusy(false), 
-    canCopy(false)
+    m_pythonExecutable(true),
+    canCopy(false),
+    m_syntaxTimer(NULL)
 {
     filename = QString();
 
@@ -60,8 +67,12 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     breakPointMap.clear();
 
-    bookmarkHandles.clear();
+    bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
+
+    m_syntaxTimer = new QTimer(this);
+    connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
+    m_syntaxTimer->setInterval(1000);
 
     initEditor();
 
@@ -70,7 +81,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_pFileSysWatcher = new QFileSystemWatcher(this);
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
 
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
     if (pyEngine) 
@@ -102,7 +113,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
             }
 
         }
-    }
+    }    
 
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -182,13 +193,14 @@ RetVal ScriptEditorWidget::initEditor()
     markCBreakPointDisabled = markerDefine(QPixmap(":/breakpoints/icons/itomCBreakDisabled.png"));
     markBookmark = markerDefine(QPixmap(":/bookmark/icons/bookmark.png"));
     markSyntaxError = markerDefine(QPixmap(":/script/icons/syntaxError.png"));
+    markBookmarkSyntaxError = markerDefine(QPixmap(":/script/icons/bookmarkSyntaxError.png"));
 
     markCurrentLine = markerDefine(QPixmap(":/script/icons/currentLine.png"));
     markCurrentLineHandle = -1;
 
     markMaskBreakpoints = (1 << markBreakPoint) | (1 << markCBreakPoint)  | (1 << markBreakPointDisabled)  | (1 << markCBreakPointDisabled) | (1 << markCurrentLine);
     markMask1 = markMaskBreakpoints;
-    markMask2 = (1 << markBookmark) | (1 << markSyntaxError);
+    markMask2 = (1 << markBookmark) | (1 << markSyntaxError) | (1 << markBookmarkSyntaxError);
 
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
@@ -217,6 +229,20 @@ void ScriptEditorWidget::loadSettings()
     else
     {
         setWhitespaceVisibility(QsciScintilla::WsInvisible);
+    }
+
+    // SyntaxChecker
+    m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
+    m_syntaxCheckerIntervall = (int)(settings.value("syntaxIntervall", 1).toDouble()*1000);
+    m_syntaxTimer->stop();
+    m_syntaxTimer->setInterval(m_syntaxCheckerIntervall);
+    if (m_syntaxCheckerEnabled)
+    { // empy call: all bugs disappear
+        checkSyntax();
+    }
+    else
+    {
+        errorListChange(QStringList());
     }
 
     AbstractPyScintillaWidget::loadSettings();
@@ -342,9 +368,9 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
     return RetVal(retOk);
 }
@@ -353,9 +379,9 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
 RetVal ScriptEditorWidget::preShowContextMenuMargin()
 {
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
-    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkHandles.empty());
-    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkHandles.empty());
+    bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
+    bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
     breakpointMenuActions["nextBP"]->setEnabled(!breakPointMap.empty());
     breakpointMenuActions["prevBP"]->setEnabled(!breakPointMap.empty());
@@ -982,40 +1008,210 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     return RetVal(retOk);
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< Syntax Checker
+void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
+{ // this event occurs when the syntax checker is delivering results
+    QStringList errorList = b.split("\n");
+    for (int i = 0; i<errorList.length(); ++i)
+        errorList.removeAt(errorList.indexOf("",i));
+    errorListChange(errorList);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::errorListChange(QStringList errorList)
+{ // Updates the List of Bookmarks and Errors when new Errorlist appears
+    QList<bookmarkErrorEntry>::iterator it;
+    it = bookmarkErrorHandles.begin();
+    while (it != bookmarkErrorHandles.end())
+    {
+        if (it->type == 2)
+        { // only Bug => Remove
+            markerDeleteHandle(it->handle);
+            it = bookmarkErrorHandles.erase(it);
+        }
+        else if (it->type == 3)
+        { // Bookmark and Bug => set to 1 and change Icon
+            int line = markerLine(it->handle);
+            markerDeleteHandle(it->handle);
+            it->handle = markerAdd(line, markBookmark);
+            it->type = 1;
+            ++it;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for (int i = 0; i < errorList.length(); i++)
+    {
+        QRegExp regError(":(\\d+):(.*)");
+        regError.indexIn(errorList.at(i),0);
+        int line = regError.cap(1).toInt();
+        bool found = false;
+        it = bookmarkErrorHandles.begin();
+        while (it != bookmarkErrorHandles.end())
+        {
+            if (line == markerLine(it->handle) + 1 && it->type == 1)
+            { // this entry exists and is a bookmark, so make it 3 (BM & Err)
+                markerDeleteHandle(it->handle);
+                it->type = 3;
+                it->handle = markerAdd(line-1, markBookmarkSyntaxError);
+                it->errorMessage = regError.cap(2);
+                found = true;
+            }
+            ++it;
+        }
+        if (found == false)
+        {
+            bookmarkErrorEntry newE;
+            newE.type = 2;
+            newE.handle = markerAdd(line-1, markSyntaxError);
+            newE.errorMessage = regError.cap(2);
+            bookmarkErrorHandles.append(newE);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::checkSyntax()
+{ // Sends the code to the Syntax Checker
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEng->pySyntaxCheckAvailable())
+    {
+        QString s = this->text();
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::updateSyntaxCheck()
+{
+    m_syntaxTimer->stop();
+    checkSyntax();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::event (QEvent * event)
+{ // This function is called when staying over an error icon to display the hint
+    if (event->type() == QEvent::ToolTip)
+    {
+        //see http://www.riverbankcomputing.com/pipermail/qscintilla/2008-November/000381.html
+        QHelpEvent *evt = static_cast<QHelpEvent*>(event);
+        QPoint point = evt->pos();
+        int sensAreaX = QsciScintilla::marginWidth(1);
+        int posX = point.rx();
+        int posY = point.ry();
+        // Check that it´s in the right column (margin)
+        if (posX <= sensAreaX)
+        {
+            point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
+            int line = QsciScintilla::lineAt(point);
+            
+            QList<bookmarkErrorEntry>::iterator it;
+            it = bookmarkErrorHandles.begin();
+            while (it != bookmarkErrorHandles.end())
+            {
+                int l = markerLine(it->handle);
+                if (l == line && (it->type == 2 || it->type == 3))
+                {
+                    point.rx() = posX;
+                    point = this->mapToGlobal(point);
+                    QToolTip::showText(point, it->errorMessage, this);
+                }
+                ++it;
+            }
+        }
+    }
+    return QsciScintilla::event(event);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
 RetVal ScriptEditorWidget::toggleBookmark(int line)
 {
+    QList<bookmarkErrorEntry>::iterator it;
+    bool createNew = true;
 
-    //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
-    std::list<int>::iterator it;
-    bool found = false;
-
-    for (it=bookmarkHandles.begin(); it != bookmarkHandles.end() && !found; ++it)
+    it = bookmarkErrorHandles.begin();
+    while (it != bookmarkErrorHandles.end())
     {
-        if (markerLine(*it) == line)
+        if (markerLine(it->handle) == line)
         {
-            markerDeleteHandle(*it);
-            *it = -1; //!< in order to mark it for removal
-            found = true;
+            // Delete old Handle
+            markerDeleteHandle(it->handle);
+
+            if (it->type == 1)
+            { // bookmark => leave it empty and delete entry in List
+                it = bookmarkErrorHandles.erase(it);
+                createNew = false;
+            }
+            else if (it->type == 2)
+            { // bug => create bug with bookmark
+                it->handle = markerAdd(line, markBookmarkSyntaxError);
+                it->type = 3;
+                createNew = false;
+                ++it;
+            }
+            else if (it->type == 3)
+            { // bookmark and bug => create bug without bookmark
+                it->handle = markerAdd(line, markSyntaxError);
+                it->type = 2;
+                createNew = false;
+                ++it;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        else
+        {
+            ++it;
         }
     }
-
-    bookmarkHandles.remove(-1);
-
-    if (!found)
-    {
-        bookmarkHandles.push_back(markerAdd(line, markBookmark));
+    if (createNew)
+    {    
+        bookmarkErrorEntry newE;
+        newE.type = 1;
+        newE.handle = markerAdd(line, markBookmark);
+        bookmarkErrorHandles.append(newE);
     }
-
     return RetVal(retOk);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBookmarks()
 {
-    markerDeleteAll(markBookmark);
-    bookmarkHandles.clear();
+    QList<bookmarkErrorEntry>::iterator it;
+    bool createNew = true;
+
+    it = bookmarkErrorHandles.begin();
+    while (it != bookmarkErrorHandles.end())
+    {
+        if (it->type == 1)
+        { // bookmark => delete it
+            markerDeleteHandle(it->handle);
+            it = bookmarkErrorHandles.erase(it);
+            createNew = false;
+        }
+        else if (it->type == 3)
+        { // bookmark and bug => create bug without bookmark
+            int line = it->handle;
+            markerDeleteHandle(it->handle);
+            it->handle = markerAdd(markerLine(line), markSyntaxError);
+            it->type = 2;
+            createNew = false;
+            ++it;
+        }
+        else
+        {
+            ++it;
+        }
+    }
 
     return RetVal(retOk);
 }
@@ -1024,8 +1220,10 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
 RetVal ScriptEditorWidget::gotoNextBookmark()
 {
     int line, index;
-    int bookmarkLine;
+    int closestLine = lines();
     getCursorPosition(&line, &index);
+    QList<bookmarkErrorEntry>::iterator it;
+    it = bookmarkErrorHandles.begin();
 
     line += 1;
 
@@ -1034,18 +1232,21 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
         line = 0;
     }
 
-    bookmarkLine = markerFindNext(line, 1 << markBookmark);
-    if (bookmarkLine < 0)
+    while (it != bookmarkErrorHandles.end())
     {
-        bookmarkLine = markerFindNext(0, 1 << markBookmark);
+        if ((it->type == 1 || it->type == 3) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
+        {
+            closestLine = markerLine(it->handle);
+        }
+        ++it;
+        if (it == bookmarkErrorHandles.end() && closestLine == lines())
+        { // eoF reached without finding a bookmark
+            it = bookmarkErrorHandles.begin();
+            line = 0;
+        }
     }
-
-    if (bookmarkLine >= 0)
-    {
-        setCursorPosAndEnsureVisible(bookmarkLine);
-        return RetVal(retOk);
-    }
-
+    setCursorPosAndEnsureVisible(closestLine);
+    return RetVal(retOk);
     return RetVal(retError);
 }
 
@@ -1053,8 +1254,10 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
 RetVal ScriptEditorWidget::gotoPreviousBookmark()
 {
     int line, index;
-    int bookmarkLine;
+    int closestLine = 0;
     getCursorPosition(&line, &index);
+    QList<bookmarkErrorEntry>::iterator it;
+    it = bookmarkErrorHandles.begin();
 
     if (line == 0)
     {
@@ -1065,17 +1268,21 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         line -= 1;
     }
 
-    bookmarkLine = markerFindPrevious(line, 1 << markBookmark);
-    if (bookmarkLine < 0)
+    while (it != bookmarkErrorHandles.end())
     {
-        bookmarkLine = markerFindPrevious(lines() - 1, 1 << markBookmark);
+        if ((it->type == 1 || it->type == 3) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
+        {
+            closestLine = markerLine(it->handle);
+        }
+        ++it;
+        if (it == bookmarkErrorHandles.end() && closestLine == 0)
+        { // eoF reached without finding a bookmark
+            it = bookmarkErrorHandles.begin();
+            line = lines();
+        }
     }
-
-    if (bookmarkLine >= 0)
-    {
-        setCursorPosAndEnsureVisible(bookmarkLine);
-        return RetVal(retOk);
-    }
+    setCursorPosAndEnsureVisible(closestLine);
+    return RetVal(retOk);
     return RetVal(retError);
 
 }
@@ -1495,6 +1702,12 @@ void ScriptEditorWidget::nrOfLinesChanged()
             ++it;
         }
     }
+
+    // SyntaxCheck   
+    if (m_pythonExecutable && m_syntaxCheckerEnabled)
+    {
+        m_syntaxTimer->start();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1530,12 +1743,14 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransBeginDebug:
         if (!hasNoFilename()) setReadOnly(true);
         pythonBusy = true;
+        m_pythonExecutable = false;
         break;
     case pyTransDebugContinue:
         if (markCurrentLineHandle != -1)
         {
             markerDeleteHandle(markCurrentLineHandle);
         }
+        m_pythonExecutable = false;
         break;
     case pyTransEndRun:
     case pyTransEndDebug:
@@ -1545,11 +1760,16 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
             markerDeleteHandle(markCurrentLineHandle);
         }
         pythonBusy = false;
+        m_pythonExecutable = true;
         break;
     case pyTransDebugWaiting:
+        m_pythonExecutable = true;
+        break;
     case pyTransDebugExecCmdBegin:
+        m_pythonExecutable = false;
+        break;
     case pyTransDebugExecCmdEnd:
-
+        m_pythonExecutable = true;
         break;
     }
 }

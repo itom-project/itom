@@ -29,28 +29,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set (QT5_FOUND FALSE)
-if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if (POLICY CMP0020)
-        cmake_policy(SET CMP0020 NEW)
-    endif (POLICY CMP0020)
-    
-    find_package(Qt5 COMPONENTS Core QUIET)
-    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-	if (WIN32)
-	  find_package(WindowsSDK REQUIRED)
-	  set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
-	  set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-	endif (WIN32)
-        find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-        set(QT5_FOUND TRUE)
-        #set(CMAKE_AUTOMOC ON)
-    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
-if (NOT QT5_FOUND)
-    find_package(Qt4 REQUIRED)
-endif (NOT QT5_FOUND)
-
+FIND_PACKAGE_QT(OFF UiTools Widgets Svg Designer LinguistTools) #no automoc for Qt5
 find_package(VisualLeakDetector QUIET)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake")
@@ -79,12 +58,8 @@ INCLUDE_DIRECTORIES(
     ${QT_QTCORE_INCLUDE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
     ${Qt5Designer_INCLUDE_DIRS}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}    
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR}   
 )
-
-if (NOT QT5_FOUND)
-    INCLUDE(${QT_USE_FILE})
-endif (NOT QT5_FOUND)
 
 set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
@@ -99,7 +74,6 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
@@ -212,7 +186,7 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_
 
 if (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES})
-    qt5_use_modules(${target_name} UiTools Widgets Svg Designer)
+    qt5_use_modules(${target_name} UiTools Widgets Svg Designer LinguistTools)
 else (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
 endif (QT5_FOUND)

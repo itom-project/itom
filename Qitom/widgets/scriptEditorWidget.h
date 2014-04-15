@@ -33,6 +33,7 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
+
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprinter.h>
 #else
@@ -64,7 +65,7 @@ public:
     inline QString getFilename() const {return filename; }
     inline bool hasNoFilename() const { return filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
-    inline bool isBookmarked() const { return !bookmarkHandles.empty(); }
+    inline bool isBookmarked() const { return !bookmarkErrorHandles.empty(); }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
 
     RetVal setCursorPosAndEnsureVisible(int line);
@@ -74,8 +75,8 @@ protected:
     bool canInsertFromMimeData(const QMimeData *source) const;
 //    void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-
     virtual void loadSettings();
+    bool event (QEvent * event);
 
 private:
     enum msgType
@@ -114,8 +115,21 @@ private:
     QMutex fileSystemWatcherMutex;
 
     //!< marker handling
-    std::list<int> bookmarkHandles;
+    struct bookmarkErrorEntry
+    {
+        int handle;
+        int type;
+        QString errorMessage;
+        QString errorComment;
+        int errorPos;
+    };
+    QList<bookmarkErrorEntry> bookmarkErrorHandles;
     int syntaxErrorHandle;
+
+    bool m_syntaxCheckerEnabled;
+    int m_syntaxCheckerIntervall;
+    QTimer *m_syntaxTimer;
+    int m_lastTipLine;
 
     std::list<QPair<int,int> > breakPointMap; //!< <int bpHandle, int lineNo>
 
@@ -125,6 +139,7 @@ private:
     unsigned int markCBreakPointDisabled;
     unsigned int markBookmark;
     unsigned int markSyntaxError;
+    unsigned int markBookmarkSyntaxError;
 
     unsigned int markCurrentLine;
     int markCurrentLineHandle;
@@ -152,6 +167,7 @@ private:
     int unnamedNumber;
 
     bool pythonBusy; //!< true: python is executing or debugging a script, a command...
+    bool m_pythonExecutable;
 
     bool canCopy;
 
@@ -167,6 +183,9 @@ signals:
 
 public slots:
     void menuToggleBookmark();
+    void checkSyntax();
+    void syntaxCheckResult(QString a, QString b);
+    void errorListChange(QStringList errorList);
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();
@@ -197,6 +216,8 @@ public slots:
     void breakPointAdd(BreakPointItem bp, int row);
     void breakPointDelete(QString filename, int lineNo, int pyBpNumber);
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
+
+    void updateSyntaxCheck();
 
     void print();
 

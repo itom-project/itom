@@ -29,7 +29,8 @@ namespace ito
 PyDoc_STRVAR(pyAMax_doc,"amax(dataObject) -> returns the maximum value of the data object.");
 /*static */PyObject* PythonNumeric::PyAMax(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 {
-    return PyErr_Format(PyExc_RuntimeError, "not yet implemented (method amax)");
+    PyErr_SetString(PyExc_RuntimeError, "not yet implemented (method amax)");
+    return NULL;
 }
 
 

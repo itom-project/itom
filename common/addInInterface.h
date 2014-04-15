@@ -42,11 +42,17 @@
 #include <qset.h>
 #include <qthread.h>
 #include <qsharedpointer.h>
-#include <qwidget.h>
-#include <qdockwidget.h>
+//#include <qwidget.h>
 #include <qmutex.h>
-#include <qevent.h>
+//#include <qevent.h>
+
+#if QT_VERSION < 0x050000
 #include <qpluginloader.h>
+#include <qdockwidget.h>
+#else
+#include <QtCore/qpluginloader.h>
+#include <QtWidgets/qdockwidget.h>
+#endif
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -59,6 +65,46 @@
                 { ito::ITOM_API_FUNCS_GRAPH = apiPtr;} \
             public: \
                 //.
+
+//! macro to create a new plugin instance in the method getAddInInst of any plugin
+/*!
+    Insert this macro at the first line of the method getAddInInst of your plugin.
+    Pass the name of the corresponding plugin class (not its interface class)
+*/
+#define NEW_PLUGININSTANCE(PluginClass) \
+    PluginClass* newInst = new PluginClass(); \
+    newInst->setBasePlugin(this); \
+    *addInInst = qobject_cast<ito::AddInBase*>(newInst); \
+    m_InstList.append(*addInInst);
+
+//! macro to delete a plugin instance in the method closeThisInst of any plugin
+/*!
+    Insert this macro at the first line of the method closeThisInst of your plugin.
+    Pass the name of the corresponding plugin class (not its interface class).
+    This macro is the opposite of NEW_PLUGININSTANCE
+*/
+#define REMOVE_PLUGININSTANCE(PluginClass) \
+   if (*addInInst) \
+   { \
+      delete ((PluginClass *)*addInInst); \
+      m_InstList.removeOne(*addInInst); \
+   } 
+
+//! macro to set the pointer of the plugin to all its defined filters and widgets
+/*!
+    Insert this macro right after NEW_PLUGININSTANCE in all plugins that are
+    algo plugins.
+*/
+#define REGISTER_FILTERS_AND_WIDGETS \
+    foreach(ito::AddInAlgo::FilterDef *f, newInst->m_filterList) \
+    { \
+        f->m_pBasePlugin = this; \
+    } \
+    foreach(ito::AddInAlgo::AlgoWidgetDef *w, newInst->m_algoWidgetList) \
+    { \
+        w->m_pBasePlugin = this; \
+    }
+
 
 namespace ito
 {
@@ -475,6 +521,9 @@ namespace ito
             // destructor (doc in source)
             virtual ~AddInBase();
 
+            //! sets the identifier of the plugin. The slot AbstractAddInDockWidget::identifierChanged is invoked if a corresponding dock widget is available.
+            void setIdentifier(const QString &identifier);
+
             //doc in source
             void createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas = Qt::AllDockWidgetAreas, QWidget *content = NULL);
 
@@ -543,9 +592,9 @@ namespace ito
             //! method for closing an instance (must be overwritten)
             virtual ito::RetVal close(ItomSharedSemaphore *waitCond) = 0;
 
-            //! method for the retrieval of a parameter. The actual value is always passed as ito::Param (must be overwritten). See also \ref getParam
+            //! method for the retrieval of a parameter. The actual value is always passed as ito::Param (must be overwritten). See also \ref setParam
             virtual ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL) = 0;
-            //! method to set a parameter. The actual value is always passed as ito::tParam (must be overwritten). See also \ref getParam
+            //! method to set a parameter. The actual value is always passed as ito::ParamBase (must be overwritten). See also \ref getParam
             virtual ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) = 0;
 
             // doc in source-file
@@ -797,7 +846,7 @@ namespace ito
             */
             bool isInterrupted() 
             {
-//                QMutexLocker locker(&m_interruptMutex);
+                QMutexLocker locker(&m_interruptMutex);
                 bool res = m_interruptFlag;
                 m_interruptFlag = false;
                 return res;
@@ -814,7 +863,7 @@ namespace ito
             */
             void setInterrupt()
             {
-//                QMutexLocker locker(&m_interruptMutex);
+                QMutexLocker locker(&m_interruptMutex);
                 m_interruptFlag = true;
             }
 
@@ -867,6 +916,9 @@ namespace ito
             virtual ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL) = 0;
             //! increment/decrement a number of axis by position values. The axis' numbers are given in the axis vector
             virtual ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL) = 0;
+
+            //! overload this function to update the current status and position values, followed by calling sendStatusUpdate and/or sendTargetUpdate
+            virtual ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos); //added 2014-03-04
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------

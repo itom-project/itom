@@ -176,7 +176,7 @@ void MainApplication::setupApplication()
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
-    QByteArray codec =  settings->value("codec", "UTF-8").toByteArray();
+    QByteArray codec =  settings->value("codec", "ISO 8859-1").toByteArray(); //latin1 is default
     settings->endGroup();
     settings->sync();
 
@@ -210,11 +210,14 @@ void MainApplication::setupApplication()
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
     if (textCodec == NULL)
     {
-        textCodec = QTextCodec::codecForName("UTF-8");
+        textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
     }
 
+    // None of these two is available in Qt5 and according to
+    // Qt docu it should not have been used anyway. So 
+    // we need to find another solution here
 //    QTextCodec::setCodecForCStrings(textCodec);
-    QTextCodec::setCodecForLocale(textCodec);
+//    QTextCodec::setCodecForLocale(textCodec);
 
     settings->beginGroup("CurrentStatus");
     QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());

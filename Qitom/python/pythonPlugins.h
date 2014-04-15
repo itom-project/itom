@@ -114,6 +114,12 @@ class PythonPlugins
        static PyTypeObject PyActuatorPluginType;
        static PyModuleDef  PyActuatorPluginModule;
 
+       static void paramBaseVectorDeleter(QVector<ito::ParamBase> *obj)
+        {
+            delete obj;
+        }
+
+
        // pending for deletion
 /*
        // Actuator axis

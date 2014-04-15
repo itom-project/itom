@@ -27,12 +27,14 @@
 
 namespace ito 
 {
-    class apiFunctions 
+    class AbstractAddInConfigDialog;
+
+    class ApiFunctions 
     {
         public:
             ito::RetVal setFPointer(void);
-            apiFunctions();
-            ~apiFunctions();
+            ApiFunctions();
+            ~ApiFunctions();
 
             static ito::RetVal mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef);
             static ito::RetVal mfilterCall(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -44,6 +46,8 @@ namespace ito
 
             static ito::DataObject* mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
             static QString getCurrentWorkingDir(void);
+
+            static ito::RetVal mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance);
 
         private:
             int m_loadFPointer;

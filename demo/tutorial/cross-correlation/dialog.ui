@@ -114,11 +114,7 @@
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="itom2DGVFigure" name="plotLive">
-      <property name="toolbarVisible">
-       <bool>true</bool>
-      </property>
-     </widget>
+     <widget class="GraphicViewPlot" name="plotLive"/>
     </item>
    </layout>
   </widget>
@@ -136,14 +132,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>itom2DGVFigure</class>
-   <extends>QMainWindow</extends>
-   <header>itom2DGVFigure.h</header>
-  </customwidget>
-  <customwidget>
    <class>Itom2dQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom2dqwtplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GraphicViewPlot</class>
+   <extends>QMainWindow</extends>
+   <header>graphicViewPlot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -337,10 +337,20 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         }
         else if(PyUnicode_Check(repr))
         {
-            PyObject *repr2 = PyUnicode_AsASCIIString(repr);
-            if(repr2 != NULL)
+            PyObject *encodedByteArray = PyUnicode_AsLatin1String(repr);
+            if (!encodedByteArray)
             {
-                item->m_extendedValue = item->m_value = PyBytes_AsString(repr2);
+                PyErr_Clear();
+                encodedByteArray = PyUnicode_AsASCIIString(repr);
+                if (!encodedByteArray)
+                {
+                    PyErr_Clear();
+                    encodedByteArray = PyUnicode_AsUTF8String(repr);
+                }
+            }
+            if (encodedByteArray)
+            {
+                item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
                 if(item->m_value.length()>20)
                 {
                     item->m_value = item->m_value.replace("\n",";");
@@ -349,7 +359,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                 {
                     item->m_value = "<double-click to show value>";
                 }
-                Py_XDECREF(repr2);
+                Py_XDECREF(encodedByteArray);
             }
             else
             {
@@ -485,10 +495,20 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                 }
                 else if(PyUnicode_Check(repr))
                 {
-                    PyObject *repr2 = PyUnicode_AsASCIIString(repr);
-                    if(repr2 != NULL)
+                    PyObject *encodedByteArray = PyUnicode_AsLatin1String(repr);
+                    if (!encodedByteArray)
                     {
-                        item->m_extendedValue = item->m_value = PyBytes_AsString(repr2);
+                        PyErr_Clear();
+                        encodedByteArray = PyUnicode_AsASCIIString(repr);
+                        if (!encodedByteArray)
+                        {
+                            PyErr_Clear();
+                            encodedByteArray = PyUnicode_AsUTF8String(repr);
+                        }
+                    }
+                    if (encodedByteArray)
+                    {
+                        item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
                         if(item->m_value.length()>20)
                         {
                             item->m_value = item->m_value.replace("\n",";");
@@ -497,7 +517,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                         {
                             item->m_value = "<double-click to show value>";
                         }
-                        Py_XDECREF(repr2);
+                        Py_XDECREF(encodedByteArray);
                     }
                     else
                     {

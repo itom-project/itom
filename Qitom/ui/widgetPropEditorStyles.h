@@ -89,7 +89,7 @@ private slots:
     void on_checkFillEOL_stateChanged(int state);
     void on_btnFontSizeDec_clicked();
     void on_btnFontSizeInc_clicked();
-
+    void on_btnReset_clicked();
 };
 
 #endif

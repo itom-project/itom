@@ -22,11 +22,9 @@ Templates
 
 You will find templates for the most important files needed for creating a new plugin in the folder **pluginTemplates** of the SDK-directory of |itom|.
 
-Copy the file **CMakeLists.txt** from this template-directory and copy it to the source directory of your plugin. Open this file with an arbitrary editor. The commands, starting with #, give you hints
-where you need to adapt this file. Further details about the syntax of these files can be found under http://www.cmake.org/cmake/help/documentation.html.
+Copy the file **CMakeLists.txt** from this template-directory and copy it to the source directory of your plugin. Open this file with an arbitrary editor. The commands, starting with #, give you hints where you need to adapt this file. Further details about the syntax of these files can be found under http://www.cmake.org/cmake/help/documentation.html.
 
-Furthermore, you will find template implementations of an actuator, algorithm and camera plugin in the **pluginTemplates** folder. Copy the corresponding header and source file of your type into
-your source directory and start replacing the template strings by your versions, e.g. you need to change the name of your plugin hence the class names.
+Furthermore, you will find template implementations of an actuator, algorithm and camera plugin in the **pluginTemplates** folder. Copy the corresponding header and source file of your type into your source directory and start replacing the template strings by your versions, e.g. you need to change the name of your plugin hence the class names.
 
 Generate project
 ------------------
@@ -78,5 +76,5 @@ Next, you probably need to indicate the location of the build-directory of **Ope
     :scale: 80%
     
 Continue clicking **configure** until there are no more warnings. Then you can press **Generate** in order to build the project files.
-Change then to the build-directory and open the recently build solution file. In you afterwards change the **CMakeLists.txt**-file, you don't need to explicitely run the CMake-GUI again, since Visual Studio is also
+Change then to the build-directory and open the recently build solution file. In you afterwards change the **CMakeLists.txt**-file, you don't need to explicitly run the CMake-GUI again, since Visual Studio is also
 able to directly run CMake and update its project files.

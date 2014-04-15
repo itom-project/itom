@@ -1566,6 +1566,7 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
         }
         return QModelIndex();
     }
+    return QModelIndex();
 }
 
 

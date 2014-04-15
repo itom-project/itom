@@ -1,10 +1,10 @@
 SET (target_name qitom)
 set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
-
+ 
 project(${target_name})
-
+ 
 cmake_minimum_required(VERSION 2.8.7)
-
+  
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
@@ -13,37 +13,15 @@ OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-
+OPTION(BUILD_WITH_NPDATAOBJECT "Build with the python class itom.npDataObject. This is deprecated and will be removed in coming versions since it is incompatible with Numpy 1.7 or higher" OFF)
+ 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
  
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set (QT5_FOUND FALSE)
-if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if (POLICY CMP0020)
-        cmake_policy(SET CMP0020 NEW)
-    endif (POLICY CMP0020)
-    
-    find_package(Qt5 COMPONENTS Core QUIET)
-    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-	if (WIN32)
-	  find_package(WindowsSDK REQUIRED)
-	  set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
-	  set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-	endif (WIN32)
-        find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-        set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC ON)
-    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
-
-if (NOT QT5_FOUND)
-    find_package(Qt4 REQUIRED)
-endif (NOT QT5_FOUND)
-
-
+FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV COMPONENTS core REQUIRED)
@@ -63,6 +41,10 @@ IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
+IF (BUILD_WITH_NPDATAOBJECT)
+    ADD_DEFINITIONS(-DITOM_NPDATAOBJECT -D_ITOM_NPDATAOBJECT)
+ENDIF (BUILD_WITH_NPDATAOBJECT)
+
 IF (BUILD_WITH_PCL)
     ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
 ENDIF (BUILD_WITH_PCL)
@@ -72,14 +54,7 @@ ADD_DEFINITIONS(-DCMAKE -DITOM_CORE -DITOMSHAREDDESIGNER)
 IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
- 
-IF (NOT QT5_FOUND)
-    SET (QT_USE_QTOPENGL TRUE)
-    SET (QT_USE_QTXML TRUE)
-    SET (QT_USE_QTSVG TRUE)
-    SET (QT_USE_QTSQL TRUE)
-    SET (QT_USE_QTNETWORK TRUE)
-ENDIF (NOT QT5_FOUND)
+
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -96,8 +71,6 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
- #   ${QT_QTCORE_INCLUDE_DIR}
- #   ${QT_QTSVG_INCLUDE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
@@ -108,19 +81,12 @@ INCLUDE_DIRECTORIES(
     ../DataObject/
     ../PointCloud/
 )
-IF (NOT QT5_FOUND)
-    #set(${INCLUDE_DIRECTORIES} ${INCLUDE_DIRECTORIES} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTSVG_INCLUDE_DIR})
-ENDIF (NOT QT5_FOUND)
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${OpenCV_DIR}/lib
 )
-
-IF (NOT QT5_FOUND)
-    INCLUDE(${QT_USE_FILE})
-ENDIF (NOT QT5_FOUND)
 
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
@@ -140,7 +106,6 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
     
 )
-
 
 set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/aaa.h   # this file must be first in list for automoc
@@ -253,7 +218,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
 )
 
-
 IF (QT5_FOUND)
 #    QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
 ELSE (QT5_FOUND)
@@ -316,7 +280,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
@@ -530,14 +493,13 @@ else (UPDATE_TRANSLATIONS)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
-
 ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 
 IF (QT5_FOUND)
-    qt5_use_modules(${target_name} PrintSupport Widgets UiTools Sql Network Svg Xml OpenGL)
+    qt5_use_modules(${target_name} Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)
 ENDIF (QT5_FOUND)
 
 SET( WINICONRES "" )
@@ -552,19 +514,19 @@ IF(MSVC)
 ENDIF(MSVC)
 
 if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-        #set(PYTHON_LIBRARY_ITOM debug ${PYTHON_LIBRARY_DEBUG} optimized ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
-        set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+    #set(PYTHON_LIBRARY_ITOM debug ${PYTHON_LIBRARY_DEBUG} optimized ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
+    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
 #only debug
 elseif(PYTHON_LIBRARY_DEBUG)
-        message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
+    message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
 elseif(PYTHON_LIBRARY_RELEASE)
-        set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
 elseif(PYTHON_LIBRARY)
     set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY})
 #no library found
 else()
-        message(STATUS "Python could not be found")
+    message(STATUS "Python could not be found")
 endif()
 
 IF(BUILD_WITH_PCL)
@@ -601,9 +563,7 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATI
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGlut.cmake               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindFFTW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindNumPy.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindOpenCV.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindQScintilla.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindVisualLeakDetector.cmake  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindLAPACKE.cmake             DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindXsd.cmake                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)

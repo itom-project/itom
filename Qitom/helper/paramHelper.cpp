@@ -368,8 +368,9 @@ namespace ito {
             double step = meta->getStepSize();
             if (step > 0.0)   
             {
-                double div = std::abs((value - minVal) / step);
-                if ((div - (double)(qRound(div))) > std::numeric_limits<double>::epsilon())
+                double div = (value - minVal) / step;
+                div = qRound(div) * step + minVal;
+                if (std::abs(div - value) > std::numeric_limits<double>::epsilon())
                 {
                     return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
                 }
@@ -819,6 +820,29 @@ namespace ito {
             }
         }
         return ito::Param();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*static*/ ito::RetVal ParamHelper::updateParameters(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values)
+    {
+        ito::RetVal retval;
+        QString name;
+
+        for (int i = 0; i < values.size(); ++i)
+        {
+            name = values[i]->getName();
+
+            if (paramMap.contains( name ))
+            {
+                retval += paramMap[name].copyValueFrom(values[i].data());
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "Parameter '%s' does not exist", name.toLatin1().data());
+            }
+        }
+
+        return retval;
     }
 
 } //end namespace ito

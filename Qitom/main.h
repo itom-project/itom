@@ -45,13 +45,13 @@ public:
             qWarning("Itom-Application has caught a cv::exception");
             qWarning() << (exc.err).c_str() << " from" << receiver->objectName();
             //qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
-            qFatal("Exiting due to exception caught");
+            qFatal("Exiting due to exception caught. OpenCV-Exception: %s", (exc.err).c_str());
         }
         catch(std::exception &exc)
         {
             qWarning("Itom-Application has caught an exception");
             qWarning() << "Message:" << exc.what() << " from" << receiver->objectName();
-            qFatal("Exiting due to exception caught");
+            qFatal("Exiting due to exception caught. Exception: %s", exc.what());
         }
         catch (...)
         {

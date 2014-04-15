@@ -25,7 +25,11 @@
 
 #include "../global.h"
 
-#include "../common/addInInterface.h"
+#include "common/addInInterface.h"
+#include "DataObject/dataobj.h"
+#if ITOM_POINTCLOUDLIBRARY > 0
+    #include "PointCloud/pclStructures.h"
+#endif
 #include "../models/PlugInModel.h"
 #include "algoInterfaceValidator.h"
 
@@ -77,9 +81,8 @@ Q_DECLARE_METATYPE(QSharedPointer<ito::ParamBase>)
 Q_DECLARE_METATYPE(QVector<QSharedPointer<ito::ParamBase> >)
 Q_DECLARE_METATYPE(StringMap)
 
-//Q_DECLARE_METATYPE(ito::PCLPointCloud)
-//Q_DECLARE_METATYPE(ito::PCLPoint)
-//Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
+Q_DECLARE_METATYPE(ito::DataObject)
+
 
 namespace ito
 {
@@ -282,7 +285,7 @@ namespace ito
             void splashLoadMessage(const QString &message, int alignment = Qt::AlignLeft, const QColor &color = Qt::black);
 
         public slots:
-            ito::RetVal showConfigDialog(ito::AddInBase *addin);
+            ito::RetVal showConfigDialog(ito::AddInBase *addin, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal showDockWidget(ito::AddInBase *addin, int visible, ItomSharedSemaphore *waitCond = NULL);
 
             ito::RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);

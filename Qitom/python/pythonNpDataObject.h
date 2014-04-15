@@ -20,10 +20,14 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+
+
 #ifndef PYTHONNPDATAOBJECT_H
 #define PYTHONNPDATAOBJECT_H
 
 #include "pythonDataObject.h"
+
+#if ITOM_NPDATAOBJECT
 
 //using namespace ito;
 namespace ito {
@@ -113,4 +117,43 @@ public:
 
 }; // namespace ito
 
+#else //ITOM_NPDATAOBJECT
+
+namespace ito {
+    class PythonNpDataObject
+    {
+
+    public:
+
+        //-------------------------------------------------------------------------------------------------
+        // typedefs
+        //------------------------------------------------------------------------------------------------- 
+        typedef struct
+        {
+            PyObject_HEAD
+        }
+        PyNpDataObject;
+
+        //-------------------------------------------------------------------------------------------------
+        // constructor, deconstructor, alloc, dellaoc
+        //------------------------------------------------------------------------------------------------- 
+        static void PyNpDataObject_dealloc(PyNpDataObject *self);
+        static PyObject *PyNpDataObject_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+        static int PyNpDataObject_init(PyNpDataObject *self, PyObject *args, PyObject *kwds);
+
+        static PyObject* PyNpDataObject_repr(PyNpDataObject *self);
+        
+        //-------------------------------------------------------------------------------------------------
+        // type structures
+        //------------------------------------------------------------------------------------------------- 
+        static PyMemberDef PyRgba_members[];
+        static PyMethodDef PyRgba_methods[];
+        static PyTypeObject PyNpDataObjectType;
+        static PyModuleDef PyNpDataObjectModule;
+};
+}; //end namespace ito
+
+#endif //ITOM_NPDATAOBJECT
+
 #endif
+

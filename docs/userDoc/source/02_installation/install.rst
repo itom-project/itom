@@ -78,6 +78,7 @@ If you compiled |itom| from sources, no compiled documentation file is provided.
     :maxdepth: 1
     
     build_documentation.rst
+    plugin_documentation.rst
 
    
    

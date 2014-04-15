@@ -62,6 +62,10 @@
 #include "pythonMatlab.h"
 #endif
 
+#if linux
+#include <langinfo.h>
+#endif
+
 //using namespace std;
 
 QMutex PythonEngine::instatiated;
@@ -130,6 +134,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QStringList> >("QSharedPointer<QStringList>");
     qRegisterMetaType<QSharedPointer<QVariantMap> >("QSharedPointer<QVariantMap>");
     qRegisterMetaType<QSharedPointer<QObject*> >("QSharedPointer<QObject*>");
+    qRegisterMetaType<QPointer<QObject> >("QPointer<QObject>");
     qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>"); 
     qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int>>"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
     qRegisterMetaType<PyObject*>("PyObject*");
@@ -300,6 +305,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 #endif
 
+//#if ITOM_NPDATAOBJECT //right now, npDataObject exists but raises a python exception if ITOM_NPDATAOBJECT is not defined
             PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
             PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
             PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
@@ -308,6 +314,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
                 PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
             }
+//#endif //ITOM_NPDATAOBJECT
 
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
@@ -694,55 +701,76 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     bool found = false;
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
-    QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+    //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+
+#if linux
+    // google says this should work on linux ... didn't test it
+    QByteArray curQtCodec = QTextCodec::codecForName(nl_langinfo(CODESET))->name();
+#else
+    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
+    if (curQtCodec == "System" || curQtCodec == "system")
+    {
+        curQtCodec = "ISO-8859-1";
+    }
+#endif
+//    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
 
     //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
-    if (qtCodecNames.contains("UTF-8"))
+    //if (qtCodecNames.contains("UTF-8"))
+    if (curQtCodec.contains("UTF-8"))
     {
         encodingType = PythonQtConversion::utf_8;
         encodingName = "utf_8";
     }
-    else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    //else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
+    else if (curQtCodec.contains("ISO-8859-1") || curQtCodec.contains("latin1"))
     {
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
-    else if (qtCodecNames.contains("US-ASCII"))
+    //else if (qtCodecNames.contains("US-ASCII"))
+    else if (curQtCodec.contains("US-ASCII"))
     {
         encodingType = PythonQtConversion::ascii;
         encodingName = "ascii";
     }
-    else if (qtCodecNames.contains("UTF-16"))
+    //else if (qtCodecNames.contains("UTF-16"))
+    else if (curQtCodec.contains("UTF-16"))
     {
         encodingType = PythonQtConversion::utf_16;
         encodingName = "utf_16";
     }
-    else if (qtCodecNames.contains("UTF-16LE"))
+    //else if (qtCodecNames.contains("UTF-16LE"))
+    else if (curQtCodec.contains("UTF-16LE"))
     {
         encodingType = PythonQtConversion::utf_16_LE;
         encodingName = "utf_16_le";
     }
-    else if (qtCodecNames.contains("UTF-16BE"))
+    //else if (qtCodecNames.contains("UTF-16BE"))
+    else if (curQtCodec.contains("UTF-16BE"))
     {
         encodingType = PythonQtConversion::utf_16_BE;
         encodingName = "utf_16_be";
     }
-    else if (qtCodecNames.contains("UTF-32"))
+    //else if (qtCodecNames.contains("UTF-32"))
+    else if (curQtCodec.contains("UTF-32"))
     {
         encodingType = PythonQtConversion::utf_32;
         encodingName = "utf_32";
     }
-    else if (qtCodecNames.contains("UTF-32BE"))
+    //else if (qtCodecNames.contains("UTF-32BE"))
+    else if (curQtCodec.contains("UTF-32BE"))
     {
         encodingType = PythonQtConversion::utf_32_BE;
         encodingName = "utf_32_be";
     }
-    else if (qtCodecNames.contains("UTF-32LE"))
+    //else if (qtCodecNames.contains("UTF-32LE"))
+    else if (curQtCodec.contains("UTF-32LE"))
     {
         encodingType = PythonQtConversion::utf_32_LE;
         encodingName = "utf_32_le";
     }
-    else
+    /*else
     {
         encodingType = PythonQtConversion::other;
         found = false;
@@ -764,7 +792,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
             encodingName = "utf_8";
         }
     }
-
+    */
     PythonQtConversion::textEncoding = encodingType;
     PythonQtConversion::textEncodingName = encodingName;
 
@@ -808,7 +836,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::runString(const char *command)
+RetVal PythonEngine::runString(const QString &command)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -823,14 +851,14 @@ RetVal PythonEngine::runString(const char *command)
     }
     else
     {
-        QString tempCmd(command);
-        if (tempCmd.contains('\n')) //multi-line commands must have the Py_file_input flag
+        //input to PyRun_String must be UTF8
+        if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
         {
-            result = PyRun_String(command, Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
         }
         else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
         {
-            result = PyRun_String(command, Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
 
         }
 
@@ -889,7 +917,7 @@ RetVal PythonEngine::runString(const char *command)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::runPyFile(char* pythonFileName)
+RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 {
     PyObject* result = NULL;
     PyObject* compile = NULL;
@@ -993,7 +1021,7 @@ RetVal PythonEngine::runPyFile(char* pythonFileName)
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName);
+            result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
 
             if (result == NULL)
             {
@@ -1126,7 +1154,7 @@ RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::debugFile(char* pythonFileName)
+RetVal PythonEngine::debugFile(const QString &pythonFileName)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1179,7 +1207,7 @@ RetVal PythonEngine::debugFile(char* pythonFileName)
         //!< setup connections for live-changes in breakpoints
         setupBreakPointDebugConnections();
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName);
+        result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName.toUtf8().data()); //"s" requires utf-8 encoded string
 
         clearDbgCmdLoop();
 
@@ -1219,7 +1247,7 @@ RetVal PythonEngine::debugFile(char* pythonFileName)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::debugString(const char *command)
+RetVal PythonEngine::debugString(const QString &command)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1263,7 +1291,7 @@ RetVal PythonEngine::debugString(const char *command)
         //!< setup connections for live-changes in breakpoints
         setupBreakPointDebugConnections();
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command);
+        result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
 
         clearDbgCmdLoop();
 
@@ -1302,35 +1330,40 @@ RetVal PythonEngine::debugString(const char *command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonSyntaxCheck(const QString &code)
+void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
 {
     if (m_pyModSyntaxCheck)
     {
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", code.toLatin1().data());
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", code.toUtf8().data());
 
-        if (result && PyTuple_Check(result) && PyTuple_Size(result) >= 2)
+        if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {
             QString unexpectedErrors;
             QString flakes;
 
             bool ok;
-            unexpectedErrors = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,0), false, ok);
+            unexpectedErrors = PythonQtConversion::PyObjGetString( PyList_GetItem(result,0), false, ok);
             if (!ok)
             {
                 unexpectedErrors = "<<error>>";
             }
 
-            flakes = PythonQtConversion::PyObjGetString( PyTuple_GetItem(result,1), false, ok);
+            flakes = PythonQtConversion::PyObjGetString( PyList_GetItem(result,1), false, ok);
             if (!ok)
             {
                 flakes = "<<error>>";
             }
 
-            QObject *s = sender();
+            QObject *s = sender.data();
             if (s)
             {
                 QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
             }
+        }
+        else if (!result)
+        {
+            std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
+            PyErr_Print();
         }
 
         Py_XDECREF(result);
@@ -1355,11 +1388,11 @@ RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int line
 
         if (condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOOi", filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOOi", filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOsi", filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOsi", filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
         }
 
         if (result == NULL)
@@ -1403,11 +1436,11 @@ RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &f
 
         if (condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOOi", pyBpNumber, filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOOi", pyBpNumber, filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOsi", pyBpNumber, filename.toLatin1().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
+            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOsi", pyBpNumber, filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
         }
 
         if (result == NULL)
@@ -1646,7 +1679,7 @@ void PythonEngine::pythonRunFile(QString filename)
         {
             if (filenameTemp != "")
             {
-                runPyFile(filenameTemp.toLatin1().data());
+                runPyFile(filenameTemp);
             }
         }
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
@@ -1669,7 +1702,7 @@ void PythonEngine::pythonDebugFile(QString filename)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
-        debugFile(filename.toLatin1().data());
+        debugFile(filename);
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
         pythonStateTransition(pyTransEndDebug);
         break;
@@ -1713,10 +1746,10 @@ void PythonEngine::pythonDebugString(QString cmd)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    QByteArray ba(cmd.toLatin1());
-    if (ba.trimmed().startsWith("#"))
+    //QByteArray ba(cmd.toLatin1());
+    if (cmd.trimmed().startsWith("#"))
     {
-        ba.prepend("pass"); //a single command line leads to an error while execution
+        cmd.prepend("pass"); //a single command line leads to an error while execution
     }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
@@ -1727,14 +1760,14 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         if (m_executeInternalPythonCodeInDebugMode)
         {
             pythonStateTransition(pyTransBeginDebug);
-            debugString(cmd.toLatin1().data());
+            debugString(cmd);
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
             pythonStateTransition(pyTransEndDebug);
         }
         else
         {
             pythonStateTransition(pyTransBeginRun);
-            runString(ba.data());
+            runString(cmd);
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
             pythonStateTransition(pyTransEndRun);
         }
@@ -1746,7 +1779,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         break;
     case pyStateDebuggingWaiting:
         pythonStateTransition(pyTransDebugExecCmdBegin);
-        runString(ba.data());
+        runString(cmd);
         emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
         pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
@@ -2428,7 +2461,8 @@ void PythonEngine::pythonInterruptExecution() const
 //        {
 //            return PyErr_Occurred();
 //        }
-//        return PyErr_Format(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        PyErr_SetString(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
+//        return NULL;
 //    }
 //}
 
@@ -2678,7 +2712,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
             {
                 PyErr_Clear();
                 retVal = false;
@@ -2868,7 +2903,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyTuple_SetItem(pArgs,0, PyUnicode_FromString(filename.toLatin1().data()));
+            PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
+            
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
@@ -2884,7 +2921,9 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
                 }
                 else
                 {
-                    PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    
+                    //PyList_Append(keyList , PyUnicode_FromString(varNames.at(i).toLatin1().data()));
+                    PyList_Append(keyList , PyUnicode_DecodeLatin1(varNames.at(i).toLatin1().data(), varNames.at(i).length(), NULL));
                     PyList_Append(valueList, tempElem);
                 }
             }
@@ -2957,7 +2996,8 @@ RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, 
         }
         else
         {
-            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
+            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
@@ -3295,7 +3335,8 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
         }
         else
         {
-            if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
+            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(varname2, strlen(varname2), NULL)))
             {
                 PyErr_Clear();
                 QString ErrStr = tr("variable name '%1' is no valid python variable name.").arg(varname);
@@ -3645,7 +3686,21 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    
+    PyObject* pyMode = PyUnicode_FromString("wb\0");
+    PyObject* fileHandle = NULL;
+
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    
+    if(pyFileName != NULL)
+    {
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        Py_DECREF(pyFileName);
+    }
+    
+    if(pyMode) Py_DECREF(pyMode);
+
 
     if (fileHandle == NULL)
     {
@@ -3803,7 +3858,20 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    
+    PyObject* pyMode = PyUnicode_FromString("rb\0");
+    PyObject* fileHandle = NULL;
+
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    
+    if(pyFileName != NULL)
+    {
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        Py_DECREF(pyFileName);
+    }
+    
+    if(pyMode) Py_DECREF(pyMode);
 
     if (fileHandle == NULL)
     {
@@ -3816,7 +3884,7 @@ RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filen
         {
             unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
         }
-        catch(std::bad_alloc &ba)
+        catch(std::bad_alloc &/*ba*/)
         {
             retval += RetVal(retError, 0, "No more memory available during unpickling.");
         }

@@ -5,6 +5,8 @@
 #########################################################################
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
+SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
+
 
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
@@ -80,6 +82,196 @@ MACRO (BUILD_PARALLEL_LINUX targetName)
       set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
   endif(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO (BUILD_PARALLEL_LINUX)
+
+
+MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
+    #call this macro to find the qt4 package (either version qt4 or qt5).
+    #
+    # call example FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
+    #
+    # this will detect Qt with all given packages (packages given as Qt5 package names, Qt4 is automatically
+    # back-translated) and automoc for Qt5 is set to ON (ignored for Qt4)
+    #
+    # If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected and if not found Qt4 is detected
+    # Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt4' or 'Qt5'
+    #
+    # For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0
+    #
+    SET(Components ${ARGN}) #all arguments after SetAutomoc are components for Qt
+    SET(QT_COMPONENTS ${ARGN})
+
+    IF(${BUILD_QTVERSION} STREQUAL "Qt4")
+        SET(DETECT_QT5 FALSE)
+    ELSEIF(${BUILD_QTVERSION} STREQUAL "Qt5")
+        if (CMAKE_VERSION VERSION_GREATER 2.8.7)
+            if (POLICY CMP0020)
+                cmake_policy(SET CMP0020 NEW)
+            endif (POLICY CMP0020)
+        else ()
+            MESSAGE(SEND_ERROR "with cmake <= 2.8.7 Qt5 cannot be detected.")
+        endif ()
+        SET(DETECT_QT5 TRUE)
+    ELSEIF(${BUILD_QTVERSION} STREQUAL "auto")
+        if (CMAKE_VERSION VERSION_GREATER 2.8.7)
+            if (POLICY CMP0020)
+                cmake_policy(SET CMP0020 NEW)
+            endif (POLICY CMP0020)
+            SET(DETECT_QT5 TRUE)
+        else ()
+            MESSAGE(STATUS "with cmake <= 2.8.7 no Qt4 auto-detection is possible. Search for Qt4")
+            SET(DETECT_QT5 FALSE)
+        endif ()
+    ELSE()
+        MESSAGE(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt4 or Qt5 allowed")
+    ENDIF()
+    set (QT5_FOUND FALSE)
+        
+    IF (DETECT_QT5)
+        #TRY TO FIND QT5
+        find_package(Qt5 COMPONENTS Core QUIET)
+        
+        if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+	        #maybe Qt5.0 is installed that does not support the overall FindQt5 script
+            find_package(Qt5Core QUIET)
+            IF (NOT Qt5Core_FOUND)
+                IF(${BUILD_QTVERSION} STREQUAL "auto")
+                    SET(DETECT_QT5 FALSE)
+                ELSE()
+                    MESSAGE(SEND_ERROR "Qt5 could not be found on this computer")
+                ENDIF()
+            ELSE (NOT Qt5Core_FOUND)
+                set(QT5_FOUND TRUE)
+                
+                if (WIN32)
+                    find_package(WindowsSDK REQUIRED)
+                    set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+                    set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+                endif (WIN32)
+                
+                set(QT5_FOUND TRUE)
+                
+                IF (${SET_AUTOMOC})
+                    set(CMAKE_AUTOMOC ON)
+                ELSE (${SET_AUTOMOC})
+                    set(CMAKE_AUTOMOC OFF)
+                ENDIF (${SET_AUTOMOC})
+                
+                FOREACH (comp ${Components})
+                    message(STATUS "FIND_PACKAGE FOR COMPONENT ${comp}")
+                    find_package(Qt5${comp} REQUIRED)
+                    IF (${comp} STREQUAL "Widgets")
+                        add_definitions(${Qt5Widgets_DEFINITIONS})
+                    ENDIF ()
+                ENDFOREACH (comp)
+            ENDIF (NOT Qt5Core_FOUND)
+            
+        else (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+            #QT5 could be found with component based find_package command
+            if (WIN32)
+              find_package(WindowsSDK REQUIRED)
+              set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+              set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+            endif (WIN32)
+            
+            find_package(Qt5 COMPONENTS ${Components} REQUIRED)
+            set(QT5_FOUND TRUE)
+            
+            IF (${SET_AUTOMOC})
+                set(CMAKE_AUTOMOC ON)
+            ELSE (${SET_AUTOMOC})
+                set(CMAKE_AUTOMOC OFF)
+            ENDIF (${SET_AUTOMOC})
+            
+            FOREACH (comp ${Components})
+                IF (${comp} STREQUAL "Widgets")
+                    add_definitions(${Qt5Widgets_DEFINITIONS})
+                ENDIF ()
+            ENDFOREACH (comp)
+        endif (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+        
+    ENDIF (DETECT_QT5)
+
+    if (NOT DETECT_QT5)
+        #TRY TO FIND QT4
+        SET(QT5_FOUND FALSE)
+        find_package(Qt4 REQUIRED)
+        SET (QT_USE_CORE TRUE)
+        
+        FOREACH (comp ${Components})
+            IF (${comp} STREQUAL "OpenGL")
+                SET (QT_USE_QTOPENGL TRUE)
+            ELSEIF (${comp} STREQUAL "Core")
+                SET (QT_USE_QTCORE TRUE)
+            ELSEIF (${comp} STREQUAL "Designer")
+                SET (QT_USE_QTDESIGNER TRUE)
+            ELSEIF (${comp} STREQUAL "Xml")
+                SET (QT_USE_QTXML TRUE)
+            ELSEIF (${comp} STREQUAL "Svg")
+                SET (QT_USE_QTSVG TRUE)
+            ELSEIF (${comp} STREQUAL "Sql")
+                SET (QT_USE_QTSQL TRUE)
+            ELSEIF (${comp} STREQUAL "Network")
+                SET (QT_USE_QTNETWORK TRUE)
+            ELSEIF (${comp} STREQUAL "UiTools")
+                SET (QT_USE_QTUITOOLS TRUE)
+            ELSEIF (${comp} STREQUAL "Widgets")
+                SET (QT_USE_QTGUI TRUE)
+            ELSEIF (${comp} STREQUAL "PrintSupport")
+            ELSEIF (${comp} STREQUAL "LinguistTools")
+            ELSE ()
+                message (SEND_ERROR "Qt component ${comp} unknown")
+            ENDIF ()
+        ENDFOREACH (comp)
+        
+        INCLUDE(${QT_USE_FILE})
+    endif (NOT DETECT_QT5)
+    
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+ENDMACRO (FIND_PACKAGE_QT)
+
+#use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
+#
+# example:
+# set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
+# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+#
+# Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
+# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
+# is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
+#
+# Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
+# ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST
+#
+MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
+    SET(TRANSLATIONS_FILES)
+    SET(TRANSLATION_OUTPUT_FILES)
+
+    if (${force_translation_update})
+        if (QT5_FOUND)
+            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        else (QT5_FOUND)
+            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        endif (QT5_FOUND)
+        
+        add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target} _${target}_translation)
+        
+        if (QT5_FOUND)
+            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+        else (QT5_FOUND)
+            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+        endif (QT5_FOUND)
+    else (${force_translation_update})
+        if (QT5_FOUND)
+            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+        else (QT5_FOUND)
+            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+        endif (QT5_FOUND)
+    endif (${force_translation_update})
+    
+    SET(${qm_files} ${${qm_files}} ${QMFILES})
+    
+ENDMACRO (PLUGIN_TRANSLATION)
 
 
 ###########################################################################

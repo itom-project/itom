@@ -32,6 +32,7 @@
 #include <qdebug.h>
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
+#include "abstractAddInDockWidget.h"
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -245,7 +246,25 @@ namespace ito
         m_dockWidget->setFeatures(features);
         m_dockWidget->setAllowedAreas(allowedAreas);
 
-        if (content) m_dockWidget->setWidget(content);
+        if (content) 
+        {
+            m_dockWidget->setWidget(content);
+            content->setParent(m_dockWidget);
+        }
+    }
+
+    void AddInBase::setIdentifier(const QString &identifier)
+    {
+        m_identifier = identifier;
+
+        if (m_dockWidget)
+        {
+            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(m_dockWidget->widget());
+            if (adw)
+            {
+                QMetaObject::invokeMethod(adw, "identifierChanged", Q_ARG(const QString &, identifier));
+            }
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -780,6 +799,31 @@ namespace ito
         {
             emit targetChanged(m_targetPos);
         }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! method invoked in order to force a re-emitation of the current status, the current positions (if desired) and the target positions (if desired)
+    /*!
+        This method is mainly invoked by a dock widget of the actuator such that the plugin re-emits the current values, that are then
+        received by the dock widget.
+
+        Overload this method if you want to update the values before emitting them.
+    */
+    ito::RetVal AddInActuator::requestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+    {
+        ito::RetVal retval;
+
+        //in your real motor, overload this function and update m_currentStatus, m_currentPos and/or m_targetPos
+        //before emitting them using the methods above
+
+        sendStatusUpdate(!sendActPosition);
+
+        if (sendTargetPos)
+        {
+            sendTargetUpdate();
+        }
+
+        return retval;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

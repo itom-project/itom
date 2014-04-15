@@ -41,12 +41,12 @@ The possible types, covered by this container are:
 
 .. note::
 
-	*Type 1* means, that these types are internally copied when calling a constructor, copy constructor
-	or assignement operator of the parameter, where for parameters of *Type 2* only the pointer to the value
-	itself is internally stored in the parameter, hence, only this pointer is copied at the above mentioned
-	methods. The reason is, that a quick passing of the parameter is provided, on the other side, parameters
-	of *Type 2* need some further attention concerning thread-safety and/or creation and deletion
-	responsability.
+    *Type 1* means, that these types are internally copied when calling a constructor, copy constructor
+    or assignement operator of the parameter, where for parameters of *Type 2* only the pointer to the value
+    itself is internally stored in the parameter, hence, only this pointer is copied at the above mentioned
+    methods. The reason is, that a quick passing of the parameter is provided, on the other side, parameters
+    of *Type 2* need some further attention concerning thread-safety and/or creation and deletion
+    responsability.
 
 *ParamBase* and *Param* and the *Meta*-classes
 ----------------------------------------------
@@ -106,52 +106,52 @@ type information, the first 16 bits may contain flags.
 They can be separated using an AND-operation with the masks **ito::paramFlagMask** or **ito::paramTypeMask**:
 
 .. code-block:: c++
-	
-	int typesAndFlags
-	int types = typesAndFlags & ito::paramTypeMask
-	int flags = typesAndFlags & ito::paramFlagMask
+    
+    int typesAndFlags
+    int types = typesAndFlags & ito::paramTypeMask
+    int flags = typesAndFlags & ito::paramFlagMask
 
 The following (high-level) types are available:
 
 .. code-block:: c++
-	
-	enum Type {
-		...
-		//type (bit 1-16)
-		Pointer         = 0x000001, //do not use directly
-		Char            = 0x000002, //Character-Parameter
-		Int             = 0x000004, //Integer-Parameter
-		Double          = 0x000008, //Double-Parameter
-		String          = 0x000020 | Pointer, //zero-terminated String-Parameter
-		HWRef           = 0x000040 | Pointer | NoAutosave, //pointer to plugin-instance
-		DObjPtr         = 0x000010 | Pointer | NoAutosave, //pointer to dataObject
-		CharArray       = Char     | Pointer, //array of characters
-		IntArray        = Int      | Pointer, //array of integers
-		DoubleArray     = Double   | Pointer, //array of doubles
-		PointCloudPtr   = 0x000080 | Pointer | NoAutosave, //pointer to point cloud
-		PointPtr        = 0x000100 | Pointer | NoAutosave, //pointer to point
-		PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave  //pointer to polygon mesh
-		...
-	};
+    
+    enum Type {
+        ...
+        //type (bit 1-16)
+        Pointer         = 0x000001, //do not use directly
+        Char            = 0x000002, //Character-Parameter
+        Int             = 0x000004, //Integer-Parameter
+        Double          = 0x000008, //Double-Parameter
+        String          = 0x000020 | Pointer, //zero-terminated String-Parameter
+        HWRef           = 0x000040 | Pointer | NoAutosave, //pointer to plugin-instance
+        DObjPtr         = 0x000010 | Pointer | NoAutosave, //pointer to dataObject
+        CharArray       = Char     | Pointer, //array of characters
+        IntArray        = Int      | Pointer, //array of integers
+        DoubleArray     = Double   | Pointer, //array of doubles
+        PointCloudPtr   = 0x000080 | Pointer | NoAutosave, //pointer to point cloud
+        PointPtr        = 0x000100 | Pointer | NoAutosave, //pointer to point
+        PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave  //pointer to polygon mesh
+        ...
+    };
 
 .. note::
-	
-	All pointer-based types have the **NoAutosave**-flag, since a pointer can not be saved to harddrive. The
-	arrays of **CharArray**, **IntArray** and **DoubleArray** are internally copied (e.g. in a copy-constructor),
-	therefore only use them for smaller arrays and not for matrices with millions of entries. This might be an inefficient
-	structure though.
+    
+    All pointer-based types have the **NoAutosave**-flag, since a pointer can not be saved to harddrive. The
+    arrays of **CharArray**, **IntArray** and **DoubleArray** are internally copied (e.g. in a copy-constructor),
+    therefore only use them for smaller arrays and not for matrices with millions of entries. This might be an inefficient
+    structure though.
 
 The following flags are implemented in the **Type**-enumeration:
 
 .. code-block:: c++
-	
-	enum Type {
-		NoAutosave,
-		Readonly,
-		In,
-		Out
-		...
-	};
+    
+    enum Type {
+        NoAutosave,
+        Readonly,
+        In,
+        Out
+        ...
+    };
 
 The behaviour of the **NoAutosave**-flag can be read in see :ref:`plugin-autoloadsave-policy`.
 The **readonly**-flag marks this parameter to be readonly. Please consider, that this flag is not evaluated in the classes
@@ -163,7 +163,7 @@ might be changed within a filter call. This is a suitable form to pass a dataObj
 Parameters with flag **Out** only are only accepted in the parameter vector which is the default for the output-variables of a filter...
 It is only allowed to mark parameter of type **Char**, **Int**, **Double**, **String**, **CharArray**, **IntArray** or **DoubleArray** as **Out**-
 parameters.
-	
+    
 
 Class *ParamBase*
 -----------------
@@ -174,15 +174,15 @@ corresponding getter- or setter-methods:
 .. c:member:: m_type
     
     This variable contains an OR combination of the data type, covered by the parameter container as well as some
-    additional falgs (read-only, auto-save). Read the section :ref:`plugin-params-typesFlags` for more information about the type.
+    additional flags (read-only, auto-save). Read the section :ref:`plugin-params-typesFlags` for more information about the type.
     
     The type part of this member is obtained by **getType()**, the flags can be obtained by **getFlags()**.
 
-.. c:member:: char *m_pName
+.. c:member:: ito::ByteArray m_name
     
-     This char-pointer contains the name of the parameter. This name is for example used for accessing the parameter in the python's *setParam* or *getParam* method and usually you can also use this name as keyword in a python argument list of appropriate method calls.
+     This member contains the name of the parameter. This name is for example used for accessing the parameter in the python's *setParam* or *getParam* method and usually you can also use this name as keyword in a python argument list of appropriate method calls.
      
-     Access the name of a parameter by using **getName()**.
+     Access the name of a parameter by using **getName()**. This returns the zero-terminated name string as char-pointer.
      
 .. c:member:: values
     
@@ -192,96 +192,96 @@ corresponding getter- or setter-methods:
 Typical creations for parameters of class **ParamBase** are:
 
 .. code-block:: c++
-	
-	//empty parameter (name: NULL, type: 0)
-	ParamBase p1;
-	
-	//creating an integer-parameter, flag: In, value: 2
-	ParamBase p2("IntParam", ito::ParamBase::Int | ito::ParamBase::In, 2);
-	
-	//creating a double-parameter, flag: Readonly, value: -4.0
-	ParamBase p3("Name", ito::ParamBase::Double | ito::ParamBase::Readonly, -4.0);
-	
-	//creating a string-parameter
-	ParamBase p4("Name", ito::ParamBase::String, "default text");
-	
-	//creating an integer-array parameter
-	int size = 5;
-	int* a = new int[size];
-	//.. fill a with valid values
-	ParamBase p5("Array", ito::ParamBase::IntArray, size, a);
-	//a is copied, therefore delete it now
-	delete[] a;
-	a = NULL;
-	
-	//passing a dataObject pointer as parameter
-	ito::DataObject *dObj = new ito::DataObject(...);
-	ParamBase p6("param", ito::ParamBase::DObjPtr, dObj);
-	//be careful: p6 only holds a pointer to dObj, therefore you can only delete it
-	// if p6 does not access it any more.
-	
-	//passing a pointer to another actuator- or dataIO-instance to a parameter
-	ito::AddInActuator *aia = ...;
-	ParamBase p7("motor", ito::ParamBase::HWRef, aia);
-	//like with the dataObject. Be careful and make sure, that the pointer 'aia' remains
-	//accessible during the lifetime of p7.
+    
+    //empty parameter (name: NULL, type: 0)
+    ParamBase p1;
+    
+    //creating an integer-parameter, flag: In, value: 2
+    ParamBase p2("IntParam", ito::ParamBase::Int | ito::ParamBase::In, 2);
+    
+    //creating a double-parameter, flag: Readonly, value: -4.0
+    ParamBase p3("Name", ito::ParamBase::Double | ito::ParamBase::Readonly, -4.0);
+    
+    //creating a string-parameter
+    ParamBase p4("Name", ito::ParamBase::String, "default text");
+    
+    //creating an integer-array parameter
+    int size = 5;
+    int* a = new int[size];
+    //.. fill a with valid values
+    ParamBase p5("Array", ito::ParamBase::IntArray, size, a);
+    //a is copied, therefore delete it now
+    delete[] a;
+    a = NULL;
+    
+    //passing a dataObject pointer as parameter
+    ito::DataObject *dObj = new ito::DataObject(...);
+    ParamBase p6("param", ito::ParamBase::DObjPtr, dObj);
+    //be careful: p6 only holds a pointer to dObj, therefore you can only delete it
+    // if p6 does not access it any more.
+    
+    //passing a pointer to another actuator- or dataIO-instance to a parameter
+    ito::AddInActuator *aia = ...;
+    ParamBase p7("motor", ito::ParamBase::HWRef, aia);
+    //like with the dataObject. Be careful and make sure, that the pointer 'aia' remains
+    //accessible during the lifetime of p7.
 
 The parameter **p1** has no suitable type or value right now. However, you can assign another parameter to **p1** 
 by using the assignment operator:
 
 .. code-block:: c++
-	
-	p1 = ParamBase("newVal", ito::ParamBase::Char, 128)
+    
+    p1 = ParamBase("newVal", ito::ParamBase::Char, 128)
 
 If you have an array-parameter, you can access one single index of this array, which is then returned as new
 instance of **ParamBase**. If the index is out of range or the parameter is no array-type, an empty instance
 of **ParamBase** is returned:
 
 .. code-block:: c++
-	
-	//use p5 from the example above
-	ParamBase p5_0 = p5[0] //is a valid parameter of type Int
-	ParamBase p5_5 = p5[5] //error. empty ParamBase since index exceeded the maximum size.
+    
+    //use p5 from the example above
+    ParamBase p5_0 = p5[0] //is a valid parameter of type Int
+    ParamBase p5_5 = p5[5] //error. empty ParamBase since index exceeded the maximum size.
 
 Reading values from the parameter is done by the method **getVal**. This method must be called with a template
 parameter, that corresponds to the original data type, which is covered by the parameter.
 
 .. code-block:: c++
-	
-	//This example is based on the constructed params above
-	int p2_val = p2.getVal<int>();
-	
-	double p3_val = p3.getVal<double>();
-	
-	//the following examples return the internal pointer to the string or arrays.
-	//This pointer is no copy, therefore you are not allowed to delete the pointer.
-	char* p4_val = p4.getVal<char*>();
-	
-	int* p5_val = p5.getVal<int*>();
-	//you can access the elements of p5 by
-	int temp = p5_val[0];
-	temp = p5_val[4];
-	//p5_val[5] is not allowed, since it exceeds the number of elements of this array
-	
-	//in order to get the number of values in the parameter, use the following 
-	//implementation
-	int length = 0;
-	p5_val = p5.getVal<int*>(length);
-	//now length is equal to 5.
-	
-	//pointer-parameters are obtained by using the right template
+    
+    //This example is based on the constructed params above
+    int p2_val = p2.getVal<int>();
+    
+    double p3_val = p3.getVal<double>();
+    
+    //the following examples return the internal pointer to the string or arrays.
+    //This pointer is no copy, therefore you are not allowed to delete the pointer.
+    char* p4_val = p4.getVal<char*>();
+    
+    int* p5_val = p5.getVal<int*>();
+    //you can access the elements of p5 by
+    int temp = p5_val[0];
+    temp = p5_val[4];
+    //p5_val[5] is not allowed, since it exceeds the number of elements of this array
+    
+    //in order to get the number of values in the parameter, use the following 
+    //implementation
+    int length = 0;
+    p5_val = p5.getVal<int*>(length);
+    //now length is equal to 5.
+    
+    //pointer-parameters are obtained by using the right template
     //parameter of the getVal method. The internal pointer of the
     //parameter is then casted to the template type.
-	ito::DataObject *dObj = p6.getVal<ito::DataObject*>();
-	
-	ito::AddInActuator *aia = p7.getVal<ito::AddInActuator*>();
-	
-	//If you are sure that the parameter contains at least any plugin, however you have no idea
-	//whether it is an acutator or an instance of dataIO, you could at first get the
-	//base instance to ito::AddInBase and then try to safely cast it to your requested type:
-	ito::AddInBase *aib = p7.getVal<ito::AddInBase*>();
-	ito::AddInActutator *aia = qobject_cast<ito::AddInActuator*>(aib);
-	//aia is NULL, if the cast failed.
+    ito::DataObject *dObj = p6.getVal<ito::DataObject*>();
+    
+    ito::AddInActuator *aia = p7.getVal<ito::AddInActuator*>();
+    
+    //If you are sure that the parameter contains at least any plugin, however you have no idea
+    //whether it is an acutator or an instance of dataIO, you could at first get the
+    //base instance to ito::AddInBase and then try to safely cast it to your requested type:
+    ito::AddInBase *aib = p7.getVal<ito::AddInBase*>();
+    ito::AddInActutator *aia = qobject_cast<ito::AddInActuator*>(aib);
+    //aia is NULL, if the cast failed.
 
 If the given template parameter does not fit to the corresponding parameter type, the value of the
 parameter will be casted to the given template type. If this is not possible an exception is raised.
@@ -292,50 +292,50 @@ based method. The following code snippets show examples how to change values of 
 parameters **p1** to **p7**:
 
 .. code-block:: c++
-	
-	ito::RetVal retValue;
-	retValue += p2.setVal<int>(5); //retValue remains retOk
-	retValue += p3.setVal<double>(-3.7); //retValue remains retOk
-	
-	//p4 is a string-type. New values assigned to p4 (here: "new value")
-	// are internally copied.
-	retValue += p4.setVal<char*>("new value"); //retValue remains retOk
-	
-	//for array-types, you can only assign the whole array and not change any
-	//elements. For changing values, use getVal<_Tp>(...) in order to obtain the pointer and
-	//change the values directly.
-	int values[] = {1,2,3,4,5};
-	retValue += p5.setVal<int*>(values,5); //always provide the length of the array
-	//again, the setVal-method above internally copies the array and you can destroy the 
-	//source.
-	int length = p5.getLen(); //length of array
-	
-	ito::DataObject dObj;
-	retValue += p6.setVal<void*>( (void*)(&dObj) );
-	//again remember, that p6 requires, that dObj remains accessible during the lifetime of p6.
-	
+    
+    ito::RetVal retValue;
+    retValue += p2.setVal<int>(5); //retValue remains retOk
+    retValue += p3.setVal<double>(-3.7); //retValue remains retOk
+    
+    //p4 is a string-type. New values assigned to p4 (here: "new value")
+    // are internally copied.
+    retValue += p4.setVal<char*>("new value"); //retValue remains retOk
+    
+    //for array-types, you can only assign the whole array and not change any
+    //elements. For changing values, use getVal<_Tp>(...) in order to obtain the pointer and
+    //change the values directly.
+    int values[] = {1,2,3,4,5};
+    retValue += p5.setVal<int*>(values,5); //always provide the length of the array
+    //again, the setVal-method above internally copies the array and you can destroy the 
+    //source.
+    int length = p5.getLen(); //length of array
+    
+    ito::DataObject dObj;
+    retValue += p6.setVal<void*>( (void*)(&dObj) );
+    //again remember, that p6 requires, that dObj remains accessible during the lifetime of p6.
+    
 .. note::
-	
-	The method **setVal** will never change the assigned type of the parameter. If the new value
-	can not be converted into the internal type of the parameter, **setVal** will return with a **RetVal**,
-	that contains errors.
+    
+    The method **setVal** will never change the assigned type of the parameter. If the new value
+    can not be converted into the internal type of the parameter, **setVal** will return with a **RetVal**,
+    that contains errors.
 
 If you only want to copy the content of one parameter of type **ParamBase** to your parameter, then you
 can use the method **copyValueFrom**, which requires another instance of **ParamBase** or **Param** (since this is derived
 from **ParamBase**). The method returns an error if the parameters are not compatible:
 
 .. code-block::c++
-	
-	ParamBase p1("other parameter",ParamBase::Int,5);
-	ParamBase p2("your parameter", ParamBase::Int,4);
-	RetVal retValue = p2.copyValueFrom(&p1);
-	//retValue is retOk
-	int value = p2.getVal<int>(); //value is 5 now
-	
-	ParamBase p3("wrong", ParamBase::String);
-	retValue += p3.copyValueFrom(&p1);
-	//retValue.containsError() returns true
-	
+    
+    ParamBase p1("other parameter",ParamBase::Int,5);
+    ParamBase p2("your parameter", ParamBase::Int,4);
+    RetVal retValue = p2.copyValueFrom(&p1);
+    //retValue is retOk
+    int value = p2.getVal<int>(); //value is 5 now
+    
+    ParamBase p3("wrong", ParamBase::String);
+    retValue += p3.copyValueFrom(&p1);
+    //retValue.containsError() returns true
+    
 For a full reference to all member function of class **ParamBase**, see :ref:`plugin-paramBase-Ref`.
 
 Class *Param*
@@ -369,7 +369,7 @@ member variables:
             meta = p.getMeta();
             //meta is now a pointer to a structure of type ParamMeta. It can be casted to IntMeta.
 
-    .. cpp:member:: char *m_pInfo
+    .. cpp:member:: ito::ByteArray m_Info
         
         This is the description string of the parameter. If no description is indicated, this pointer is NULL, else it is a
         zero-terminated string, which is also copied, when the parameter is called using a copy constructor or assigned to another

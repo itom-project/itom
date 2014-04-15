@@ -115,16 +115,21 @@ These default-parameter methods have the following implementation:
     ito::RetVal MyAlgoPlugin::filter1Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
     {
         ito::Param param;
-		ito::RetVal retval = ito::retOk;
-		retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-		if(retval.containsError()) return retval;
+        ito::RetVal retval = ito::retOk;
+        retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+        if(retval.containsError()) return retval;
 
-		param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
-		paramsMand->append(param);
-		param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
-		paramsMand->append(param);
-		param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toLatin1().data());
-		paramsOpt->append(param);
+        param = ito::Param("mand1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toLatin1().data());
+        paramsOpt->append(param);
+        
+        param = ito::Param("return1", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("description").toLatin1().data());
+        paramsOut->append(param);
+        param = ito::Param("return2", ito::ParamBase::String | ito::ParamBase::Out, NULL, tr("description").toLatin1().data());
+        paramsOut->append(param);
 
         return retval;
     }
@@ -177,12 +182,12 @@ itsself. The implementation might follow this scheme:
         //  The order and type is important.
         
         //possibility 1 (index-based access):
-        ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+        const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
         const char *filename = (*paramsMand)[1].getVal<char*>(); //don't delete this pointer (borrowed)
         double opt1 = (*paramsOpt)[0].getVal<double>();
         
         //possibility 2 (name-based access):
-        ito::DataObjec *dObj =  (ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const ito::DataObjec *dObj =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
         const char *filename = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
         double opt1 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
         

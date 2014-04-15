@@ -54,7 +54,7 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+807"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+814"/>
         <source>script execution</source>
         <translation>Skript wird ausgeführt</translation>
     </message>
@@ -253,7 +253,7 @@ p, li { white-space: pre-wrap; }
         <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
     </message>
     <message>
-        <location filename="../ui/dialogAbout.cpp" line="+38"/>
+        <location filename="../ui/dialogAbout.cpp" line="+39"/>
         <location line="+77"/>
         <location line="+14"/>
         <source>Could not load file %1. Reason: %2.</source>
@@ -976,11 +976,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <source>Parser: </source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>CommandLinkButton</source>
         <translation></translation>
     </message>
@@ -991,7 +986,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location/>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+718"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+1145"/>
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
     </message>
@@ -1006,26 +1001,27 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+57"/>
         <source>No help database available</source>
-        <translation>Keine Hilfedatenbank verfügbar</translation>
+        <translation type="obsolete">Keine Hilfedatenbank verfügbar</translation>
     </message>
     <message>
         <source>Parser: No Help available</source>
         <translation type="obsolete">Parser: Keine Hilfe verfügbar</translation>
     </message>
     <message>
-        <location line="-528"/>
+        <location line="-746"/>
+        <location line="+25"/>
         <source>Template Error: Returns section is only defined by either the start or end tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-21"/>
+        <location line="+25"/>
         <source>Template Error: End tag of returns section comes before start tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-54"/>
         <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1035,27 +1031,43 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+111"/>
         <source>Unknown filter name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekannter Filtername &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+37"/>
-        <source>Unknown widget name &apos;%1&apos;</source>
-        <translation type="unfinished">Unbekannter Widget-Name &apos;%1&apos;</translation>
+        <location line="+166"/>
+        <source>unknown type</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+188"/>
+        <location line="+10"/>
+        <location line="+10"/>
+        <source>Range: min: %1, max: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+341"/>
+        <source>No help database available! 
+ go to Properties File -&gt; General -&gt; Helpviewer and check the selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown widget name &apos;%1&apos;</source>
+        <translation type="obsolete">Unbekannter Widget-Name &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location line="-644"/>
         <source>Unknown algorithm plugin with name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>unknown filter type</source>
-        <translation type="unfinished">Unbekannter Filtertyp</translation>
+        <translation type="obsolete">Unbekannter Filtertyp</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+239"/>
         <source>Template Error: %s section is only defined by either the start or end tag.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1065,17 +1077,15 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+689"/>
         <source>invalid Link</source>
-        <translation type="unfinished">ungültiger Link</translation>
+        <translation type="obsolete">ungültiger Link</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>unknown protocol</source>
-        <translation type="unfinished">Unbekanntes Protokoll</translation>
+        <translation type="obsolete">Unbekanntes Protokoll</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+852"/>
         <source>The protocol of the link is unknown. </source>
         <translation type="unfinished">Das Protokoll des Links ist unbekannt. </translation>
     </message>
@@ -1088,7 +1098,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+120"/>
+        <location filename="../mainApplication.cpp" line="+121"/>
         <location line="+2"/>
         <source>Version %1
 %2</source>
@@ -1173,7 +1183,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+249"/>
+        <location filename="../python/pythonEngine.cpp" line="+243"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -1197,7 +1207,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+189"/>
+        <location line="+195"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1213,7 +1223,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+102"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -1223,7 +1233,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+84"/>
         <source>Qt text encoding %1 not compatible to python. Python encoding is set to UTF-8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1260,7 +1270,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+136"/>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
         <translation type="unfinished">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
@@ -1400,7 +1410,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QLibrary</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+447"/>
+        <location filename="../organizer/addInManager.cpp" line="+454"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
         <translation>Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
     </message>
@@ -1408,73 +1418,44 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../common/helperCommon.cpp" line="+47"/>
         <source>parameter vector is not initialized</source>
-        <translation>Parametervektor wurde nicht inizialisiert</translation>
+        <translation type="obsolete">Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+21"/>
         <source>mandatory parameter vector is not initialized</source>
-        <translation>Pflichtparametervektor wurde nicht inizialisiert</translation>
+        <translation type="obsolete">Pflichtparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>optional parameter vector is not initialized</source>
-        <translation>Optionaler Parametervektor wurde nicht inizialisiert</translation>
+        <translation type="obsolete">Optionaler Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>output parameter vector is not initialized</source>
-        <translation>Ausgabeparametervektor wurde nicht inizialisiert</translation>
+        <translation type="obsolete">Ausgabeparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
-        <location line="+30"/>
-        <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation>Der Parameter &apos;%1&apos; wurde nicht im übergebenen Parametervektor gefunden</translation>
+        <translation type="obsolete">Der Parameter &apos;%1&apos; wurde nicht im übergebenen Parametervektor gefunden</translation>
     </message>
     <message>
-        <location line="+78"/>
-        <location line="+125"/>
         <source>name of requested parameter is empty.</source>
-        <translation>Name des Angefragten Parameter ist leer.</translation>
+        <translation type="obsolete">Name des Angefragten Parameter ist leer.</translation>
     </message>
     <message>
-        <location line="-118"/>
-        <location line="+125"/>
         <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation>Der Parametername &apos;%1&apos; ist ungültig</translation>
+        <translation type="obsolete">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
-        <location line="-101"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+127"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-120"/>
-        <location line="+127"/>
         <source>parameter not found in m_params.</source>
-        <translation>Parameter wurde nicht in m_params gefunden.</translation>
+        <translation type="obsolete">Parameter wurde nicht in m_params gefunden.</translation>
     </message>
     <message>
-        <location line="-14"/>
-        <source>array index out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../helper/paramHelper.cpp" line="+690"/>
-        <location filename="../../common/helperCommon.cpp" line="+55"/>
+        <location filename="../helper/paramHelper.cpp" line="+722"/>
         <source>invalid parameter name</source>
         <translation>Ungültiger Parametername</translation>
     </message>
     <message>
-        <location line="-651"/>
+        <location line="-683"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1562,20 +1543,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+7"/>
-        <location line="+62"/>
+        <location line="+94"/>
         <source>AddIn must not be NULL</source>
         <translation>AddIn muss NULL sein</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+13"/>
+        <location line="-78"/>
+        <location line="+27"/>
+        <location line="+22"/>
         <source>value out of range [%1, %2]</source>
         <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="-39"/>
+        <location line="+23"/>
+        <location line="+22"/>
+        <source>value does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Value out of range [%1, %2]</source>
-        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
+        <translation type="obsolete">Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+118"/>
@@ -1654,304 +1642,35 @@ p, li { white-space: pre-wrap; }
         <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
-        <location filename="../../common/sharedFunctionsQt.cpp" line="+67"/>
-        <source>Tried to scale unscaleable unit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>No unit specified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+141"/>
-        <source>Pluginname undefined. No xml file loaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>ParamList not inialized properly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+245"/>
-        <location line="+216"/>
         <source>Can&apos;t open xml file</source>
-        <translation>XML-Datei konnte nicht geöffnet werden</translation>
+        <translation type="obsolete">XML-Datei konnte nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+72"/>
         <source>%1
 Autosave parameter %2 not found</source>
-        <translation>%1
+        <translation type="obsolete">%1
 Parameter %2 für die automatische Speicherung wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
-        <translation>Warnung XML-Import:
+        <translation type="obsolete">Warnung XML-Import:
 Parameter %1 für die automatische Speicherung wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+27"/>
         <source>%1
 Obsolete parameter %2</source>
-        <translation>%1
+        <translation type="obsolete">%1
 Veralteter Parameter %2</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
-        <translation>Warnung XML-Import:
+        <translation type="obsolete">Warnung XML-Import:
 Veralteter Parameter %1</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>%1
-Parameter %2 not autosave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>XML-Import warnings:
-Parameter %1 not autosave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>%1
-Parameter not loadable %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>XML-Import warnings:
-Parameter not loadable %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>%1
-Type conflict for %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>XML-Import warnings:
-Type conflict for %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+77"/>
-        <source>Save object failed: type not supported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+294"/>
-        <source>Save object failed: invalid object handle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Save object failed: object seems empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Save object failed: file not writeable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+95"/>
-        <location line="+29"/>
-        <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Load object failed: Number of dims smaller 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Not enough memory to alloc sizes vector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Load object failed: dimension size missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Load object failed: dimX not specified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Load object failed: dimY not specified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+75"/>
-        <source>Load object failed: type not supported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Load object failed: Error during allocating memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>Load object failed: file corrupted at metaData (v1.0)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Load object warning: file has invalid metaData for v1.0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Load object warning: DoubleExportType for v1.0 invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Load object warning: DoubleExportType for v1.0 missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Load object warning: MetaData for %1 missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+33"/>
-        <source>Load object warning: MetaData for dimX missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Load object warning: MetaData for dimY missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Load object warning: MetaData for values missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Load object warning: MetaData import for Rotation Matrix failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Load object failed: tag space not at expected position. Got %1 instead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Load object failed: tags Space invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+38"/>
-        <location line="+6"/>
-        <source>Load object warning: invalid tagType found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Load object warning: tagsSpace invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Load object failed: dataSpace missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Load object warning: dataSpace and dataObject are not equal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Load object warning: dataSpace attributes corrupted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Load object failed: dataStream ended before finished reading</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Load object failed: invalid object handle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Load object failed: file not readable or does not exists</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Load object failed: file seems corrupt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Load object failed: wrong xml version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Load object failed: wrong document encoding</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Load object failed: unexpected file ending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Load object failed: file is no itomDataObjectFile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Load object failed: illegal format version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Load object failed: object header not valied</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../api/apiFunctions.cpp" line="+140"/>
+        <location filename="../api/apiFunctions.cpp" line="+142"/>
         <location filename="../python/pythonCommon.cpp" line="+216"/>
         <source>Unknown parameter type</source>
         <translation type="unfinished"></translation>
@@ -2022,7 +1741,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+979"/>
+        <location filename="../python/pythonCommon.cpp" line="+1014"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2037,12 +1756,12 @@ Type conflict for %1</source>
         <translation type="unfinished">- unbekannte Meldung -</translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="+562"/>
+        <location filename="../python/pythonPlugins.cpp" line="+583"/>
         <source>timeout while getting name parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameternamens</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+40"/>
         <source>you must provide at least one parameter with the name of the function</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2057,62 +1776,62 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+26"/>
         <source>timeout while calling specific function in plugin.</source>
         <translation type="unfinished">Zeitüberschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
     </message>
     <message>
-        <location line="+125"/>
+        <location line="+136"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
     <message>
-        <location line="+324"/>
+        <location line="+335"/>
         <source>timeout.</source>
         <translation>Zeitüberschreitung.</translation>
     </message>
     <message>
-        <location line="+454"/>
+        <location line="+479"/>
         <source>timeout while calibration</source>
         <translation type="unfinished">Zeitüberschreitung bei der Kalibrierung</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+123"/>
         <source>timeout while setting origin</source>
         <translation type="unfinished">Zeitüberschreitung beim Setzen auf den Nullpunkt</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+95"/>
         <source>timeout while getting Status</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen des Status</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+133"/>
         <source>timeout while getting position values</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Positionswerte</translation>
     </message>
     <message>
-        <location line="+257"/>
+        <location line="+272"/>
         <source>timeout while setting absolute position</source>
         <translation type="unfinished">Zeitüberschreitung beim setzen der absoluten Position</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+87"/>
         <source>timeout while setting relative position</source>
         <translation type="unfinished">Zeitüberschreitung beim Setzten der relativen Position</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+60"/>
         <source>Itom ActuatorPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+890"/>
+        <location line="+968"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished">Die Funktion &apos;copyVal&apos; wurde nur für ADDA-Wandler und Grabber implementiert</translation>
     </message>
     <message>
-        <location line="+497"/>
+        <location line="+558"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2147,7 +1866,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
     </message>
     <message>
-        <location filename="../organizer/helpSystem.cpp" line="+191"/>
+        <location filename="../organizer/helpSystem.cpp" line="+280"/>
         <source>file could not be opened.</source>
         <translation type="unfinished">Datei konnte nicht geöffnet werden.</translation>
     </message>
@@ -2167,17 +1886,77 @@ Type conflict for %1</source>
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>Load XML file failed: could not intepret checksum content as uint</source>
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Checksummenfehler</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+62"/>
         <source>collection project file could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+217"/>
+        <location line="+55"/>
+        <source>error calling qcollectiongenerator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>templates for plugin documentation not found. Directory &apos;docs/pluginDoc/template&apos; not available. Plugin documentation will not be built.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>folder &apos;build&apos; as subfolder of &apos;docs/pluginDoc&apos; could not be created. Plugin documentation will not be built.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>could not clear folder &apos;docs/pluginDoc/build&apos;. Plugin documentation will not be built.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>no plugin directory available. No plugin documentation will be built.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>error opening index.html of template folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>error opening itomPluginDoc.qhp of template folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>error writing index.html of template folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>error writing itomPluginDoc.qhp of template folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>could not copy folder &apos;docs/pluginDoc/template/_static&apos; to &apos;docs/pluginDoc/build/_static&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>error calling qhelpgenerator for creating the plugin documentation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../helper/versionHelper.cpp" line="+190"/>
+        <source>none</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>Warning: The version contains locally changed code!
 </source>
         <translation type="unfinished"></translation>
@@ -2206,7 +1985,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+1643"/>
+        <location filename="../python/pythonItom.cpp" line="+1827"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -2268,52 +2047,17 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="+209"/>
+        <location filename="../../plot/AbstractNode.h" line="+210"/>
         <source>Live data source for plot</source>
         <translation type="unfinished">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="+241"/>
-        <source>parameters in list could not be found in channels, in updateChannels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+38"/>
-        <source>channel is not a sender in setUpdatePending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>unknown channel in setUpdatePending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="+192"/>
-        <location line="+46"/>
-        <source>duplicate Channel, in addChannel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-38"/>
-        <location line="+7"/>
-        <source>parameters incompatible, while adding channel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>undefined channel direction, while adding channel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
         <source>invalid child pointer, in addChannel</source>
-        <translation type="unfinished">ungültiger Child-Pointer in &apos;addChannel&apos;</translation>
+        <translation type="obsolete">ungültiger Child-Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+27"/>
         <source>channel does not exist</source>
-        <translation type="unfinished">Kanal existiert nicht</translation>
+        <translation type="obsolete">Kanal existiert nicht</translation>
     </message>
     <message>
         <source>home</source>
@@ -2324,19 +2068,16 @@ Type conflict for %1</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.cpp" line="-179"/>
         <source>Parameter: does not exist in updateParam</source>
-        <translation type="unfinished">Parameter existiert nicht in &apos;updateParam&apos;</translation>
+        <translation type="obsolete">Parameter existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
-        <translation type="unfinished">Aktualisierung an einem gesperrten Eingabekanal, das heißt &apos;updatePending&apos;-Flag wurde nicht gesetzt</translation>
+        <translation type="obsolete">Aktualisierung an einem gesperrten Eingabekanal, das heißt &apos;updatePending&apos;-Flag wurde nicht gesetzt</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Channel is already updating</source>
-        <translation type="unfinished">Kanal ist bereits aktualisiert</translation>
+        <translation type="obsolete">Kanal ist bereits aktualisiert</translation>
     </message>
     <message>
         <location filename="../api/apiFunctionsGraph.cpp" line="+261"/>
@@ -2369,7 +2110,7 @@ Type conflict for %1</source>
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+66"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+68"/>
         <source>Source data for plot</source>
         <translation type="unfinished">Quelldaten für Plot</translation>
     </message>
@@ -2379,7 +2120,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-188"/>
+        <location filename="../organizer/addInManager.cpp" line="-195"/>
         <source>directory &apos;%1&apos; could not be found</source>
         <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -2389,7 +2130,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+47"/>
         <source>filename is no AddIn-library: %1</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
@@ -2416,7 +2157,7 @@ Type conflict for %1</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
         <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veraltete Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
     </message>
@@ -2493,12 +2234,12 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+42"/>
-        <location line="+71"/>
+        <location line="+69"/>
         <source>plugin not found</source>
         <translation type="unfinished">Plugin nicht gefunden</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+120"/>
         <location line="+135"/>
         <location line="+130"/>
         <source>Wrong plugin name</source>
@@ -2528,7 +2269,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+659"/>
+        <location line="+661"/>
         <source>no toolbox available</source>
         <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
@@ -2546,53 +2287,18 @@ Type conflict for %1</source>
         <translation type="obsolete">AddIn ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../../common/helperActuator.cpp" line="+81"/>
-        <location filename="../../common/helperGrabber.cpp" line="+78"/>
-        <location line="+298"/>
-        <location line="+20"/>
-        <location line="+20"/>
         <source>timeout while getting numaxis parameter</source>
-        <translation type="unfinished">Zeitüberschreitung beim Lesen des &apos;numaxis&apos;-Parameters</translation>
+        <translation type="obsolete">Zeitüberschreitung beim Lesen des &apos;numaxis&apos;-Parameters</translation>
     </message>
     <message>
-        <location line="+54"/>
         <source>Motor not correctly initialized</source>
-        <translation type="unfinished">Der Motor wurde nicht korrekt inizialisiert</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <location line="+179"/>
-        <location filename="../../common/helperGrabber.cpp" line="-271"/>
-        <source>Timeout while Waiting for Semaphore</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-172"/>
-        <source>Semaphore contained error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <location line="+38"/>
-        <source>Error during setPosRel: Vectors differ in size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+96"/>
-        <location filename="../../common/helperGrabber.cpp" line="-5"/>
-        <source>Semaphore not correctly initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/helperGrabber.cpp" line="-22"/>
-        <source>Camera not correctly initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Der Motor wurde nicht korrekt inizialisiert</translation>
     </message>
 </context>
 <context>
     <name>ScriptEditorOrganizer</name>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+112"/>
+        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+113"/>
         <source>Script Editor</source>
         <translation>Script-Editor</translation>
     </message>
@@ -3233,6 +2939,22 @@ Type conflict for %1</source>
         <source>Mac</source>
         <translation></translation>
     </message>
+    <message>
+        <location/>
+        <source>Python Syntax-Checker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>enable Syntax-Checker (uses Python-Module &quot;frosted&quot;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>  Check intervall [sec]  </source>
+        <extracomment>The timer is started when entering a new line</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WidgetPropEditorStyles</name>
@@ -3294,6 +3016,11 @@ Type conflict for %1</source>
         <location/>
         <source>Overall font size:</source>
         <translation>Generelle Schriftgröße:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Reset to Default</source>
+        <translation>Auf Standard zurücksetzen</translation>
     </message>
 </context>
 <context>
@@ -3388,18 +3115,16 @@ Type conflict for %1</source>
         <translation>Externe Links öffnen</translation>
     </message>
     <message>
-        <location/>
         <source>Display plaintext instead of html</source>
-        <translation>Klartext statt HTML anzeigen</translation>
+        <translation type="obsolete">Klartext statt HTML anzeigen</translation>
     </message>
     <message>
         <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are loaded.</source>
         <translation type="obsolete">Nach Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Je nach Anzahl der zu ladenden Datenbanken kann dies einige Sekunden benötigen.</translation>
     </message>
     <message>
-        <location/>
         <source>Show Filters</source>
-        <translation>Filter anzeigen</translation>
+        <translation type="obsolete">Filter anzeigen</translation>
     </message>
     <message>
         <location/>
@@ -3410,6 +3135,26 @@ Type conflict for %1</source>
         <location/>
         <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many databases are selected.</source>
         <translation>Nach dem Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Abhängig von der Anzahl der gewählten Datenbanken kann dies einige Sekunden in Anspruch nehmen.</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show Algorithms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show Widgets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show DataIO and Actuator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Display Plaintext (html-source)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3448,6 +3193,11 @@ Type conflict for %1</source>
         <location line="+0"/>
         <source>python script (*.py)</source>
         <translation>Python-Skript (*.py)</translation>
+    </message>
+    <message>
+        <location filename="../ui/widgetPropPythonStartup.ui"/>
+        <source>To change the order in which the items (files) are loaded, use Drag and Drop</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3705,7 +3455,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Instanz</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+101"/>
         <source>Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters</source>
         <translation>Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
@@ -3738,14 +3488,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.cpp" line="+115"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
-        <translation>Die Funktion &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
+        <translation type="obsolete">Die Funktion &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location line="+123"/>
         <source>Figure does not contain an input slot for live sources</source>
-        <translation>Abbildung enthält keinen Input-Slot für Livequellen</translation>
+        <translation type="obsolete">Abbildung enthält keinen Input-Slot für Livequellen</translation>
     </message>
 </context>
 <context>
@@ -3789,9 +3537,8 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractFigure</name>
     <message>
-        <location filename="../../plot/AbstractFigure.cpp" line="-146"/>
         <source>Properties</source>
-        <translation>Eigenschaften</translation>
+        <translation type="obsolete">Eigenschaften</translation>
     </message>
 </context>
 <context>
@@ -3819,25 +3566,22 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation>Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="+997"/>
+        <location filename="../../common/addInInterface.h" line="+1053"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3855,82 +3599,46 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation type="unfinished">Diese Funktion wird in diesem Plugin nicht benutzt</translation>
+        <translation type="obsolete">Diese Funktion wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
+        <translation type="obsolete">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
         <source>Constructor must be overwritten</source>
-        <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation type="unfinished">Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
         <source>timer could not be set</source>
-        <translation type="unfinished">Timer konnte nicht gesetzt werden</translation>
+        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
         <source>not implemented</source>
-        <translation type="unfinished">Nicht implementiert</translation>
+        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../common/addInGrabber.cpp" line="+85"/>
-        <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished">Der Slot &apos;setSource&apos; des Live-Quellenknotens konnte nicht aktiviert werden</translation>
+        <translation type="obsolete">Der Slot &apos;setSource&apos; des Live-Quellenknotens konnte nicht aktiviert werden</translation>
     </message>
     <message>
-        <location line="+118"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Das Objekt hat mehr als eine Ebene. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
+        <translation type="obsolete">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Das Objekt hat mehr als eine Ebene. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
+        <translation type="obsolete">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
     </message>
 </context>
 <context>
@@ -4151,7 +3859,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+54"/>
-        <location line="+107"/>
+        <location line="+116"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
@@ -4164,7 +3872,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogOpenFileWithFilter</name>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+52"/>
+        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+57"/>
         <source>The name must start with a letter followed by numbers or letters [a-z] or [A-Z]</source>
         <translation type="unfinished">Der Name muss mit einem Buchstaben, gefolgt von Ziffern oder Buchstaben [a-z] oder [A-Z], beginnen</translation>
     </message>
@@ -4214,7 +3922,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogPluginPicker</name>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="+149"/>
+        <location filename="../ui/dialogPluginPicker.cpp" line="+150"/>
         <source>error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished">Fehler beim Erzeugen einer neuen Instanz.
@@ -4255,7 +3963,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="+50"/>
+        <location filename="../ui/dialogProperties.cpp" line="+51"/>
         <source>Properties</source>
         <translation>Optionen</translation>
     </message>
@@ -4590,7 +4298,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::FileSystemDockWidget</name>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="+86"/>
+        <location filename="../widgets/fileSystemDockWidget.cpp" line="+87"/>
         <source>last used directories</source>
         <translation>Zuletzt verwendetet Verzeichnisse</translation>
     </message>
@@ -4791,7 +4499,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Datenbank neu laden</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+21"/>
         <source>type text to filter the keywords in the tree</source>
         <translation>Text für die Filterung von Schlüsselwörtern im Baum eingeben</translation>
     </message>
@@ -4812,13 +4520,13 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="+110"/>
-        <location line="+701"/>
+        <location filename="../helper/IOHelper.cpp" line="+112"/>
+        <location line="+717"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-701"/>
+        <location line="-717"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4938,7 +4646,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+225"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
         <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
@@ -4973,7 +4681,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-681"/>
+        <location line="-697"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -4983,7 +4691,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+602"/>
+        <location line="+618"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
@@ -5079,7 +4787,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+98"/>
+        <location filename="../widgets/mainWindow.cpp" line="+100"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -5119,7 +4827,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+40"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
@@ -5132,7 +4840,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+241"/>
+        <location line="+275"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -5192,12 +4900,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Assistent</translation>
     </message>
     <message>
-        <location line="-343"/>
+        <location line="-383"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+348"/>
+        <location line="+389"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5317,8 +5025,8 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="-455"/>
-        <location line="+467"/>
+        <location line="-496"/>
+        <location line="+508"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -5340,7 +5048,27 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+80"/>
+        <source>Error when preparing help or showing assistant.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error while showing assistant.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Warning when preparing help or showing assistant.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Warning while showing assistant.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
         <source>The help assistant could not be started.</source>
         <translation type="unfinished">Der Hilfeassistent konnte nicht gestartet werden.</translation>
     </message>
@@ -5411,7 +5139,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Zu dieser &apos;Action&apos; existiert kein Python-Code.</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+61"/>
         <source>The UI designer (Qt designer) could not be started.</source>
         <translation type="unfinished">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
     </message>
@@ -5419,7 +5147,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ParamInputParser</name>
     <message>
-        <location filename="../ui/paramInputParser.cpp" line="+54"/>
+        <location filename="../ui/paramInputParser.cpp" line="+59"/>
         <location line="+90"/>
         <location line="+72"/>
         <source>Canvas widget does not exist any more</source>
@@ -5477,7 +5205,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+125"/>
         <source>%1 [Wildcard]</source>
         <translation type="unfinished">%1 [Maskenzeichen]</translation>
     </message>
@@ -5617,7 +5345,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+212"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+213"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -5982,7 +5710,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+223"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+255"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -6138,7 +5866,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+407"/>
+        <location line="+588"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -6153,7 +5881,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>unbenannt</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+211"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -6173,7 +5901,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Soll diese neu geladen werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+64"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+69"/>
         <source>Untitled%1</source>
         <translation type="unfinished">Unbenannt%1</translation>
     </message>
@@ -6181,7 +5909,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+265"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+263"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6327,14 +6055,14 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+31"/>
         <location line="+25"/>
         <location line="+24"/>
-        <location line="+1210"/>
+        <location line="+1218"/>
         <location line="+37"/>
         <location line="+36"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1223"/>
+        <location line="-1231"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6387,7 +6115,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+219"/>
         <source>There exists no object with the given id.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6651,7 +6379,7 @@ Katesisch</translation>
 <context>
     <name>ito::WorkspaceDockWidget</name>
     <message>
-        <location filename="../widgets/workspaceDockWidget.cpp" line="+132"/>
+        <location filename="../widgets/workspaceDockWidget.cpp" line="+133"/>
         <source>delete item(s)</source>
         <translation>Objekt(e) löschen</translation>
     </message>

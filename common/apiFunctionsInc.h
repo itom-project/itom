@@ -156,6 +156,24 @@ namespace ito
     #define apiCompareParam \
         (*(ito::tCompareResult (*)(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret)) ito::ITOM_API_FUNCS[12])
     
+    //! checks whether a given parameter fits to a template parameter.
+    /*!
+        This method checks whether a parameter param fits to the requirements of a template parameter.
+
+        At first the types of param and templateParam are checked. If they are not equal or not compatible (in case of strict==false), an
+        error with an appropriate error message is returned. After this, the value of param is checked with respect to the meta information,
+        that are optionally given in templateParam. If param does not fit to these requirements, an error is returned, too.
+
+        If templateParam is an array type and param is the corresponding non-array type, the validation succeeds if the name of param
+        is an index-base name, e.g. myParam[0]. Then it is assumed, that param is the value at the first position of templateParam.
+
+        \param templateParam is the template parameter. Its type as well as optionally available meta information is used for the check
+        \param param is the parameter to check. Only the current value and its type is used.
+        \param strict indicates whether the types of param and templateParam must exactly fit (true) or if compatible types (e.g. int vs. double) are allowed as well (false).
+        \param mandatory is a boolean value indicating if the given parameter must contain a value (NULL as value for strings or dataObjects is no value).
+        \return ito::RetVal (ito::retOk if the given instance fits the requirements, else ito::retError)
+        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta
+    */
     #define apiValidateParam \
         (*(ito::RetVal (*)(const ito::Param &templateParam, const ito::ParamBase &param, bool strict, bool mandatory)) ito::ITOM_API_FUNCS[13])
     
@@ -201,6 +219,18 @@ namespace ito
 
     #define apiGetParam \
         (*(ito::Param (*)(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)) ito::ITOM_API_FUNCS[20])
+    
+    //! update all values in paramMap
+    /*!
+        For each value in vector values, their corresponding entry in paramMap is searched and if available set to the value given in the
+        values vector. No validation besides a general type validation is done.
+
+        \param paramMap is the map with parameters to set
+        \param values are the new values, their name is used as keyword for paramMap
+        \return ito::RetVal (ito::retOk if all parameters could be set, else ito::retError)
+    */
+    #define apiUpdateParameters \
+        (*(ito::RetVal (*)(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[23])
 
     #define apiSaveQLIST2XML \
         (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[17])
@@ -227,9 +257,28 @@ namespace ito
     */
     #define apiCreateFromDataObject \
         (* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
+    
+    //! returns the current working directory of itom
+    /*!
+        The current working directory is the current working directory of both python and itom itself. Its absolute path is returned as string.
 
+        \return current working directory
+    */
     #define apiGetCurrentWorkingDir \
         (* (QString (*)(void)) ito::ITOM_API_FUNCS[21])
+    
+    //! helper function to show and process a configuration dialog of a plugin
+    /*!
+        Use this simple api method in the method showConfDialog of a plugin to show and process
+        the configuration dialog, whose instance is passed by configDialogInstance. This api function
+        shows the dialog, passes the current parameters of the plugin and processes the changes. The given
+        dialog instance is automatically deleted at the end.
+
+        \param plugin the instance of the plugin itself
+        \param configDialogInstance a new instance of the configuration dialog inherited from ito::AbstractAddInConfigDialog
+    */
+    #define apiShowConfigurationDialog \
+        (* (ito::RetVal (*)(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)) ito::ITOM_API_FUNCS[22])
 
     /** \} */
 

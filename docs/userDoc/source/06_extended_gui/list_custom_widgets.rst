@@ -2,7 +2,7 @@
 
 .. _listCustomDesignerWidgets:
 
-**Itom Custom Designer Widgets**
+Custom Designer Widgets
 ==============================================
 
 Beside QtDesginer-Widgets for plots and figures (see  :ref:`PlotsAndFigures`) some non-plotting widgets have been develop to give the user GUI-based access to itom specific objects and functions.
@@ -53,7 +53,7 @@ Properties
 dObMetaDataTable
 ----------------------------------------------
 
-The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.g. to realize a measurement protoco . The widget is not inherited from a AbstractDObject and can not be used for a live plot.
+The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.g. to realize a measurement protocol . The widget is not inherited from a AbstractDObject and can not be used for a live plot.
 
 Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -76,7 +76,7 @@ Properties
 EvaluateGeometricsFigure
 ----------------------------------------------
 
-The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elments and a row for each geometric element to display.
+The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elements and a row for each geometric element to display.
 Further more it allows the evaluation of geometric relations between the geometric primitives. It contains a tableView and although is is inherited by AbstractDObject it should not be used for "liveVisualisation of dataObject".
 
 
@@ -134,7 +134,7 @@ Slots
  
  *idx, int*: Index of the modified geometric element
  
- *flags, int*: Type (and meta properties) of geometric elements which was changed. If type differes from original type clear and refill is necessary.
+ *flags, int*: Type (and meta properties) of geometric elements which was changed. If type differs from original type clear and refill is necessary.
  
  *values, QVector<ito::float32>*: Geometric parameters of the modified geometric item.
  

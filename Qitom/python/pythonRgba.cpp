@@ -150,7 +150,8 @@ PyObject* PythonRgba::PyRgba_nbAdd(PyObject* o1, PyObject* o2)
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError, "both operands must be of type rgba");
+        PyErr_SetString(PyExc_RuntimeError, "both operands must be of type rgba");
+        return NULL;
     }
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
@@ -172,7 +173,8 @@ PyObject* PythonRgba::PyRgba_nbSubtract(PyObject* o1, PyObject* o2)
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError, "both operands must be of type rgba");
+        PyErr_SetString(PyExc_RuntimeError, "both operands must be of type rgba");
+        return NULL;
     }
 
     PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference

@@ -509,7 +509,20 @@ void AIManagerWidget::mnuShowConfdialog()
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais && ais->hasConfDialog())
         {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, ais));
+            ito::RetVal retValue = ais->showConfDialog();
+            
+            if (retValue.containsWarning())
+            {
+                const char* msg = retValue.errorMessage();
+                QString message = tr("Warning while showing configuration dialog. Message: %1").arg(msg);
+                QMessageBox::warning(this, tr("Warning while showing configuration dialog"), message);
+            }
+            else if (retValue.containsError())
+            {
+                const char* msg = retValue.errorMessage();
+                QString message = tr("Error while showing configuration dialog. Message: %1").arg(msg);
+                QMessageBox::critical(this, tr("Error while showing configuration dialog"), message);
+            }
         }
     }
 }
@@ -895,8 +908,23 @@ void AIManagerWidget::mnuShowLiveImage()
             QSharedPointer<unsigned int> figHandle(new unsigned int);
             *figHandle = 0; //new figure will be requested
 
-            uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
-        }
+            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
+
+			if (retval.containsError())
+			{
+				QMessageBox msgBox;
+				msgBox.setText(retval.errorMessage());
+				msgBox.setIcon(QMessageBox::Warning);
+				msgBox.exec();
+		    }
+			else if (retval.containsWarning())
+			{
+				QMessageBox msgBox;
+				msgBox.setText(retval.errorMessage());
+				msgBox.setIcon(QMessageBox::Warning);
+				msgBox.exec();
+		    }
+		}
         else
         {
             QMessageBox msgBox;
