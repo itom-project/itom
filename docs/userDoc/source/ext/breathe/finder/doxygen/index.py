@@ -52,12 +52,12 @@ class CompoundTypeSubItemFinder(ItemFinder):
         if member_results:
 
             file_data = self.compound_parser.parse(self.data_object.refid)
-            myfinder = self.item_finder_factory.create_finder(file_data)
+            finder = self.item_finder_factory.create_finder(file_data)
 
             for member_data in member_results:
                 ref_matcher_stack = self.matcher_factory.create_ref_matcher_stack("", member_data.refid)
                 # TODO: Fix this! Should be ref_matcher_stack!
-                results.extend(myfinder.find(matcher_stack))
+                results.extend(finder.find(matcher_stack))
 
         elif matcher_stack.full_match("compound", self.data_object):
             results.append(self.data_object)
@@ -68,9 +68,9 @@ class CompoundTypeSubItemFinder(ItemFinder):
     def filter_(self, parent, filter_, matches):
 
         file_data = self.compound_parser.parse(self.data_object.refid)
-        myfinder = self.item_finder_factory.create_finder(file_data)
+        finder = self.item_finder_factory.create_finder(file_data)
 
-        myfinder.filter_(self.data_object, filter_, matches)
+        finder.filter_(self.data_object, filter_, matches)
 
 class MemberTypeSubItemFinder(ItemFinder):
 

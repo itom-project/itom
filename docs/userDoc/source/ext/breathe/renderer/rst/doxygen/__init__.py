@@ -5,6 +5,9 @@ from breathe.renderer.rst.doxygen import compound as compoundrenderer
 
 from breathe.parser.doxygen import index, compound, compoundsuper
 
+from docutils import nodes
+import textwrap
+
 class RstContentCreator(object):
 
     def __init__(self, list_type, dedent):
@@ -14,7 +17,7 @@ class RstContentCreator(object):
 
     def __call__(self, text):
 
-        # Remove the first line
+        # Remove the first line which is "embed:rst[:leading-asterisk]"
         text = "\n".join(text.split("\n")[1:])
 
         # Remove starting whitespace
@@ -108,7 +111,7 @@ class DoxygenToRstRendererFactory(object):
             # Horrible hack to silence errors on filtering unicode objects
             # until we fix the parsing
             if type(data_object) == str:
-                node_type = "str"
+                node_type = "unicode"
             else:
                 raise e
 
@@ -139,9 +142,9 @@ class DoxygenToRstRendererFactory(object):
             elif data_object.type_ == "subscript":
                 creator = self.node_factory.subscript
             elif data_object.type_ == "center":
-                print ("Warning: does not currently handle 'center' text display")
+                print("Warning: does not currently handle 'center' text display")
             elif data_object.type_ == "small":
-                print ("Warning: does not currently handle 'small' text display")
+                print("Warning: does not currently handle 'small' text display")
 
             return Renderer(
                     creator,
@@ -263,12 +266,16 @@ class DoxygenToRstRendererFactoryCreator(object):
             "docsimplesect" : compoundrenderer.DocSimpleSectTypeSubRenderer,
             "doctitle" : compoundrenderer.DocTitleTypeSubRenderer,
             "docformula" : compoundrenderer.DocForumlaTypeSubRenderer,
+            "docimage" : compoundrenderer.DocImageTypeSubRenderer,
+            "listing" : compoundrenderer.ListingTypeSubRenderer,
+            "codeline" : compoundrenderer.CodeLineTypeSubRenderer,
+            "highlight" : compoundrenderer.HighlightTypeSubRenderer,
             "templateparamlist" : compoundrenderer.TemplateParamListRenderer,
             "inc" : compoundrenderer.IncTypeSubRenderer,
             "ref" : CreateRefTypeSubRenderer(self.parser_factory),
             "verbatim" : compoundrenderer.VerbatimTypeSubRenderer,
             "mixedcontainer" : compoundrenderer.MixedContainerRenderer,
-            "str" : UnicodeRenderer,
+            "unicode" : UnicodeRenderer,
             }
 
         try:
@@ -278,7 +285,7 @@ class DoxygenToRstRendererFactoryCreator(object):
             # Horrible hack to silence errors on filtering unicode objects
             # until we fix the parsing
             if type(data_object) == str:
-                node_type = "str"
+                node_type = "unicode"
             else:
                 raise e
 
@@ -321,7 +328,7 @@ class DoxygenToRstRendererFactoryCreator(object):
             # Horrible hack to silence errors on filtering unicode objects
             # until we fix the parsing
             if type(data_object) == str:
-                node_type = "str"
+                node_type = "unicode"
             else:
                 raise e
 
@@ -387,13 +394,14 @@ class DoxygenToRstRendererFactoryCreatorConstructor(object):
         self.domain_handler_factory_creator = domain_handler_factory_creator
         self.rst_content_creator = rst_content_creator
 
-    def create_factory_creator(self, project_info, document, options):
+    def create_factory_creator(self, project_info, document, options, target_handler):
 
         domain_handler_factory = self.domain_handler_factory_creator.create_domain_handler_factory(
                 project_info,
                 document,
                 document.settings.env,
                 options,
+                target_handler
                 )
 
         return DoxygenToRstRendererFactoryCreator(
@@ -404,4 +412,28 @@ class DoxygenToRstRendererFactoryCreatorConstructor(object):
                 domain_handler_factory,
                 project_info,
                 )
+
+
+def format_parser_error(name, error, filename, state, lineno, do_unicode_warning):
+
+    warning = '%s: Unable to parse xml file "%s". ' % (name, filename)
+    explanation = 'Reported error: %s. ' % error
+
+    unicode_explanation_text = ""
+    unicode_explanation = []
+    if do_unicode_warning:
+        unicode_explanation_text = textwrap.dedent("""
+        Parsing errors are often due to unicode errors associated with the encoding of the original
+        source files. Doxygen propagates invalid characters from the input source files to the
+        output xml.""").strip().replace("\n", " ")
+        unicode_explanation = [nodes.paragraph("", "", nodes.Text(unicode_explanation_text))]
+
+    return [nodes.warning("",
+                nodes.paragraph("", "", nodes.Text(warning)),
+                nodes.paragraph("", "", nodes.Text(explanation)),
+                *unicode_explanation
+                ),
+            state.document.reporter.warning(warning + explanation + unicode_explanation_text, line=lineno)
+            ]
+
 

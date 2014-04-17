@@ -5,8 +5,7 @@
 #
 
 import sys
-#import getopt
-#from string import lower as str_lower
+import getopt
 from xml.dom import minidom
 from xml.dom import Node
 
@@ -64,7 +63,7 @@ def showIndent(outfile, level):
         outfile.write('    ')
 
 def quote_xml(inStr):
-    s1 = (isinstance(inStr, basestring) and inStr or
+    s1 = (isinstance(inStr, str) and inStr or
           '%s' % inStr)
     s1 = s1.replace('&', '&amp;')
     s1 = s1.replace('<', '&lt;')
@@ -72,7 +71,7 @@ def quote_xml(inStr):
     return s1
 
 def quote_attrib(inStr):
-    s1 = (isinstance(inStr, basestring) and inStr or
+    s1 = (isinstance(inStr, str) and inStr or
           '%s' % inStr)
     s1 = s1.replace('&', '&amp;')
     s1 = s1.replace('<', '&lt;')
@@ -2602,7 +2601,9 @@ class highlightType(GeneratedsSuper):
             value_ = []
             for text_ in child_.childNodes:
                 value_.append(text_.nodeValue)
-            valuestr_ = ''.join(value_)
+            # We make this unicode so that our unicode renderer catch-all picks it up
+            # otherwise it would go through as 'str' and we'd have to pick it up too
+            valuestr_ = ' '
             obj_ = self.mixedclass_(MixedContainer.CategorySimple,
                 MixedContainer.TypeString, 'sp', valuestr_)
             self.content_.append(obj_)
@@ -5742,7 +5743,7 @@ Options:
 """
 
 def usage():
-    print (USAGE_TEXT)
+    print(USAGE_TEXT)
     sys.exit(1)
 
 
