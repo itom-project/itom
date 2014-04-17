@@ -2,11 +2,8 @@
 
 .. sectionauthor:: Marc Gronle
 
-Basic programming structure of any itom-plugin
+Introduction to plugins
 ==============================================
-
-Introduction
-------------
 
 The software |itom| obtains most functionality by mainly two concepts. On the one hand there is the python scripting language, which allows you to use almost all available python modules
 that are available for python 3.2 or higher. On the other hand, the entire measurement system becomes powerful by the possibility to enhance its functionality by several plugins.
@@ -77,7 +74,7 @@ The two classes of the plugin are as follows:
     
     Further information about the common parts of the plugin class, independent on the plugin's type, see :ref:`plugin-class`. For detailed information about the implementation of the different plugin types, see :ref:`plugin-class-dataio`, :ref:`plugin-class-actuator` or :ref:`plugin-class-algo`.
     
-Communication between |itom|, Python and each plugin
+Communication between itom, Python and each plugin
 ----------------------------------------------------
 
 The communication to plugins of type **actuator** and **dataIO** is only possible by calling the public methods defined in the base classes **AddInActuator** or **AddInDataIO**. In Python, there exist two classes **dataIO** and **actuator**. Both have an interface that is analog to the corresponding interface **AddInActuator** or **AddInDataIO** in C++. Therefore, if a certain method of these classes is called in python, the call is redirected to the corresponding plugin-method. However, this call is executed across a thread-change, since both python and each plugin (besides the algorith-plugins) "live" in their own thread.

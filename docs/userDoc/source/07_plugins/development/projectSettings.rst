@@ -5,8 +5,7 @@
 Project settings for plugins
 =======================================
 
-Since you are building your plugins using **CMake** most of the following settings are automatically set. However, this document gives some hints about properties, which can
-maybe be helpful in case of any problems.
+Since you are building your plugins using **CMake** most of the following settings are automatically set. However, this document gives some hints about properties, which can maybe be helpful in case of any problems.
 
 Prerequisites
 ----------------
@@ -19,7 +18,7 @@ For programming a plugin, you need at least the following things:
 
 * For running *itom*, you need *Python 3.2* installed on your machine.
 
-* If you want to support the *itom*-internal *DataObject* (matrix structures), it is highly recommended to install *OpenCV2.3* on your machine.
+* If you want to support the *itom*-internal *DataObject* (matrix structures), it is highly recommended to install *OpenCV2.3* or later on your machine.
 
 Please consider to have all libraries, which you need, installed in the same version with respect to the processor type (32bit or 64bit).
 

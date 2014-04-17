@@ -7,7 +7,7 @@
 Optional dock widget (toolbox) for hardware plugins
 ####################################################
 
-Every hardware plugin (actuator, dataIO) can provide one toolbox (alternatively called *dockWidget*) that can be docked into the main window of |itom| and provide fast access to commonly used parameters and settings of the plugin. An example for the toolbox of a USB device of the plugin *MSMediaFoundation* looks like:
+Every hardware plugin (actuator, dataIO) can provide one toolbox (alternatively called *dockWidget*) that can be docked into the main window of |itom| and provide fast access to commonly used parameters and settings of the plugin. An example for the toolbox of a USB camera device of the plugin *MSMediaFoundation* looks like:
 
 .. figure:: images/dockWidget.png
 
