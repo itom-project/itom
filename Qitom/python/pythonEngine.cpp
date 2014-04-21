@@ -66,11 +66,14 @@
 #include <langinfo.h>
 #endif
 
-//using namespace std;
+namespace ito
+{
 
 QMutex PythonEngine::instatiated;
 QMutex PythonEngine::instancePtrProtection;
 PythonEngine* PythonEngine::instance = NULL;
+
+using namespace ito;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //public
@@ -159,7 +162,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
 
-    bpModel = new BreakPointModel();
+    bpModel = new ito::BreakPointModel();
+    bpModel->restoreState(); //get breakPoints from last session
 
     m_pDesktopWidget = new QDesktopWidget(); //must be in constructor, since the constructor is executed in main-thread
 
@@ -178,7 +182,9 @@ PythonEngine::~PythonEngine()
         pythonShutdown();
     }
 
+    bpModel->saveState(); //save current set of breakPoints to settings file
     DELETE_AND_SET_NULL(bpModel);
+
     DELETE_AND_SET_NULL(m_pDesktopWidget);
 
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
@@ -256,22 +262,22 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             static wchar_t *wargv = L"";
             PySys_SetArgv(1, &wargv);
 
-            PythonDataObject::PyDataObjectType.tp_base = 0;
-            PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
-            PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonDataObject::PyDataObjectType) >= 0)
+            ito::PythonDataObject::PyDataObjectType.tp_base = 0;
+            ito::PythonDataObject::PyDataObjectType.tp_free = PyObject_Free;
+            ito::PythonDataObject::PyDataObjectType.tp_alloc = PyType_GenericAlloc;
+            if (PyType_Ready(&ito::PythonDataObject::PyDataObjectType) >= 0)
             {
-                Py_INCREF(&PythonDataObject::PyDataObjectType);
-                PyModule_AddObject(itomModule, "dataObject", (PyObject *)&PythonDataObject::PyDataObjectType);
+                Py_INCREF(&ito::PythonDataObject::PyDataObjectType);
+                PyModule_AddObject(itomModule, "dataObject", (PyObject *)&ito::PythonDataObject::PyDataObjectType);
             }
 
 
-            PythonDataObject::PyDataObjectIterType.tp_base =0;
-            PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
-            PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonDataObject::PyDataObjectIterType) >= 0)
+            ito::PythonDataObject::PyDataObjectIterType.tp_base =0;
+            ito::PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
+            ito::PythonDataObject::PyDataObjectIterType.tp_alloc = PyType_GenericAlloc;
+            if (PyType_Ready(&ito::PythonDataObject::PyDataObjectIterType) >= 0)
             {
-                Py_INCREF(&PythonDataObject::PyDataObjectIterType);
+                Py_INCREF(&ito::PythonDataObject::PyDataObjectIterType);
                 //PyModule_AddObject(itomModule, "dataObjectIter", (PyObject *)&PythonDataObject::PyDataObjectIterType);
             }
 
@@ -486,7 +492,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         }
         else
         {
-            (*retValue) += RetVal(retError, 2, tr("deadlock in python setup.").toLatin1().data());
+            (*retValue) += ito::RetVal(ito::retError, 2, tr("deadlock in python setup.").toLatin1().data());
         }
     }
 
@@ -494,7 +500,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= QString()*/)
+ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= QString()*/)
 {
     //store current directory
     QString currentDir;
@@ -544,7 +550,7 @@ RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
+ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 {
     ItomSharedSemaphoreLocker locker(aimWait);
 
@@ -615,7 +621,7 @@ RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonAddBuiltinMethods()
+ito::RetVal PythonEngine::pythonAddBuiltinMethods()
 {
     //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
 
@@ -649,7 +655,7 @@ RetVal PythonEngine::pythonAddBuiltinMethods()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::addMethodToModule(PyMethodDef *def)
+ito::RetVal PythonEngine::addMethodToModule(PyMethodDef *def)
 {
     //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
 
@@ -671,7 +677,7 @@ RetVal PythonEngine::addMethodToModule(PyMethodDef *def)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::delMethodFromModule(const char* ml_name)
+ito::RetVal PythonEngine::delMethodFromModule(const char* ml_name)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -836,7 +842,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::runString(const QString &command)
+ito::RetVal PythonEngine::runString(const QString &command)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -917,7 +923,7 @@ RetVal PythonEngine::runString(const QString &command)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::runPyFile(const QString &pythonFileName)
+ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 {
     PyObject* result = NULL;
     PyObject* compile = NULL;
@@ -1055,7 +1061,7 @@ RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
+ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1138,7 +1144,7 @@ RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
+ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1154,7 +1160,7 @@ RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::debugFile(const QString &pythonFileName)
+ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1247,7 +1253,7 @@ RetVal PythonEngine::debugFile(const QString &pythonFileName)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::debugString(const QString &command)
+ito::RetVal PythonEngine::debugString(const QString &command)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1371,7 +1377,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
+ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
 {
     PyObject *result = NULL;
 
@@ -1422,7 +1428,7 @@ RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int line
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
+ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
 {
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
@@ -1465,7 +1471,7 @@ RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &f
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
+ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
@@ -1498,7 +1504,7 @@ RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool /*showTraceback*/)
+ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool /*showTraceback*/)
 {
     if (PyErr_Occurred())
     {
@@ -1935,7 +1941,7 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
+ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
 {
     RetVal retValue(retOk);
     pythonStateChangeMutex.lock();
@@ -2047,7 +2053,7 @@ RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::enqueueDbgCmd(tPythonDbgCmd dbgCmd)
+void PythonEngine::enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd)
 {
     if (dbgCmd != pyDbgNone)
     {
@@ -2058,7 +2064,7 @@ void PythonEngine::enqueueDbgCmd(tPythonDbgCmd dbgCmd)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-tPythonDbgCmd PythonEngine::dequeueDbgCmd()
+ito::tPythonDbgCmd PythonEngine::dequeueDbgCmd()
 {
     tPythonDbgCmd cmd = pyDbgNone;
     dbgCmdMutex.lock();
@@ -2104,13 +2110,13 @@ void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int p
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, BreakPointItem newBp)
+void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
     pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::setupBreakPointDebugConnections()
+ito::RetVal PythonEngine::setupBreakPointDebugConnections()
 {
     connect(bpModel, SIGNAL(breakPointAdded(BreakPointItem,int)), this, SLOT(breakPointAdded(BreakPointItem,int)));
     connect(bpModel, SIGNAL(breakPointDeleted(QString,int,int)), this, SLOT(breakPointDeleted(QString,int,int)));
@@ -2119,7 +2125,7 @@ RetVal PythonEngine::setupBreakPointDebugConnections()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::shutdownBreakPointDebugConnections()
+ito::RetVal PythonEngine::shutdownBreakPointDebugConnections()
 {
     disconnect(bpModel, SIGNAL(breakPointAdded(BreakPointItem,int)), this, SLOT(breakPointAdded(BreakPointItem,int)));
     disconnect(bpModel, SIGNAL(breakPointDeleted(QString,int,int)), this, SLOT(breakPointDeleted(QString,int,int)));
@@ -2136,12 +2142,12 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
     {
         if (globalNotLocal && m_mainWorkspaceContainer.contains(container) == false)
         {
-            connect(container,SIGNAL(getChildNodes(ito::PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(ito::PyWorkspaceContainer*,QString)));
+            connect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_mainWorkspaceContainer.insert(container);
         }
         else if (!globalNotLocal && m_localWorkspaceContainer.contains(container) == false)
         {
-            connect(container,SIGNAL(getChildNodes(ito::PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(ito::PyWorkspaceContainer*,QString)));
+            connect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_localWorkspaceContainer.insert(container);
         }
 
@@ -2151,12 +2157,12 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
     {
         if (globalNotLocal)
         {
-            disconnect(container,SIGNAL(getChildNodes(ito::PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(ito::PyWorkspaceContainer*,QString)));
+            disconnect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_mainWorkspaceContainer.remove(container);
         }
         else
         {
-            disconnect(container,SIGNAL(getChildNodes(ito::PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(ito::PyWorkspaceContainer*,QString)));
+            disconnect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_localWorkspaceContainer.remove(container);
         }
     }
@@ -2258,7 +2264,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::workspaceGetChildNode(ito::PyWorkspaceContainer *container, QString fullNameParentItem)
+void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem)
 {
     QStringList itemNameSplit = fullNameParentItem.split(container->getDelimiter());
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), itemNameSplit);
@@ -2487,7 +2493,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject* globalDict = NULL;
     PyObject* localDict = NULL;
 
-    ito::tPythonDbgCmd recentDbgCmd = ito::pyDbgNone;
+    tPythonDbgCmd recentDbgCmd = pyDbgNone;
 
     PythonEngine* pyEngine = PythonEngine::getInstanceInternal();
 
@@ -2862,7 +2868,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
@@ -2958,7 +2964,7 @@ RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filename, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -3287,7 +3293,7 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     RetVal retVal(retOk);
@@ -3434,7 +3440,7 @@ RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *inst
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue;
     tPythonState oldState = pythonState;
@@ -3506,7 +3512,7 @@ RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue;
     tPythonState oldState = pythonState;
@@ -3576,7 +3582,7 @@ RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
@@ -3660,7 +3666,7 @@ RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename, QStr
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
+ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
 {
     RetVal retval;
 
@@ -3753,7 +3759,7 @@ RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -3832,7 +3838,7 @@ RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, It
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite)
+ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite)
 {
     RetVal retval;
 
@@ -3983,3 +3989,5 @@ PyObject* PythonEngine::PyInitItomDbg(void)
 {
     return PyModule_Create(&PyModuleItomDbg);
 }
+
+} //end namespace ito

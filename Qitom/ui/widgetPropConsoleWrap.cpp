@@ -25,6 +25,9 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropConsoleWrap::WidgetPropConsoleWrap(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -162,5 +165,6 @@ void WidgetPropConsoleWrap::writeSettings()
     settings.endGroup();
 }
 
+} //end namespace ito
 
 

@@ -27,6 +27,9 @@
 #include <qobject.h>
 #include <qmutex.h>
 
+namespace ito
+{
+
 /* content */
 
 //!< AppManagement (in order to provide access to basic organizers, managers and other main components to every instance
@@ -125,5 +128,7 @@ class AppManagement
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
 };
+
+} //end namespace ito
 
 #endif // APPMANAGEMENT_H

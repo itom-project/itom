@@ -29,6 +29,9 @@
 
 #include "ui_widgetPropConsoleWrap.h"
 
+namespace ito
+{
+
 class WidgetPropConsoleWrap: public AbstractPropertyPageWidget
 {
     Q_OBJECT
@@ -53,5 +56,7 @@ public slots:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

@@ -39,6 +39,12 @@
 #include <qsplashscreen.h>
 #include <qstylefactory.h>
 #include <qmessagebox.h>
+#include <qpainter.h>
+#include <qlibraryinfo.h>
+#include <qresource.h>
+
+namespace ito
+{
 
 /*!
     \class MainApplication
@@ -605,4 +611,4 @@ int MainApplication::exec()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+} //end namespace ito

@@ -28,11 +28,11 @@
 #include <qbytearray.h>
 #include <qmetaobject.h>
 
-class MethodDescription;
-typedef QList<MethodDescription> MethodDescriptionList;
-
 namespace ito 
 {
+    class MethodDescription;
+    typedef QList<MethodDescription> MethodDescriptionList;
+
     struct PythonQObjectMarshal
     {
         PythonQObjectMarshal() : m_objectID(0), m_object(NULL) {}
@@ -42,7 +42,7 @@ namespace ito
         unsigned int m_objectID;
         void *m_object; //casted from QObject
     };
-} //end namespace ito
+
 
 
 // MethodDescription
@@ -180,5 +180,7 @@ private:
     void** m_args;   /*!< void*-array containing the data of each parameter, NULL if the parameter is not available / filled (yet) */
     int* m_argTypes; /*!< int-array with the corresponding type-id's for each parameter in \ref m_args */
 };
+
+} //end namespace ito
 
 #endif // PYTHONITOMMETAOBJECT_H

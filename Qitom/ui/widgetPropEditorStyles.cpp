@@ -27,6 +27,10 @@
 #include <qcolordialog.h>
 #include <qfontdialog.h>
 #include <qpalette.h>
+#include <qsettings.h>
+
+namespace ito
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
@@ -239,3 +243,5 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
         }
     }
 }
+
+} //end namespace ito

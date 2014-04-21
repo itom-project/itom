@@ -103,7 +103,7 @@ public:
 
     inline bool isGlobalWorkspace() const { return m_globalNotLocal; }
     inline bool isRoot(PyWorkspaceItem *item) const { return item == &m_rootItem; }
-    inline void emitGetChildNodes(ito::PyWorkspaceContainer *container, QString fullNameParentItem) { emit getChildNodes(container,fullNameParentItem); }
+    inline void emitGetChildNodes(PyWorkspaceContainer *container, QString fullNameParentItem) { emit getChildNodes(container,fullNameParentItem); }
 
     inline QString getDelimiter() const { return m_delimiter; };
 
@@ -125,8 +125,8 @@ private:
     PyObject *dictUnicode;
 
 signals:
-    void updateAvailable(ito::PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
-    void getChildNodes(ito::PyWorkspaceContainer *container, QString fullNameParentItem); //signal catched by python    //TODO
+    void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
+    void getChildNodes(PyWorkspaceContainer *container, QString fullNameParentItem); //signal catched by python    //TODO
 };
 
 } //end namespace ito

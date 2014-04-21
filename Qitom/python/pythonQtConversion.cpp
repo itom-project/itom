@@ -32,6 +32,9 @@
 
 #include "pythonSharedPointerGuard.h"
 
+namespace ito
+{
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -2644,3 +2647,5 @@ MethodDescription::~MethodDescription()
 {
     DELETE_AND_SET_NULL_ARRAY(m_argTypes);
 }
+
+} //end namespace ito

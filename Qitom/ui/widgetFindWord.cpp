@@ -22,6 +22,9 @@
 
 #include "widgetFindWord.h"
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetFindWord::WidgetFindWord(QWidget *parent) :
     QWidget(parent)
@@ -110,3 +113,5 @@ void WidgetFindWord::setCursorToTextField()
     ui.txtFind->setFocus();
     ui.txtFind->selectAll();
 }
+
+} //end namespace ito

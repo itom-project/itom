@@ -40,6 +40,7 @@
 #endif
 #include <qtooltip.h>
 #include <qtimer.h>
+#include <qpainter.h>
 
 namespace ito 
 {
@@ -298,6 +299,43 @@ RetVal ScriptEditorWidget::initMenus()
     connect(editorMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuEditor()));
 
     return RetVal(retOk);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const ScriptEditorStorage ScriptEditorWidget::saveState() const
+{
+    ScriptEditorStorage storage;
+    storage.filename = getFilename().toLatin1();
+    storage.firstVisibleLine = firstVisibleLine();
+
+    foreach(const BookmarkErrorEntry &e, bookmarkErrorHandles)
+    {
+        if (e.type & markerBookmark)
+        {
+            storage.bookmarkLines << markerLine(e.handle);
+        }
+    }
+
+    return storage;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
+{
+    RetVal retVal = openFile(data.filename, true);
+
+    if (!retVal.containsError())
+    {
+        setFirstVisibleLine(data.firstVisibleLine);
+
+        clearAllBookmarks();
+        foreach(const int &bookmarkLine, data.bookmarkLines)
+        {
+            toggleBookmark(bookmarkLine);
+        }
+    }
+    
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -838,7 +876,7 @@ void ScriptEditorWidget::menuStopScript()
     {
         if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
         {
-            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, ito::pyDbgQuit));
+            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
         }
         else
         {
@@ -1022,21 +1060,21 @@ void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::errorListChange(QStringList errorList)
 { // Updates the List of Bookmarks and Errors when new Errorlist appears
-    QList<bookmarkErrorEntry>::iterator it;
+    QList<BookmarkErrorEntry>::iterator it;
     it = bookmarkErrorHandles.begin();
     while (it != bookmarkErrorHandles.end())
     {
-        if (it->type == 2)
+        if (it->type == markerPyBug)
         { // only Bug => Remove
             markerDeleteHandle(it->handle);
             it = bookmarkErrorHandles.erase(it);
         }
-        else if (it->type == 3)
+        else if (it->type == markerBookmarkAndPyBug)
         { // Bookmark and Bug => set to 1 and change Icon
             int line = markerLine(it->handle);
             markerDeleteHandle(it->handle);
             it->handle = markerAdd(line, markBookmark);
-            it->type = 1;
+            it->type = markerBookmark;
             ++it;
         }
         else
@@ -1054,10 +1092,10 @@ void ScriptEditorWidget::errorListChange(QStringList errorList)
         it = bookmarkErrorHandles.begin();
         while (it != bookmarkErrorHandles.end())
         {
-            if (line == markerLine(it->handle) + 1 && it->type == 1)
+            if (line == markerLine(it->handle) + 1 && it->type == markerBookmark)
             { // this entry exists and is a bookmark, so make it 3 (BM & Err)
                 markerDeleteHandle(it->handle);
-                it->type = 3;
+                it->type = markerBookmarkAndPyBug;
                 it->handle = markerAdd(line-1, markBookmarkSyntaxError);
                 it->errorMessage = regError.cap(2);
                 found = true;
@@ -1066,8 +1104,8 @@ void ScriptEditorWidget::errorListChange(QStringList errorList)
         }
         if (found == false)
         {
-            bookmarkErrorEntry newE;
-            newE.type = 2;
+            BookmarkErrorEntry newE;
+            newE.type = markerPyBug;
             newE.handle = markerAdd(line-1, markSyntaxError);
             newE.errorMessage = regError.cap(2);
             bookmarkErrorHandles.append(newE);
@@ -1110,12 +1148,12 @@ bool ScriptEditorWidget::event (QEvent * event)
             point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
             int line = QsciScintilla::lineAt(point);
             
-            QList<bookmarkErrorEntry>::iterator it;
+            QList<BookmarkErrorEntry>::iterator it;
             it = bookmarkErrorHandles.begin();
             while (it != bookmarkErrorHandles.end())
             {
                 int l = markerLine(it->handle);
-                if (l == line && (it->type == 2 || it->type == 3))
+                if (l == line && (it->type & markerBookmarkAndPyBug))
                 {
                     point.rx() = posX;
                     point = this->mapToGlobal(point);
@@ -1133,7 +1171,7 @@ bool ScriptEditorWidget::event (QEvent * event)
 //!< bookmark handling
 RetVal ScriptEditorWidget::toggleBookmark(int line)
 {
-    QList<bookmarkErrorEntry>::iterator it;
+    QList<BookmarkErrorEntry>::iterator it;
     bool createNew = true;
 
     it = bookmarkErrorHandles.begin();
@@ -1144,22 +1182,22 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
             // Delete old Handle
             markerDeleteHandle(it->handle);
 
-            if (it->type == 1)
+            if (it->type == markerBookmark)
             { // bookmark => leave it empty and delete entry in List
                 it = bookmarkErrorHandles.erase(it);
                 createNew = false;
             }
-            else if (it->type == 2)
+            else if (it->type == markerPyBug)
             { // bug => create bug with bookmark
                 it->handle = markerAdd(line, markBookmarkSyntaxError);
-                it->type = 3;
+                it->type = markerBookmarkAndPyBug;
                 createNew = false;
                 ++it;
             }
-            else if (it->type == 3)
+            else if (it->type == markerBookmarkAndPyBug)
             { // bookmark and bug => create bug without bookmark
                 it->handle = markerAdd(line, markSyntaxError);
-                it->type = 2;
+                it->type = markerPyBug;
                 createNew = false;
                 ++it;
             }
@@ -1173,37 +1211,38 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
             ++it;
         }
     }
-    if (createNew)
+    if (createNew && line >= 0 && line < lines())
     {    
-        bookmarkErrorEntry newE;
-        newE.type = 1;
+        BookmarkErrorEntry newE;
+        newE.type = markerBookmark;
         newE.handle = markerAdd(line, markBookmark);
         bookmarkErrorHandles.append(newE);
     }
+
     return RetVal(retOk);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBookmarks()
 {
-    QList<bookmarkErrorEntry>::iterator it;
+    QList<BookmarkErrorEntry>::iterator it;
     bool createNew = true;
 
     it = bookmarkErrorHandles.begin();
     while (it != bookmarkErrorHandles.end())
     {
-        if (it->type == 1)
+        if (it->type == markerBookmark)
         { // bookmark => delete it
             markerDeleteHandle(it->handle);
             it = bookmarkErrorHandles.erase(it);
             createNew = false;
         }
-        else if (it->type == 3)
+        else if (it->type == markerBookmarkAndPyBug)
         { // bookmark and bug => create bug without bookmark
             int line = it->handle;
             markerDeleteHandle(it->handle);
             it->handle = markerAdd(markerLine(line), markSyntaxError);
-            it->type = 2;
+            it->type = markerPyBug;
             createNew = false;
             ++it;
         }
@@ -1222,7 +1261,7 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     int line, index;
     int closestLine = lines();
     getCursorPosition(&line, &index);
-    QList<bookmarkErrorEntry>::iterator it;
+    QList<BookmarkErrorEntry>::iterator it;
     it = bookmarkErrorHandles.begin();
 
     line += 1;
@@ -1234,7 +1273,7 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
 
     while (it != bookmarkErrorHandles.end())
     {
-        if ((it->type == 1 || it->type == 3) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
+        if ((it->type & markerBookmark) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
         {
             closestLine = markerLine(it->handle);
         }
@@ -1256,7 +1295,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
     int line, index;
     int closestLine = 0;
     getCursorPosition(&line, &index);
-    QList<bookmarkErrorEntry>::iterator it;
+    QList<BookmarkErrorEntry>::iterator it;
     it = bookmarkErrorHandles.begin();
 
     if (line == 0)
@@ -1270,7 +1309,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 
     while (it != bookmarkErrorHandles.end())
     {
-        if ((it->type == 1 || it->type == 3) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
+        if ((it->type & markerBookmark) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
         {
             closestLine = markerLine(it->handle);
         }

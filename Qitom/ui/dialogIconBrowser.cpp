@@ -29,7 +29,9 @@
 
 #include <QApplication>
 #include <QDirIterator>
-#include <QClipboard>
+
+namespace ito
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
@@ -104,3 +106,5 @@ void DialogIconBrowser::on_pushButtonInsert_clicked(bool value)
 {
     emit sendIconBrowserText(ui.treeWidget->currentItem()->text(0));
 }
+
+} //end namespace ito

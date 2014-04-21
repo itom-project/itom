@@ -11,6 +11,9 @@
 #include <qmovie.h>
 #include "../widgets/abstractDockWidget.h"
 
+namespace ito
+{
+
 class LeafFilterProxyModel; //forward declaration
 
 class HelpTreeDockWidget : public QWidget
@@ -114,5 +117,7 @@ private:
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };
+
+} //end namespace ito
 
 #endif // HELPTREEDOCKWIDGET_H

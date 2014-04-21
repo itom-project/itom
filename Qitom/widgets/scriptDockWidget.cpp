@@ -21,10 +21,12 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
-#include "../widgets/mainWindow.h"
-#include "../global.h"
 
 #include "scriptDockWidget.h"
+#include "scriptEditorWidget.h"
+
+#include "../widgets/mainWindow.h"
+#include "../global.h"
 
 #include <qlist.h>
 #include <qfileinfo.h>
@@ -146,6 +148,71 @@ ScriptDockWidget::~ScriptDockWidget()
     DELETE_AND_SET_NULL(m_pVBox);
     DELETE_AND_SET_NULL(m_pCenterWidget);
     DELETE_AND_SET_NULL(m_pDialogReplace);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QVariant ScriptDockWidget::saveScriptState() const
+{
+    QList<ito::ScriptEditorStorage> state;
+    ScriptEditorWidget *sew;
+
+    for (int idx = 0; idx < m_tab->count(); ++idx)
+    {
+        sew = static_cast<ScriptEditorWidget *>(m_tab->widget(idx));
+
+        if (sew)
+        {
+            if (sew->hasNoFilename() == false) //don't save the state of non-saved scripts
+            {
+                state << sew->saveState();
+            }
+        }
+    }
+    
+    return QVariant::fromValue<QList<ito::ScriptEditorStorage> >(state);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptDockWidget::restoreScriptState(const QVariant &state)
+{
+    RetVal retVal;
+    QList<ito::ScriptEditorStorage> states;
+
+    if (state.canConvert<ito::ScriptEditorStorage>())
+    {
+        states << state.value<ito::ScriptEditorStorage>();
+    }
+    else if (state.canConvert<QList<ito::ScriptEditorStorage> >())
+    {
+        states = state.value<QList<ito::ScriptEditorStorage> >();
+    }
+    else
+    {
+        retVal += RetVal(retError,0,"missaligned data");
+    }
+
+    if (!retVal.containsError())
+    {
+        foreach(const ito::ScriptEditorStorage &ses, states)
+        {
+            QFileInfo fi(ses.filename);
+
+            if (ses.filename.isNull() == false && fi.exists())
+            {
+                ScriptEditorWidget* sew = new ScriptEditorWidget(m_tab);
+                if (sew->restoreState(ses).containsError())
+                {
+                    sew->deleteLater();
+                }
+                else
+                {
+                    retVal += appendEditor(sew);
+                }
+            }
+        }
+    }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

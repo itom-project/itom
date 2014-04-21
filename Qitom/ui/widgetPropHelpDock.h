@@ -25,9 +25,13 @@
 
 #include "abstractPropertyPageWidget.h"
 
-#include <QtGui>
+#include <qwidget.h>
+#include <qstring.h>
 
 #include "ui_widgetPropHelpDock.h"
+
+namespace ito
+{
 
 class WidgetPropHelpDock: public AbstractPropertyPageWidget
 {
@@ -57,5 +61,7 @@ private slots:
     void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
 };
+
+} //end namespace ito
 
 #endif

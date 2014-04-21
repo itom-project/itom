@@ -23,10 +23,12 @@
 #ifndef DIALOGEDITBREAKPOINT_H
 #define DIALOGEDITBREAKPOINT_H
 
-#include <QtGui>
 #include <qdialog.h>
 
 #include "ui_dialogEditBreakpoint.h"
+
+namespace ito
+{
 
 class DialogEditBreakpoint : public QDialog 
 {
@@ -42,5 +44,7 @@ private:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

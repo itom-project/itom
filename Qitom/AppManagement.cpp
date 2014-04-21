@@ -21,10 +21,11 @@
 *********************************************************************** */
 
 #include "AppManagement.h"
-#include "./organizer/addInManager.h"
-#include "./organizer/userOrganizer.h"
+#include "organizer/addInManager.h"
+#include "organizer/userOrganizer.h"
 
-//#include <qfileinfo.h>
+namespace ito
+{
 
 /*!
     \class AppManagement
@@ -56,3 +57,5 @@ QString AppManagement::getSettingsFile(void)
     QMutexLocker locker(&m_mutex);
     return ((ito::UserOrganizer*)m_userOrganizer)->getSettingsFile();
 }
+
+} //end namespace ito

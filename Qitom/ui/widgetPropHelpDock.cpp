@@ -25,8 +25,10 @@
 #include "../AppManagement.h"
 
 #include <qsettings.h>
+#include <qdiriterator.h>
 
-
+namespace ito
+{
 
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
@@ -149,6 +151,8 @@ void WidgetPropHelpDock::readSettings()
         }
         ui.listWidget->addItem(nextDBItem);
     }
+    settings.endArray();
+
     settings.endGroup();
     refreshDBs();
 }
@@ -184,3 +188,4 @@ void WidgetPropHelpDock::writeSettings()
     settings.endGroup();
 }
 
+} //end namespace ito

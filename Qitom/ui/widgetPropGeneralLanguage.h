@@ -27,9 +27,12 @@
 
 #include <qlistwidget.h>
 
-#include <QtGui>
+#include <qwidget.h>
 
 #include "ui_widgetPropGeneralLanguage.h"
+
+namespace ito
+{
 
 class WidgetPropGeneralLanguage : public AbstractPropertyPageWidget
 {
@@ -47,9 +50,6 @@ protected:
 private:
     Ui::WidgetPropGeneralLanguage ui;
 
-
-    
-
 signals:
 
 public slots:
@@ -57,5 +57,7 @@ public slots:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

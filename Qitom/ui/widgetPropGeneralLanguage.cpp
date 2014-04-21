@@ -33,6 +33,9 @@
 #include <qlocale.h>
 #include <qregexp.h>
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -132,3 +135,5 @@ void WidgetPropGeneralLanguage::writeSettings()
         ui.lblCurrentLanguage->setText(tr("Current Language: ") + ui.listWidget->currentItem()->text());
     }
 }
+
+} //end namespace ito

@@ -25,6 +25,11 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+#include <qsettings.h>
+
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorAutoCompletion::WidgetPropEditorAutoCompletion(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -90,3 +95,5 @@ void WidgetPropEditorAutoCompletion::writeSettings()
 
     settings.endGroup();
 }
+
+} //end namespace ito

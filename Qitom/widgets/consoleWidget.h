@@ -46,12 +46,12 @@
 #include <qdebug.h>
 #include <qsettings.h>
 
-
-using namespace ito;
-
 QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
+
+namespace ito
+{
 
 class DequeCommandList;
 
@@ -159,5 +159,7 @@ private:
     std::deque<QString> cmdList;
     std::deque<QString>::reverse_iterator rit;
 };
+
+} //end namespace ito
 
 #endif

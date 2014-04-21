@@ -47,6 +47,9 @@ Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
 
+namespace ito
+{
+
 class PythonQtConversion
 {
 public:
@@ -162,5 +165,7 @@ private:
         delete sharedObject;
     }
 };
+
+} //end namespace ito
 
 #endif

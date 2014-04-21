@@ -56,7 +56,8 @@
 #include <qmainwindow.h>
 
 
-
+namespace ito
+{
 
 
 //! destructor
@@ -85,8 +86,6 @@ UiContainer::~UiContainer()
         }
 
         m_weakDialog.data()->deleteLater();
-//        m_weakDialog.clear();
-//        delete m_weakDialog;
     }
 }
 
@@ -101,8 +100,7 @@ UiContainer::~UiContainer()
 unsigned int UiOrganizer::autoIncUiDialogCounter = 1;
 unsigned int UiOrganizer::autoIncObjectCounter = 1;
 
-namespace ito
-{
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! constructor

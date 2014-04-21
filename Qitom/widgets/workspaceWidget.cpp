@@ -27,6 +27,9 @@
 #include "../ui/dialogVariableDetail.h"
 #include <qstringlist.h>
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class WorkspaceWidget
@@ -77,7 +80,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
         'ellipsis', 'traceback', 'frame', 'other']*/
 
     m_workspaceContainer = new ito::PyWorkspaceContainer(m_globalNotLocal);
-    connect(m_workspaceContainer,SIGNAL(updateAvailable(ito::PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(ito::PyWorkspaceItem*,QString,QStringList)));
+    connect(m_workspaceContainer,SIGNAL(updateAvailable(PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(PyWorkspaceItem*,QString,QStringList)));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int))); //when double-clicking on an item, its content is showed in DialogVariableDetail-Dialog
     connect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
 }
@@ -86,7 +89,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
 //! destructor
 WorkspaceWidget::~WorkspaceWidget()
 {
-    disconnect(m_workspaceContainer,SIGNAL(updateAvailable(ito::PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(ito::PyWorkspaceItem*,QString,QStringList)));
+    disconnect(m_workspaceContainer,SIGNAL(updateAvailable(PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(PyWorkspaceItem*,QString,QStringList)));
     m_workspaceContainer->deleteLater();
     disconnect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
     disconnect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
@@ -171,7 +174,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WorkspaceWidget::workspaceContainerUpdated(ito::PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames)
+void WorkspaceWidget::workspaceContainerUpdated(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames)
 {
     QTreeWidgetItem *parent = NULL;
     QTreeWidgetItem *temp;
@@ -328,5 +331,7 @@ void WorkspaceWidget::itemCollapsed(QTreeWidgetItem* item)
     m_workspaceContainer->m_expandedFullNames.remove(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
 }
+
+} //end namespace ito
 
 

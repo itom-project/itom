@@ -30,6 +30,9 @@
 
 #include "ui_dialogReloadModule.h"
 
+namespace ito
+{
+
 class DialogReloadModule : public QDialog 
 {
     Q_OBJECT
@@ -59,5 +62,7 @@ public slots:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

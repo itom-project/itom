@@ -26,12 +26,15 @@
 #include "abstractPropertyPageWidget.h"
 
 #include <qlistwidget.h>
-
-#include <QtGui>
+#include <qwidget.h>
+#include <qstring.h>
 
 #include "../organizer/qsciApiManager.h"
 
 #include "ui_widgetPropEditorAPI.h"
+
+namespace ito
+{
 
 class WidgetPropEditorAPI : public AbstractPropertyPageWidget
 {
@@ -65,5 +68,7 @@ private slots:
     void on_btnRemove_clicked();
 
 };
+
+} //end namespace ito
 
 #endif

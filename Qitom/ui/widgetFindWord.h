@@ -23,10 +23,13 @@
 #ifndef WIDGETFINDWORD_H
 #define WIDGETFINDWORD_H
 
-#include <QtGui>
 #include <qwidget.h>
+#include <qstring.h>
 
 #include "ui_widgetFindWord.h"
+
+namespace ito
+{
 
 class WidgetFindWord : public QWidget 
 {
@@ -57,5 +60,7 @@ public slots:
 signals:
     void findNext(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward = true, bool isQuickSeach = true);
 };
+
+} //end namespace ito
 
 #endif

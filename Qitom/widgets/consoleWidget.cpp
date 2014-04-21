@@ -30,6 +30,9 @@
 //#include "../widgets/lastCommandDockWidget.h"
 //#include "../widgets/mainWindow.h"
 
+namespace ito
+{
+
 //!< constants
 const QString ConsoleWidget::lineBreak = QString("\n");
 
@@ -1363,3 +1366,5 @@ QString DequeCommandList::getNext()
         return QString();
     }
 }
+
+} //end namespace ito

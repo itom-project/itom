@@ -33,17 +33,36 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
+#include <qmetaobject.h>
 
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprinter.h>
 #else
-    #include <Qt/qprinter.h>
+    #include <qprinter.h>
 #endif
+
 #include <Qsci/qsciprinter.h>
 
 QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
+
+
+
+namespace ito
+{
+
+struct ScriptEditorStorage
+{
+    QByteArray  filename;
+    int         firstVisibleLine;
+    QList<int>  bookmarkLines;
+};
+
+}
+
+Q_DECLARE_METATYPE(ito::ScriptEditorStorage) //must be outside of namespace
+Q_DECLARE_METATYPE(QList<ito::ScriptEditorStorage>) //must be outside of namespace
 
 namespace ito
 {
@@ -51,7 +70,6 @@ namespace ito
 class ScriptEditorWidget : public AbstractPyScintillaWidget
 {
     Q_OBJECT
-
 
 public:
     ScriptEditorWidget(QWidget* parent = NULL);
@@ -70,6 +88,9 @@ public:
 
     RetVal setCursorPosAndEnsureVisible(int line);
 
+    const ScriptEditorStorage saveState() const;
+    RetVal restoreState(const ScriptEditorStorage &data);
+
 protected:
     //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
@@ -87,6 +108,13 @@ private:
         msgTextInfo,
         msgTextWarning,
         msgTextError
+    };
+
+    enum markerType
+    {   
+        markerBookmark = 1,
+        markerPyBug = 2,
+        markerBookmarkAndPyBug = markerBookmark | markerPyBug
     };
 
     RetVal initEditor();
@@ -115,7 +143,7 @@ private:
     QMutex fileSystemWatcherMutex;
 
     //!< marker handling
-    struct bookmarkErrorEntry
+    struct BookmarkErrorEntry
     {
         int handle;
         int type;
@@ -123,7 +151,7 @@ private:
         QString errorComment;
         int errorPos;
     };
-    QList<bookmarkErrorEntry> bookmarkErrorHandles;
+    QList<BookmarkErrorEntry> bookmarkErrorHandles;
     int syntaxErrorHandle;
 
     bool m_syntaxCheckerEnabled;

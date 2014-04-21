@@ -25,9 +25,12 @@
 
 #include "abstractPropertyPageWidget.h"
 
-#include <QtGui>
+#include <qwidget.h>
 
 #include "ui_widgetPropConsoleLastCommand.h"
+
+namespace ito
+{
 
 class WidgetPropConsoleLastCommand: public AbstractPropertyPageWidget
 {
@@ -45,12 +48,8 @@ protected:
 private:
     Ui::WidgetPropConsoleLastCommand ui;
     
-signals:
-
-public slots:
-
-private slots:
-
 };
+
+} //end namespace ito
 
 #endif

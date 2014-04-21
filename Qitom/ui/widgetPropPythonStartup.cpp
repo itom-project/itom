@@ -31,7 +31,8 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-
+namespace ito
+{
 
 WidgetPropPythonStartup::WidgetPropPythonStartup(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -124,3 +125,5 @@ void WidgetPropPythonStartup::on_listWidget_itemActivated(QListWidgetItem* item)
         ui.listWidget->editItem(item);
     }
 }
+
+} //end namespace ito

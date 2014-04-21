@@ -25,7 +25,8 @@
 #include <qicon.h>
 #include <qfileinfo.h>
 
-using namespace ito;
+namespace ito
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor
@@ -1394,3 +1395,5 @@ bool PlugInModel::resetModel(bool beginOperation)
     }
     return true;
 }
+
+} //end namespace ito

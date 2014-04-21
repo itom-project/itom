@@ -23,13 +23,14 @@
 #ifndef DIALOGGOTO_H
 #define DIALOGGOTO_H
 
-#include <QtGui>
 #include <qdialog.h>
+#include <qstring.h>
 
 #include "ui_dialogGoto.h"
 #include "itomSpinBox.h"
 
-
+namespace ito
+{
 
 class DialogGoto : public QDialog 
 {
@@ -54,5 +55,7 @@ private slots:
     void on_radioChar_clicked();
 
 };
+
+} //end namespace ito
 
 #endif
