@@ -31,7 +31,8 @@
 #include <qstring.h>
 #include <QDebug>
 
-using namespace ito;
+
+namespace ito {
 
 //! item of BreakPointModel
 /*! 
@@ -52,6 +53,13 @@ struct BreakPointItem
     int pythonDbgBpNumber;  /*!<  corresponding breakpoint number in the python debugger */
 };
 
+} //end namespace ito
+
+Q_DECLARE_METATYPE(ito::BreakPointItem) //must be outside of namespace
+
+namespace ito
+{
+
 
 
 class BreakPointModel : public QAbstractItemModel
@@ -61,6 +69,9 @@ class BreakPointModel : public QAbstractItemModel
 public:
     BreakPointModel();
     ~BreakPointModel();
+
+    RetVal saveState();
+    RetVal restoreState();
 
     QVariant data(const QModelIndex &index, int role) const;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -106,6 +117,8 @@ signals:
     void breakPointDeleted(QString filename, int lineNo, int pyBpNumber);   /*!<  emitted if breakpoint in file filename at line lineNo with python internal debugger number has been deleted from model */
     void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     /*!<  emitted if breakpoint oldBp has been changed to newBp */
 };
+
+} //end namespace ito
 
 
 #endif
