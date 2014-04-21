@@ -22,7 +22,7 @@
 
 #include "breakPointModel.h"
 
-#include "../appManagement.h"
+#include "../AppManagement.h"
 
 #include <algorithm>
 
