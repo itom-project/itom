@@ -32,6 +32,7 @@
         <file alias="localDatabase">icons/localDatabase.png</file>
         <file alias="upToDate">icons/upToDate.png</file>
         <file alias="downloadUpdate">icons/downloadUpdate.png</file>
+      <file alias="deleteDatabase">icons/delete_database.png</file>
 
     </qresource>
     <qresource prefix="/application">

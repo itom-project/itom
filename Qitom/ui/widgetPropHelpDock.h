@@ -30,6 +30,7 @@
 #include "ui_widgetPropHelpDock.h"
 #include "helper\fileDownloader.h"
 #include <qlist.h>
+#include <qdir.h>
 
 class WidgetPropHelpDock: public AbstractPropertyPageWidget
 {
@@ -62,7 +63,8 @@ private:
         int         schemeID;
         QString     name;
         QString     date;
-        QString     path;
+        QFileInfo   path;
+        QUrl        url;
     };
 
     // Functions
@@ -87,7 +89,9 @@ private:
     QString m_pdbPath;
     bool m_listChanged;
     bool m_treeIsUpdating;
-    QString m_serverAdress;
+    bool m_downloadTimeoutReached;
+    int  m_downloadTimeout;
+    QUrl m_serverAdress;
 
     // Lists and Co
     QMap< int, DatabaseInfo > existingDBs;
@@ -114,10 +118,13 @@ private slots:
     void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);
     void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
+    void on_spinTimeout_valueChanged(int i);
     void refreshButtonClicked();
     void mnuDownloadUpdate();
     void mnuLocateOnDisk();
+    void mnuRemoveDatabase();
     void treeWidgetContextMenuRequested(const QPoint &pos);
+    void downloadTimeoutReached();
 };
 
 #endif

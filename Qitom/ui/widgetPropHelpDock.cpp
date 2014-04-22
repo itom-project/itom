@@ -31,10 +31,13 @@
 #include <qxmlstream.h>
 #include <global.h>
 
+// Constructor
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
-    m_pdbPath(qApp->applicationDirPath()+"/help/")
+    m_pdbPath(qApp->applicationDirPath()+"/help/"),
+    m_downloadTimeout(10000),
+    m_downloadTimeoutReached(false)
 {
     ui.setupUi(this);
     m_listChanged = false;
@@ -55,14 +58,17 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     ui.treeWidgetDB->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(ui.treeWidgetDB, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
+    connect(ui.spinTimeout, SIGNAL(valueChanged(int)), this, SLOT(on_spinTimeout_valueChanged(int)));
 }
 
+// Destructor
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropHelpDock::~WidgetPropHelpDock()
 {
 
 }
 
+// Checkbox changed 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
 {
@@ -72,12 +78,14 @@ void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
         ui.treeWidgetDB->setEnabled(false);
 }
 
+// Checkbox changed
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkFilters_stateChanged (int state)
 {
     ui.label->show();
 }
 
+// Checkbox changed
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int column)
 {
@@ -90,6 +98,7 @@ void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int 
     }
 }
 
+// get settings from ini
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::readSettings()
 {
@@ -103,6 +112,9 @@ void WidgetPropHelpDock::readSettings()
     ui.checkDataIO->setChecked( settings.value("showDataIO", false).toBool() );
     ui.checkModules->setChecked( settings.value("showModules", false).toBool() );
     ui.lineEdit->setText( settings.value("serverAdress", "").toString());
+    m_downloadTimeout = settings.value("downloadTimeout", 10000).toInt();
+    ui.spinTimeout->setValue(m_downloadTimeout/1000);
+
     if (ui.checkModules->isChecked())
         ui.treeWidgetDB->setEnabled(true);
     else
@@ -123,6 +135,7 @@ void WidgetPropHelpDock::readSettings()
     //refreshButtonClicked();
 }
 
+// set settings from ini
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::writeSettings()
 {
@@ -137,6 +150,7 @@ void WidgetPropHelpDock::writeSettings()
     settings.setValue("showDataIO"  , ui.checkDataIO->isChecked());
     settings.setValue("showModules" , ui.checkModules->isChecked());
     settings.setValue("serverAdress", ui.lineEdit->text());
+    settings.setValue("downloadTimeout", m_downloadTimeout);
 
     // Write the checkstate with the List into the ini File
     settings.beginWriteArray("Databases");
@@ -155,12 +169,18 @@ void WidgetPropHelpDock::writeSettings()
     settings.endGroup();
 }
 
+// ui Spinbox for timeout changed
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::on_spinTimeout_valueChanged(int i)
+{
+    m_downloadTimeout = i*1000;
+}
 
 // All about the Databases and online updates
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::refreshButtonClicked()
 {// This button is also automatically clicked when the option dialog is started
-    m_serverAdress = ui.lineEdit->text();
+    m_serverAdress.setUrl(ui.lineEdit->text());
 
     // Update both Databases
     refreshExistingDBs();
@@ -201,7 +221,8 @@ void WidgetPropHelpDock::refreshExistingDBs()
                 item->version         = query.value(2).toInt();
                 item->date            = query.value(3).toString();
                 item->schemeID        = query.value(4).toInt();
-                item->path            = path;
+                item->path            = QFileInfo(path + QDir::separator());
+                item->url             = QUrl();
                 item->updateState     = stateUnknown;
                 // add to Map
                 existingDBs.insert(id, *item);
@@ -213,19 +234,33 @@ void WidgetPropHelpDock::refreshExistingDBs()
     setExistingDBsChecks();
 }
 
+// if download takes too long, this slot is called and the while loop is broken up
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::downloadTimeoutReached()
+{
+    m_downloadTimeoutReached = true;
+}
+
 // This block downlaods and refreshes the updatableDBs Map
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::refreshUpdatableDBs()
 {
-    QProgressDialog progress("Remote database update...", tr("Cancel"), 0, 100, this);
+    QProgressDialog progress("Remote database update...", tr("Cancel"), 0, 101, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(0);
 
-    FileDownloader *downloader = new FileDownloader(QUrl(m_serverAdress + m_xmlFileName), 5, this);
+    FileDownloader *downloader = new FileDownloader(QUrl(m_serverAdress.toString() + m_xmlFileName), 5, this);
     FileDownloader::Status status = FileDownloader::sRunning; //0: still running, 1: ok, 2: error, 3: cancelled
     QString errorMsg;
     bool dbFound = false;
     QString dbError;
+
+    // Download-timeout
+    QTimer *timeoutTimer = new QTimer(this);
+    connect(timeoutTimer, SIGNAL(timeout()), this, SLOT(downloadTimeoutReached()));
+    timeoutTimer->setSingleShot(true);
+    m_downloadTimeoutReached = false;
+    timeoutTimer->start(m_downloadTimeout);
 
     while(status == FileDownloader::sRunning)
     {
@@ -242,7 +277,16 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
 
         QCoreApplication::processEvents();
 
+        if (m_downloadTimeoutReached)
+        {
+            status = FileDownloader::sError;
+            errorMsg = "Timeout: Server is not responding in time";
+            break;
+        }
     }
+    timeoutTimer->stop();
+    timeoutTimer->deleteLater();
+
     // first of all, clear the old List
     updatableDBs.clear();
 
@@ -254,15 +298,12 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
         while(!xml.atEnd() && !xml.hasError()) 
         {
             QXmlStreamReader::TokenType token = xml.readNext();
-            /* If token is just StartDocument, we'll go to next.*/
             if(token == QXmlStreamReader::StartDocument) 
             {
                 continue;
             }
-            /* If token is StartElement, we'll see if we can read it.*/
             if(token == QXmlStreamReader::StartElement) 
             {
-                /* If it's named persons, we'll go to the next.*/
                 if(xml.name() == "databases") 
                 {
                     if (xml.attributes().hasAttribute("type"))
@@ -319,13 +360,14 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
         } 
     }
 
-      
-    
     if (status == FileDownloader::sError)
     {
         showErrorMessage(errorMsg);
     }
     
+    // finish progressWindow
+    progress.setValue(101);
+
     // Clean up
     downloader->deleteLater();
 
@@ -333,12 +375,12 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
     compareDatabaseVersions();
 }
 
-
+// Parse the xml Elements and return each as pair
+//----------------------------------------------------------------------------------------------------------------------------------
 QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml) 
 {
     QPair<int, WidgetPropHelpDock::DatabaseInfo> file;
     int id = 0;
-    /* Let's check that we're really getting a person. */
     if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file") 
     {
         return file;
@@ -354,6 +396,7 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
     }
     /* Next element... */
     xml.readNext();
+    int timeOut = 10;
     while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "file")) 
     {
         if(xml.tokenType() == QXmlStreamReader::StartElement) 
@@ -378,11 +421,19 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
                 xml.readNext();
                 appendedItem->schemeID = xml.text().toString().toInt();
             }
-            else if(xml.name() == "path")
+            else if(xml.name() == "url")
             {
                 xml.readNext();
-                appendedItem->path = xml.text().toString();
+                appendedItem->url = QUrl(xml.text().toString());
             }
+        }
+        else if(timeOut <= 0)
+        {
+            break;
+        }
+        else
+        {
+            --timeOut;
         }
         /* ...and next... */
         xml.readNext();
@@ -392,6 +443,7 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
     return file;
 }
 
+// Sets the text in the last column of the tree (update available etc)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
 {
@@ -438,6 +490,7 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
     }
 }
 
+// Updates the treeWidget from the two maps (existingDBs / updatableDBs)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::updateTreeWidget()
 {
@@ -469,7 +522,7 @@ void WidgetPropHelpDock::updateTreeWidget()
         newWidget->setText(2, i->date);
         newWidget->setData(0, m_urID, i.key());
         newWidget->setData(0, m_urUD, i->updateState);
-        newWidget->setData(0, m_urFD, i->path);
+        newWidget->setData(0, m_urFD, i->path.path());
         if (i->isChecked == true)
         {
             newWidget->setCheckState(0, Qt::Checked);
@@ -519,6 +572,7 @@ void WidgetPropHelpDock::updateTreeWidget()
     m_treeIsUpdating = false;
 }
 
+// Compares the two maps and sets their update/download status
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::compareDatabaseVersions()
 {
@@ -585,8 +639,7 @@ void WidgetPropHelpDock::updateCheckedIdList()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//
+// Checkstate of a DB changes
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::setExistingDBsChecks()
 {
@@ -603,8 +656,6 @@ void WidgetPropHelpDock::setExistingDBsChecks()
         }
     }
 }
-
-
 
 // Hint-Information (path and url)
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -626,15 +677,24 @@ bool WidgetPropHelpDock::event (QEvent * event)
     return AbstractPropertyPageWidget::event(event);
 }
 
-
 // Update-Context-Menu
 
+// Show error Message
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::showErrorMessage(const QString &error)
+{
+    QMessageBox::warning(this, tr("download error"), error);
+}
+
+// init DropdownMenu
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::initMenus()
 {
     m_pContextMenu = new QMenu(this);
     contextMenuActions["update"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/downloadUpdate"), tr("&update"), this, SLOT(mnuDownloadUpdate()));
     contextMenuActions["locateOnDisk"] = m_pContextMenu->addAction(QIcon(":/files/icons/browser.png"), tr("locate on disk"), this, SLOT(mnuLocateOnDisk()));
+    contextMenuActions["removeDatabase"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/deleteDatabase"), tr("remove from disk"), this, SLOT(mnuRemoveDatabase()));
+
 
     connect(m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 }
@@ -646,15 +706,25 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
     QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
     if (item != NULL)
     {
-        QString localPath = existingDBs[item->data(0, m_urID).toInt()].path;
-        QProgressDialog progress(tr("Remote database update..."), tr("Cancel"), 0, 100, this);
+        QFileInfo oldFile = existingDBs[item->data(0, m_urID).toInt()].path;
+        QProgressDialog progress(tr("Remote database update..."), tr("Cancel"), 0, 101, this);
         progress.setWindowModality(Qt::WindowModal);
         progress.setMinimumDuration(0);
 
-        QString url = /*m_serverAdress + */updatableDBs[item->data(0, m_urID).toInt()].path;
-        FileDownloader *downloader = new FileDownloader(QUrl(url), 5, this);
+        QUrl url = /*m_serverAdress + */updatableDBs[item->data(0, m_urID).toInt()].url;
+        QString Test1 = url.toString();
+        QString Test3 = oldFile.absolutePath();
+        QString Test4 = oldFile.absoluteFilePath();
+        FileDownloader *downloader = new FileDownloader(url, 5, this);
         FileDownloader::Status status = FileDownloader::sRunning; //0: still running, 1: ok, 2: error, 3: cancelled
         QString errorMsg;
+
+        // Download-timeout
+        QTimer *timeoutTimer = new QTimer(this);
+        connect(timeoutTimer, SIGNAL(timeout()), this, SLOT(downloadTimeoutReached()));
+        timeoutTimer->setSingleShot(true);
+        m_downloadTimeoutReached = false;
+        timeoutTimer->start(m_downloadTimeout);
 
         while(status == FileDownloader::sRunning)
         {
@@ -668,26 +738,37 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
                 progress.setValue(downloader->getDownloadProgress());
                 status = downloader->getStatus(errorMsg);
             }
+            
             QCoreApplication::processEvents();
+        
+            if (m_downloadTimeoutReached)
+            {
+                status = FileDownloader::sError;
+                errorMsg = tr("Timeout: Server is not responding in time");
+                break;
+            }
         }
+        timeoutTimer->stop();
+        timeoutTimer->deleteLater();
 
         // Replace old Database with Downloaded
         if (status == FileDownloader::sFinished)
         {
             QString newLocalPath;
-            url = url.left(url.lastIndexOf("/"));
+            
+            //url = url.left(url.lastIndexOf("/"));
             // Downlaod Finished, Safe File
-            if (QFile::exists(localPath))
+            if (oldFile.exists())
             {
-                newLocalPath = localPath.left(localPath.lastIndexOf("/"))+url.right(url.length()-url.lastIndexOf("/"));
-                if (!QFile::remove(localPath))
+                newLocalPath = oldFile.path() + existingDBs[item->data(0, m_urID).toInt()].name + ".db";//url.right(url.length()-url.lastIndexOf("/"));
+                if (!QFile::remove(oldFile.path()))
                 {
                     showErrorMessage(tr("Could not delete old local version of Database"));
                 }
             }
             else 
             {
-                newLocalPath = m_pdbPath + url.right(url.length()-url.lastIndexOf("/")-1);
+                newLocalPath = m_pdbPath + updatableDBs[item->data(0, m_urID).toInt()].name + ".db";//right(url.length()-url.lastIndexOf("/")-1);
             }
             QFile file(newLocalPath);
             file.open(QIODevice::WriteOnly);
@@ -701,15 +782,16 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
         {
             showErrorMessage(errorMsg);
         }
+
+        // finish progressWindow
+        progress.setValue(101);
+
+        // CleanUp
         downloader->deleteLater();
     }
 }
 
-void WidgetPropHelpDock::showErrorMessage(const QString &error)
-{
-    QMessageBox::warning(this, tr("download error"), error);
-}
-
+// Locate on disc button on Database clicked
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::mnuLocateOnDisk()
 {
@@ -720,6 +802,17 @@ void WidgetPropHelpDock::mnuLocateOnDisk()
     }
 }
 
+void WidgetPropHelpDock::mnuRemoveDatabase()
+{
+    QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
+    if (item != NULL)
+    {
+        QFile::remove(item->data(0, m_urFD).toString());
+        refreshButtonClicked();
+    }
+}
+
+// Highlights a file in the explorer when mnuLocateOnDisc is clicked
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 {
@@ -744,6 +837,7 @@ void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 #endif
 }
 
+// ContextMenu pops up
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
 {
@@ -755,25 +849,28 @@ void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
     {
         if (selItem->data(0, m_urUD) == stateDownloadAvailable)
         {
-            contextMenuActions["locateOnDisk"]->setEnabled(false);
             contextMenuActions["update"]->setEnabled(true);
             contextMenuActions["update"]->setText("downlaod");
+            contextMenuActions["locateOnDisk"]->setEnabled(false);
+            contextMenuActions["removeDatabase"]->setEnabled(false);
             m_pContextMenu->exec(global);
         }
         else if (selItem->data(0, m_urUD) == stateUpdateAvailable)
         {
-            contextMenuActions["locateOnDisk"]->setEnabled(true);
             contextMenuActions["update"]->setEnabled(true);
             contextMenuActions["update"]->setText("update");
+            contextMenuActions["locateOnDisk"]->setEnabled(true);
+            contextMenuActions["removeDatabase"]->setEnabled(true);
             m_pContextMenu->exec(global);
         }
         else if (selItem->data(0, m_urUD) == stateUnknown ||
                  selItem->data(0, m_urUD) == stateUpdateAvailable ||
                  selItem->data(0, m_urUD) == stateUpToDate)
         {
-            contextMenuActions["locateOnDisk"]->setEnabled(true);
             contextMenuActions["update"]->setEnabled(false);
             contextMenuActions["update"]->setText("update");
+            contextMenuActions["locateOnDisk"]->setEnabled(true);
+            contextMenuActions["removeDatabase"]->setEnabled(true);
             m_pContextMenu->exec(global);
         }
     }
