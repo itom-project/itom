@@ -151,7 +151,7 @@ ScriptDockWidget::~ScriptDockWidget()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QVariant ScriptDockWidget::saveScriptState() const
+QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
 {
     QList<ito::ScriptEditorStorage> state;
     ScriptEditorWidget *sew;
@@ -169,28 +169,14 @@ QVariant ScriptDockWidget::saveScriptState() const
         }
     }
     
-    return QVariant::fromValue<QList<ito::ScriptEditorStorage> >(state);
+    return state;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptDockWidget::restoreScriptState(const QVariant &state)
+RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage> &states)
 {
     RetVal retVal;
-    QList<ito::ScriptEditorStorage> states;
-
-    if (state.canConvert<ito::ScriptEditorStorage>())
-    {
-        states << state.value<ito::ScriptEditorStorage>();
-    }
-    else if (state.canConvert<QList<ito::ScriptEditorStorage> >())
-    {
-        states = state.value<QList<ito::ScriptEditorStorage> >();
-    }
-    else
-    {
-        retVal += RetVal(retError,0,"missaligned data");
-    }
-
+    
     if (!retVal.containsError())
     {
         foreach(const ito::ScriptEditorStorage &ses, states)

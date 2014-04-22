@@ -59,8 +59,6 @@ namespace ito
 */
 BreakPointModel::BreakPointModel() : QAbstractItemModel()
 {
-    qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
-
     m_headers   << tr("filename")          << tr("line")               << tr("condition")         << tr("temporary")            << tr("enabled")              << tr("ignore count")       << tr("py bp nr");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
 }

@@ -28,9 +28,9 @@
 
 namespace ito
 {
-QDataStream &operator<<(QDataStream &out, const ScriptEditorStorage &obj); 
+QDataStream &operator<<(QDataStream &out, const ito::ScriptEditorStorage &obj); 
 
-QDataStream &operator>>(QDataStream &in, ScriptEditorStorage &obj); 
+QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj); 
 
 class ScriptEditorOrganizer : public QObject
 {
@@ -42,10 +42,13 @@ public:
     RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false);
     RetVal closeAllScripts(bool saveFirst);
 
+    void saveScriptState();
+    RetVal restoreScriptState();
+
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked);
 
-    void saveScriptState();
+    
 
 private:
     ScriptDockWidget* getFirstDockedElement();

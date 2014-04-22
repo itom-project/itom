@@ -63,8 +63,8 @@ public:
     bool activateTabByFilename(QString filename, int line = -1);
     bool activeTabEnsureLineVisible(int lineNr);
 
-    QVariant saveScriptState() const;
-    RetVal restoreScriptState(const QVariant &state);
+    QList<ito::ScriptEditorStorage> saveScriptState() const;
+    RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
 
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;

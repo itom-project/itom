@@ -61,6 +61,7 @@ class MainApplication : public QObject
         static MainApplication* instance();
 
     protected:
+        void registerMetaObjects();
 
     private:
         tGuiType m_guiType;                                   /*!<  member for the desired gui-type */
