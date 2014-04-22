@@ -1566,7 +1566,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 {
     if (filename == getFilename() && filename != "")
     {
-                std::list<QPair<int, int> >::iterator it;
+        std::list<QPair<int, int> >::iterator it;
 
         it=breakPointMap.begin();
 

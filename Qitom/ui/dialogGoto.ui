@@ -46,7 +46,7 @@
     </widget>
    </item>
    <item>
-    <widget class="ItomSpinBox" name="spinValue"/>
+    <widget class="ito::ItomSpinBox" name="spinValue"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="btnBox">
@@ -62,7 +62,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ItomSpinBox</class>
+   <class>ito::ItomSpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">ui/itomSpinBox.h</header>
   </customwidget>

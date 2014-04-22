@@ -30,6 +30,9 @@
 
 #include "ui_dialogAbout.h"
 
+namespace ito
+{
+
 class DialogAboutQItom : public QDialog 
 {
     Q_OBJECT
@@ -51,5 +54,7 @@ class DialogAboutQItom : public QDialog
         void on_pushButton_close_clicked();
 
 };
+
+} //end namespace ito
 
 #endif // DIALOGABOUTQITOM

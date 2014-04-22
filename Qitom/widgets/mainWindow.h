@@ -41,13 +41,10 @@
 #include "../organizer/helpSystem.h"
 
 #include <qsharedpointer.h>
-//
-//#include "../memoryCheck/setDebugNew.h"
-//#include "../memoryCheck/reportingHook.h"
-
-class WidgetInfoBox; //forward declaration
 
 namespace ito {
+
+class WidgetInfoBox; //forward declaration
 
 class MainWindow : public QMainWindow
 {
@@ -170,12 +167,6 @@ private slots:
     void mnuScriptStepOut();
     void mnuPyReloadModules();
     void mnuShowLoadedPlugins();
-
-    /*void mnuTest()
-    {
-        ScriptWindow *s = new ScriptWindow(this);
-        s->show();
-    }*/
 
     void helpAssistantError ( QProcess::ProcessError error );
     void designerError ( QProcess::ProcessError error );

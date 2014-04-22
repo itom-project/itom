@@ -168,15 +168,9 @@ void MainApplication::setupApplication()
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
-        char *oldpath = getenv("path");
-        char *newpath = (char*)malloc(strlen(oldpath) + p.size() + 10);
-        newpath[0] = 0;
-        strcat(newpath, "path=");
-        strcat(newpath, p.toLatin1().data()); //set libDir at the beginning of the path-variable
-        strcat(newpath, ";");
-        strcat(newpath, oldpath);
-        _putenv(newpath);
-        free(newpath);
+        QByteArray oldpath = getenv("path");
+        QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
+        _putenv(newpath.data());
     }
 #endif
 
