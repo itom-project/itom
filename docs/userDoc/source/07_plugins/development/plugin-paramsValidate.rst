@@ -7,8 +7,8 @@
 Parameters - Validation
 =======================
 
-If a default-parameter (or let's say template) is given in form of an instance of class **Param** and have now a value in form of an instance
-of class **ParamBase**, you might be interested if the new value fits to the type and optionally the restrictions given by meta information of
+If a default-parameter (or let's say template) is given in form of an instance of class :cpp:class:`ito::Param` and have now a value in form of an instance
+of class **ito::ParamBase**, you might be interested if the new value fits to the type and optionally the restrictions given by meta information of
 the template.
 
 Therefore, the class **ParamHelper** (folder *helper*) provide method to validate ParamBase-instances with respect to a given meta information
@@ -32,28 +32,28 @@ meta information.
     If it does not fit, *retError* is returned with an appropriate error message. If argument *mandatory* is false, *retOk* is also returned
     if the string is not given, hence, value is an empty string.
     
-    **API-Call:** ito::RetVal ito::itoValidateStringMeta(-same arguments-)
+    **API-Call:** ito::RetVal apiValidateStringMeta(-same arguments-)
 
 .. c:function:: static ito::RetVal validateDoubleMeta(const ito::DoubleMeta *meta, double value)
     
     This methods checks whether the number 'value' does not exceed the boundaries given by the double meta information 'meta'.
     If this is not the case *retError* with appropriate error message is returned, else *retOk*.
     
-    **API-Call:** ito::RetVal ito::itoValidateDoubleMeta(-same arguments-)
+    **API-Call:** ito::RetVal apiValidateDoubleMeta(-same arguments-)
 
 .. c:function:: static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value)
     
     This methods checks whether the number 'value' does not exceed the boundaries given by the integer meta information 'meta'.
     If this is not the case *retError* with appropriate error message is returned, else *retOk*.
     
-    **API-Call:** ito::RetVal ito::itoValidateIntMeta(-same arguments-)
+    **API-Call:** ito::RetVal apiValidateIntMeta(-same arguments-)
 
 .. c:function:: static ito::RetVal validateCharMeta(const ito::CharMeta *meta, double value)
     
     This methods checks whether the number 'value' does not exceed the boundaries given by the char meta information 'meta'.
     If this is not the case *retError* with appropriate error message is returned, else *retOk*.
     
-    **API-Call:** ito::RetVal ito::itoValidateCharMeta(-same arguments-)
+    **API-Call:** ito::RetVal apiValidateCharMeta(-same arguments-)
 
 .. c:function:: static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false)
     
@@ -61,7 +61,7 @@ meta information.
     information struct. If this is the case *retOk* is returned, else *retError* with an appropriate error message. If 'value'
     is NULL *retOk* is only returned if argument 'mandatory' is *false*.
     
-    **API-Call:** ito::RetVal ito::itoValidateHWMeta(-same arguments-)
+    **API-Call:** ito::RetVal apiValidateHWMeta(-same arguments-)
 
 .. c:function:: static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false)
     
@@ -69,5 +69,5 @@ meta information.
     If 'strict' is *false*, the type is tried to be converted to type of 'templateParam' if possible. The 'mandatory' parameter is redirected to
     the corresponding validation methods above as therefore has the same meaning.
     
-    **API-Call:** -not yet provided-
+    **API-Call:** ito::RetVal apiValidateParam(-same arguments-)
 

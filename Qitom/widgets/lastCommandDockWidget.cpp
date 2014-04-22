@@ -122,8 +122,10 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
 //            childItem->setTextColor(0, QColor(0x80000008));  // Color of text in windows
             parentItem->addChild(childItem);
         }
+
+        settings.endArray();
     }
-    settings.endArray();
+    
     settings.endGroup();
 
     m_lastCommandTreeWidget->setItemsExpandable(true);

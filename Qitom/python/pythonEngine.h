@@ -31,7 +31,9 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
-//#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
+#ifndef ITOM_NPDATAOBJECT
+    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
+#endif
 
 #ifndef Q_MOC_RUN
     //python
@@ -97,6 +99,9 @@
 class QDesktopWidget;
 class QTimer;
 
+namespace ito
+{
+
 class PythonEngine : public QObject
 {
     Q_OBJECT
@@ -111,10 +116,10 @@ public:
 
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
-    inline BreakPointModel *getBreakPointModel() const { return bpModel; }
-    inline bool isPythonBusy() const { return pythonState != pyStateIdle; }
-    inline bool isPythonDebugging() const { return (pythonState == pyStateDebuggingWaitingButBusy || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaiting); }
-    inline bool isPythonDebuggingAndWaiting() const { return pythonState == pyStateDebuggingWaiting; }
+    inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
+    inline bool isPythonBusy() const { return pythonState != ito::pyStateIdle; }
+    inline bool isPythonDebugging() const { return (pythonState == ito::pyStateDebuggingWaitingButBusy || pythonState == ito::pyStateDebugging || pythonState == ito::pyStateDebuggingWaiting); }
+    inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
 
@@ -134,14 +139,14 @@ public:
 
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
-    RetVal runPyFile(char* pythonFileName);         // run file pythonFileName
-    RetVal debugFile(char* pythonFileName);         // debug file pythonFileName
-    RetVal runString(const char *command);          // run string command
-    RetVal debugString(const char *command);        // debug string command
-    RetVal debugFunction(PyObject *callable, PyObject *argTuple);
-    RetVal runFunction(PyObject *callable, PyObject *argTuple);
+    ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
+    ito::RetVal debugFile(const QString &pythonFileName);         // debug file pythonFileName
+    ito::RetVal runString(const QString &command);          // run string command
+    ito::RetVal debugString(const QString &command);        // debug string command
+    ito::RetVal debugFunction(PyObject *callable, PyObject *argTuple);
+    ito::RetVal runFunction(PyObject *callable, PyObject *argTuple);
 
-    RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
+    ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
 private:
     static PythonEngine *getInstanceInternal();
@@ -155,28 +160,28 @@ private:
 
     void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict);
 
-    RetVal pickleDictionary(PyObject *dict, QString filename);
-    RetVal unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite);
-    RetVal saveDictAsMatlab(PyObject *dict, QString filename);
-    RetVal loadMatlabToDict(PyObject *destinationDict, QString filename);
+    ito::RetVal pickleDictionary(PyObject *dict, QString filename);
+    ito::RetVal unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite);
+    ito::RetVal saveDictAsMatlab(PyObject *dict, QString filename);
+    ito::RetVal loadMatlabToDict(PyObject *destinationDict, QString filename);
 
     //methods for maintaining python functionality
-    RetVal addMethodToModule(PyMethodDef* def);
-    RetVal delMethodFromModule(const char* ml_name);
-    RetVal pythonAddBuiltinMethods();
+    ito::RetVal addMethodToModule(PyMethodDef* def);
+    ito::RetVal delMethodFromModule(const char* ml_name);
+    ito::RetVal pythonAddBuiltinMethods();
 
     //methods for debugging
-    void enqueueDbgCmd(tPythonDbgCmd dbgCmd);
-    tPythonDbgCmd dequeueDbgCmd();
+    void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);
+    ito::tPythonDbgCmd dequeueDbgCmd();
     bool DbgCommandsAvailable();
     void clearDbgCmdLoop();
 
-    RetVal pythonStateTransition(tPythonTransitions transition);
+    ito::RetVal pythonStateTransition(tPythonTransitions transition);
 
     //methods for breakpoint
-    RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
-    RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
-    RetVal pythonDeleteBreakpoint(const int pyBpNumber);
+    ito::RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
+    ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
+    ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
 
     //member variables
     bool started;
@@ -187,12 +192,12 @@ private:
     QMutex pythonStateChangeMutex;
     QMutex dictChangeMutex;
     QDesktopWidget *m_pDesktopWidget;
-    QQueue<tPythonDbgCmd> debugCommandQueue;
-    tPythonDbgCmd debugCommand;
+    QQueue<ito::tPythonDbgCmd> debugCommandQueue;
+    ito::tPythonDbgCmd debugCommand;
     
-    tPythonState pythonState;
+    ito::tPythonState pythonState;
     
-    BreakPointModel *bpModel;
+    ito::BreakPointModel *bpModel;
 
     PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
     PyObject* mainDictionary;      //!< main dictionary of python [borrowed]
@@ -208,8 +213,8 @@ private:
 
     PyObject *dictUnicode;
 
-    QSet<PyWorkspaceContainer*> m_mainWorkspaceContainer;
-    QSet<PyWorkspaceContainer*> m_localWorkspaceContainer;
+    QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
+    QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
     QHash<QString, QPair<PyObject*,PyObject*> > m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
     int m_pyFuncWeakRefHashesAutoInc;
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
@@ -269,21 +274,21 @@ public slots:
     void breakPointAdded(BreakPointItem bp, int row);
     void breakPointDeleted(QString filename, int lineNo, int pyBpNumber);
     void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);
-    RetVal setupBreakPointDebugConnections();
-    RetVal shutdownBreakPointDebugConnections();
+    ito::RetVal setupBreakPointDebugConnections();
+    ito::RetVal shutdownBreakPointDebugConnections();
 
     bool renameVariable(bool globalNotLocal, QString oldKey, QString newKey, ItomSharedSemaphore *semaphore = NULL);
     bool deleteVariable(bool globalNotLocal, QStringList keys, ItomSharedSemaphore *semaphore = NULL);
-    RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
-    RetVal unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
-    RetVal saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
-    RetVal loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
-    RetVal registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore = NULL);
-    RetVal reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore = NULL);
 
     void registerWorkspaceContainer(PyWorkspaceContainer *container, bool registerNotUnregister, bool globalNotLocal);
-    void workspaceGetChildNode(ito::PyWorkspaceContainer *container, QString fullNameParentItem);
+    void workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem);
     void workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
     void putParamsToWorkspace(bool globalNotLocal, QStringList names, QVector<SharedParamBasePointer > values, ItomSharedSemaphore *semaphore = NULL);
@@ -292,6 +297,8 @@ public slots:
 private slots:
 
 };
+
+} //end namespace ito
 
 
 #endif

@@ -33,6 +33,9 @@
 #include <qmetaobject.h>
 #include <qtimer.h>
 
+namespace ito
+{
+
 DialogReloadModule::DialogReloadModule(QWidget* parent) :
     QDialog(parent)
 {
@@ -83,7 +86,7 @@ void DialogReloadModule::loadModules()
             QMessageBox::critical(this, tr("connection problem"), tr("No information about loaded modules could be retrieved by python."));
             enableUI(false);
         }
-        else if(locker.getSemaphore()->returnValue != retOk)
+        else if(locker.getSemaphore()->returnValue != ito::retOk)
         {
             if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
@@ -157,7 +160,7 @@ void DialogReloadModule::dialogAccepted()
         {
             QMessageBox::critical(this, tr("connection problem"), tr("Timeout while forcing python to reload modules."));
         }
-        else if(locker.getSemaphore()->returnValue != retOk)
+        else if(locker.getSemaphore()->returnValue != ito::retOk)
         {
             if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
@@ -219,3 +222,5 @@ void DialogReloadModule::filterItems()
         }
     }
 }
+
+} //end namespace ito

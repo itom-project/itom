@@ -25,6 +25,11 @@
 
 /* includes */
 #include <string>
+
+#ifndef ITOM_NPDATAOBJECT
+    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
+#endif
+
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before including global.h)
     #define NO_IMPORT_ARRAY

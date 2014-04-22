@@ -20,27 +20,52 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include <algorithm>
 #include "breakPointModel.h"
+
+#include "../AppManagement.h"
+
+#include <algorithm>
+
 
 #include <qfileinfo.h>
 #include <qsize.h>
+#include <qsettings.h>
+
+namespace ito
+{
+
+    QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj)
+    {
+        out << obj.filename << obj.lineno << obj.condition << obj.conditioned << obj.enabled << obj.ignoreCount << obj.temporary;
+        return out;
+    }
+
+    QDataStream &operator>>(QDataStream &in, BreakPointItem &obj)
+    {
+        obj.pythonDbgBpNumber = -1; //invalid, only valid if python is deubugging
+        in >> obj.filename >> obj.lineno >> obj.condition >> obj.conditioned >> obj.enabled >> obj.ignoreCount >> obj.temporary;
+        return in;
+    }
 
 /*!
     \class BreakPointModel
     \brief model for management of all breakpoints. This model will be displayed by a viewer-widget in the main window
 */
 
+//-------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
     initializes headers and its alignment
 */
 BreakPointModel::BreakPointModel() : QAbstractItemModel()
 {
+    qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+
     m_headers   << tr("filename")          << tr("line")               << tr("condition")         << tr("temporary")            << tr("enabled")              << tr("ignore count")       << tr("py bp nr");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! destructor
 BreakPointModel::~BreakPointModel()
 {
@@ -49,6 +74,63 @@ BreakPointModel::~BreakPointModel()
     m_breakpoints.clear();
 }
 
+//-------------------------------------------------------------------------------------------------------
+RetVal BreakPointModel::saveState()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    int counter = 0;
+    settings.beginGroup("BreakPointModel");
+
+    settings.beginWriteArray("breakPointStorage");
+
+    foreach(const BreakPointItem &item, m_breakpoints)
+    {
+        QFileInfo fi(item.filename);
+
+        if (fi.exists())
+        {
+            settings.setArrayIndex(counter++);
+            settings.setValue("item", QVariant::fromValue<BreakPointItem>(item));
+        }
+    }
+
+    settings.endArray();
+    settings.endGroup();
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------------------------
+RetVal BreakPointModel::restoreState()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("BreakPointModel");
+
+    int size = settings.beginReadArray("breakPointStorage");
+    for (int i = 0; i < size; ++i) 
+    {
+        settings.setArrayIndex(i);
+        QVariant v = settings.value("item");
+
+        if (v.canConvert<BreakPointItem>())
+        {
+            BreakPointItem item = v.value<BreakPointItem>();
+
+            QFileInfo fi(item.filename);
+            if (fi.exists())
+            {
+                addBreakPoint(item);
+            }
+        }
+    }
+
+    settings.endArray();
+    settings.endGroup();
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------------------------
 //! adds given breakpoint to model
 /*!
     if added, the signal breakPointAdded is emitted.
@@ -66,6 +148,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
     return RetVal(retOk);
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! delete breakpoint given by its QModelIndex
 /*!
     emits breakPointDeleted if deletion has been successfull.
@@ -91,6 +174,7 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! delete multiple breakpoints given by a list of QModelIndex
 /*!
     calls deleteBreakPoint method for each element of QModelIndexList
@@ -115,6 +199,7 @@ RetVal BreakPointModel::deleteBreakPoints(QModelIndexList indizes)
     return retValue;
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! counts number of breakpoints in this model
 /*!
     \return number of elements
@@ -124,6 +209,7 @@ int BreakPointModel::rowCount(const QModelIndex &/*parent*/) const
     return m_breakpoints.size();
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! counts number of columns in this model (corresponds to number of header-elements)
 /*!
     \return number of columns
@@ -133,6 +219,7 @@ int BreakPointModel::columnCount(const QModelIndex &/*parent*/) const
     return m_headers.size();
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! overwritten data method of QAbstractItemModel
 /*!
     data method will be called by View-Widget in order to fill the table.
@@ -224,6 +311,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns QModelIndex for given row and column
 /*!
     \param row row of desired entry, corresponds to index in m_breakpoints list
@@ -241,6 +329,7 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
     return createIndex(row, column);
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns parent of given QModelIndex
 /*!
     since this model is not a tree model, returns always an empty QModelIndex
@@ -250,7 +339,7 @@ QModelIndex BreakPointModel::parent(const QModelIndex &/*index*/) const
     return QModelIndex();
 }
 
-
+//-------------------------------------------------------------------------------------------------------
 //! returns header element at given position
 /*!
     \param section position in m_headers list
@@ -271,6 +360,7 @@ QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, i
     return QVariant();
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns QModelIndex for first breakpoint which is found in given filename and at given line number.
 /*!
     \param filename Filename of Python macro file
@@ -290,6 +380,7 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString filename, int
     return QModelIndex();
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns a list of QModelIndex for all breakpoints, which are registered in given file and at given line number.
 /*!
     \param filename Filename of python macro
@@ -310,6 +401,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename, in
     return list;
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns BreakPointItem for breakpoint being in given file and at given line number
 /*!
     \param filename Filename of python macro file
@@ -321,6 +413,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString filename, int lineNo
     return getBreakPoint(getFirstBreakPointIndex(filename, lineNo));
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns BreakPointItem for given QModelIndex
 /*!
     \param index given QModelIndex
@@ -338,6 +431,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex index) const
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! changes breakpoint, given by its QModelIndex to values, determined by BreakPointItem
 /*!
     if indicated, emits signal emitBreakPointChanged with old and new BreakPointItem
@@ -366,6 +460,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
 
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns QModelIndexList with all breakpoints being in one given file
 /*!
     \param filename Filename of python macro file
@@ -385,6 +480,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString filename) co
     return list;
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! returns list of BreakPointItem corresponding to given list of model indices
 /*!
     \param indizes list of model indices
@@ -400,6 +496,7 @@ QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList indi
     return bps;
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! change multiple breakpoints to data, given by list of BreakPointItem
 /*!
     \param indizes list of model indices
@@ -425,6 +522,7 @@ RetVal BreakPointModel::changeBreakPoints(const QModelIndexList indizes, QList<B
     return retValue;
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! resets all python breakpoint numbers to -1.
 /*!
     every breakpoint only gets a valid python breakpoint number, if python is in debugging mode. This method is called,
@@ -443,6 +541,7 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
     return RetVal(retOk);
 }
 
+//-------------------------------------------------------------------------------------------------------
 //! set python breakpoint number of breakpoint at given row in the model
 /*!
     If starting debugging a python macro, the whole breakpoint list is submitted to the python debugger, which assigns a python debugging number for each breakpoint.
@@ -459,3 +558,5 @@ RetVal BreakPointModel::setPyBpNumber(int row, int pyBpNumber)
     bp.pythonDbgBpNumber=pyBpNumber;
     return changeBreakPoint(createIndex(row,1),bp,false);
 }
+
+} //end namespace ito

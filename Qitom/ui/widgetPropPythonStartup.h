@@ -27,9 +27,12 @@
 
 #include <qlistwidget.h>
 
-#include <QtGui>
+#include <qwidget.h>
 
 #include "ui_widgetPropPythonStartup.h"
+
+namespace ito
+{
 
 class WidgetPropPythonStartup : public AbstractPropertyPageWidget
 {
@@ -60,5 +63,7 @@ private slots:
     void on_btnRemove_clicked();
 
 };
+
+} //end namespace ito
 
 #endif

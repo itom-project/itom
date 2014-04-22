@@ -195,7 +195,8 @@ class camToolbar():
         dialogSnapshot.comboBoxdObj.call("addItems", dObjects)
         dialogSnapshot.comboBoxdObj.call("setCurrentIndex",objindex)
         dialogSnapshot.comboBoxdObj["editable"] = True #.setProperty("comboBoxdObj", "editable", True)
-        dialogSnapshot.txtBinning["text"] = 1 #.setProperty("txtBinning", "text", "1")
+        dialogSnapshot.spinBoxTempBin["value"] = 1 #.setProperty("txtBinning", "text", "1")
+        dialogSnapshot.spinBoxNumImages["value"] = 1 #.setProperty("txtBinning", "text", "1")
         dialogSnapshot.checkBoxShow["checked"] = True #.setProperty("checkBoxShow", "checked", True) 
         retdialog = dialogSnapshot.show(1)
         
@@ -204,7 +205,8 @@ class camToolbar():
             #dataObj = dataObj[0]
             camname = dialogSnapshot.comboBoxGrabber["currentText"] #getProperty("comboBoxGrabber", "currentText")
             #camname = camname[0]
-            binning = dialogSnapshot.txtBinning["text"] #.getProperty("txtBinning","text")
+            binning = dialogSnapshot.spinBoxTempBin["value"] #.getProperty("txtBinning","text")
+            stacked = dialogSnapshot.spinBoxNumImages["value"] #.getProperty("txtBinning","text")
             #binning = binning[0]
             show = dialogSnapshot.checkBoxShow["checked"] #.getProperty("checkBoxShow", "checked")
             #show = show[0] #show is bool now....
@@ -242,31 +244,36 @@ class camToolbar():
                 if checkGrabbing == True:
                     eval("{}.disableAutoGrabbing()".format(camname))
                 
-                if binning == "1":
+                if stacked == 1: 
+                    if binning == 1:
 
-                    eval("{}.acquire()".format(camname))
-                    
-                    script = "tmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()[\"{dataObj}\"]=tmpObj.copy()\ndel tmpObj"
-                    exec(script.format(camname=camname, dataObj=dataObj),globals())
-                    
-                else:
-                    tmpObj=dataObject()
-                    script = "{camname}.acquire()\n\
-                    tmpObj=dataObject()\n\
-                    {camname}.getVal(tmpObj)"
-                    
-                    exec(script.format(camname=camname))
-                    tmpObj2 = tmpObj.copy()
-                    tmpObj2 = tmpObj2.astype("float64")
-                    script="{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(camname=camname)
-                    for i in range (1, int(binning)):
+                        eval("{}.acquire()".format(camname))
+                        
+                        script = "tmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()[\"{dataObj}\"]=tmpObj.copy()\ndel tmpObj"
+                        exec(script.format(camname=camname, dataObj=dataObj),globals())
+                        
+                    else:
+                        tmpObj=dataObject()
+                        script = "{camname}.acquire()\n{camname}.getVal(tmpObj)"
+                        
+                        exec(script.format(camname=camname),globals(),locals())
+                        tmpObj2 = tmpObj.astype("float64")
+                        script="{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(camname=camname)
+                        for i in range (1, binning):
+                            exec(script,globals(),locals())
+                            tmpObj2 = tmpObj2 + tmpObj.astype("float64")
+                        bin = 1/(binning)
+                        script="{}=tmpObj2*{}".format(dataObj, bin)
                         exec(script)
-                        tmpObj2 = tmpObj2 + tmpObj.astype("float64")
-                    bin = 1/(int(binning))
-                    script="{}=tmpObj2*{}".format(dataObj, bin)
-                    exec(script)
-                    del tmpObj
-                    
+                        del tmpObj
+                        
+                else:
+                    if binning > 1:
+                        print("Warning, binning not compatible with stack")
+                    exec("tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\nglobals()[\"{dataObj}\"] = dataObject([{cnt},tmpObj.shape[0], tmpObj.shape[1]], tmpObj.dtype)\nglobals()[\"{dataObj}\"][0,:, :] = tmpObj".format(cnt=stacked, camname=camname,dataObj=dataObj))
+                    for i in range(1, stacked):
+                        exec("tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\nglobals()[\"{dataObj}\"][{cnt},:, :] = tmpObj".format(cnt=i, camname=camname,dataObj=dataObj))
+                        
                 if checkGrabbing == True:
                     eval("{}.enableAutoGrabbing()".format(camname))
                 eval("{}.stopDevice()".format(camname))
@@ -276,7 +283,7 @@ class camToolbar():
                     exec(script.format(dataObj)) 
                     
                 result = dataObj
-                
+                    
             except:
                 if skipBox == False:
                     ui.msgCritical("Cam", "Execution error", ui.MsgBoxOk)

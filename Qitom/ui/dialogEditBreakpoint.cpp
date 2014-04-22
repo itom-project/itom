@@ -22,6 +22,9 @@
 
 #include "dialogEditBreakpoint.h"
 
+namespace ito
+{
+
 DialogEditBreakpoint::DialogEditBreakpoint(QString filename, int linenr, bool enabled, bool temporary, int ignoreCount, QString condition)
 {
     ui.setupUi(this);
@@ -46,4 +49,6 @@ void DialogEditBreakpoint::getData(bool &enabled, bool &temporary, int &ignoreCo
     ignoreCount = ui.spinBoxIgnoreCount->value();
     condition = ui.txtCondition->text();
 }
+
+} //end namespace ito
 

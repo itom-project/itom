@@ -20,13 +20,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+
+
 #include "pythonEngineInc.h"
 #include "pythonNpDataObject.h"
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
+#include "structmember.h"
+
+#if ITOM_NPDATAOBJECT
 
 //------------------------------------------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     //argument must be a PyObject
     if(!PyArg_ParseTuple(args, "O", &obj)) //obj is borrowed reference
     {
-        PyErr_Format(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
+        PyErr_SetString(PyExc_ValueError,"Argument of npDataObject must be of type ndarray or dataObject and not empty");
         return NULL;
     }
 
@@ -200,7 +200,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == NULL)
         {
             Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "ndarray argument is invalid");
+            PyErr_SetString(PyExc_ValueError, "ndarray argument is invalid");
             return NULL;
         }
 
@@ -233,7 +233,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
         if(arr == Py_NotImplemented)
         {
             //Py_XDECREF(arr);
-            PyErr_Format(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
+            PyErr_SetString(PyExc_ValueError, "argument returned Py_NotImplemented (e.g. empty dataObject is not allowed)");
             return NULL;
         }
         else
@@ -259,6 +259,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             //std::string tempString;
             DataObjectTagType tempTag;
             std::string tempKey;
+            std::string tempString;
             bool validOp;
 
             //1. tags
@@ -280,7 +281,9 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
                 }
                 else
                 {
-                    item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    //item =  PyUnicode_FromString(tempTag.getVal_ToString().data());
+                    tempString = tempTag.getVal_ToString().data();
+                    item =  PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
                     PyDict_SetItemString(self->tags, tempKey.data(), item);
                     Py_DECREF(item);
                 }
@@ -304,21 +307,27 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
             self->axisDescriptions = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisDescriptions, i, PyUnicode_FromString(dObj->getAxisDescription(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisDescription(i,validOp);
+                PyList_SetItem(self->axisDescriptions, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //5. axisUnits
             self->axisUnits = PyList_New(dims);
             for(int i=0;i<dims;i++)
             {
-                PyList_SetItem(self->axisUnits, i, PyUnicode_FromString(dObj->getAxisUnit(i,validOp).data())); //steals ref to value
+                tempString = dObj->getAxisUnit(i,validOp);
+                PyList_SetItem(self->axisUnits, i, PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL)); //steals ref to value
             }
 
             //6. valueUnit
-            self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            //self->valueUnit = PyUnicode_FromString(dObj->getValueUnit().data());
+            tempString = dObj->getValueUnit();
+            self->valueUnit = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //7. valueDescription
-            self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            //self->valueDescription = PyUnicode_FromString(dObj->getValueDescription().data());
+            tempString = dObj->getValueDescription();
+            self->valueDescription = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
 
             //8.
             self->valueOffset = dObj->getValueOffset();
@@ -330,7 +339,7 @@ PyObject * PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject *
     else
     {
         //Py_XDECREF(obj);
-        PyErr_Format(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
+        PyErr_SetString(PyExc_ValueError, "Argument of npDataObject must be of type ndarray or dataObject");
         return NULL;
     }
 
@@ -1109,3 +1118,92 @@ PyObject* PythonNpDataObject::PyNpDataObject_getTagDict(PyNpDataObject *self, vo
 
     return dict; //returns new reference
 }
+
+#else
+
+namespace ito {
+
+//------------------------------------------------------------------------------------------------------
+void PythonNpDataObject::PyNpDataObject_dealloc(PyNpDataObject* self)
+{
+    Py_TYPE(self)->tp_free((PyObject*)self);
+};
+
+
+//------------------------------------------------------------------------------------------------------
+PyObject* PythonNpDataObject::PyNpDataObject_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
+{
+    PyNpDataObject* self = (PyNpDataObject *)type->tp_alloc(type, 0);
+    return (PyObject *)self;
+};
+
+//------------------------------------------------------------------------------------------------------
+int PythonNpDataObject::PyNpDataObject_init(PyNpDataObject *self, PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_RuntimeError, "The class itom.npDataObject does not exist any more since it is incompatible with numpy versions >= 1.7. \nPlease directly use numpy.array instead of npDataObject in your code or use the BUILD_WITH_NPDATAOBJECT option in CMake of itom.");
+    return -1;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyObject* PythonNpDataObject::PyNpDataObject_repr(PyNpDataObject *self)
+{
+    PyObject *result = PyUnicode_FromFormat("NpDataObject (deprecated)");
+    return result;
+};
+
+//------------------------------------------------------------------------------------------------------
+PyModuleDef PythonNpDataObject::PyNpDataObjectModule = {
+        PyModuleDef_HEAD_INIT,
+        "npDataObject",
+        "deprecated",
+        -1,
+        NULL, NULL, NULL, NULL, NULL
+    };
+
+
+PyTypeObject PythonNpDataObject::PyNpDataObjectType = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        "itom.npDataObject",               /* tp_name */
+        sizeof(PyNpDataObject),            /* tp_basicsize */
+        0,                         /* tp_itemsize */
+        (destructor)PyNpDataObject_dealloc, /* tp_dealloc */
+        0,                         /* tp_print */
+        0,                         /* tp_getattr */
+        0,                         /* tp_setattr */
+        0,                         /* tp_reserved */
+        (reprfunc)PyNpDataObject_repr,     /* tp_repr */
+        0,                         /* tp_as_number */
+        0,                         /* tp_as_sequence */
+        0,                         /* tp_as_mapping */
+        0,                         /* tp_hash  */
+        0,                         /* tp_call */
+        0,                         /* tp_str */
+        0,                         /* tp_getattro */
+        0,                         /* tp_setattro */
+        0,                         /* tp_as_buffer */
+        Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
+        0,                        /* tp_doc */
+        0,                        /* tp_traverse */
+        0,                        /* tp_clear */
+        0,                        /* tp_richcompare */
+        0,                        /* tp_weaklistoffset */
+        0,                        /* tp_iter */
+        0,                        /* tp_iternext */
+        0,                        /* tp_methods */
+        0,                        /* tp_members */
+        0,                        /* tp_getset */
+        0,                        /* tp_base */
+        0,                        /* tp_dict */
+        0,                        /* tp_descr_get */
+        0,                        /* tp_descr_set */
+        0,                        /* tp_dictoffset */
+        (initproc)PyNpDataObject_init,                /* tp_init */
+        0,                        /* tp_alloc */
+        PyNpDataObject_new /*PyType_GenericNew*/    /* tp_new */
+    };
+
+}; //end namespace ito
+
+
+
+#endif //ITOM_NPDATAOBJECT

@@ -30,6 +30,9 @@
 
 #include "../common/sharedStructuresQt.h"
 #include "../DataObject/dataobj.h"
+#if ITOM_POINTCLOUDLIBRARY > 0
+#include "../../PointCloud/pclStructures.h"
+#endif
 
 #include "../widgets/userUiDialog.h"
 #include "../widgets/figureWidget.h"
@@ -202,6 +205,22 @@ public:
     UiContainer *container;
 };
 
+struct UiDataContainer {
+    UiDataContainer() { m_dataType = ito::ParamBase::DObjPtr; };
+    ~UiDataContainer() {};
+    UiDataContainer(QSharedPointer<ito::DataObject> dObj) { m_dataType = ito::ParamBase::DObjPtr; m_dObjPtr = dObj; }
+#if ITOM_POINTCLOUDLIBRARY > 0
+    UiDataContainer(QSharedPointer<ito::PCLPointCloud> PC) { m_dataType = ito::ParamBase::PointCloudPtr; m_dPCPtr = PC; }
+    UiDataContainer(QSharedPointer<ito::PCLPolygonMesh> PM) { m_dataType = ito::ParamBase::PolygonMeshPtr; m_dPMPtr = PM; }
+#endif
+
+    ito::ParamBase::Type m_dataType;
+    QSharedPointer<ito::DataObject> m_dObjPtr;
+#if ITOM_POINTCLOUDLIBRARY > 0
+    QSharedPointer<ito::PCLPointCloud> m_dPCPtr;
+    QSharedPointer<ito::PCLPolygonMesh> m_dPMPtr;
+#endif
+};
 
 class UiOrganizer : public QObject
 {
@@ -362,7 +381,8 @@ public slots:
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+//    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figurePlot(struct ito::UiDataContainer dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     
     RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);

@@ -29,10 +29,18 @@
 //#define ITOM_IMPORT_API
 #include "../AbstractFigure.h"
 
+#if QT_VERSION < 0x050000
 #include <qaction.h>
 #include <qtoolbar.h>
 #include <qmenu.h>
 #include <qmenubar.h>
+#else
+#include <QtWidgets/qaction.h>
+#include <QtWidgets/qtoolbar.h>
+#include <QtWidgets/qmenu.h>
+#include <QtWidgets/qmenubar.h>
+#include <QtGui/qevent.h>
+#endif
 #include <qsettings.h>
 
 #include "../../common/typeDefs.h"

@@ -47,6 +47,9 @@
 #include <qdebug.h>
 #include <qset.h>
 
+namespace ito
+{
+
 class WorkspaceWidget : public QTreeWidget
 {
     Q_OBJECT
@@ -92,12 +95,14 @@ signals:
 public slots:
     //ito::RetVal loadDictionary(PyObject *dict, ItomSharedSemaphore *semaphore = NULL);                      /*!< slot invoked by PythonEngine if dictionary has changed */
 
-    void workspaceContainerUpdated(ito::PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);
+    void workspaceContainerUpdated(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);
 
 private slots:
     void itemDoubleClicked(QTreeWidgetItem* item, int column);  /*!< slot invoked if item has been double-clicked */
     void itemExpanded(QTreeWidgetItem* item);
     void itemCollapsed(QTreeWidgetItem* item);
 };
+
+} //end namespace ito
 
 #endif

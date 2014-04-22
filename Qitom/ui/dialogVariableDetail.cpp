@@ -22,6 +22,9 @@
 
 #include "dialogVariableDetail.h"
 
+namespace ito
+{
+
 DialogVariableDetail::DialogVariableDetail(QString name, QString type, QString value) :
     QDialog()
 {
@@ -43,3 +46,5 @@ DialogVariableDetail::DialogVariableDetail(QString name, QString type, QString v
 */
 
 }
+
+} //end namespace ito

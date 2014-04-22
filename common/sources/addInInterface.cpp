@@ -802,6 +802,31 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    //! method invoked in order to force a re-emitation of the current status, the current positions (if desired) and the target positions (if desired)
+    /*!
+        This method is mainly invoked by a dock widget of the actuator such that the plugin re-emits the current values, that are then
+        received by the dock widget.
+
+        Overload this method if you want to update the values before emitting them.
+    */
+    ito::RetVal AddInActuator::requestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+    {
+        ito::RetVal retval;
+
+        //in your real motor, overload this function and update m_currentStatus, m_currentPos and/or m_targetPos
+        //before emitting them using the methods above
+
+        sendStatusUpdate(!sendActPosition);
+
+        if (sendTargetPos)
+        {
+            sendTargetUpdate();
+        }
+
+        return retval;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     AddInAlgo::AddInAlgo() : AddInBase()
     {
         Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toLatin1().data());

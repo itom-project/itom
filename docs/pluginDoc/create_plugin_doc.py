@@ -100,7 +100,7 @@ def createPluginDoc(confFile, buildernames):
                 shutil.copytree(outdir, pluginDocInstallDir, ignore=shutil.ignore_patterns("*.js","search.html",".buildinfo"))
         
         else:
-            print("Plugin documentation for", cfgDict["pluginDocTarget"], "could not be build since not available on this computer")
+            print("Plugin documentation for", helpDict["name"], "could not be build since not available on this computer")
             
 
 if (__name__ == "__main__"):

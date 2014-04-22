@@ -38,6 +38,8 @@ The real documentation about the structure of plugins is organized as follows:
    plugin-itomAPI.rst
    plugin-externalLibraries.rst
    projectSettings.rst
+   plugin-dockWidget.rst
+   plugin-configDialog.rst
 
 
 

@@ -98,6 +98,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     # For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0
     #
     SET(Components ${ARGN}) #all arguments after SetAutomoc are components for Qt
+    SET(QT_COMPONENTS ${ARGN})
 
     IF(${BUILD_QTVERSION} STREQUAL "Qt4")
         SET(DETECT_QT5 FALSE)
@@ -194,7 +195,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
         #TRY TO FIND QT4
         SET(QT5_FOUND FALSE)
         find_package(Qt4 REQUIRED)
-        SET (QT_USE_QTMAIN TRUE)
+        SET (QT_USE_CORE TRUE)
         
         FOREACH (comp ${Components})
             IF (${comp} STREQUAL "OpenGL")
@@ -214,6 +215,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
             ELSEIF (${comp} STREQUAL "UiTools")
                 SET (QT_USE_QTUITOOLS TRUE)
             ELSEIF (${comp} STREQUAL "Widgets")
+                SET (QT_USE_QTGUI TRUE)
             ELSEIF (${comp} STREQUAL "PrintSupport")
             ELSEIF (${comp} STREQUAL "LinguistTools")
             ELSE ()
@@ -231,7 +233,7 @@ ENDMACRO (FIND_PACKAGE_QT)
 #
 # example:
 # set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
-# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 #
 # Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
 # EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
@@ -246,22 +248,22 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
 
     if (${force_translation_update})
         if (QT5_FOUND)
-            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
+            QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         else (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${${files_to_translate}})
+            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         endif (QT5_FOUND)
         
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${target} _${target}_translation)
         
         if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+            QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         else (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         endif (QT5_FOUND)
     else (${force_translation_update})
         if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+            QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         else (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         endif (QT5_FOUND)
@@ -276,7 +278,7 @@ ENDMACRO (PLUGIN_TRANSLATION)
 # useful macros
 ###########################################################################
 
-# using custom macro for qtCreator compability, i.e. put ui files into GeneratedFiles/ folder
+# using custom macro for qtCreator compatibility, i.e. put ui files into GeneratedFiles/ folder
 # This macro is copied and adapted from Qt4Macros.cmake (Copyright Kitware, Inc.).
 MACRO (QT4_WRAP_UI_ITOM outfiles)
     
@@ -416,7 +418,88 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
             set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
     endforeach()
 
-    #QT4_ADD_TRANSLATION_ITOM(${_qm_files} ${_my_tsfiles})
+ENDMACRO()
+
+MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
+
+    IF(${CMAKE_VERSION_GT_020811})
+        QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options _lupdate_target ${ARGN})
+    ELSE(${CMAKE_VERSION_GT_020811})
+        QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options ${ARGN})
+    ENDIF(${CMAKE_VERSION_GT_020811})
+    
+    
+    set(_my_sources)
+    set(_my_dirs)
+    set(_my_tsfiles)
+    set(_ts_pro)
+
+    #reset tsFiles
+    set(${tsFiles} "")
+
+    foreach (_file ${_lupdate_files})
+            get_filename_component(_ext ${_file} EXT)
+            get_filename_component(_abs_FILE ${_file} ABSOLUTE)
+            if(_ext MATCHES "ts")
+                    list(APPEND _my_tsfiles ${_abs_FILE})
+            else()
+                    if(NOT _ext)
+                            list(APPEND _my_dirs ${_abs_FILE})
+                    else()
+                            list(APPEND _my_sources ${_abs_FILE})
+                    endif()
+            endif()
+    endforeach()
+
+    #message(STATUS "native ts ${_my_tsfiles}")
+
+    foreach( _lang ${${languages}})
+            set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
+            #message(STATUS "scan ${_tsFile}")
+            get_filename_component(_ext ${_tsFile} EXT)
+            get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
+            if(EXISTS ${_abs_FILE})
+                    list(APPEND _my_tsfiles ${_abs_FILE})
+            else()
+                    #message(STATUS "...ist aber nicht da")
+                    #create new ts file
+                    add_custom_command(OUTPUT ${_abs_FILE}_new
+                            COMMAND ${Qt5_LUPDATE_EXECUTABLE}
+                            ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
+                            DEPENDS ${_my_sources} VERBATIM)
+                    list(APPEND _my_tsfiles ${_abs_FILE})
+                    set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
+            endif()
+    endforeach()
+
+    set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
+
+    foreach(_ts_file ${_my_tsfiles})
+            #message(STATUS "update ${_ts_file}")
+            if(_my_sources)
+                    # make a .pro file to call lupdate on, so we don't make our commands too
+                    # long for some systems
+                    get_filename_component(_ts_name ${_ts_file} NAME_WE)
+                    set(_ts_pro ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_ts_name}_lupdate.pro)
+                    set(_pro_srcs)
+                    foreach(_pro_src ${_my_sources})
+                            set(_pro_srcs "${_pro_srcs} \"${_pro_src}\"")
+                    endforeach()
+                    set(_pro_includes)
+                    get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
+                    foreach(_pro_include ${_inc_DIRS})
+                            get_filename_component(_abs_include "${_pro_include}" ABSOLUTE)
+                            set(_pro_includes "${_pro_includes} \"${_abs_include}\"")
+                    endforeach()
+                    file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
+            endif()
+            add_custom_command(OUTPUT ${_ts_file}_update
+                    COMMAND ${Qt5_LUPDATE_EXECUTABLE}
+                    ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
+                    DEPENDS ${_my_sources} ${_ts_pro} VERBATIM)
+            set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
+    endforeach()
+
 ENDMACRO()
 
 
@@ -431,15 +514,28 @@ MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
         add_custom_command(TARGET ${target}
              PRE_BUILD
              COMMAND ${QT_LRELEASE_EXECUTABLE}
-                                 ARGS ${_abs_FILE} -qm ${qm}
-                                 VERBATIM
-                                 )
+             ARGS ${_abs_FILE} -qm ${qm}
+             VERBATIM
+             )
 
-        #add_custom_command(OUTPUT ${qm}
-        #    COMMAND ${QT_LRELEASE_EXECUTABLE}
-        #    ARGS ${_abs_FILE} -qm ${qm}
-        #    DEPENDS ${_abs_FILE} VERBATIM
-        #)
+        set(${_qm_files} ${${_qm_files}} ${qm})
+    endforeach ()
+ENDMACRO()
+
+MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
+    foreach (_current_FILE ${ARGN})
+        get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
+        get_filename_component(qm ${_abs_FILE} NAME_WE)
+
+        file(MAKE_DIRECTORY "${output_location}")
+        set(qm "${output_location}/${qm}.qm")
+        add_custom_command(TARGET ${target}
+             PRE_BUILD
+             COMMAND ${Qt5_LRELEASE_EXECUTABLE}
+             ARGS ${_abs_FILE} -qm ${qm}
+             VERBATIM
+             )
+
         set(${_qm_files} ${${_qm_files}} ${qm})
     endforeach ()
 ENDMACRO()

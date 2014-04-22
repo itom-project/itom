@@ -26,6 +26,9 @@
 #include <qspinbox.h>
 #include <qlineedit.h>
 
+namespace ito
+{
+
 class ItomSpinBox : public QSpinBox
 {
     Q_OBJECT
@@ -39,5 +42,7 @@ public:
     }
 
 };
+
+} //end namespace ito
 
 #endif

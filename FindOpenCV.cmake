@@ -84,6 +84,7 @@ if(EXISTS "${OpenCV_DIR}")
             endforeach(__CVLIB)
         endif()
         
+        set(OpenCV_INCLUDE_DIR ) #reset it
         find_path(OpenCV_INCLUDE_DIR "cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" "include/opencv" DOC "")
         get_filename_component(OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIR}/.." REALPATH)
         if(EXISTS  ${OpenCV_INCLUDE_DIRS})

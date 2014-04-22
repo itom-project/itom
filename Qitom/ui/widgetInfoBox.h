@@ -28,6 +28,9 @@
 
 #include "ui_widgetInfoBox.h"
 
+namespace ito
+{
+
 class WidgetInfoBox : public QWidget 
 {
     Q_OBJECT
@@ -61,5 +64,7 @@ private:
     Ui::WidgetInfoBox ui;
 
 };
+
+} //end namespace ito
 
 #endif

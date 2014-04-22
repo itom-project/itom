@@ -36,6 +36,9 @@
 #include "../models/leafFilterProxyModel.h"
 #include "../AppManagement.h"
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // on_start
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WindowFlags flags)
@@ -1762,3 +1765,5 @@ void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
 {
     ui.treeView->resizeColumnToContents(0);
 }
+
+} //end namespace ito

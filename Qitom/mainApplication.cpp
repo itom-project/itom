@@ -39,6 +39,12 @@
 #include <qsplashscreen.h>
 #include <qstylefactory.h>
 #include <qmessagebox.h>
+#include <qpainter.h>
+#include <qlibraryinfo.h>
+#include <qresource.h>
+
+namespace ito
+{
 
 /*!
     \class MainApplication
@@ -162,21 +168,15 @@ void MainApplication::setupApplication()
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
-        char *oldpath = getenv("path");
-        char *newpath = (char*)malloc(strlen(oldpath) + p.size() + 10);
-        newpath[0] = 0;
-        strcat(newpath, "path=");
-        strcat(newpath, p.toLatin1().data()); //set libDir at the beginning of the path-variable
-        strcat(newpath, ";");
-        strcat(newpath, oldpath);
-        _putenv(newpath);
-        free(newpath);
+        QByteArray oldpath = getenv("path");
+        QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
+        _putenv(newpath.data());
     }
 #endif
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
-    QByteArray codec =  settings->value("codec", "UTF-8").toByteArray();
+    QByteArray codec =  settings->value("codec", "ISO 8859-1").toByteArray(); //latin1 is default
     settings->endGroup();
     settings->sync();
 
@@ -210,11 +210,14 @@ void MainApplication::setupApplication()
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
     if (textCodec == NULL)
     {
-        textCodec = QTextCodec::codecForName("UTF-8");
+        textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
     }
 
+    // None of these two is available in Qt5 and according to
+    // Qt docu it should not have been used anyway. So 
+    // we need to find another solution here
 //    QTextCodec::setCodecForCStrings(textCodec);
-    QTextCodec::setCodecForLocale(textCodec);
+//    QTextCodec::setCodecForLocale(textCodec);
 
     settings->beginGroup("CurrentStatus");
     QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
@@ -602,4 +605,4 @@ int MainApplication::exec()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+} //end namespace ito

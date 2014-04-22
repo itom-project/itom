@@ -141,13 +141,25 @@ class ITOMCOMMON_EXPORT RetVal
         void appendRetMessage(const char *addRetMessage);
 
         //----------------------------------------------------------------------------------------------------------------------------------
+        /*BEGIN: THIS METHODS ARE MARKED AS DEPRECATED AND WILL BE REPLACE BY THE CONST VERSIONS BELOW IN NEXT API CHANGE (2014-04-10)*/
         inline int containsWarning() { return (m_retValue & retWarning); }              /*!< checks if any warning has occurred in this return value (true), else (false) */
         inline int containsError() { return (m_retValue & retError); }                 /*!< checks if any error has occurred in this return value (true), else (false) */
         inline int containsWarningOrError() { return (m_retValue & (retError | retWarning)); }  /*!< checks if any warning or error has occurred in this return value (true), else (false) */
+        /*END: THIS METHODS ARE MARKED AS DEPRECATED AND WILL BE REPLACE BY THE CONST VERSIONS BELOW IN NEXT API CHANGE (2014-04-10)*/
+
+        inline int containsWarning() const { return (m_retValue & retWarning); }              /*!< checks if any warning has occurred in this return value (true), else (false) */
+        inline int containsError() const { return (m_retValue & retError); }                 /*!< checks if any error has occurred in this return value (true), else (false) */
+        inline int containsWarningOrError() const { return (m_retValue & (retError | retWarning)); }  /*!< checks if any warning or error has occurred in this return value (true), else (false) */
 
         inline bool hasErrorMessage() const { return m_retMessage.size() > 0; }
+
+        /*BEGIN: THIS METHODS ARE MARKED AS DEPRECATED AND WILL BE REPLACE BY THE CONST VERSIONS BELOW IN NEXT API CHANGE (2014-04-10)*/
         inline const char *errorMessage() { return m_retMessage.data(); } /*!< returns zero-terminated error message or empty, zero-terminated string if no error message has been set */
+        /*END: THIS METHODS ARE MARKED AS DEPRECATED AND WILL BE REPLACE BY THE CONST VERSIONS BELOW IN NEXT API CHANGE (2014-04-10)*/
+
         inline int errorCode() const { return m_retCode; }
+
+        inline const char *errorMessage() const{ return m_retMessage.data(); } /*!< returns zero-terminated error message or empty, zero-terminated string if no error message has been set */
 
         //----------------------------------------------------------------------------------------------------------------------------------
         static RetVal format(ito::tRetValue retValue, int retCode, const char *pRetMessage, ...);

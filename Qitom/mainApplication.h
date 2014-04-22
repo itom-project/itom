@@ -37,6 +37,9 @@
 //using namespace ito;
 class QSplashScreen;
 
+namespace ito
+{
+
 class MainApplication : public QObject
 {
     Q_OBJECT
@@ -90,5 +93,7 @@ class MainApplication : public QObject
         void _propertiesChanged() { emit propertiesChanged(); }
         void mainWindowCloseRequest();
 };
+
+} //end namespace ito
 
 #endif

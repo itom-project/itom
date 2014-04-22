@@ -1571,7 +1571,6 @@ class DATAOBJ_EXPORT DataObject
 
         DataObject row(const int selRow);
         DataObject col(const int selCol);
-        //DataObject diag(void);
 
         // ROI
         DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
@@ -1579,8 +1578,50 @@ class DATAOBJ_EXPORT DataObject
         RetVal locateROI(int *wholeSizes, int *offsets);                              /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
         RetVal locateROI(int *lims);                                                  /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
 
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      //!< copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        //! copies the externally given source data inside this data object
+        /*!
+            This method obtains an externally given source array that must have the same
+            element type than this data object. Its dimension is given by sizeX and sizeY and
+            must correspond to the x-size and y-size of this data object. It is allowed that
+            this data object is a shallow copy with a possible region of interest of another (bigger)
+            object.
+
+            Then, the given array is copied inside of the values of the data object. The external 
+            array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
+            
+            \param _Tp* src is the source array. The type of the array is analyzed at compile time (_Tp is the placeholder for this type as template parameter)
+            \param sizeX is the width of the array and must fit to the plane width of the data object
+            \param sizeY is the height of the array and must fit to the plane height of the data object
+            \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
+        */
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+
+        //! copies the externally given source data inside this data object
+        /*!
+            This method obtains an externally given source array that must have the same
+            element type than this data object. Its dimension is given by sizeX and sizeY and
+            must correspond to the x-size and y-size of this data object. It is allowed that
+            this data object is a shallow copy with a possible region of interest of another (bigger)
+            object.
+
+            Then, the given array is copied inside of the values of the data object. The external 
+            array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
+
+            In this method, it is allowed that the original width and height of the given data is different
+            than the plane size of this data object. Then only a subregion of the external data is copied, indicated
+            by the x0 and y0 indices of the first value and its width and height (sizeX and sizeY are the original size of
+            the given data). width and height must correspond to the plane size of the data object.
+            
+            \param _Tp* src is the source array. The type of the array is analyzed at compile time (_Tp is the placeholder for this type as template parameter)
+            \param sizeX is the width of the array.
+            \param sizeY is the height of the array.
+            \param x0 is the x-index of the first value of the source data that is copied.
+            \param y0 is the y-index of the first value of the source data that is copied.
+            \param width is the width of the sub-region of the source data that should be copied (must fit to the width of the data object)
+            \param height is the height of the sub-region of the source data that should be copied (must fit to the height of the data object)
+            \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
+        */
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
         
         //----------------------------------------------------------------------------------------------------------------------------------
         //! verifies if the data type of elements in this data object is equal to the type of the argument.

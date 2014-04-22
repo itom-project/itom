@@ -25,6 +25,9 @@
 
 #include <qwidget.h>
 
+namespace ito
+{
+
 class AbstractPropertyPageWidget : public QWidget
 {
     Q_OBJECT
@@ -36,5 +39,7 @@ class AbstractPropertyPageWidget : public QWidget
         virtual void readSettings() = 0;  /*!< This method is called at startup of the property dialog. Read the setting file using QSetting in order to initialize your property widget (this method must be overwritten) */
         virtual void writeSettings() = 0; /*!< This method is called at shutdown of the property dialog (only if apply or ok has been clicked). Apply your settings and write it to the setting file using QSetting (this method must be overwritten) */
 };
+
+} //end namespace ito
 
 #endif

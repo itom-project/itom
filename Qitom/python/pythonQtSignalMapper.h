@@ -42,6 +42,9 @@
 #include <qvariant.h>
 #include <qobject.h>
 
+namespace ito
+{
+
 class PythonQtSignalTarget
 {
 public:
@@ -213,5 +216,7 @@ private:
     QList<PythonQtSignalTarget> m_targets;    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
     int m_slotCount;                        //!< index of the last virtual slot managed by this instance (auto-incremented)
 };
+
+} //end namespace ito
 
 #endif

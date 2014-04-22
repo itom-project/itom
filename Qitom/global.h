@@ -51,6 +51,7 @@
 #else
     #define ITOM_POINTCLOUDLIBRARY 0
 #endif
+
 #define ITOM_PYTHONMATLAB 0
 
 #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};

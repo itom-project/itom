@@ -1,5 +1,5 @@
 project(itom)      
- 
+  
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
@@ -16,9 +16,9 @@ else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
  
-
+ 
 ADD_SUBDIRECTORY(DataObject) 
-
+     
 IF(BUILD_WITH_PCL)
     ADD_SUBDIRECTORY(PointCloud)
     SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets")

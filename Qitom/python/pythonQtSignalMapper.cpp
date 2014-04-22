@@ -28,6 +28,9 @@
 
 #include <qmetaobject.h>
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class PythonQtSignalMapper
@@ -282,4 +285,6 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
 //    PyGILState_Release(state);
 }
+
+} //end namespace ito
 

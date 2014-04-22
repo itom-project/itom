@@ -190,7 +190,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 		break;
 		
         default:
-            PyErr_Format(PyExc_TypeError, "The point cloud type is unknown");
+            PyErr_SetString(PyExc_TypeError, "The point cloud type is unknown");
             return -1;
         }
     }
@@ -234,7 +234,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 
                     if (iterator == NULL) 
                     {
-                        PyErr_Format(PyExc_TypeError, "error creating iterator");
+                        PyErr_SetString(PyExc_TypeError, "error creating iterator");
                     }
                     else
                     {
@@ -248,7 +248,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                             }
                             else
                             {
-                                PyErr_Format(PyExc_TypeError, "indices must only contain integer values");
+                                PyErr_SetString(PyExc_TypeError, "indices must only contain integer values");
                                 Py_DECREF(item);
                                 break;
                             }
@@ -280,7 +280,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                 }
                 else
                 {
-                    PyErr_Format(PyExc_TypeError, "indices must be an iteratible object");
+                    PyErr_SetString(PyExc_TypeError, "indices must be an iteratible object");
                 }
             }
         }
@@ -389,7 +389,7 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -401,6 +401,7 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
     catch(pcl::PCLException exc)
     {
         PyErr_SetString(PyExc_TypeError, exc.detailedMessage().c_str());
+        
         return NULL;
     }
 
@@ -453,7 +454,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -485,7 +486,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -517,7 +518,7 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -546,7 +547,7 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -576,7 +577,7 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -606,7 +607,7 @@ PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -629,7 +630,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return -1;
     }
 
@@ -677,7 +678,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -699,7 +700,8 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     for(int i = 0 ; i < a.size() ; i++)
     {
         ba = a[i].toLatin1();
-        PyList_SetItem(result,i, PyUnicode_FromStringAndSize( ba.data(), ba.size() ) );
+        //PyList_SetItem(result,i, PyUnicode_FromStringAndSize( ba.data(), ba.size() ) );
+        PyList_SetItem(result,i, PyUnicode_DecodeLatin1( ba.data(), ba.size(), NULL ) );
     }
     
     return result;
@@ -725,7 +727,7 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -738,7 +740,7 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         PyPointCloud *pcl = (PyPointCloud*)pclObj;
         if (pcl == NULL || pcl->data == NULL)
         {
-            PyErr_Format(PyExc_RuntimeError, "argument is of type pointCloud, but this point cloud or the underlying point cloud structure is NULL");
+            PyErr_SetString(PyExc_RuntimeError, "argument is of type pointCloud, but this point cloud or the underlying point cloud structure is NULL");
             return NULL;
         }
 
@@ -750,12 +752,12 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         PyPoint *point = (PyPoint*)pclObj;
         if (point == NULL || point->point == NULL)
         {
-            PyErr_Format(PyExc_RuntimeError, "argument is of type point, but this point or the underlying point structure is NULL");
+            PyErr_SetString(PyExc_RuntimeError, "argument is of type point, but this point or the underlying point structure is NULL");
             return NULL;
         }
         if (self->data->getType() != point->point->getType() && self->data->getType() != ito::pclInvalid)
         {
-            PyErr_Format(PyExc_RuntimeError, "point cloud and this point do not have the same type");
+            PyErr_SetString(PyExc_RuntimeError, "point cloud and this point do not have the same type");
             return NULL;
         }
         self->data->push_back(*(point->point));
@@ -817,7 +819,7 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
             break;
         }
         default:
-            PyErr_Format(PyExc_RuntimeError, "point cloud must have a valid point type");
+            PyErr_SetString(PyExc_RuntimeError, "point cloud must have a valid point type");
             return NULL;
         }
     }
@@ -830,7 +832,7 @@ PyObject* PythonPCL::PyPointCloud_XYZ_append(PyPointCloud *self, PyObject *xyzOb
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZ)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZ");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZ");
         return NULL;
     }
 
@@ -863,7 +865,7 @@ PyObject* PythonPCL::PyPointCloud_XYZI_append(PyPointCloud *self, PyObject *xyzi
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZI)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZI");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZI");
         return NULL;
     }
 
@@ -898,7 +900,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *x
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZI)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZRGBA");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZRGBA");
         return NULL;
     }
 
@@ -930,7 +932,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *x
         delete[] xyz; xyz = NULL;
         Py_XDECREF(arrayObj);
         Py_XDECREF(arrayObj2);
-        PyErr_Format(PyExc_RuntimeError, "length of xyz and rgba-arrays must be equal");
+        PyErr_SetString(PyExc_RuntimeError, "length of xyz and rgba-arrays must be equal");
         return NULL;
     }
 
@@ -957,7 +959,7 @@ PyObject* PythonPCL::PyPointCloud_XYZNormal_append(PyPointCloud *self, PyObject 
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZNormal)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZNormal");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZNormal");
         return NULL;
     }
 
@@ -994,7 +996,7 @@ PyObject* PythonPCL::PyPointCloud_XYZINormal_append(PyPointCloud *self, PyObject
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZINormal)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZINormal");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZINormal");
         return NULL;
     }
 
@@ -1032,7 +1034,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObje
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZRGBNormal)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZRGBNormal");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL or not of type pointXYZRGBNormal");
         return NULL;
     }
 
@@ -1064,7 +1066,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObje
         delete[] xyznxnynzc; xyznxnynzc = NULL;
         Py_XDECREF(arrayObj);
         Py_XDECREF(arrayObj2);
-        PyErr_Format(PyExc_RuntimeError, "length of xyz and rgba-arrays must be equal");
+        PyErr_SetString(PyExc_RuntimeError, "length of xyz and rgba-arrays must be equal");
         return NULL;
     }
 
@@ -1135,7 +1137,7 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
         return NULL;
     }
 
@@ -1175,7 +1177,7 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
 {
     if ( Py_TYPE(rhs) != &PyPointCloudType )
     {
-        PyErr_Format(PyExc_TypeError, "object must be of type pointCloud");
+        PyErr_SetString(PyExc_TypeError, "object must be of type pointCloud");
         return NULL;
     }
 
@@ -1200,11 +1202,11 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "could not allocate object of type pointCloud");
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type pointCloud");
             return NULL;
         }
     }
-    PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+    PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
@@ -1235,11 +1237,11 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "could not allocate object of type pointCloud");
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type pointCloud");
             return NULL;
         }
     }
-    PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+    PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
@@ -1271,11 +1273,11 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "could not allocate object of type point");
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point");
             return NULL;
         }
     }
-    PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+    PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
@@ -1284,7 +1286,7 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+        PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
         return -1;
     }
 
@@ -1302,7 +1304,7 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
     {
         if (Py_TYPE(point) != &PyPointType )
         {
-            PyErr_Format(PyExc_TypeError, "assigned value must be of type point");
+            PyErr_SetString(PyExc_TypeError, "assigned value must be of type point");
             return -1;
         }
         PyPoint *point_ = (PyPoint*)point;
@@ -1326,7 +1328,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
 {
     if ( Py_TYPE(rhs) != &PyPointCloudType )
     {
-        PyErr_Format(PyExc_TypeError, "object must be of type pointCloud");
+        PyErr_SetString(PyExc_TypeError, "object must be of type pointCloud");
         return NULL;
     }
 
@@ -1346,14 +1348,14 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         Py_INCREF(self);
         return (PyObject*)self;
     }
-    PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+    PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqInplaceRepeat(PyPointCloud * /*self*/, Py_ssize_t /*size*/)//returns new reference
 {
-    PyErr_Format(PyExc_NotImplementedError, "not implemented yet");
+    PyErr_SetString(PyExc_NotImplementedError, "not implemented yet");
     return NULL;
 }
 
@@ -1368,7 +1370,7 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+        PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
         return NULL;
     }
 
@@ -1417,7 +1419,7 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
             else
             {
                 Py_XDECREF(retValue);
-                PyErr_Format(PyExc_RuntimeError, "could not allocate object of type point");
+                PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point");
                 return NULL;
             }
 
@@ -1436,7 +1438,7 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
         }
         else
         {
-            PyErr_Format(PyExc_RuntimeError, "could not allocate object of type point");
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point");
             return NULL;
         }
         return (PyObject*)tempPt;
@@ -1448,7 +1450,7 @@ int PythonPCL::PyPointCloud_mappingSetElem(PyPointCloud *self, PyObject *key, Py
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+        PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
         return -1;
     }
 
@@ -1552,7 +1554,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
 {
     if (self->data == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "this point cloud is empty");
+        PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
         return NULL;
     }
 
@@ -1561,7 +1563,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
     Py_ssize_t start = 0;
     if (!PyArg_ParseTuple(args,"OO", &index, &points))
     {
-        PyErr_Format(PyExc_RuntimeError, "argument must be an fixed-point index number followed by a single point or a sequence of points");
+        PyErr_SetString(PyExc_RuntimeError, "argument must be an fixed-point index number followed by a single point or a sequence of points");
         return NULL;
     }
 
@@ -1597,7 +1599,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
         {
             if (Py_TYPE( PySequence_Fast_GET_ITEM(sequence,i) ) != &PyPointType)
             {
-                PyErr_Format(PyExc_TypeError, "not every element in sequence is of type point");
+                PyErr_SetString(PyExc_TypeError, "not every element in sequence is of type point");
                 Py_DECREF(sequence);
                 return NULL;
             }
@@ -1644,7 +1646,7 @@ PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
     PyObject *indices = NULL;
     if (!PyArg_ParseTuple(args,"O", &indices))
     {
-        PyErr_Format(PyExc_RuntimeError, "argument must be a number of a slice object");
+        PyErr_SetString(PyExc_RuntimeError, "argument must be a number of a slice object");
         return NULL;
     }
 
@@ -1686,7 +1688,7 @@ See Also \n\
     }
     else
     {
-        PyErr_Format(PyExc_RuntimeError, "point cloud is empty");
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is empty");
         return NULL;
     }  
 }
@@ -1919,7 +1921,7 @@ PointCloud.");
             XYZ = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objX, false, ok) );
             if(!ok)
             {
-                PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
+                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
                 return NULL;
             }
             
@@ -1933,13 +1935,13 @@ PointCloud.");
             ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
             ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            X = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() ) );
 
             ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            Y = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() )  );
 
             ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges) )  );
+            Z = QSharedPointer<ito::DataObject>( new ito::DataObject( XYZ->at(ranges).squeeze() ) );
 
         }
     }
@@ -1948,21 +1950,21 @@ PointCloud.");
         X = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objX, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
             return NULL;
         }
 
         Y = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objY, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
             return NULL;
         }
 
         Z = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objZ, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
             return NULL;
         }
     }
@@ -2026,7 +2028,7 @@ PointCloud.");
             XYZ = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objX, false, ok) );
             if(!ok)
             {
-                PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
+                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
                 return NULL;
             }
             
@@ -2051,7 +2053,7 @@ PointCloud.");
             I = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objI, false, ok) );
             if(!ok)
             {
-                PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
+                PyErr_SetString(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
                 return NULL;
             }
 
@@ -2062,28 +2064,28 @@ PointCloud.");
         X = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objX, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
             return NULL;
         }
 
         Y = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objY, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
             return NULL;
         }
 
         Z = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objZ, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
             return NULL;
         }
 
         I = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objI, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
             return NULL;
         }
     }
@@ -2138,7 +2140,7 @@ PointCloud.");
     dispMap = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objDisp, false, ok) );
     if(!ok)
     {
-        PyErr_Format(PyExc_RuntimeError, "disparity map argument could not be converted to a data object");
+        PyErr_SetString(PyExc_RuntimeError, "disparity map argument could not be converted to a data object");
         return NULL;
     }
 
@@ -2147,7 +2149,7 @@ PointCloud.");
         IntMap = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objI, false, ok) );
         if(!ok)
         {
-            PyErr_Format(PyExc_RuntimeError, "intensity map argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "intensity map argument could not be converted to a data object");
             return NULL;
         }
     }
@@ -2295,10 +2297,10 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
 {
     if (mRequired < 1 || mRequired > 7)
     {
-        PyErr_Format(PyExc_RuntimeError, "the number of required rows must be between 1 and 7");
+        PyErr_SetString(PyExc_RuntimeError, "the number of required rows must be between 1 and 7");
         return NULL;
     }
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
@@ -2306,7 +2308,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
     
     if (arr == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "argument cannot be interpreted as float32, c-contiguous numpy.ndarray");
+        PyErr_SetString(PyExc_RuntimeError, "argument cannot be interpreted as float32, c-contiguous numpy.ndarray");
         return NULL;
     }
 
@@ -2314,7 +2316,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
     if (PyArray_NDIM( (PyArrayObject*)arr) != 2)
     {
         Py_XDECREF(arr);
-        PyErr_Format(PyExc_RuntimeError, "input array must have two dimensions");
+        PyErr_SetString(PyExc_RuntimeError, "input array must have two dimensions");
         return NULL;
     }
     if (PyArray_DIM( (PyArrayObject*)arr,0) != mRequired)
@@ -2340,11 +2342,11 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
 {
     if (mRequired < 1 || mRequired > 4)
     {
-        PyErr_Format(PyExc_RuntimeError, "the number of required rows must be between 1 and 4");
+        PyErr_SetString(PyExc_RuntimeError, "the number of required rows must be between 1 and 4");
         return NULL;
     }
 
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
@@ -2352,7 +2354,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
     
     if (arr == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "argument cannot be interpreted as uint8, c-contiguous numpy.ndarray");
+        PyErr_SetString(PyExc_RuntimeError, "argument cannot be interpreted as uint8, c-contiguous numpy.ndarray");
         return NULL;
     }
 
@@ -2360,7 +2362,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
     if (PyArray_NDIM( (PyArrayObject*)arr) != 2)
     {
         Py_XDECREF(arr);
-        PyErr_Format(PyExc_RuntimeError, "input array must have two dimensions");
+        PyErr_SetString(PyExc_RuntimeError, "input array must have two dimensions");
         return NULL;
     }
     if (PyArray_DIM( (PyArrayObject*)arr,0) != mRequired)
@@ -2445,7 +2447,7 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         {
             if (!PyLong_Check(temp))
             {
-                PyErr_Format(PyExc_TypeError, "The argument must contain the type of the point, e.g. point.PointXYZ");
+                PyErr_SetString(PyExc_TypeError, "The argument must contain the type of the point, e.g. point.PointXYZ");
                 return -1;
             }
             pclType = PyLong_AsLong(temp);  
@@ -2546,7 +2548,7 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
             break;
         }
         default:
-            PyErr_Format(PyExc_TypeError, "The point type is unknown");
+            PyErr_SetString(PyExc_TypeError, "The point type is unknown");
             return -1;
     }
     return 0;
@@ -2620,7 +2622,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
 {
     if (self->point == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point is invalid");
+        PyErr_SetString(PyExc_RuntimeError, "point is invalid");
         return NULL;
     }
     bool ok;
@@ -2629,7 +2631,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
     QString keyString = PythonQtConversion::PyObjGetString(key,true,ok);
     if (ok == false)
     {
-        PyErr_Format(PyExc_ValueError, "key must be a string");
+        PyErr_SetString(PyExc_ValueError, "key must be a string");
         return NULL;
     }
 
@@ -2645,7 +2647,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz'");
                 return NULL;
             }
             break;
@@ -2663,7 +2665,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz' or 'intensity'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz' or 'intensity'");
                 return NULL;
             }
             break;
@@ -2685,7 +2687,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'rgb' or 'rgba'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'rgb' or 'rgba'");
                 return NULL;
             }
             break;
@@ -2707,7 +2709,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal' or 'curvature'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal' or 'curvature'");
                 return NULL;
             }
             break;
@@ -2733,7 +2735,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature' or 'intensity'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature' or 'intensity'");
                 return NULL;
             }
             break;
@@ -2763,7 +2765,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature', 'rgb' or 'rgba'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature', 'rgb' or 'rgba'");
                 return NULL;
             }
             break;
@@ -2780,7 +2782,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
 {
     if (self->point == NULL)
     {
-        PyErr_Format(PyExc_RuntimeError, "point is invalid");
+        PyErr_SetString(PyExc_RuntimeError, "point is invalid");
         return -1;
     }
     bool ok;
@@ -2788,13 +2790,13 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
     QString keyString = PythonQtConversion::PyObjGetString(key,true,ok);
     if (ok == false)
     {
-        PyErr_Format(PyExc_ValueError, "key must be a string");
+        PyErr_SetString(PyExc_ValueError, "key must be a string");
         return -1;
     }
 
     if (value == NULL)
     {
-        PyErr_Format(PyExc_ValueError, "value must not be empty");
+        PyErr_SetString(PyExc_ValueError, "value must not be empty");
         return -1;
     }
 
@@ -2819,7 +2821,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz'");
                 return 0;
             }
             break;
@@ -2839,7 +2841,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz' or 'intensity'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz' or 'intensity'");
                 return 0;
             }
             break;
@@ -2864,7 +2866,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'rgb' or 'rgba'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'rgb' or 'rgba'");
                 return 0;
             }
             break;
@@ -2889,7 +2891,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal' or 'curvature'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal' or 'curvature'");
                 return 0;
             }
             break;
@@ -2919,7 +2921,7 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature' or 'intensity'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature' or 'intensity'");
                 return 0;
             }
             break;
@@ -2954,13 +2956,13 @@ int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* va
             }
             else
             {
-                PyErr_Format(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature', 'rgb' or 'rgba'");
+                PyErr_SetString(PyExc_ValueError, "key must be 'xyz', 'normal', 'curvature', 'rgb' or 'rgba'");
                 return 0;
             }
             break;
         }
     default:
-        PyErr_Format(PyExc_ValueError, "Point is invalid");
+        PyErr_SetString(PyExc_ValueError, "Point is invalid");
         goto end;
     }
     Py_DECREF(tuple);
@@ -3512,7 +3514,12 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
             }
 
             //try to convert polygons into a numpy-array of desired type
-            PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+                PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #else
+                PyArrayObject *polygonArray = (PyArrayObject*)PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
+            #endif
+            
 
             if(polygonArray)
             {
@@ -3591,7 +3598,8 @@ PyObject* PythonPCL::PyPolygonMesh_data(PyPolygonMesh *self)
     }
     else
     {
-        return PyErr_Format(PyExc_RuntimeError,"point cloud is NULL");
+        PyErr_SetString(PyExc_RuntimeError,"point cloud is NULL");
+        return NULL;
     }
 }
 
@@ -3948,7 +3956,11 @@ polygons : {array-like, MxN} \n\
     }
 
     //try to convert polygons into a numpy-array of desired type
-    PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+        PyObject *polygonArray = PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #else
+        PyArrayObject *polygonArray = (PyArrayObject*)PyArray_ContiguousFromAny(polygons, NPY_INT32, 2, 2);
+    #endif
 
     if(polygonArray)
     {

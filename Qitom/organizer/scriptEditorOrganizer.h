@@ -26,6 +26,12 @@
 #include "../widgets/scriptDockWidget.h"
 #include "../common/sharedStructuresQt.h"
 
+namespace ito
+{
+QDataStream &operator<<(QDataStream &out, const ScriptEditorStorage &obj); 
+
+QDataStream &operator>>(QDataStream &in, ScriptEditorStorage &obj); 
+
 class ScriptEditorOrganizer : public QObject
 {
     Q_OBJECT
@@ -38,6 +44,8 @@ public:
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked);
+
+    void saveScriptState();
 
 private:
     ScriptDockWidget* getFirstDockedElement();
@@ -77,5 +85,7 @@ private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
 };
+
+} //end namespace ito
 
 #endif

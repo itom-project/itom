@@ -8,7 +8,7 @@ SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-
+    
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
        
@@ -35,8 +35,12 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
     
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core)
+FIND_PACKAGE_QT(ON Core Xml)
 find_package(OpenCV COMPONENTS core REQUIRED)
+IF(BUILD_WITH_PCL)
+    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
+ENDIF(BUILD_WITH_PCL)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -51,15 +55,26 @@ ELSE(CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
+IF(BUILD_WITH_PCL)
+    IF(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES pointcloud)
+    ELSE(BUILD_ITOMLIBS_SHARED)
+        SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
+    ENDIF(BUILD_ITOMLIBS_SHARED)
+ELSE(BUILD_WITH_PCL)
+    SET(POINTCLOUD_LIBRARIES "")
+ENDIF(BUILD_WITH_PCL)
 
 INCLUDE_DIRECTORIES( 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${OpenCV_DIR}/include
+    ${PCL_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
+    ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${OpenCV_DIR}/lib
 )
 
@@ -77,6 +92,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPCLFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
@@ -98,6 +114,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
 )
@@ -109,10 +126,10 @@ endif(MSVC)
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
 IF (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
-    qt5_use_modules(${target_name} Core)
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
+    qt5_use_modules(${target_name} Core Xml)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} dataobject qpropertyeditor itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
 ENDIF (QT5_FOUND)
 
 # COPY SECTION

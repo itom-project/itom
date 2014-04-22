@@ -52,7 +52,7 @@ QDebugStream::~QDebugStream()
     // output anything that is left
     if (!m_string.empty())
     {
-        emit flushStream(QString(m_string.c_str()),msg_type);
+        emit flushStream(QString(m_string.c_str()),msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
     }
     m_stream.rdbuf(m_old_buf);
 }
@@ -69,7 +69,7 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
         if (pos != std::string::npos)
         {
             std::string tmp(m_string.begin(), m_string.begin() + pos);
-            emit flushStream(QString(tmp.c_str()).append(line_break), msg_type);
+            emit flushStream(QString(tmp.c_str()).append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
             m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
         }
     }

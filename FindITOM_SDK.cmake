@@ -11,8 +11,11 @@
 # The following are set after configuration is done: 
 #  
 #  ITOM_SDK_FOUND
-#  ITOM_SDK_LIBRARIES
-#  ITOM_SDK_INCLUDE_DIR
+#  ITOM_SDK_LIBRARIES -> list of all necessary libraries to link against. This list also contains
+#                        necessary libraries from dependent packages like OpenCV (dataobject) or PCL (pointcloud)
+#  ITOM_SDK_INCLUDE_DIR -> include directory of itom SDK
+#  ITOM_SDK_INCLUDE_DIRS -> list of necessary include directories including ITOM_SDK_INCLUDE_DIR plus
+#                           additional include directories e.g. from dependent packages like OpenCV.
 #
 #
 #----------------------------------------------------------
@@ -33,16 +36,14 @@ ELSE(EXISTS ${ITOM_SDK_DIR})
     SET(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
 ENDIF(EXISTS ${ITOM_SDK_DIR})
 
+message(STATUS ${ITOM_SDK_FIND_QUIETLY})
+
 IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     INCLUDE(${ITOM_SDK_CONFIG_FILE})
 
     #find include directory
     FIND_PATH(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
-
-    IF(EXISTS  ${ITOM_SDK_INCLUDE_DIRS})
-        include_directories(${ITOM_SDK_INCLUDE_DIR})
-    ENDIF(EXISTS  ${ITOM_SDK_INCLUDE_DIRS})
     
     FIND_PATH(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
     get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
@@ -101,24 +102,94 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
               endif()
             endif()
             
-            #Add to the general list
-            #if(ITOM_SDK_${__ITOMLIB}_LIBRARY)
-            #        set(ITOM_SDK_LIBS ${ITOM_SDK_LIBS} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
-            #endif(ITOM_SDK_${__ITOMLIB}_LIBRARY)
-            
     endforeach(__ITOMLIB)
     
     if(NOT ITOM_SDK_FIND_COMPONENTS)
         set(ITOM_SDK_FIND_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS})
     endif(NOT ITOM_SDK_FIND_COMPONENTS)
     
+    SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIR})
+    
     SET (ITOM_SDK_LIBRARIES)
     foreach(__ITOMLIB ${ITOM_SDK_FIND_COMPONENTS})
+        
         if (ITOM_SDK_${__ITOMLIB}_LIBRARY)
             set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
         else()
             message(SEND_ERROR "Required component ${__ITOMLIB} could not be found in itom SDK")
         endif()
+        
+        #dataobject has a dependency to OpenCV, therefore adapt ITOM_SDK_INCLUDE_DIRS
+        #and add the core library of OpenCV to the ITOM_SDK_LIBRARIES
+        if (${__ITOMLIB} STREQUAL "dataobject")
+            
+            if (OpenCV_FOUND) 
+                #store the current value of OpenCV_LIBS and reset it afterwards
+                SET(__OpenCV_LIBS "${OpenCV_LIBS}")
+            else(OpenCV_FOUND)
+                SET(__OpenCV_LIBS "")
+            endif (OpenCV_FOUND)
+            
+            if(ITOM_SDK_FIND_QUIETLY)
+                find_package(OpenCV QUIET COMPONENTS core)
+            else(ITOM_SDK_FIND_QUIETLY)
+                find_package(OpenCV COMPONENTS core)
+            endif(ITOM_SDK_FIND_QUIETLY)
+            
+            if(OpenCV_FOUND)
+                SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
+                set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS})
+            else(OpenCV_FOUND)
+                set(ITOM_SDK_FOUND_TMP false)
+                SET(ERR_MSG "OpenCV not found. Use OpenCV_DIR to indicate the (build-)folder of OpenCV.")
+            endif(OpenCV_FOUND)
+            
+            IF(__OpenCV_LIBS)
+                #reset OpenCV_LIBS
+                SET(OpenCV_LIBS "${__OpenCV_LIBS}")
+            ENDIF()
+        endif()
+        
+        #pointcloud has a dependency to the core component of the point cloud library, 
+        #therefore adapt ITOM_SDK_INCLUDE_DIRS and add the core library of PCL to the ITOM_SDK_LIBRARIES
+        if (${__ITOMLIB} STREQUAL "pointcloud")
+        
+            if (PCL_FOUND)
+                #store the current value of PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS and reset it afterwards
+                SET(__PCL_INCLUDE_DIRS "${PCL_INCLUDE_DIRS}")
+                SET(__PCL_LIBRARY_DIRS "${PCL_LIBRARY_DIRS}")
+            else(PCL_FOUND)
+                SET(__PCL_INCLUDE_DIRS "")
+                SET(__PCL_LIBRARY_DIRS "")
+            endif (PCL_FOUND)
+            
+            if(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 QUIET COMPONENTS common)
+            else(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 COMPONENTS common)
+            endif(ITOM_SDK_FIND_QUIETLY)
+                
+            if(PCL_FOUND)
+                SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+                set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
+            else(PCL_FOUND)
+                set(ITOM_SDK_FOUND_TMP false)
+                SET(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
+            endif(PCL_FOUND)
+            
+            IF(__PCL_INCLUDE_DIRS)
+                #reset PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS
+                SET(PCL_INCLUDE_DIRS "${__PCL_INCLUDE_DIRS}")
+                SET(PCL_LIBRARY_DIRS "${__PCL_LIBRARY_DIRS}")
+            ENDIF(__PCL_INCLUDE_DIRS)
+            
+        endif()
+        
+        #itomWidgets often requires the SDK_INCLUDE_DIR/itomWidgets directory as further include directory
+        if (${__ITOMLIB} STREQUAL "itomWidgets")
+            SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
+        endif()
+        
     endforeach(__ITOMLIB)
 
 

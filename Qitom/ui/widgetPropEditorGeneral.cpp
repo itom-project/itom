@@ -26,6 +26,11 @@
 #include "../AppManagement.h"
 #include <qmenu.h>
 
+#include <qsettings.h>
+
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -119,4 +124,6 @@ void WidgetPropEditorGeneral::writeSettings()
 
     settings.endGroup();
 }
+
+} //end namespace ito
 

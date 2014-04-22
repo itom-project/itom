@@ -188,7 +188,8 @@ True or False");
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     int x,y;
@@ -535,7 +536,8 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     if(self->r->isEmpty())
@@ -550,7 +552,8 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     return Py_BuildValue( "i", self->r->rectCount() );
@@ -561,7 +564,8 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     QVector<QRect> rects = self->r->rects();
@@ -588,7 +592,8 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     QRect b = self->r->boundingRect();
@@ -618,7 +623,8 @@ in the dataObject corresponds to the left upper corner of the bounding rectangle
 {
     if(!self || self->r == NULL)
     {
-        return PyErr_Format(PyExc_RuntimeError, "region is not available");
+        PyErr_SetString(PyExc_RuntimeError, "region is not available");
+        return NULL;
     }
 
     QRect r = self->r->boundingRect();

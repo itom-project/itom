@@ -20,8 +20,8 @@ class CompoundDefTypeSubItemFinder(ItemFinder):
 
         results = []
         for sectiondef in self.data_object.sectiondef:
-            myfinder = self.item_finder_factory.create_finder(sectiondef)
-            results.extend(myfinder.find(matcher_stack))
+            finder = self.item_finder_factory.create_finder(sectiondef)
+            results.extend(finder.find(matcher_stack))
 
         return results
 
@@ -31,8 +31,8 @@ class CompoundDefTypeSubItemFinder(ItemFinder):
             matches.append(self.data_object)
 
         for sectiondef in self.data_object.sectiondef:
-            myfinder = self.item_finder_factory.create_finder(sectiondef)
-            myfinder.filter_(self.data_object, filter_, matches)
+            finder = self.item_finder_factory.create_finder(sectiondef)
+            finder.filter_(self.data_object, filter_, matches)
 
 class SectionDefTypeSubItemFinder(ItemFinder):
 
@@ -40,16 +40,16 @@ class SectionDefTypeSubItemFinder(ItemFinder):
 
         results = []
         for memberdef in self.data_object.memberdef:
-            myfinder = self.item_finder_factory.create_finder(memberdef)
-            results.extend(myfinder.find(matcher_stack))
+            finder = self.item_finder_factory.create_finder(memberdef)
+            results.extend(finder.find(matcher_stack))
 
         return results
 
     def filter_(self, parent, filter_, matches):
 
         for memberdef in self.data_object.memberdef:
-            myfinder = self.item_finder_factory.create_finder(memberdef)
-            myfinder.filter_(self.data_object, filter_, matches)
+            finder = self.item_finder_factory.create_finder(memberdef)
+            finder.filter_(self.data_object, filter_, matches)
 
 class MemberDefTypeSubItemFinder(ItemFinder):
 

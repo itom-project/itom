@@ -24,8 +24,13 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
-#include <qcolor.h>
 #include "../widgets/lastCommandDockWidget.h"
+
+#include <qcolor.h>
+#include <qsettings.h>
+
+namespace ito 
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropConsoleLastCommand::WidgetPropConsoleLastCommand(QWidget *parent) :
@@ -84,3 +89,5 @@ void WidgetPropConsoleLastCommand::writeSettings()
 
     settings.endGroup();
 }
+
+} //end namespace ito

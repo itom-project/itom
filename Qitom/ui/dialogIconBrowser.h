@@ -28,6 +28,9 @@
 
 #include "ui_dialogIconBrowser.h"
 
+namespace ito
+{
+
 class DialogIconBrowser : public QDialog
 {
     Q_OBJECT
@@ -51,5 +54,7 @@ private slots:
     void on_pushButtonClipboard_clicked(bool value);
     void on_pushButtonInsert_clicked(bool value);
 };
+
+} //end namespace ito
 
 #endif

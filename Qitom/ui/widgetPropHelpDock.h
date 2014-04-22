@@ -25,12 +25,16 @@
 
 #include "abstractPropertyPageWidget.h"
 
-#include <QtGui>
+#include <qwidget.h>
+#include <qstring.h>
 
 #include "ui_widgetPropHelpDock.h"
 #include "helper\fileDownloader.h"
 #include <qlist.h>
 #include <qdir.h>
+
+namespace ito
+{
 
 class WidgetPropHelpDock: public AbstractPropertyPageWidget
 {
@@ -126,5 +130,7 @@ private slots:
     void treeWidgetContextMenuRequested(const QPoint &pos);
     void downloadTimeoutReached();
 };
+
+} //end namespace ito
 
 #endif

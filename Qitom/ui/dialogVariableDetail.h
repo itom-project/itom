@@ -23,10 +23,12 @@
 #ifndef DIALOGVARIABLEDETAIL_H
 #define DIALOGVARIABLEDETAIL_H
 
-#include <QtGui>
 #include <qdialog.h>
 
 #include "ui_dialogVariableDetail.h"
+
+namespace ito
+{
 
 class DialogVariableDetail : public QDialog 
 {
@@ -40,5 +42,7 @@ private:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

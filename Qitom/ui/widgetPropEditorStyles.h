@@ -40,7 +40,13 @@
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexerpython.h>
 
+#include <qstring.h>
+#include <qcolor.h>
+
 #include "ui_widgetPropEditorStyles.h"
+
+namespace ito
+{
 
 class WidgetPropEditorStyles : public AbstractPropertyPageWidget
 {
@@ -91,5 +97,7 @@ private slots:
     void on_btnFontSizeInc_clicked();
     void on_btnReset_clicked();
 };
+
+} //end namespace ito
 
 #endif

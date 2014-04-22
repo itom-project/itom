@@ -27,6 +27,9 @@
 #include <QClipboard>
 #include <qmessagebox.h>
 
+namespace ito
+{
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
 {
@@ -152,3 +155,5 @@ void DialogAboutQItom::on_pushButton_close_clicked()
 {
     close();
 }
+
+} //end namespace ito

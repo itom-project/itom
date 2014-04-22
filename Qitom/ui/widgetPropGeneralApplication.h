@@ -25,9 +25,12 @@
 
 #include "abstractPropertyPageWidget.h"
 
-#include <QtGui>
+#include <qwidget.h>
 
 #include "ui_widgetPropGeneralApplication.h"
+
+namespace ito
+{
 
 class WidgetPropGeneralApplication: public AbstractPropertyPageWidget
 {
@@ -53,5 +56,7 @@ public slots:
 private slots:
 
 };
+
+} //end namespace ito
 
 #endif

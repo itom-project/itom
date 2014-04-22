@@ -22,6 +22,9 @@
 
 #include "dialogGoto.h"
 
+namespace ito
+{
+
 DialogGoto::DialogGoto(const int maxLine, const int curLine, const int maxChar, const int curChar, QWidget *parent) :
     QDialog(parent)
 {
@@ -65,3 +68,5 @@ void DialogGoto::getData(bool &lineNotChar, int &curValue)
     lineNotChar = ui.radioLine->isChecked();
     curValue = ui.spinValue->value();
 }
+
+} //end namespace ito

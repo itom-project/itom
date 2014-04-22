@@ -25,6 +25,11 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+#include <qsettings.h>
+
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorCalltips::WidgetPropEditorCalltips(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -77,3 +82,5 @@ void WidgetPropEditorCalltips::writeSettings()
 
     settings.endGroup();
 }
+
+} //end namespace ito

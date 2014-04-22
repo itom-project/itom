@@ -24,6 +24,7 @@
 #include "../AppManagement.h"
 
 #include <qsettings.h>
+#include <qdiriterator.h>
 #include <qurl.h>
 #include "helper\fileDownloader.h"
 #include <QtSql/qsqldatabase.h>
@@ -31,6 +32,8 @@
 #include <qxmlstream.h>
 #include <global.h>
 
+namespace ito
+{
 // Constructor
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
@@ -131,6 +134,8 @@ void WidgetPropHelpDock::readSettings()
         checkedIdList.append(id);
         settings.remove("DB");
     }
+    settings.endArray();
+
     settings.endGroup();
     //refreshButtonClicked();
 }
@@ -877,3 +882,5 @@ void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
 
     // event am ende wieder loeschen
 }
+
+} //end namespace ito

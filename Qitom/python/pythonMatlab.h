@@ -43,7 +43,9 @@
  * along with pymatlab.  If not, see <http://www.gnu.org/licenses/>.
  * * */
 
-//#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
+#ifndef ITOM_NPDATAOBJECT
+    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
+#endif
 
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #if (defined _DEBUG) && (!defined linux)
@@ -184,17 +186,19 @@ static PyObject * PyMatlabSessionObject_run(PyMatlabSessionObject *self, PyObjec
         return NULL;
     sprintf(command,function_wrap,stringarg);
     if (engEvalString(self->ep,command)!=0)
-        return PyErr_Format(PyExc_RuntimeError,
-                "Was not able to evaluate command: %s",command);
+    {
+        return PyErr_Format(PyExc_RuntimeError, "Was not able to evaluate command: %s",command);
+    }
     if ((mxresult = engGetVariable(self->ep,"pymatlaberrstring"))==NULL)
-        return PyErr_Format(PyExc_RuntimeError,"%s",
-                "can't get internal variable: pymatlaberrstring");
+    {
+        PyErr_SetString(PyExc_RuntimeError, "can't get internal variable: pymatlaberrstring");
+        return NULL;
+    }
     if (strcmp( mxArrayToString(mxresult),"")!=0)
     {
         /*make sure 'pymatlaberrstring' is empty or not exist until next call*/
         status = engEvalString(self->ep,"clear pymatlaberrstring");
-        return PyErr_Format(PyExc_RuntimeError,"Error from Matlab: %s end.",
-                mxArrayToString(mxresult));
+        return PyErr_Format(PyExc_RuntimeError,"Error from Matlab: %s end.", mxArrayToString(mxresult));
     }
     free((void*)command);
     Py_RETURN_NONE;
@@ -228,7 +232,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxINT64_CLASS , mxREAL)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((long*)mxGetData(mxarray))[0] = PyLong_AsLong(obj);
@@ -237,7 +242,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxDOUBLE_CLASS , mxREAL)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((double*)mxGetData(mxarray))[0] = PyFloat_AsDouble(obj);
@@ -246,7 +252,8 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     {
         if (!(mxarray=mxCreateNumericArray(1, dims, mxDOUBLE_CLASS , mxCOMPLEX)))
         {
-            return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray.");
+            PyErr_SetString(PyExc_RuntimeError, "Couldn't create mxarray.");
+            return NULL;
         }
 
         ((double*)mxGetData(mxarray))[0] = PyComplex_RealAsDouble(obj);
@@ -254,8 +261,11 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     }
     else
     {
-
-        cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_F_CONTIGUOUS | NPY_ALIGNED | NPY_WRITEABLE);
+        #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
+            cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_F_CONTIGUOUS | NPY_ALIGNED | NPY_WRITEABLE);
+        #else
+            cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE);
+        #endif
 
         if(cont_ndarray == NULL || (PyObject*)cont_ndarray == Py_NotImplemented)
         {
@@ -266,7 +276,7 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
         allocating and zero initialise */
         if(PyArray_TYPE(cont_ndarray) != NPY_CFLOAT && PyArray_TYPE(cont_ndarray) != NPY_CDOUBLE && PyArray_TYPE(cont_ndarray) != NPY_CLONGDOUBLE) //real values
         {
-            if (!(mxarray=mxCreateNumericArray((mwSize)cont_ndarray->nd,
+            if (!(mxarray=mxCreateNumericArray((mwSize)PyArray_NDIM(cont_ndarray),
                             (mwSize*)PyArray_DIMS(cont_ndarray),
                             npytomx[PyArray_TYPE(cont_ndarray)],
                             mxREAL)))
@@ -286,7 +296,7 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
         } 
         else //else complex
         {
-            if (!(mxarray=mxCreateNumericArray((mwSize)cont_ndarray->nd,
+            if (!(mxarray=mxCreateNumericArray((mwSize)PyArray_NDIM(cont_ndarray),
                             (mwSize*)PyArray_DIMS(cont_ndarray),
                             npytomx[PyArray_TYPE(cont_ndarray)],
                             mxCOMPLEX)))
@@ -394,7 +404,8 @@ static PyObject * PyMatlabSessionObject_getString(PyMatlabSessionObject *self, P
         //char *string = new char[sizebuf+1];
         char *string = (char*)malloc(sizeof(char)*(sizebuf+1));
         mxGetString(variable, string, sizebuf+1);
-        pyString = PyUnicode_FromString(string);
+        //pyString = PyUnicode_FromString(string);
+        pyString = PyUnicode_DecodeLatin1(string, strlen(string), NULL);
         free ((void*)string);
         return pyString;
     }
@@ -472,6 +483,9 @@ static PyObject * PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, P
                 case mxDOUBLE_CLASS:
                     return PyFloat_FromDouble( (double)((double*)real)[0] );
                     break;
+                default:
+                    PyErr_SetString(PyExc_RuntimeError,"unknown datatype of matlab matrix");
+                    return NULL;
                 }
             }
         }
@@ -482,11 +496,18 @@ static PyObject * PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, P
         *    data = malloc(sizeof(double[n*m])); 
         *    memcpy((void * )data,(void *)mxGetPr(mx),sizeof(double[n*m]));
         */
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
+        int flag = NPY_F_CONTIGUOUS;
+#else
+        int flag = NPY_ARRAY_F_CONTIGUOUS;
+#endif
+
         if (!(result=PyArray_New(&PyArray_Type,(int) mxGetNumberOfDimensions(mx), 
                         (npy_intp*) mxGetDimensions(mx), mxtonpy[mxGetClassID(mx)],
-                        NULL, mxGetData(mx), NULL, NPY_F_CONTIGUOUS, NULL)))
+                        NULL, mxGetData(mx), NULL, flag, NULL)))
         {
-            return PyErr_Format(PyExc_AttributeError,"Couldn't convert to PyArray");
+            PyErr_SetString(PyExc_AttributeError,"Couldn't convert to PyArray");
+            return NULL;
         }
 
          return (PyObject*)PyArray_GETCONTIGUOUS((PyArrayObject*)result); //make array c-contiguous
@@ -599,7 +620,7 @@ PyMODINIT_FUNC init_matlab()
 
     if (module == NULL)
     {
-        PyErr_Format(PyExc_AttributeError,"fail in init: module is zero");
+        PyErr_SetString(PyExc_AttributeError,"fail in init: module is zero");
         goto fail;
     }
 
@@ -607,7 +628,7 @@ PyMODINIT_FUNC init_matlab()
 
     if (PyType_Ready(&PyMatlabSessionObjectType) < 0)
     {
-        //PyErr_Format(PyExc_AttributeError,"fail in init: pyMatlabSessionObjectType is not ready");
+        //PyErr_SetString(PyExc_AttributeError,"fail in init: pyMatlabSessionObjectType is not ready");
         goto fail;
     }
     Py_INCREF(&PyMatlabSessionObjectType);

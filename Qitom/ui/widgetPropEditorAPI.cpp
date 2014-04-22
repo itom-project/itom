@@ -35,6 +35,9 @@
 #include <qcoreapplication.h>
 #include <qdir.h>
 
+namespace ito
+{
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorAPI::WidgetPropEditorAPI(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -179,3 +182,5 @@ void WidgetPropEditorAPI::on_listWidget_itemActivated(QListWidgetItem* item)
         //ui.listWidget->editItem(item);
     }
 }
+
+} //end namespace ito

@@ -28,6 +28,23 @@
 #include "../AppManagement.h"
 
 #include <qmessagebox.h>
+#include <qmetaobject.h>
+
+namespace ito
+{
+    QDataStream &operator<<(QDataStream &out, const ScriptEditorStorage &obj)
+    {
+        out << obj.filename << obj.firstVisibleLine << obj.bookmarkLines;
+        return out;
+    }
+
+    QDataStream &operator>>(QDataStream &in, ScriptEditorStorage &obj)
+    {
+        in >> obj.filename >> obj.firstVisibleLine >> obj.bookmarkLines;
+        return in;
+    }
+
+
 /*!
     \class ScriptEditorOrganizer
     \brief organizes script editors, independent on their appearance (docked or window-style)
@@ -42,6 +59,8 @@
 */
 ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
 {
+    qRegisterMetaTypeStreamOperators<ScriptEditorStorage>("ScriptEditorStorage");
+
     m_dockAvailable = dockAvailable;
 
     widgetFocusChanged(NULL,NULL); //sets active ScriptDockWidget to NULL
@@ -50,7 +69,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
     scriptDockElements.clear();
     m_scriptStackMutex.unlock();
 
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine()); // PythonEngine::getInstance();
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
     connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
@@ -65,14 +84,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
 */
 ScriptEditorOrganizer::~ScriptEditorOrganizer()
 {
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
-    if (pyEngine != NULL)
-    {
-        disconnect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
-        disconnect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
-        disconnect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
-    }
+    disconnect();
 
     ScriptDockWidget* sew;
 
@@ -86,6 +98,15 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 
     scriptDockElements.clear();
     m_scriptStackMutex.unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::saveScriptState()
+{
+    foreach(const ito::ScriptDockWidget *sdw, scriptDockElements)
+    {
+        //sdw->
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +176,8 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
 */
 void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 {
-    disconnect(widget,SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)),this,SLOT(removeScriptDockWidget(ScriptDockWidget*)));
+    widget->disconnect(); //disconnect all connected to 'widget'
+    /*disconnect(widget,SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)),this,SLOT(removeScriptDockWidget(ScriptDockWidget*)));
     disconnect(widget,SIGNAL(dockScriptTab(ScriptDockWidget*,int,bool)),this,SLOT(dockScriptTab(ScriptDockWidget*,int,bool)));
     disconnect(widget,SIGNAL(undockScriptTab(ScriptDockWidget*,int,bool,bool)),this,SLOT(undockScriptTab(ScriptDockWidget*,int,bool,bool)));
 
@@ -169,7 +191,7 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
     {
         disconnect(widget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
         disconnect(widget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
-    }
+    }*/
 
     emit(removeScriptDockWidgetFromMainWindow(widget));
 
@@ -664,3 +686,5 @@ void ScriptEditorOrganizer::pythonDebugPositionChanged(QString filename, int lin
         widget->activateTabByFilename(filename, lineNo);
     }
 }
+
+} //end namespace ito

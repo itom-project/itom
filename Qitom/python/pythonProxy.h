@@ -32,22 +32,10 @@
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
     #if (defined _DEBUG) && (!defined linux)
         #undef _DEBUG
-        #if (defined linux) | (defined CMAKE)
-            #include "Python.h"
-            //#include "numpy/arrayobject.h"
-        #else
-            #include "Python.h"
-            //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-        #endif
+        #include "Python.h"
         #define _DEBUG
     #else
-        #ifdef linux
-            #include "Python.h"
-            //#include "numpy/arrayobject.h"
-        #else
-            #include "Python.h"
-            //#include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-        #endif
+        #include "Python.h"   
     #endif
 #endif
 
