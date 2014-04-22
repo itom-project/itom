@@ -42,9 +42,7 @@
 #include <qset.h>
 #include <qthread.h>
 #include <qsharedpointer.h>
-//#include <qwidget.h>
 #include <qmutex.h>
-//#include <qevent.h>
 
 #if QT_VERSION < 0x050000
 #include <qpluginloader.h>
@@ -109,10 +107,10 @@
 namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
-    /**
-    * tPluginType enumeration
-    * used to describe the plugin type and subtype (in case of DataIO main type)
-    * e.g. typeDataIO|typeGrabber for a frame grabber
+    //! tPluginType enumeration
+    /*! 
+      used to describe the plugin type and subtype (in case of DataIO main type)
+      e.g. typeDataIO|typeGrabber for a frame grabber
     */
     enum tPluginType {
         typeDataIO      =   0x1,     /*!< base type for data input and output (cameras, AD-converter, display windows...) */
@@ -123,29 +121,39 @@ namespace ito
         typeRawIO       =   0x200   /*!< subtype of dataIO for further input-output-devices (like display windows), use this type in combination with typeDataIO (OR-combination) */
     };
 
+    //! tActuatorStatus enumeration
+    /*! 
+      flags used for describing the status of one axis of an actuator plugin.
+      
+      These flags are intended to be combined in the status bitmask.
+      Usually the bitmask for each mask is saved in the vector ito::AddInActuator::m_currentStatus
+      of an actuator plugin.
+      
+      The bitmask is divided into different topical areas (moving flags, switches, general status).
+    */
     enum tActuatorStatus {
         //moving flags
-        actuatorUnknown         = 0x0001,
-        actuatorInterrupted     = 0x0002,
-        actuatorMoving          = 0x0004,
-        actuatorAtTarget        = 0x0008,
-        actuatorTimeout         = 0x0010,
+        actuatorUnknown         = 0x0001, /*!< moving status of axis is unknown */
+        actuatorInterrupted     = 0x0002, /*!< movement has been interrupted by the user, axis is immediately stopped */
+        actuatorMoving          = 0x0004, /*!< axis is currently moving */
+        actuatorAtTarget        = 0x0008, /*!< axis reached target */
+        actuatorTimeout         = 0x0010, /*!< no signal from axis, timeout */
         //switches
-        actuatorEndSwitch       = 0x0100,
-        actuatorLeftEndSwitch   = 0x0200,
-        actuatorRightEndSwitch  = 0x0400,
-        actuatorRefSwitch       = 0x0800,
-        actuatorLeftRefSwitch   = 0x1000,
-        actuatorRightRefSwitch  = 0x2000,
+        actuatorEndSwitch       = 0x0100, /*!< axis reached an undefined end switch */
+        actuatorLeftEndSwitch   = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
+        actuatorRightEndSwitch  = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch) */
+        actuatorRefSwitch       = 0x0800, /*!< axis reached an undefined reference switch */
+        actuatorLeftRefSwitch   = 0x1000, /*!< axis reached the specified left reference switch (if set, also set actuatorRefSwitch) */
+        actuatorRightRefSwitch  = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch) */
         //status flags
-        actuatorAvailable       = 0x4000,
-        actuatorEnabled         = 0x8000,
+        actuatorAvailable       = 0x4000, /*!< axis is generally available */
+        actuatorEnabled         = 0x8000, /*!< axis is enabled for movements */
 
-        actMovingMask           = actuatorUnknown | actuatorInterrupted | actuatorMoving | actuatorAtTarget | actuatorTimeout,
-        actEndSwitchMask        = actuatorEndSwitch | actuatorLeftEndSwitch | actuatorRightEndSwitch,
-        actRefSwitchMask        = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch,
-        actSwitchesMask         = actEndSwitchMask | actRefSwitchMask,
-        actStatusMask           = actuatorAvailable | actuatorEnabled
+        actMovingMask           = actuatorUnknown | actuatorInterrupted | actuatorMoving | actuatorAtTarget | actuatorTimeout, /*!< bitmask that marks all bits related to the movement */
+        actEndSwitchMask        = actuatorEndSwitch | actuatorLeftEndSwitch | actuatorRightEndSwitch, /*!< bitmask that marks all bits related to end switches */
+        actRefSwitchMask        = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch, /*!< bitmask that marks all bits related to reference switches */
+        actSwitchesMask         = actEndSwitchMask | actRefSwitchMask,                                /*!< bitmask that marks all bits related to reference and end switches */
+        actStatusMask           = actuatorAvailable | actuatorEnabled                                 /*!< bitmask that marks all status flags */
     };
 
     enum tAutoLoadPolicy {
@@ -174,7 +182,6 @@ namespace ito
     };
 
     class AddInBase;        //!< forward declaration
-//    class ActuatorAxis;     //!< forward declaration
     class DataObject;
 
     //----------------------------------------------------------------------------------------------------------------------------------

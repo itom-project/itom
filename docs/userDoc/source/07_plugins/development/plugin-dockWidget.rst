@@ -310,7 +310,8 @@ within a dockable toolbox of the main window of itom:
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas; //areas where the toolbox can be positioned (see Qt documentation)
     
     //define some features, saying if the toolbox can be closed, can be undocked (floatable) and moved...
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | \
+        QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     
     //register the toolbox
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
