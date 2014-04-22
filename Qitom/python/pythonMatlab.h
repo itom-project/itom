@@ -191,7 +191,7 @@ static PyObject * PyMatlabSessionObject_run(PyMatlabSessionObject *self, PyObjec
     }
     if ((mxresult = engGetVariable(self->ep,"pymatlaberrstring"))==NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError,"%s", "can't get internal variable: pymatlaberrstring");
+        PyErr_SetString(PyExc_RuntimeError, "can't get internal variable: pymatlaberrstring");
         return NULL;
     }
     if (strcmp( mxArrayToString(mxresult),"")!=0)
@@ -261,8 +261,11 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
     }
     else
     {
-
-        cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_F_CONTIGUOUS | NPY_ALIGNED | NPY_WRITEABLE);
+        #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
+            cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_F_CONTIGUOUS | NPY_ALIGNED | NPY_WRITEABLE);
+        #else
+            cont_ndarray = (PyArrayObject*)PyArray_FROM_OF(obj,NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE);
+        #endif
 
         if(cont_ndarray == NULL || (PyObject*)cont_ndarray == Py_NotImplemented)
         {
@@ -273,7 +276,7 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
         allocating and zero initialise */
         if(PyArray_TYPE(cont_ndarray) != NPY_CFLOAT && PyArray_TYPE(cont_ndarray) != NPY_CDOUBLE && PyArray_TYPE(cont_ndarray) != NPY_CLONGDOUBLE) //real values
         {
-            if (!(mxarray=mxCreateNumericArray((mwSize)cont_ndarray->nd,
+            if (!(mxarray=mxCreateNumericArray((mwSize)PyArray_NDIM(cont_ndarray),
                             (mwSize*)PyArray_DIMS(cont_ndarray),
                             npytomx[PyArray_TYPE(cont_ndarray)],
                             mxREAL)))
@@ -293,7 +296,7 @@ static PyObject * PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, Py
         } 
         else //else complex
         {
-            if (!(mxarray=mxCreateNumericArray((mwSize)cont_ndarray->nd,
+            if (!(mxarray=mxCreateNumericArray((mwSize)PyArray_NDIM(cont_ndarray),
                             (mwSize*)PyArray_DIMS(cont_ndarray),
                             npytomx[PyArray_TYPE(cont_ndarray)],
                             mxCOMPLEX)))
@@ -480,6 +483,9 @@ static PyObject * PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, P
                 case mxDOUBLE_CLASS:
                     return PyFloat_FromDouble( (double)((double*)real)[0] );
                     break;
+                default:
+                    PyErr_SetString(PyExc_RuntimeError,"unknown datatype of matlab matrix");
+                    return NULL;
                 }
             }
         }
@@ -490,11 +496,18 @@ static PyObject * PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, P
         *    data = malloc(sizeof(double[n*m])); 
         *    memcpy((void * )data,(void *)mxGetPr(mx),sizeof(double[n*m]));
         */
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
+        int flag = NPY_F_CONTIGUOUS;
+#else
+        int flag = NPY_ARRAY_F_CONTIGUOUS;
+#endif
+
         if (!(result=PyArray_New(&PyArray_Type,(int) mxGetNumberOfDimensions(mx), 
                         (npy_intp*) mxGetDimensions(mx), mxtonpy[mxGetClassID(mx)],
-                        NULL, mxGetData(mx), NULL, NPY_F_CONTIGUOUS, NULL)))
+                        NULL, mxGetData(mx), NULL, flag, NULL)))
         {
-            return PyErr_SetString(PyExc_AttributeError,"Couldn't convert to PyArray");
+            PyErr_SetString(PyExc_AttributeError,"Couldn't convert to PyArray");
+            return NULL;
         }
 
          return (PyObject*)PyArray_GETCONTIGUOUS((PyArrayObject*)result); //make array c-contiguous

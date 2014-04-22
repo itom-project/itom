@@ -286,7 +286,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 }
                 else
                 {
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
                     ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
 #else
                     ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_ARRAY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
@@ -5270,7 +5270,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
         return NULL;
     }
 
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)
 #else
     inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED | NPY_ARRAY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)

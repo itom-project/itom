@@ -2300,7 +2300,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
         PyErr_SetString(PyExc_RuntimeError, "the number of required rows must be between 1 and 7");
         return NULL;
     }
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
@@ -2346,7 +2346,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
         return NULL;
     }
 
-#if (NPY_FEATURE_VERSION < 0x00000007)
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
