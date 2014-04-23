@@ -1319,22 +1319,22 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            retval += meanValueFunc<uint8, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<uint8, float32>(dObj, meanResult, false);
             break;
         }
         case tInt8:
         {
-            retval += meanValueFunc<int8, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<int8, float32>(dObj, meanResult, false);
             break;
         }        
         case tUInt16:
         {
-            retval += meanValueFunc<uint16, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<uint16, float64>(dObj, meanResult, false);
             break;
         }
         case tInt16:
         {
-            retval += meanValueFunc<int16, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<int16, float64>(dObj, meanResult, false);
             break;
         }
         case tUInt32:
@@ -1564,22 +1564,22 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            retval += devValueFunc<uint8, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<uint8, float32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tInt8:
         {
-            retval += devValueFunc<int8, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<int8, float32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }        
         case tUInt16:
         {
-            retval += devValueFunc<uint16, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<uint16, float64>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tInt16:
         {
-            retval += devValueFunc<int16, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<int16, float64>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tUInt32:
