@@ -41,6 +41,7 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qpainter.h>
+#include <qmimedata.h>
 
 namespace ito 
 {
