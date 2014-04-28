@@ -46,7 +46,7 @@ public:
     RetVal restoreScriptState();
 
 protected:
-    ScriptDockWidget* createEmptyScriptDock(bool docked);
+    ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
 
     
 
@@ -56,6 +56,7 @@ private:
     ScriptDockWidget* getActiveDockWidget();
 
     QList<ScriptDockWidget*> scriptDockElements;    //! list with references to all ScriptDockWidgets (docked or windows-style)
+    QSet<QString> m_usedObjectNames;               //! currently used objectNames for script windows
     bool m_dockAvailable;                             //! true if docking mode is available, else: false
 
     QMutex m_scriptStackMutex;                        //! mutex locking any changes to scriptDockElements

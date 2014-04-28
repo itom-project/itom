@@ -31,6 +31,7 @@
 #include <qmetaobject.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
+#include <qmainwindow.h>
 
 namespace ito
 {
@@ -103,6 +104,8 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorOrganizer::saveScriptState()
 {
+    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings.remove("ScriptEditorOrganizer"); //remove old entries and rebuild it from nothing
@@ -112,9 +115,20 @@ void ScriptEditorOrganizer::saveScriptState()
     int counter = 0;
     QVariant states;
 
-    foreach(const ito::ScriptDockWidget *sdw, scriptDockElements)
+    foreach(ito::ScriptDockWidget *sdw, scriptDockElements)
     {
         settings.setArrayIndex(counter++);
+        
+        if (mainWin)
+        {
+            settings.setValue("dockWidgetArea",mainWin->dockWidgetArea(sdw));
+        }
+        else
+        {
+            settings.setValue("dockWidgetArea", Qt::TopDockWidgetArea);
+        }
+        
+        settings.setValue("objectName", sdw->objectName());
         settings.setValue("docked",sdw->docked());
         states = QVariant::fromValue<QList<ito::ScriptEditorStorage> >(sdw->saveScriptState());
         settings.setValue("state", states);
@@ -133,13 +147,23 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     int counter = settings.beginReadArray("scriptWidgets");
 
     bool docked;
+    QString objectName;
     QVariant scriptDockState;
+    Qt::DockWidgetArea area;
     ScriptDockWidget *sdw;
 
     for (int i = 0; i < counter; ++i)
     {
         settings.setArrayIndex(i);
         docked = settings.value("docked", false).toBool();
+        objectName = settings.value("objectName").toString();
+        area = (Qt::DockWidgetArea)settings.value("dockWidgetArea", Qt::TopDockWidgetArea).toInt();
+
+        if (!docked)
+        {
+            area = Qt::NoDockWidgetArea;
+        }
+
         scriptDockState = settings.value("state");
 
         if (scriptDockState.isValid() && scriptDockState.canConvert<QList<ito::ScriptEditorStorage> >())
@@ -160,7 +184,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 
             if (valid)
             {
-                sdw = createEmptyScriptDock(docked);
+                sdw = createEmptyScriptDock(docked, area, objectName);
                 RetVal ret = sdw->restoreScriptState(states);
 
                 if (ret.containsError())
@@ -188,7 +212,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     \param docked true, if widget should be docked in main window, else false (new on-top window)
     \return reference to new ScriptDockWidget
 */
-ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
+ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::DockWidgetArea area /*=Qt::TopDockWidgetArea*/, const QString &objectName /*= QString()*/)
 {
     ScriptDockWidget* newWidget;
     
@@ -202,6 +226,29 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
     }
 
     newWidget = new ScriptDockWidget(tr("Script Editor"), "", docked, m_dockAvailable, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+
+    if (objectName.isNull() || m_usedObjectNames.contains(objectName))
+    {
+        //generate a new object name
+        QString objectNameDraft;
+        for (int i = 0; i < 10000; ++i)
+        {
+            objectNameDraft = QString("scriptEditor%1").arg(i);
+
+            if (m_usedObjectNames.contains(objectNameDraft) == false)
+            {
+                newWidget->setObjectName(objectNameDraft);
+                m_usedObjectNames.insert(objectNameDraft);
+                break;
+            }
+        }
+    }
+    else
+    {
+        newWidget->setObjectName(objectName);
+        m_usedObjectNames.insert(objectName);
+    }
+    
     m_scriptStackMutex.lock();
     scriptDockElements.push_front(newWidget);
     m_scriptStackMutex.unlock();
@@ -226,7 +273,8 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked)
 
     if (docked)
     {
-        emit(addScriptDockWidgetToMainWindow(newWidget, Qt::TopDockWidgetArea));
+        if (area == Qt::NoDockWidgetArea) area = Qt::TopDockWidgetArea;
+        emit(addScriptDockWidgetToMainWindow(newWidget, area));
     }
     else
     {
@@ -249,6 +297,8 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
     widget->disconnect(); //disconnect all connected to 'widget'
 
     emit(removeScriptDockWidgetFromMainWindow(widget));
+
+    m_usedObjectNames.remove(widget->objectName());
 
     m_scriptStackMutex.lock();
     scriptDockElements.removeAll(widget);
