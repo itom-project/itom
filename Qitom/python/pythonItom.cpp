@@ -217,7 +217,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     PyObject *data = NULL;
 //    int areaIndex = 0;
     char* className = NULL;
-    bool ok = true;
+    bool ok = false;
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|s", const_cast<char**>(kwlist), &data, &className))
     {
@@ -225,36 +225,32 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     }
 
     ito::UiDataContainer dataCont;
-//    QSharedPointer<ito::DataObject> newDataObj(PythonQtConversion::PyObjGetDataObjectNewPtr(data, true, ok));
-    dataCont.m_dObjPtr = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, true, ok));
+
+    //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
+    //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
+#if ITOM_POINTCLOUDLIBRARY > 0
+    dataCont = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+    }
+#else
+    ok = false;
+#endif
+
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+    }
+
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        dataCont.m_dPCPtr = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
-        if (!ok)
-        {
-            dataCont.m_dPMPtr = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
-            if (!ok)
-            {
+        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+#else
+        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject.");
 #endif
-                PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to a dataObject");
-                return NULL;
-#if ITOM_POINTCLOUDLIBRARY > 0
-            }
-            else
-            {
-                dataCont.m_dataType = ito::ParamBase::PolygonMeshPtr;
-            }
-        }
-        else
-        {
-            dataCont.m_dataType = ito::ParamBase::PointCloudPtr;
-        }
-#endif
-    }
-    else
-    {
-        dataCont.m_dataType = ito::ParamBase::DObjPtr;
+        return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -269,8 +265,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-//    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(QSharedPointer<ito::DataObject>, newDataObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer, dataCont), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while plotting data object");

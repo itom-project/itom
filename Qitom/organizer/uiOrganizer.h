@@ -205,15 +205,44 @@ public:
     UiContainer *container;
 };
 
-struct UiDataContainer {
-    UiDataContainer() { m_dataType = ito::ParamBase::DObjPtr; };
+class UiDataContainer 
+{
+public:
+    UiDataContainer() : m_dataType(ito::ParamBase::DObjPtr) {};
     ~UiDataContainer() {};
-    UiDataContainer(QSharedPointer<ito::DataObject> dObj) { m_dataType = ito::ParamBase::DObjPtr; m_dObjPtr = dObj; }
+    UiDataContainer(const QSharedPointer<ito::DataObject> &sharedDataObject) : m_dataType(ito::ParamBase::DObjPtr), m_dObjPtr(sharedDataObject) {}
 #if ITOM_POINTCLOUDLIBRARY > 0
-    UiDataContainer(QSharedPointer<ito::PCLPointCloud> PC) { m_dataType = ito::ParamBase::PointCloudPtr; m_dPCPtr = PC; }
-    UiDataContainer(QSharedPointer<ito::PCLPolygonMesh> PM) { m_dataType = ito::ParamBase::PolygonMeshPtr; m_dPMPtr = PM; }
+    UiDataContainer(const QSharedPointer<ito::PCLPointCloud> &sharedPointCloud) : m_dataType(ito::ParamBase::PointCloudPtr), m_dPCPtr(sharedPointCloud) {}
+    UiDataContainer(const QSharedPointer<ito::PCLPolygonMesh> &sharedPolygonMesh) : m_dataType(ito::ParamBase::PolygonMeshPtr), m_dPMPtr(sharedPolygonMesh) {}
+
+    inline UiDataContainer & operator = (QSharedPointer<ito::PCLPointCloud> sharedPointCloud)
+    {
+        m_dataType = ito::ParamBase::PointCloudPtr;
+        m_dPCPtr = sharedPointCloud;
+        return *this;
+    }
+
+    inline UiDataContainer & operator = (QSharedPointer<ito::PCLPolygonMesh> sharedPolygonMesh)
+    {
+        m_dataType = ito::ParamBase::PolygonMeshPtr;
+        m_dPMPtr = sharedPolygonMesh;
+        return *this;
+    }
 #endif
 
+    inline UiDataContainer & operator = (QSharedPointer<ito::DataObject> sharedDataObject)
+    {
+        m_dataType = ito::ParamBase::DObjPtr;
+        m_dObjPtr = sharedDataObject;
+        return *this;
+    }
+
+    inline ito::ParamBase::Type getType() const { return m_dataType; }
+    inline QSharedPointer<ito::DataObject> getDataObject() const { return m_dObjPtr; }
+    inline QSharedPointer<ito::PCLPointCloud> getPointCloud() const { return m_dPCPtr; }
+    inline QSharedPointer<ito::PCLPolygonMesh> getPolygonMesh() const { return m_dPMPtr; }
+
+private:
     ito::ParamBase::Type m_dataType;
     QSharedPointer<ito::DataObject> m_dObjPtr;
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -382,7 +411,7 @@ public slots:
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
 //    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
-    RetVal figurePlot(struct ito::UiDataContainer dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     
     RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
