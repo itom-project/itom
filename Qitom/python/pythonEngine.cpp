@@ -708,99 +708,113 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
     //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
+	QTextCodec *codec = NULL;
+	QByteArray curQtCodec;
 
 #if linux
     // google says this should work on linux ... didn't test it
-    QByteArray curQtCodec = QTextCodec::codecForName(nl_langinfo(CODESET))->name();
+    codec = QTextCodec::codecForName(nl_langinfo(CODESET));
 #else
-    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
+    codec = QTextCodec::codecForLocale();
     if (curQtCodec == "System" || curQtCodec == "system")
     {
         curQtCodec = "ISO-8859-1";
     }
 #endif
-//    QByteArray curQtCodec = QTextCodec::codecForLocale()->name();
 
-    //check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
-    //if (qtCodecNames.contains("UTF-8"))
-    if (curQtCodec.contains("UTF-8"))
-    {
-        encodingType = PythonQtConversion::utf_8;
-        encodingName = "utf_8";
-    }
-    //else if (qtCodecNames.contains("ISO-8859-1") || qtCodecNames.contains("latin1"))
-    else if (curQtCodec.contains("ISO-8859-1") || curQtCodec.contains("latin1"))
-    {
-        encodingType = PythonQtConversion::latin_1;
-        encodingName = "latin_1";
-    }
-    //else if (qtCodecNames.contains("US-ASCII"))
-    else if (curQtCodec.contains("US-ASCII"))
-    {
-        encodingType = PythonQtConversion::ascii;
-        encodingName = "ascii";
-    }
-    //else if (qtCodecNames.contains("UTF-16"))
-    else if (curQtCodec.contains("UTF-16"))
-    {
-        encodingType = PythonQtConversion::utf_16;
-        encodingName = "utf_16";
-    }
-    //else if (qtCodecNames.contains("UTF-16LE"))
-    else if (curQtCodec.contains("UTF-16LE"))
-    {
-        encodingType = PythonQtConversion::utf_16_LE;
-        encodingName = "utf_16_le";
-    }
-    //else if (qtCodecNames.contains("UTF-16BE"))
-    else if (curQtCodec.contains("UTF-16BE"))
-    {
-        encodingType = PythonQtConversion::utf_16_BE;
-        encodingName = "utf_16_be";
-    }
-    //else if (qtCodecNames.contains("UTF-32"))
-    else if (curQtCodec.contains("UTF-32"))
-    {
-        encodingType = PythonQtConversion::utf_32;
-        encodingName = "utf_32";
-    }
-    //else if (qtCodecNames.contains("UTF-32BE"))
-    else if (curQtCodec.contains("UTF-32BE"))
-    {
-        encodingType = PythonQtConversion::utf_32_BE;
-        encodingName = "utf_32_be";
-    }
-    //else if (qtCodecNames.contains("UTF-32LE"))
-    else if (curQtCodec.contains("UTF-32LE"))
-    {
-        encodingType = PythonQtConversion::utf_32_LE;
-        encodingName = "utf_32_le";
-    }
-    /*else
-    {
-        encodingType = PythonQtConversion::other;
-        found = false;
+	if (codec)
+	{
+		QList<QByteArray> aliases;
+		aliases << codec->name() << codec->aliases();
+		foreach(const QByteArray &qtCodecName, aliases)
+		{
+			//check the following default codecs (mbcs is not supported by Qt, since not in the table http://www.iana.org/assignments/character-sets/character-sets.xml)
+			if (qtCodecName == "UTF-8")
+			{
+				encodingType = PythonQtConversion::utf_8;
+				encodingName = "utf_8";
+			}
+			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1")
+			{
+				encodingType = PythonQtConversion::latin_1;
+				encodingName = "latin_1";
+			}
+			else if (qtCodecName == "US-ASCII")
+			{
+				encodingType = PythonQtConversion::ascii;
+				encodingName = "ascii";
+			}
+			else if (qtCodecName == "UTF-16")
+			{
+				encodingType = PythonQtConversion::utf_16;
+				encodingName = "utf_16";
+			}
+			else if (qtCodecName == "UTF-16LE")
+			{
+				encodingType = PythonQtConversion::utf_16_LE;
+				encodingName = "utf_16_le";
+			}
+			else if (qtCodecName == "UTF-16BE")
+			{
+				encodingType = PythonQtConversion::utf_16_BE;
+				encodingName = "utf_16_be";
+			}
+			else if (curQtCodec == "UTF-32")
+			{
+				encodingType = PythonQtConversion::utf_32;
+				encodingName = "utf_32";
+			}
+			//else if (qtCodecNames.contains("UTF-32BE"))
+			else if (curQtCodec == "UTF-32BE")
+			{
+				encodingType = PythonQtConversion::utf_32_BE;
+				encodingName = "utf_32_be";
+			}
+			//else if (qtCodecNames.contains("UTF-32LE"))
+			else if (curQtCodec == "UTF-32LE")
+			{
+				encodingType = PythonQtConversion::utf_32_LE;
+				encodingName = "utf_32_le";
+			}
 
-        foreach (const QByteArray &ba, qtCodecNames)
-        {
-            if (PyCodec_KnownEncoding(ba.data()))
-            {
-                encodingName = ba;
-                found = true;
-                break;
-            }
-        }
+			if (encodingType != PythonQtConversion::other)
+			{
+				break;
+			}
+		}
+
+		if (encodingType == PythonQtConversion::other)
+		{
+			encodingType = PythonQtConversion::other;
+			found = false;
+
+			foreach (const QByteArray &ba, aliases)
+			{
+				if (PyCodec_KnownEncoding(ba.data()))
+				{
+					encodingName = ba;
+					found = true;
+					break;
+				}
+			}
         
-        if (!found)
-        {
-            retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to UTF-8").arg(qtCodecNames.last().data()).toLatin1().data());
-            encodingType = PythonQtConversion::utf_8;
-            encodingName = "utf_8";
-        }
-    }
-    */
-    PythonQtConversion::textEncoding = encodingType;
-    PythonQtConversion::textEncodingName = encodingName;
+			if (!found)
+			{
+				retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->aliases().first().data()).toLatin1().data());
+				encodingType = PythonQtConversion::latin_1;
+				encodingName = "latin_1";
+			}
+		}
+	}
+	else
+	{
+		retval += ito::RetVal(ito::retWarning,0,"default text codec could not be obtained. Latin1 is used");
+		encodingType = PythonQtConversion::latin_1;
+		encodingName = "latin_1";
+	}
+	
+	PythonQtConversion::textEncoding = encodingType;
+	PythonQtConversion::textEncodingName = encodingName;
 
     return retval;
 }
