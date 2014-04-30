@@ -800,7 +800,15 @@ ito::RetVal PythonEngine::stringEncodingChanged()
         
 			if (!found)
 			{
-				retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->aliases().first().data()).toLatin1().data());
+				if(codec->aliases().isEmpty())
+				{
+					retval += RetVal(ito::retWarning, 0, tr("Qt text encoding not compatible to python. Python encoding is set to latin 1").toLatin1().data());
+				}
+				else
+				{
+					retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->aliases().first().data()).toLatin1().data());
+				}
+					
 				encodingType = PythonQtConversion::latin_1;
 				encodingName = "latin_1";
 			}
