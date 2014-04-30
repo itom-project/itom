@@ -716,15 +716,17 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     codec = QTextCodec::codecForName(nl_langinfo(CODESET));
 #else
     codec = QTextCodec::codecForLocale();
-    if (curQtCodec == "System" || curQtCodec == "system")
-    {
-        curQtCodec = "ISO-8859-1";
-    }
 #endif
 
 	if (codec)
 	{
 		QList<QByteArray> aliases;
+#ifndef linux
+		if (codec->name() == "System" || codec->name() == "system")
+		{
+			aliases << "ISO-8859-1"; //with Qt4 and Windows, the default codec is called System and is then mapped to ISO-8859-1
+		}
+#endif
 		aliases << codec->name() << codec->aliases();
 		foreach(const QByteArray &qtCodecName, aliases)
 		{
