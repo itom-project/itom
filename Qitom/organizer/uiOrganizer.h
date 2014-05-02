@@ -219,6 +219,8 @@ public:
     {
         m_dataType = ito::ParamBase::PointCloudPtr;
         m_dPCPtr = sharedPointCloud;
+        m_dObjPtr.clear();
+        m_dPMPtr.clear();
         return *this;
     }
 
@@ -226,6 +228,8 @@ public:
     {
         m_dataType = ito::ParamBase::PolygonMeshPtr;
         m_dPMPtr = sharedPolygonMesh;
+        m_dObjPtr.clear();
+        m_dPCPtr.clear();
         return *this;
     }
 #endif
@@ -234,6 +238,8 @@ public:
     {
         m_dataType = ito::ParamBase::DObjPtr;
         m_dObjPtr = sharedDataObject;
+        m_dPCPtr.clear();
+        m_dPMPtr.clear();
         return *this;
     }
 
