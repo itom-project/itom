@@ -713,8 +713,9 @@ void AbstractDockWidget::dockWidget()
 
     Qt::WindowFlags flags = m_pWindow->windowFlags();
     flags &= (~Qt::WindowStaysOnTopHint); //delete WindowStaysOnTopHint
-    flags &= (~Qt::Window); //delete Window
-    flags |= Qt::Widget; //add Qt::Widget flag
+    //the following two commented lines cause layout errors with Qt5 especially
+    //flags &= (~Qt::Window); //delete Window
+    //flags |= Qt::Widget; //add Qt::Widget flag
     m_pWindow->setWindowFlags(flags);
     m_pWindow->setParent(this);
     setWidget(m_pWindow);
