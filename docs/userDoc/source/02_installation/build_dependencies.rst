@@ -157,6 +157,10 @@ Finally, add the appropriate bin-folder of OpenCV to the windows environment var
 
 Changes to the environment variable only become active after a re-login to windows.
 
+.. note::
+    
+    There is a known linker problem with OpenCV 2.4.7 (only this version). Please avoid to use this special version.
+
 **PointCloudLibrary** (optional, 1.6 or higher)
 
 The PointCloud-Library is a sister-project of OpenCV and is able to work with large point clouds. You can compile |itom| with support for the point cloud library. Then the python classes **itom.pointCloud**, **itom.point** and **itom.polygonMesh** are available and algorithm plugins can use point cloud functionalities. If you don't need anything like this, don't install the point cloud library and uncheck the option **BUILD_WITH_PCL** in the CMake configurations of |itom|.
