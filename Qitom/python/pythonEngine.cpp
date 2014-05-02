@@ -761,19 +761,19 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 				encodingType = PythonQtConversion::utf_16_BE;
 				encodingName = "utf_16_be";
 			}
-			else if (curQtCodec == "UTF-32")
+			else if (qtCodecName == "UTF-32")
 			{
 				encodingType = PythonQtConversion::utf_32;
 				encodingName = "utf_32";
 			}
 			//else if (qtCodecNames.contains("UTF-32BE"))
-			else if (curQtCodec == "UTF-32BE")
+			else if (qtCodecName == "UTF-32BE")
 			{
 				encodingType = PythonQtConversion::utf_32_BE;
 				encodingName = "utf_32_be";
 			}
 			//else if (qtCodecNames.contains("UTF-32LE"))
-			else if (curQtCodec == "UTF-32LE")
+			else if (qtCodecName == "UTF-32LE")
 			{
 				encodingType = PythonQtConversion::utf_32_LE;
 				encodingName = "utf_32_le";
@@ -802,13 +802,13 @@ ito::RetVal PythonEngine::stringEncodingChanged()
         
 			if (!found)
 			{
-				if(codec->aliases().isEmpty())
+				if(codec->name().isEmpty())
 				{
 					retval += RetVal(ito::retWarning, 0, tr("Qt text encoding not compatible to python. Python encoding is set to latin 1").toLatin1().data());
 				}
 				else
 				{
-					retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->aliases().first().data()).toLatin1().data());
+					retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->name().data()).toLatin1().data());
 				}
 					
 				encodingType = PythonQtConversion::latin_1;
