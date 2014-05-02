@@ -711,8 +711,11 @@ void AbstractDockWidget::dockWidget()
 
     setWindowFlags(Qt::Widget);
 
-    m_pWindow->setWindowFlags(Qt::Widget);
-    m_pWindow->setWindowFlags(m_pWindow->windowFlags() & ~(Qt::WindowStaysOnTopHint));
+    Qt::WindowFlags flags = m_pWindow->windowFlags();
+    flags &= (~Qt::WindowStaysOnTopHint); //delete WindowStaysOnTopHint
+    flags &= (~Qt::Window); //delete Window
+    flags |= Qt::Widget; //add Qt::Widget flag
+    m_pWindow->setWindowFlags(flags);
     m_pWindow->setParent(this);
     setWidget(m_pWindow);
     setParent(m_overallParent);
