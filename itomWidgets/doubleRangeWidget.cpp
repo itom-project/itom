@@ -33,50 +33,59 @@
 #include <QMouseEvent>
 //#include <QWeakPointer>
 #include <QPointer>
-#include <QSpinBox>
 
 // CTK includes
-#include "rangeWidget.h"
-#include "ui_rangeWidget.h"
+#include "doubleRangeWidget.h"
+#include "valueProxy.h"
+#include "ui_doubleRangeWidget.h"
 
 // STD includes
 #include <cmath>
 #include <limits>
 
 //-----------------------------------------------------------------------------
-class RangeWidgetPrivate: public Ui_RangeWidget
+class DoubleRangeWidgetPrivate: public Ui_DoubleRangeWidget
 {
-  Q_DECLARE_PUBLIC(RangeWidget);
+  Q_DECLARE_PUBLIC(DoubleRangeWidget);
 protected:
-  RangeWidget* const q_ptr;
+  DoubleRangeWidget* const q_ptr;
 public:
-  RangeWidgetPrivate(RangeWidget& object);
+  DoubleRangeWidgetPrivate(DoubleRangeWidget& object);
   void connectSlider();
 
   void updateSpinBoxWidth();
   int synchronizedSpinBoxWidth()const;
   void synchronizeSiblingSpinBox(int newWidth);
-  bool equal(int v1, int v2)const;
+  bool equal(double v1, double v2)const;
   void relayout();
 
   bool          Tracking;
   bool          Changing;
   bool          SettingSliderRange;
   bool          BlockSliderUpdate;
-  int        MinimumValueBeforeChange;
-  int        MaximumValueBeforeChange;
+  double        MinimumValueBeforeChange;
+  double        MaximumValueBeforeChange;
   bool          AutoSpinBoxWidth;
   Qt::Alignment SpinBoxAlignment;
+  QPointer<ValueProxy> Proxy;
 };
 
 // --------------------------------------------------------------------------
-bool RangeWidgetPrivate::equal(int v1, int v2)const
+bool DoubleRangeWidgetPrivate::equal(double v1, double v2)const
 {
-  return (v1 == v2);
+  if (v1 == v2)
+    {// don't bother computing difference as it could fail for infinity numbers
+    return true;
+    }
+  if (v1 != v1 && v2 != v2)
+    {// NaN check
+    return true;
+    }
+  return qAbs(v1 - v2) < pow(10., -this->MinimumSpinBox->decimals());
 }
 
 // --------------------------------------------------------------------------
-RangeWidgetPrivate::RangeWidgetPrivate(RangeWidget& object)
+DoubleRangeWidgetPrivate::DoubleRangeWidgetPrivate(DoubleRangeWidget& object)
   :q_ptr(&object)
 {
   this->Tracking = true;
@@ -90,35 +99,39 @@ RangeWidgetPrivate::RangeWidgetPrivate(RangeWidget& object)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidgetPrivate::connectSlider()
+void DoubleRangeWidgetPrivate::connectSlider()
 {
-  Q_Q(RangeWidget);
-  QObject::connect(this->Slider, SIGNAL(valuesChanged(int,int)),
-                   q, SLOT(changeValues(int,int)));
-  QObject::connect(this->Slider, SIGNAL(minimumValueChanged(int)),
-                   q, SLOT(changeMinimumValue(int)));
-  QObject::connect(this->Slider, SIGNAL(maximumValueChanged(int)),
-                   q, SLOT(changeMaximumValue(int)));
+  Q_Q(DoubleRangeWidget);
+  QObject::connect(this->Slider, SIGNAL(valuesChanged(double,double)),
+                   q, SLOT(changeValues(double,double)));
+  QObject::connect(this->Slider, SIGNAL(minimumValueChanged(double)),
+                   q, SLOT(changeMinimumValue(double)));
+  QObject::connect(this->Slider, SIGNAL(maximumValueChanged(double)),
+                   q, SLOT(changeMaximumValue(double)));
 
-  QObject::connect(this->MinimumSpinBox, SIGNAL(valueChanged(int)),
+  QObject::connect(this->MinimumSpinBox, SIGNAL(valueChanged(double)),
                    q, SLOT(setSliderValues()));
-  QObject::connect(this->MaximumSpinBox, SIGNAL(valueChanged(int)),
+  QObject::connect(this->MaximumSpinBox, SIGNAL(valueChanged(double)),
                    q, SLOT(setSliderValues()));
-  QObject::connect(this->MinimumSpinBox, SIGNAL(valueChanged(int)),
-                   q, SLOT(setMinimumToMaximumSpinBox(int)));
-  QObject::connect(this->MaximumSpinBox, SIGNAL(valueChanged(int)),
-                   q, SLOT(setMaximumToMinimumSpinBox(int)));
+  QObject::connect(this->MinimumSpinBox, SIGNAL(valueChanged(double)),
+                   q, SLOT(setMinimumToMaximumSpinBox(double)));
+  QObject::connect(this->MaximumSpinBox, SIGNAL(valueChanged(double)),
+                   q, SLOT(setMaximumToMinimumSpinBox(double)));
+  QObject::connect(this->MinimumSpinBox, SIGNAL(decimalsChanged(int)),
+                   q, SLOT(setDecimals(int)));
+  QObject::connect(this->MaximumSpinBox, SIGNAL(decimalsChanged(int)),
+                   q, SLOT(setDecimals(int)));
 
   QObject::connect(this->Slider, SIGNAL(sliderPressed()),
                    q, SLOT(startChanging()));
   QObject::connect(this->Slider, SIGNAL(sliderReleased()),
                    q, SLOT(stopChanging()));
-  QObject::connect(this->Slider, SIGNAL(rangeChanged(int,int)),
-                   q, SLOT(onSliderRangeChanged(int,int)));
+  QObject::connect(this->Slider, SIGNAL(rangeChanged(double,double)),
+                   q, SLOT(onSliderRangeChanged(double,double)));
 }
 
 // --------------------------------------------------------------------------
-void RangeWidgetPrivate::updateSpinBoxWidth()
+void DoubleRangeWidgetPrivate::updateSpinBoxWidth()
 {
   int spinBoxWidth = this->synchronizedSpinBoxWidth();
   if (this->AutoSpinBoxWidth)
@@ -135,9 +148,9 @@ void RangeWidgetPrivate::updateSpinBoxWidth()
 }
 
 // --------------------------------------------------------------------------
-int RangeWidgetPrivate::synchronizedSpinBoxWidth()const
+int DoubleRangeWidgetPrivate::synchronizedSpinBoxWidth()const
 {
-  Q_Q(const RangeWidget);
+  Q_Q(const DoubleRangeWidget);
   //Q_ASSERT(this->MinimumSpinBox->sizeHint() == this->MaximumSpinBox->sizeHint());
   int maxWidth = qMax(this->MinimumSpinBox->sizeHint().width(),
                       this->MaximumSpinBox->sizeHint().width());
@@ -145,9 +158,9 @@ int RangeWidgetPrivate::synchronizedSpinBoxWidth()const
     {
     return maxWidth;
     }
-  QList<RangeWidget*> siblings =
-    q->parent()->findChildren<RangeWidget*>();
-  foreach(RangeWidget* sibling, siblings)
+  QList<DoubleRangeWidget*> siblings =
+    q->parent()->findChildren<DoubleRangeWidget*>();
+  foreach(DoubleRangeWidget* sibling, siblings)
     {
     maxWidth = qMax(maxWidth, qMax(sibling->d_func()->MaximumSpinBox->sizeHint().width(),
                                    sibling->d_func()->MaximumSpinBox->sizeHint().width()));
@@ -156,12 +169,12 @@ int RangeWidgetPrivate::synchronizedSpinBoxWidth()const
 }
 
 // --------------------------------------------------------------------------
-void RangeWidgetPrivate::synchronizeSiblingSpinBox(int width)
+void DoubleRangeWidgetPrivate::synchronizeSiblingSpinBox(int width)
 {
-  Q_Q(const RangeWidget);
-  QList<RangeWidget*> siblings =
-    q->parent()->findChildren<RangeWidget*>();
-  foreach(RangeWidget* sibling, siblings)
+  Q_Q(const DoubleRangeWidget);
+  QList<DoubleRangeWidget*> siblings =
+    q->parent()->findChildren<DoubleRangeWidget*>();
+  foreach(DoubleRangeWidget* sibling, siblings)
     {
     if (sibling != q && sibling->isAutoSpinBoxWidth())
       {
@@ -172,7 +185,7 @@ void RangeWidgetPrivate::synchronizeSiblingSpinBox(int width)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidgetPrivate::relayout()
+void DoubleRangeWidgetPrivate::relayout()
 {
   this->GridLayout->removeWidget(this->MinimumSpinBox);
   this->GridLayout->removeWidget(this->MaximumSpinBox);
@@ -210,10 +223,10 @@ void RangeWidgetPrivate::relayout()
 }
 
 // --------------------------------------------------------------------------
-RangeWidget::RangeWidget(QWidget* _parent) : Superclass(_parent)
-  , d_ptr(new RangeWidgetPrivate(*this))
+DoubleRangeWidget::DoubleRangeWidget(QWidget* _parent) : Superclass(_parent)
+  , d_ptr(new DoubleRangeWidgetPrivate(*this))
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   
   d->setupUi(this);
 
@@ -229,30 +242,30 @@ RangeWidget::RangeWidget(QWidget* _parent) : Superclass(_parent)
 }
 
 // --------------------------------------------------------------------------
-RangeWidget::~RangeWidget()
+DoubleRangeWidget::~DoubleRangeWidget()
 {
 }
 
 // --------------------------------------------------------------------------
-int RangeWidget::minimum()const
+double DoubleRangeWidget::minimum()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->MinimumSpinBox->minimum(),d->Slider->minimum()));
   return d->Slider->minimum();
 }
 
 // --------------------------------------------------------------------------
-int RangeWidget::maximum()const
+double DoubleRangeWidget::maximum()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->MaximumSpinBox->maximum(), d->Slider->maximum()));
   return d->Slider->maximum();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMinimum(int min)
+void DoubleRangeWidget::setMinimum(double min)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   bool blocked = d->MinimumSpinBox->blockSignals(true);
   blocked = d->MaximumSpinBox->blockSignals(true);
   d->MinimumSpinBox->setMinimum(min);
@@ -269,9 +282,9 @@ void RangeWidget::setMinimum(int min)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMaximum(int max)
+void DoubleRangeWidget::setMaximum(double max)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   bool blocked = d->MinimumSpinBox->blockSignals(true);
   blocked = d->MaximumSpinBox->blockSignals(true);
   d->MinimumSpinBox->setMaximum(max);
@@ -288,9 +301,9 @@ void RangeWidget::setMaximum(int max)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setRange(int min, int max)
+void DoubleRangeWidget::setRange(double min, double max)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
 
   double oldMin = d->MinimumSpinBox->minimum();
   double oldMax = d->MaximumSpinBox->maximum();
@@ -318,9 +331,9 @@ void RangeWidget::setRange(int min, int max)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::range(int range[2])const
+void DoubleRangeWidget::range(double range[2])const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->MinimumSpinBox->maximum(), d->Slider->minimum()));
   Q_ASSERT(d->equal(d->MaximumSpinBox->maximum(), d->Slider->maximum()));
   range[0] = d->Slider->minimum();
@@ -328,9 +341,9 @@ void RangeWidget::range(int range[2])const
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::onSliderRangeChanged(int min, int max)
+void DoubleRangeWidget::onSliderRangeChanged(double min, double max)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (!d->SettingSliderRange)
     {
     this->setRange(min, max);
@@ -339,29 +352,29 @@ void RangeWidget::onSliderRangeChanged(int min, int max)
 
 /*
 // --------------------------------------------------------------------------
-int RangeWidget::sliderPosition()const
+double DoubleRangeWidget::sliderPosition()const
 {
   return d->Slider->sliderPosition();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setSliderPosition(int position)
+void DoubleRangeWidget::setSliderPosition(double position)
 {
   d->Slider->setSliderPosition(position);
 }
 */
 /*
 // --------------------------------------------------------------------------
-int RangeWidget::previousSliderPosition()
+double DoubleRangeWidget::previousSliderPosition()
 {
   return d->Slider->previousSliderPosition();
 }
 */
 
 // --------------------------------------------------------------------------
-void RangeWidget::values(int &minValue, int &maxValue)const
+void DoubleRangeWidget::values(double &minValue, double &maxValue)const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->Slider->minimumValue(), d->MinimumSpinBox->value()));
   Q_ASSERT(d->equal(d->Slider->maximumValue(), d->MaximumSpinBox->value()));
   minValue = d->Changing ? d->MinimumValueBeforeChange : d->Slider->minimumValue();
@@ -369,29 +382,29 @@ void RangeWidget::values(int &minValue, int &maxValue)const
 }
 
 // --------------------------------------------------------------------------
-int RangeWidget::minimumValue()const
+double DoubleRangeWidget::minimumValue()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->Slider->minimumValue(), d->MinimumSpinBox->value()));
-  const int minValue =
+  const double minValue =
     d->Changing ? d->MinimumValueBeforeChange : d->Slider->minimumValue();
   return minValue;
 }
 
 // --------------------------------------------------------------------------
-int RangeWidget::maximumValue()const
+double DoubleRangeWidget::maximumValue()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->Slider->maximumValue(), d->MaximumSpinBox->value()));
-  const int maxValue =
+  const double maxValue =
     d->Changing ? d->MaximumValueBeforeChange : d->Slider->maximumValue();
   return maxValue;
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMinimumValue(int _value)
+void DoubleRangeWidget::setMinimumValue(double _value)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   // disable the tracking temporally to emit the
   // signal valueChanged if changeValue() is called
   bool isChanging = d->Changing;
@@ -403,9 +416,9 @@ void RangeWidget::setMinimumValue(int _value)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMaximumValue(int _value)
+void DoubleRangeWidget::setMaximumValue(double _value)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   // disable the tracking temporally to emit the
   // signal valueChanged if changeValue() is called
   bool isChanging = d->Changing;
@@ -417,9 +430,9 @@ void RangeWidget::setMaximumValue(int _value)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setValues(int newMinimumValue, int newMaximumValue)
+void DoubleRangeWidget::setValues(double newMinimumValue, double newMaximumValue)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (newMinimumValue > newMaximumValue)
     {
     qSwap(newMinimumValue, newMaximumValue);
@@ -455,9 +468,9 @@ void RangeWidget::setValues(int newMinimumValue, int newMaximumValue)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setSliderValues()
+void DoubleRangeWidget::setSliderValues()
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (d->BlockSliderUpdate)
     {
     return;
@@ -466,9 +479,9 @@ void RangeWidget::setSliderValues()
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMinimumToMaximumSpinBox(int minimum)
+void DoubleRangeWidget::setMinimumToMaximumSpinBox(double minimum)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (minimum != minimum) // NaN check
     {
     return;
@@ -477,9 +490,9 @@ void RangeWidget::setMinimumToMaximumSpinBox(int minimum)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setMaximumToMinimumSpinBox(int maximum)
+void DoubleRangeWidget::setMaximumToMinimumSpinBox(double maximum)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (maximum != maximum) // NaN check
     {
     return;
@@ -488,9 +501,9 @@ void RangeWidget::setMaximumToMinimumSpinBox(int maximum)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::startChanging()
+void DoubleRangeWidget::startChanging()
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (d->Tracking)
     {
     return;
@@ -503,9 +516,9 @@ void RangeWidget::startChanging()
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::stopChanging()
+void DoubleRangeWidget::stopChanging()
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (d->Tracking)
     {
     return;
@@ -529,9 +542,9 @@ void RangeWidget::stopChanging()
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::changeMinimumValue(int newValue)
+void DoubleRangeWidget::changeMinimumValue(double newValue)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   //if (d->Tracking)
     {
     emit this->minimumValueIsChanging(newValue);
@@ -543,9 +556,9 @@ void RangeWidget::changeMinimumValue(int newValue)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::changeMaximumValue(int newValue)
+void DoubleRangeWidget::changeMaximumValue(double newValue)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   //if (d->Tracking)
     {
     emit this->maximumValueIsChanging(newValue);
@@ -557,9 +570,9 @@ void RangeWidget::changeMaximumValue(int newValue)
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::changeValues(int newMinValue, int newMaxValue)
+void DoubleRangeWidget::changeValues(double newMinValue, double newMaxValue)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   bool wasBlocking = d->BlockSliderUpdate;
   d->BlockSliderUpdate = true;
   d->MinimumSpinBox->setValue(newMinValue);
@@ -572,7 +585,7 @@ void RangeWidget::changeValues(int newMinValue, int newMaxValue)
 }
 
 // --------------------------------------------------------------------------
-bool RangeWidget::eventFilter(QObject *obj, QEvent *event)
+bool DoubleRangeWidget::eventFilter(QObject *obj, QEvent *event)
  {
    if (event->type() == QEvent::MouseButtonPress)
      {
@@ -587,7 +600,7 @@ bool RangeWidget::eventFilter(QObject *obj, QEvent *event)
      QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
      if (mouseEvent->button() & Qt::LeftButton)
        {
-       // here we might prevent RangeWidget::stopChanging
+       // here we might prevent DoubleRangeWidget::stopChanging
        // from sending a valueChanged() event as the spinbox might
        // send a valueChanged() after eventFilter() is done.
        this->stopChanging();
@@ -598,18 +611,24 @@ bool RangeWidget::eventFilter(QObject *obj, QEvent *event)
  }
 
 // --------------------------------------------------------------------------
-int RangeWidget::singleStep()const
+double DoubleRangeWidget::singleStep()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->equal(d->Slider->singleStep(), d->MinimumSpinBox->singleStep()));
   Q_ASSERT(d->equal(d->Slider->singleStep(), d->MaximumSpinBox->singleStep()));
   return d->Slider->singleStep();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setSingleStep(int step)
+void DoubleRangeWidget::setSingleStep(double step)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
+  if (!d->Slider->isValidStep(step))
+    {
+    qWarning() << "DoubleRangeWidget::setSingleStep(" << step << ")"
+               << "is outside valid bounds";
+    return;
+    }
   d->MinimumSpinBox->setSingleStep(step);
   d->MaximumSpinBox->setSingleStep(step);
   d->Slider->setSingleStep(d->MinimumSpinBox->singleStep());
@@ -620,61 +639,82 @@ void RangeWidget::setSingleStep(int step)
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidget::prefix()const
+int DoubleRangeWidget::decimals()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
+  Q_ASSERT(d->MinimumSpinBox->decimals() == d->MaximumSpinBox->decimals());
+  return d->MinimumSpinBox->decimals();
+}
+
+// --------------------------------------------------------------------------
+void DoubleRangeWidget::setDecimals(int newDecimals)
+{
+  Q_D(DoubleRangeWidget);
+  d->MinimumSpinBox->setDecimals(newDecimals);
+  d->MaximumSpinBox->setDecimals(newDecimals);
+  // The number of decimals can change the range values
+  // i.e. 50.55 with 2 decimals -> 51 with 0 decimals
+  // As the SpinBox range change doesn't fire signals, 
+  // we have to do the synchronization manually here
+  d->Slider->setRange(d->MinimumSpinBox->minimum(), d->MaximumSpinBox->maximum());
+}
+
+// --------------------------------------------------------------------------
+QString DoubleRangeWidget::prefix()const
+{
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->MinimumSpinBox->prefix() == d->MaximumSpinBox->prefix());
   return d->MinimumSpinBox->prefix();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setPrefix(const QString& newPrefix)
+void DoubleRangeWidget::setPrefix(const QString& newPrefix)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->MinimumSpinBox->setPrefix(newPrefix);
   d->MaximumSpinBox->setPrefix(newPrefix);
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidget::suffix()const
+QString DoubleRangeWidget::suffix()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
  Q_ASSERT(d->MinimumSpinBox->suffix() == d->MaximumSpinBox->suffix());
   return d->MinimumSpinBox->suffix();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setSuffix(const QString& newSuffix)
+void DoubleRangeWidget::setSuffix(const QString& newSuffix)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->MinimumSpinBox->setSuffix(newSuffix);
   d->MaximumSpinBox->setSuffix(newSuffix);
 }
 
 // --------------------------------------------------------------------------
-int RangeWidget::tickInterval()const
+double DoubleRangeWidget::tickInterval()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->Slider->tickInterval();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setTickInterval(int ti)
+void DoubleRangeWidget::setTickInterval(double ti)
 { 
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->Slider->setTickInterval(ti);
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::reset()
+void DoubleRangeWidget::reset()
 {
   this->setValues(this->minimum(), this->maximum());
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::setSpinBoxAlignment(Qt::Alignment alignment)
+void DoubleRangeWidget::setSpinBoxAlignment(Qt::Alignment alignment)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   if (d->SpinBoxAlignment == alignment)
     {
     return;
@@ -684,82 +724,82 @@ void RangeWidget::setSpinBoxAlignment(Qt::Alignment alignment)
 }
 
 // -------------------------------------------------------------------------
-Qt::Alignment RangeWidget::spinBoxAlignment()const
+Qt::Alignment DoubleRangeWidget::spinBoxAlignment()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->SpinBoxAlignment;
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::setSpinBoxTextAlignment(Qt::Alignment alignment)
+void DoubleRangeWidget::setSpinBoxTextAlignment(Qt::Alignment alignment)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->MinimumSpinBox->setAlignment(alignment);
   d->MaximumSpinBox->setAlignment(alignment);
 }
 
 // -------------------------------------------------------------------------
-Qt::Alignment RangeWidget::spinBoxTextAlignment()const
+Qt::Alignment DoubleRangeWidget::spinBoxTextAlignment()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   Q_ASSERT(d->MinimumSpinBox->alignment() == d->MaximumSpinBox->alignment());
   return d->MinimumSpinBox->alignment();
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::setTracking(bool enable)
+void DoubleRangeWidget::setTracking(bool enable)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->Tracking = enable;
 }
 
 // -------------------------------------------------------------------------
-bool RangeWidget::hasTracking()const
+bool DoubleRangeWidget::hasTracking()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->Tracking;
 }
 
 // -------------------------------------------------------------------------
-bool RangeWidget::isAutoSpinBoxWidth()const
+bool DoubleRangeWidget::isAutoSpinBoxWidth()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->AutoSpinBoxWidth;
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::setAutoSpinBoxWidth(bool autoWidth)
+void DoubleRangeWidget::setAutoSpinBoxWidth(bool autoWidth)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->AutoSpinBoxWidth = autoWidth;
   d->updateSpinBoxWidth();
 }
 
 // --------------------------------------------------------------------------
-bool RangeWidget::symmetricMoves()const
+bool DoubleRangeWidget::symmetricMoves()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->Slider->symmetricMoves();
 }
 
 // --------------------------------------------------------------------------
-void RangeWidget::setSymmetricMoves(bool symmetry)
+void DoubleRangeWidget::setSymmetricMoves(bool symmetry)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
   d->Slider->setSymmetricMoves(symmetry);
 }
 
 // -------------------------------------------------------------------------
-RangeSlider* RangeWidget::slider()const
+DoubleRangeSlider* DoubleRangeWidget::slider()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->Slider;
 }
 
 // -------------------------------------------------------------------------
-void RangeWidget::setSlider(RangeSlider* slider)
+void DoubleRangeWidget::setSlider(DoubleRangeSlider* slider)
 {
-  Q_D(RangeWidget);
+  Q_D(DoubleRangeWidget);
 
   slider->setOrientation(d->Slider->orientation());
   slider->setRange(d->Slider->minimum(), d->Slider->maximum());
@@ -777,15 +817,72 @@ void RangeWidget::setSlider(RangeSlider* slider)
 }
 
 // -------------------------------------------------------------------------
-QSpinBox* RangeWidget::minimumSpinBox()const
+DoubleSpinBox* DoubleRangeWidget::minimumSpinBox()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->MinimumSpinBox;
 }
 
 // -------------------------------------------------------------------------
-QSpinBox* RangeWidget::maximumSpinBox()const
+DoubleSpinBox* DoubleRangeWidget::maximumSpinBox()const
 {
-  Q_D(const RangeWidget);
+  Q_D(const DoubleRangeWidget);
   return d->MaximumSpinBox;
+}
+
+//----------------------------------------------------------------------------
+void DoubleRangeWidget::setValueProxy(ValueProxy* proxy)
+{
+  Q_D(DoubleRangeWidget);
+  if (proxy == d->Proxy.data())
+    {
+    return;
+    }
+
+  this->onValueProxyAboutToBeModified();
+
+  if (d->Proxy)
+    {
+    disconnect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
+               this, SLOT(onValueProxyAboutToBeModified()));
+    disconnect(d->Proxy.data(), SIGNAL(proxyModified()),
+               this, SLOT(onValueProxyModified()));
+    }
+
+  d->Proxy = proxy;
+
+  if (d->Proxy)
+    {
+    connect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
+            this, SLOT(onValueProxyAboutToBeModified()));
+    }
+
+  this->slider()->setValueProxy(proxy);
+  this->minimumSpinBox()->setValueProxy(proxy);
+  this->maximumSpinBox()->setValueProxy(proxy);
+
+  if (d->Proxy)
+    {
+    connect(d->Proxy.data(), SIGNAL(proxyModified()),
+            this, SLOT(onValueProxyModified()));
+    }
+
+  this->onValueProxyModified();
+}
+
+//----------------------------------------------------------------------------
+ValueProxy* DoubleRangeWidget::valueProxy() const
+{
+  Q_D(const DoubleRangeWidget);
+  return d->Proxy.data();
+}
+
+//-----------------------------------------------------------------------------
+void DoubleRangeWidget::onValueProxyAboutToBeModified()
+{
+}
+
+//-----------------------------------------------------------------------------
+void DoubleRangeWidget::onValueProxyModified()
+{
 }
