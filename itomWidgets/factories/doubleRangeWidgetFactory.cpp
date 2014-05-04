@@ -49,7 +49,7 @@ QString DoubleRangeWidgetFactory::domXml() const
 // --------------------------------------------------------------------------
 QIcon DoubleRangeWidgetFactory::icon() const
 {
-  return QIcon(":/icons/hrangeslider.png");
+  return QIcon(":/icons/rangespinbox.png");
 }
 
 // --------------------------------------------------------------------------

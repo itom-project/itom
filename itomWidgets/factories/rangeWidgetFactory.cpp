@@ -49,7 +49,7 @@ QString RangeWidgetFactory::domXml() const
 // --------------------------------------------------------------------------
 QIcon RangeWidgetFactory::icon() const
 {
-  return QIcon(":/icons/hrangeslider.png");
+  return QIcon(":/icons/rangespinbox.png");
 }
 
 // --------------------------------------------------------------------------
