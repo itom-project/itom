@@ -29,8 +29,7 @@
 #include <qaction.h>
 #include <qtoolbar.h>
 
-#include <qtableview.h>
-
+#include "itomQWidgets.h"
 
 
 namespace ito
@@ -53,12 +52,26 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-            QTableView *m_breakPointView;
+            QTreeViewItom   *m_breakPointView;
 
+            // Toolbar
+            QToolBar    *m_pMainToolbar;
+
+            ShortcutAction* m_pActDelBP;
+            ShortcutAction* m_pActDelAllBPs;
+            ShortcutAction* m_pActEditBP;
+            ShortcutAction* m_pActToggleBP;
+            ShortcutAction* m_pActToggleAllBPs;
+            
         signals:
 
         private slots:
             void doubleClicked(const QModelIndex &index);
+            void mnuDeleteBP();
+            void mnuDeleteAllBPs();
+            void mnuEditBreakpoint();
+            void mnuToggleBrakpoint();
+            void mnuToggleAllBrakpoints();
 
     };
 

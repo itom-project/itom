@@ -37,7 +37,7 @@ namespace ito {
 BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent)
 {
-    m_breakPointView = new QTableView(this);
+    m_breakPointView = new QTreeViewItom(this);
 
     AbstractDockWidget::init();
 
@@ -51,11 +51,12 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
         m_breakPointView->setModel(pe->getBreakPointModel());
     }
 
-    m_breakPointView->verticalHeader()->setDefaultSectionSize(22);
     m_breakPointView->setAlternatingRowColors(true);
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->setSortingEnabled(true);
-    m_breakPointView->resizeColumnsToContents();
+    m_breakPointView->expandAll();
+    m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid unexpand of item while trying to open it
+    m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -65,17 +66,108 @@ BreakPointDockWidget::~BreakPointDockWidget()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::createToolBars()
+{
+    QWidget *spacerWidget = new QWidget();
+    QHBoxLayout *spacerLayout = new QHBoxLayout();
+    spacerLayout->addItem(new QSpacerItem(5, 5, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    spacerLayout->setStretch(0, 2);
+    spacerWidget->setLayout(spacerLayout);
+
+    m_pMainToolbar = new QToolBar(tr("breakpoints"), this);
+    m_pMainToolbar->setObjectName("toolbarBreakpoints");
+    m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+    m_pMainToolbar->setFloatable(false);
+    addToolBar(m_pMainToolbar, "mainToolBar");
+
+    m_pMainToolbar->addAction(m_pActDelBP->action());
+    m_pMainToolbar->addAction(m_pActDelAllBPs->action());
+    m_pMainToolbar->addAction(m_pActEditBP->action());
+    m_pMainToolbar->addAction(m_pActToggleBP->action());
+    m_pMainToolbar->addAction(m_pActToggleAllBPs->action());
+    m_pMainToolbar->addWidget(spacerWidget);
+    //connect(m_pFileSystemSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::createActions()
 {
+    m_pActDelBP         = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/garbageBP.png"), tr("delete Breakpoint"), this);
+    m_pActDelBP->connectTrigger(this, SLOT(mnuDeleteBP()));
+    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/garbageAllBPs.png"), tr("delete all Breakpoints"), this);
+    m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
+    m_pActEditBP        = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/editBP.png"), tr("edit Breakpoints"), this);
+    m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleBP.png"), tr("toggle Breakpoint"), this);
+    m_pActToggleBP->connectTrigger(this, SLOT(mnuToggleBrakpoint()));
+    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleAllBPs.png"), tr("toggle all Breakpoints"), this);
+    m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuToggleAllBrakpoints()));
 }
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::mnuDeleteBP()
+{
+    BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
+    if (model)
+    {
+        model->deleteBreakPoints(m_breakPointView->selectedIndexes());
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::mnuDeleteAllBPs()
+{
+// Create new function in model to delete all breakpoints
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::mnuEditBreakpoint()
+{
+    BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
+    if (model)
+    {
+        if (m_breakPointView->selectedIndexes().length() == 1)
+        {
+            QModelIndex sel = m_breakPointView->selectedIndexes()[0];
+            BreakPointItem bp = model->getBreakPoint(sel);
+            
+            // TODO: Let the Dialog appear here!
+
+            model->changeBreakPoint(sel, bp, true);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::mnuToggleBrakpoint()
+{
+    BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
+    if (model)
+    {
+        // TODO CHECK EVERYWHERE IF TEH SELECTION IS ONLY BPs OR FILE FILES ARE WITHIN
+        QModelIndexList selected = m_breakPointView->selectedIndexes();
+
+        for (int i = 0; i<selected.length(); ++i)
+        {
+            BreakPointItem bp = model->getBreakPoint(selected[i]);
+            bp.enabled != bp.enabled;
+            model->changeBreakPoint(selected[i], bp, true);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::mnuToggleAllBrakpoints()
+{
+
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::createMenus()
-{
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::createToolBars()
 {
 }
 
@@ -97,7 +189,7 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
         idx = m->index(index.row(), 0, index.parent());
         canonicalPath = m->data(idx, Qt::ToolTipRole).toString();
 
-        idx = m->index(index.row(), 1, index.parent());
+        idx = m->index(index.row(), 0, index.parent());
         lineNr = m->data(idx, Qt::DisplayRole).toInt() - 1;
 
         if (canonicalPath.isEmpty() == false && canonicalPath.contains("<") == false)

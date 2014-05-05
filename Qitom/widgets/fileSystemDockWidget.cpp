@@ -149,7 +149,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
 
-    m_pTreeView = new FileSystemTreeView(this);
+    m_pTreeView = new ito::QTreeViewItom(this);
     connect(m_pTreeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(openFile(const QModelIndex&)));
     connect(m_pTreeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
     m_pTreeView->setModel(m_pFileSystemModel);

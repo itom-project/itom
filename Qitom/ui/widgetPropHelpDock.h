@@ -32,6 +32,7 @@
 #include "helper\fileDownloader.h"
 #include <qlist.h>
 #include <qdir.h>
+#include <qxmlstream.h>
 
 namespace ito
 {

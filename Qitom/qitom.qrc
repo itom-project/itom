@@ -1,4 +1,12 @@
 <RCC>
+    <qresource prefix="/breakPointDockWidget">
+        <file>icons/garbageBP.png</file>
+        <file>icons/garbageAllBPs.png</file>
+        <file>icons/editBP.png</file>
+        <file>icons/toggleBP.png</file>
+        <file>icons/toggleAllBPs.png</file>
+    </qresource>
+
     <qresource prefix="/helpTreeDockWidget">
         <file alias="help_style">styles/help/help_style.css</file>
         <file alias="algo_page">styles/help/algorithms_page.html</file>

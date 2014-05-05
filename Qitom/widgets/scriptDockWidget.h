@@ -24,7 +24,7 @@
 #define SCRIPTDOCKWIDGET_H
 
 #include "abstractDockWidget.h"
-#include "QTabWidgetItom.h"
+#include "itomQWidgets.h"
 #include "scriptEditorWidget.h"
 
 #include <qaction.h>

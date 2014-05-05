@@ -202,9 +202,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/QTabWidgetItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h

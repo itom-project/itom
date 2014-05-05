@@ -85,12 +85,14 @@ public:
     RetVal deleteBreakPoint(QModelIndex index);
     RetVal deleteBreakPoints(QModelIndexList indizes);
 
-    QModelIndex getFirstBreakPointIndex(const QString filename, int lineNo) const;
-    QModelIndexList getBreakPointIndizes(const QString filename, int lineNo) const;
-    QModelIndexList getBreakPointIndizes(const QString filename) const;
+    
 
-    BreakPointItem getBreakPoint(const QString filename, int lineNo) const;
-    BreakPointItem getBreakPoint(const QModelIndex index) const;
+    QModelIndex getFirstBreakPointIndex(const QString &filename, int lineNo) const;
+    QModelIndexList getBreakPointIndizes(const QString &filename, int lineNo) const;
+    QModelIndexList getBreakPointIndizes(const QString &filename) const;
+
+    BreakPointItem getBreakPoint(const QString &filename, int lineNo) const;
+    BreakPointItem getBreakPoint(const QModelIndex &index) const;
     QList<BreakPointItem> getBreakPoints(const QModelIndexList indizes) const;
 
     RetVal changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged = true);
@@ -104,6 +106,9 @@ public:
 protected:
 
 private:
+    int nrOfBreakpointsInFile(const qint64 &fileIdx) const;
+    QModelIndex getFilenameModelIndex(const QString &filename) const;
+    int getBreakPointIndex(const QModelIndex &index) const;
 
     //! helper-method for sorting different breakpoints with respect to row-index of both given QModelIndex
     static inline bool compareRow(QModelIndex a, QModelIndex b) { return a.row()>b.row(); };    
@@ -111,6 +116,8 @@ private:
     QList<BreakPointItem> m_breakpoints;    /*!<  list of breakpoints (BreakPointItem) which are currently available in this application */
     QList<QString> m_headers;               /*!<  string list of names of column headers */
     QList<QVariant> m_alignment;            /*!<  list of alignments for the corresponding headers */
+    QMap<QString, int> m_includedFiles;     /*!<  list of all files that have breakpoints */
+    QList<QString> m_scriptFiles;
 
 signals:
     void breakPointAdded(BreakPointItem bp, int row);                       /*!<  emitted if breakpoint has been added to model at position row */

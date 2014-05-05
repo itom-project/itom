@@ -26,6 +26,8 @@
 #include "../helper/IOHelper.h"
 #include "abstractDockWidget.h"
 
+#include "itomQWidgets.h"
+
 #include <qwidget.h>
 #include <qaction.h>
 #include <qtoolbar.h>
@@ -56,52 +58,6 @@ namespace ito
             ~FileSystemDockWidget();
 
         protected:
-            class FileSystemTreeView : public QTreeView
-            {
-            public:
-                FileSystemTreeView ( QWidget * parent = 0 ) : QTreeView(parent) {}
-                ~FileSystemTreeView () {}
-
-                QModelIndexList selectedIndexes() const
-                { 
-                    return QTreeView::selectedIndexes();
-                }
-
-                //void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
-                //{
-                //    QTreeView::selectionChanged(selected, deselected);
-                //    AbstractDockWidget *adw = qobject_cast<AbstractDockWidget*>(parent());
-                //    if(adw) adw->updateActions();
-                //}
-        
-                //! catches the double click event
-                /*!
-                    Since the read-only property of the QFileSystemModel is set to false (in order to guarantee rename, copy,... methods),
-                    a double click leaded to an edit-box in order to being able to rename the file. This is not the desired behaviour.
-                    Therefore we've overwritten the mouseDoubleClickEvent-event, such that this event directly emits the activated signal. This
-                    is the same behaviour than in the case, when the read-only property is set to true.
-
-                    => Not necessary anymore, by deactivating the editing trigger a double click do not lead to an edit-box. (2012-09-11 David Fleischle)
-                */
-                /*
-                void mouseDoubleClickEvent ( QMouseEvent * event )
-                {
-                    QModelIndexList currents = selectedIndexes();
-
-                    if(currents.size() > 0)
-                    {
-                        emit activated(currents[0]);
-                        event->accept();
-                    }
-                    else
-                    {
-                        event->ignore();
-                    }
-                }
-                */
-
-            };
-
             void createActions();
             void createMenus();
             void createToolBars();
@@ -122,7 +78,7 @@ namespace ito
             QMenu* m_pContextMenu;
             QTextBrowser* m_pPathEdit;
             QToolBar* m_pMainToolbar;
-            FileSystemTreeView* m_pTreeView;
+            QTreeViewItom* m_pTreeView;
             QLabel* m_pLblFilter;
             QComboBox* m_pCmbFilter;
             QFileSystemModel* m_pFileSystemModel;

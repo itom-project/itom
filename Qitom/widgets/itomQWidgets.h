@@ -20,12 +20,16 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef QTABWIDGETITOM_H
-#define QTABWIDGETITOM_H
+#ifndef ITOMQTWIDGETS_H
+#define ITOMQTWIDGETS_H
 
-#include <QTabWidget>
+#include <qtabwidget.h>
+#include <qtreeview.h>
 #include <qtabbar.h>
 #include <qevent.h>
+
+namespace ito
+{
 
 /*!
     This class inherits QTabWidget and only has the additional inline function to get the member tabBar of QTabWidget.
@@ -49,5 +53,20 @@ protected:
 signals:
     void tabContextMenuEvent (QContextMenuEvent *event);
 };
+
+
+class QTreeViewItom : public QTreeView
+{
+public:
+    QTreeViewItom ( QWidget * parent = 0 ) : QTreeView(parent) {}
+    ~QTreeViewItom () {}
+
+    QModelIndexList selectedIndexes() const
+    { 
+        return QTreeView::selectedIndexes();
+    }
+};
+
+} //end namespace ito
 
 #endif

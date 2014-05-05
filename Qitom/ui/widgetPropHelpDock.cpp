@@ -29,8 +29,14 @@
 #include "helper\fileDownloader.h"
 #include <QtSql/qsqldatabase.h>
 #include <QtSql/qsqlquery.h>
-#include <qxmlstream.h>
 #include <global.h>
+#include <qprogressdialog.h>
+#include <qtimer.h>
+#include <qmessagebox.h>
+#include <qtooltip.h>
+#include <qevent.h>
+#include <qmenu.h>
+#include <qprocess.h>
 
 namespace ito
 {
@@ -62,6 +68,7 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
 
     connect(ui.treeWidgetDB, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
     connect(ui.spinTimeout, SIGNAL(valueChanged(int)), this, SLOT(on_spinTimeout_valueChanged(int)));
+
 }
 
 // Destructor
@@ -138,6 +145,10 @@ void WidgetPropHelpDock::readSettings()
 
     settings.endGroup();
     //refreshButtonClicked();
+
+    // fill the tree manually with local dbs only
+    refreshExistingDBs();
+    compareDatabaseVersions();
 }
 
 // set settings from ini
@@ -191,7 +202,7 @@ void WidgetPropHelpDock::refreshButtonClicked()
     refreshExistingDBs();
     refreshUpdatableDBs();
 
-    // if the new db is downloaded, funcktions are called as folowed:
+    // if the new db is downloaded, functions are called as folowed:
     // => xmlDownloaded()
     // ===> compareDatabaseVersions()
     // =====> updateTreeWidget()
