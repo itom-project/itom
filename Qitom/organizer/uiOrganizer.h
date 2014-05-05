@@ -207,6 +207,14 @@ public:
 
 class UiDataContainer 
 {
+private:
+    ito::ParamBase::Type m_dataType;
+    QSharedPointer<ito::DataObject> m_dObjPtr;
+#if ITOM_POINTCLOUDLIBRARY > 0
+    QSharedPointer<ito::PCLPointCloud> m_dPCPtr;
+    QSharedPointer<ito::PCLPolygonMesh> m_dPMPtr;
+#endif
+
 public:
     UiDataContainer() : m_dataType(ito::ParamBase::DObjPtr) {};
     ~UiDataContainer() {};
@@ -238,22 +246,18 @@ public:
     {
         m_dataType = ito::ParamBase::DObjPtr;
         m_dObjPtr = sharedDataObject;
+#if ITOM_POINTCLOUDLIBRARY > 0
         m_dPCPtr.clear();
         m_dPMPtr.clear();
+#endif
         return *this;
     }
 
     inline ito::ParamBase::Type getType() const { return m_dataType; }
     inline QSharedPointer<ito::DataObject> getDataObject() const { return m_dObjPtr; }
+#if ITOM_POINTCLOUDLIBRARY > 0
     inline QSharedPointer<ito::PCLPointCloud> getPointCloud() const { return m_dPCPtr; }
     inline QSharedPointer<ito::PCLPolygonMesh> getPolygonMesh() const { return m_dPMPtr; }
-
-private:
-    ito::ParamBase::Type m_dataType;
-    QSharedPointer<ito::DataObject> m_dObjPtr;
-#if ITOM_POINTCLOUDLIBRARY > 0
-    QSharedPointer<ito::PCLPointCloud> m_dPCPtr;
-    QSharedPointer<ito::PCLPolygonMesh> m_dPMPtr;
 #endif
 };
 
