@@ -1995,18 +1995,19 @@ PyObject* PythonPlugins::PyActuatorPlugin_showToolbox(PyActuatorPlugin* self)
     return plugin_showToolbox(aib);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyActuatorSetInterrupt_doc, "setInterrupt() -> interrupts a movement of an actuator \n\
 \n\
 Sets the interrupt flag of an actuator. The actuator interrupts the movement of all running axes \
 as soon as this flag is checked again.");
 
-//----------------------------------------------------------------------------------------------------------------------------------
 /** sets the interrupt flag of the actuator in order to interrupt a movement
 */
 PyObject* PythonPlugins::PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self)
 {
     if (self->actuatorObj)
     {
+        //direct call is thread-safe since the flag is protected by a mutex.
         self->actuatorObj->setInterrupt();
     }
     else
