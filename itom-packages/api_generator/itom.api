@@ -13,6 +13,7 @@ itom.actuator.getStatus() -> returns a list of status values for each axis
 itom.actuator.getType() -> returns actuator type
 itom.actuator.hideToolbox() -> hides toolbox of the plugin
 itom.actuator.name() -> returns the plugin name
+itom.actuator.setInterrupt() -> interrupts a movement of an actuator
 itom.actuator.setOrigin(axis[, axis1, ...]) -> defines the actual position of the given axes to value 0.
 itom.actuator.setParam(name, value) -> sets parameter 'name' to the given value.
 itom.actuator.setPosAbs(axis0, pos0 [, axis1, pos1, ...]) -> moves given axes to given absolute values (in mm or degree).
@@ -122,18 +123,7 @@ itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObjec
 itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
 itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
-itom.npDataObject(??) [doc: npDataObject objects]
-itom.npDataObject.axisDescriptions
-itom.npDataObject.axisOffsets
-itom.npDataObject.axisScales
-itom.npDataObject.axisUnits
-itom.npDataObject.metaDict
-itom.npDataObject.name
-itom.npDataObject.tags
-itom.npDataObject.valueDescription
-itom.npDataObject.valueOffset
-itom.npDataObject.valueScale
-itom.npDataObject.valueUnit
+itom.npDataObject(??) [class]
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className]) -> plots a dataObject in a newly created figure
@@ -284,5 +274,9 @@ itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of correspond
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
 itom.uiItem.setWindowFlags(flags) -> set window flags of corresponding widget.
 itom.uncompressData
+itom.userGetInfo() -> return a dictionary with the current user management information.
+itom.userIsAdmin() -> return True if USER has administrator status.
+itom.userIsDeveloper() -> return True if USER has developer status.
+itom.userIsUser() -> return True if USER has only user status.
 itom.version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers
 itom.widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s).
