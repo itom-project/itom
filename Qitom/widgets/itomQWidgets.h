@@ -63,7 +63,15 @@ public:
 
     QModelIndexList selectedIndexes() const
     { 
-        return QTreeView::selectedIndexes();
+        QModelIndexList retList;
+        for (int i = 0; i < QTreeView::selectedIndexes().length(); ++i)
+        {
+            if (QTreeView::selectedIndexes().at(i).column() == 0)
+            {
+                retList.append(QTreeView::selectedIndexes().at(i));
+            }
+        }
+        return retList;
     }
 };
 

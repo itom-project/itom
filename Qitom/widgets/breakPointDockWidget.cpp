@@ -45,18 +45,23 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
+    
+    m_breakPointView->setAlternatingRowColors(false);
+    m_breakPointView->setTextElideMode(Qt::ElideLeft);
+    m_breakPointView->setSortingEnabled(true);
+    m_breakPointView->sortByColumn(0);
+    m_breakPointView->expandAll();
+    m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid unexpand of item while trying to open it
+    m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+    m_breakPointView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    
+
+
     PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pe)
     {
         m_breakPointView->setModel(pe->getBreakPointModel());
     }
-
-    m_breakPointView->setAlternatingRowColors(true);
-    m_breakPointView->setTextElideMode(Qt::ElideLeft);
-    m_breakPointView->setSortingEnabled(true);
-    m_breakPointView->expandAll();
-    m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid unexpand of item while trying to open it
-    m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,10 +103,10 @@ void BreakPointDockWidget::createActions()
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
     m_pActEditBP        = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/editBP.png"), tr("edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
-    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleBP.png"), tr("toggle Breakpoint"), this);
-    m_pActToggleBP->connectTrigger(this, SLOT(mnuToggleBrakpoint()));
-    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleAllBPs.png"), tr("toggle all Breakpoints"), this);
-    m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuToggleAllBrakpoints()));
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleBP.png"), tr("En- or disable Breakpoint"), this);
+    m_pActToggleBP->connectTrigger(this, SLOT(mnuEnOrDisAbleBrakpoint()));
+    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleAllBPs.png"), tr("En- or disable all Breakpoints"), this);
+    m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuEnOrDisAbleAllBrakpoints()));
 }
 
 
@@ -120,7 +125,9 @@ void BreakPointDockWidget::mnuDeleteBP()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::mnuDeleteAllBPs()
 {
-// Create new function in model to delete all breakpoints
+    m_breakPointView->clearSelection();
+    m_breakPointView->selectAll();
+    mnuDeleteBP();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -142,27 +149,35 @@ void BreakPointDockWidget::mnuEditBreakpoint()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::mnuToggleBrakpoint()
+void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
 {
     BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
     if (model)
     {
-        // TODO CHECK EVERYWHERE IF TEH SELECTION IS ONLY BPs OR FILE FILES ARE WITHIN
         QModelIndexList selected = m_breakPointView->selectedIndexes();
-
         for (int i = 0; i<selected.length(); ++i)
         {
             BreakPointItem bp = model->getBreakPoint(selected[i]);
-            bp.enabled != bp.enabled;
+            if (bp.enabled)
+            {
+                bp.enabled = false;
+            }
+            else
+            {
+                bp.enabled = true;
+            }
             model->changeBreakPoint(selected[i], bp, true);
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::mnuToggleAllBrakpoints()
+void BreakPointDockWidget::mnuEnOrDisAbleAllBrakpoints()
 {
-
+    m_breakPointView->clearSelection();
+    m_breakPointView->selectAll();
+    mnuEnOrDisAbleBrakpoint();
+    m_breakPointView->clearSelection();
 }
 
 

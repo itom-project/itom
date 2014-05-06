@@ -259,6 +259,7 @@ int BreakPointModel::rowCount(const QModelIndex &parent) const
 */
 int BreakPointModel::columnCount(const QModelIndex &parent) const
 {
+    qDebug() << m_headers.size();
     return m_headers.size();
 }
 
@@ -272,12 +273,16 @@ int BreakPointModel::columnCount(const QModelIndex &parent) const
 */
 QVariant BreakPointModel::data(const QModelIndex &index, int role) const
 {
+    qDebug() << index.row() << index.column() << index.parent().isValid();
+
     if(!index.isValid())
     {
         return QVariant();
     }
 
     int ROWHEIGHT = 18;
+
+  
     
     if (!index.parent().isValid()) // toplevel-item
     {
@@ -299,28 +304,35 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             }
             else if(role == Qt::SizeHintRole)
             {
-                return QSize(150,ROWHEIGHT);
+                return QSize(250,ROWHEIGHT);
             }
             else if(role == Qt::DecorationRole)
             {
                 return QIcon(":/files/icons/filePython.png");
             }
         }
-        else if(index.column() > 0 && role == Qt::SizeHintRole)
+        else if(index.column() > 0)
         {
-            switch(index.column())
+            if (role == Qt::SizeHintRole)
             {
-            case 1: //condition
-                return QSize(20,ROWHEIGHT);
-            case 2: //temporary
-                return QSize(30,ROWHEIGHT);
-            case 3: //enabled
-                return QSize(20,ROWHEIGHT);
-            case 4: //ignore count
-                return QSize(20,ROWHEIGHT);
+                switch(index.column())
+                {
+                case 1: //condition
+                    return QSize(20,ROWHEIGHT);
+                case 2: //temporary
+                    return QSize(30,ROWHEIGHT);
+                case 3: //enabled
+                    return QSize(20,ROWHEIGHT);
+                case 4: //ignore count
+                    return QSize(20,ROWHEIGHT);
+                }
             }
+            //else if (role == Qt::DisplayRole)
+            //{
+            //    return "a";
+            //}
         }
-        else 
+        else
         {
             return QVariant();
         }
@@ -345,8 +357,6 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
                 return item.enabled ? tr("yes") : tr("no");
             case 4: //ignore count
                 return item.ignoreCount;
-            case 5: //pythonDbgBpNumber
-                return item.pythonDbgBpNumber;
             }
         }
         else if(role == Qt::DecorationRole && index.column() == 0)
@@ -430,7 +440,7 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
 {
     if (!parent.isValid()) //root item
     {
-        if (row < 0 || column != 0 || row >= m_scriptFiles.count())
+        if (row < 0 || column < 0 || column >= m_headers.size() || row >= m_scriptFiles.count())
         {
             return QModelIndex();
         }
@@ -470,7 +480,7 @@ QModelIndex BreakPointModel::parent(const QModelIndex &index) const
     }
     else
     {
-        return createIndex(index.internalId(), index.column(), ROOTLEVELBREAKPOINTITEM);
+        return createIndex(index.internalId(), 0 /*index.column()*/, ROOTLEVELBREAKPOINTITEM);
     }
 }
 

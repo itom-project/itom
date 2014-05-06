@@ -113,10 +113,10 @@ private:
     //! helper-method for sorting different breakpoints with respect to row-index of both given QModelIndex
     static inline bool compareRow(QModelIndex a, QModelIndex b) { return a.row()>b.row(); };    
 
+    QMap<QString, int> m_includedFiles;     /*!<  list of all files that have breakpoints */
     QList<BreakPointItem> m_breakpoints;    /*!<  list of breakpoints (BreakPointItem) which are currently available in this application */
     QList<QString> m_headers;               /*!<  string list of names of column headers */
     QList<QVariant> m_alignment;            /*!<  list of alignments for the corresponding headers */
-    QMap<QString, int> m_includedFiles;     /*!<  list of all files that have breakpoints */
     QList<QString> m_scriptFiles;
 
 signals:

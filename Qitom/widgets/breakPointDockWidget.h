@@ -70,8 +70,8 @@ namespace ito
             void mnuDeleteBP();
             void mnuDeleteAllBPs();
             void mnuEditBreakpoint();
-            void mnuToggleBrakpoint();
-            void mnuToggleAllBrakpoints();
+            void mnuEnOrDisAbleBrakpoint();
+            void mnuEnOrDisAbleAllBrakpoints();
 
     };
 
