@@ -22,7 +22,7 @@ See section :ref:`primitives` for a short introduction.
 
 **Features:**
 
-* Export graphics to images, pdf and vector graphics.
+* Export graphics to images, pdf, vector graphics (via button) or to the clipBoard (ctrl-c).
 * Metadata support (the 'title'-tag is used as title of the plot).
 * Supports fixed ratio x/y-axis but not necessary fixed ratio to monitor-pixel
 * Drawing of geometrical elements and markers by script and user interaction.
@@ -191,6 +191,11 @@ Slots
 **refreshPlot( )**: 
 
  Refresh / redraw current plot
+ 
+
+**copyToClipBoard()**:
+ 
+ Copy current canvas with white background to clipBoard
  
 
 GraphicViewPlot
