@@ -70,6 +70,7 @@ void AbstractPyScintillaWidget::init()
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
     setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);
     setIndicatorDrawUnder(true, m_textIndicatorNr);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -201,6 +202,10 @@ void AbstractPyScintillaWidget::loadSettings()
     settings.endGroup();
 
     // ------------ styles ---------------------------------------------------------------
+    //set font for line numbers (equal to font of default style number)
+    QFont marginFont = qSciLex->font(qSciLex->defaultStyle());
+    setMarginsFont(marginFont);
+
     int noOfStyles = qSciLex->styleBitsNeeded();
 
     for (int i = 0; i < (2 << noOfStyles); i++)
