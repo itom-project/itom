@@ -36,6 +36,8 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qsettings.h>
+#include <qdesktopwidget.h>
+#include <qapplication.h>
 
 namespace ito {
 
@@ -142,7 +144,8 @@ void AbstractDockWidget::init()
 
     m_pWindow->installEventFilter(this);
 
-    m_pWindow->setWindowFlags(Qt::Widget);
+    m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
+    
     setWidget(m_pWindow);
 
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable;
@@ -708,8 +711,8 @@ void AbstractDockWidget::dockWidget()
     }
 
     m_docked = true;
-
-    setWindowFlags(Qt::Widget);
+    
+    setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
 
     Qt::WindowFlags flags = m_pWindow->windowFlags();
     flags &= (~Qt::WindowStaysOnTopHint); //delete WindowStaysOnTopHint
@@ -773,11 +776,14 @@ void AbstractDockWidget::undockWidget()
             m_dockToolbar->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
         }
 
-        m_pWindow->setWindowFlags(Qt::Window);
+        m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Window, Qt::Widget));
 
         if (m_docked_old && !m_lastUndockedSize.isEmpty())
-        {
+	{
             m_pWindow->setGeometry(m_lastUndockedSize);
+#if linux //also fixes the bug in lxde such that title bar is out of window, since frameGeometry is bigger than geometry
+	    m_pWindow->move(m_pWindow->geometry().topLeft() - m_pWindow->pos());
+#endif
         }
 
         if (m_docked_old)
@@ -787,12 +793,26 @@ void AbstractDockWidget::undockWidget()
 
         setTopLevel(m_recentTopLevelStyle);
 
-        setWindowFlags(Qt::Widget);
+        setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
         setFloating(true);
         QDockWidget::hide();
 
         m_pWindow->show();
         m_pWindow->raise();
+	
+#if linux
+	//in LXDE the window is sometimes positioned out of the window such that
+	//the title bar is not visible any more. Therefore it is center in the
+	//center of the current main window.
+	if (m_lastUndockedSize.isEmpty())
+	{
+	  QDesktopWidget *dw = QApplication::desktop();
+	  QRect overallRect = dw->availableGeometry(-1);
+	  QPoint centerPoint = overallRect.center();
+	  m_pWindow->adjustSize();
+	  m_pWindow->move(centerPoint - m_pWindow->rect().center());
+	}
+#endif
 
         toggleViewAction()->setVisible(false);
     }
@@ -800,7 +820,7 @@ void AbstractDockWidget::undockWidget()
     {
         setParent(m_overallParent);
         m_pWindow->setParent(this);
-        setWindowFlags(Qt::Widget);
+        setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
         setFloating(true);
 
         if (m_dockToolbar)
@@ -996,6 +1016,15 @@ void AbstractDockWidget::returnToOldMinMaxSizes()
         setMinimumSize(m_oldMinSize);
         setMaximumSize(m_oldMaxSize);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+Qt::WindowFlags AbstractDockWidget::modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags /*= 0*/, const Qt::WindowFlags &unsetFlags /*= 0*/)
+{
+  Qt::WindowFlags out = flags;
+  out |= setFlags;
+  out &= (~unsetFlags);
+  return out;
 }
 
 } //end namespace ito
