@@ -30,6 +30,7 @@
 #include <qfileinfo.h>
 #include <qsize.h>
 #include <qsettings.h>
+#include <qdatastream.h>
 
 namespace ito
 {
