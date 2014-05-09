@@ -1479,36 +1479,10 @@ void ScriptDockWidget::mnuScriptRun()
 void ScriptDockWidget::mnuScriptRunSelection()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
+
     if (sew == NULL) return;
 
-    int lineFrom = -1;
-    int lineTo = -1;
-    int indexFrom = -1;
-    int indexTo = -1;
-
-    //check whether text has been marked
-    sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-    if (lineFrom >= 0)
-    {
-        //text has been marked
-        if (lineFrom != lineTo)
-        {
-            indexFrom = 0;
-            if (lineTo == sew->lines() - 1)
-            {
-                indexTo = sew->lineLength(lineTo);
-            }
-            else
-            {
-                indexTo = sew->lineLength(lineTo) - 1;
-            }
-
-            sew->setSelection(lineFrom, indexFrom, lineTo, indexTo);
-        }
-        QString defaultText = sew->selectedText();
-
-        emit pythonRunSelection(defaultText);
-    }
+    sew->menuRunSelection();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

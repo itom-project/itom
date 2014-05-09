@@ -826,22 +826,20 @@ void ScriptEditorWidget::menuRunSelection()
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
     if (lineFrom >= 0)
     {
-        //text has been marked
-        if (lineFrom != lineTo)
-        {
-            indexFrom = 0;
-            if (lineTo == lines() - 1)
-            {
-                indexTo = lineLength(lineTo);
-            }
-            else
-            {
-                indexTo = lineLength(lineTo) - 1;
-            }
-
-            setSelection(lineFrom, indexFrom, lineTo, indexTo);
-        }
         QString defaultText = selectedText();
+
+        //in linux, double-clicking at one line entirely marks this line and sometimes includes a \n to the next line. remove this:
+        const QChar *data = defaultText.constData();
+        int signsToRemove = 0;
+        int len = defaultText.size() - 1;
+        
+        while (defaultText[len-signsToRemove] == '\n' || defaultText[len-signsToRemove] == '\r' || defaultText[len-signsToRemove] == ' ')
+        {
+            signsToRemove++;
+        }
+
+        defaultText.truncate(len - signsToRemove + 1);
+        
 
         emit pythonRunSelection(defaultText);
     }
