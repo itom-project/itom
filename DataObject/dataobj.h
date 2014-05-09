@@ -1846,7 +1846,7 @@ static inline std::ostream& operator << (std::ostream& out, const DataObject& dO
    return fListCout[dObj.getType()](out, dObj);
 }
 
-//! static method which returns the real data object of any given data type
+//! static method which returns the real data type of any given data type
 /*!
     If the given data type is already real, the same type is returned. Else the type of the real argument of the given complex type is returned.
 
@@ -1875,6 +1875,54 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
     }
 
     cv::error(cv::Exception(CV_StsAssert, "Input data type unknown", "", __FILE__, __LINE__));
+    return ito::tInt8;
+}
+
+//! static method which guesses the dataObject type from a given cv::Mat*
+/*!
+    If the given data type is already real, the same type is returned. Else the type of the real argument of the given complex type is returned.
+
+    \param mat is the OpenCV matrix.
+    \param retval an error value will be added if the type cannot be converted.
+    \return ito::DataObject type that fits to the given matrix
+*/
+static ito::tDataType guessDataTypeFromCVMat(const cv::Mat* mat, ito::RetVal &retval)
+{
+    //this method was added 2014-05-09 without changing the binary compatibility of the dataObject library
+    if (mat)
+    {
+        switch(mat->type())
+        {
+        case cv::DataType<ito::int8>::type:
+            return ito::tInt8;
+        case cv::DataType<ito::uint8>::type:
+            return ito::tUInt8;
+        case cv::DataType<ito::int16>::type:
+            return ito::tInt16;
+        case cv::DataType<ito::uint16>::type:
+            return ito::tUInt16;
+        case cv::DataType<ito::int32>::type:
+            return ito::tInt32;
+        case cv::DataType<ito::uint32>::type:
+            return ito::tUInt32;
+        case cv::DataType<ito::float32>::type:
+            return ito::tFloat32;
+        case cv::DataType<ito::float64>::type:
+            return ito::tFloat64;
+        case cv::DataType<ito::Rgba32>::type:
+            return ito::tRGBA32;
+        case cv::DataType<ito::complex64>::type:
+            return ito::tComplex64;
+        case cv::DataType<ito::complex128>::type:
+            return ito::tComplex128;
+        }
+
+        retval += ito::RetVal(ito::retError, 0, "type of cv::Mat is incompatible to ito::DataObject");
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "given cv::Mat is NULL.");
+    }
     return ito::tInt8;
 }
 
