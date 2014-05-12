@@ -231,10 +231,7 @@ void MainApplication::setupApplication()
 //    QTextCodec::setCodecForCStrings(textCodec);
 //    QTextCodec::setCodecForLocale(textCodec);
 
-    settings->beginGroup("CurrentStatus");
-    QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
-    settings->endGroup();
-    settings->sync();
+    
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -391,6 +388,18 @@ void MainApplication::setupApplication()
 
     qDebug("..starting load settings");
     settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat); //reload settings, since all organizers can load their own instances, that might lead to an unwanted read/write mixture.
+
+    //the current directory is set after having loaded all plugins and designerPlugins
+    //Reason: There is a crazy bug, if starting itom in Visual Studio, Debug-Mode. If the current directory
+    //is a network drive, no plugins can be loaded any more using Window's loadLibrary command!
+    settings->beginGroup("CurrentStatus");
+    QDir dir(settings->value("currentDir",QDir::currentPath()).toString());
+    if (dir.exists())
+    {
+        QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
+    }
+    settings->endGroup();
+    settings->sync();
 
     //try to execute startup-python scripts
     m_splashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom);
