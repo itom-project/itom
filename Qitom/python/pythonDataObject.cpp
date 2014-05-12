@@ -4910,10 +4910,16 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 }
 
             }
+            else if (Py_TYPE(value) == &ito::PythonRgba::PyRgbaType)
+            {
+                ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)(value);
+                fromType = ito::tRGBA32;
+                valuePtr = static_cast<void*>(&rgba->rgba); //will be valid until end of function since this is a direct access to the underlying structure.
+            }
             else
             {
                 error = true;
-                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex");
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, dataObject");
             }
 
             self->dataObject->unlock();
@@ -6018,6 +6024,60 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray([destinationType='uint8']) -> returns the rgba32 color data object as a gray-scale object\n\
+\n\
+The destination data object has the same size than this data object and the real type given by destinationType. The pixel-wise \
+conversion is done using the formula: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
+\n\
+Parameters \n\
+----------- \n\
+destinationType : {str} \n\
+    Type string indicating the new real type ('uint8',...'float32','float64' - no complex) \n\
+\n\
+Returns \n\
+------- \n\
+dataObj : {dataObject} \n\
+    converted gray-scale data object of desired type");
+/*static*/ PyObject* PythonDataObject::PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    const char* type;
+    int typeno = ito::tUInt8;
+
+    const char *kwlist[] = {"destinationType", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds,"|s",const_cast<char**>(kwlist), &type))
+    {
+        return NULL;
+    }
+
+    typeno = typeNameToNumber(type);
+
+    if (typeno == -1)
+    {
+        PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
+        return NULL;
+    }
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    try
+    {
+        retObj->dataObject = new ito::DataObject(self->dataObject->toGray(typeno));
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    if (!retObj->dataObject->getOwnData())
+    {
+        PyDataObject_SetBase(retObj, (PyObject*)self);
+    }
+
+    return (PyObject*)retObj;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> return the data object as a (possibly nested) list\n\
 \n\
@@ -6608,6 +6668,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
 
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
+        {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
         {NULL}  /* Sentinel */
     };
 

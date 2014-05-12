@@ -117,10 +117,10 @@ namespace cv
    template<> inline ito::Rgba32 saturate_cast(ito::float64 v){return ito::Rgba32(saturate_cast<ito::uint8>(v));}
    template<> inline ito::Rgba32 saturate_cast(ito::Rgba32 v){return v;}
 
-   template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::Rgba32", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-   template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::Rgba32", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-   template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::Rgba32", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-   template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Not defined for output parameter type ito::Rgba32", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+   template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int8 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+   template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int16 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+   template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from complex128 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+   template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Cast from complex64 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
 
    template<> inline ito::uint8 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
    //template<> inline ito::int16 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::int16>(v.gray());};
@@ -1148,6 +1148,9 @@ class DATAOBJ_EXPORT DataObject
         uchar ** get_mdata(void);
         uchar ** get_mdata(void) const;
 
+        cv::Mat* getCvPlaneMat(const int planeIndex);
+        const cv::Mat* getCvPlaneMat(const int planeIndex) const;
+
         //! returns the size-member. m_size fits to the physical organization of data in memory.
         /*!
             \return size-member of type MSize
@@ -1571,6 +1574,8 @@ class DATAOBJ_EXPORT DataObject
 
         DataObject row(const int selRow);
         DataObject col(const int selCol);
+
+        DataObject toGray(const int destinationType = ito::tUInt8);
 
         // ROI
         DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
