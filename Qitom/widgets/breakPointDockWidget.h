@@ -54,8 +54,11 @@ namespace ito
         private:
             QTreeViewItom   *m_breakPointView;
 
+            
             // Toolbar
             QToolBar    *m_pMainToolbar;
+
+            QMenu *m_pContextMenu;
 
             ShortcutAction* m_pActDelBP;
             ShortcutAction* m_pActDelAllBPs;
@@ -72,6 +75,8 @@ namespace ito
             void mnuEditBreakpoint();
             void mnuEnOrDisAbleBrakpoint();
             void mnuEnOrDisAbleAllBrakpoints();
+            void treeViewContextMenuRequested(const QPoint &pos);
+            void actualizeTree(const QModelIndex &parent, int start, int end);
 
     };
 

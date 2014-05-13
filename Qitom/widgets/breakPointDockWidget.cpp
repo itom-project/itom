@@ -25,6 +25,7 @@
 #include "breakPointDockWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
+#include "ui\dialogEditBreakpoint.h"
 
 #include "../organizer/scriptEditorOrganizer.h"
 
@@ -42,32 +43,39 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     AbstractDockWidget::init();
 
     setContentWidget(m_breakPointView);
+    m_breakPointView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
-    
-    m_breakPointView->setAlternatingRowColors(false);
+    connect(m_breakPointView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+
+    //m_breakPointView->setAlternatingRowColors(false);
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
-    m_breakPointView->setSortingEnabled(true);
     m_breakPointView->sortByColumn(0);
-    m_breakPointView->expandAll();
-    m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid unexpand of item while trying to open it
+    m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid collapse of item while trying to open it
     m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
     m_breakPointView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     
-
-
     PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pe)
     {
         m_breakPointView->setModel(pe->getBreakPointModel());
+        connect(pe->getBreakPointModel(), SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SLOT(actualizeTree(const QModelIndex &, int, int)));
+        // maybe it would be good to connect the rowsRemoved-Signal as well. Just to be shure!
     }
+    m_breakPointView->setColumnWidth(0, 200);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 BreakPointDockWidget::~BreakPointDockWidget()
 {
     
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::actualizeTree(const QModelIndex &parent, int start, int end)
+{   
+    m_breakPointView->expandAll();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -97,19 +105,35 @@ void BreakPointDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::createActions()
 {
-    m_pActDelBP         = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/garbageBP.png"), tr("delete Breakpoint"), this);
+    m_pActDelBP         = new ShortcutAction(QIcon(":/breakpoints/icons/garbageBP.png"), tr("delete Breakpoint"), this);
     m_pActDelBP->connectTrigger(this, SLOT(mnuDeleteBP()));
-    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/garbageAllBPs.png"), tr("delete all Breakpoints"), this);
+    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("delete all Breakpoints"), this);
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
-    m_pActEditBP        = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/editBP.png"), tr("edit Breakpoints"), this);
+    m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
-    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleBP.png"), tr("En- or disable Breakpoint"), this);
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabled.png"), tr("En- or disable Breakpoint"), this);
     m_pActToggleBP->connectTrigger(this, SLOT(mnuEnOrDisAbleBrakpoint()));
-    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakPointDockWidget/icons/toggleAllBPs.png"), tr("En- or disable all Breakpoints"), this);
+    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.png"), tr("En- or disable all Breakpoints"), this);
     m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuEnOrDisAbleAllBrakpoints()));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::createMenus()
+{
+    m_pContextMenu = new QMenu(this);
+    m_pContextMenu->addAction(m_pActDelBP->action());
+    m_pContextMenu->addAction(m_pActDelAllBPs->action());
+    m_pContextMenu->addAction(m_pActEditBP->action());
+    m_pContextMenu->addAction(m_pActToggleBP->action());
+    m_pContextMenu->addAction(m_pActToggleAllBPs->action());
+}
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::treeViewContextMenuRequested(const QPoint &pos)
+{
+    updateActions();
+    m_pContextMenu->exec(pos + m_breakPointView->mapToGlobal(m_breakPointView->pos()));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::mnuDeleteBP()
@@ -117,7 +141,17 @@ void BreakPointDockWidget::mnuDeleteBP()
     BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
     if (model)
     {
-        model->deleteBreakPoints(m_breakPointView->selectedIndexes());
+        QModelIndexList delList;
+        QModelIndexList allList = model->getAllFileIndexes();
+        QModelIndexList selList = m_breakPointView->selectedIndexes();
+        for (int i = 0; i < selList.size(); ++i)
+        {
+            if (!allList.contains(selList.at(i)))
+            {
+                delList.append(selList.at(i));
+            }
+        }
+        model->deleteBreakPoints(delList);
     }
 }
 
@@ -141,7 +175,17 @@ void BreakPointDockWidget::mnuEditBreakpoint()
             QModelIndex sel = m_breakPointView->selectedIndexes()[0];
             BreakPointItem bp = model->getBreakPoint(sel);
             
-            // TODO: Let the Dialog appear here!
+            DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineno+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
+            dlg->exec();
+            if (dlg->result() == QDialog::Accepted)
+            {
+                dlg->getData(bp.enabled, bp.temporary, bp.ignoreCount, bp.condition);
+                bp.conditioned = (bp.condition != "") || (bp.ignoreCount > 0) || bp.temporary;
+
+                model->changeBreakPoint(sel, bp);
+            }
+
+            DELETE_AND_SET_NULL(dlg);
 
             model->changeBreakPoint(sel, bp, true);
         }
@@ -178,12 +222,6 @@ void BreakPointDockWidget::mnuEnOrDisAbleAllBrakpoints()
     m_breakPointView->selectAll();
     mnuEnOrDisAbleBrakpoint();
     m_breakPointView->clearSelection();
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::createMenus()
-{
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

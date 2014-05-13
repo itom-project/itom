@@ -262,11 +262,11 @@ RetVal ScriptEditorWidget::initMenus()
 
     breakpointMenu = new QMenu(this);
     breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&toggle breakpoint"), this, SLOT(menuToggleBreakpoint()));
-    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisabled.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
     breakpointMenuActions["editConditionBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&edit condition"), this, SLOT(menuEditBreakpoint()));
-    breakpointMenuActions["nextBP"] = breakpointMenu->addAction(tr("&next breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
-    breakpointMenuActions["prevBP"] = breakpointMenu->addAction(tr("&previous breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
-    breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(tr("&clear all breakpoint"), this, SLOT(menuClearAllBreakpoints()));
+    breakpointMenuActions["nextBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&next breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
+    breakpointMenuActions["prevBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&previous breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
+    breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&delete all breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 
     connect(breakpointMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 

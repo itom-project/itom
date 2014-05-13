@@ -32,11 +32,13 @@
 #include <qsettings.h>
 #include <qicon.h>
 #include <qsize.h>
-
-#define ROOTLEVELBREAKPOINTITEM  500000
+#include <qhash.h>
 
 namespace ito
 {
+
+    int ROWHEIGHT = 20;
+    int COLWIDTH = 100;
 
     QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj)
     {
@@ -150,6 +152,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
         m_scriptFiles.append(bp.filename);
         endInsertRows();
     }
+    // now append the bp to the file:
     QModelIndex parent = getFilenameModelIndex(bp.filename);
     if (parent.isValid())
     {
@@ -174,8 +177,12 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
 {
     if(index.isValid())
     {
-        if (index.internalId() >= 0) //delete one single breakpoint, second level item
+        //TODO stimmt hier >=0 oder muss man hier gegen 500000 prüfen "?
+        if (index.internalPointer() != NULL) //>= 0) //delete one single breakpoint, second level item
         {
+            // TODO: Problem, dass wenn in der liste ein file ist, dieses gelöscht wird
+            // und dann nicht mehr der index ermittelt werden kann
+
             int breakPointIndex = getBreakPointIndex(index);
 
             if (breakPointIndex >= 0)
@@ -225,7 +232,11 @@ RetVal BreakPointModel::deleteBreakPoints(QModelIndexList indizes)
 
     for(it = indizes.begin() ; it != indizes.end() ; ++it)
     {
-        retValue += deleteBreakPoint(*it);
+        void* k = it->internalPointer();
+        if (k != NULL)
+        {
+            retValue += deleteBreakPoint(*it);
+        }
     }
 
     return retValue;
@@ -242,7 +253,7 @@ int BreakPointModel::rowCount(const QModelIndex &parent) const
     {
         return m_scriptFiles.count();
     }
-    else if (parent.internalId() == ROOTLEVELBREAKPOINTITEM)
+    else if (parent.internalPointer() == NULL)
     {
         return nrOfBreakpointsInFile(parent.row());
     }
@@ -259,7 +270,6 @@ int BreakPointModel::rowCount(const QModelIndex &parent) const
 */
 int BreakPointModel::columnCount(const QModelIndex &parent) const
 {
-    qDebug() << m_headers.size();
     return m_headers.size();
 }
 
@@ -280,9 +290,23 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    int ROWHEIGHT = 18;
-
-  
+    // Size policy
+    if (role == Qt::SizeHintRole)
+    {
+        switch(index.column())
+        {
+        case 0:
+            return QSize(COLWIDTH, ROWHEIGHT);
+        case 1: //condition
+            return QSize(20,ROWHEIGHT);
+        case 2: //temporary
+            return QSize(30,ROWHEIGHT);
+        case 3: //enabled
+            return QSize(20,ROWHEIGHT);
+        case 4: //ignore count
+            return QSize(20,ROWHEIGHT);
+        }
+    }
     
     if (!index.parent().isValid()) // toplevel-item
     {
@@ -302,37 +326,12 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             {
                 return Qt::AlignLeft;
             }
-            else if(role == Qt::SizeHintRole)
-            {
-                return QSize(250,ROWHEIGHT);
-            }
             else if(role == Qt::DecorationRole)
             {
                 return QIcon(":/files/icons/filePython.png");
             }
         }
-        else if(index.column() > 0)
-        {
-            if (role == Qt::SizeHintRole)
-            {
-                switch(index.column())
-                {
-                case 1: //condition
-                    return QSize(20,ROWHEIGHT);
-                case 2: //temporary
-                    return QSize(30,ROWHEIGHT);
-                case 3: //enabled
-                    return QSize(20,ROWHEIGHT);
-                case 4: //ignore count
-                    return QSize(20,ROWHEIGHT);
-                }
-            }
-            //else if (role == Qt::DisplayRole)
-            //{
-            //    return "a";
-            //}
-        }
-        else
+        else // these columns are always empty in toplevel items
         {
             return QVariant();
         }
@@ -341,7 +340,6 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
     {
         int breakPointIndex = getBreakPointIndex(index);
         const BreakPointItem item = m_breakpoints[breakPointIndex];
-
 
         if(role == Qt::DisplayRole)
         {
@@ -408,22 +406,6 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
                 return Qt::AlignCenter;
             }
         }
-        else if(role == Qt::SizeHintRole)
-        {
-            switch(index.column())
-            {
-            case 0: //line
-                return QSize(150,ROWHEIGHT);
-            case 1: //condition
-                return QSize(20,ROWHEIGHT);
-            case 2: //temporary
-                return QSize(30,ROWHEIGHT);
-            case 3: //enabled
-                return QSize(20,ROWHEIGHT);
-            case 4: //ignore count
-                return QSize(20,ROWHEIGHT);
-            }
-        }
     }
     return QVariant();
 }
@@ -445,22 +427,20 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
             return QModelIndex();
         }
         else
-        {
-            return createIndex(row, column, ROOTLEVELBREAKPOINTITEM); //internalId of root item is ROOTLEVELBREAKPOINTITEM
+        {                           //???
+            return createIndex(row, column, NULL); //internalId of root item is NULL
         }
     }
     else
     {
-        qint64 fileIdx = parent.row();
-        int nrOfFiles = nrOfBreakpointsInFile(fileIdx);
-
+        int nrOfFiles = nrOfBreakpointsInFile(parent.row());
         if (row < 0 || row >= nrOfFiles || column < 0 || column >= m_headers.size())
         {
             return QModelIndex();
         }
         else
-        {
-            return createIndex(row, column, (quint32)fileIdx);
+        {                           //???
+            return createIndex(row, column, (void*)(&(m_scriptFiles[parent.row()])));
         }
     }
 
@@ -474,14 +454,36 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
 */
 QModelIndex BreakPointModel::parent(const QModelIndex &index) const
 {
-    if (index.isValid() && index.internalId() == ROOTLEVELBREAKPOINTITEM) //this index is a root level item
+    if (index.isValid() && index.internalPointer() == NULL) //this index is a root level item
     {
         return QModelIndex();
     }
     else
     {
-        return createIndex(index.internalId(), 0 /*index.column()*/, ROOTLEVELBREAKPOINTITEM);
+        int parentRow = getFileIndexFromInternalPtr(index.internalPointer());
+
+        if (parentRow >= 0)
+        {
+            return createIndex(parentRow, 0, NULL);
+        }
+        else //may not occur
+        {
+            return QModelIndex();
+        }
     }
+}
+
+int BreakPointModel::getFileIndexFromInternalPtr(const void* ptr) const
+{
+    for (int i = 0; i < m_scriptFiles.size(); ++i)
+    {
+        if (&(m_scriptFiles[i]) == ptr)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -502,13 +504,29 @@ QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, i
         }
         return QVariant();
     }
+    else if (role == Qt::SizeHintRole)
+    {
+        switch(section)
+        {
+        case 0:
+            return QSize(COLWIDTH, ROWHEIGHT);
+        case 1: //condition
+            return QSize(20,ROWHEIGHT);
+        case 2: //temporary
+            return QSize(30,ROWHEIGHT);
+        case 3: //enabled
+            return QSize(20,ROWHEIGHT);
+        case 4: //ignore count
+            return QSize(20,ROWHEIGHT);
+        }
+    }
     return QVariant();
 }
 
 //-------------------------------------------------------------------------------------------------------
-int BreakPointModel::nrOfBreakpointsInFile(const qint64 &fileIdx) const
+int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
 {
-    if (fileIdx < m_scriptFiles.size() && fileIdx >= 0)
+    if (fileIdx >= 0 && fileIdx < m_scriptFiles.size())
     {
         QString filename = m_scriptFiles[fileIdx];
         int count = 0;
@@ -537,7 +555,7 @@ QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) cons
     {
         if (QString::compare(m_scriptFiles[i], filename, Qt::CaseInsensitive) == 0)
         {
-            return createIndex(i, 0, ROOTLEVELBREAKPOINTITEM);
+            return createIndex(i, 0, NULL);
         }
     }
     return QModelIndex();
@@ -552,19 +570,19 @@ QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) cons
 */
 QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, int lineNo) const
 {
-    int fileRow = -1;
+    void *filePointer = NULL;
 
     //first find filename in m_scriptFiles
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
         if (QString::compare(m_scriptFiles[i], filename) == 0)
         {
-            fileRow = i;
+            filePointer = (void*)(&(m_scriptFiles[i]));
             break;
         }
     }
 
-    if (fileRow >= 0)
+    if (filePointer)
     {
         int count = -1;
 
@@ -576,7 +594,7 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
 
                 if (m_breakpoints[row].lineno == lineNo)
                 {
-                    return createIndex(count, 0, fileRow);
+                    return createIndex(count, 0, filePointer);
                 }
             }
         }
@@ -595,20 +613,20 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
 */
 QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, int lineNo) const
 {
-    int fileRow = -1;
     QModelIndexList list;
+    void *filePointer = NULL;
 
     //first find filename in m_scriptFiles
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
         if (QString::compare(m_scriptFiles[i], filename) == 0)
         {
-            fileRow = i;
+            filePointer = (void*)(&(m_scriptFiles[i]));
             break;
         }
     }
 
-    if (fileRow >= 0)
+    if (filePointer)
     {
         int count = -1;
 
@@ -620,7 +638,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
 
                 if (m_breakpoints[row].lineno == lineNo)
                 {
-                    list.push_back(createIndex(count, 0, fileRow));
+                    list.push_back(createIndex(count, 0, filePointer));
                 }
             }
         }
@@ -649,18 +667,24 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineN
 */
 BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 {
-    if (index.isValid() && index.internalId() != ROOTLEVELBREAKPOINTITEM)
+    if (index.isValid() && index.internalPointer() != NULL)
     {
-        QString filename = m_scriptFiles[index.internalId()];
-        int breakpointIndex = index.row();
-
-        int count = -1;
-        for (int i = 0; i < m_breakpoints.size(); ++i)
+        for (int i = 0; i < m_scriptFiles.size(); ++i)
         {
-            if (m_breakpoints[i].filename == filename) count++;
-            if (count == breakpointIndex)
+            if (&m_scriptFiles[i] == index.internalPointer())
             {
-                return m_breakpoints[i];
+                QString filename = m_scriptFiles[i];
+                int breakpointIndex = index.row();
+
+                int count = -1;
+                for (int i = 0; i < m_breakpoints.size(); ++i)
+                {
+                    if (m_breakpoints[i].filename == filename) count++;
+                    if (count == breakpointIndex)
+                    {
+                        return m_breakpoints[i];
+                    }
+                }
             }
         }
     }
@@ -676,23 +700,40 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 */
 int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
 {
-    if (index.isValid() && index.internalId() != ROOTLEVELBREAKPOINTITEM)
+    if (index.isValid() && index.internalPointer() != NULL)
     {
-        QString filename = m_scriptFiles[index.internalId()];
-        int breakpointIndex = index.row();
-
-        int count = -1;
-        for (int i = 0; i < m_breakpoints.size(); ++i)
+        for (int i = 0; i < m_scriptFiles.size(); ++i)
         {
-            if (m_breakpoints[i].filename == filename) count++;
-            if (count == breakpointIndex)
+            if (&m_scriptFiles[i] == index.internalPointer())
             {
-                return i;
+                QString filename = m_scriptFiles[i];
+                int breakpointIndex = index.row();
+
+                int count = -1;
+                for (int i = 0; i < m_breakpoints.size(); ++i)
+                {
+                    if (m_breakpoints[i].filename == filename) count++;
+                    if (count == breakpointIndex)
+                    {
+                        return i;
+                    }
+                }
             }
         }
     }
 
     return -1;
+}
+
+//-------------------------------------------------------------------------------------------------------
+QModelIndexList BreakPointModel::getAllFileIndexes()
+{
+    QModelIndexList retList;
+    for (int i = 0; i < m_scriptFiles.size(); ++i)
+    {
+        retList.append(this->getFilenameModelIndex(m_scriptFiles.at(i)));
+    }
+    return retList;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -715,7 +756,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
     {
         retval += ito::RetVal(ito::retError, 0, "given modelIndex of breakpoint is invalid");
     }
-    else if (index.internalId() != ROOTLEVELBREAKPOINTITEM)
+    else if (index.internalPointer() != NULL)
     {
         //second level item
         int idx = getBreakPointIndex(index);
@@ -732,7 +773,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
                 m_breakpoints[idx] = bp;
                 //emit(dataChanged(index,index));
                 //this->setData(index, QVariant(), Qt::DisplayRole);
-                emit(dataChanged(createIndex(index.row(),0,(quint32)index.internalId()),createIndex(index.row(),m_headers.size()-1,(quint32)index.internalId())));
+                emit(dataChanged(createIndex(index.row(),0,index.internalPointer()),createIndex(index.row(),0/*m_headers.size()-1*/,index.internalPointer())));
                 if(emitBreakPointChanged) //!< should be false, if filename or line-nr of editor has changed.
                 {
                     emit(breakPointChanged(oldBp, bp));
@@ -756,7 +797,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
 */
 QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) const
 {
-    int fileRow = -1;
+    void *filePointer = NULL;
     QModelIndexList list;
 
     //first find filename in m_scriptFiles
@@ -764,12 +805,12 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) c
     {
         if (QString::compare(m_scriptFiles[i], filename) == 0)
         {
-            fileRow = i;
+            filePointer = (void*)(&(m_scriptFiles[i]));
             break;
         }
     }
 
-    if (fileRow >= 0)
+    if (filePointer)
     {
         int count = -1;
 
@@ -778,8 +819,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) c
             if (QString::compare(m_breakpoints[row].filename, filename) == 0)
             {
                 count++;
-
-                list.push_back(createIndex(count, 0, fileRow));
+                list.push_back(createIndex(count, 0, filePointer));
             }
         }
     }
@@ -848,7 +888,7 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
     for(it = m_breakpoints.begin() ; it != m_breakpoints.end() ; ++it)
     {
         (*it).pythonDbgBpNumber = -1;
-    }
+    }                                                                    //???
     emit(dataChanged(createIndex(0,0),createIndex(m_breakpoints.size()-1,m_headers.size()-1)));
     return RetVal(retOk);
 }
@@ -865,7 +905,7 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
     \sa changeBreakPoint
 */
 RetVal BreakPointModel::setPyBpNumber(int row, int pyBpNumber)
-{
+{                                                     //???
     BreakPointItem bp = getBreakPoint(createIndex(row,1));
     bp.pythonDbgBpNumber=pyBpNumber;
     return changeBreakPoint(createIndex(row,1),bp,false);
