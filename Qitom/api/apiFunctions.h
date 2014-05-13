@@ -45,6 +45,7 @@ namespace ito
             static ito::RetVal maddInOpenDataIO(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&dataIO);
 
             static ito::DataObject* mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
+            static ito::DataObject* mcreateFromNamedDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name = NULL, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
             static QString getCurrentWorkingDir(void);
 
             static ito::RetVal mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance);

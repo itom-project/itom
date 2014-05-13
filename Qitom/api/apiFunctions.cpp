@@ -60,6 +60,7 @@ namespace ito
         (void*)&ApiFunctions::getCurrentWorkingDir,     /* [21] */
         (void*)&ApiFunctions::mshowConfigurationDialog, /* [22] */
         (void*)&ParamHelper::updateParameters,           /* [23] */
+        (void*)&ApiFunctions::mcreateFromNamedDataObject,    /* [24] */
         NULL
     };
 
@@ -426,6 +427,12 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
 {
+    return mcreateFromNamedDataObject(dObj, nrDims, type, NULL, sizeLimits, retval);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::DataObject* ApiFunctions::mcreateFromNamedDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name /*= NULL*/, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
+{
     ito::DataObject *output = NULL;
     ito::RetVal ret;
 
@@ -433,7 +440,14 @@ ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
     {
         if (dObj->getDims() != nrDims)
         {
-            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toLatin1().data(), nrDims, dObj->getDims());
+            if (name)
+            {
+                ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The data object '%s' must have %i dimensions (%i given)").toLatin1().data(), name, nrDims, dObj->getDims());
+            }
+            else
+            {
+                ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The given data object must have %i dimensions (%i given)").toLatin1().data(), nrDims, dObj->getDims());
+            }
         }
         else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
         {
@@ -442,7 +456,14 @@ ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
                 int s = dObj->getSize(i);
                 if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
                 {
-                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                    if (name)
+                    {
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension  of data object '%s' exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, name, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                    }
+                    else
+                    {
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                    }
                     break;
                 }
             }

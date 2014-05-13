@@ -52,6 +52,12 @@
 #include <QtWidgets/qdockwidget.h>
 #endif
 
+//plugins define VISUAL_LEAK_DETECTOR_CMAKE in their CMake configuration file
+#if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
+    #define NOMINMAX //instead min, max is defined as macro in winDef.h, included by vld.h
+    #include "vld.h"
+#endif
+
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 //write this macro right after Q_INTERFACE(...) in your interface class definition

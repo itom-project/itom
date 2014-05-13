@@ -257,6 +257,27 @@ namespace ito
     */
     #define apiCreateFromDataObject \
         (* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[19])
+
+    //! returns a shallow or deep copy of a given data object that fits to given requirements
+    /*!
+        Use this simple api method to test a given data object if it fits some requirements.
+        If this is the case, a shallow copy of the input data object is returned. Else, it is
+        tried to convert into the required object and a converted deep copy is returned. If the
+        input object does not fit the given requirements, NULL is returned and the ito::RetVal
+        parameter contains an error status including error message.
+
+        \note In any case you need to delete the returned data object
+
+        \param dObj the input data object
+        \param nrDims the required number of dimensions
+        \param type the required type of the returned data object
+        \param name name of the data object for an improved error message (zero-terminated string) or NULL if no name is known.
+        \param sizeLimits can be NULL if the sizes should not be checked, else it is an array with length (2*nrDims). Every adjacent pair describes the minimum and maximum size of each dimension.
+        \param retval can be a pointer to an instance of ito::RetVal or NULL. If given, the status of this method is added to this return value.
+        \return shallow or deep copy of the input data object or NULL (in case of unsolvable incompatibility)
+    */
+    #define apiCreateFromNamedDataObject \
+        (* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[24])
     
     //! returns the current working directory of itom
     /*!

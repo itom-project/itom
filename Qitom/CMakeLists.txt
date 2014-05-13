@@ -18,7 +18,7 @@ OPTION(BUILD_WITH_NPDATAOBJECT "Build with the python class itom.npDataObject. T
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
- 
+   
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)
