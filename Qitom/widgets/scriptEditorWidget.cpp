@@ -1162,6 +1162,12 @@ bool ScriptEditorWidget::event (QEvent * event)
             }
         }
     }
+    else if(event->type() == QEvent::KeyRelease && m_pythonExecutable && m_syntaxCheckerEnabled)
+    {
+        // SyntaxCheck   
+        m_syntaxTimer->start(); //starts or restarts the timer
+    }
+
     return QsciScintilla::event(event);
 }
 
@@ -1744,7 +1750,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
     // SyntaxCheck   
     if (m_pythonExecutable && m_syntaxCheckerEnabled)
     {
-        m_syntaxTimer->start();
+        m_syntaxTimer->start(); //starts or restarts the timer
     }
 }
 
