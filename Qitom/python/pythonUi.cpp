@@ -2946,7 +2946,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     dialog->uiItem.widgetClassName = new char[className->size()+1];
     strcpy_s(dialog->uiItem.widgetClassName, className->size()+1, className->data());
 
-    char *objName = "<plugin-widget>\0";
+    const char *objName = "<plugin-widget>\0";
     dialog->uiItem.objName = new char[strlen(objName)+1];
     strcpy_s(dialog->uiItem.objName, strlen(objName)+1, objName);  
 

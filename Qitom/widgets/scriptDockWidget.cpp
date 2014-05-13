@@ -151,7 +151,7 @@ ScriptDockWidget::~ScriptDockWidget()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QVariant ScriptDockWidget::saveScriptState() const
+QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
 {
     QList<ito::ScriptEditorStorage> state;
     ScriptEditorWidget *sew;
@@ -169,28 +169,14 @@ QVariant ScriptDockWidget::saveScriptState() const
         }
     }
     
-    return QVariant::fromValue<QList<ito::ScriptEditorStorage> >(state);
+    return state;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptDockWidget::restoreScriptState(const QVariant &state)
+RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage> &states)
 {
     RetVal retVal;
-    QList<ito::ScriptEditorStorage> states;
-
-    if (state.canConvert<ito::ScriptEditorStorage>())
-    {
-        states << state.value<ito::ScriptEditorStorage>();
-    }
-    else if (state.canConvert<QList<ito::ScriptEditorStorage> >())
-    {
-        states = state.value<QList<ito::ScriptEditorStorage> >();
-    }
-    else
-    {
-        retVal += RetVal(retError,0,"missaligned data");
-    }
-
+    
     if (!retVal.containsError())
     {
         foreach(const ito::ScriptEditorStorage &ses, states)
@@ -1493,36 +1479,10 @@ void ScriptDockWidget::mnuScriptRun()
 void ScriptDockWidget::mnuScriptRunSelection()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
+
     if (sew == NULL) return;
 
-    int lineFrom = -1;
-    int lineTo = -1;
-    int indexFrom = -1;
-    int indexTo = -1;
-
-    //check whether text has been marked
-    sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-    if (lineFrom >= 0)
-    {
-        //text has been marked
-        if (lineFrom != lineTo)
-        {
-            indexFrom = 0;
-            if (lineTo == sew->lines() - 1)
-            {
-                indexTo = sew->lineLength(lineTo);
-            }
-            else
-            {
-                indexTo = sew->lineLength(lineTo) - 1;
-            }
-
-            sew->setSelection(lineFrom, indexFrom, lineTo, indexTo);
-        }
-        QString defaultText = sew->selectedText();
-
-        emit pythonRunSelection(defaultText);
-    }
+    sew->menuRunSelection();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

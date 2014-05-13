@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RangeWidget</class>
- <widget class="QWidget" name="RangeWidget">
+ <class>DoubleRangeWidget</class>
+ <widget class="QWidget" name="DoubleRangeWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -24,25 +24,30 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QSpinBox" name="MinimumSpinBox"/>
+    <widget class="DoubleSpinBox" name="MinimumSpinBox"/>
    </item>
    <item row="0" column="1">
-    <widget class="RangeSlider" name="Slider">
+    <widget class="DoubleRangeSlider" name="Slider">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QSpinBox" name="MaximumSpinBox"/>
+    <widget class="DoubleSpinBox" name="MaximumSpinBox"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>RangeSlider</class>
-   <extends>QSlider</extends>
-   <header>rangeSlider.h</header>
+   <class>DoubleRangeSlider</class>
+   <extends>QWidget</extends>
+   <header>doubleRangeSlider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QWidget</extends>
+   <header>doubleSpinBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

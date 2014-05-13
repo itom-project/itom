@@ -27,6 +27,10 @@
 #include <QMessageBox>
 #include <qfile.h>
 #include <qmimedata.h>
+#include <qurl.h>
+#include <qfileinfo.h>
+
+#include "../organizer/userOrganizer.h"
 //#include "../widgets/lastCommandDockWidget.h"
 //#include "../widgets/mainWindow.h"
 
@@ -1031,47 +1035,120 @@ RetVal ConsoleWidget::moveCursorToEnd()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dropEvent(QDropEvent * event)
 {
-    QsciScintilla::dropEvent(event);
+    const QMimeData *md = event->mimeData();
+
+    //check if a local python file will be dropped -> allow this
+    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
+    {
+        QObject *sew = AppManagement::getScriptEditorOrganizer();
+        ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+        if (uOrg->hasFeature(featDeveloper))
+        {
+            foreach (const QUrl &url, md->urls())
+            {
+                if (!url.isLocalFile() || !url.isValid())
+                {
+                    break;
+                }
+
+                QFileInfo file(url.toLocalFile());
+                QString suffix = file.suffix().toLower();
+                if (suffix != "py")
+                {
+                    break;
+                }
+
+                if (sew != NULL)
+                {
+                    QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString,QString(file.absoluteFilePath())), Q_ARG(ItomSharedSemaphore*,NULL));
+                }
+            }   
+        }
+    }
+    else
+    {
+        QsciScintilla::dropEvent(event);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
 {
-    if (event->mimeData()->hasText())
+    const QMimeData *md = event->mimeData();
+
+    if (md->hasText())
     {
         event->acceptProposedAction();
+    }
+    else
+    {
+        ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+        if (uOrg->hasFeature(featDeveloper))
+        {
+            //check if a local python file will be dropped -> allow this
+            if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
+            {
+                foreach (const QUrl &url, md->urls())
+                {
+                    if (!url.isLocalFile() || !url.isValid())
+                    {
+                        return; //not good
+                    }
+
+                    QString suffix = QFileInfo(url.toString()).suffix().toLower();
+                    if (suffix != "py")
+                    {
+                        return; //not good
+                    }
+                }
+
+                event->acceptProposedAction();
+   
+            }
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 {
-    QsciScintilla::dragMoveEvent(event);
+    const QMimeData *md = event->mimeData();
 
-    //!< if text selected in this widget, starting point before valid region and move action -> ignore
-    int lineFrom, lineTo, indexFrom, indexTo;
-
-    //!< check, that selections are only in valid area
-    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-    if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2))
+    //check if a local python file will be dropped -> allow this
+    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     {
-        if (event->dropAction() & Qt::MoveAction)
-        {
-            event->ignore();
-        }
+        event->accept();
     }
     else
     {
-        int res = checkValidDropRegion(event->pos());
+        QsciScintilla::dragMoveEvent(event);
 
-        if (res==0)
+        //!< if text selected in this widget, starting point before valid region and move action -> ignore
+        int lineFrom, lineTo, indexFrom, indexTo;
+
+        //!< check, that selections are only in valid area
+        getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+        if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2))
         {
-            event->ignore();
+            if (event->dropAction() & Qt::MoveAction)
+            {
+                event->ignore();
+            }
         }
         else
         {
-            event->accept();
+            int res = checkValidDropRegion(event->pos());
+
+            if (res==0)
+            {
+                event->ignore();
+            }
+            else
+            {
+                event->accept();
+            }
         }
     }
 }

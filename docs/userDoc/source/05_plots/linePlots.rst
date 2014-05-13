@@ -14,6 +14,8 @@ The plot does not support z-stack sectioning at the momtent.
 
 You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
+The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a plublic slot.
+
 Properties
 ---------------
 
@@ -161,6 +163,10 @@ Slots
 **refreshPlot( )**: 
 
  Refresh / redraw current plot
+
+**copyToClipBoard()**:
+ 
+ Copy current canvas with white background to clipBoard
 
 
 Deprecated figures

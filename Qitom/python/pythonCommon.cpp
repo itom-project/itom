@@ -374,7 +374,11 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         }
                         int va =  ((*params)[n]).getVal<int>();
 
-                        if (step == 1)
+                        if (mi == std::numeric_limits<int>::min() && ma == std::numeric_limits<int>::max() && step == 1)
+                        {
+                            temp = QString("current: %1").arg(va);
+                        }
+                        else if (step == 1)
                         {
                             temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
                         }
@@ -417,7 +421,11 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         }
                         double va =  ((*params)[n]).getVal<double>();
 
-                        if (step == 0.0)
+                        if (qAbs(ma - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && qAbs(mi + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && step == 0.0)
+                        {
+                            temp = QString("current: %1").arg(va);
+                        }
+                        else if (step == 0.0)
                         {
                             temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
                         }

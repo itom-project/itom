@@ -1,6 +1,5 @@
 #include "helpTreeDockWidget.h"
 
-#include <qdebug.h>
 #include "../organizer/addInManager.h"
 #include <AppManagement.h>
 #include <qdesktopservices.h>
@@ -807,9 +806,7 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
     else
     {
         QString rowContent = content.mid(start, end + endString.size() - start);
-        qDebug() << rowContent;
         content.remove(start, end + endString.size() - start);
-        qDebug() << content;
         QString internalContent = "";
 
         foreach(const ito::Param &p, paramVector)

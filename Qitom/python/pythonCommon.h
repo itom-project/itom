@@ -23,6 +23,13 @@
 #ifndef PYTHONCOMMON_H
 #define PYTHONCOMMON_H
 
+#ifndef NPY_1_7_API_VERSION
+    #define NPY_1_7_API_VERSION 0x00000007
+#endif
+#ifndef NPY_1_8_API_VERSION
+    #define NPY_1_8_API_VERSION 0x00000008
+#endif
+
 #include "pythonPlugins.h"
 #include "pythonDataObject.h"
 #include "pythonPCL.h"

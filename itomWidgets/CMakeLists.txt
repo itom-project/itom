@@ -69,6 +69,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.h
@@ -90,6 +91,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSlider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.h
@@ -129,6 +131,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.cpp
@@ -138,6 +141,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.cpp
@@ -155,6 +159,7 @@ endif(MSVC)
 
 set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/rangeWidget.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/doubleRangeWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/sliderWidget.ui
 )
 

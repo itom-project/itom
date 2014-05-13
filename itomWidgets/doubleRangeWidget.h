@@ -28,8 +28,8 @@
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
-#ifndef RANGEWIDGET_H
-#define RANGEWIDGET_H
+#ifndef DOUBLERANGEWIDGET_H
+#define DOUBLERANGEWIDGET_H
 
 // Qt includes
 #include <QSlider>
@@ -37,26 +37,28 @@
 
 #include "commonWidgets.h"
 
-class RangeSlider;
-class QSpinBox;
-class RangeWidgetPrivate;
+class DoubleRangeSlider;
+class DoubleSpinBox;
+class DoubleRangeWidgetPrivate;
+class ValueProxy;
 
 /// \ingroup Widgets
 ///
-/// RangeWidget is a wrapper around a DoubleRangeSlider and 2 QSpinBoxes
+/// DoubleRangeWidget is a wrapper around a DoubleRangeSlider and 2 QSpinBoxes
 /// \image html http://www.commontk.org/images/1/14/RangeWidget.png
 /// \sa ctkSliderSpinBoxWidget, DoubleRangeSlider, QSpinBox
-class ITOMWIDGETS_EXPORT RangeWidget : public QWidget
+class ITOMWIDGETS_EXPORT DoubleRangeWidget : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY(int singleStep READ singleStep WRITE setSingleStep)
-  Q_PROPERTY(int minimum READ minimum WRITE setMinimum)
-  Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
-  Q_PROPERTY(int minimumValue READ minimumValue WRITE setMinimumValue)
-  Q_PROPERTY(int maximumValue READ maximumValue WRITE setMaximumValue)
+  Q_PROPERTY(int decimals READ decimals WRITE setDecimals)
+  Q_PROPERTY(double singleStep READ singleStep WRITE setSingleStep)
+  Q_PROPERTY(double minimum READ minimum WRITE setMinimum)
+  Q_PROPERTY(double maximum READ maximum WRITE setMaximum)
+  Q_PROPERTY(double minimumValue READ minimumValue WRITE setMinimumValue)
+  Q_PROPERTY(double maximumValue READ maximumValue WRITE setMaximumValue)
   Q_PROPERTY(QString prefix READ prefix WRITE setPrefix)
   Q_PROPERTY(QString suffix READ suffix WRITE setSuffix)
-  Q_PROPERTY(int tickInterval READ tickInterval WRITE setTickInterval)
+  Q_PROPERTY(double tickInterval READ tickInterval WRITE setTickInterval)
   Q_PROPERTY(bool autoSpinBoxWidth READ isAutoSpinBoxWidth WRITE setAutoSpinBoxWidth)
   Q_PROPERTY(Qt::Alignment spinBoxTextAlignment READ spinBoxTextAlignment WRITE setSpinBoxTextAlignment)
   Q_PROPERTY(Qt::Alignment spinBoxAlignment READ spinBoxAlignment WRITE setSpinBoxAlignment)
@@ -68,12 +70,12 @@ public:
   typedef QWidget Superclass;
 
   /// Constructor
-  /// If \li parent is null, RangeWidget will be a top-leve widget
+  /// If \li parent is null, DoubleRangeWidget will be a top-leve widget
   /// \note The \li parent can be set later using QWidget::setParent()
-  explicit RangeWidget(QWidget* parent = 0);
+  explicit DoubleRangeWidget(QWidget* parent = 0);
   
   /// Destructor
-  virtual ~RangeWidget();
+  virtual ~DoubleRangeWidget();
 
   ///
   /// This property holds the sliders and spinbox minimum value.
@@ -81,8 +83,8 @@ public:
   /// When setting this property, the maximum is adjusted if necessary
   /// to ensure that the range remains valid.
   /// Also the slider's current value is adjusted to be within the new range.
-  int minimum()const;
-  void setMinimum(int minimum);
+  double minimum()const;
+  void setMinimum(double minimum);
 
   ///
   /// This property holds the sliders and spinbox minimum value.
@@ -90,37 +92,41 @@ public:
   /// When setting this property, the maximum is adjusted if necessary
   /// to ensure that the range remains valid.
   /// Also the slider's current value is adjusted to be within the new range.
-  int maximum()const;
-  void setMaximum(int maximum);
+  double maximum()const;
+  void setMaximum(double maximum);
   /// Description
   /// Utility function that set the min/max in once
-  void setRange(int min, int max);
-  void range(int minimumAndMaximum[2])const;
+  void setRange(double min, double max);
+  void range(double minimumAndMaximum[2])const;
 
   ///
   /// This property holds the slider and spinbox minimum value.
   /// RangeWidget forces the value to be within the
   /// legal range: minimum <= minimumValue <= maximumValue <= maximum.
-  int minimumValue()const;
+  double minimumValue()const;
 
   ///
   /// This property holds the slider and spinbox maximum value.
   /// RangeWidget forces the value to be within the
   /// legal range: minimum <= minimumValue <= maximumValue <= maximum.
-  int maximumValue()const;
+  double maximumValue()const;
 
   ///
   /// Utility function that returns both values at the same time
   /// Returns minimumValue and maximumValue
-  void values(int &minValue, int &maxValue)const;
+  void values(double &minValue, double &maxValue)const;
 
   ///
   /// This property holds the single step.
   /// The smaller of two natural steps that the
   /// slider provides and typically corresponds to the
   /// user pressing an arrow key.
-  int singleStep()const;
-  void setSingleStep(int step);
+  double singleStep()const;
+  void setSingleStep(double step);
+
+  ///
+  /// This property holds the precision of the spin box, in decimals.
+  int decimals()const;
 
   ///
   /// This property holds the spin box's prefix.
@@ -141,8 +147,8 @@ public:
   /// This is a value interval, not a pixel interval.
   /// If it is 0, the slider will choose between lineStep() and pageStep().
   /// The default value is 0.
-  int tickInterval()const;
-  void setTickInterval(int ti);
+  double tickInterval()const;
+  void setTickInterval(double ti);
 
   ///
   /// This property holds the alignment of the spin boxes.
@@ -183,59 +189,71 @@ public:
 
   /// Return the slider of the range widget.
   /// \sa minimumSpinBox(), maximumSpinBox()
-  RangeSlider* slider()const;
+  DoubleRangeSlider* slider()const;
   /// Return the minimum spinbox.
   /// \sa maximumSpinBox(), slider()
-  QSpinBox* minimumSpinBox()const;
+  DoubleSpinBox* minimumSpinBox()const;
   /// Return the maximum spinbox.
   /// \sa minimumSpinBox(), slider()
-  QSpinBox* maximumSpinBox()const;
+  DoubleSpinBox* maximumSpinBox()const;
+
+  /// Set/Get the value proxy of the slider and spinboxes.
+  /// \sa setValueProxy(), valueProxy()
+  void setValueProxy(ValueProxy* proxy);
+  ValueProxy* valueProxy() const;
 
 public Q_SLOTS:
   ///
   /// Reset the slider and spinbox to zero (value and position)
   void reset();
-  void setMinimumValue(int value);
-  void setMaximumValue(int value);
+  void setMinimumValue(double value);
+  void setMaximumValue(double value);
   ///
   /// Utility function that set the min and max values at once
-  void setValues(int minValue, int maxValue);
+  void setValues(double minValue, double maxValue);
+
+  /// Sets how many decimals the spinbox will use for displaying and
+  /// interpreting doubles.
+  void setDecimals(int decimals);
 
 Q_SIGNALS:
   /// Use with care:
   /// sliderMoved is emitted only when the user moves the slider
-  //void sliderMoved(int position);
-  void minimumValueChanged(int value);
-  void minimumValueIsChanging(int value);
-  void maximumValueChanged(int value);
-  void maximumValueIsChanging(int value);
-  void valuesChanged(int minValue, int maxValue);
-  void rangeChanged(int min, int max);
+  //void sliderMoved(double position);
+  void minimumValueChanged(double value);
+  void minimumValueIsChanging(double value);
+  void maximumValueChanged(double value);
+  void maximumValueIsChanging(double value);
+  void valuesChanged(double minValue, double maxValue);
+  void rangeChanged(double min, double max);
 
 protected Q_SLOTS:
   void startChanging();
   void stopChanging();
-  void changeValues(int newMinValue, int newMaxValue);
-  void changeMinimumValue(int value);
-  void changeMaximumValue(int value);
+  void changeValues(double newMinValue, double newMaxValue);
+  void changeMinimumValue(double value);
+  void changeMaximumValue(double value);
   /// A spinbox value has been modified, update the slider.
   void setSliderValues();
-  void setMinimumToMaximumSpinBox(int minimum);
-  void setMaximumToMinimumSpinBox(int maximum);
-  void onSliderRangeChanged(int min, int max);
+  void setMinimumToMaximumSpinBox(double minimum);
+  void setMaximumToMinimumSpinBox(double maximum);
+  void onSliderRangeChanged(double min, double max);
+
+  void onValueProxyAboutToBeModified();
+  void onValueProxyModified();
 
 protected:
   virtual bool eventFilter(QObject *obj, QEvent *event);
 
   /// can be used to change the slider by a custom one
-  void setSlider(RangeSlider* slider);
+  void setSlider(DoubleRangeSlider* slider);
 
 protected:
-  QScopedPointer<RangeWidgetPrivate> d_ptr;
+  QScopedPointer<DoubleRangeWidgetPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(RangeWidget);
-  Q_DISABLE_COPY(RangeWidget);
+  Q_DECLARE_PRIVATE(DoubleRangeWidget);
+  Q_DISABLE_COPY(DoubleRangeWidget);
 
 };
 

@@ -30,6 +30,7 @@
 
 #include <qheaderview.h>
 #include <qsettings.h>
+#include <qmimedata.h>
 
 
 namespace ito {

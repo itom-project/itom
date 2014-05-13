@@ -30,6 +30,7 @@
 #include <qfileinfo.h>
 #include <qsize.h>
 #include <qsettings.h>
+#include <qdatastream.h>
 #include <qicon.h>
 #include <qsize.h>
 #include <qhash.h>

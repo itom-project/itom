@@ -29,6 +29,7 @@
 #include "organizer/addInManager.h"
 #include "./models/UserModel.h"
 #include "organizer/userOrganizer.h"
+#include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
 
 #include <qsettings.h>
@@ -108,6 +109,15 @@ MainApplication::~MainApplication()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void MainApplication::registerMetaObjects()
+{
+    qRegisterMetaTypeStreamOperators<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
+    qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+
+    qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
     starts PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and organizers.
@@ -120,6 +130,8 @@ void MainApplication::setupApplication()
     RetVal retValue = retOk;
     RetVal pyRetValue;
     QStringList startupScripts;
+
+    registerMetaObjects();
 
     QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
 
@@ -219,10 +231,7 @@ void MainApplication::setupApplication()
 //    QTextCodec::setCodecForCStrings(textCodec);
 //    QTextCodec::setCodecForLocale(textCodec);
 
-    settings->beginGroup("CurrentStatus");
-    QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
-    settings->endGroup();
-    settings->sync();
+    
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -283,6 +292,8 @@ void MainApplication::setupApplication()
             }
         }
     }
+
+    DELETE_AND_SET_NULL(settings);
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
     m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
@@ -371,9 +382,24 @@ void MainApplication::setupApplication()
         connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addAbstractDock(AbstractDockWidget*, Qt::DockWidgetArea)));
         connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeAbstractDock(AbstractDockWidget*)));
         connect(m_mainWin, SIGNAL(mainWindowCloseRequest()), this, SLOT(mainWindowCloseRequest()));
+
+        m_scriptEditorOrganizer->restoreScriptState();
     }
 
     qDebug("..starting load settings");
+    settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat); //reload settings, since all organizers can load their own instances, that might lead to an unwanted read/write mixture.
+
+    //the current directory is set after having loaded all plugins and designerPlugins
+    //Reason: There is a crazy bug, if starting itom in Visual Studio, Debug-Mode. If the current directory
+    //is a network drive, no plugins can be loaded any more using Window's loadLibrary command!
+    settings->beginGroup("CurrentStatus");
+    QDir dir(settings->value("currentDir",QDir::currentPath()).toString());
+    if (dir.exists())
+    {
+        QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
+    }
+    settings->endGroup();
+    settings->sync();
 
     //try to execute startup-python scripts
     m_splashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom);
@@ -400,7 +426,7 @@ void MainApplication::setupApplication()
     settings->beginGroup("CurrentStatus");
     QString currentDir = (settings->value("currentDir", QDir::currentPath()).toString());
     settings->endGroup();
-    delete settings;
+    DELETE_AND_SET_NULL(settings);
 
     m_splashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
@@ -568,6 +594,9 @@ void MainApplication::mainWindowCloseRequest()
     }
 
     if (retValue.containsError()) return;
+
+    //saves the state of all opened scripts to the settings file
+    m_scriptEditorOrganizer->saveScriptState();
 
     retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 

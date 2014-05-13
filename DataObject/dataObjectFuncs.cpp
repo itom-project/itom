@@ -1305,7 +1305,9 @@ namespace dObjHelper
     {
         ito::RetVal retval = ito::retOk;
 
-        if(dObj == NULL || dObj->getDims() == 0)
+        int dims = dObj->getDims();
+
+        if(dObj == NULL || dims == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
         if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
@@ -1319,22 +1321,25 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            retval += meanValueFunc<uint8, int32>(dObj, meanResult, false);
+            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<uint8, float64>(dObj, meanResult, false);
+            else retval += meanValueFunc<uint8, int32>(dObj, meanResult, false);
             break;
         }
         case tInt8:
         {
-            retval += meanValueFunc<int8, int32>(dObj, meanResult, false);
+            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<int8, float64>(dObj, meanResult, false);
+            else retval += meanValueFunc<int8, int32>(dObj, meanResult, false);
             break;
-        }        
+        }   
+    
         case tUInt16:
         {
-            retval += meanValueFunc<uint16, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<uint16, float64>(dObj, meanResult, false);
             break;
         }
         case tInt16:
         {
-            retval += meanValueFunc<int16, int32>(dObj, meanResult, false);
+            retval += meanValueFunc<int16, float64>(dObj, meanResult, false);
             break;
         }
         case tUInt32:
@@ -1549,7 +1554,9 @@ namespace dObjHelper
     {
         ito::RetVal retval = ito::retOk;
 
-        if(dObj == NULL || dObj->getDims() == 0)
+        int dims = dObj->getDims();
+
+        if(dObj == NULL || dims == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
         if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
@@ -1564,22 +1571,24 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            retval += devValueFunc<uint8, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<uint8, float64>(dObj, devTypFlag, meanValue, devValue, false);
+            else retval += devValueFunc<uint8, int32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tInt8:
         {
-            retval += devValueFunc<int8, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<int8, float64>(dObj, devTypFlag, meanValue, devValue, false);
+            else retval += devValueFunc<int8, int32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }        
         case tUInt16:
         {
-            retval += devValueFunc<uint16, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<uint16, float64>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tInt16:
         {
-            retval += devValueFunc<int16, int32>(dObj, devTypFlag, meanValue, devValue, false);
+            retval += devValueFunc<int16, float64>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tUInt32:

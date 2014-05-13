@@ -102,6 +102,8 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_showToolbox(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_hideToolbox(PyActuatorPlugin *self);
 
+       static PyObject *PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self);
+
        static PyObject *PyActuatorPlugin_calib(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setOrigin(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_getStatus(PyActuatorPlugin *self, PyObject *args);

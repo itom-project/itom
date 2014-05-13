@@ -724,6 +724,46 @@ uchar ** DataObject::get_mdata(void) const
    return this->m_data;
 }
 
+//! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
+/*!
+    This command is equivalent to (cv::Mat*)(m_data[seekMat(planeIndex)]) but checks for out-of-range errors.
+
+    \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
+    \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
+    \sa seekMat
+    \sa get_mdata
+*/
+cv::Mat* DataObject::getCvPlaneMat(const int planeIndex)
+{
+    int numMats = calcNumMats();
+
+    if (planeIndex >= 0 && planeIndex < numMats)
+    {
+        return (cv::Mat*)(m_data[seekMat(planeIndex, numMats)]);
+    }
+    return NULL;
+}
+
+//! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
+/*!
+    This command is equivalent to (cv::Mat*)(m_data[seekMat(planeIndex)]) but checks for out-of-range errors.
+
+    \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
+    \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
+    \sa seekMat
+    \sa get_mdata
+*/
+const cv::Mat* DataObject::getCvPlaneMat(const int planeIndex) const
+{
+    int numMats = calcNumMats();
+
+    if (planeIndex >= 0 && planeIndex < numMats)
+    {
+        return (cv::Mat*)(m_data[seekMat(planeIndex, numMats)]);
+    }
+    return NULL;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 int DataObject::mdata_realloc(const int size)
 {
@@ -1816,6 +1856,11 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
           case ito::tComplex128:
              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
              CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tRGBA32:
+              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+              CastFunc<_Tp, Rgba32>(&lhs, &rhs, alpha, beta);
           break;
 
           default:
@@ -5248,6 +5293,103 @@ template<typename T2> DataObject::operator T2 ()
         return resObj;
     }
     return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObject *resObj)
+{
+   int numMats = dObj->calcNumMats();
+   int resTmat = 0;
+   int srcTmat = 0;
+
+   int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+   int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+   cv::Mat * srcMat = NULL;
+   cv::Mat * dstMat = NULL;
+   ito::Rgba32* srcPtr;
+   _Tp* dstPtr;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        resTmat = resObj->seekMat(nmat, numMats);
+        srcTmat = dObj->seekMat(nmat, numMats);
+        srcMat = ((cv::Mat*)((dObj->get_mdata())[srcTmat]));
+        dstMat = ((cv::Mat*)((resObj->get_mdata())[resTmat]));
+        for (int y = 0; y < sizey; y++)
+        {
+            dstPtr = (_Tp*)dstMat->ptr(y);
+            srcPtr = (ito::Rgba32*)srcMat->ptr(y);
+            for (int x = 0; x < sizex; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
+            }
+        }
+    }
+
+   return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! converts a color image (rgba32) to a gray-scale image
+/*!
+    usage: res = static_cast<ito::float32>(sourceDataObject)
+
+    \throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
+    \return cast data object
+    \sa convertTo, CastFunc
+*/
+DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/)
+{
+    if (this->m_type != ito::tRGBA32)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"data type of dataObject must be rgba32.","", __FILE__, __LINE__));
+    }
+    else if (destinationType == ito::tComplex64 || destinationType == ito::tComplex128)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"destinationType must be real.","", __FILE__, __LINE__));
+    }
+
+    DataObject resObj = DataObject(m_dims, m_size, destinationType);
+
+    switch (destinationType)
+    {
+        case ito::tInt8:
+            GrayScaleCastFunc<int8>(this, &resObj);
+        break;
+
+        case ito::tUInt8:
+            GrayScaleCastFunc<uint8>(this, &resObj);
+        break;
+
+        case ito::tInt16:
+            GrayScaleCastFunc<int16>(this, &resObj);
+        break;
+
+        case ito::tUInt16:
+            GrayScaleCastFunc<uint16>(this, &resObj);
+        break;
+
+        case ito::tInt32:
+            GrayScaleCastFunc<uint32>(this, &resObj);
+        break;
+
+        case ito::tFloat32:
+            GrayScaleCastFunc<float32>(this, &resObj);
+        break;
+
+        case ito::tFloat64:
+            GrayScaleCastFunc<float64>(this, &resObj);
+        break;
+
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        break;
+    }
+
+    copyTagMapTo(resObj);
+    copyAxisTagsTo(resObj);
+
+    return resObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

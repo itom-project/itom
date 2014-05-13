@@ -60,7 +60,10 @@ Q_DECLARE_METATYPE(ito::BreakPointItem) //must be outside of namespace
 namespace ito
 {
 
+QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj);
+    
 
+QDataStream &operator>>(QDataStream &in, BreakPointItem &obj);
 
 class BreakPointModel : public QAbstractItemModel
 {

@@ -22,74 +22,74 @@
 
 
 #include <QtCore/QtPlugin>
-#include "rangeWidgetFactory.h"
-#include "rangeWidget.h"
+#include "doubleRangeWidgetFactory.h"
+#include "doubleRangeWidget.h"
 
 
 // --------------------------------------------------------------------------
-RangeWidgetFactory::RangeWidgetFactory(QObject *_parent)
+DoubleRangeWidgetFactory::DoubleRangeWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *RangeWidgetFactory::createWidget(QWidget *_parent)
+QWidget *DoubleRangeWidgetFactory::createWidget(QWidget *_parent)
 {
-    RangeWidget* widget = new RangeWidget(_parent);
+    DoubleRangeWidget* widget = new DoubleRangeWidget(_parent);
     return widget;
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::domXml() const
+QString DoubleRangeWidgetFactory::domXml() const
 {
-  return "<widget class=\"RangeWidget\" name=\"rangeWidget\">\n"
+  return "<widget class=\"DoubleRangeWidget\" name=\"doubleRangeWidget\">\n"
           "</widget>\n";
 }
 
 // --------------------------------------------------------------------------
-QIcon RangeWidgetFactory::icon() const
+QIcon DoubleRangeWidgetFactory::icon() const
 {
   return QIcon(":/icons/rangespinbox.png");
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::includeFile() const
+QString DoubleRangeWidgetFactory::includeFile() const
 {
-    return "rangeWidget.h";
+    return "doubleRangeWidget.h";
 }
 
 // --------------------------------------------------------------------------
-bool RangeWidgetFactory::isContainer() const
+bool DoubleRangeWidgetFactory::isContainer() const
 {
     return false;
 }
 
 // --------------------------------------------------------------------------
-QString RangeWidgetFactory::name() const
+QString DoubleRangeWidgetFactory::name() const
 {
-    return "RangeWidget";
+    return "DoubleRangeWidget";
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::group() const
+QString DoubleRangeWidgetFactory::group() const
 { 
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::toolTip() const
+QString DoubleRangeWidgetFactory::toolTip() const
 { 
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-QString RangeWidgetFactory::whatsThis() const
+QString DoubleRangeWidgetFactory::whatsThis() const
 {
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-void RangeWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
+void DoubleRangeWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
 {
     Q_UNUSED(formEditor);
     if (initialized)

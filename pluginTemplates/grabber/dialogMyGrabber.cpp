@@ -28,6 +28,9 @@ DialogMyGrabber::DialogMyGrabber(ito::AddInBase *grabber) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 {
+    //save the currently set parameters to m_currentParameters
+    m_currentParameters = params;
+    
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -41,9 +44,7 @@ void DialogMyGrabber::parametersChanged(QMap<QString, ito::Param> params)
     }
 
     //set the status of all widgets depending on the values of params
-    
-    //save the currently set parameters to m_currentParameters
-    m_currentParameters = params;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
