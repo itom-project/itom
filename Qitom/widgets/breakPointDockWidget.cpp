@@ -53,7 +53,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->sortByColumn(0);
     m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid collapse of item while trying to open it
-    m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+    m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_breakPointView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     
     PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
