@@ -1344,11 +1344,11 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
 
         document->setHtml(html.arg(rawContent));
         
-        //dummy output (write last loaded Plaintext into html-File)
-        QFile file2("helpOutput.html");
-        file2.open(QIODevice::WriteOnly);
-        file2.write(html.arg(rawContent).toLatin1());
-        file2.close();
+        ////dummy output (write last loaded Plaintext into html-File)
+        //QFile file2("helpOutput.html");
+        //file2.open(QIODevice::WriteOnly);
+        //file2.write(html.arg(rawContent).toLatin1());
+        //file2.close();
     }
     return ito::retOk;
 }
