@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,7 +26,7 @@
 #include <qsettings.h>
 #include <qdiriterator.h>
 #include <qurl.h>
-#include "helper\fileDownloader.h"
+#include "helper/fileDownloader.h"
 #include <QtSql/qsqldatabase.h>
 #include <QtSql/qsqlquery.h>
 #include <global.h>
@@ -52,7 +52,7 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     m_listChanged = false;
     m_treeIsUpdating = false;
     ui.label->hide();
-    
+
     // init consts
      m_xmlFileName = ""; //updateInfo.xml";
 
@@ -78,7 +78,7 @@ WidgetPropHelpDock::~WidgetPropHelpDock()
 
 }
 
-// Checkbox changed 
+// Checkbox changed
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
 {
@@ -244,7 +244,7 @@ void WidgetPropHelpDock::refreshExistingDBs()
                 existingDBs.insert(id, *item);
             }
             database.close();
-        }  
+        }
         QSqlDatabase::removeDatabase(path);
     }
     setExistingDBsChecks();
@@ -311,16 +311,16 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
     {
         QXmlStreamReader xml;
         xml.addData(downloader->downloadedData());
-        while(!xml.atEnd() && !xml.hasError()) 
+        while(!xml.atEnd() && !xml.hasError())
         {
             QXmlStreamReader::TokenType token = xml.readNext();
-            if(token == QXmlStreamReader::StartDocument) 
+            if(token == QXmlStreamReader::StartDocument)
             {
                 continue;
             }
-            if(token == QXmlStreamReader::StartElement) 
+            if(token == QXmlStreamReader::StartElement)
             {
-                if(xml.name() == "databases") 
+                if(xml.name() == "databases")
                 {
                     if (xml.attributes().hasAttribute("type"))
                     {
@@ -338,7 +338,7 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
                         dbError = tr("Type attribute node 'database' of xml file is missing.");
                     }
                 }
-                else if(dbFound && xml.name() == "file") 
+                else if(dbFound && xml.name() == "file")
                 {
                     QPair <int, WidgetPropHelpDock::DatabaseInfo> p = this->parseFile(xml);
                     if (updatableDBs.contains(p.first))
@@ -350,7 +350,7 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
                                 updatableDBs.insert(p.first, p.second);
                             }
                         }
-                    }   
+                    }
                     else
                     {
                         updatableDBs.insert(p.first, p.second);
@@ -373,14 +373,14 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
         {
             status = FileDownloader::sError;
             errorMsg = dbError;
-        } 
+        }
     }
 
     if (status == FileDownloader::sError)
     {
         showErrorMessage(errorMsg);
     }
-    
+
     // finish progressWindow
     progress.setValue(101);
 
@@ -393,11 +393,11 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
 
 // Parse the xml Elements and return each as pair
 //----------------------------------------------------------------------------------------------------------------------------------
-QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml) 
+QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml)
 {
     QPair<int, WidgetPropHelpDock::DatabaseInfo> file;
     int id = 0;
-    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file") 
+    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file")
     {
         return file;
     }
@@ -406,16 +406,16 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
 
     // Check for ID-Attribute
     QXmlStreamAttributes attributes = xml.attributes();
-    if(attributes.hasAttribute("id")) 
+    if(attributes.hasAttribute("id"))
     {
         id = attributes.value("id").toString().toInt();
     }
     /* Next element... */
     xml.readNext();
     int timeOut = 10;
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "file")) 
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "file"))
     {
-        if(xml.tokenType() == QXmlStreamReader::StartElement) 
+        if(xml.tokenType() == QXmlStreamReader::StartElement)
         {
             if(xml.name() == "name")
             {
@@ -465,40 +465,40 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
 {
     QString infoText = "";
     int ID = widget->data(0, m_urID).toInt();
-    switch(widget->data(0, m_urUD).toInt()) 
+    switch(widget->data(0, m_urUD).toInt())
     {
-        case  stateUnknown: 
+        case  stateUnknown:
         {
             widget->setText(3, "unknown (lokal build Database)");
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/localDatabase")); // OK!
             break;
         }
-        case  stateUpToDate: 
+        case  stateUpToDate:
         {
             widget->setText(3, tr("Up to date"));
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/upToDate"));
             break;
         }
-        case  stateUpdateAvailable: 
+        case  stateUpdateAvailable:
         {
             widget->setText(3, tr("Update to version: %1 (%2)").arg(QString::number(updatableDBs[ID].version)).arg(updatableDBs[ID].date));
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/downloadUpdate"));
             break;
         }
-        case  stateDownloadAvailable: 
+        case  stateDownloadAvailable:
         {
             widget->setText(3, tr("Download version: %1 (%2)").arg(QString::number(updatableDBs[ID].version)).arg(updatableDBs[ID].date));
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/downloadUpdate"));
             break;
         }
-        case  stateWrongScheme: 
+        case  stateWrongScheme:
         {
             widget->setText(3, tr("wrong Scheme: %1 (your scheme%2)").arg(QString::number(existingDBs[ID].schemeID)).arg(QString::number(SCHEME_ID)));
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/wrongScheme"));
             widget->setFlags(widget->flags() ^ Qt::ItemIsEnabled);
             break;
         }
-        default: 
+        default:
         {
             widget->setText(3, "");
             break;
@@ -512,7 +512,7 @@ void WidgetPropHelpDock::updateTreeWidget()
 {
     // surpress the itemChanged() event of the tree View
     m_treeIsUpdating = true;
-    
+
     // to avoid the loss of the checkboxes state
     setExistingDBsChecks();
     ui.treeWidgetDB->clear();
@@ -640,8 +640,8 @@ void WidgetPropHelpDock::compareDatabaseVersions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// This function saves the id of each checked entry of the TreeWidget in the 
-// checkedIdList. Don´t modify that list manually. 
+// This function saves the id of each checked entry of the TreeWidget in the
+// checkedIdList. Don´t modify that list manually.
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::updateCheckedIdList()
 {
@@ -754,9 +754,9 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
                 progress.setValue(downloader->getDownloadProgress());
                 status = downloader->getStatus(errorMsg);
             }
-            
+
             QCoreApplication::processEvents();
-        
+
             if (m_downloadTimeoutReached)
             {
                 status = FileDownloader::sError;
@@ -771,7 +771,7 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
         if (status == FileDownloader::sFinished)
         {
             QString newLocalPath;
-            
+
             //url = url.left(url.lastIndexOf("/"));
             // Downlaod Finished, Safe File
             if (oldFile.exists())
@@ -782,7 +782,7 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
                     showErrorMessage(tr("Could not delete old local version of Database"));
                 }
             }
-            else 
+            else
             {
                 newLocalPath = m_pdbPath + updatableDBs[item->data(0, m_urID).toInt()].name + ".db";//right(url.length()-url.lastIndexOf("/")-1);
             }

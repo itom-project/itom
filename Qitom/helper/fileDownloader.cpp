@@ -1,5 +1,5 @@
 
-#include "filedownloader.h"
+#include "fileDownloader.h"
 
 #include <qdebug.h>
 #include <qnetworkcookiejar.h>
@@ -14,15 +14,15 @@ FileDownloader::FileDownloader(QUrl Url, int nrOfAllowedRedirects /*= 0*/, QObje
 {
     connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)), SLOT(fileDownloaded(QNetworkReply*)));
     m_WebCtrl.setCookieJar(new QNetworkCookieJar(&m_WebCtrl));
-     
+
     QNetworkRequest request(Url);
     request.setRawHeader("User-Agent", "Wget/1.12 (linux-gnu)");
     m_pCurrentNetworkReply = m_WebCtrl.get(request);
 
     connect(m_pCurrentNetworkReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64,qint64)));
 }
-   
-//-------------------------------------------------------------------------------------  
+
+//-------------------------------------------------------------------------------------
 FileDownloader::~FileDownloader()
 {
      if (m_pCurrentNetworkReply)
@@ -66,7 +66,7 @@ FileDownloader::Status FileDownloader::getStatus(QString &errorMsg)
             status = sRunning;
         }
         else if (m_pCurrentNetworkReply->isFinished())
-        {   
+        {
             // finished... but check for redirect
             int redirect = checkRedirect(errorMsg);
             if (redirect == 1) //redirection started
@@ -135,7 +135,7 @@ int FileDownloader::checkRedirect(QString &errorMsg)
             {
                 m_nrOfAllowedRedirects--;
                 QUrl newUrl = redirect;
-                
+
                 if (newUrl.isRelative())
                 {
                     newUrl = m_pCurrentNetworkReply->url().resolved(newUrl);
@@ -155,7 +155,7 @@ int FileDownloader::checkRedirect(QString &errorMsg)
             }
         }
         else
-        { 
+        {
             //no redirect, all good
             errorMsg = "";
             return 0;

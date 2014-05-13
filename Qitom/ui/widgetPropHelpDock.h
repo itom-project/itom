@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -29,7 +29,7 @@
 #include <qstring.h>
 
 #include "ui_widgetPropHelpDock.h"
-#include "helper\fileDownloader.h"
+#include "helper/fileDownloader.h"
 #include <qlist.h>
 #include <qdir.h>
 #include <qxmlstream.h>
@@ -117,7 +117,7 @@ private:
 signals:
 
 public slots:
-    
+
 
 private slots:
     void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);

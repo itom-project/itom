@@ -5,7 +5,7 @@
     Universität Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,7 +25,7 @@
 #include "breakPointDockWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
-#include "ui\dialogEditBreakpoint.h"
+#include "ui/dialogEditBreakpoint.h"
 
 #include "../organizer/scriptEditorOrganizer.h"
 
@@ -55,7 +55,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid collapse of item while trying to open it
     m_breakPointView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_breakPointView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    
+
     PythonEngine *pe = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pe)
     {
@@ -69,12 +69,12 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 //----------------------------------------------------------------------------------------------------------------------------------
 BreakPointDockWidget::~BreakPointDockWidget()
 {
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::actualizeTree(const QModelIndex &parent, int start, int end)
-{   
+{
     m_breakPointView->expandAll();
 }
 
@@ -174,7 +174,7 @@ void BreakPointDockWidget::mnuEditBreakpoint()
         {
             QModelIndex sel = m_breakPointView->selectedIndexes()[0];
             BreakPointItem bp = model->getBreakPoint(sel);
-            
+
             DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineno+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
             dlg->exec();
             if (dlg->result() == QDialog::Accepted)
