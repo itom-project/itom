@@ -1,11 +1,4 @@
 <RCC>
-    <qresource prefix="/breakPointDockWidget">
-        <file>icons/garbageBP.png</file>
-        <file>icons/garbageAllBPs.png</file>
-        <file>icons/editBP.png</file>
-        <file>icons/toggleBP.png</file>
-        <file>icons/toggleAllBPs.png</file>
-    </qresource>
 
     <qresource prefix="/helpTreeDockWidget">
         <file alias="help_style">styles/help/help_style.css</file>
@@ -106,7 +99,12 @@
         <file>icons/itomBreak.png</file>
         <file>icons/itomcBreak.png</file>
         <file>icons/itomBreakDisabled.png</file>
+        <file>icons/itomBreakDisabledAll.png</file>
         <file>icons/itomCBreakDisabled.png</file>
+        <file>icons/garbageBP.png</file>
+        <file>icons/garbageAllBPs.png</file>
+        <file>icons/breakpointNext.png</file>
+        <file>icons/breakpointPrevious.png</file>
     </qresource>
     <qresource prefix="/bookmark">
         <file>icons/bookmark.png</file>

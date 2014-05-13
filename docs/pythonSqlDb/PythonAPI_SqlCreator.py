@@ -14,10 +14,30 @@ import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keywo
 import itom
 
 # some switches
-add_builtins =                      0      # e.g. open()
-add_builtin_modules =           0      # e.g. sys
-add_manual_modules =          1      # modules from manuallist
+add_builtins =                      1      # e.g. open()
+add_builtin_modules =           1      # e.g. sys
 add_package_modules =        0      # modules which are directories with __init__.py files
+add_manual_modules =          0      # modules from manuallist
+
+manualList = ['itom']
+
+# This is how the DB is named! For singlepackage databases use their name as filename!
+id = 1000
+name = 'builtins'
+version = '1'
+date = '13.05.2014'
+itomMinVersion = '1'            # SchemeID
+
+
+filename = name + '.db'
+dbInfo = [id, name, version, date, itomMinVersion]
+
+
+
+
+
+
+
 
 remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
 
@@ -36,10 +56,6 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
                      '__sub__', '__xor__', '__main__','__repr__','itoDebugger','__path__','__file__']
 
 
-manualList = ['itom']
-
-# This is how the DB is named! For singlepackage databases use their name as filename!
-filename = 'PyModItom.db'
 
 
 # This is the path, where the file will be copied after it´s created
@@ -70,6 +86,7 @@ from sphinxext import numpydoc
 
 
 stackList = []
+builtinList = []
 ns = {}
 doubleID = {}
 idList = {}
@@ -188,6 +205,7 @@ def getAllModules(ns):
         for name in dir(__builtins__):
             if name not in blacklist:
                 stackList.append(name)
+                builtinList.append(name)
                 try:
                     exec('import '+name,ns)
                 except:
@@ -196,6 +214,7 @@ def getAllModules(ns):
         for name in sys.builtin_module_names:
             if name not in blacklist:
                 stackList.append(name)
+                builtinList.append(name)
                 try:
                     exec('import '+name,ns)
                 except:
@@ -238,7 +257,7 @@ def processModules(ns):
                             stackList.append(ret)
                     except:
                         del stackList[0]
-                        reportMessage(module+stackList[0],'e')
+                        #reportMessage(module+stackList[0],'e')
                 else:
                     del stackList[0]
             else:
@@ -333,7 +352,10 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     line[0] = nametype
     
     # 2. prefix
-    line[1] = prefix[:len(prefix)]+name
+    if (prefix[:prefix.find('.')] in builtinList) or (prefix in builtinList) or (name in builtinList):
+        line[1] = 'python.' + prefix[:len(prefix)] + name
+    else:
+        line[1] = prefix[:len(prefix)]+name
     
     # 3. Name
     if (name != ''):
@@ -343,7 +365,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         
     # 4. Parameter
     
-    # Falls ein Befehl länger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
+    # Falls ein Befehl laenger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
     m = re.search(r'^.{0:20}[(].*?[)]',docstr,re.DOTALL)
     if (m != None):
         s = docstr[m.start():m.end()]
@@ -361,7 +383,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         else:
             line[4] = ''
     else:
-        line[4] = 'This Package is only referenced here. It´s original position is: \n'
+        line[4] = 'This Package is only referenced here. Its original position is: \n'
         
     # 6. Doc
     if (id != 0):
@@ -445,6 +467,22 @@ def createSQLDB(ns):
         c.close()
 
 
+def createSQLDBinfo(ns, info):
+    #shortIfpossible(ns)
+    try:
+        conn = sqlite3.connect(filename)
+        c = conn.cursor()
+        # Create table
+        c.execute("DROP TABLE IF EXISTS databaseInfo")
+        c.execute('''create table databaseInfo (id int, name text, version text, date text, itomMinVersion text)''')
+        c.execute('INSERT INTO databaseInfo VALUES (?,?,?,?,?)',info)
+        conn.commit()
+        print("SQL-DB-Info succesful")
+    except:
+        reportMessage("while writing the SQL-DB-Info", 'e')
+    finally:
+        c.close()
+
 #####################
 ##### Main Programm #####
 #####################
@@ -493,6 +531,7 @@ processModules(ns)
 # write the DOC into a DB
 print('-> creating the DB')
 createSQLDB(ns)
+createSQLDBinfo(ns, dbInfo)
 
 print('-> inserted objects: '+str(len(doclist)))
 

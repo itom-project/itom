@@ -268,7 +268,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             break;
         }
     case 4: //Actuator
-        {
+        { 
             // Main Node zusammenbauen
             mainNode->setText("Actuator");
             mainNode->setData(typeCategory, m_urType);
@@ -315,6 +315,9 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
     QString docString = "";
     QString filter = filterpath.split(".").last();
+    
+    // needed for breadcrumb and for list of children in algorithms
+    QString linkNav;
 
     if (type != 6)
     {
@@ -328,7 +331,6 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         // Breadcrumb Navigation zusammenstellen
         // -------------------------------------
         QStringList splittedLink = filterpath.split(".");
-        QString linkNav;
         QString linkPath = filterpath;
         linkNav.insert(0, ">> " + splittedLink[splittedLink.length() - 1]);
         for (int i = splittedLink.length() - 2; i > -1; i--)
@@ -431,7 +433,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         const ito::FilterParams *params = aim->getHashedFilterParams(fd->m_paramFunc); 
 
                         docString.replace("%NAME%", fd->m_name);
-                        docString.replace("%INFO%",parseFilterWidgetContent(fd->m_description));
+                        docString.replace("%INFO%", parseFilterWidgetContent(fd->m_description));
                 
                         // Parameter-Section
                         if ((params->paramsMand.size() + params->paramsOpt.size() == 0) && parameterSection.isNull() == false)
@@ -531,7 +533,24 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     if (aib)
                     {
                         docString.replace("%NAME%", aib->objectName());
-                        docString.replace("%INFO%", parseFilterWidgetContent(aib->getDescription()));
+
+                        QString extendedInfo;
+                        
+                        extendedInfo.insert(0, parseFilterWidgetContent(aib->getDescription()));
+                        extendedInfo.append("<p class=\"rubric\">This plugin contains the following algorithms:</p>");
+
+                        QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+                        while (i != filterHashTable->constEnd()) 
+                        {
+                            if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                            {
+                                QString link = "."+i.value()->m_pBasePlugin->objectName()+"."+i.value()->m_name;
+                                extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms"+link.toLatin1().toPercentEncoding("",".")+"\">"+i.value()->m_name.toLatin1().toPercentEncoding("",".")+"</a><br><br>");
+                            }
+                            ++i;
+                        }
+
+                        docString.replace("%INFO%", extendedInfo);
 
                         parameterSection = "";
                         returnsSection = "";
@@ -1621,9 +1640,13 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     {
         showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
-    else if (parts[0] == "algorithm")
+    else if (parts[0] == "algorithm" && parts[1].split(".").length() < 3)
     {//Filter
         showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
+    }
+    else if (parts[0] == "algorithm" && parts[1].split(".").length() >= 3)
+    {//Filter
+        showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "-1")
     {
