@@ -891,7 +891,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::Map;
         }
-        else if (PyList_Check(val) || PyTuple_Check(val) || PySequence_Check(val))
+        else if (PyList_Check(val) || PyTuple_Check(val))
         {
             type = QVariant::List;
         }
@@ -919,7 +919,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             type = QMetaType::type("ito::PCLPolygonMesh");
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
-        else if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
+        else if ((Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType) || PyArray_Check(val))
         {
             type = QMetaType::type("QSharedPointer<ito::DataObject>");
         }
@@ -930,6 +930,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (Py_TYPE(val) == &ito::PythonPlugins::PyDataIOPluginType)
         {
             type = QMetaType::type("QPointer<ito::AddInDataIO>");
+        }
+        else if(PySequence_Check(val))
+        {
+            type = QVariant::List;
         }
     }
 
@@ -1110,35 +1114,81 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     {
         if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
         {
-            ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)val;
-            if (dataObj)
+            if (PyDataObject_Check(val))
             {
-                if (dataObj->dataObject == NULL)
+                ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)val;
+                if (dataObj)
                 {
-                    v = QVariant();
-                }
-                else if (dataObj->base != NULL) //if the python-dataObject shares memory with other arrays (like a numpy array, we need to make a deep copy here, since we cannot increment the reference of 
-                {
-                    //QSharedPointer<ito::DataObject> value(new ito::DataObject());
-                    //dataObj->dataObject->copyTo(*value);
-                    //v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
-
-                    //baseObjectDeleter
-                    Py_XINCREF(dataObj->base);
-                    ito::DataObject *copy = new ito::DataObject(*dataObj->dataObject);
-                    m_pyBaseObjectStorage.insert((char*)copy, dataObj->base); //unique
-                    QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
-                    v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                    if (dataObj->dataObject == NULL)
+                    {
+                        v = QVariant();
+                    }
+                    else if (dataObj->base != NULL) //if the python-dataObject shares memory with other arrays (like a numpy array, we need to make a deep copy here, since we cannot increment the reference of 
+                    {
+                        //baseObjectDeleter
+                        Py_XINCREF(dataObj->base);
+                        ito::DataObject *copy = new ito::DataObject(*dataObj->dataObject);
+                        m_pyBaseObjectStorage.insert((char*)copy, dataObj->base); //unique
+                        QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
+                        v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                    }
+                    else
+                    {
+                        QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
+                        v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                    }
                 }
                 else
                 {
-                    QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
-                    v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                    v = QVariant();
                 }
             }
-            else
+            else if (PyArray_Check(val))
             {
-                v = QVariant();
+                //try to create a dataObject (Python object) from given numpy array
+                PyObject *pyDataObj = PythonDataObject::PyDataObjectType.tp_new(&PythonDataObject::PyDataObjectType,NULL,NULL); //PyObject_New(PythonDataObject::PyDataObject, &PythonDataObject::PyDataObjectType); //new ref
+                if (pyDataObj)
+                {
+                    PyObject *args = Py_BuildValue("(O)", val);
+                    PyObject *kwds = PyDict_New();
+                    int result = PythonDataObject::PyDataObjectType.tp_init(pyDataObj, args, kwds);
+                    Py_XDECREF(args);
+                    Py_XDECREF(kwds);
+
+                    if (result == 0)
+                    {
+                        PythonDataObject::PyDataObject *pyDataObj2 = (PythonDataObject::PyDataObject*)pyDataObj;
+                        if (pyDataObj2->dataObject == NULL)
+                        {
+                            v = QVariant();
+                        }
+                        else if (pyDataObj2->base != NULL) //if the python-dataObject shares memory with other arrays (like a numpy array, we need to make a deep copy here, since we cannot increment the reference of 
+                        {
+                            //baseObjectDeleter
+                            Py_XINCREF(pyDataObj2->base);
+                            ito::DataObject *copy = new ito::DataObject(*pyDataObj2->dataObject);
+                            m_pyBaseObjectStorage.insert((char*)copy, pyDataObj2->base); //unique
+                            QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
+                            v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                        }
+                        else
+                        {
+                            QSharedPointer<ito::DataObject> value(new ito::DataObject(*pyDataObj2->dataObject));
+                            v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                        }
+                    }
+                    else
+                    {
+                        PyErr_Print();
+                        v = QVariant();
+                    }
+
+                    Py_DECREF(pyDataObj);
+                }
+                else
+                {
+                    v = QVariant();
+                }
             }
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
