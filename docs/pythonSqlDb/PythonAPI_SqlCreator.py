@@ -13,31 +13,53 @@ that should be created
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
 import itom
 
-# some switches
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------All Settings start here-------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+
+# which kinds of modules do you want to document
 add_builtins =                      1      # e.g. open()
 add_builtin_modules =           1      # e.g. sys
 add_package_modules =        0      # modules which are directories with __init__.py files
 add_manual_modules =          0      # modules from manuallist
 
+# if your module is already in here, the id is set automatically. If not, add it:  {...., "myNewModule":1009}
+# Make shure that your new ID is not already used by another module!!!
+idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib":1004}
+
+# Enter modules you ant to add manually
 manualList = ['itom']
 
 # This is how the DB is named! For singlepackage databases use their name as filename!
-id = 1000
 name = 'builtins'
+
+# Name of the Database
+id = idDict[name]
+
+# Always increase the version by one to allow automatic updates
 version = '1'
-date = '13.05.2014'
+
+# Automatically detected
+date = time.strftime("%d.%m.%Y")
+
+# Only change if there was a SchemeID change in Itom
 itomMinVersion = '1'            # SchemeID
 
+#------------------------------------------------------------------------------------------------------------------
+#-------------------------------Don�t make any changes below this Line-------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
 
+
+
+# Filename is created by name and .db
 filename = name + '.db'
+
+# finished db-Info
 dbInfo = [id, name, version, date, itomMinVersion]
-
-
-
-
-
-
-
 
 remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
 
@@ -66,7 +88,6 @@ destination = os.path.abspath(os.path.join( itom.getAppPath(), "help" ))
 import numpy
 import time
 
-from sphinx import directives
 from sphinx import locale
 locale.init([], "en")
 
@@ -102,7 +123,6 @@ def printPercent(value, maxim):
     global oldPercentage
     percentage = value/maxim*100
     if round(percentage) > round(oldPercentage):
-        str1 = format(percentage)+'%'
         print("Writing to DB progress: %d%%   \r" % (percentage))
         oldPercentage = percentage
     return
@@ -495,7 +515,7 @@ print('-------------START-------------')
 
 
 
-# funktion ispackage in namespace registrieren um sie mit exec ausführen zu können
+# funktion ispackage in namespace registrieren um sie mit exec ausfuehren zu koennen
 
 types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
 

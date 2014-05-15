@@ -178,14 +178,9 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
 {
     if(index.isValid())
     {
-        //TODO stimmt hier >=0 oder muss man hier gegen 500000 prüfen "?
         if (index.internalPointer() != NULL) //>= 0) //delete one single breakpoint, second level item
         {
-            // TODO: Problem, dass wenn in der liste ein file ist, dieses gelöscht wird
-            // und dann nicht mehr der index ermittelt werden kann
-
             int breakPointIndex = getBreakPointIndex(index);
-
             if (breakPointIndex >= 0)
             {
                 int row = index.row();
@@ -207,7 +202,10 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
         }
         else //delete all breakpoints of a file
         {
-            //TODO
+            // in this case, index is the parent, so delete all the children and the parent afterwards
+            // problem with BreakPointModel::deleteBreakPoints because a list can contain files and BPs
+            // In this case it might happen, that the file is deleted and the corresponding BPs
+            // are still in the list from BreakPointModel::deleteBreakPoints!!!
         }
     }
 

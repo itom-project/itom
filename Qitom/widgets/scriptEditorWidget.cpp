@@ -1052,7 +1052,10 @@ void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 { // this event occurs when the syntax checker is delivering results
     QStringList errorList = b.split("\n");
     for (int i = 0; i<errorList.length(); ++i)
+    {
         errorList.removeAt(errorList.indexOf("",i));
+        //errorList.at(i).
+    }
     errorListChange(errorList);
 }
 
@@ -1118,8 +1121,10 @@ void ScriptEditorWidget::checkSyntax()
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng->pySyntaxCheckAvailable())
     {
-        QString s = this->text();
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
+        // TODO: Hier kann die "import itom as *" Zeile eingefugt werden... dadurch wird jedoch ein Fehler in der -1. Zeile eingeführt
+        //QString extension = "import itom as *\n";
+        QString s = /*extension +*/ this->text();
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, s), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
     }
 }
 

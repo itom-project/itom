@@ -598,7 +598,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
                         if (aib != NULL)
                         {
-                            docString.replace("%NAME%", aib->objectName());
+                            docString.replace("%NAME%", aib->objectName());        // TODO: should return desc, but returns sdesc
                             docString.replace("%INFO%", parseFilterWidgetContent(aib->getDescription()));
                 
                             // Parameter-Section
@@ -1761,7 +1761,7 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
         clip->setText(parts[1], QClipboard::Clipboard);
     }
     else if (parts[0] == "itom")
-    {//Internal ItomLink //TODO doppelten Aufruf von findIndexBy... rausnehmen
+    {
         showPluginInfo(parts[1], 1, findIndexByPath(1, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[1].split(".").length() == 1 || (parts[1].split(".")[0] == "DataIO" && parts[1].split(".").length() == 2))
@@ -1769,11 +1769,11 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
         showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "algorithm" && parts[1].split(".").length() < 3)
-    {//Filter
+    {//Filter Plugin
         showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "algorithm" && parts[1].split(".").length() >= 3)
-    {//Filter
+    {//Filter (This is a workaround for the Linklist. Without this else if the links wouldn´t work
         showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
     }
     else if (parts[0] == "-1")
