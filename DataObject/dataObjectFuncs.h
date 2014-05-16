@@ -31,26 +31,26 @@
 #include "dataobj.h"
 
 //! creates template defined function table for all supported data types
-#define MAKEHELPERFUNCLIST(FuncName) static t##FuncName fList##FuncName[] =   \
-{                                                                       \
-   FuncName<int8>,                                                      \
-   FuncName<uint8>,                                                     \
-   FuncName<int16>,                                                     \
-   FuncName<uint16>,                                                    \
-   FuncName<int32>,                                                     \
-   FuncName<uint32>,                                                    \
-   FuncName<ito::float32>,                                                   \
-   FuncName<ito::float64>,                                                   \
-   FuncName<ito::complex64>,                                                 \
-   FuncName<ito::complex128>,                                                 \
-   FuncName<ito::Rgba32>                                                 \
+#define MAKEHELPERFUNCLIST(FuncName) static t##FuncName fList##FuncName[] = \
+{                                                                           \
+   FuncName<int8>,                                                          \
+   FuncName<uint8>,                                                         \
+   FuncName<int16>,                                                         \
+   FuncName<uint16>,                                                        \
+   FuncName<int32>,                                                         \
+   FuncName<uint32>,                                                        \
+   FuncName<ito::float32>,                                                  \
+   FuncName<ito::float64>,                                                  \
+   FuncName<ito::complex64>,                                                \
+   FuncName<ito::complex128>,                                               \
+   FuncName<ito::Rgba32>                                                    \
 };
 
 //! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
-#define MAKEHELPERFUNCLIST_CMPLX_TO_REAL(FuncName) static t##FuncName fList##FuncName[] =     \
-{                                                                                       \
-    FuncName<ito::complex64,float32>,                                                        \
-    FuncName<ito::complex128,float64>                                                        \
+#define MAKEHELPERFUNCLIST_CMPLX_TO_REAL(FuncName) static t##FuncName fList##FuncName[] = \
+{                                                                                         \
+    FuncName<ito::complex64,float32>,                                                     \
+    FuncName<ito::complex128,float64>                                                     \
 };
 
 namespace ito 
@@ -587,6 +587,7 @@ namespace dObjHelper
     ito::RetVal DATAOBJ_EXPORT verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     ito::RetVal DATAOBJ_EXPORT verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     ito::RetVal DATAOBJ_EXPORT verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
+    ito::DataObject DATAOBJ_EXPORT squeezeConvertCheck2DDataObject(const ito::DataObject *dObj, const char* name, const ito::Range &sizeY, const ito::Range &sizeX, ito::RetVal &retval, int convertToType, uint8 numberOfAllowedTypes, ...);
     
     //-----------------------------------------------------------------------------------------------
     /*! \fn freeRowPointer
@@ -690,78 +691,6 @@ namespace dObjHelper
         }
         return retVal;
     } 
-    
-    //template<typename _Tp> void minMaxValueHelper(ito::DataObject *dObj, float64 *min, float64 *max, int matNumber);
-
-    //-----------------------------------------------------------------------------------------------
-    /*! \fn checkITOMType
-        \brief   This helperfunction compares the type to the allowed types and returns an error if the given type in not allowed 
-        \param[in]   type    Type of the dataObject
-        \param[in]   allow_int8  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_uint8  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_int16  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_uint16  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_int32  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_uint32  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_float32  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_float64  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_complex64  If true, type is allowed, else if type = allow_* an error is return
-        \param[in]   allow_complex128  If true, type is allowed, else if type = allow_* an error is return
-        \author  ITO 
-        \sa 
-        \date 12.2011
-    */
-    /*
-    inline ito::RetVal checkITOMType(ito::DataObject *dObj, bool allow_int8, bool allow_uint8, bool allow_int16, bool allow_uint16, bool allow_int32, bool allow_uint32, bool allow_float32, bool allow_float64, bool allow_complex64, bool allow_complex128)
-    {
-        int type = dObj->getType();
-        switch(type)
-        {
-        case ito::tUInt8:
-            if(allow_uint8)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "UInt8 not allowed");
-        case ito::tUInt16:
-            if(allow_uint16)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "UInt16 not allowed");
-        case ito::tUInt32:
-            if(allow_uint32)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "UInt32 not allowed");
-        case ito::tInt8:
-            if(allow_int8)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "Int8 not allowed");
-        case ito::tInt16:
-            if(allow_int16)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "Int16 not allowed");
-        case ito::tInt32:
-            if(allow_int32)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "Int32 not allowed");
-        case ito::tFloat32:
-            if(allow_float32)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "Float32 not allowed");
-        case ito::tFloat64:
-            if(allow_float64)
-                return 0;
-            else return ito::RetVal(ito::retError, 0, "Float64 not allowed");
-        case ito::tComplex64:
-            if(allow_complex64)
-                return ito::retOk;
-            else return ito::RetVal(ito::retError, 0, "Complex64 not allowed");
-        case ito::tComplex128:
-            if(allow_complex128)
-                return 0;
-            else return ito::RetVal(ito::retError, 0, "Complex128 not allowed");
-        default:
-            return ito::RetVal(ito::retError, 0, "Unknown type or type not implemented");
-        }
-    }
-    */
  
     //-----------------------------------------------------------------------------------------------
     /*! \fn isIntType 
@@ -951,7 +880,7 @@ namespace dObjHelper
     ito::RetVal DATAOBJ_EXPORT dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
 
     ito::RetVal DATAOBJ_EXPORT dObjSetScaleRectangle(ito::DataObject &DataObjectInOut, const double &x0, const double &x1, const double &y0, const double &y1);
-}
-}
+} //end namespace dObjHelper
+} //end namespace ito
 
 #endif

@@ -1982,6 +1982,138 @@ namespace dObjHelper
         }
         return ito::retOk;
     }
+
+    //-----------------------------------------------------------------------------------------------
+    //! returns a shallow or deep copy of a given data object that fits to given requirements
+    /*!
+        Use this method to test an incoming data object to be two-dimensional, have a certain width and height and types.
+
+        If the data object has more than two dimensions, it is squeezed at the beginning and must than contain two dimensions.
+        In this case a two-dimensional shallow copy is returned (hence, the squeezed version). If convertToType is != 0, the
+        dataObject is finally converted to the desired new type (in terms of ito::tDataType), if it is 0, it stays like it is.
+
+        Use the variable number of arguments at the end to pass all type enumeration that are allowed for the incoming data object.
+        numberOfAllowedTypes indicates the number of following type arguments. Then pass all allowed types (ito::tDataType) as unique arguments.
+        Don't pass an or combination of types, since they are not organized as bitmask. If numberOfAllowedTypes is equal to zero, all types
+        are accepted.
+
+        \param dObj the input data object
+        \param name is the name of the data object (for error messages only)
+        \param sizeX is the allowed range for the width of the 2d data object (start and end are included)
+        \param sizeY is the allowed range for the height of the 2d data object (start and end are included)
+        \param retval is the return value
+        \param convertToType is the type the data object should be converted to (ito::tInt8, ito::tFloat32...) or 0 if no conversion should be done
+        \param numberOfAllowedTypes is the number of types that are allowed for the incoming object or 0 if all types are allowed
+        \param ... is the list of allowed types in terms of ito::tDataType added as multiple arguments (their number must correspond to numberOfAllowedTypes)
+        \return shallow or deep copy of the (squeezed) input data object.
+    */
+    ito::DataObject squeezeConvertCheck2DDataObject(const ito::DataObject *dObj, const char* name, const ito::Range &sizeY, const ito::Range &sizeX, ito::RetVal &retval, int convertToType, uint8 numberOfAllowedTypes, ...)
+    {
+        ito::DataObject out;
+
+        if(dObj == NULL)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
+        }
+        else
+        {
+            //type checking
+            if (numberOfAllowedTypes > 0)
+            {
+                bool found = false;
+                int type = dObj->getType();
+                va_list vl;
+                va_start(vl, numberOfAllowedTypes);
+                for(int i=0;i<numberOfAllowedTypes;i++)
+                {
+                    if(va_arg(vl, int) == type) //gcc complains that ito::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                va_end(vl);
+
+                if(!found)
+                {
+                    retval += ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
+                }
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            
+            if (dObj->getDims() == 2)
+            {
+                //size checking
+                int width = dObj->getSize(1);
+                int height = dObj->getSize(0);
+
+                if (width < sizeX.start || width > sizeX.end)
+                {
+                    retval += ito::RetVal::format( ito::retError, 0, "sizeX of dataObject '%s' out of range [%i,%i]", name, sizeX.start, sizeX.end);
+                }
+                else if (height < sizeY.start || height > sizeY.end)
+                {
+                    retval += ito::RetVal::format( ito::retError, 0, "sizeY of dataObject '%s' out of range [%i,%i]", name, sizeY.start, sizeY.end);
+                }
+                else
+                {
+                    //check if it needs to be converted
+                    if (convertToType > 0 && (convertToType != dObj->getType()))
+                    {
+                        retval += dObj->convertTo(out, convertToType);
+                    }
+                    else //take as is
+                    {
+                        out = *dObj;
+                    }
+                }
+            }
+            else if (dObj->getDims() > 2)
+            {
+                //check that the first dims-2 dimensions are 1
+                out = dObj->squeeze();
+
+                if (out.getDims() == 2)
+                {
+                    //size checking
+                    int width = out.getSize(1);
+                    int height = out.getSize(0);
+
+                    if (width < sizeX.start || width > sizeX.end)
+                    {
+                        retval += ito::RetVal::format( ito::retError, 0, "sizeX of dataObject '%s' out of range [%i,%i]", name, sizeX.start, sizeX.end);
+                    }
+                    else if (height < sizeY.start || height > sizeY.end)
+                    {
+                        retval += ito::RetVal::format( ito::retError, 0, "sizeY of dataObject '%s' out of range [%i,%i]", name, sizeY.start, sizeY.end);
+                    }
+                    else
+                    {
+                        //check if it needs to be converted
+                        if (convertToType > 0 && convertToType != out.getType())
+                        {
+                            retval += out.convertTo(out, convertToType); //inplace !
+                        }
+                        else {} //take as is
+                    }
+                }
+                else
+                {
+                    retval += ito::RetVal::format( ito::retError, 0, "DataObject '%s' must have 2 dimensions (squeezed)", name);
+                }
+            }
+            else
+            {
+                retval += ito::RetVal::format( ito::retError, 0, "DataObject '%s' must have 2 dimensions (squeezed)", name);
+            }
+        }
+    
+        return out;
+    }
+
     //-----------------------------------------------------------------------------------------------
     /*! \fn dObjCopyLastNAxisTags 
         \detail  Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
@@ -2073,120 +2205,10 @@ namespace dObjHelper
 
         return ito::retOk;
     }
-    //-----------------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------
-    /*! \fn minMaxValueHelper 
-        \brief  Helpfunction to find min and maxValue in a dataObject
-                The function searches either in all planes (matNumber < 0) or in one specific plane 
-        \param[in]   dObj    dataObject
-        \param[out]  min    Minimal value
-        \param[out]  max    Minimal value
-        \param[in]   matNumber   Specific mat to search in one or all planes (if < 0)
-        \author  Lyda
-        \sa  
-        \date    12.2011 
-    */
-    /*
-    template<typename _Tp> void minMaxValueHelper(ito::DataObject *dObj, float64 *min, float64 *max, int matNumber)
-    {
-        unsigned int numMats = 0;
-        unsigned int matIndex = 0;
-        unsigned int rhsMatNum = 0;
-        unsigned int resMatNum = 0;
-        unsigned int matStart = 0;
 
-        if(matNumber < 0)
-        {
-            numMats = dObj->calcNumMats();
-            matStart = 0;
 
-        }
-        else
-        {
-            numMats = (unsigned int)matNumber +1;
-            matStart = (unsigned int)matNumber;
-        }
 
-        int m,n;
 
-        cv::Mat_<_Tp> *mat = NULL;
-        const _Tp* rowPtr;
-
-        _Tp resultmax;
-
-        if(std::numeric_limits<_Tp>::is_exact)
-        {
-            resultmax = std::numeric_limits<_Tp>::min(); //integer numbers
-        }
-        else
-        {
-            resultmax = -std::numeric_limits<_Tp>::max();
-        }
-
-        _Tp resultmin = std::numeric_limits<_Tp>::max();
-
-        for (unsigned int nmat = matStart; nmat < numMats; nmat++)
-        {
-            matIndex = dObj->seekMat(nmat, numMats);
-            mat = (cv::Mat_<_Tp> *)(dObj->get_mdata())[matIndex];
-
-            for(m = 0; m < mat->rows; m++)
-            {
-                rowPtr = (_Tp*)mat->ptr(m);
-                for(n = 0; n < mat->cols; n++)
-                {
-                    if(rowPtr[n] > resultmax) resultmax = rowPtr[n];
-                    if(rowPtr[n] < resultmin) resultmin = rowPtr[n];
-                }
-            }
-        }
-
-        *max = (static_cast<float64>(resultmax));
-        *min = (static_cast<float64>(resultmin));
-    }
-    */
-
-    /*
-    template<> void GetHLineL<int8>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<uint8>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<int16>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<uint16>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<uint32>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<float32>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<float64>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<complex64>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-    template<> void GetHLineL<complex128>(const cv::Mat *srcPlane, const int x0, const int y, const int length, int32 * pData);
-
-    template<> void GetHLineD<int8>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<uint8>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<int16>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<uint16>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<int32>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<uint32>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<float32>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<complex64>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-    template<> void GetHLineD<complex128>(const cv::Mat *srcPlane, const int x0, const int y, const int length, float64 * pData);
-
-    template<> void SetHLineL<int8>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<uint8>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<int16>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<uint16>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<uint32>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<float32>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<float64>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<complex64>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-    template<> void SetHLineL<complex128>(cv::Mat *destPlane, const int x0, const int y, const int length, const int32 * pData);
-
-    template<> void SetHLineD<int8>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<uint8>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<int16>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<uint16>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<int32>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<uint32>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<float32>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<complex64>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    template<> void SetHLineD<complex128>(cv::Mat *destPlane, const int x0, const int y, const int length, const float64 * pData);
-    */
 
 }
 }

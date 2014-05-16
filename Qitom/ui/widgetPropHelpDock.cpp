@@ -469,7 +469,7 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
     {
         case  stateUnknown:
         {
-            widget->setText(3, "unknown (lokal build Database)");
+            widget->setText(3, "unknown (local database only)");
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/localDatabase")); // OK!
             break;
         }
@@ -710,9 +710,6 @@ void WidgetPropHelpDock::initMenus()
     contextMenuActions["update"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/downloadUpdate"), tr("&update"), this, SLOT(mnuDownloadUpdate()));
     contextMenuActions["locateOnDisk"] = m_pContextMenu->addAction(QIcon(":/files/icons/browser.png"), tr("locate on disk"), this, SLOT(mnuLocateOnDisk()));
     contextMenuActions["removeDatabase"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/deleteDatabase"), tr("remove from disk"), this, SLOT(mnuRemoveDatabase()));
-
-
-    connect(m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 }
 
 // This Block downloads/updates a single database
@@ -773,7 +770,7 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
             QString newLocalPath;
 
             //url = url.left(url.lastIndexOf("/"));
-            // Downlaod Finished, Safe File
+            // Download Finished, Safe File
             if (oldFile.exists())
             {
                 newLocalPath = oldFile.path() + existingDBs[item->data(0, m_urID).toInt()].name + ".db";//url.right(url.length()-url.lastIndexOf("/"));
@@ -866,7 +863,7 @@ void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
         if (selItem->data(0, m_urUD) == stateDownloadAvailable)
         {
             contextMenuActions["update"]->setEnabled(true);
-            contextMenuActions["update"]->setText("downlaod");
+            contextMenuActions["update"]->setText("download");
             contextMenuActions["locateOnDisk"]->setEnabled(false);
             contextMenuActions["removeDatabase"]->setEnabled(false);
             m_pContextMenu->exec(global);
