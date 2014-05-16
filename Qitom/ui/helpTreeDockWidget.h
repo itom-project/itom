@@ -68,6 +68,12 @@ private:
         bool DataIO;
     };
 
+    QString minText(int minimum) const;
+    QString minText(double minimum) const;
+    QString minText(char minimum) const;
+    QString maxText(int minimum) const;
+    QString maxText(double minimum) const;
+    QString maxText(char minimum) const;
     
     static void createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);

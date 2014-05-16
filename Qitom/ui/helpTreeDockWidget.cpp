@@ -836,42 +836,113 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
     case ito::ParamBase::Int:
         {
             type = "integer";
-            if (param.getMeta() != NULL)
+            const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
+            if (pMeta)
             {
-                const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
-                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
+                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+            }
+            else
+            {
+                meta = tr("Default: %1").arg(param.getVal<int>());
             }
         }
         break;
     case ito::ParamBase::Char:
         { // Never tested ... no filter holding metadata as char available
             type = "char";
-            if (param.getMeta() != NULL)
+            const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
+            if (pMeta)
             {
-                const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
-                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
+                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+            }
+            else
+            {
+                meta = tr("Default: %1").arg(param.getVal<char>());
             }
         }
         break;
     case ito::ParamBase::Double:
         {
             type = "double";
+            const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
             if (param.getMeta() != NULL)
             {
-                const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-                meta = tr("Range: min: %1, max: %2").arg(pMeta->getMin()).arg(pMeta->getMax());
+                
+                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+            }
+            else
+            {
+                meta = tr("Default: %1").arg(param.getVal<double>());
             }
         }
         break;
     case ito::ParamBase::String:
         {
             type = "string";
-            if (param.getMeta() != NULL)
+            const ito::StringMeta *pMeta = dynamic_cast<const ito::StringMeta*>(param.getMeta());
+
+            if (pMeta)
             {
-                const ito::StringMeta *pMeta = dynamic_cast<const ito::StringMeta*>(param.getMeta());
-                QString str = pMeta->getString();
-                QString len = QString::number(pMeta->getLen());
-                meta = "Default: "+str+"; max. Length: "+len;
+                switch (pMeta->getStringType())
+                {
+                case ito::StringMeta::RegExp:
+                    if (pMeta->getLen() == 1)
+                    {
+                        meta = tr("RegExp: '%1'").arg(pMeta->getString(0));
+                    }
+                    else if (pMeta->getLen() > 1)
+                    {
+                        QStringList allowed;
+                        for (int i = 0; i < pMeta->getLen(); ++i)
+                        {
+                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                        }
+                        meta = tr("RegExp: [%1]").arg(allowed.join("; "));
+                    }
+                    else if (pMeta->getLen() == 0)
+                    {
+                        meta = tr("RegExp: <no pattern given>");
+                    }
+                    break;
+                case ito::StringMeta::String:
+                    if (pMeta->getLen() == 1)
+                    {
+                        meta = tr("Match: '%1'").arg(pMeta->getString(0));
+                    }
+                    else if (pMeta->getLen() > 1)
+                    {
+                        QStringList allowed;
+                        for (int i = 0; i < pMeta->getLen(); ++i)
+                        {
+                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                        }
+                        meta = tr("Match: [%1]").arg(allowed.join("; "));
+                    }
+                    else if (pMeta->getLen() == 0)
+                    {
+                        meta = tr("Match: <no pattern given>");
+                    }
+                    break;
+                case ito::StringMeta::Wildcard:
+                    if (pMeta->getLen() == 1)
+                    {
+                        meta = tr("Wildcard: '%1'").arg(pMeta->getString(0));
+                    }
+                    else if (pMeta->getLen() > 1)
+                    {
+                        QStringList allowed;
+                        for (int i = 0; i < pMeta->getLen(); ++i)
+                        {
+                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                        }
+                        meta = tr("Wildcard: [%1]").arg(allowed.join("; "));
+                    }
+                    else if (pMeta->getLen() == 0)
+                    {
+                        meta = tr("Wildcard: <no pattern given>");
+                    }
+                    break;
+                }
             }
         }
         break;
@@ -944,6 +1015,66 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
     output.replace("%PARAMINFO%", info);
     output.replace("%PARAMMETA%", meta);
     return output;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::minText(int minimum) const
+{
+    if (minimum == std::numeric_limits<int>::min())
+    {
+        return "-inf";
+    }
+    return QString::number(minimum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::minText(double minimum) const
+{
+    if (std::abs(minimum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    {
+        return "-inf";
+    }
+    return QString::number(minimum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::minText(char minimum) const
+{
+    if (minimum == std::numeric_limits<char>::min())
+    {
+        return "-inf";
+    }
+    return QString::number(minimum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::maxText(int maximum) const
+{
+    if (maximum == std::numeric_limits<int>::max())
+    {
+        return "inf";
+    }
+    return QString::number(maximum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::maxText(double maximum) const
+{
+    if (std::abs(maximum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    {
+        return "inf";
+    }
+    return QString::number(maximum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString HelpTreeDockWidget::maxText(char maximum) const
+{
+    if (maximum == std::numeric_limits<char>::max())
+    {
+        return "inf";
+    }
+    return QString::number(maximum);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
