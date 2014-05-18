@@ -31,6 +31,7 @@ Doku erstellen:
 3. itom_doxygen.dox abspeichern
 4. itom starten
 5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen
+5. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen
 
 
 CHANGE-LOG
