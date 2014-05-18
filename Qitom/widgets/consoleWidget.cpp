@@ -1070,6 +1070,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     {
         QsciScintilla::dropEvent(event);
     }
+    setFocus(); //set focus to this widget such that a key-press (e.g. return) after a drop is directly executed (useful if code from callstack is dropped)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
