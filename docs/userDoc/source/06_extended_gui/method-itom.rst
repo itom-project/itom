@@ -1,5 +1,7 @@
 .. include:: /include/global.inc
 
+.. _msgInputBoxes:
+
 Show messages, input boxes and default dialogs
 ************************************************
 

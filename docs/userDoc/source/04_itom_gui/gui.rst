@@ -2,8 +2,10 @@
 
 .. _gui:
 
-The |itom| User Interface
+The itom User Interface
 ###########################
+
+This chapter describes the main functionalities, windows and dialogs that are provided by the main application of |itom|.
 
 .. toctree::
    :maxdepth: 2

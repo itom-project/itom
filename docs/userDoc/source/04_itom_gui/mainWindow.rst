@@ -3,38 +3,38 @@
 Main Window
 ============
 
-When starting |itom| a splash screen is shown during the loading process of many components and external plugins. Then, the main window appears like in the following figure:
+During the startup of |itom| a splash screen shows the current state of the load process. After having finished, the |itom| main window appears like in the following screenshot:
 
 .. figure:: images/iTOM.png
     :scale: 100%
     :align: center
 
-The GUI consists of a command line widget (console_) in the center and several toolboxes_. |itom| contains the embedded scripting language Python 3. Simple python commands can therefore be typed in the console. The
-toolboxes provide many further functionalities of |itom|. Additionally, every opened actuator or dataIO plugin may provide its own toolbox, that can also be docked into |itom|'s main window.
+The appearance of the application after its start may vary with respect to the depicted screenshot, since the current position, size and visibility of many toolboxes and other components of the overall graphical user interface as stored in the settings at shutdown. They are reloaded at the next startup.
 
-Besides the console and toolboxes, further important functionalities are provided by the menu or the main toolbars.
+In general, the GUI consists of a command line widget (console_) in the center and several toolboxes_ that can be arbitrarily positioned as well as moved out of the main window itself (floated state). The toolboxes provide access to many main functionalities of |itom|. Additionally, every opened hardware plugin may provide its own toolbox, that can also be docked into |itom|'s main window.
 
-Console
----------
+Further functionalities of |itom| are reached by the menu or the toolbars. It is possible to add further user defined menus and toolbars using the python scripting language (see toolbar-start_).
 
-The command line in the center of the main window allows to execute single or multi-line python commands. Additionally all messages, warnings and errors coming from python methods or |itom| itself are printed in that console
-widget, where error messages are highlighted with a red background.
+.. _console:
+
+Command Line
+-------------
+
+The command line in the center of the main window allows executing single or multi-line python commands. Additionally all messages, warnings and errors coming from python method calls or |itom| itself are printed in the command line widget. Errors are highlighted with a red background:
 
 .. figure:: images/consoleError.png
     :scale: 100%
     :align: center
 
-Usually, the last line of the command line shows the ">>" sign, that indicates that the console is ready for a new input. You can either write a single python command and press the return key in order to execute it or you can write multiline commands. In order to create a new line for this, press the Shift+Return keys, which is a smooth line break (known from other software). After the final command simply press the return key such that the whole
-command block is executed.
+Usually, the last line of the command line shows the ">>" sign, that indicates that the console is ready for a new input. You can either write a single python command and press the return key in order to execute it or you can write multiline commands. In order to create a new line for this, press the Shift + Return (smooth line break). After the final command simply press the return key such that the whole command block is executed.
 
 .. figure:: images/consoleMultiLine.png
     :scale: 100%
     :align: center
 
-The current line or code-block that is executed is highlighted with a yellow background. For multi-line commands, |itom| parses the whole command block and divides it into logical blocks, such that the highlighed background
-switches from one block to the other one.
+The current line or code-block that is executed is highlighted with a yellow background. For multi-line commands, |itom| parses the whole command block and divides it into logical blocks, such that the highlighted background switches from one block to the other one.
 
-In the command line you can use every python command however the command line is not able to handle inputs. Additionally you can use one of the following key-words in order to clear the command line::
+In the command line you can use every python command, only character inputs are not supported. For inputs consider using the input dialog mechanism of |itom| (see msgInputBoxes_). Additionally you can use one of the following key-words in order to clear the command line::
     
     clc
     clear
@@ -107,13 +107,18 @@ Content:
    plugins
    filesystem
    breakpoints
+   commandHistory
+   callStack
 
-The core application of |itom| already comes with a set of different toolboxes. Additionally, many plugins provide the possibility to open a toolbox for every opened hardware instance, like actuators or cameras.
-These toolboxes are then also inserted into the main window of |itom|. Usually toolboxes can be docked into the main window or be in a floating state, such they appear like an unresizable window. If docked, they
-can be positioned at the left or right side or the top or bottom of the main window. Some of them however are limited with respect to the dockable positions.
+The core application of |itom| already comes with a set of different toolboxes. Additionally, many plugins provide the 
+possibility to open a toolbox for every opened hardware instance, like actuators or cameras. These toolboxes are then 
+also inserted into the main window of |itom|. Usually toolboxes can be docked into the main window or be in a floating 
+state, such they appear like an unresizable window. If docked, they can be positioned at the left or right side or the 
+top or bottom of the main window. Some of them however are limited with respect to the dockable positions.
 
-All available toolboxes are listed in the menu **View >> Toolboxes**, where hidden toolboxes can be shown again. Additionally, a right click to any place in the toolbar openes the following context menu where
-the first items also access the loaded toolboxes. The items after the separator correspond to the toolbars, such that they can be hidden or shown:
+All available toolboxes are listed in the menu **View >> Toolboxes**, where hidden toolboxes can be shown again. 
+Additionally, a right click to any place in the toolbar opens the following context menu where the first items also access 
+the loaded toolboxes. The items after the separator correspond to the toolbars, such that they can be hidden or shown:
 
 .. figure:: images/toolboxmenu.png
     :scale: 100%
