@@ -96,7 +96,14 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
+        if (param->getName())
+        {
+            msgBox.setText(tr("Error while setting parameter '%1'").arg(param->getName()).toLatin1().data());
+        }
+        else
+        {
+            msgBox.setText(tr("Error while setting parameter").toLatin1().data());
+        }
         if (retval.errorMessage())
         {
             msgBox.setInformativeText(retval.errorMessage());
@@ -107,7 +114,14 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
+        if (param->getName())
+        {
+            msgBox.setText(tr("Warning while setting parameter '%1'").arg(param->getName()).toLatin1().data());
+        }
+        else
+        {
+            msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
+        }
         if (retval.errorMessage())
         {
             msgBox.setInformativeText(retval.errorMessage());
@@ -161,7 +175,14 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
+        if (param->getName())
+        {
+            msgBox.setText(tr("Warning while setting parameter '%1'").arg(param->getName()).toLatin1().data());
+        }
+        else
+        {
+            msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
+        }
         if (retval.errorMessage())
         {
             msgBox.setInformativeText(retval.errorMessage());

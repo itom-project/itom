@@ -431,11 +431,10 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
     {
-        qDebug("start: startDeviceAndRegisterListener");
+        qDebug("begin: startDeviceAndRegisterListener");
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
 
-//        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("dataAvailable(ito::DataObject)")) == -1)
         if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
         {
             retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toLatin1().data());
@@ -466,7 +465,7 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-        qDebug("stop: startDeviceAndRegisterListener");
+        qDebug("end: startDeviceAndRegisterListener");
         return retValue;
     }
 
