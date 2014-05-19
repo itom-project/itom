@@ -167,10 +167,17 @@ MainWindow::MainWindow() :
         m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
-        // tabify file-directory and breakpoints
-        tabifyDockWidget(m_callStackDock, m_fileSystemDock);
-        tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
-        m_fileSystemDock->raise();
+        if (m_fileSystemDock)
+        {
+            // tabify file-directory and breakpoints
+            tabifyDockWidget(m_callStackDock, m_fileSystemDock);
+            tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
+            m_fileSystemDock->raise();
+        }
+        else
+        {
+            tabifyDockWidget(m_callStackDock, m_breakPointDock);
+        }
 
         // global workspace widget (Python)
         m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), "itomGlobalWorkspaceDockWidget", true, this, true, true, AbstractDockWidget::floatingStandard);
