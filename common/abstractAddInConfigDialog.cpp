@@ -175,14 +175,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        if (param->getName())
-        {
-            msgBox.setText(tr("Warning while setting parameter '%1'").arg(param->getName()).toLatin1().data());
-        }
-        else
-        {
-            msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
-        }
+        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
         if (retval.errorMessage())
         {
             msgBox.setInformativeText(retval.errorMessage());
