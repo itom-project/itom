@@ -185,6 +185,7 @@ private:
 
     //member variables
     bool started;
+    QString m_itomMemberClasses;
 
     //PyGILState_STATE threadState;
 
@@ -219,6 +220,9 @@ private:
     int m_pyFuncWeakRefHashesAutoInc;
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
+
+    // decides if itom is automatically included in every source file before it´s handed to the syntax checker
+    bool m_includeItom;
 
     //!< debugger functionality
     static PyMethodDef PyMethodItomDbg[];
@@ -265,6 +269,10 @@ public slots:
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
     void pythonInterruptExecution() const;
     void pythonDebugCommand(tPythonDbgCmd cmd);
+
+    // Settings are neccesary for automatic itom inclusion and syntax check
+    void readSettings();
+    void propertiesChanged();
 
     void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender);
 

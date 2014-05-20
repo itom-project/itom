@@ -54,7 +54,8 @@ void WidgetPropEditorGeneral::readSettings()
     ui.radioEOL2->setChecked(eolMode == "EolUnix");
     ui.radioEOL3->setChecked(eolMode == "EolMac");
 
-    ui.checkSyntaxChecker->setChecked(settings.value("syntaxChecker", true).toBool());
+    ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
+    ui.checkIncludeItom->setChecked(settings.value("syntaxIncludeItom", true).toBool());
     ui.spinSyntaxIntervall->setValue(settings.value("syntaxIntervall", 1.00).toDouble());
 
     ui.checkAutoIndent->setChecked(settings.value("autoIndent", true).toBool());
@@ -94,7 +95,8 @@ void WidgetPropEditorGeneral::writeSettings()
     }
 
     settings.setValue("syntaxIntervall", ui.spinSyntaxIntervall->value());
-    settings.setValue("syntaxChecker", ui.checkSyntaxChecker->isChecked());
+    settings.setValue("syntaxChecker", ui.groupSyntaxCheck->isChecked());
+    settings.setValue("syntaxIncludeItom", ui.checkIncludeItom->isChecked());
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
     settings.setValue("indentationWidth", ui.spinIndentWidth->value());

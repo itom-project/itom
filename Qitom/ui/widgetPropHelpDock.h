@@ -123,6 +123,8 @@ private slots:
     void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);
     void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
+    void on_checkWidgets_stateChanged (int state);
+    void on_checkDataIO_stateChanged (int state);
     void on_spinTimeout_valueChanged(int i);
     void refreshButtonClicked();
     void mnuDownloadUpdate();

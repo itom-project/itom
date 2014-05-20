@@ -76,6 +76,7 @@ namespace ito
             void mnuEnOrDisAbleBrakpoint();
             void mnuEnOrDisAbleAllBrakpoints();
             void treeViewContextMenuRequested(const QPoint &pos);
+            void treeViewSelectionChanged(const QModelIndex & index);
             void actualizeTree(const QModelIndex &parent, int start, int end);
 
     };

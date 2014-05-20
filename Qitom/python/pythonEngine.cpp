@@ -52,6 +52,9 @@
 #include <qdir.h>
 #include <qdesktopwidget.h>
 
+#include <qsettings.h>
+#include <AppManagement.h>
+
 #include <qsharedpointer.h>
 #include <qtimer.h>
 #include <qtextcodec.h>
@@ -171,8 +174,9 @@ PythonEngine::PythonEngine() :
     PythonEngine::instance = const_cast<PythonEngine*>(this);
     locker.unlock();
 
+    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
+
 }
-    
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonEngine::~PythonEngine()
@@ -488,6 +492,34 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             runString("from itom import *");
 
+            // Setup for 
+            PyObject *itomDir = PyObject_Dir(itomModule); //new ref
+            if (itomDir && PyList_Check(itomDir))
+            {
+                Py_ssize_t len = PyList_GET_SIZE(itomDir);
+
+                
+                m_itomMemberClasses.clear();
+
+                for (Py_ssize_t l = 0; l < len; ++l)
+                {
+                    PyObject *dirItem = PyList_GET_ITEM(itomDir, l); //borrowed ref
+                    bool ok;
+                    QString string = PythonQtConversion::PyObjGetString(dirItem, false, ok);
+
+                    if (ok)
+                    {
+                        if (!string.startsWith("__"))
+                        {
+                            m_itomMemberClasses.append(string + ",");
+                        }
+                    }
+                }
+                m_itomMemberClasses.remove(m_itomMemberClasses.length()-1, 1);
+            }
+               
+            Py_XDECREF(itomDir);
+
             started = true;
         }
         else
@@ -497,6 +529,22 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     }
 
     return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::readSettings()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("PyScintilla");
+
+    m_includeItom = settings.value("syntaxIncludeItom", true).toBool();
+
+    settings.endGroup();
+}
+
+void PythonEngine::propertiesChanged()
+{
+    readSettings();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1364,7 +1412,16 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
 {
     if (m_pyModSyntaxCheck)
     {
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", code.toUtf8().data());
+        QString firstLine;
+        if (m_includeItom)
+        {
+            firstLine = "from itom import " + m_itomMemberClasses + "\n" + code;
+        }
+        else
+        {
+            firstLine = code;
+        }
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {
@@ -1383,7 +1440,32 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             {
                 flakes = "<<error>>";
             }
-
+            else
+            {   
+                if (m_includeItom)
+                {   // if itom is automatically included, this block is correcting the line numbers
+                    QStringList sFlakes = flakes.split("\n");
+                    if (sFlakes.length() > 0)
+                    {
+                        while (sFlakes.at(0).startsWith("code:1:"))
+                        {
+                            sFlakes.removeFirst();
+                            if (sFlakes.length() == 0)
+                            {
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < sFlakes.length(); ++i)
+                        {
+                            QRegExp reg("(code:)(\\d+)");
+                            reg.indexIn(sFlakes[i]);
+                            int line = reg.cap(2).toInt() - 1;
+                            sFlakes[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
+                        }
+                        flakes = sFlakes.join("\n");
+                    }
+                }   // if not, no correction is nessesary
+            }
             QObject *s = sender.data();
             if (s)
             {

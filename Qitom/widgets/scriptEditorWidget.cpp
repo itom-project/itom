@@ -1121,10 +1121,7 @@ void ScriptEditorWidget::checkSyntax()
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng->pySyntaxCheckAvailable())
     {
-        // TODO: Hier kann die "import itom as *" Zeile eingefugt werden... dadurch wird jedoch ein Fehler in der -1. Zeile eingeführt
-        //QString extension = "import itom as *\n";
-        QString s = /*extension +*/ this->text();
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, s), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
     }
 }
 
@@ -1249,9 +1246,9 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
         }
         else if (it->type == markerBookmarkAndPyBug)
         { // bookmark and bug => create bug without bookmark
-            int line = it->handle;
+            int line = markerLine(it->handle);
             markerDeleteHandle(it->handle);
-            it->handle = markerAdd(markerLine(line), markSyntaxError);
+            it->handle = markerAdd(line, markSyntaxError);
             it->type = markerPyBug;
             createNew = false;
             ++it;

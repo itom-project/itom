@@ -48,8 +48,9 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
 
     connect(m_breakPointView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
-
-    //m_breakPointView->setAlternatingRowColors(false);
+    
+    connect(m_breakPointView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewSelectionChanged(const QModelIndex &)));
+    
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->sortByColumn(0);
     m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid collapse of item while trying to open it
@@ -133,6 +134,12 @@ void BreakPointDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 {
     updateActions();
     m_pContextMenu->exec(pos + m_breakPointView->mapToGlobal(m_breakPointView->pos()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::treeViewSelectionChanged(const QModelIndex & index)
+{
+    updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -227,6 +234,28 @@ void BreakPointDockWidget::mnuEnOrDisAbleAllBrakpoints()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::updateActions()
 {
+    QModelIndexList sel = m_breakPointView->selectedIndexes();
+    if (sel.length() == 1 && sel.at(0).parent().isValid())
+    {
+        m_pActEditBP->setEnabled(true);
+    }
+    else
+    {
+        m_pActEditBP->setEnabled(false);
+    }
+    for (int i = 0; i < sel.length(); ++i)
+    {
+        if (sel.at(i).parent().isValid())
+        {
+            m_pActToggleBP->setEnabled(true);
+            m_pActDelBP->setEnabled(true);
+        }
+        else
+        {
+            m_pActToggleBP->setEnabled(false);
+            m_pActDelBP->setEnabled(false);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

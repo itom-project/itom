@@ -78,7 +78,7 @@ WidgetPropHelpDock::~WidgetPropHelpDock()
 
 }
 
-// Checkbox changed
+// Checkbox Modules and Packages
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
 {
@@ -88,10 +88,25 @@ void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
         ui.treeWidgetDB->setEnabled(false);
 }
 
-// Checkbox changed
+// Checkbox Algorithms
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::on_checkFilters_stateChanged (int state)
 {
+    m_listChanged = true;
+    ui.label->show();
+}
+
+// Checkbox Widgets
+void WidgetPropHelpDock::on_checkWidgets_stateChanged (int state)
+{
+    m_listChanged = true;
+    ui.label->show();
+}
+
+// Checkbox DataIO
+void WidgetPropHelpDock::on_checkDataIO_stateChanged (int state)
+{
+    m_listChanged = true;
     ui.label->show();
 }
 
@@ -121,7 +136,7 @@ void WidgetPropHelpDock::readSettings()
     ui.checkWidgets->setChecked( settings.value("showWidgets", false).toBool() );
     ui.checkDataIO->setChecked( settings.value("showDataIO", false).toBool() );
     ui.checkModules->setChecked( settings.value("showModules", false).toBool() );
-    ui.lineEdit->setText( settings.value("serverAdress", "").toString());
+    ui.lineEdit->setText( settings.value("serverAdress", "http://sourceforge.net/projects/itom/files/repositories/helpDatabase/updateInfo.xml").toString());
     m_downloadTimeout = settings.value("downloadTimeout", 10000).toInt();
     ui.spinTimeout->setValue(m_downloadTimeout/1000);
 
