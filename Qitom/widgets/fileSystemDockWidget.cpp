@@ -364,31 +364,39 @@ void FileSystemDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::updateActions()
 {
-    QModelIndexList indexList = m_pTreeView->selectedIndexes();
+    QModelIndexList indexList;
+
+    //filter indexList such that only one index per row and parent is available
+    bool found;
+    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
+    {
+        found = false;
+        foreach(const QModelIndex &idx2, indexList)
+        {
+            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            indexList.append(idx);
+        }
+    }
+
     bool selected = indexList.count();
-    bool selectedOnlyOne = false;
-    int columns = 1;
 
-    if (m_pTreeView->isColumnHidden(1))
-    {
-        selectedOnlyOne = indexList.count() == 1;
-        columns = 1;
-    }
-    else
-    {
-        selectedOnlyOne = indexList.count() == m_pFileSystemModel->columnCount();
-        columns = m_pFileSystemModel->columnCount();
-    }
-
-//    bool isDir = false;
     bool isFile = false;
     bool areFiles = false;
     bool isPyFile = false;
     bool pyNotRun = false;
+    bool selectedOnlyOne = (indexList.count() == 1);
+
     if (selectedOnlyOne)
     {
         QFileInfo fileinfo = m_pFileSystemModel->fileInfo(indexList.first());
-//        isDir = fileinfo.isDir();
         isFile = fileinfo.isFile();
         isPyFile = isFile && (fileinfo.suffix().toLower() == "py");
         if (isPyFile)
@@ -400,9 +408,9 @@ void FileSystemDockWidget::updateActions()
     else
     {
         areFiles = true;
-        for (int i = 0; i < (m_pTreeView->selectedIndexes().count() / columns); i++)
+        foreach (const QModelIndex &idx, indexList)
         {
-            QFileInfo fileinfo = m_pFileSystemModel->fileInfo(indexList[i*columns]);
+            QFileInfo fileinfo = m_pFileSystemModel->fileInfo(idx);
             areFiles = fileinfo.isFile();
             if (!areFiles)
             {
@@ -725,20 +733,31 @@ void FileSystemDockWidget::mnuExecuteFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuOpenFile()
 {
-    int columns = 1;
+    QModelIndexList indexList;
 
-    if (m_pTreeView->isColumnHidden(1))
+    //filter indexList such that only one index per row and parent is available
+    bool found;
+    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
     {
-        columns = 1;
-    }
-    else
-    {
-        columns = m_pFileSystemModel->columnCount();
+        found = false;
+        foreach(const QModelIndex &idx2, indexList)
+        {
+            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            indexList.append(idx);
+        }
     }
 
-    for (int i = 0; i < (m_pTreeView->selectedIndexes().count() / columns); i++)
+    foreach (const QModelIndex &idx, indexList)
     {
-        openFile(m_pTreeView->selectedIndexes()[i*columns]);
+        openFile(idx);
     }  
 }
 
@@ -783,19 +802,30 @@ void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuRenameItem()
 {
-    int columns;
-    if (m_pTreeView->isColumnHidden(1))
+    //filter indexList such that only one index per row and parent is available
+    bool found;
+    QModelIndexList indexList;
+    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
     {
-        columns = 1;
-    }
-    else
-    {
-        columns = m_pFileSystemModel->columnCount();
+        found = false;
+        foreach(const QModelIndex &idx2, indexList)
+        {
+            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            indexList.append(idx);
+        }
     }
 
-    if (m_pTreeView->selectedIndexes().count() == columns)
+    if (indexList.count() == 1)
     {
-        m_pTreeView->edit(m_pTreeView->currentIndex());
+        m_pTreeView->edit(indexList[0]);
     }
 }
 
@@ -803,35 +833,44 @@ void FileSystemDockWidget::mnuRenameItem()
 void FileSystemDockWidget::mnuDeleteItems()
 {
     QString itemName;
-//    QModelIndex index;
-//    bool removed = true;
     QStringList fileList;
-    int columns;
 
-    if (m_pTreeView->isColumnHidden(1))
+    //filter indexList such that only one index per row and parent is available
+    bool found;
+    QModelIndexList indexList;
+    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
     {
-        columns = 1;
+        found = false;
+        foreach(const QModelIndex &idx2, indexList)
+        {
+            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            indexList.append(idx);
+        }
+    }
+
+    if (indexList.count() == 1)
+    {
+        itemName = "'" + m_pFileSystemModel->fileInfo(indexList[0]).fileName() + "'";
     }
     else
     {
-        columns = m_pFileSystemModel->columnCount();
+        itemName = tr("the selected items");
     }
 
-    if (m_pTreeView->selectedIndexes().count() == columns)
-    {
-        itemName = " '" + m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes()[0]).fileName() + "'";
-    }
-    else
-    {
-        itemName = tr(" the selected items");
-    }
-
-    if (QMessageBox::question(this, tr("delete"), tr("Do you really want to delete%1 ?").arg(itemName), QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes)
+    if (QMessageBox::question(this, tr("delete"), tr("Do you really want to delete %1?").arg(itemName), QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes)
     {
         // first we have to create a list with all selected files
-        for (int i = 0; i < (m_pTreeView->selectedIndexes().count() / columns); i++)
+        foreach(const QModelIndex &idx, indexList)
         {
-            fileList.append(m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes()[i*columns]).filePath());
+            fileList.append(m_pFileSystemModel->fileInfo(idx).filePath());
         }
 
         // now we can delete the files in the list
