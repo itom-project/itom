@@ -88,6 +88,7 @@ Plugins
 
 (more than 200 commits in plugins repository)
 
+* PCOCamera: improved plugin with renew config dialog and toolbox. Tested with PCO.1300 and PCO.2000.
 * DataObjectIO: Added importfilter for ascii based images or point lists
 * PCLTools released under LGPL
 * PGRFlyCapture: extended shutter added for longer integration times, frame rate is not used if extended shutter is one since images are acquired as fast as possible.
