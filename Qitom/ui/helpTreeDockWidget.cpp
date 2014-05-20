@@ -1280,6 +1280,12 @@ void HelpTreeDockWidget::propertiesChanged()
 // Reload Database and clear search-edit and start the new Thread
 void HelpTreeDockWidget::reloadDB()
 {
+    if (dbLoaderWatcher.isRunning())
+    {
+        //a previous reload and QtConcurrent::run is still running, wait for it to be finished
+        dbLoaderWatcher.waitForFinished();
+    }
+
     //Create and Display Mainmodel
     m_pMainModel->clear();
     ui.treeView->reset();
