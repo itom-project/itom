@@ -794,7 +794,7 @@ namespace ito
         int found = 0;
         ito::AddInInterfaceBase *aib = NULL;
 
-        //test actuator
+        //test actuator (objectName)
         for (int n=0; n < m_addInListAct.size(); n++)
         {
             if (QString::compare(m_addInListAct[n]->objectName(),name,Qt::CaseInsensitive) == 0)
@@ -809,7 +809,7 @@ namespace ito
             }
         }
 
-        if (!found) //test dataIO
+        if (!found) //test dataIO (objectName)
         {
             for (int n=0; n < m_addInListDataIO.size(); n++)
             {
@@ -826,7 +826,7 @@ namespace ito
             }
         }
 
-        if (!found) //test Algorithm
+        if (!found) //test Algorithm (objectName)
         {
             for (int n=0; n < m_addInListAlgo.size(); n++)
             {
@@ -843,7 +843,66 @@ namespace ito
             }
         }
 
-        if (aib)
+        //if nothing found until then, try to find name as filename within the dll-filename of the plugin
+        if (!found)
+        {
+            QFileInfo fi;
+            QString name_(name);
+#ifdef _DEBUG
+            name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
+#endif
+
+            //test actuator (objectName)
+            for (int n=0; n < m_addInListAct.size(); n++)
+            {
+                aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]);
+                fi.setFile(aib->getFilename());
+                if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+                {
+                    pluginNum = n;
+                    pluginType = ito::typeActuator;
+                    typeString = "Actuator";
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) //test dataIO (objectName)
+            {
+                for (int n=0; n < m_addInListDataIO.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+                    {
+                        pluginNum = n;
+                        pluginType = ito::typeDataIO;
+                        typeString = "DataIO";
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+
+            if (!found) //test Algorithm (objectName)
+            {
+                for (int n=0; n < m_addInListAlgo.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+                    {
+                        pluginNum = n;
+                        pluginType = ito::typeAlgo;
+                        typeString = "Algorithm";
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (aib && found)
         {
             author = aib->getAuthor();
             description = aib->getDescription();
