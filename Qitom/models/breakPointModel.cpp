@@ -282,8 +282,6 @@ int BreakPointModel::columnCount(const QModelIndex &parent) const
 */
 QVariant BreakPointModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << index.row() << index.column() << index.parent().isValid();
-
     if(!index.isValid())
     {
         return QVariant();

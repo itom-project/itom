@@ -114,6 +114,7 @@ void HelpDockWidget::updateActions()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::mnuShowInfo(QString name, int type)
 {
     emit(showPluginInfo(name, type, QModelIndex(), true));

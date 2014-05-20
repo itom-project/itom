@@ -343,8 +343,9 @@ void DialogProperties::apply()
 
     QObject *mainApplication = AppManagement::getMainApplication();
 
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QMetaObject::invokeMethod(mainApplication, "_propertiesChanged");
-
+    QApplication::restoreOverrideCursor();
 }
 
 } //end namespace ito
