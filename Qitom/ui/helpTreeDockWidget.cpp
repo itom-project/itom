@@ -853,7 +853,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
             if (pMeta)
             {
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
             }
             else
             {
@@ -868,7 +868,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
             }
             else
             {
@@ -1010,10 +1010,10 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         break;
     }
 
-    output.replace("%PARAMNAME%", name);
-    output.replace("%PARAMTYPE%", type);
-    output.replace("%PARAMINFO%", info);
-    output.replace("%PARAMMETA%", meta);
+    output.replace("%PARAMNAME%", Qt::escape(name));
+    output.replace("%PARAMTYPE%", Qt::escape(type));
+    output.replace("%PARAMINFO%", Qt::escape(info));
+    output.replace("%PARAMMETA%", Qt::escape(meta));
     return output;
 }
 
