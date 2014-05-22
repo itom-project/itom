@@ -191,6 +191,8 @@ Source: "{#SourceDirItomBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\translation\*.qm"; DestDir: "{app}\plugins\FireGrabber\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\FittingFilters.dll"; DestDir: "{app}\plugins\FittingFilters"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\translation\*.qm"; DestDir: "{app}\plugins\FittingFilters\translation"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FringeProj\FringeProj.dll"; DestDir: "{app}\plugins\FringeProj"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\plugins\FringeProj\translation\*.qm"; DestDir: "{app}\plugins\FringeProj\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\GWInstekPSP.dll"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\translation\*.qm"; DestDir: "{app}\plugins\GWInstekPSP\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\LeicaMotorFocus.dll"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: promptifolder
