@@ -901,11 +901,19 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
     \return result of changeBreakPoint method
     \sa changeBreakPoint
 */
-RetVal BreakPointModel::setPyBpNumber(int row, int pyBpNumber)
+RetVal BreakPointModel::setPyBpNumber(const BreakPointItem &item, int pyBpNumber)
 {                                                     //???
-    BreakPointItem bp = getBreakPoint(createIndex(row,1));
-    bp.pythonDbgBpNumber=pyBpNumber;
-    return changeBreakPoint(createIndex(row,1),bp,false);
+    //get modelIndex of file
+    QModelIndex index = getFirstBreakPointIndex(item.filename, item.lineno);
+
+    if (index.isValid())
+    {
+        BreakPointItem bp = item;
+        bp.pythonDbgBpNumber = pyBpNumber;
+        return changeBreakPoint(index,bp,false);
+    }
+
+    return ito::retError;    
 }
 
 } //end namespace ito

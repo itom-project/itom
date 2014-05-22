@@ -106,7 +106,7 @@ public:
     QModelIndexList getAllFileIndexes();
 
     RetVal resetAllPyBpNumbers();
-    RetVal setPyBpNumber(int row, int pyBpNumber);
+    RetVal setPyBpNumber(const BreakPointItem &item, int pyBpNumber);
 
 protected:
 
