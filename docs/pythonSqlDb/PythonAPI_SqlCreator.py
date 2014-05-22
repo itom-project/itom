@@ -13,56 +13,6 @@ that should be created
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
 import itom
 
-#------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------All Settings start here-------------------------------------------
-#------------------------------------------------------------------------------------------------------------------
-
-# which kinds of modules do you want to document
-add_builtins =                      1      # e.g. open()
-add_builtin_modules =           1      # e.g. sys
-add_package_modules =        0      # modules which are directories with __init__.py files
-add_manual_modules =          0      # modules from manuallist
-
-# if your module is already in here, the id is set automatically. If not, add it:  {...., "myNewModule":1009}
-# Make shure that your new ID is not already used by another module!!!
-idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib":1004}
-
-# Enter modules you ant to add manually
-manualList = ['itom']
-
-# This is how the DB is named! For singlepackage databases use their name as filename!
-name = 'builtins'
-
-# Name of the Database
-id = idDict[name]
-
-# Always increase the version by one to allow automatic updates
-version = '1'
-
-# Automatically detected
-date = time.strftime("%d.%m.%Y")
-
-# Only change if there was a SchemeID change in Itom
-itomMinVersion = '1'            # SchemeID
-
-#------------------------------------------------------------------------------------------------------------------
-#-------------------------------Don´t make any changes below this Line-------------------------------
-#------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------
-
-
-
-# Filename is created by name and .db
-filename = name + '.db'
-
-# finished db-Info
-dbInfo = [id, name, version, date, itomMinVersion]
-
-remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
-
 blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turtledemo','win32traceutil', 
                      'win32pdh', 'perfmondata', 'tzparse', '__next__',
                      'libqtcmodule-2.2', 'libqtc', 'win32com', 'GDK', 'GTK', 'GdkImlib', 'GtkExtra', 
@@ -76,6 +26,101 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
                      '__len__', '__lt__', '__mul__', '__delattr__', '__ne__', '__setitem__', '__doc__', '__dict__',
                      '__new__', '__init__', '__name__', '__cached__', '__ior__', '__isub__', '__and__',
                      '__sub__', '__xor__', '__main__','__repr__','itoDebugger','__path__','__file__']
+
+
+
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------All Settings start here-------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+
+# if your module is already in here, the id is set automatically. If not, add it:  {...., "myNewModule":1009}
+# Make shure that your new ID is not already used by another module!!!
+idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib":1004}
+
+# --->>>Global simple Settings<<<---
+
+# Filename and DB-Name
+databasename = 'builtins'
+
+name = databasename
+
+# Always increase the version by one to allow automatic updates
+dbVersion = '3'
+
+# Only change if there was a SchemeID change in Itom
+itomMinVersion = '1'            # SchemeID
+
+# --->>>Global advanced Settings<<<---
+
+# Name of the Database
+id = idDict[name]
+
+# Date is automatically detected
+date = time.strftime("%d.%m.%Y")
+
+# Enter modules you ant to add manually
+# manualList = ['itom'] # advanced settings
+
+# which kinds of modules do you want to document # advanced settings
+#add_builtins =                      1      # e.g. open()
+#add_builtin_modules =           1      # e.g. sys
+#add_package_modules =        1      # modules which are directories with __init__.py files
+#add_manual_modules =          0      # modules from manuallist
+
+# This is how the DB is named! For singlepackage databases use their name as filename!
+#name = 'builtins' # advanced settings
+
+
+
+
+if (databasename == 'itom') or (databasename == 'numpy') or (databasename == 'scipy') or (databasename == 'matplotlib'):
+    manualList = [databasename]
+    add_builtins =               0      
+    add_builtin_modules =        0      
+    add_package_modules =        0  
+    add_manual_modules =         1
+    print(name)
+elif databasename == 'builtins':
+    add_builtins =                   1
+    add_builtin_modules =        1
+    add_package_modules =     1
+    add_manual_modules =       0
+    blacklist.append(['itom','itomEnum','itomSyntaxCheck','itomUi'])
+    print(name)
+else:
+    add_builtins =                0
+    add_builtin_modules =     0
+    add_package_modules =  0
+    add_manual_modules =    0
+    print('no source selected')
+
+
+# If you would like to have a Report File for your Databasecreation
+createReportFile = 0
+reportFile = open("HelpReport.txt","w")
+# and what do you want to be in that file:
+reportE = 0
+reportW = 0
+oldPercentage = 0
+
+
+#------------------------------------------------------------------------------------------------------------------
+#-------------------------------Don´t make any changes below this Line-------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
+
+
+
+# Filename is created by name and .db
+filename = name + '.db'
+
+# finished db-Info
+dbInfo = [id, name, dbVersion, date, itomMinVersion]
+
+remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
 
 
 
@@ -113,12 +158,6 @@ doubleID = {}
 idList = {}
 doclist = []
 
-reportFile = open("HelpReport.txt","w")
-
-reportE = 0
-reportW = 0
-oldPercentage = 0
-
 def printPercent(value, maxim):
     global oldPercentage
     percentage = value/maxim*100
@@ -129,11 +168,11 @@ def printPercent(value, maxim):
 
 
 def closeReport():
-    #t = 
-    reportFile.write('Timestamp: '+time.asctime(time.localtime())+'\n')
-    reportFile.write('Warnings:  '+format(reportW)+'\n')
-    reportFile.write('Errors:    '+format(reportE)+'\n')
-    reportFile.close()
+    if createReportFile:
+        reportFile.write('Timestamp: '+time.asctime(time.localtime())+'\n')
+        reportFile.write('Warnings:  '+format(reportW)+'\n')
+        reportFile.write('Errors:    '+format(reportE)+'\n')
+        reportFile.close()
     return
 
 def reportMessage(message, typ):
@@ -257,6 +296,7 @@ def getAllModules(ns):
         for module_loader, name, ispkg in pkgutil.iter_modules(selPath):
             if name not in blacklist:
                 stackList.append(name)
+                builtinList.append(name) # this line adds the module to buildin list to set python infront afterwards
                 try:
                     exec('import '+name,ns)
                 except:
@@ -336,7 +376,7 @@ def processName(moduleP, ns, recLevel = 0):
         except:
             print('Sublist of : '+prefix+module,'e')
     else:
-        # Hier werden die Links eingefÃ¼gt!!!
+        # Hier werden die Links eingefuegt!!!
         # da diese Objekte im original bereits bestehen!
         if prefix+module in blacklist:
             return
@@ -349,7 +389,10 @@ def processName(moduleP, ns, recLevel = 0):
                 prefixL = prefixL +'.'
             else:
                 prefixL = ''
-            doclink = '<a id=\"HiLink\" href=\"itom://'+prefixL+moduleL+'\">'+prefixL+moduleL+'</a>'
+            if (prefix[:prefix.find('.')] in builtinList) or (prefix in builtinList) or (module in builtinList):
+                doclink = '<a id=\"HiLink\" href=\"itom://python.'+prefixL+moduleL+'\">python.'+prefixL+moduleL+'</a>'
+            else:
+                doclink = '<a id=\"HiLink\" href=\"itom://'+prefixL+moduleL+'\">'+prefixL+moduleL+'</a>'
             createSQLEntry(doclink, prefix, module, '1'+nametype, 0)
         except:
             reportMessage('Error in: '+prefix+module,'e')
@@ -361,7 +404,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     # Nametype can be a type or a string... nothing else!!!!
     # create one new Row in Database for every function
     line = [0, 0, 0, 0, 0, 0, 0]
-    time.sleep(0.001)
+    time.sleep(0.001) #TODO: why
     
     if type(docstrIn) == str:
         docstr = docstrIn
@@ -423,24 +466,6 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             cor = "\n".join(lines)
             sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})#, 'env':app.env.settings["env"]})
             line[6] = '0'
-            
-            '''
-            try:
-                # String in lines aufsplitten
-                lines = s.split('\n')
-                ns["lines"] = lines
-                # numpy docstring korrigieren
-                global types
-                exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[1]+'.__name__,'+line[1]+', None, lines)', ns)
-                lines = ns['lines']
-                # Linien wieder zusamensetzen
-                cor = "\n".join(lines)
-                sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})
-                line[6] = '0'
-            except:
-                sout = s
-                line[6] = '1'
-            '''
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
             line[5] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
@@ -451,8 +476,12 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             line[6] = '3'
     else:
         # only a link reference
-        line[5] = itom.compressData(docstr)
-        line[6] = '0'
+        if (prefix[:prefix.find('.')] in builtinList) or (prefix in builtinList) or (name in builtinList):
+            line[5] = itom.compressData(docstr)
+            line[6] = '0'
+        else:
+            line[5] = itom.compressData(docstr)
+            line[6] = '0'
     
     # 7 HTML-Error
     # Wiird bereits bei #7 eingetragen
