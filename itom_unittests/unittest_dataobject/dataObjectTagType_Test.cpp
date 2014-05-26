@@ -203,9 +203,9 @@ TYPED_TEST(dataObjectTagType_Test,isValid_Test)
 TYPED_TEST(dataObjectTagType_Test,getVal_ToDouble_Test)
 {
 	double tempVal3=24;
-	double val1= std::numeric_limits<double>::signaling_NaN();
-	double val2= std::numeric_limits<double>::quiet_NaN();
-	double val3= std::numeric_limits<double>::infinity();
+	double sigNaN= std::numeric_limits<double>::signaling_NaN();
+	double quietNaN= std::numeric_limits<double>::quiet_NaN();
+	double inf= std::numeric_limits<double>::infinity();
 	double valDouble;
 	std::ostringstream s4;
 	std::string str4;
@@ -235,16 +235,16 @@ TYPED_TEST(dataObjectTagType_Test,getVal_ToDouble_Test)
 
 	//!< Test for getVal_ToDouble() function.
 	valDouble=StrObj1.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< valDouble contains the output of getVal_ToDouble() function for String Object of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< valDouble contains the output of getVal_ToDouble() function for String Object of DataObjectTagType. */
 	EXPECT_DOUBLE_EQ( tempVal3,Obj1.getVal_ToDouble() );					/*!< Test for getVal_ToDouble function for Object with Double value of DataObjectTagType. */
 	valDouble=EmptyObj1.getVal_ToDouble();									/*!< val2 contains the output of getVal_ToDouble() function for Empty Object of DataObjectTagType. */
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
 	valDouble=Obj2.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val2,&valDouble,sizeof(val2) ) );
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );
 	valDouble=Obj3.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );
+	EXPECT_EQ( 0,std::memcmp(&sigNaN,&valDouble,sizeof(sigNaN) ) );
 	valDouble=Obj4.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val3,&valDouble,sizeof(val3) ) );
+	EXPECT_EQ( 0,std::memcmp(&inf,&valDouble,sizeof(inf) ) );
 
 	//!< The above Test for getVal_ToDouble() function could also be accomplished by following code. 
 		/*!<	
@@ -255,29 +255,29 @@ TYPED_TEST(dataObjectTagType_Test,getVal_ToDouble_Test)
 	
 	//!< Test for getVal_ToDouble() function with copied objects.
 	valDouble=CpyStrObj1.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< valDouble contains the output of getVal_ToDouble() function for Copied String Object with Copy Constructor of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< valDouble contains the output of getVal_ToDouble() function for Copied String Object with Copy Constructor of DataObjectTagType. */
 	EXPECT_DOUBLE_EQ( tempVal3,CpyObj1.getVal_ToDouble() );					/*!< Test for getVal_ToDouble function for Object with Double value of DataObjectTagType. */
 	valDouble=CpyEmptyObj1.getVal_ToDouble();								/*!< val2 contains the output of getVal_ToDouble() function for Empty Object of DataObjectTagType. */
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
 	valDouble=CpyObj2.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val2,&valDouble,sizeof(val2) ) );
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );
 	valDouble=CpyObj3.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );
+	EXPECT_EQ( 0,std::memcmp(&sigNaN,&valDouble,sizeof(sigNaN) ) );
 	valDouble=CpyObj4.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val3,&valDouble,sizeof(val3) ) );
+	EXPECT_EQ( 0,std::memcmp(&inf,&valDouble,sizeof(inf) ) );
 
 	//!< Test for getVal_ToDouble() function with copied objects using Assignment Operator "=".
 	valDouble=AsgnStrObj1.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< val2 contains the output of getVal_ToDouble() function for String Object of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< val2 contains the output of getVal_ToDouble() function for String Object of DataObjectTagType. */
 	EXPECT_DOUBLE_EQ( tempVal3,AsgnObj1.getVal_ToDouble() );				/*!< Test for getVal_ToDouble function for Object with Double value of DataObjectTagType. */
 	valDouble=AsgnEmptyObj1.getVal_ToDouble();								/*!< val2 contains the output of getVal_ToDouble() function for Empty Object of DataObjectTagType. */
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );				/*!< Test for getVal_ToDouble() function with empty objects of DataObjectTagType. */
 	valDouble=AsgnObj2.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val2,&valDouble,sizeof(val2) ) );
+	EXPECT_EQ( 0,std::memcmp(&quietNaN,&valDouble,sizeof(quietNaN) ) );
 	valDouble=AsgnObj3.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val1,&valDouble,sizeof(val1) ) );
+	EXPECT_EQ( 0,std::memcmp(&sigNaN,&valDouble,sizeof(sigNaN) ) );
 	valDouble=AsgnObj4.getVal_ToDouble();
-	EXPECT_EQ( 0,std::memcmp(&val3,&valDouble,sizeof(val3) ) );
+	EXPECT_EQ( 0,std::memcmp(&inf,&valDouble,sizeof(inf) ) );
 }
 
 //setTag_Test

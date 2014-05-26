@@ -108,19 +108,19 @@ TYPED_TEST(SaturateTestFloat, saturate_cast_Test)
 	EXPECT_FLOAT_EQ(cv::saturate_cast<ito::float32>(float64_inf),float32_inf);						/*!< Testing if float64 infinity variable becomes same as float32 infinity variable after converting with saturate_cast<Type>(...) function. */
 
 	ito::float32 float32_test1 = cv::saturate_cast<ito::float32>(float64_sigNan);
-	EXPECT_EQ(0,std::memcmp(&float32_sigNan,&float32_test1,sizeof(float32_sigNan) ) );				/*!< Testing if float64 signalNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function. */
+	EXPECT_EQ(0,std::memcmp(&float32_qNan,&float32_test1,sizeof(float32_qNan) ) );				/*!< Testing if float64 signalNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function. */
 
 	ito::float32 float32_test2 = cv::saturate_cast<ito::float32>(float64_qNan);					//!< cv::saturate_cast always returns signalingNaN for any NaN-input
-	EXPECT_EQ(0,std::memcmp(&float32_sigNan,&float32_test2,sizeof(float32_qNan) ) );		    //!< Testing if float64 quietNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function.         
+	EXPECT_EQ(0,std::memcmp(&float32_qNan,&float32_test2,sizeof(float32_qNan) ) );		    //!< Testing if float64 quietNaN variable becomes same as float32 signalNaN variable after converting with saturate_cast<Type>(...) function.         
 
 
 	EXPECT_FLOAT_EQ(cv::saturate_cast<ito::float32>(float32_inf),float64_inf);
 
 	ito::float64 float64_test1 = cv::saturate_cast<ito::float64>(float32_sigNan);
-	EXPECT_EQ(0,std::memcmp(&float64_sigNan,&float64_test1,sizeof(float64_sigNan) ) );
+	EXPECT_EQ(0,std::memcmp(&float64_qNan,&float64_test1,sizeof(float64_qNan) ) );
 
 	ito::float64 float64_test2 = cv::saturate_cast<ito::float64>(float32_qNan);					//cv::saturate_cast always returns signalingNaN for any NaN-input
-	EXPECT_EQ(0,std::memcmp(&float64_sigNan,&float64_test2,sizeof(float64_qNan) ) );			//!< Testing if float32 quietNaN variable becomes same as float64 signalNaN variable after converting with saturate_cast<Type>(...) function.
+	EXPECT_EQ(0,std::memcmp(&float64_qNan,&float64_test2,sizeof(float64_qNan) ) );			//!< Testing if float32 quietNaN variable becomes same as float64 signalNaN variable after converting with saturate_cast<Type>(...) function.
 
 }
 
