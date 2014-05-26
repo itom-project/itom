@@ -563,7 +563,7 @@ void MainWindow::createActions()
         {
             m_actions["python_global_runmode"]->setChecked(pyEngine->execInternalCodeByDebugger());
         }
-        connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToogleExecPyCodeByDebugger(bool)));
+        connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
         m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
         m_actions["python_stopAction"]->setShortcut(tr("Shift+F10"));
@@ -1464,7 +1464,7 @@ void MainWindow::designerError (QProcess::ProcessError /*error*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::mnuToogleExecPyCodeByDebugger(bool checked)
+void MainWindow::mnuToggleExecPyCodeByDebugger(bool checked)
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 

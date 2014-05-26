@@ -940,7 +940,7 @@ namespace dObjHelper
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
     \detail This function searches for min and max-value of the <_Type> data object and saves its first detects positions in firstMinLocation (must be uint32[3]-Array) and firstMaxLocation (must be  uint32[3]-Array).
-            The specialDataTypeFlags for complex handling / rgba32 selection is used to toogle between the different channels.
+            The specialDataTypeFlags for complex handling / rgba32 selection is used to toggle between the different channels.
             If specialDataTypeFlags == RGBA_B the maximal & minimal value for the blue channel is returned.
             If specialDataTypeFlags == RGBA_G the maximal & minimal value for the green channel is returned
             If specialDataTypeFlags == RGBA_R the maximal & minimal value for the red channel is returned
@@ -1626,9 +1626,9 @@ namespace dObjHelper
         This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated linewise or pointwise.
 
         \param[in|out]  dObjIO              handle to the dataObject. Must be float-type or complex-type
-        \param[in]      inverse             toogle between IFFT or FFT
-        \param[out]     inverseAsReal       toogle output for the IFFT between real and complex
-        \param[out]     lineWise            toogle between 1D-linewise and 2D-FFT
+        \param[in]      inverse             toggle between IFFT or FFT
+        \param[out]     inverseAsReal       toggle output for the IFFT between real and complex
+        \param[out]     lineWise            toggle between 1D-linewise and 2D-FFT
 
         \return retOK
     */
