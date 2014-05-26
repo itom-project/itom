@@ -2095,7 +2095,9 @@ namespace dObjHelper
                         //check if it needs to be converted
                         if (convertToType > 0 && convertToType != out.getType())
                         {
-                            retval += out.convertTo(out, convertToType); //inplace !
+                            ito::DataObject out2;
+                            retval += out.convertTo(out2, convertToType); //non-inplace conversion
+                            out = out2;
                         }
                         else {} //take as is
                     }
