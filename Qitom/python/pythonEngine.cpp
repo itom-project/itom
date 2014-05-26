@@ -205,6 +205,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 //    bool numpyAvailable = true;
 
     qDebug() << "python in thread: " << QThread::currentThreadId ();
+    readSettings();
 
     RetVal tretVal(retOk);
     if (!started)
@@ -542,6 +543,7 @@ void PythonEngine::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::propertiesChanged()
 {
     readSettings();
