@@ -42,10 +42,10 @@ Name: "{app}\"; Permissions: everyone-modify
 Name: "{app}\plugins"; Permissions: everyone-modify
 Name: "{app}\plugins\demoAlgorithms"; Permissions: everyone-modify
 Name: "{app}\plugins\demoAlgorithms\translation"; Permissions: everyone-modify
-Name: "{app}\plugins\DummyGrabber"; Permissions: everyone-modify
-Name: "{app}\plugins\DummyGrabber\translation"; Permissions: everyone-modify
-Name: "{app}\plugins\DummyMotor"; Permissions: everyone-modify
-Name: "{app}\plugins\DummyMotor\translation"; Permissions: everyone-modify
+;Name: "{app}\plugins\DummyGrabber"; Permissions: everyone-modify
+;Name: "{app}\plugins\DummyGrabber\translation"; Permissions: everyone-modify
+;Name: "{app}\plugins\DummyMotor"; Permissions: everyone-modify
+;Name: "{app}\plugins\DummyMotor\translation"; Permissions: everyone-modify
 Name: "{app}\designer"; Permissions: everyone-modify
 Name: "{app}\designer\translation"; Permissions: everyone-modify
 Name: "{app}\demo"; Permissions: everyone-modify
@@ -160,6 +160,7 @@ Source: "{#SourceDirItomBuild}\designer\itom1DQwtPlot.dll"; DestDir: "{app}\desi
 Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\itomGraphicView.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\itomIsoGLFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: promptifolder recursesubdirs
@@ -183,8 +184,8 @@ Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\DummyGrabber.dll"; DestDir: 
 Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\translation\*.qm"; DestDir: "{app}\plugins\DummyGrabber\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\DummyMotor.dll"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\translation\*.qm"; DestDir: "{app}\plugins\DummyMotor\translation"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\FFTWfilters.dll"; DestDir: "{app}\plugins\FFTWfilters"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\translation\*.qm"; DestDir: "{app}\plugins\FFTWfilters\translation"; Flags: promptifolder
+;Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\FFTWfilters.dll"; DestDir: "{app}\plugins\FFTWfilters"; Flags: promptifolder
+;Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\translation\*.qm"; DestDir: "{app}\plugins\FFTWfilters\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\FileGrabber.dll"; DestDir: "{app}\plugins\FileGrabber"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\translation\*.qm"; DestDir: "{app}\plugins\FileGrabber\translation"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\FireGrabber.dll"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder
@@ -233,10 +234,27 @@ Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "
 Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\AeroBasic.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleC.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleCore.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\glew32.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\m3api.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigE.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLFilter.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLWinsock.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\xiApi.NET.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 
 ; Demo
 Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
