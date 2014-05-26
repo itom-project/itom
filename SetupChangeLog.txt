@@ -46,4 +46,4 @@ Setup 1.0.12 - Erstellt am 07.06.2013 - AddInInterface "ito.AddIn.InterfaceBase/
 Setup 1.0.13 - Erstellt am 22.07.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.19"
 Setup 1.0.14 - Erstellt am 30.08.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.20"
 Setup 1.1.0  - Erstellt am 27.01.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.1.24"
-Setup 1.2.0  - Erstellt am 25.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.2.1"
+Setup 1.2.0  - Erstellt am 26.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.2.1"
