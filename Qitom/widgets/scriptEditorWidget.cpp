@@ -173,13 +173,13 @@ RetVal ScriptEditorWidget::initEditor()
     }
 
     setMarginWidth(1, 16);
-    setMarginWidth(2, 35);
+
     setMarginWidth(3, 18);
     setMarginWidth(4, 18);
 
     setMarginSensitivity(1, true);
     setMarginSensitivity(3, true);
-
+    autoAdaptLineNumberColumnWidth();
     setMarginLineNumbers(2, true);
 
     setMarginType(1, QsciScintilla::SymbolMargin); //!< bookmark margin
@@ -318,6 +318,36 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
     }
 
     return storage;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::autoAdaptLineNumberColumnWidth()
+{
+    int l = lines();
+    QString s; //make the width always a little bit bigger than necessary
+
+    if (l < 10)
+    {
+        s = QString::number(10);
+    }
+    else if (l < 100)
+    {
+        s = QString::number(100);
+    }
+    else if (l < 1000)
+    {
+        s = QString::number(1000);
+    }
+    else if (l < 10000)
+    {
+        s = QString::number(10000);
+    }
+    else
+    {
+        s = QString::number(100000);
+    }
+
+    setMarginWidth(2, s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1349,15 +1379,32 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     }
     else
     {
-        BreakPointItem bp;
-        bp.filename = getFilename();
-        bp.lineno = line;
-        bp.conditioned = false;
-        bp.condition = "";
-        bp.enabled = true;
-        bp.temporary = false;
-        bp.ignoreCount = 0;
-        bpModel->addBreakPoint(bp);
+        // Check if it's a blank or comment line 
+        bool emptyLine = false;
+        for (int i = 0; i < this->lineLength(line); ++i)
+        {
+            QString c = this->text(line)[i];
+            if (c != "\t" && c != " " && c != "#" && c != "\n")
+            { // it must be a character
+                break;
+            }
+            else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
+            { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
+                emptyLine = true;
+            }
+        }
+        if (!emptyLine)
+        {
+            BreakPointItem bp;
+            bp.filename = getFilename();
+            bp.lineno = line;
+            bp.conditioned = false;
+            bp.condition = "";
+            bp.enabled = true;
+            bp.temporary = false;
+            bp.ignoreCount = 0;
+            bpModel->addBreakPoint(bp);
+        }
     }
 
     return RetVal(retOk);
@@ -1526,11 +1573,12 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 
     if (bp.filename == getFilename() && bp.filename != "")
     {
-                std::list<QPair<int, int> >::iterator it;
+        std::list<QPair<int, int> >::iterator it;
         bool found = false;
 
         for (it = breakPointMap.begin(); it != breakPointMap.end() && !found; ++it)
         {
+            // Check if there is already a bp
             if (it->second == bp.lineno)
             {
                 found = true;
@@ -1730,7 +1778,14 @@ void ScriptEditorWidget::nrOfLinesChanged()
             {
                 bpModel->deleteBreakPoint(index);
             }
-            it = breakPointMap.erase(it);
+            if (breakPointMap.size() > 0)
+            {
+                it = breakPointMap.erase(it);
+            }
+            else
+            {
+                break;
+            }
         }
         else if (line != it->second)
         {
@@ -1754,6 +1809,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         m_syntaxTimer->start(); //starts or restarts the timer
     }
+    autoAdaptLineNumberColumnWidth();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

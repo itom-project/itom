@@ -94,6 +94,7 @@ public:
 protected:
     //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
+    void autoAdaptLineNumberColumnWidth();
 //    void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
