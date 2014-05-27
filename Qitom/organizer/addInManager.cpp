@@ -967,7 +967,7 @@ namespace ito
         bool callInitInNewThread;
         bool timeoutOccurred = false;
 
-        if ((m_addInListDataIO[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListDataIO[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
@@ -1064,10 +1064,9 @@ namespace ito
         }
 
         //updateModel();
-
-end:
         m_plugInModel.insertInstance(aib, false); //end insert
 
+end:
         if (aimWait)
         {
             aimWait->returnValue = retval;
@@ -1102,7 +1101,7 @@ end:
         bool callInitInNewThread;
         bool timeoutOccurred = false;
 
-        if ((m_addInListAct[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListAct[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
@@ -1197,10 +1196,9 @@ end:
         }
 
         //updateModel();
-        
+        m_plugInModel.insertInstance(aib, false); //end insert
 
 end:
-        m_plugInModel.insertInstance(aib, false); //end insert
 
         if (aimWait)
         {
@@ -1232,7 +1230,7 @@ end:
         ito::tAutoLoadPolicy policy = ito::autoLoadNever;
         ito::AddInInterfaceBase *aib = NULL;
 
-        if ((m_addInListAlgo[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListAlgo[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
