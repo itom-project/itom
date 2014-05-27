@@ -275,20 +275,24 @@ Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopico
 [Run]
 Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK;
 Filename: "{tmp}\1. python-3.3.0.amd64.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3..."; Components: PYTHON
-Filename: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
-Filename: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
-Filename: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
-Filename: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Pillow..."; Components: PILLOW
-Filename: "{tmp}\6. pyparsing-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
+Filename: "{tmp}\2. numpy-MKL-1.8.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
+Filename: "{tmp}\3. scipy-0.14.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
+Filename: "{tmp}\4. pyparsing-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
+Filename: "{tmp}\5. python-dateutil-2.2.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
+Filename: "{tmp}\6. six-1.6.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: SIX
+Filename: "{tmp}\7. matplotlib-1.3.1.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
+Filename: "{tmp}\8. Pillow-2.0.0.win-amd64-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Pillow..."; Components: PILLOW
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
 Type: files; Name: "{tmp}\1. python-3.3.0.amd64.msi"
-Type: files; Name: "{tmp}\2. numpy-MKL-1.7.1rc1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\3. scipy-0.12.0b1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\4. matplotlib-1.2.1.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\5. Pillow-2.0.0.win-amd64-py3.3.exe"
-Type: files; Name: "{tmp}\6. pyparsing-2.0.0.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\2. numpy-MKL-1.8.1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\3. scipy-0.14.0.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\4. pyparsing-2.0.0.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\5. python-dateutil-2.2.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\6. six-1.6.1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\7. matplotlib-1.3.1.win-amd64-py3.3.exe"
+Type: files; Name: "{tmp}\8. Pillow-2.0.0.win-amd64-py3.3.exe"
 Type: files; Name: "{tmp}\vcredist_x64.exe"
 
 [Types]
@@ -298,11 +302,13 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10
 Name: "PYTHON"; Description: "Python 3.3.0"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "NumPy MKL 1.7.1 for Win32-Py 3.3"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "SciPy 0.12.0b1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "MatPlotLib 1.2.1 Win32-Py 3.3"; Types: Install; Flags: checkablealone
-Name: "PILLOW"; Description: "Pillow 2.0.0 Win32-Py 3.3"; Types: Install; Flags: checkablealone
-Name: "PYPARSING"; Description: "PyParsing 2.0.0 Win32-Py 3.3"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "numpy-MKL-1.8.1.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "SCIPY"; Description: "scipy-0.14.0.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "PYPARSING"; Description: "pyparsing-2.0.0.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "DATEUTIL"; Description: "python-dateutil-2.2.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "SIX"; Description: "six-1.6.1.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "matplotlib-1.3.1.win-amd64-py3.3"; Types: Install; Flags: checkablealone
+Name: "PILLOW"; Description: "Pillow-2.0.0.win-amd64-py3.3"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
