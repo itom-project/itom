@@ -72,6 +72,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: promptifolder
 
 ; DLLs
+Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\phonon4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\Qt3Support4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtCLucene4.dll"; DestDir: "{app}"; Flags: promptifolder
@@ -135,7 +140,7 @@ Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: pro
 
 ; itom-packages
 Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
-Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder  
+Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
 ;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
@@ -145,12 +150,10 @@ Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom
 Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\common"; Components: SDK; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: promptifolder recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Components: SDK;  Flags: promptifolder
 
 ; DesignerPlugins

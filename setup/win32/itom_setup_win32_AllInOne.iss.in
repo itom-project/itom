@@ -74,6 +74,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: promptifolder
 
 ; DLLs
+Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\phonon4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\Qt3Support4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtCLucene4.dll"; DestDir: "{app}"; Flags: promptifolder
@@ -156,12 +161,10 @@ Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom
 Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\common\*.*"; DestDir: "{app}\SDK\include\common"; Components: SDK; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\DataObject\*.*"; DestDir: "{app}\SDK\include\DataObject"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\PointCloud\*.*"; DestDir: "{app}\SDK\include\PointCloud"; Components: SDK;  Flags: promptifolder
-Source: "{#SourceDirItomBuild}\SDK\include\QPropertyEditor\*.*"; DestDir: "{app}\SDK\include\QPropertyEditor"; Components: SDK;  Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: promptifolder recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x86\*.*"; DestDir: "{app}\SDK\lib\vc10_x86"; Components: SDK;  Flags: promptifolder
 
 ; DesignerPlugins
