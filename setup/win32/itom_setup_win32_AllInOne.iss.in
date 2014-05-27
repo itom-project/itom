@@ -127,11 +127,13 @@ Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceRedistributable}\vcredist_x86.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\1. python-3.3.0.msi"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\2. numpy-MKL-1.7.1rc1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\3. scipy-0.12.0b1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\4. matplotlib-1.2.1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\5. Pillow-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\6. pyparsing-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\2. numpy-MKL-1.8.1.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\3. scipy-0.14.0.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\4. pyparsing-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\5. python-dateutil-2.2.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\6. six-1.6.1.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\7. matplotlib-1.3.1.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\8. Pillow-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
 
 ; vielleicht
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
