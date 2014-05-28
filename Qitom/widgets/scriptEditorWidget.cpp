@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2013, Institut für Technische Optik (ITO), 
     Universität Stuttgart, Germany
 
     This file is part of itom.
-
+  
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -43,7 +43,7 @@
 #include <qpainter.h>
 #include <qmimedata.h>
 
-namespace ito
+namespace ito 
 {
 
 //!< constants
@@ -55,10 +55,10 @@ int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
-    AbstractPyScintillaWidget(parent),
-    m_pFileSysWatcher(NULL),
-    contextMenuLine(-1),
-    pythonBusy(false),
+    AbstractPyScintillaWidget(parent), 
+    m_pFileSysWatcher(NULL), 
+    contextMenuLine(-1), 
+    pythonBusy(false), 
     m_pythonExecutable(true),
     canCopy(false),
     m_syntaxTimer(NULL)
@@ -66,8 +66,6 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     filename = QString();
 
     unnamedNumber = ScriptEditorWidget::unnamedAutoIncrement++;
-
-    breakPointMap.clear();
 
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
@@ -86,12 +84,12 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
-    if (pyEngine)
+    if (pyEngine) 
     {
         pythonBusy = pyEngine->isPythonBusy();
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-
+    
         connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
@@ -115,7 +113,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
             }
 
         }
-    }
+    }    
 
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -207,7 +205,7 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
 
-    setBraceMatching(QsciScintilla::StrictBraceMatch);
+    setBraceMatching(QsciScintilla::StrictBraceMatch); 
     setMatchedBraceBackgroundColor(QColor("lightGray"));
     setMatchedBraceForegroundColor(QColor("blue"));
 
@@ -263,7 +261,7 @@ RetVal ScriptEditorWidget::initMenus()
 
     breakpointMenu = new QMenu(this);
     breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&toggle breakpoint"), this, SLOT(menuToggleBreakpoint()));
-    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisabled.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
     breakpointMenuActions["editConditionBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&edit condition"), this, SLOT(menuEditBreakpoint()));
     breakpointMenuActions["nextBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&next breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
     breakpointMenuActions["prevBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&previous breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
@@ -365,7 +363,7 @@ RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
             toggleBookmark(bookmarkLine);
         }
     }
-
+    
     return retVal;
 }
 
@@ -452,9 +450,9 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
     bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
-    breakpointMenuActions["nextBP"]->setEnabled(!breakPointMap.empty());
-    breakpointMenuActions["prevBP"]->setEnabled(!breakPointMap.empty());
-    breakpointMenuActions["clearALLBP"]->setEnabled(!breakPointMap.empty());
+    breakpointMenuActions["nextBP"]->setEnabled(!m_breakPointMap.empty());
+    breakpointMenuActions["prevBP"]->setEnabled(!m_breakPointMap.empty());
+    breakpointMenuActions["clearALLBP"]->setEnabled(!m_breakPointMap.empty());
 
     if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
     {
@@ -862,14 +860,14 @@ void ScriptEditorWidget::menuRunSelection()
         const QChar *data = defaultText.constData();
         int signsToRemove = 0;
         int len = defaultText.size() - 1;
-
+        
         while (defaultText[len-signsToRemove] == '\n' || defaultText[len-signsToRemove] == '\r' || defaultText[len-signsToRemove] == ' ')
         {
             signsToRemove++;
         }
 
         defaultText.truncate(len - signsToRemove + 1);
-
+        
 
         emit pythonRunSelection(defaultText);
     }
@@ -1178,7 +1176,7 @@ bool ScriptEditorWidget::event (QEvent * event)
         {
             point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
             int line = QsciScintilla::lineAt(point);
-
+            
             QList<BookmarkErrorEntry>::iterator it;
             it = bookmarkErrorHandles.begin();
             while (it != bookmarkErrorHandles.end())
@@ -1196,7 +1194,7 @@ bool ScriptEditorWidget::event (QEvent * event)
     }
     else if(event->type() == QEvent::KeyRelease && m_pythonExecutable && m_syntaxCheckerEnabled)
     {
-        // SyntaxCheck
+        // SyntaxCheck   
         m_syntaxTimer->start(); //starts or restarts the timer
     }
 
@@ -1249,7 +1247,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
         }
     }
     if (createNew && line >= 0 && line < lines())
-    {
+    {    
         BookmarkErrorEntry newE;
         newE.type = markerBookmark;
         newE.handle = markerAdd(line, markBookmark);
@@ -1379,21 +1377,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     }
     else
     {
-        // Check if it's a blank or comment line
-        bool emptyLine = false;
-        for (int i = 0; i < this->lineLength(line); ++i)
-        {
-            QCharRef c = this->text(line)[i];
-            if (c != '\t' && c != ' ' && c != '#' && c != '\n')
-            { // it must be a character
-                break;
-            }
-            else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
-            { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
-                emptyLine = true;
-            }
-        }
-        if (!emptyLine)
+        if (lineAcceptsBPs(line))
         {
             BreakPointItem bp;
             bp.filename = getFilename();
@@ -1409,6 +1393,34 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 
     return RetVal(retOk);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::lineAcceptsBPs(int line)
+{
+    // Check if it's a blank or comment line 
+    bool accepts = true;
+    for (int i = 0; i < this->lineLength(line); ++i)
+    {
+        const QChar c = this->text(line)[i];
+        if (c != '\t' && c != ' ' && c != '#' && c != '\n')
+        { // it must be a character
+            break;
+        }
+        else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
+        { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
+            accepts = false;
+        }
+    }
+    return true;
+    //return accepts;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::removeAllUnacceptedBPs()
+{
+    
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
@@ -1481,13 +1493,6 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
     {
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
-
-    //!< the following lines are not neccesary, since the delete-slot is invoked for each breakPoint by the BreakPointModel
-    /*markerDeleteAll(markBreakPoint);
-    markerDeleteAll(markCBreakPoint);
-    markerDeleteAll(markCBreakPointDisabled);
-    markerDeleteAll(markBreakPointDisabled);
-    breakPointMap.clear();*/
 
     return RetVal(retOk);
 }
@@ -1576,17 +1581,17 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
         std::list<QPair<int, int> >::iterator it;
         bool found = false;
 
-        for (it = breakPointMap.begin(); it != breakPointMap.end() && !found; ++it)
+        foreach( const BPMarker &bpEntry, m_breakPointMap)
         {
-            // Check if there is already a bp
-            if (it->second == bp.lineno)
+            if (bpEntry.lineNo == bp.lineno && !bpEntry.markedForDeletion)
             {
+                //there is already a breakPoint in this line
                 found = true;
+                break;
             }
         }
 
         if (found) return; //!< there is already a breakpoint in this line, do not add the new one
-
 
         if (bp.enabled)
         {
@@ -1610,7 +1615,15 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
                 newHandle = markerAdd(bp.lineno, markBreakPointDisabled);
             }
         }
-        breakPointMap.push_back(QPair<int, int>(newHandle, bp.lineno));
+
+        BPMarker m;
+        m.bpHandle = newHandle;
+        m.lineNo = bp.lineno;
+        m.markedForDeletion = false;
+        m_breakPointMap.append( m );
+        /*int t = m_breakPointMap[0].lineNo;
+        t = m_breakPointMap[0].bpHandle;
+        t = 0;*/
 
     }
 }
@@ -1619,22 +1632,40 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*pyBpNumber*/)
 {
+    bool found = false;
     if (filename == getFilename() && filename != "")
     {
-        std::list<QPair<int, int> >::iterator it;
+        QList<BPMarker>::iterator it = m_breakPointMap.begin();
 
-        it=breakPointMap.begin();
-
-        while(it != breakPointMap.end())
+        //markedForDeletion comes prior
+        while(it != m_breakPointMap.end())
         {
-            if (it->second == lineNo)
+            if (it->lineNo == lineNo && it->markedForDeletion == true)
             {
-                markerDeleteHandle(it->first);
-                it = breakPointMap.erase(it);
+                markerDeleteHandle(it->bpHandle);
+                it = m_breakPointMap.erase(it);
+                found = true;
             }
             else
             {
                 ++it;
+            }
+        }
+
+        if (!found)
+        {
+            it = m_breakPointMap.begin();
+            while(it != m_breakPointMap.end())
+            {
+                if (it->lineNo == lineNo)
+                {
+                    markerDeleteHandle(it->bpHandle);
+                    it = m_breakPointMap.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
             }
         }
     }
@@ -1707,7 +1738,7 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
     //    Public slot to show a print preview of the text.
     //    """
     //    from PyQt4.QtGui import QPrintPreviewDialog
-    //
+    //    
     //    printer = Printer(mode=QPrinter.HighResolution)
     //    fn = self.getFileName()
     //    if fn is not None:
@@ -1758,53 +1789,120 @@ RetVal ScriptEditorWidget::changeFilename(QString newFilename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::nrOfLinesChanged()
 {
-    std::list<QPair<int, int> >::iterator it;
-    int line;
     BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
     BreakPointItem item;
     QModelIndex index;
 
-    it = breakPointMap.begin();
+    QHash<int,int> currentLineHash;
+    QModelIndexList oldItemsToDelete; //QList contains the old line numbers whose break points should be deleted in the end
+    QList< QPair<QModelIndex, BreakPointItem> > itemsToChange;
 
-    while(it != breakPointMap.end())
+    //get current line number of each item in m_breakPointMap (m_breakPointMap still reflects the state before the line change)
+    foreach (const BPMarker &marker, m_breakPointMap)
     {
-        line = markerLine(it->first);
+        currentLineHash[marker.bpHandle] = markerLine(marker.bpHandle);
+        qDebug() << "handle " << marker.bpHandle << " was in " << marker.lineNo << " and is in " << markerLine(marker.bpHandle);
+    }
 
-        if (line == -1)
+    foreach (const BPMarker &marker, m_breakPointMap)
+    {
+        if (currentLineHash[marker.bpHandle] == -1) //break point does not exist any more, delete it
         {
-            //!< marker has been deleted:
-            index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-            if (index.isValid())
+            oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+            (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
+        }
+        else if (currentLineHash[marker.bpHandle] != marker.lineNo) //line has been changed, if there is another unchanged item at this line, remove this one
+        {
+            bool found = false;
+            foreach (const BPMarker &marker2, m_breakPointMap)
             {
-                bpModel->deleteBreakPoint(index);
+                if (marker2.lineNo == currentLineHash[marker.bpHandle] && currentLineHash[marker2.bpHandle] == marker2.lineNo)
+                {
+                    found = true;
+                    break;
+                }
             }
-            if (breakPointMap.size() > 0)
+
+            if (found) //another unchanged breakpoint was and still is in the new line of marker, therefore delete marker
             {
-                it = breakPointMap.erase(it);
+                oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+                (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
             }
             else
             {
-                break;
+                //this breakpoint changed its line, but should stay alive
+                // marker moved because a line was added or removed
+                index = bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo);
+                item = bpModel->getBreakPoint(index);
+                item.lineno = currentLineHash[marker.bpHandle]; //new line
+
+                itemsToChange.append( QPair<QModelIndex,BreakPointItem>(index,item) );
             }
-        }
-        else if (line != it->second)
-        {
-            index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-
-            item = bpModel->getBreakPoint(index);
-            item.lineno = line;
-            bpModel->changeBreakPoint(index, item, false);
-            it->second = line;
-
-            ++it;
-        }
-        else
-        {
-            ++it;
         }
     }
 
-    // SyntaxCheck
+    //now send all changes and afterwards delete the items that should be deleted
+    for (int i = 0; i < itemsToChange.size(); ++i)
+    {
+        bpModel->changeBreakPoint(itemsToChange[i].first, itemsToChange[i].second, true);
+    }
+
+    bpModel->deleteBreakPoints(oldItemsToDelete);
+
+    //unmark all for deletion flags
+    for (int i=0; i < m_breakPointMap.size(); ++i)
+    {
+        m_breakPointMap[i].markedForDeletion = false;
+    }
+    
+
+    //foreach (const BPMarker &marker, m_breakPointMap)
+    //{
+    //    line = markerLine(it->
+    //}
+
+    //it = breakPointMap.begin();
+
+    //while(it != breakPointMap.end())
+    //{
+    //    line = markerLine(it->first);
+
+    //    if (line == -1)
+    //    {
+    //        //!< marker has been deleted:
+    //        index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
+    //        if (index.isValid())
+    //        {
+    //            bpModel->deleteBreakPoint(index);
+    //        }
+    //        if (breakPointMap.size() > 0)
+    //        {
+    //            it = breakPointMap.erase(it);
+    //        }
+    //        else
+    //        {
+    //            break;
+    //        }
+    //    }
+    //    else if (line != it->second)
+    //    {
+    //        // marker moved because a line was added or removed
+    //        index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
+
+    //        item = bpModel->getBreakPoint(index);
+    //        item.lineno = line;
+    //        bpModel->changeBreakPoint(index, item, false);
+    //        it->second = line;
+
+    //        ++it;
+    //    }
+    //    else
+    //    {
+    //        ++it;
+    //    }
+    //}
+
+    // SyntaxCheck   
     if (m_pythonExecutable && m_syntaxCheckerEnabled)
     {
         m_syntaxTimer->start(); //starts or restarts the timer
@@ -1974,10 +2072,10 @@ void ItomQsciPrinter::formatPage( QPainter &painter, bool drawing, QRect &area, 
     int width = area.width();
     int dateWidth = painter.fontMetrics().width(date);
     filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
-
+        
     painter.save();
     painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
-    painter.setPen(QColor(Qt::black));
+    painter.setPen(QColor(Qt::black)); 
     if (drawing)
     {
         //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);

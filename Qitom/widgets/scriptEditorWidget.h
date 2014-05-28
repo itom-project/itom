@@ -137,6 +137,9 @@ private:
     RetVal clearAllBreakpoints();
     RetVal gotoNextBreakPoint();
     RetVal gotoPreviousBreakPoint();
+    
+    bool lineAcceptsBPs(int line);
+    void removeAllUnacceptedBPs();
 
     RetVal changeFilename(QString newFilename);
 
@@ -160,7 +163,14 @@ private:
     QTimer *m_syntaxTimer;
     int m_lastTipLine;
 
-    std::list<QPair<int,int> > breakPointMap; //!< <int bpHandle, int lineNo>
+    struct BPMarker
+    {
+        int bpHandle;
+        int lineNo;
+        bool markedForDeletion;
+    };
+
+    QList<BPMarker> m_breakPointMap; //!< <int bpHandle, int lineNo>
 
     unsigned int markBreakPoint;
     unsigned int markCBreakPoint;
