@@ -1,33 +1,26 @@
 ===================
- MyGrabber
+ MyActuator
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`AlgoPlugin`
-**Type**:       :plugintype:`AlgoPlugin`
-**License**:    :pluginlicense:`AlgoPlugin`
+**Summary**:    :pluginsummary:`MyActuator`
+**Type**:       :plugintype:`MyActuator`
+**License**:    :pluginlicense:`MyActuator`
 **Platforms**:  Some words about supported operating systems
 **Devices**:    Some words about supported devices
-**Author**:     :pluginauthor:`AlgoPlugin`
+**Author**:     :pluginauthor:`MyActuator`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: AlgoPlugin
+    :plugin: MyActuator
 
-
-These filters are defined in the plugin:
-
-.. pluginfilterlist::
-    :plugin: AlgoPlugin
-    :overviewonly:
-
-Filters
+Initialization
 ==============
-        
-Detailed overview about all defined filters:
+  
+The following parameters are mandatory or optional for initializing an instance of this plugin:
     
-.. pluginfilterlist::
-    :plugin: AlgoPlugin
+    .. plugininitparams::
+        :plugin: MyActuator

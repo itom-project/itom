@@ -3,31 +3,24 @@
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`AlgoPlugin`
-**Type**:       :plugintype:`AlgoPlugin`
-**License**:    :pluginlicense:`AlgoPlugin`
+**Summary**:    :pluginsummary:`MyGrabber`
+**Type**:       :plugintype:`MyGrabber`
+**License**:    :pluginlicense:`MyGrabber`
 **Platforms**:  Some words about supported operating systems
 **Devices**:    Some words about supported devices
-**Author**:     :pluginauthor:`AlgoPlugin`
+**Author**:     :pluginauthor:`MyGrabber`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: AlgoPlugin
+    :plugin: MyGrabber
 
-
-These filters are defined in the plugin:
-
-.. pluginfilterlist::
-    :plugin: AlgoPlugin
-    :overviewonly:
-
-Filters
+Initialization
 ==============
-        
-Detailed overview about all defined filters:
+  
+The following parameters are mandatory or optional for initializing an instance of this plugin:
     
-.. pluginfilterlist::
-    :plugin: AlgoPlugin
+    .. plugininitparams::
+        :plugin: MyGrabber
