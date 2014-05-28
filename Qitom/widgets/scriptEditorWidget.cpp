@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO), 
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -43,7 +43,7 @@
 #include <qpainter.h>
 #include <qmimedata.h>
 
-namespace ito 
+namespace ito
 {
 
 //!< constants
@@ -55,10 +55,10 @@ int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
-    AbstractPyScintillaWidget(parent), 
-    m_pFileSysWatcher(NULL), 
-    contextMenuLine(-1), 
-    pythonBusy(false), 
+    AbstractPyScintillaWidget(parent),
+    m_pFileSysWatcher(NULL),
+    contextMenuLine(-1),
+    pythonBusy(false),
     m_pythonExecutable(true),
     canCopy(false),
     m_syntaxTimer(NULL)
@@ -86,12 +86,12 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
-    if (pyEngine) 
+    if (pyEngine)
     {
         pythonBusy = pyEngine->isPythonBusy();
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-    
+
         connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
@@ -115,7 +115,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
             }
 
         }
-    }    
+    }
 
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -207,7 +207,7 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
 
-    setBraceMatching(QsciScintilla::StrictBraceMatch); 
+    setBraceMatching(QsciScintilla::StrictBraceMatch);
     setMatchedBraceBackgroundColor(QColor("lightGray"));
     setMatchedBraceForegroundColor(QColor("blue"));
 
@@ -365,7 +365,7 @@ RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
             toggleBookmark(bookmarkLine);
         }
     }
-    
+
     return retVal;
 }
 
@@ -862,14 +862,14 @@ void ScriptEditorWidget::menuRunSelection()
         const QChar *data = defaultText.constData();
         int signsToRemove = 0;
         int len = defaultText.size() - 1;
-        
+
         while (defaultText[len-signsToRemove] == '\n' || defaultText[len-signsToRemove] == '\r' || defaultText[len-signsToRemove] == ' ')
         {
             signsToRemove++;
         }
 
         defaultText.truncate(len - signsToRemove + 1);
-        
+
 
         emit pythonRunSelection(defaultText);
     }
@@ -1178,7 +1178,7 @@ bool ScriptEditorWidget::event (QEvent * event)
         {
             point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
             int line = QsciScintilla::lineAt(point);
-            
+
             QList<BookmarkErrorEntry>::iterator it;
             it = bookmarkErrorHandles.begin();
             while (it != bookmarkErrorHandles.end())
@@ -1196,7 +1196,7 @@ bool ScriptEditorWidget::event (QEvent * event)
     }
     else if(event->type() == QEvent::KeyRelease && m_pythonExecutable && m_syntaxCheckerEnabled)
     {
-        // SyntaxCheck   
+        // SyntaxCheck
         m_syntaxTimer->start(); //starts or restarts the timer
     }
 
@@ -1249,7 +1249,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
         }
     }
     if (createNew && line >= 0 && line < lines())
-    {    
+    {
         BookmarkErrorEntry newE;
         newE.type = markerBookmark;
         newE.handle = markerAdd(line, markBookmark);
@@ -1379,12 +1379,12 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     }
     else
     {
-        // Check if it's a blank or comment line 
+        // Check if it's a blank or comment line
         bool emptyLine = false;
         for (int i = 0; i < this->lineLength(line); ++i)
         {
-            QString c = this->text(line)[i];
-            if (c != "\t" && c != " " && c != "#" && c != "\n")
+            QCharRef c = this->text(line)[i];
+            if (c != '\t' && c != ' ' && c != '#' && c != '\n')
             { // it must be a character
                 break;
             }
@@ -1707,7 +1707,7 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
     //    Public slot to show a print preview of the text.
     //    """
     //    from PyQt4.QtGui import QPrintPreviewDialog
-    //    
+    //
     //    printer = Printer(mode=QPrinter.HighResolution)
     //    fn = self.getFileName()
     //    if fn is not None:
@@ -1804,7 +1804,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
         }
     }
 
-    // SyntaxCheck   
+    // SyntaxCheck
     if (m_pythonExecutable && m_syntaxCheckerEnabled)
     {
         m_syntaxTimer->start(); //starts or restarts the timer
@@ -1974,10 +1974,10 @@ void ItomQsciPrinter::formatPage( QPainter &painter, bool drawing, QRect &area, 
     int width = area.width();
     int dateWidth = painter.fontMetrics().width(date);
     filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
-        
+
     painter.save();
     painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
-    painter.setPen(QColor(Qt::black)); 
+    painter.setPen(QColor(Qt::black));
     if (drawing)
     {
         //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
