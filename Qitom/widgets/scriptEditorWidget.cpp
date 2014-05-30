@@ -1811,13 +1811,16 @@ void ScriptEditorWidget::nrOfLinesChanged()
             oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
             (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
         }
-        else if (currentLineHash[marker.bpHandle] != marker.lineNo) //line has been changed, if there is another unchanged item at this line, remove this one
+        else if (currentLineHash[marker.bpHandle] != marker.lineNo) //line has been changed, if there is another breakpoint that is now in this line and that was in a smaller line number before, delete this one
         {
             bool found = false;
-            foreach (const BPMarker &marker2, m_breakPointMap)
+            foreach (const BPMarker &other, m_breakPointMap)
             {
-                if (marker2.lineNo == currentLineHash[marker.bpHandle] && currentLineHash[marker2.bpHandle] == marker2.lineNo)
+                if (currentLineHash[other.bpHandle] == currentLineHash[marker.bpHandle] && other.lineNo < marker.lineNo && !other.markedForDeletion)
                 {
+                    //two breakpoints now in the same line AND
+                    //the other breakpoint has been in a line above the former line nr of marker AND
+                    //the other breakpoint has not been deleted for deletion
                     found = true;
                     break;
                 }
