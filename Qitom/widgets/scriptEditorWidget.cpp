@@ -1621,10 +1621,6 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
         m.lineNo = bp.lineno;
         m.markedForDeletion = false;
         m_breakPointMap.append( m );
-        /*int t = m_breakPointMap[0].lineNo;
-        t = m_breakPointMap[0].bpHandle;
-        t = 0;*/
-
     }
 }
 
@@ -1712,14 +1708,6 @@ void ScriptEditorWidget::print()
         printPreviewDialog.setWindowFlags(Qt::Window);
         connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreviewRequested(QPrinter*)));
         printPreviewDialog.exec();
-
-    //    QPrintDialog printDialog(&printer);
-    ////    QPrintPreviewDialog printDialog(&printer);
-    //    if (printDialog.exec())
-    //    {
-    //        printer.
-    //        printer.printRange(this);
-    //    }
     }
 }
 
@@ -1732,23 +1720,6 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
         p->printRange(this);
     }
 }
-
-    //def printPreviewFile(self):
-    //    """
-    //    Public slot to show a print preview of the text.
-    //    """
-    //    from PyQt4.QtGui import QPrintPreviewDialog
-    //    
-    //    printer = Printer(mode=QPrinter.HighResolution)
-    //    fn = self.getFileName()
-    //    if fn is not None:
-    //        printer.setDocName(os.path.basename(fn))
-    //    else:
-    //        printer.setDocName(self.noName)
-    //    preview = QPrintPreviewDialog(printer, self)
-    //    preview.paintRequested.connect(self.__printPreview)
-    //    preview.exec_()
-    //
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::changeFilename(QString newFilename)
@@ -1801,7 +1772,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
     foreach (const BPMarker &marker, m_breakPointMap)
     {
         currentLineHash[marker.bpHandle] = markerLine(marker.bpHandle);
-        qDebug() << "handle " << marker.bpHandle << " was in " << marker.lineNo << " and is in " << markerLine(marker.bpHandle);
+        //qDebug() << "handle " << marker.bpHandle << " was in " << marker.lineNo << " and is in " << markerLine(marker.bpHandle);
     }
 
     foreach (const BPMarker &marker, m_breakPointMap)
@@ -1857,53 +1828,6 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         m_breakPointMap[i].markedForDeletion = false;
     }
-    
-
-    //foreach (const BPMarker &marker, m_breakPointMap)
-    //{
-    //    line = markerLine(it->
-    //}
-
-    //it = breakPointMap.begin();
-
-    //while(it != breakPointMap.end())
-    //{
-    //    line = markerLine(it->first);
-
-    //    if (line == -1)
-    //    {
-    //        //!< marker has been deleted:
-    //        index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-    //        if (index.isValid())
-    //        {
-    //            bpModel->deleteBreakPoint(index);
-    //        }
-    //        if (breakPointMap.size() > 0)
-    //        {
-    //            it = breakPointMap.erase(it);
-    //        }
-    //        else
-    //        {
-    //            break;
-    //        }
-    //    }
-    //    else if (line != it->second)
-    //    {
-    //        // marker moved because a line was added or removed
-    //        index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-
-    //        item = bpModel->getBreakPoint(index);
-    //        item.lineno = line;
-    //        bpModel->changeBreakPoint(index, item, false);
-    //        it->second = line;
-
-    //        ++it;
-    //    }
-    //    else
-    //    {
-    //        ++it;
-    //    }
-    //}
 
     // SyntaxCheck   
     if (m_pythonExecutable && m_syntaxCheckerEnabled)
