@@ -46,6 +46,7 @@ WidgetFindWord::~WidgetFindWord()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_cmdClose_clicked()
 {
+    emit hideSearchBar();
     this->hide();
 }
 
