@@ -40,6 +40,8 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 {
     m_breakPointView = new QTreeViewItom(this);
 
+    m_enOrDisAbleAllBrakpoints = false;
+
     AbstractDockWidget::init();
 
     setContentWidget(m_breakPointView);

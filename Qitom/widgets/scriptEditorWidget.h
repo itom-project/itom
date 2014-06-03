@@ -139,7 +139,6 @@ private:
     RetVal gotoPreviousBreakPoint();
     
     bool lineAcceptsBPs(int line);
-    void removeAllUnacceptedBPs();
 
     RetVal changeFilename(QString newFilename);
 

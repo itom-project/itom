@@ -1362,12 +1362,33 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// Breakpoint Handling
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::lineAcceptsBPs(int line)
+{
+    // Check if it's a blank or comment line 
+    for (int i = 0; i < this->lineLength(line); ++i)
+    {
+        QChar c = this->text(line).at(i);
+        if (c != '\t' && c != ' ' && c != '#' && c != '\n')
+        { // it must be a character
+            return true;
+        }
+        else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
+        { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
+            return false;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 {
     if (getFilename() == "") return RetVal(retError);
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
-//    std::list<QPair<int, int> >::iterator it;
+    std::list<QPair<int, int> >::iterator it;
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
 
@@ -1375,52 +1396,21 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     {
         bpModel->deleteBreakPoints(indexList);
     }
-    else
+    else if (lineAcceptsBPs(line))
     {
-        if (lineAcceptsBPs(line))
-        {
-            BreakPointItem bp;
-            bp.filename = getFilename();
-            bp.lineno = line;
-            bp.conditioned = false;
-            bp.condition = "";
-            bp.enabled = true;
-            bp.temporary = false;
-            bp.ignoreCount = 0;
-            bpModel->addBreakPoint(bp);
-        }
+        BreakPointItem bp;
+        bp.filename = getFilename();
+        bp.lineno = line;
+        bp.conditioned = false;
+        bp.condition = "";
+        bp.enabled = true;
+        bp.temporary = false;
+        bp.ignoreCount = 0;
+        bpModel->addBreakPoint(bp);
     }
 
     return RetVal(retOk);
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptEditorWidget::lineAcceptsBPs(int line)
-{
-    // Check if it's a blank or comment line 
-    bool accepts = true;
-    for (int i = 0; i < this->lineLength(line); ++i)
-    {
-        const QChar c = this->text(line)[i];
-        if (c != '\t' && c != ' ' && c != '#' && c != '\n')
-        { // it must be a character
-            break;
-        }
-        else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
-        { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
-            accepts = false;
-        }
-    }
-    return true;
-    //return accepts;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::removeAllUnacceptedBPs()
-{
-    
-}
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
