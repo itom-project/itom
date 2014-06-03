@@ -535,7 +535,19 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                         QString extendedInfo;
                         
-                        extendedInfo.insert(0, parseFilterWidgetContent(aib->getDescription()));
+                        if (aib->getDescription() != "")
+                        {
+                            extendedInfo.insert(0, parseFilterWidgetContent(aib->getDescription()));
+                            if (aib->getDetailDescription() != "")
+                            {
+                                extendedInfo.append("<br>");
+                            }
+                        }
+                        if (aib->getDetailDescription() != "")
+                        {
+                            extendedInfo.append(parseFilterWidgetContent(aib->getDetailDescription()));
+                        }
+
                         extendedInfo.append("<p class=\"rubric\">This plugin contains the following algorithms:</p>");
 
                         QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
@@ -1008,6 +1020,22 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             }
         }
         break;
+    }
+
+    ito::uint32 inOut = param.getFlags();
+
+    // TODO: already tried to avoid the linewrap inside [] bit <td nowrap> didn´t work!
+    if ((inOut & ito::ParamBase::In) && (inOut & ito::ParamBase::Out))
+    {
+        type.append(" [in/out]");
+    }
+    else if (inOut & ito::ParamBase::In)
+    {
+        type.append(" [in]");
+    }
+    else if (inOut & ito::ParamBase::Out)
+    {
+        type.append(" [out]");
     }
 
     output.replace("%PARAMNAME%", Qt::escape(name));
