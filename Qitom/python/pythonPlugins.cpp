@@ -497,12 +497,13 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 *   @param [in] addInObj    the plugin whoes name should be returned
 *   @return     the plugin name
 */
-template<typename _Tp> PyObject* getName(_Tp *addInObj)
+PyObject* getName(ito::AddInBase *addInObj)
 {
     ito::RetVal ret = ito::retOk;
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String, "", NULL));
+
     if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
@@ -683,7 +684,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 *   The function tries to retrieve the value of the parameter with the name given in args. If the parameter does not exist
 *   NULL is returned. To actually retrieve the value the getParam function of the plugin is invoked.
 */
-template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
+PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
 {
     PyObject *result = NULL;
     const char *paramName = NULL;
@@ -713,7 +714,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
     //now get pointer to the parameter-map from plugin and check whether paramName is available
     QMap<QString, Param> *params;
     QMap<QString, Param>::iterator it;
-    ((ito::AddInBase*)addInObj)->getParamList(&params); //always returns ok
+    (addInObj)->getParamList(&params); //always returns ok
 
     //find parameter in params
     it = params->find(nameOnly);
@@ -987,13 +988,11 @@ execFuncsInfo");
 *   The function tries to set the value of the parameter with the name given in args. If the parameter does not exist
 *   or is incompatible with the value passed, NULL is returned. To actually set the value the setParam function of the plugin is invoked.
 */
-template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
+PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
 {
     const char *key = NULL;
     ItomSharedSemaphore *waitCond = NULL;
     ito::RetVal ret = ito::retOk;
-    //ito::Param param;
-    ito::AddInBase* aib = (ito::AddInBase*)addInObj;
     PyObject *value = NULL;
 
     QSharedPointer<ito::ParamBase> qsParam;
@@ -1018,7 +1017,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     //now get pointer to the parameter-map from plugin and check whether paramName is available
     QMap<QString, Param> *params;
     QMap<QString, Param>::iterator it;
-    aib->getParamList(&params); //always returns ok
+    addInObj->getParamList(&params); //always returns ok
 
     //find parameter in params
     it = params->find(paramName);
