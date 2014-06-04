@@ -33,7 +33,6 @@
 
 // Qt includes
 #include <QDoubleSpinBox>
-//#include <QWeakPointer>
 #include <QPointer>
 class DoubleSpinBoxPrivate;
 class ValueProxy;

@@ -32,7 +32,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QVariant>
-#include <QWeakPointer>
+#include <QPointer>
 #include <qpointer.h>
 
 //  includes
