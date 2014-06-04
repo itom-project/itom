@@ -381,7 +381,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
         *initSlotCount = 0;
         *objectID = 0;
         UiContainer *widgetContainer = NULL;
-        QMetaObject::invokeMethod(uiOrg, "loadPluginWidget", Q_ARG(void *, reinterpret_cast<char*>(algoWidgetFunc)), Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(QSharedPointer<unsigned int>, dialogHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrg, "loadPluginWidget", Q_ARG(void *, reinterpret_cast<char*>(algoWidgetFunc)), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         if(!locker.getSemaphore()->wait(-1))
         {
@@ -393,12 +393,12 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
         if (retval.containsError())
             return retval;
 
-        QMetaObject::invokeMethod(uiOrg, "getUiDialogByHandle", Qt::BlockingQueuedConnection, Q_RETURN_ARG(UiContainer*, widgetContainer), Q_ARG(unsigned int, *dialogHandle));
+        QMetaObject::invokeMethod(uiOrg, "getUiDialogByHandle", Qt::BlockingQueuedConnection, Q_RETURN_ARG(UiContainer*, widgetContainer), Q_ARG(uint, *dialogHandle)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         if (!(*widget = widgetContainer->getUiWidget()))
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("error retrieving widget pointer").toLatin1().data());
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
             if(!locker2.getSemaphore()->wait(5000))
             {
@@ -408,7 +408,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
         }
 
         ItomSharedSemaphoreLocker locker3(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrg, "showDialog", Q_ARG(unsigned int, *dialogHandle) , Q_ARG(int, 0), Q_ARG(QSharedPointer<int>, modalRet), Q_ARG(ItomSharedSemaphore*, locker3.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrg, "showDialog", Q_ARG(uint, *dialogHandle) , Q_ARG(int, 0), Q_ARG(QSharedPointer<int>, modalRet), Q_ARG(ItomSharedSemaphore*, locker3.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         if(!locker3.getSemaphore()->wait(-1))
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout showing dialog").toLatin1().data());

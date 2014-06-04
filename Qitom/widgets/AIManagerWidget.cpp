@@ -953,11 +953,11 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
             waitCond = new ItomSharedSemaphore();
             if (m_pActAutoGrabbing->isChecked())
             {
-                QMetaObject::invokeMethod(ais, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+                QMetaObject::invokeMethod(ais, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond));
             }
             else
             {
-                QMetaObject::invokeMethod(ais, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+                QMetaObject::invokeMethod(ais, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond));
             }
              waitCond->deleteSemaphore();
              waitCond = NULL;

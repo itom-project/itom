@@ -294,7 +294,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
             bool success = false;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-            if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(const int, axis), Q_ARG(const double, position), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(int, axis), Q_ARG(double, position), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
             {
                 retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
             }

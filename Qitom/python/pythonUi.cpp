@@ -139,7 +139,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         parentItem = (PythonUi::PyUiItem*)parentObj;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "getChildObject3", Q_ARG(unsigned int, static_cast<unsigned int>(parentItem->objectID)), Q_ARG(QString, QString(objName)), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, widgetClassNameBA), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "getChildObject3", Q_ARG(uint, static_cast<unsigned int>(parentItem->objectID)), Q_ARG(QString, QString(objName)), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, widgetClassNameBA), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         locker.getSemaphore()->wait(-1);
         retValue += locker.getSemaphore()->returnValue;
@@ -221,7 +221,7 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
     *methodCount = -1;
     *propertiesCount = -1;
 
-    QMetaObject::invokeMethod(uiOrga, "widgetMetaObjectCounts", Q_ARG(unsigned int, static_cast<unsigned int>(self->objectID)), Q_ARG(QSharedPointer<int>, classInfoCount), Q_ARG(QSharedPointer<int>, enumeratorCount), Q_ARG(QSharedPointer<int>, methodCount),Q_ARG(QSharedPointer<int>, propertiesCount), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "widgetMetaObjectCounts", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QSharedPointer<int>, classInfoCount), Q_ARG(QSharedPointer<int>, enumeratorCount), Q_ARG(QSharedPointer<int>, methodCount),Q_ARG(QSharedPointer<int>, propertiesCount), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -267,7 +267,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
         (*retPropMap)[propNames.at(i)] = QVariant();
     }
 
-    QMetaObject::invokeMethod(uiOrga, "readProperties", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "readProperties", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -323,7 +323,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(unsigned int, self->objectID), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, self->objectID), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -523,11 +523,11 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
     if(foundMethod->type() == QMetaMethod::Slot)
     {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,true), Q_ARG(unsigned int, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,true), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     }   
     else if(foundMethod->type() == QMetaMethod::Method)
     {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,false), Q_ARG(unsigned int, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,false), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     }
     else
     {
@@ -626,7 +626,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(unsigned int, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -705,7 +705,7 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(unsigned int, self->objectID), Q_ARG(QString, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -776,7 +776,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(unsigned int, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -977,7 +977,7 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(unsigned int, static_cast<unsigned int>(self->objectID)), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1021,7 +1021,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     ito::RetVal retValue = retOk;
 
     QSharedPointer<QVariantMap> retPropMap(new QVariantMap());
-    QMetaObject::invokeMethod(uiOrga, "getPropertyInfos", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getPropertyInfos", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1149,7 +1149,7 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     ito::RetVal retValue = retOk;
     QSharedPointer<bool> value(new bool);
 
-    QMetaObject::invokeMethod(uiOrga, "getAttribute", Q_ARG(unsigned int, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(QSharedPointer<bool>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(QSharedPointer<bool>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1220,7 +1220,7 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "setAttribute", Q_ARG(unsigned int, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(bool, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "setAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(bool, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1291,7 +1291,7 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "setWindowFlags", Q_ARG(unsigned int, self->objectID), Q_ARG(int, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "setWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(int, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1337,7 +1337,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     ito::RetVal retValue = retOk;
     QSharedPointer<int> value(new int);
 
-    QMetaObject::invokeMethod(uiOrga, "getWindowFlags", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<int>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<int>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1371,7 +1371,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     ito::RetVal retValue = retOk;
     QSharedPointer< QVariantMap > value(new QVariantMap );
 
-    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -1414,7 +1414,7 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
             QSharedPointer<MethodDescriptionList> methodList(new MethodDescriptionList);
             ItomSharedSemaphoreLocker locker1(new ItomSharedSemaphore());
 
-            QMetaObject::invokeMethod(uiOrga, "getMethodDescriptions", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<MethodDescriptionList>, methodList), Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrga, "getMethodDescriptions", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<MethodDescriptionList>, methodList), Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
             if(!locker1.getSemaphore()->wait(5000))
             {
@@ -1609,7 +1609,7 @@ void PythonUi::PyUi_dealloc(PyUi* self)
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         ito::RetVal retValue = retOk;
 
-        QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(unsigned int, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
         if(!locker.getSemaphore()->wait(5000))
         {
@@ -1771,7 +1771,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
-    QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<unsigned int>, dialogHandle),Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle),Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(60000))
     {
@@ -1859,7 +1859,7 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     *retCodeIfModal = -1;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(unsigned int, static_cast<unsigned int>(self->uiHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(modalLevel == 1)
     {
@@ -1917,7 +1917,7 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(unsigned int, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -1958,7 +1958,7 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
     *visible = false;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "isVisible", Q_ARG(unsigned int, static_cast<unsigned int>(self->uiHandle)), Q_ARG(QSharedPointer<bool>, visible), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "isVisible", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(QSharedPointer<bool>, visible), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(5000))
     {
@@ -2531,8 +2531,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     *retButton = QMessageBox::Escape;
     QSharedPointer<QString> retButtonText(new QString());
     unsigned int parentUiHandle = parentItem ? parentItem->uiHandle : 0;
-
-    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(unsigned int, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, QString(title)), Q_ARG(QString, QString(text)), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, QString(title)), Q_ARG(QString, QString(text)), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2623,7 +2622,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     unsigned int parentHandle = (parentItem) ? parentItem->uiHandle : 0;
     QSharedPointer<QString> sharedDir(new QString(directory));
 
-    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(unsigned int, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2701,7 +2700,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(unsigned int, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2781,7 +2780,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(unsigned int, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2905,7 +2904,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     *dialogHandle = 0;
     *initSlotCount = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(QVector<ito::ParamBase> *, &paramsMandBase), Q_ARG(QVector<ito::ParamBase> *, &paramsOptBase), Q_ARG(QSharedPointer<unsigned int>, dialogHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2927,7 +2926,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
         if(*dialogHandle)
         {
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(unsigned int, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
             if(!locker2.getSemaphore()->wait(5000))
             {

@@ -257,7 +257,7 @@ PyObject* plugin_showConfiguration(ito::AddInBase *aib)
     {
         if (aib->hasConfDialog())
         {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase *, aib), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase*, aib), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
@@ -291,7 +291,7 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
@@ -328,7 +328,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase *, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
@@ -503,7 +503,7 @@ template<typename _Tp> PyObject* getName(_Tp *addInObj)
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String, "", NULL));
-    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
 
@@ -590,7 +590,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
             if (!ret.containsError())
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                if (QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+                if (QMetaObject::invokeMethod(aib, "execFunc", Q_ARG(QString, name), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsMand), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOpt), Q_ARG(QSharedPointer<QVector<ito::ParamBase> >, paramsOut), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
                 {
                     bool timeout = false;
 
@@ -725,7 +725,7 @@ template<typename _Tp> PyObject* getParam(_Tp *addInObj, PyObject *args)
 
     QSharedPointer<ito::Param> qsParam(new ito::Param(paramName)); //here it is sufficient to provide an empty param container with name only, the content will be filled by the plugin (including type)
     
-    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+    if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
         while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
@@ -1060,7 +1060,7 @@ template<typename _Tp> PyObject* setParam(_Tp *addInObj, PyObject *args)
     {
         bool timeout = false;
         waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(addInObj, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
 
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -1297,7 +1297,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         Py_DECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             waitCond->wait(-1);
             retval += waitCond->returnValue;
@@ -1519,11 +1519,11 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     bool invokeOk;
     if (length == 1)
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "calib", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
     if (invokeOk)
@@ -1643,11 +1643,11 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     bool invokeOk;
     if (length == 1)
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(const int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(int, (const int) *cargs[0]), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setOrigin", Q_ARG(QVector<int>, axisVec), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
     if (invokeOk)
@@ -1745,7 +1745,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
         return NULL;
     }
 
-    if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+    if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
         while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
@@ -1871,11 +1871,11 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     if (length == 1)
     {
         long axis = *(long *)cargs[0];
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(const int, (const int) axis), Q_ARG(QSharedPointer<double>, pos), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, pos), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVec), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
     if (invokeOk)
@@ -2166,11 +2166,11 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     if (length == 2)
     {
         long axis = *(long *)cargs[0];
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(int, (const int) axis), Q_ARG(double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
     if (invokeOk)
@@ -2253,11 +2253,11 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     if (length == 2)
     {
         long axis = *(long *)cargs[0];
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(int, (const int) axis), Q_ARG(double, (const double)(*((double*)(cargs[1])))), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        invokeOk = QMetaObject::invokeMethod(self->actuatorObj, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
     if (invokeOk)
@@ -2579,7 +2579,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 
-        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInDataIO**, &self->dataIOObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInDataIO**, &self->dataIOObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             waitCond->wait(-1);
             retval += waitCond->returnValue;
@@ -2769,7 +2769,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
     for (int i = 0 ; i < count ; i++)
     {
         waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "startDevice", Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
 
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -2853,7 +2853,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
         for (int i = 0 ; i < count ; i++)
         {
             waitCond = new ItomSharedSemaphore();
-            if (QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond)))
+            if (QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
                 {
@@ -2894,7 +2894,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
         {
             count++;
             waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore *, waitCond));
+            QMetaObject::invokeMethod(self->dataIOObj, "stopDevice", Q_ARG(ItomSharedSemaphore*, waitCond));
 
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
@@ -2967,7 +2967,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     bool timeout = false;
-    if (QMetaObject::invokeMethod(self->dataIOObj, "acquire", Q_ARG(const int, trigger), Q_ARG(ItomSharedSemaphore *, waitCond)))
+    if (QMetaObject::invokeMethod(self->dataIOObj, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, waitCond)))
     {
 
         while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -3070,7 +3070,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         }
 
         locker = (new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(void *, (void*)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(void*, (void*)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         invokeMethod = 1;
     }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
@@ -3106,7 +3106,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         }
 
         locker = (new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(QSharedPointer<char>, sharedBuffer), Q_ARG(QSharedPointer<int>, maxLength), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(QSharedPointer<char>, sharedBuffer), Q_ARG(QSharedPointer<int>, maxLength), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         invokeMethod = 2;
     }
     else
@@ -3216,7 +3216,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             bool timeout = false;
 
@@ -3259,7 +3259,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         
-        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             bool timeout = false;
 
@@ -3354,7 +3354,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)dObj), Q_ARG(const int, 1), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)dObj), Q_ARG(int, 1), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             bool timeout = false;
 
@@ -3461,7 +3461,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)buf), Q_ARG(const int, datalen), Q_ARG(ItomSharedSemaphore *, waitCond)))
+        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)buf), Q_ARG(int, datalen), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {        
             bool timeout = false;
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -3522,7 +3522,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
 {
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    if (QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond)))
+    if (QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond)))
     {
         bool timeout = false;
         while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -3590,7 +3590,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     
-    if (QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond)))
+    if (QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond)))
     {
         bool timeout = false;
         while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -3657,11 +3657,11 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     bool invokeOk;
     if (val)
     {
-        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond));
     }
     else
     {
-        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore *, waitCond));
+        invokeOk = QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond));
     }
 
     if (invokeOk)
@@ -4063,7 +4063,7 @@ int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObjec
         Py_DECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, pluginName), Q_ARG(ito::AddInAlgo**, &self->algoObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
+        QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInAlgo**, &self->algoObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
         waitCond->wait(-1);
         retval += waitCond->returnValue;
         waitCond->deleteSemaphore();

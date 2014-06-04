@@ -72,7 +72,7 @@ namespace ito
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
         QSharedPointer<ito::Param> qsParam(new ito::Param("numaxis", ito::ParamBase::Int));
-        QMetaObject::invokeMethod(pMyMotor, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
         {
@@ -183,7 +183,7 @@ namespace ito
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, stepSizeVec), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, stepSizeVec), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
         if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
@@ -222,7 +222,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(QVector<int>, axisVec), Q_ARG(QVector<double>, posVec), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
         if (timeOutMS)
         {
             return waitForSemaphore(timeOutMS);
@@ -254,7 +254,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(stepSize)), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "setPosRel", Q_ARG(int, (const int) axis), Q_ARG(double, (const double)(stepSize)), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         if (timeOutMS)
         {
@@ -287,7 +287,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(const int, (const int) axis), Q_ARG(const double, (const double)(pos)), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "setPosAbs", Q_ARG(int, (const int) axis), Q_ARG(double, (const double)(pos)), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         if (timeOutMS)
         {
@@ -353,7 +353,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "getPos", Q_ARG(const int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
         pos = *posSP;
@@ -391,7 +391,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "getPos", Q_ARG(QVector<int>, axisVec), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
 
@@ -424,7 +424,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
         val = *qsParam;
@@ -452,7 +452,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyMotor, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyMotor, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
         return retval;

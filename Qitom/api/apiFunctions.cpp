@@ -392,7 +392,7 @@ ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int plug
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, name), Q_ARG(ito::AddInActuator**, &actuator), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
+    QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInActuator**, &actuator), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
     //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
@@ -414,7 +414,7 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
     }
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(const int, pluginNum), Q_ARG(const QString&, name), Q_ARG(ito::AddInDataIO**, &dataIO), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
+    QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInDataIO**, &dataIO), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
     //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;

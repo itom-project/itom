@@ -103,7 +103,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     if(objectID == 0)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<unsigned int>, figure->guardedFigHandle), Q_ARG(unsigned int, subplotIndex), Q_ARG(QSharedPointer<unsigned int>, objectIDShared), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<uint>, figure->guardedFigHandle), Q_ARG(uint, subplotIndex), Q_ARG(QSharedPointer<uint>, objectIDShared), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         locker.getSemaphore()->wait(-1);
         retval += locker.getSemaphore()->returnValue;
@@ -118,7 +118,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     else
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(unsigned int, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         locker.getSemaphore()->wait(-1);
         retval += locker.getSemaphore()->returnValue;
@@ -189,7 +189,7 @@ maxNrPoints: {int}, optional \n\
     else
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(unsigned int, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         bool finished = false;
 
@@ -198,7 +198,7 @@ maxNrPoints: {int}, optional \n\
             if (PyErr_CheckSignals())
             {
                 retval += ito::RetVal(ito::retError,0,"pick points operation interrupted by user");
-                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(unsigned int, self->uiItem.objectID));
+                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
             }
             else
             {
@@ -280,7 +280,7 @@ maxNrElements: {int}, optional \n\
     else
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricElements", Q_ARG(unsigned int, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricElements", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         bool finished = false;
 
@@ -289,7 +289,7 @@ maxNrElements: {int}, optional \n\
             if (PyErr_CheckSignals())
             {
                 retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
-                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(unsigned int, self->uiItem.objectID));
+                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
             }
             else
             {

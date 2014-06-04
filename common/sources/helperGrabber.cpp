@@ -71,7 +71,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
         QSharedPointer<ito::Param> qsParamBPP(new ito::Param("bpp", ito::ParamBase::Int));
-        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamBPP), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamBPP), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(PLUGINWAIT))
         {
@@ -166,7 +166,7 @@ namespace ito
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "startDevice", Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "startDevice", Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         return waitForSemaphore(timeOutMS);
     }
@@ -189,7 +189,7 @@ namespace ito
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "stopDevice", Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "stopDevice", Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
         return retval;
@@ -219,7 +219,7 @@ namespace ito
         //double middletime1 = (double)(cv::getTickCount())/cv::getTickFrequency();
         
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "acquire", Q_ARG(const int, trigger), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         //double middletime2 = (double)(cv::getTickCount())/cv::getTickFrequency();
 
@@ -252,7 +252,7 @@ namespace ito
         }
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
         return retval;
@@ -284,7 +284,7 @@ namespace ito
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
-        QMetaObject::invokeMethod(pMyCamera, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         //double middletime2 = (double)(cv::getTickCount())/cv::getTickFrequency();
 
@@ -317,7 +317,7 @@ namespace ito
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
         QSharedPointer<ito::Param> qsParam(new ito::Param(val));
-        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         retval += waitForSemaphore(timeOutMS);
 
@@ -345,7 +345,7 @@ namespace ito
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
         retval += waitForSemaphore(timeOutMS);
 
         return retval;
@@ -369,7 +369,7 @@ namespace ito
         QSharedPointer<ito::Param> qsParamBPP(new ito::Param("bpp", ito::ParamBase::Int));
 
         pMySemaphoreLocker = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamBPP), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamBPP), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
@@ -389,7 +389,7 @@ namespace ito
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
         QSharedPointer<ito::Param> qsParamSizeX(new ito::Param("sizex", ito::ParamBase::Int));
-        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamSizeX), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamSizeX), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
@@ -409,7 +409,7 @@ namespace ito
         pMySemaphoreLocker = new ItomSharedSemaphore();
 
         QSharedPointer<ito::Param> qsParamSizeY(new ito::Param("sizey", ito::ParamBase::Int));
-        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamSizeY), Q_ARG(ItomSharedSemaphore *, pMySemaphoreLocker.getSemaphore()));
+        QMetaObject::invokeMethod(pMyCamera, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParamSizeY), Q_ARG(ItomSharedSemaphore*, pMySemaphoreLocker.getSemaphore()));
 
         while (!pMySemaphoreLocker.getSemaphore()->wait(timeOutMS))
         {
