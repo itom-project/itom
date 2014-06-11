@@ -425,7 +425,7 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
         }
         else
         {                           //???
-            return createIndex(row, column, NULL); //internalId of root item is NULL
+            return createIndex(row, column, (void*)NULL); //internalId of root item is NULL
         }
     }
     else
@@ -461,7 +461,7 @@ QModelIndex BreakPointModel::parent(const QModelIndex &index) const
 
         if (parentRow >= 0)
         {
-            return createIndex(parentRow, 0, NULL);
+            return createIndex(parentRow, 0, (void*)NULL);
         }
         else //may not occur
         {
@@ -552,7 +552,7 @@ QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) cons
     {
         if (QString::compare(m_scriptFiles[i], filename, Qt::CaseInsensitive) == 0)
         {
-            return createIndex(i, 0, NULL);
+            return createIndex(i, 0, (void*)NULL);
         }
     }
     return QModelIndex();
