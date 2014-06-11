@@ -967,7 +967,7 @@ namespace ito
         bool callInitInNewThread;
         bool timeoutOccurred = false;
 
-        if ((m_addInListDataIO[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListDataIO[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
@@ -1005,7 +1005,7 @@ namespace ito
             (*addIn)->MoveToThread();
         }
 
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(ItomSharedSemaphore *, waitCond));
+        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
 
         while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
         {
@@ -1064,10 +1064,9 @@ namespace ito
         }
 
         //updateModel();
-
-end:
         m_plugInModel.insertInstance(aib, false); //end insert
 
+end:
         if (aimWait)
         {
             aimWait->returnValue = retval;
@@ -1102,7 +1101,7 @@ end:
         bool callInitInNewThread;
         bool timeoutOccurred = false;
 
-        if ((m_addInListAct[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListAct[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
@@ -1140,7 +1139,7 @@ end:
             (*addIn)->MoveToThread();
         }
 
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase> *, paramsMand), Q_ARG(QVector<ito::ParamBase> *, paramsOpt), Q_ARG(ItomSharedSemaphore *, waitCond));
+        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
 
         while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
         {
@@ -1197,10 +1196,9 @@ end:
         }
 
         //updateModel();
-        
+        m_plugInModel.insertInstance(aib, false); //end insert
 
 end:
-        m_plugInModel.insertInstance(aib, false); //end insert
 
         if (aimWait)
         {
@@ -1232,7 +1230,7 @@ end:
         ito::tAutoLoadPolicy policy = ito::autoLoadNever;
         ito::AddInInterfaceBase *aib = NULL;
 
-        if ((m_addInListAlgo[pluginNum])->objectName() != name)
+        if (QString::compare((m_addInListAlgo[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
             goto end;
@@ -1318,7 +1316,7 @@ end:
         if (aib->getRef(*addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
         {
             waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore *, waitCond));
+            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
             waitCond->wait(AppManagement::timeouts.pluginInitClose); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
             retval += waitCond->returnValue;
             waitCond->deleteSemaphore();
@@ -1511,7 +1509,7 @@ end:
 //                continue;
 //            }
             waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore *, waitCond));
+            QMetaObject::invokeMethod(plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond));
             ret += waitCond->returnValue;
             waitCond->wait(AppManagement::timeouts.pluginGeneral);
             waitCond->deleteSemaphore();

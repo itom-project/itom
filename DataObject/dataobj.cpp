@@ -1799,7 +1799,7 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
 {
    if (&lhs == &rhs)
    {
-         return 0;
+         return ito::RetVal(ito::retError, 0, "inplace-conversion of dataObject not possible");
    }
    //_Tp is source type
 
@@ -1872,7 +1872,7 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
         lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tConvertToFunc)(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);

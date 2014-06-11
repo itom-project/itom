@@ -205,6 +205,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 //    bool numpyAvailable = true;
 
     qDebug() << "python in thread: " << QThread::currentThreadId ();
+    readSettings();
 
     RetVal tretVal(retOk);
     if (!started)
@@ -542,6 +543,7 @@ void PythonEngine::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::propertiesChanged()
 {
     readSettings();
@@ -1164,7 +1166,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
             if ((*it).pythonDbgBpNumber==-1)
             {
                 retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(row,pyBpNumber);
+                bpModel->setPyBpNumber(*it,pyBpNumber);
 
                 if (retValue.containsError())
                 {
@@ -1272,7 +1274,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             if ((*it).pythonDbgBpNumber==-1)
             {
                 retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(row,pyBpNumber);
+                bpModel->setPyBpNumber(*it,pyBpNumber);
 
                 if (retValue.containsError()) //error occurred, but already printed
                 {
@@ -1356,7 +1358,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
             if ((*it).pythonDbgBpNumber==-1)
             {
                 retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(row,pyBpNumber);
+                bpModel->setPyBpNumber(*it,pyBpNumber);
 
                 if (retValue.containsError())
                 {
@@ -1541,7 +1543,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
     {
         return RetVal(retError);
     }
-    else
+    else if (pyBpNumber >= 0)
     {
         PyObject *PyEnabled = enabled ? Py_True : Py_False;
         PyObject *PyTemporary = temporary ? Py_True : Py_False;
@@ -1572,6 +1574,11 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
             }
         }
     }
+    else
+    {
+        qDebug() << "Breakpoint in file " << filename << ", line " << lineno << " can not be edited since it could not be registered in python (maybe an commented or blank line)";
+    }
+
     Py_XDECREF(result);
     return RetVal(retOk);
 }
@@ -1584,7 +1591,7 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
     {
         return RetVal(retError);
     }
-    else
+    else if (pyBpNumber >= 0)
     {
         result = PyObject_CallMethod(itomDbgInstance, "clearBreakPoint", "i", pyBpNumber);
         if (result == NULL)
@@ -1605,6 +1612,11 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 
         }
     }
+    else
+    {
+        qDebug() << "Breakpoint could not be deleted. Its python-internal bp-nr is invalid (maybe an commented or blank line).";
+    }
+
     Py_XDECREF(result);
     return RetVal(retOk);
 }
@@ -2206,7 +2218,7 @@ void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 {
     int pyBpNumber;
     pythonAddBreakpoint(bp.filename, bp.lineno, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
-    bpModel->setPyBpNumber(row, pyBpNumber);
+    bpModel->setPyBpNumber(bp, pyBpNumber);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

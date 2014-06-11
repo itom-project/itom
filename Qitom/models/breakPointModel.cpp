@@ -645,6 +645,21 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
 }
 
 //-------------------------------------------------------------------------------------------------------
+/*
+- returns a List of all Breakpoints, doesn't matter in which file they are
+*/
+QModelIndexList BreakPointModel::getAllBreakPointIndizes()
+{
+    QModelIndexList allBPs;
+    for (int i = 0; i < m_scriptFiles.size(); ++i)
+    {
+        QString filename = m_scriptFiles[i];
+        allBPs.append(getBreakPointIndizes(filename));
+    }
+    return allBPs;
+}
+
+//-------------------------------------------------------------------------------------------------------
 //! returns BreakPointItem for breakpoint being in given file and at given line number
 /*!
     \param filename Filename of python macro file
@@ -662,6 +677,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineN
     \param index given QModelIndex
     \return ...
 */
+//TODO: Change secondindex from i to j
 BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 {
     if (index.isValid() && index.internalPointer() != NULL)
@@ -901,11 +917,19 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
     \return result of changeBreakPoint method
     \sa changeBreakPoint
 */
-RetVal BreakPointModel::setPyBpNumber(int row, int pyBpNumber)
+RetVal BreakPointModel::setPyBpNumber(const BreakPointItem &item, int pyBpNumber)
 {                                                     //???
-    BreakPointItem bp = getBreakPoint(createIndex(row,1));
-    bp.pythonDbgBpNumber=pyBpNumber;
-    return changeBreakPoint(createIndex(row,1),bp,false);
+    //get modelIndex of file
+    QModelIndex index = getFirstBreakPointIndex(item.filename, item.lineno);
+
+    if (index.isValid())
+    {
+        BreakPointItem bp = item;
+        bp.pythonDbgBpNumber = pyBpNumber;
+        return changeBreakPoint(index,bp,false);
+    }
+
+    return ito::retError;    
 }
 
 } //end namespace ito

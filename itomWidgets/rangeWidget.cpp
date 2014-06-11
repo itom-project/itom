@@ -31,7 +31,6 @@
 // Qt includes
 #include <QDebug>
 #include <QMouseEvent>
-//#include <QWeakPointer>
 #include <QPointer>
 #include <QSpinBox>
 

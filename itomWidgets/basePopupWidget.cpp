@@ -89,7 +89,6 @@ QGradient* duplicateGradient(const QGradient* gradient)
 BasePopupWidgetPrivate::BasePopupWidgetPrivate(BasePopupWidget& object)
   :q_ptr(&object)
 {
-  this->BaseWidget = 0;
   this->Effect = BasePopupWidget::ScrollEffect;
   this->EffectDuration = 333; // in ms
   this->EffectAlpha = 1.;
@@ -177,7 +176,7 @@ QWidgetList BasePopupWidgetPrivate::focusWidgets(bool onlyVisible)const
     {
     res << const_cast<BasePopupWidget*>(q);
     }
-  if (this->BaseWidget && (!onlyVisible || this->BaseWidget->isVisible()))
+  if (!this->BaseWidget.isNull() && (!onlyVisible || this->BaseWidget->isVisible()))
     {
     res << this->BaseWidget;
     }
@@ -236,7 +235,7 @@ bool BasePopupWidgetPrivate::isAncestorOf(const QWidget* ancestor, const QWidget
 void BasePopupWidgetPrivate::setupPopupPixmapWidget()
 {
   Q_Q(BasePopupWidget);
-  this->PopupPixmapWidget->setAlignment(this->pixmapAlignment());  
+  this->PopupPixmapWidget->setAlignment(this->pixmapAlignment());
   QPixmap pixmap;
   if (q->testAttribute(Qt::WA_TranslucentBackground))
     {
@@ -312,7 +311,7 @@ QRect BasePopupWidgetPrivate::closedGeometry(QRect openGeom)const
 // -------------------------------------------------------------------------
 QRect BasePopupWidgetPrivate::baseGeometry()const
 {
-  if (!this->BaseWidget)
+  if (this->BaseWidget.isNull())
     {
     return QRect();
     }
@@ -324,7 +323,7 @@ QRect BasePopupWidgetPrivate::baseGeometry()const
 QPoint BasePopupWidgetPrivate::mapToGlobal(const QPoint& baseWidgetPoint)const
 {
   QPoint mappedPoint = baseWidgetPoint;
-  if (this->BaseWidget && this->BaseWidget->parentWidget())
+  if (!this->BaseWidget.isNull() && this->BaseWidget->parentWidget())
     {
     mappedPoint = this->BaseWidget->parentWidget()->mapToGlobal(mappedPoint);
     }
@@ -447,7 +446,7 @@ void BasePopupWidgetPrivate::hideAll()
   // Before hiding, transfer the active window flag to its parent, this will
   // prevent the application to send a ApplicationDeactivate signal that
   // doesn't need to be done.
-  if (q->isActiveWindow() && this->BaseWidget)
+  if (q->isActiveWindow() && !this->BaseWidget.isNull())
     {
     qApp->setActiveWindow(this->BaseWidget->window());
     }
@@ -503,13 +502,13 @@ QWidget* BasePopupWidget::baseWidget()const
 void BasePopupWidget::setBaseWidget(QWidget* widget)
 {
   Q_D(BasePopupWidget);
-  if (d->BaseWidget)
+  if (!d->BaseWidget.isNull())
     {
     //disconnect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
     //           this, SLOT(onBaseWidgetDestroyed()));
     }
   d->BaseWidget = widget;
-  if (d->BaseWidget)
+  if (!d->BaseWidget.isNull())
     {
     //connect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
     //        this, SLOT(onBaseWidgetDestroyed()));
@@ -708,7 +707,7 @@ void BasePopupWidget::showPopup()
   
   if ((this->isVisible() &&
        d->currentAnimation()->state() == QAbstractAnimation::Stopped) ||
-      (d->BaseWidget && !d->BaseWidget->isVisible()))
+      (!d->BaseWidget.isNull() && !d->BaseWidget->isVisible()))
     {
     return;
     }
@@ -796,7 +795,7 @@ void BasePopupWidget::hidePopup()
       d->PopupPixmapWidget->show();
       if (this->isActiveWindow())
         {
-        qApp->setActiveWindow(d->BaseWidget ? d->BaseWidget->window() : 0);
+        qApp->setActiveWindow(!d->BaseWidget.isNull() ? d->BaseWidget->window() : 0);
         }
       this->hide();
       break;

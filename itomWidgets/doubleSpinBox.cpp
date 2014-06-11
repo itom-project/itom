@@ -295,23 +295,35 @@ void DoubleSpinBoxPrivate::setValue(double value, int dec)
 {
   Q_Q(DoubleSpinBox);
   dec = this->boundDecimals(dec);
-  bool changeDecimals = dec != q->decimals();
+  const bool changeDecimals = dec != q->decimals();
   if (changeDecimals)
-    {
-    // don't fire decimalsChanged signal yet, wait for the value to be
-    // up-to-date.
-    this->SpinBox->setDecimals(dec);
-    }
+  {
+     // don't fire valueChanged signal because we will change the value
+     // right after anyway.
+     const bool blockValueChangedSignal = (this->round(this->SpinBox->value(), dec) != value);
+     bool wasBlocked = false;
+     if (blockValueChangedSignal)
+     {
+       wasBlocked = this->SpinBox->blockSignals(true);
+     }
+     // don't fire decimalsChanged signal yet, wait for the value to be
+     // up-to-date.
+     this->SpinBox->setDecimals(dec);
+     if (blockValueChangedSignal)
+     {
+       this->SpinBox->blockSignals(wasBlocked);
+     }
+  }
   this->SpinBox->setValue(value); // re-do the text (calls textFromValue())
   if (changeDecimals)
-    {
+  {
     emit q->decimalsChanged(dec);
-    }
+  }
   if (this->SizeHintPolicy == DoubleSpinBox::SizeHintByValue)
-    {
+  {
     this->CachedSizeHint = QSize();
     q->updateGeometry();
-    }
+  }
 }
 
 //-----------------------------------------------------------------------------

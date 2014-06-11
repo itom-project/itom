@@ -67,8 +67,6 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     unnamedNumber = ScriptEditorWidget::unnamedAutoIncrement++;
 
-    breakPointMap.clear();
-
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
 
@@ -173,13 +171,13 @@ RetVal ScriptEditorWidget::initEditor()
     }
 
     setMarginWidth(1, 16);
-    setMarginWidth(2, 35);
+
     setMarginWidth(3, 18);
     setMarginWidth(4, 18);
 
     setMarginSensitivity(1, true);
     setMarginSensitivity(3, true);
-
+    autoAdaptLineNumberColumnWidth();
     setMarginLineNumbers(2, true);
 
     setMarginType(1, QsciScintilla::SymbolMargin); //!< bookmark margin
@@ -263,7 +261,7 @@ RetVal ScriptEditorWidget::initMenus()
 
     breakpointMenu = new QMenu(this);
     breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&toggle breakpoint"), this, SLOT(menuToggleBreakpoint()));
-    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisabled.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
     breakpointMenuActions["editConditionBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&edit condition"), this, SLOT(menuEditBreakpoint()));
     breakpointMenuActions["nextBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&next breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
     breakpointMenuActions["prevBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&previous breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
@@ -318,6 +316,36 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
     }
 
     return storage;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::autoAdaptLineNumberColumnWidth()
+{
+    int l = lines();
+    QString s; //make the width always a little bit bigger than necessary
+
+    if (l < 10)
+    {
+        s = QString::number(10);
+    }
+    else if (l < 100)
+    {
+        s = QString::number(100);
+    }
+    else if (l < 1000)
+    {
+        s = QString::number(1000);
+    }
+    else if (l < 10000)
+    {
+        s = QString::number(10000);
+    }
+    else
+    {
+        s = QString::number(100000);
+    }
+
+    setMarginWidth(2, s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -422,9 +450,9 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
     bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
 
-    breakpointMenuActions["nextBP"]->setEnabled(!breakPointMap.empty());
-    breakpointMenuActions["prevBP"]->setEnabled(!breakPointMap.empty());
-    breakpointMenuActions["clearALLBP"]->setEnabled(!breakPointMap.empty());
+    breakpointMenuActions["nextBP"]->setEnabled(!m_breakPointMap.empty());
+    breakpointMenuActions["prevBP"]->setEnabled(!m_breakPointMap.empty());
+    breakpointMenuActions["clearALLBP"]->setEnabled(!m_breakPointMap.empty());
 
     if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
     {
@@ -1334,12 +1362,33 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// Breakpoint Handling
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::lineAcceptsBPs(int line)
+{
+    // Check if it's a blank or comment line 
+    for (int i = 0; i < this->lineLength(line); ++i)
+    {
+        QChar c = this->text(line).at(i);
+        if (c != '\t' && c != ' ' && c != '#' && c != '\n')
+        { // it must be a character
+            return true;
+        }
+        else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
+        { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
+            return false;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 {
     if (getFilename() == "") return RetVal(retError);
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
-//    std::list<QPair<int, int> >::iterator it;
+    std::list<QPair<int, int> >::iterator it;
     BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
     QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
 
@@ -1347,7 +1396,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
     {
         bpModel->deleteBreakPoints(indexList);
     }
-    else
+    else if (lineAcceptsBPs(line))
     {
         BreakPointItem bp;
         bp.filename = getFilename();
@@ -1435,13 +1484,6 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
 
-    //!< the following lines are not neccesary, since the delete-slot is invoked for each breakPoint by the BreakPointModel
-    /*markerDeleteAll(markBreakPoint);
-    markerDeleteAll(markCBreakPoint);
-    markerDeleteAll(markCBreakPointDisabled);
-    markerDeleteAll(markBreakPointDisabled);
-    breakPointMap.clear();*/
-
     return RetVal(retOk);
 }
 
@@ -1526,19 +1568,20 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 
     if (bp.filename == getFilename() && bp.filename != "")
     {
-                std::list<QPair<int, int> >::iterator it;
+        std::list<QPair<int, int> >::iterator it;
         bool found = false;
 
-        for (it = breakPointMap.begin(); it != breakPointMap.end() && !found; ++it)
+        foreach( const BPMarker &bpEntry, m_breakPointMap)
         {
-            if (it->second == bp.lineno)
+            if (bpEntry.lineNo == bp.lineno && !bpEntry.markedForDeletion)
             {
+                //there is already a breakPoint in this line
                 found = true;
+                break;
             }
         }
 
         if (found) return; //!< there is already a breakpoint in this line, do not add the new one
-
 
         if (bp.enabled)
         {
@@ -1562,8 +1605,12 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
                 newHandle = markerAdd(bp.lineno, markBreakPointDisabled);
             }
         }
-        breakPointMap.push_back(QPair<int, int>(newHandle, bp.lineno));
 
+        BPMarker m;
+        m.bpHandle = newHandle;
+        m.lineNo = bp.lineno;
+        m.markedForDeletion = false;
+        m_breakPointMap.append( m );
     }
 }
 
@@ -1571,22 +1618,40 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*pyBpNumber*/)
 {
+    bool found = false;
     if (filename == getFilename() && filename != "")
     {
-        std::list<QPair<int, int> >::iterator it;
+        QList<BPMarker>::iterator it = m_breakPointMap.begin();
 
-        it=breakPointMap.begin();
-
-        while(it != breakPointMap.end())
+        //markedForDeletion comes prior
+        while(it != m_breakPointMap.end())
         {
-            if (it->second == lineNo)
+            if (it->lineNo == lineNo && it->markedForDeletion == true)
             {
-                markerDeleteHandle(it->first);
-                it = breakPointMap.erase(it);
+                markerDeleteHandle(it->bpHandle);
+                it = m_breakPointMap.erase(it);
+                found = true;
             }
             else
             {
                 ++it;
+            }
+        }
+
+        if (!found)
+        {
+            it = m_breakPointMap.begin();
+            while(it != m_breakPointMap.end())
+            {
+                if (it->lineNo == lineNo)
+                {
+                    markerDeleteHandle(it->bpHandle);
+                    it = m_breakPointMap.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
             }
         }
     }
@@ -1633,14 +1698,6 @@ void ScriptEditorWidget::print()
         printPreviewDialog.setWindowFlags(Qt::Window);
         connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreviewRequested(QPrinter*)));
         printPreviewDialog.exec();
-
-    //    QPrintDialog printDialog(&printer);
-    ////    QPrintPreviewDialog printDialog(&printer);
-    //    if (printDialog.exec())
-    //    {
-    //        printer.
-    //        printer.printRange(this);
-    //    }
     }
 }
 
@@ -1653,23 +1710,6 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
         p->printRange(this);
     }
 }
-
-    //def printPreviewFile(self):
-    //    """
-    //    Public slot to show a print preview of the text.
-    //    """
-    //    from PyQt4.QtGui import QPrintPreviewDialog
-    //    
-    //    printer = Printer(mode=QPrinter.HighResolution)
-    //    fn = self.getFileName()
-    //    if fn is not None:
-    //        printer.setDocName(os.path.basename(fn))
-    //    else:
-    //        printer.setDocName(self.noName)
-    //    preview = QPrintPreviewDialog(printer, self)
-    //    preview.paintRequested.connect(self.__printPreview)
-    //    preview.exec_()
-    //
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::changeFilename(QString newFilename)
@@ -1710,43 +1750,73 @@ RetVal ScriptEditorWidget::changeFilename(QString newFilename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::nrOfLinesChanged()
 {
-    std::list<QPair<int, int> >::iterator it;
-    int line;
     BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
     BreakPointItem item;
     QModelIndex index;
 
-    it = breakPointMap.begin();
+    QHash<int,int> currentLineHash;
+    QModelIndexList oldItemsToDelete; //QList contains the old line numbers whose break points should be deleted in the end
+    QList< QPair<QModelIndex, BreakPointItem> > itemsToChange;
 
-    while(it != breakPointMap.end())
+    //get current line number of each item in m_breakPointMap (m_breakPointMap still reflects the state before the line change)
+    foreach (const BPMarker &marker, m_breakPointMap)
     {
-        line = markerLine(it->first);
+        currentLineHash[marker.bpHandle] = markerLine(marker.bpHandle);
+        //qDebug() << "handle " << marker.bpHandle << " was in " << marker.lineNo << " and is in " << markerLine(marker.bpHandle);
+    }
 
-        if (line == -1)
+    foreach (const BPMarker &marker, m_breakPointMap)
+    {
+        if (currentLineHash[marker.bpHandle] == -1) //break point does not exist any more, delete it
         {
-            //!< marker has been deleted:
-            index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
-            if (index.isValid())
+            oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+            (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
+        }
+        else if (currentLineHash[marker.bpHandle] != marker.lineNo) //line has been changed, if there is another breakpoint that is now in this line and that was in a smaller line number before, delete this one
+        {
+            bool found = false;
+            foreach (const BPMarker &other, m_breakPointMap)
             {
-                bpModel->deleteBreakPoint(index);
+                if (currentLineHash[other.bpHandle] == currentLineHash[marker.bpHandle] && other.lineNo < marker.lineNo && !other.markedForDeletion)
+                {
+                    //two breakpoints now in the same line AND
+                    //the other breakpoint has been in a line above the former line nr of marker AND
+                    //the other breakpoint has not been deleted for deletion
+                    found = true;
+                    break;
+                }
             }
-            it = breakPointMap.erase(it);
-        }
-        else if (line != it->second)
-        {
-            index = bpModel->getFirstBreakPointIndex(getFilename(), it->second);
 
-            item = bpModel->getBreakPoint(index);
-            item.lineno = line;
-            bpModel->changeBreakPoint(index, item, false);
-            it->second = line;
+            if (found) //another unchanged breakpoint was and still is in the new line of marker, therefore delete marker
+            {
+                oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+                (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
+            }
+            else
+            {
+                //this breakpoint changed its line, but should stay alive
+                // marker moved because a line was added or removed
+                index = bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo);
+                item = bpModel->getBreakPoint(index);
+                item.lineno = currentLineHash[marker.bpHandle]; //new line
 
-            ++it;
+                itemsToChange.append( QPair<QModelIndex,BreakPointItem>(index,item) );
+            }
         }
-        else
-        {
-            ++it;
-        }
+    }
+
+    //now send all changes and afterwards delete the items that should be deleted
+    for (int i = 0; i < itemsToChange.size(); ++i)
+    {
+        bpModel->changeBreakPoint(itemsToChange[i].first, itemsToChange[i].second, true);
+    }
+
+    bpModel->deleteBreakPoints(oldItemsToDelete);
+
+    //unmark all for deletion flags
+    for (int i=0; i < m_breakPointMap.size(); ++i)
+    {
+        m_breakPointMap[i].markedForDeletion = false;
     }
 
     // SyntaxCheck   
@@ -1754,6 +1824,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         m_syntaxTimer->start(); //starts or restarts the timer
     }
+    autoAdaptLineNumberColumnWidth();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

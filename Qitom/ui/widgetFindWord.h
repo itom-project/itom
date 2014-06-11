@@ -59,6 +59,7 @@ public slots:
 
 signals:
     void findNext(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward = true, bool isQuickSeach = true);
+    void hideSearchBar();
 };
 
 } //end namespace ito

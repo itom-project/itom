@@ -158,7 +158,7 @@ private slots:
     void mnuShowDesigner();
     void mnuShowProperties();
     void mnuShowUserManagement();
-    void mnuToogleExecPyCodeByDebugger(bool checked);
+    void mnuToggleExecPyCodeByDebugger(bool checked);
 
     void mnuScriptStop();
     void mnuScriptContinue();

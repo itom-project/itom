@@ -93,6 +93,7 @@ public:
     QModelIndex getFirstBreakPointIndex(const QString &filename, int lineNo) const;
     QModelIndexList getBreakPointIndizes(const QString &filename, int lineNo) const;
     QModelIndexList getBreakPointIndizes(const QString &filename) const;
+    QModelIndexList getAllBreakPointIndizes();
 
     BreakPointItem getBreakPoint(const QString &filename, int lineNo) const;
     BreakPointItem getBreakPoint(const QModelIndex &index) const;
@@ -106,7 +107,7 @@ public:
     QModelIndexList getAllFileIndexes();
 
     RetVal resetAllPyBpNumbers();
-    RetVal setPyBpNumber(int row, int pyBpNumber);
+    RetVal setPyBpNumber(const BreakPointItem &item, int pyBpNumber);
 
 protected:
 

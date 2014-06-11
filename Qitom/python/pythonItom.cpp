@@ -265,7 +265,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while plotting data object");
@@ -408,7 +408,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, figHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image of camera");
@@ -1385,14 +1385,14 @@ Retrieve complete version information of itom and if specified version informati
 and print it either to the console or to a PyDictionary.");
 PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    bool toogleOut = false;
+    bool toggleOut = false;
     bool addPlugIns = false;
 
     int length = PyTuple_Size(pArgs);
 
     if (length == 1) //!< copy name + object
     {
-        if (!PyArg_ParseTuple(pArgs, "b", &toogleOut))
+        if (!PyArg_ParseTuple(pArgs, "b", &toggleOut))
         {
             PyErr_SetString(PyExc_TypeError, "wrong input type, must be (bool, bool)");
             return NULL;
@@ -1400,7 +1400,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else if (length == 2) //!< copy name + object + asBinary
     {
-        if (!PyArg_ParseTuple(pArgs, "bb", &toogleOut, &addPlugIns))
+        if (!PyArg_ParseTuple(pArgs, "bb", &toggleOut, &addPlugIns))
         {
             PyErr_SetString(PyExc_TypeError, "wrong input type, must be (bool, bool)");
             return NULL;
@@ -1496,7 +1496,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
     }
 
-    if (toogleOut)
+    if (toggleOut)
     {
         return myDic;
     }
@@ -2762,7 +2762,7 @@ filename : {str} \n\
 dataObject : {DataObject} \n\
     An allocated dataObject of n-Dimensions.\n\
 tagsAsBinary : {bool}, optional \n\
-    Optional tag to toogle if numeric-tags should be saved (metaData) as binary or by default as string.\n\
+    Optional tag to toggle if numeric-tags should be saved (metaData) as binary or by default as string.\n\
 \n\
 Notes \n\
 ----- \n\

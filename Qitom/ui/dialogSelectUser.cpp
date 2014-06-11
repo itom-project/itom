@@ -64,6 +64,24 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
         }
     }
 }
+void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
+{
+    if (m_userModel)
+    {
+        QModelIndex curIdx = ui.userList->currentIndex();
+        if (curIdx.isValid())
+        {
+            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
+            ui.lineEdit_name->setText(midx.data().toString());
+            midx = m_userModel->index(curIdx.row(), 2);
+            ui.lineEdit_role->setText(midx.data().toString());
+            midx = m_userModel->index(curIdx.row(), 3);
+            ui.lineEdit_iniFile->setText(midx.data().toString());
+        }
+    }
+    this->accept();
+    return;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 } //end namespace ito

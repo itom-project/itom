@@ -331,9 +331,13 @@ void CollapsibleGroupBox::childEvent(QChildEvent* c)
       }
     // We want to catch all the child's Show/Hide events.
     child->installEventFilter(this);
-    // If the child is added while CollapsibleButton is collapsed, then we
-    // need to hide the child.
-    d->setChildVisibility(childWidget);
+
+    //crash for adding QSpinBox, QDoubleSpinBox, QDateTimeEdit... if calling setChildVisibility during add-operation (see https://github.com/commontk/CTK/commit/36f72607d964e8216ea967e7ae68af92fca00f1c)
+    {
+        // If the child is added while CollapsibleButton is collapsed, then we
+        // need to hide the child.
+        ////d->setChildVisibility(childWidget); <-- activate this line once the bug has been fixed
+    }
     }
   this->QGroupBox::childEvent(c);
 }

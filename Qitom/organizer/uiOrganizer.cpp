@@ -2471,7 +2471,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 //                if (param.getName() != NULL)   // Parameter is defined
 //                {
 //                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
-//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 //                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
 //                    {
 //                        if (!dataIO->isAlive())
@@ -2545,7 +2545,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 //                if (param.getName() != NULL)   // Parameter is defined
 //                {
 //                    QSharedPointer<ito::Param> qsParam(new ito::Param(param));
-//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore *, locker.getSemaphore()));
+//                    QMetaObject::invokeMethod(dataIO, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 //                    while (!locker.getSemaphore()->wait(PLUGINWAIT))
 //                    {
 //                        if (!dataIO->isAlive())
@@ -3067,7 +3067,7 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
     if (orga)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(orga, "deleteDialog", Q_ARG(unsigned int, *handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(orga, "deleteDialog", Q_ARG(uint, *handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         //question: do we need locker here?
         locker.getSemaphore()->wait(-1);
     }

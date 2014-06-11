@@ -160,26 +160,32 @@ namespace ito
                 ShortcutAction(const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     m_action = new QAction(text, parent);
+                    m_action->setToolTip(text);
                 }
 
                 ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     m_action = new QAction(icon, text, parent);
+                    m_action->setToolTip(text);
                 }
 
                 ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent, const QKeySequence &key, Qt::ShortcutContext context = Qt::WindowShortcut) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     QString text2 = text;
                     QString text3 = text;
-                    text2.append( "\t" );
-                    text2.append( key.toString(QKeySequence::NativeText) );
-                    text3.append( " (" );
-                    text3.append( key.toString(QKeySequence::NativeText) );
-                    text3.append( ")" );
+
+                    //some key sequences do not exist as default on all operating systems
+                    if (key.isEmpty() == false)
+                    {
+                        text2 += "\t" + key.toString(QKeySequence::NativeText);
+                        text3 += " (" + key.toString(QKeySequence::NativeText) + ")";
+
+                        m_shortcut = new QShortcut(key, parent->getCanvas());
+                        m_shortcut->setContext(context);
+                    }
+
                     m_action = new QAction(icon, text2, parent);
                     m_action->setToolTip(text3);
-                    m_shortcut = new QShortcut(key, parent->getCanvas());
-                    m_shortcut->setContext(context);
                 }
 
                 ~ShortcutAction()

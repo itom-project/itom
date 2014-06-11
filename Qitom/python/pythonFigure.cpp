@@ -127,7 +127,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     *rows_ = rows;
     *cols_ = cols;
 
-    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer< QSharedPointer<unsigned int> >,guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -248,7 +248,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     }
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -324,7 +324,7 @@ className : {str}, optional \n\
     }
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<unsigned int>, self->guardedFigHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image");
@@ -386,7 +386,7 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
     *retCodeIfModal = -1;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(unsigned int, *(self->guardedFigHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(uint, *(self->guardedFigHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if (!locker.getSemaphore()->wait(30000))
     {
@@ -433,7 +433,7 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if (!locker.getSemaphore()->wait(-1))
     {
@@ -534,7 +534,7 @@ of itom, else it is a independent window. \n\
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<bool> docked(new bool);
 
-    QMetaObject::invokeMethod(uiOrga, "getDockedStatus", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "getDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if (!locker.getSemaphore()->wait(5000))
     {
@@ -584,7 +584,7 @@ of itom, else it is a independent window. \n\
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-    QMetaObject::invokeMethod(uiOrga, "setDockedStatus", Q_ARG(unsigned int, *(self->guardedFigHandle)), Q_ARG(bool, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "setDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(bool, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if (!locker.getSemaphore()->wait(5000))
     {
@@ -654,7 +654,7 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "figureClose", Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "figureClose", Q_ARG(uint, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if (!locker.getSemaphore()->wait(-1))
     {

@@ -40,6 +40,8 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 {
     m_breakPointView = new QTreeViewItom(this);
 
+    m_enOrDisAbleAllBrakpoints = false;
+
     AbstractDockWidget::init();
 
     setContentWidget(m_breakPointView);
@@ -112,7 +114,7 @@ void BreakPointDockWidget::createActions()
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
     m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
-    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabled.png"), tr("En- or disable Breakpoint"), this);
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("En- or disable Breakpoint"), this);
     m_pActToggleBP->connectTrigger(this, SLOT(mnuEnOrDisAbleBrakpoint()));
     m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.png"), tr("En- or disable all Breakpoints"), this);
     m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuEnOrDisAbleAllBrakpoints()));
@@ -162,11 +164,11 @@ void BreakPointDockWidget::mnuDeleteBP()
     }
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::mnuDeleteAllBPs()
 {
     m_breakPointView->clearSelection();
+    m_breakPointView->expandAll();
     m_breakPointView->selectAll();
     mnuDeleteBP();
 }
@@ -205,7 +207,15 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
     BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
     if (model)
     {
-        QModelIndexList selected = m_breakPointView->selectedIndexes();
+        QModelIndexList selected;
+        if (m_enOrDisAbleAllBrakpoints)
+        { // select all
+            selected = model->getAllBreakPointIndizes();
+        }
+        else
+        { // use selection
+            selected = m_breakPointView->selectedIndexes();
+        }
         for (int i = 0; i<selected.length(); ++i)
         {
             BreakPointItem bp = model->getBreakPoint(selected[i]);
@@ -226,8 +236,9 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
 void BreakPointDockWidget::mnuEnOrDisAbleAllBrakpoints()
 {
     m_breakPointView->clearSelection();
-    m_breakPointView->selectAll();
+    m_enOrDisAbleAllBrakpoints = true;
     mnuEnOrDisAbleBrakpoint();
+    m_enOrDisAbleAllBrakpoints = false;
     m_breakPointView->clearSelection();
 }
 

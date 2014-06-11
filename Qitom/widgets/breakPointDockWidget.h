@@ -59,12 +59,15 @@ namespace ito
             QToolBar    *m_pMainToolbar;
 
             QMenu *m_pContextMenu;
+            
+            bool m_enOrDisAbleAllBrakpoints;
 
             ShortcutAction* m_pActDelBP;
             ShortcutAction* m_pActDelAllBPs;
             ShortcutAction* m_pActEditBP;
             ShortcutAction* m_pActToggleBP;
             ShortcutAction* m_pActToggleAllBPs;
+
             
         signals:
 
