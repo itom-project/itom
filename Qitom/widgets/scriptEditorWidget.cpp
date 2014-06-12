@@ -1174,8 +1174,11 @@ bool ScriptEditorWidget::event (QEvent * event)
         // Check that it´s in the right column (margin)
         if (posX <= sensAreaX)
         {
+            QStringList texts;
+
             point.rx() = QsciScintilla::SendScintilla(QsciScintilla::SCI_POINTXFROMPOSITION, 0);
             int line = QsciScintilla::lineAt(point);
+            point.rx() = posX;
             
             QList<BookmarkErrorEntry>::iterator it;
             it = bookmarkErrorHandles.begin();
@@ -1184,11 +1187,15 @@ bool ScriptEditorWidget::event (QEvent * event)
                 int l = markerLine(it->handle);
                 if (l == line && (it->type & markerBookmarkAndPyBug))
                 {
-                    point.rx() = posX;
-                    point = this->mapToGlobal(point);
-                    QToolTip::showText(point, it->errorMessage, this);
+                    texts << it->errorMessage;
                 }
                 ++it;
+            }
+
+            if (texts.size() > 0)
+            {
+                point = mapToGlobal(point);
+                QToolTip::showText(point, texts.join("\n"), this);
             }
         }
     }
