@@ -500,15 +500,71 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
         if (filename == "matplotlib" || filename == "MatplotlibFigure" || filename == "MatplotlibPlot")
         {
             pluginClassName = "MatplotlibPlot";
-            win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,AbstractFigure::ModeStandaloneWindow, NULL));
-            if (win)
-            {
-                win->setWindowFlags(Qt::Window);
-                win->setAttribute(Qt::WA_DeleteOnClose, true);
 
-                //win = new WinMatplotlib();
-//                found = true;
+            //NEW
+            FigureWidget *fig = NULL;
+
+            //create new figure and gives it its own reference, since no instance is keeping track of it
+            QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>());
+            QSharedPointer<unsigned int> figObjectID(new unsigned int);
+            QSharedPointer<int> row(new int);
+            *row = 1;
+            QSharedPointer<int> col(new int);
+            *col = 1;
+            retValue += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
+            if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+            {
+                *dialogHandle = *(*guardedFigHandle);
+                if (m_dialogList.contains(*dialogHandle))
+                {
+                    fig = qobject_cast<FigureWidget*>(m_dialogList[*dialogHandle].container->getUiWidget());
+                    if (fig)
+                    {
+                        fig->setFigHandle(*guardedFigHandle);
+
+                        fig->setAttribute(Qt::WA_DeleteOnClose, true);
+
+                        QWidget *destWidget;
+                        
+                        retValue += fig->loadDesignerWidget(0, 0, pluginClassName, &destWidget);
+
+                        if (destWidget)
+                        {
+                            *objectID = addObjectToList(destWidget);
+
+                            if (m_garbageCollectorTimer == 0)
+                            {
+                                m_garbageCollectorTimer = startTimer(5000);
+                            }
+
+                            //destWidget->dumpObjectTree();
+                            *className = destWidget->metaObject()->className();
+                        }
+                    }
+                    else
+                    {
+                        retValue += RetVal::format(retError, 0, tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
+                    }
+                }
+                else
+                {
+                    retValue += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), *dialogHandle);
+                }
             }
+            //END NEW
+
+
+
+
+
+
+        //    pluginClassName = "MatplotlibPlot";
+        //    win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,AbstractFigure::ModeStandaloneWindow, NULL));
+        //    if (win)
+        //    {
+        //        win->setWindowFlags(Qt::Window);
+        //        win->setAttribute(Qt::WA_DeleteOnClose, true);
+        //    }
         }
         else
         {
@@ -518,31 +574,31 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
         if (!retValue.containsError())
         {
-            if (m_garbageCollectorTimer == 0)
-            {
-                m_garbageCollectorTimer = startTimer(5000);
-            }
+        //    if (m_garbageCollectorTimer == 0)
+        //    {
+        //        m_garbageCollectorTimer = startTimer(5000);
+        //    }
 
-            if (win)
-            {
-                set = new UiContainer(win);
-                *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                containerItem.container = set;
-                m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = win->metaObject()->methodOffset();
-                *objectID = addObjectToList(win);
-                *className = win->metaObject()->className();
-            }
-            else
-            {
-                set = new UiContainer(dlg);
-                *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                containerItem.container = set;
-                m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = dlg->metaObject()->methodOffset();
-                *objectID = addObjectToList(dlg);
-                *className = dlg->metaObject()->className();
-            }
+        //    if (win)
+        //    {
+        //        set = new UiContainer(win);
+        //        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+        //        containerItem.container = set;
+        //        m_dialogList[*dialogHandle] = containerItem;
+        //        *initSlotCount = win->metaObject()->methodOffset();
+        //        *objectID = addObjectToList(win);
+        //        *className = win->metaObject()->className();
+        //    }
+        //    else
+        //    {
+        //        set = new UiContainer(dlg);
+        //        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+        //        containerItem.container = set;
+        //        m_dialogList[*dialogHandle] = containerItem;
+        //        *initSlotCount = dlg->metaObject()->methodOffset();
+        //        *objectID = addObjectToList(dlg);
+        //        *className = dlg->metaObject()->className();
+        //    }
         }
         else
         {
@@ -1936,6 +1992,8 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, QString objectN
                 }
                 else
                 {
+                    //ptr->dumpObjectInfo();
+                    //ptr->dumpObjectTree();
                     retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
                 }
             }

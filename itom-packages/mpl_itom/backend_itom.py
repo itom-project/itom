@@ -1,21 +1,15 @@
-
-import math
 import os
 import sys
 import weakref
 import itom
 
 import matplotlib
-from matplotlib import verbose
-from matplotlib.cbook import is_string_like, onetrue
-from matplotlib.backend_bases import RendererBase, GraphicsContextBase, \
-     FigureManagerBase, FigureCanvasBase, NavigationToolbar2, IdleEvent, \
-     cursors, TimerBase
+from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, \
+     NavigationToolbar2, cursors, TimerBase
 from matplotlib.backend_bases import ShowBase
 
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.figure import Figure
-from matplotlib.mathtext import MathTextParser
 from matplotlib.widgets import SubplotTool
 
 import threading
@@ -24,12 +18,9 @@ from itom import uiItem, ui
 
 figureoptions = None
 
-
 def fn_name(): return sys._getframe(1).f_code.co_name
 
 DEBUG = False
-
-
 
 cursord = {
     cursors.MOVE          : 9,
@@ -54,7 +45,6 @@ class Show(ShowBase):
         #QtGui.qApp.exec_()
 
 show = Show()
-
 
 def new_figure_manager( num, *args, **kwargs ):
     """
@@ -377,7 +367,7 @@ class FigureManagerItom( FigureManagerBase ):
             itomUI["focusPolicy"] = 0x2 #QtCore.Qt.ClickFocus
             itomUI.connect("destroyed()", self._widgetclosed)
         
-        image = os.path.join( matplotlib.rcParams['datapath'],'images','matplotlib.png' )
+        #image = os.path.join( matplotlib.rcParams['datapath'],'images','matplotlib.png' )
         #self.window.setWindowIcon(QtGui.QIcon( image ))
 
         self.canvas._destroying = False
@@ -484,13 +474,10 @@ class FigureManagerItom( FigureManagerBase ):
                     pass
                 except:
                     pass
-        #print("----2",file=f)
         del self.itomUI
         self.itomUI = None
-        #print("----3",file=f)
         if self.toolbar: self.toolbar.destroy()
         if DEBUG: print("destroy figure manager (2)")
-        #print("----4",file=f)
         self.canvas.destroy()
         self.canvas._destroying = True
         
@@ -499,7 +486,7 @@ class FigureManagerItom( FigureManagerBase ):
 
     def set_window_title(self, title):
         if(self.embeddedCanvas == False):
-            self.itomUI["windowTitle"] = ("Figure %d" % num)
+            self.itomUI["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
 
 class NavigationToolbar2Itom( NavigationToolbar2 ):
     def __init__(self, figureCanvas, itomUI, embeddedCanvas, coordinates=True):
@@ -517,7 +504,6 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
 
     def _init_toolbar(self):
         self.basedir = os.path.join(matplotlib.rcParams[ 'datapath' ],'images')
-        self.locLabel = None
         
         r = self.itomUI()
         if(not r is None):
@@ -528,12 +514,6 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             r.actionZoomToRect.connect("triggered()", self.zoom)
             r.actionSubplotConfig.connect("triggered()", self.configure_subplots)
             r.actionSave.connect("triggered()", self.save_figure)
-        
-            # Add the x,y location widget at the right side of the toolbar
-            # The stretch factor is 1 which means any resizing of the toolbar
-            # will resize this label instead of the buttons.
-            if(self.coordinates):
-                self.locLabel = r.lblCoordinates
 
         if figureoptions is not None:
             a = self.addAction(self._icon("qt4_editor_options.png"),
@@ -596,14 +576,13 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             self._idle = True
 
     def set_message( self, s ):
-        #ui.msgInformation("Matplotlib", s)
-        if(self.locLabel is not None):
-            self.locLabel["text"] = (s.replace(', ', '\n'))
-        #if self.coordinates:
-        #    self.locLabel["text"] = (s.replace(', ', '\n'))
+        if self.coordinates:
+            r = self.itomUI()
+            if(not r is None):
+                r.call("setLabelText", (s.replace(', ', '\n')))
 
     def set_cursor( self, cursor ):
-            self.canvas.canvas.call("setCursors", cursord[cursor])
+        self.canvas.canvas.call("setCursors", cursord[cursor])
 
     def draw_rubberband( self, event, x0, y0, x1, y1 ):
         if DEBUG: 
@@ -624,9 +603,6 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             self.subplotConfigDialog = SubplotToolItom(self.canvas.figure, self.itomUI(), self.embeddedCanvas)
         
         self.subplotConfigDialog.showDialog()
-
-    #def _get_canvas(self, fig):
-    #    return FigureCanvasQT(fig)
 
     def save_figure(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
@@ -663,16 +639,12 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             itomUI.actionForward["enabled"] = can_forward
     
     def destroy(self):
-        if(not self.locLabel is None):
-            del self.locLabel
-            self.locLabel = None
         del self.canvas #in base class
         self.canvas = None
         
 
 class SubplotToolItom( SubplotTool ):
     def __init__(self, targetfig, itomUI, embeddedCanvas):
-        
         self.targetfig = targetfig
         self.embeddedCanvas = embeddedCanvas        
         self.itomUI = weakref.ref(itomUI)
@@ -736,9 +708,7 @@ class SubplotToolItom( SubplotTool ):
         self.targetfig.subplots_adjust(hspace=val/1000.)
         if self.drawon: self.targetfig.canvas.draw()
 
-
-
-
+        
 FigureManager = FigureManagerItom
 
 

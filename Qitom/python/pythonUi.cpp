@@ -1433,6 +1433,12 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 {
+    //UiItem has no __dict__ attribute and this is no widget either, therefore filter it out and raise an exception
+    if (PyUnicode_CompareWithASCIIString(name, "__dict__") == 0)
+    {
+        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U'", self->objName, name);
+    }
+
     PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name);
     if(ret != NULL)
     {
@@ -1463,10 +1469,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 {
-    int ret = PyObject_GenericSetAttr( (PyObject*)self, name, value );
-
-    //PyErr_SetString(PyExc_TypeError, "It is not possible to assign another widget to the given widget in the user interface.");
-    return ret;
+    return PyObject_GenericSetAttr( (PyObject*)self, name, value );
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1773,6 +1776,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle),Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+
     if(!locker.getSemaphore()->wait(60000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while opening dialog");

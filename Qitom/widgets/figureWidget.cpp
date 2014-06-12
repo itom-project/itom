@@ -473,6 +473,41 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
+RetVal FigureWidget::loadDesignerWidget(int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+{
+    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+    RetVal retval;
+    int idx = areaCol + areaRow * m_cols;
+
+    *canvasWidget = NULL;
+
+    if (dwo)
+    {
+        QWidget *destWidget = prepareWidget(className, areaRow, areaCol, retval);
+
+        if (!retval.containsError() && destWidget)
+        {
+            *canvasWidget = destWidget;
+
+            if (idx == m_curIdx && !retval.containsError())
+            {
+                changeCurrentSubplot(idx);
+            }
+        }
+        else if (retval.containsError())
+        {
+            DELETE_AND_SET_NULL(destWidget);
+        }
+    }
+    else
+    {
+        retval += RetVal(retError, 0, tr("designerWidgetOrganizer is not available").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
 QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, int areaCol, RetVal &retval)
 {
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());

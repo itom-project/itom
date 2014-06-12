@@ -155,7 +155,8 @@ RetVal AbstractFigure::initialize()
             break;
         case AbstractFigure::ModeStandaloneInUi:
             /*figure is contained in an user interface. Then the dock widget is dock with floating mode (default) */
-            addDockWidget(Qt::NoDockWidgetArea, m_propertyDock);
+            addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
+            m_propertyDock->setFloating(true);
             break;
 
         case AbstractFigure::ModeStandaloneWindow:

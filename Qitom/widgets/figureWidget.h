@@ -60,6 +60,8 @@ public:
 #endif
     RetVal liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
 
+    RetVal loadDesignerWidget(int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+
     QWidget *getSubplot(int index) const;
 
     RetVal changeCurrentSubplot(int newIndex);
