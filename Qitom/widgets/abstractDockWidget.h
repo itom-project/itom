@@ -120,6 +120,23 @@ namespace ito
                 } \
             }
 
+            #define QWIDGETPROPSETTERSPECIAL(settername,...) \
+            if (m_docked) \
+            { \
+                QDockWidget::settername(__VA_ARGS__);  \
+            } \
+            else \
+            { \
+                if (m_floatingStyle == floatingWindow) \
+                { \
+                    m_pWindow->settername(__VA_ARGS__); \
+                } \
+                else \
+                { \
+                    QDockWidget::settername(__VA_ARGS__); \
+                } \
+            }
+
             QRect frameGeometry() const;
             const QRect &geometry() const;
             QRect normalGeometry() const;
@@ -263,6 +280,8 @@ namespace ito
                     return QObject::eventFilter(obj,event);
                 }
             };
+
+            //void showEvent(QShowEvent * event);
 
             void init();
 

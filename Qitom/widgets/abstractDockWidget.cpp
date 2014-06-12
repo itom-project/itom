@@ -353,7 +353,15 @@ void AbstractDockWidget::setEnabled(bool enabled)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setVisible(bool visible)
 {
-    QWIDGETPROPSETTER(setVisible, visible)
+    if (visible)
+    {
+        //if undocked, the dock widget should not be shown, only the main window
+        QWIDGETPROPSETTERSPECIAL(setVisible, visible)
+    }
+    else
+    {
+        QWIDGETPROPSETTER(setVisible, visible);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -654,6 +662,21 @@ void AbstractDockWidget::closeEvent (QCloseEvent * event)
 {
     event->accept();
 }
+
+
+////----------------------------------------------------------------------------------------------------------------------------------
+//void AbstractDockWidget::showEvent(QShowEvent * event)
+//{
+//    if (m_floatingStyle == floatingWindow)
+//    {
+//        m_pWindow->settername(__VA_ARGS__);
+//        QDockWidget::settername(__VA_ARGS__);
+//    }
+//    else
+//    {
+//        QDockWidget::settername(__VA_ARGS__);
+//    }
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if python state changed. Sets the specific member variables according to the python transition.
