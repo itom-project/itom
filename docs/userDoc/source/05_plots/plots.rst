@@ -8,7 +8,7 @@ polygon mesh or point cloud structures is not part of the core application but c
 figure window, they can be nested as subplots into one common figure and it is also possible to integrate plots into user-defined widgets and windows
 (see :ref:`qtdesigner`).
 
-Such that the integration into user interfaces, created at runtime by the external Qt Designer application, is feasable, every different type of plot
+Such that the integration into user interfaces, created at runtime by the external Qt Designer application, is feasible, every different type of plot
 is a plugin that implements the interface given by Qt Designer plugins. Therefore you can handle every itom plot as any other widget in Qt Designer, if
 this tool is called by itom.
 
@@ -33,6 +33,7 @@ Content:
    imagePlots
    isometricPlot
    primitives
+   matplotlib
 
 
 There are further custom widgets for the QtDesigner which realized itom specific non-plotting functions. See section :ref:`listCustomDesignerWidgets` for the widget description.

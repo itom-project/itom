@@ -77,6 +77,8 @@ Please consider that the original source code has been changed such that the fir
     
     If the figure does not appear, the matplotlib designer widget for |itom| is not available. This means, the library **matplotlibPlot** in the **designer** folder of |itom| is missing.
     
+Further examples from the official matplotlib gallery are contained in the itom subfolder **demo/matplotlib**.
+    
 Embedding a matplotlib figure in your own user interface
 ---------------------------------------------------------
 
@@ -189,5 +191,15 @@ The you have the reference to the figure-instance of *matplotlib* and can go one
         plt.close(3)
     
     is used to firstly delete the matplotlib-figure with handle *3* once the script is re-executed.
+
+.. note::
+    
+    Usually, *matplotlib* is allowed changing the size of the output window. The window is then forced to have a new size that can afterwards
+    be manually resized. If your output widget is embedded in an user interface, this behaviour might be undesired. Then disable it by setting
+    the property **forceWindowResize** to **False**. In the example above this can be done by::
+        
+        gui.plot["forceWindowResize"] = False
+    
+    or by directlly setting the corresponding property when designing the user interface in QtDesigner.
 
 This example is contained in the **demo/ui/embeddedMatplotlib** folder.
