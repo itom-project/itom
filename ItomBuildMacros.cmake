@@ -133,10 +133,12 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     set (QT5_FOUND FALSE)
         
     IF (DETECT_QT5)
+		
         #TRY TO FIND QT5
         find_package(Qt5 COMPONENTS Core QUIET)
         
         if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+			
 	        #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core QUIET)
             IF (NOT Qt5Core_FOUND)

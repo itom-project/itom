@@ -35,7 +35,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
     
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core Xml)
+FIND_PACKAGE_QT(ON Core Xml PrintSupport Svg Designer)
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
@@ -125,11 +125,10 @@ endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
 
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
+
 IF (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
-    qt5_use_modules(${target_name} Core Xml)
-ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
 # COPY SECTION
