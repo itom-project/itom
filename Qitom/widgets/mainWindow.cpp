@@ -711,6 +711,9 @@ void MainWindow::createMenus()
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
 //    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
+    
+    //linux: allow the menu to be in the native menu bar of the operating system
+    menuBar()->setNativeMenuBar(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

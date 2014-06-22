@@ -114,6 +114,7 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     m_actStayOnTopOfApp = new QAction(tr("stay on top of main window"), this);
     m_actStayOnTopOfApp->setCheckable(true);
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -145,6 +146,8 @@ void AbstractDockWidget::init()
     m_pWindow->installEventFilter(this);
 
     m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
+    
+    m_pWindow->menuBar()->setNativeMenuBar(true);
     
     setWidget(m_pWindow);
 
@@ -732,6 +735,8 @@ void AbstractDockWidget::dockWidget()
     {
         m_lastUndockedSize = m_pWindow->geometry();
     }
+    
+    m_pWindow->menuBar()->setNativeMenuBar(false); //linux: remove menu bar from native menu bar of OS (since the menu sometimes replaces the menu of main window)
 
     m_docked = true;
     
@@ -785,6 +790,7 @@ void AbstractDockWidget::undockWidget()
 
     if (m_floatingStyle == floatingWindow)
     {
+        m_pWindow->menuBar()->setNativeMenuBar(true);
         m_pWindow->menuBar()->show();
         if (m_actDock) m_actDock->setVisible(true);
         if (m_actUndock) m_actUndock->setVisible(false);
