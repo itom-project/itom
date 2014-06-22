@@ -148,6 +148,8 @@ protected:
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
+    void connectNotify(const char* signal);
+
 private:
     static PythonEngine *getInstanceInternal();
 
@@ -162,8 +164,6 @@ private:
 
     ito::RetVal pickleDictionary(PyObject *dict, QString filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite);
-    ito::RetVal saveDictAsMatlab(PyObject *dict, QString filename);
-    ito::RetVal loadMatlabToDict(PyObject *destinationDict, QString filename);
 
     //methods for maintaining python functionality
     ito::RetVal addMethodToModule(PyMethodDef* def);
@@ -183,8 +183,11 @@ private:
     ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
     ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
 
+    
+    ito::RetVal autoReloaderCheck();
+
     //member variables
-    bool started;
+    bool m_started;
     QString m_itomMemberClasses;
 
     //PyGILState_STATE threadState;
@@ -224,6 +227,18 @@ private:
     // decides if itom is automatically included in every source file before it´s handed to the syntax checker
     bool m_includeItom;
 
+    struct AutoReload
+    {
+        PyObject *modAutoReload;
+        PyObject *classAutoReload;
+        bool enabled;
+        bool checkFileExec;
+        bool checkStringExec;
+        bool checkFctExec;
+    };
+
+    AutoReload m_autoReload;
+
     //!< debugger functionality
     static PyMethodDef PyMethodItomDbg[];
     static PyModuleDef PyModuleItomDbg;
@@ -258,6 +273,7 @@ signals:
 
     void pythonSetCursor(const Qt::CursorShape cursor);
     void pythonResetCursor();
+    void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
 public slots:
     void pythonRunString(QString cmd);
@@ -269,6 +285,8 @@ public slots:
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
     void pythonInterruptExecution() const;
     void pythonDebugCommand(tPythonDbgCmd cmd);
+
+    void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
     // Settings are neccesary for automatic itom inclusion and syntax check
     void readSettings();

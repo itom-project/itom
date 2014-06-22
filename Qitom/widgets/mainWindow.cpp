@@ -79,6 +79,7 @@ MainWindow::MainWindow() :
     m_pMenuHelp(NULL),
     m_pMenuFile(NULL),
     m_pMenuPython(NULL),
+    m_pMenuReloadModule(NULL),
     m_pMenuView(NULL),
     m_pHelpSystem(NULL),
     m_statusLblCurrentDir(NULL),
@@ -263,6 +264,11 @@ MainWindow::MainWindow() :
     createStatusBar();
     updatePythonActions();
 
+    if (pyEngine)
+    {
+        connect(pyEngine, SIGNAL(pythonAutoReloadChanged(bool,bool,bool,bool)), this, SLOT(pythonAutoReloadChanged(bool,bool,bool,bool)));
+        connect(this, SIGNAL(pythonSetAutoReloadSettings(bool,bool,bool,bool)), pyEngine, SLOT(setAutoReloader(bool,bool,bool,bool)));
+    }
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
@@ -507,6 +513,7 @@ void MainWindow::moveEvent(QMoveEvent * event)
 void MainWindow::createActions()
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    QAction *a = NULL;
 
     //app actions
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
@@ -546,52 +553,68 @@ void MainWindow::createActions()
 
     if (uOrg->hasFeature(featDeveloper))
     {
-        m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
-        connect(m_actions["open_assistant"] , SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
-        m_actions["open_assistant"]->setShortcut(QKeySequence::HelpContents);
+        a = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+        a->setShortcut(QKeySequence::HelpContents);
+        connect(a , SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
 
-        m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
-        connect(m_actions["script_reference"] , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
+        a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
+        connect(a , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
 
-        m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
-        connect(m_actions["open_designer"], SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
+        a = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
-        m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
-        m_actions["python_global_runmode"]->setToolTip(tr("set whether internal python code should be executed in debug mode"));
-        m_actions["python_global_runmode"]->setCheckable(true);
+        a = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
+        a->setToolTip(tr("set whether internal python code should be executed in debug mode"));
+        a->setCheckable(true);
         if (pyEngine)
         {
-            m_actions["python_global_runmode"]->setChecked(pyEngine->execInternalCodeByDebugger());
+            a->setChecked(pyEngine->execInternalCodeByDebugger());
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
-        m_actions["python_stopAction"]->setShortcut(tr("Shift+F10"));
-        m_actions["python_stopAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(m_actions["python_stopAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
+        a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
+        a->setShortcut(tr("Shift+F10"));
+        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
-        m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
-        m_actions["python_continueAction"]->setShortcut(tr("F6"));
-        m_actions["python_continueAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(m_actions["python_continueAction"], SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
+        a = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
+        a->setShortcut(tr("F6"));
+        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
         m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
         m_actions["python_stepAction"]->setShortcut(tr("F11"));
         m_actions["python_stepAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
-        m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
-        m_actions["python_stepOverAction"]->setShortcut(tr("F10"));
-        m_actions["python_stepOverAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(m_actions["python_stepOverAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
+        a = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
+        a->setShortcut(tr("F10"));
+        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
-        m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
-        m_actions["python_stepOutAction"]->setShortcut(tr("Shift+F11"));
-        m_actions["python_stepOutAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        connect(m_actions["python_stepOutAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
+        a = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
+        a->setShortcut(tr("Shift+F11"));
+        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
-        m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
-        connect(m_actions["python_reloadModules"], SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
+        a = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
+
+        a = m_actions["py_autoReloadEnabled"] = new QAction(tr("autoreload modules"), this);
+        a->setCheckable(true);
+        connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
+
+        a = m_actions["py_autoReloadFile"] = new QAction(tr("autoreload before script execution"), this);
+        a->setCheckable(true);
+        connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
+
+        a = m_actions["py_autoReloadCmd"] = new QAction(tr("autoreload before single command"), this);
+        a->setCheckable(true);
+        connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
+
+        a = m_actions["py_autoReloadFunc"] = new QAction(tr("autoreload before events and function calls"), this);
+        a->setCheckable(true);
+        connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
     }
 }
 
@@ -667,8 +690,16 @@ void MainWindow::createMenus()
         m_pMenuPython->addAction(m_actions["python_stepOutAction"]);
         m_pMenuPython->addSeparator();
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
-        m_pMenuPython->addSeparator();
-        m_pMenuPython->addAction(m_actions["python_reloadModules"]);
+        
+
+        m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload modules"));
+        m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);
+        m_pMenuReloadModule->addSeparator();
+        m_pMenuReloadModule->addAction(m_actions["py_autoReloadFile"]);
+        m_pMenuReloadModule->addAction(m_actions["py_autoReloadCmd"]);
+        m_pMenuReloadModule->addAction(m_actions["py_autoReloadFunc"]);
+        m_pMenuReloadModule->addSeparator();
+        m_pMenuReloadModule->addAction(m_actions["python_reloadModules"]);
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
@@ -1525,6 +1556,16 @@ void MainWindow::mnuPyReloadModules()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuPyAutoReloadTriggered(bool checked)
+{
+    bool enabled = m_actions["py_autoReloadEnabled"]->isChecked();
+    bool checkFile = m_actions["py_autoReloadFile"]->isChecked();
+    bool checkCmd = m_actions["py_autoReloadCmd"]->isChecked();
+    bool checkFct = m_actions["py_autoReloadFunc"]->isChecked();
+    emit pythonSetAutoReloadSettings(enabled, checkFile, checkCmd, checkFct);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowLoadedPlugins()
 {
     DialogLoadedPlugins *dlgLoadedPlugins = new DialogLoadedPlugins(this);
@@ -1566,6 +1607,21 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
     {
         w->setInfoText(text);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct)
+{
+    m_actions["py_autoReloadEnabled"]->setChecked(enabled);
+
+    m_actions["py_autoReloadFile"]->setChecked(checkFile);
+    m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
+    m_actions["py_autoReloadFunc"]->setChecked(checkFct);
+
+    m_actions["py_autoReloadFile"]->setEnabled(enabled);
+    m_actions["py_autoReloadCmd"]->setEnabled(enabled);
+    m_actions["py_autoReloadFunc"]->setEnabled(enabled);
+
 }
 
 } //end namespace ito

@@ -2026,6 +2026,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     //Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyProcessEvents(PyObject* /*pSelf*/)
 {
     QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -2037,6 +2038,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyGetDebugger(PyObject* /*pSelf*/)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -2049,6 +2051,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyGCStartTracking(PyObject * /*pSelf*/)
 {
     PyObject *gc = PyImport_AddModule("gc"); //borrowed ref
@@ -2084,6 +2087,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyGCEndTracking(PyObject * /*pSelf*/)
 {
     PyObject *gc = PyImport_AddModule("gc"); //borrowed ref
@@ -2141,6 +2145,73 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoReloader_doc,"autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules \n\
+\n\
+Use this method to enable or disable (and configure) a tool that automatically tries to reload imported modules and their submodules if they have changed \n\
+since the last run. \n\
+\n\
+Returns \n\
+------- \n\
+enable : {bool} \n\
+    The auto-reload tool is loaded if it is enabled for the first time. If it is disabled, \n\
+    it does not check changes of any imported modules. \n\
+checkFileExec : {bool} \n\
+    If True (default) and auto-reload enabled, a check for modifications is executed whenever a script is executed \n\
+checkCmdExec : {bool} \n\
+    If True (default) and auto-reload enabled, a check for modifications is executed whenever a command in the command line is executed \n\
+checkFctExec : {bool} \n\
+    If True and auto-reload enabled, a check for modifications is executed whenever a function or method is run (e.g. by an event or button click) (default: False)\n\
+\n\
+Notes \n\
+------- \n\
+This tool is inspired by and based on the IPython extension 'autoreload'. \n\
+\n\
+Reloading Python modules in a reliable way is in general difficult, \n\
+and unexpected things may occur. ``autoReloader`` tries to work around \n\
+common pitfalls by replacing function code objects and parts of \n\
+classes previously in the module with new versions. This makes the \n\
+following things to work: \n\
+ \n\
+- Functions and classes imported via 'from xxx import foo' are upgraded \n\
+  to new versions when 'xxx' is reloaded. \n\
+\n\
+- Methods and properties of classes are upgraded on reload, so that \n\
+  calling 'c.foo()' on an object 'c' created before the reload causes \n\
+  the new code for 'foo' to be executed. \n\
+ \n\
+Some of the known remaining caveats are: \n\
+ \n\
+- Replacing code objects does not always succeed: changing a @property \n\
+  in a class to an ordinary method or a method to a member variable \n\
+  can cause problems (but in old objects only). \n\
+ \n\
+- Functions that are removed (eg. via monkey-patching) from a module \n\
+  before it is reloaded are not upgraded. \n\
+ \n\
+- C extension modules cannot be reloaded, and so cannot be autoreloaded.");
+/*static*/ PyObject* PythonItom::PyAutoReloader(PyObject* pSelf, PyObject *args, PyObject *kwds)
+{
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    if (pyEngine)
+    {
+        const char *kwlist[] = {"filterName", "dictionary", "furtherInfos", NULL};
+
+        int enabled = 0;
+        int checkFile = 1;
+        int checkCmd = 1;
+        int checkFct = 0;
+
+        if (!PyArg_ParseTupleAndKeywords(args, kwds,"i|iii", const_cast<char**>(kwlist), &enabled, &checkFile, &checkCmd, &checkFct))
+        {
+            return NULL;
+        }
+
+        pyEngine->setAutoReloader(enabled, checkFile, checkCmd, checkFct);
+    }
+
+    Py_RETURN_NONE;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> returns dictionary with information about all available screens. \n\
@@ -3461,6 +3532,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"userIsDeveloper", (PyCFunction)PythonItom::userCheckIsDeveloper, METH_NOARGS, pyCheckIsDeveloper_doc},
     {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
     {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
+    {"autoReloader", (PyCFunction)PythonItom::PyAutoReloader, METH_VARARGS | METH_KEYWORDS, autoReloader_doc},
     {NULL, NULL, 0, NULL}
 };
 

@@ -22,6 +22,7 @@ itom.actuator.showConfiguration() -> show configuration dialog of the plugin
 itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom.
+itom.autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules
 itom.checkSignals
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.compressData

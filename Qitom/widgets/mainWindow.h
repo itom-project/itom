@@ -106,6 +106,7 @@ private:
     QMenu *m_pMenuHelp;
     QMenu *m_pMenuFile;
     QMenu *m_pMenuPython;
+    QMenu *m_pMenuReloadModule;
     QMenu *m_pMenuView;
 
     HelpSystem *m_pHelpSystem;
@@ -124,6 +125,7 @@ private:
 signals:
     void mainWindowCloseRequest();  /*!<  signal emitted if user would like to close the main window and therefore the entire application */
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
+    void pythonSetAutoReloadSettings(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
 public slots:
     void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
@@ -168,10 +170,14 @@ private slots:
     void mnuPyReloadModules();
     void mnuShowLoadedPlugins();
 
+    void mnuPyAutoReloadTriggered(bool checked);
+
     void helpAssistantError ( QProcess::ProcessError error );
     void designerError ( QProcess::ProcessError error );
 
     void userDefinedActionTriggered(const QString &pythonCode);
+
+    void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
     //void mnuRestore()
     //{

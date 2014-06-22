@@ -100,6 +100,8 @@ public:
     static PyObject* PyGCEndTracking(PyObject *pSelf);
     //static PyObject* PyGetGlobalDict(PyObject *pSelf);
 
+    static PyObject* PyAutoReloader(PyObject* pSelf, PyObject *args, PyObject *kwds);
+
     static PyObject* PyGetScreenInfo(PyObject* pSelf);
 
     static PyObject* getDefaultScaleableUnits(PyObject* pSelf);
