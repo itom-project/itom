@@ -1352,6 +1352,28 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
             }
         }
     }
+    else if (type == ito::tRGBA32)
+    {
+        for(int i = 0 ; i < numMats ; i++)
+        {
+            planeSize = planes[i].size();
+
+            if((int)planeSize.height != sizey || (int)planeSize.width != sizex)
+            {
+                cv::error(cv::Exception(CV_BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.", "", __FILE__, __LINE__));
+            }
+
+            if(planes[i].channels() != 4)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "at least one cv::Mat-plane has not four channels (RGBA type).", "", __FILE__, __LINE__));
+            }
+
+            if((planes[i].elemSize1()*4) != requiredElemSize)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
+            }
+        }
+    }
     else
     {
         for(int i = 0 ; i < numMats ; i++)
