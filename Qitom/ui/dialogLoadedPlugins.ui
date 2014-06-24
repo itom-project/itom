@@ -21,19 +21,106 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="onlyComnpatibelCheck">
+          <property name="text">
+           <string>Only display compatible plugins (debug / release)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="collapseButton">
+          <property name="text">
+           <string>Collapse all</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="expandButton">
+          <property name="text">
+           <string>Expand all</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QTreeWidget" name="tree">
+        <property name="rootIsDecorated">
+         <bool>true</bool>
+        </property>
+        <property name="columnCount">
+         <number>6</number>
+        </property>
         <attribute name="headerVisible">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="headerCascadingSectionResizes">
          <bool>false</bool>
+        </attribute>
+        <attribute name="headerDefaultSectionSize">
+         <number>21</number>
+        </attribute>
+        <attribute name="headerMinimumSectionSize">
+         <number>21</number>
+        </attribute>
+        <attribute name="headerShowSortIndicator" stdset="0">
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
           <string notr="true">1</string>
          </property>
         </column>
+        <column>
+         <property name="text">
+          <string notr="true">2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">4</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">5</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">6</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="lblText">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -43,6 +130,9 @@
        </widget>
       </item>
      </layout>
+     <zorder>tree</zorder>
+     <zorder>lblText</zorder>
+     <zorder></zorder>
     </widget>
    </item>
    <item>
@@ -198,34 +288,34 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>DialogLoadedPlugins</receiver>
-   <slot>accept()</slot>
+   <sender>collapseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>tree</receiver>
+   <slot>collapseAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>236</x>
-     <y>454</y>
+     <x>481</x>
+     <y>44</y>
     </hint>
     <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
+     <x>309</x>
+     <y>169</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>DialogLoadedPlugins</receiver>
-   <slot>reject()</slot>
+   <sender>expandButton</sender>
+   <signal>clicked()</signal>
+   <receiver>tree</receiver>
+   <slot>expandAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>454</y>
+     <x>562</x>
+     <y>44</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>309</x>
+     <y>169</y>
     </hint>
    </hints>
   </connection>

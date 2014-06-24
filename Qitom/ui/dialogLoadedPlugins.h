@@ -47,6 +47,7 @@ public:
 protected:
     void init();
     void filter();
+    void setSortChar(int column, QTreeWidgetItem &item);
     
     Ui::DialogLoadedPlugins ui;
     QList<PluginLoadStatus> m_content;
@@ -59,6 +60,7 @@ protected:
     QString m_cmdIgnored;
 
 private slots:
+    void on_onlyComnpatibelCheck_clicked(bool /*value*/) { filter(); };
     void on_cmdError_clicked(bool /*value*/) { filter(); };
     void on_cmdWarning_clicked(bool /*value*/) { filter(); };
     void on_cmdMessage_clicked(bool /*value*/) { filter(); };

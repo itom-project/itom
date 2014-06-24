@@ -25,6 +25,7 @@
 #include "../AppManagement.h"
 #include "../organizer/addInManager.h"
 #include "../organizer/designerWidgetOrganizer.h"
+#include "qmath.h"
 
 #include <qfileinfo.h>
 
@@ -46,7 +47,10 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     init();
     filter();
 
-    ui.tree->expandAll();
+    ui.tree->setSortingEnabled(true);
+    ui.tree->sortByColumn(5);
+
+    ui.tree->collapseAll();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -70,6 +74,11 @@ void DialogLoadedPlugins::init()
         m_content.append(dwo->getPluginLoadStatus());
     }
 
+    ui.tree->setColumnWidth(0, 42);
+    QStringList headers;
+    headers << "" << "i" << "w" << "e" << "ign" << "DLL / Plugin";
+    ui.tree->setHeaderLabels(headers);
+
     m_windowTitle = ui.groupBox_2->title();
     m_cmdMessage = ui.cmdMessage->text();
     m_cmdWarning = ui.cmdWarning->text();
@@ -80,97 +89,216 @@ void DialogLoadedPlugins::init()
     {
         int overallStatus = 0;
         QFileInfo info(item.filename);
-        const QPair<ito::tPluginLoadStatusFlag, QString> *message;
+        const QPair<ito::PluginLoadStatusFlags, QString> *message;
         QTreeWidgetItem *child = NULL;
 
         QTreeWidgetItem *plugin = new QTreeWidgetItem();
-        plugin->setData(0, Qt::DisplayRole, info.fileName());
-        plugin->setData(0, Qt::ToolTipRole, info.absoluteFilePath());
+        plugin->setData(5, Qt::DisplayRole, info.fileName());
+        plugin->setData(5, Qt::ToolTipRole, info.absoluteFilePath());
         plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info));
+        QColor bckRnd = QColor(0xB4,0xCD,0xCD);
+        plugin->setBackgroundColor(0, bckRnd);
+        plugin->setBackgroundColor(1, bckRnd);
+        plugin->setBackgroundColor(2, bckRnd);
+        plugin->setBackgroundColor(3, bckRnd);
+        plugin->setBackgroundColor(4, bckRnd);
+        plugin->setBackgroundColor(5, bckRnd);
+        bool pluginOK = true;
+
+        QChar sortElement = ' '; // This character is only in a column if there is an icon... this makes it easy to sort with the standard function
 
         for (int i = 0; i < item.messages.size(); i++)
         {
             message = &(item.messages[i]);
-            if (message->first == ito::plsfOk)
-            {
-//                overallStatus |= ito::retError * 2; //retOk is 0, that is bad, therefore use another value for retOk
-                overallStatus |= 8; //retOk is 0, that is bad, therefore use another value for retOk
-            }
-            else
-            {
-                overallStatus |= message->first;
-            }
+            
+            overallStatus |= message->first;
 
             child = new QTreeWidgetItem(plugin);
-            child->setData(0, Qt::DisplayRole, message->second);
-            child->setData(0, Qt::ToolTipRole, message->second);
-            if (message->first == ito::plsfOk)
+            child->setData(5, Qt::DisplayRole, message->second);
+            child->setData(5, Qt::ToolTipRole, message->second);
+            child->setIcon(5, QIcon());
+            if (message->first & ito::plsfOk)
             {
-                child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-information-4.png"));
+                child->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
+                setSortChar(1, *child);
                 m_items.append(QPair<int,QTreeWidgetItem*>(8, child)); //plsfOk is 0, that is bad, therefore use another value for retOk
             }
-            else if (message->first == ito::plsfWarning)
+            else if (message->first & ito::plsfWarning)
             {
-                child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-warning-4.png"));
+                child->setIcon(2,  QIcon(":/application/icons/dialog-warning-4.png"));
+                setSortChar(2, *child);
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfWarning, child));
+                plugin->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
+                setSortChar(2, *plugin);
+                pluginOK = false;
             }
-            else if (message->first == ito::plsfIgnored)
+            else if (message->first & ito::plsfIgnored)
             {
-                child->setData(0, Qt::DecorationRole, QIcon(":/plugins/icons_m/ignored.png"));
+                child->setIcon(4,  QIcon(":/plugins/icons_m/ignored.png"));
+                setSortChar(4, *child);
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfIgnored, child));
+                plugin->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
+                setSortChar(4, *plugin);
+                pluginOK = false;
             }
             else
             {
-                child->setData(0, Qt::DecorationRole, QIcon(":/application/icons/dialog-error-4.png"));
+                child->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
+                setSortChar(3, *child);
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfError, child));
+                plugin->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
+                setSortChar(3, *plugin);
+                pluginOK = false;
             }
         }
-        
+
+        if (pluginOK)
+        {
+            plugin->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
+            setSortChar(1, *plugin);
+        }
         m_items.append(QPair<int,QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogLoadedPlugins::setSortChar(int column, QTreeWidgetItem &item)
+{
+    // This is a little workaround to use the standard sort functions 
+    // of QTreeWidget. The sort-function normally does not sort icons. 
+    // By adding a space character to all columns without an icon
+    // the column with an icon is above the ones with spaces.
+    QChar sortElement = ' ';
+    switch(column)
+    {
+        case 1:
+        {
+            //item.setText(1, sortElement);
+            item.setText(2, sortElement);
+            item.setText(3, sortElement);
+            item.setText(4, sortElement);
+            break;
+        }
+        case 2:
+        {
+            item.setText(1, sortElement);
+            //item.setText(2, sortElement);
+            item.setText(3, sortElement);
+            item.setText(4, sortElement);
+            break;
+        }
+        case 3:
+        {
+            item.setText(1, sortElement);
+            item.setText(2, sortElement);
+            //item.setText(3, sortElement);
+            item.setText(4, sortElement);
+            break;
+        }
+        case 4:
+        {
+            item.setText(1, sortElement);
+            item.setText(2, sortElement);
+            item.setText(3, sortElement);
+            //item.setText(4, sortElement);
+            break;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::filter()
 {
-    int stateCount[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // we need 1: plsfWarning, 2: plsfError, 4: plsfIgnored, 8: plsfOk
+    int stateCount[4] = { 0, 0, 0, 0}; // we need 1: plsfOK, 2: plsfWarning, 4: plsfError, 8: plsfIgnored
 
-    int flag = ui.cmdMessage->isChecked() * 8 + 
-                ui.cmdWarning->isChecked() * ito::plsfWarning +
-                ui.cmdError->isChecked() * ito::plsfError +
-                ui.cmdIgnored->isChecked() * ito::plsfIgnored;
+    int flag = 0;
+    flag = ui.cmdMessage->isChecked() * ito::plsfOk      + 
+           ui.cmdWarning->isChecked() * ito::plsfWarning +
+           ui.cmdError->isChecked()   * ito::plsfError   +
+           ui.cmdIgnored->isChecked() * ito::plsfIgnored;
 
     bool filterEditNotEmpty = ui.filterEdit->text() != "";
     QString filterEditText = "*" + ui.filterEdit->text() + "*";
     QRegExp rx(filterEditText, Qt::CaseInsensitive, QRegExp::Wildcard);
 
-    for (int i = m_items.size() - 1; i >= 0; i--)
+    for (int i = 0; i < m_items.size(); i++)
     {
-        bool hiddenItem = false;
-        if (filterEditNotEmpty)
-        {
-            if (m_items[i].second->parent())
+        bool show = false;
+         
+        // check if button is active for this type of message
+        if ((m_items[i].first & flag) != 0)
+        { 
+            // Is compability checkbox set?
+            if (ui.onlyComnpatibelCheck->checkState())
             {
-                hiddenItem = m_items[i].second->parent()->isHidden();
+                if ((m_items[i].first & ito::plsfRelDbg) != 0) // if (dbg is incompatibel) (flag = 0)
+                {
+                    // show stays false: Debug is incompatibel
+                }
+                else
+                {
+                    show = true;
+                }
             }
+            // It´s not, show the item
             else
             {
-                hiddenItem = !rx.exactMatch(m_items[i].second->text(0));
+                show = true;
             }
         }
-
-        m_items[i].second->setHidden(!(m_items[i].first & flag) || hiddenItem);
-        if (m_items[i].second->parent() && !m_items[i].second->isHidden())
-        {
-            stateCount[m_items[i].first]++;
+        else
+        { 
+            // show stays false
         }
+
+        m_items[i].second->setHidden(!show);
+
+        // Count the item if it has a parent and is not hidden
+        if (m_items[i].second->parent() && show)
+        {
+            stateCount[int(log(double((m_items[i].first & 0xF)))/log(double(2)))]++;
+        }
+
+
+
+        //// show compatible items if ( ... && 0 = no conflict, 1 = conflict)
+        //if (!ui.onlyComnpatibelCheck->checkState() || !(m_items[i].first & ito::plsfRelDbg) != 0) 
+        //{
+        //    hideItem = false;
+        //}
+        //else if (filterEditNotEmpty && hideItem) // If TextSearch is used and item is not hidden
+        //{
+        //    if (m_items[i].second->parent())
+        //    {
+        //        // if item has parent, set the parent hide status
+        //        if (!m_items[i].second->parent()->isHidden())
+        //        {
+        //            hideItem = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // if not, check if the filter search matches ... if not, hide it 
+        //        if (rx.exactMatch(m_items[i].second->text(5)))
+        //        {
+        //            hideItem = false;
+        //        }
+        //    }
+        //}
+
+
+
+        //// Hide the item
+        //m_items[i].second->setHidden(hideItem);
+
+
     }
-    ui.groupBox_2->setTitle(QString("%1 (%2)").arg(m_windowTitle).arg(stateCount[8] + stateCount[1] + stateCount[2] + stateCount[4]));
-    ui.cmdMessage->setText(QString("%1 (%2)").arg(m_cmdMessage).arg(stateCount[8]));
-    ui.cmdWarning->setText(QString("%1 (%2)").arg(m_cmdWarning).arg(stateCount[1]));
-    ui.cmdError->setText(QString("%1 (%2)").arg(m_cmdError).arg(stateCount[2]));
-    ui.cmdIgnored->setText(QString("%1 (%2)").arg(m_cmdIgnored).arg(stateCount[4]));
+    ui.groupBox_2->setTitle(QString("%1 (%2)").arg(m_windowTitle).arg(stateCount[0] + stateCount[1] + stateCount[2] + stateCount[3]));
+    ui.cmdMessage->setText(QString("%1 (%2)").arg(m_cmdMessage).arg  (stateCount[0]));
+    ui.cmdWarning->setText(QString("%1 (%2)").arg(m_cmdWarning).arg  (stateCount[1]));
+    ui.cmdError->setText(QString("%1 (%2)").arg(m_cmdError).arg      (stateCount[2]));
+    ui.cmdIgnored->setText(QString("%1 (%2)").arg(m_cmdIgnored).arg  (stateCount[3]));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -179,7 +307,7 @@ void DialogLoadedPlugins::on_tree_itemSelectionChanged()
     QList<QTreeWidgetItem*> items = ui.tree->selectedItems();
     if (items.size() >= 1)
     {
-        ui.lblText->setText(items[0]->data(0, Qt::ToolTipRole).toString());
+        ui.lblText->setText(items[0]->data(5, Qt::ToolTipRole).toString());
     }
     else
     {

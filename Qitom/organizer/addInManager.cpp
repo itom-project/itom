@@ -344,7 +344,7 @@ namespace ito
                     {
                         message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
                         qDebug() << message;
-                        pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     }
                     else
                     {
@@ -356,7 +356,7 @@ namespace ito
     //                message = QObject::tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
                     message = QObject::tr("Unable to find translation file.");
                     qDebug() << message;
-                    pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
+                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
                 }
             }
 
@@ -400,7 +400,7 @@ namespace ito
                         message = QObject::tr("AddIn with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
                         //retValue += RetVal(retError, 1003, message.toLatin1().data());
-                        pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         break;
                     }
                     m_pluginLoadStatus.append(pls);
@@ -441,7 +441,7 @@ namespace ito
                     }
                     qDebug() << message;
                     //retValue += RetVal(retError, 1003, message.toLatin1().data());
-                    pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
 
 //                    delete plugin;
@@ -459,7 +459,7 @@ namespace ito
                     message = QObject::tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
                     pls.filename = filename;
-                    pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfIgnored, message));
+                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfIgnored, message));
                     m_pluginLoadStatus.append(pls);
                 }
                 else
@@ -472,7 +472,8 @@ namespace ito
                         message = QObject::tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
                         pls.filename = filename;
-                        pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
+                        ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
                         m_pluginLoadStatus.append(pls);
                     }
                     else
@@ -481,7 +482,7 @@ namespace ito
                         qDebug() << message;
                         //retValue += RetVal(retError, 1003, message.toLatin1().data());
                         pls.filename = filename;
-                        pls.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         m_pluginLoadStatus.append(pls);
                     }
                 }
@@ -499,12 +500,12 @@ namespace ito
         if (!m_addInListDataIO.contains(plugin))
         {
             m_addInListDataIO.append(plugin);
-            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, QObject::tr("%1 (DataIO) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, QObject::tr("%1 (DataIO) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (DataIO) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
     }
@@ -515,12 +516,12 @@ namespace ito
         if (!m_addInListAct.contains(plugin))
         {
             m_addInListAct.append(plugin);
-            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, QObject::tr("%1 (Actuator) loaded").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, QObject::tr("%1 (Actuator) loaded").arg(plugin->objectName())));
             return retOk;
         }
         else
         {
-            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
+            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfWarning, QObject::tr("Plugin %1 (Actuator) already exists. Duplicate rejected.").arg(plugin->objectName())));
             return retWarning;
         }
     }
@@ -542,7 +543,7 @@ namespace ito
                 message = QObject::tr("error initializing plugin: %1").arg(plugin->objectName());
                 qDebug() << message;
                 retValue += RetVal(retError, 1002, message.toLatin1().data());
-                pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
             }
             else
             {
@@ -565,7 +566,7 @@ namespace ito
                         message = QObject::tr("Filter '%1' rejected since a filter with the same name already exists in global filter list").arg(it.key());
                         qDebug() << message;
                         retValue += RetVal(retWarning, 1004, message.toLatin1().data());
-                        pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, message));
+                        pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfWarning, message));
                     }
                     else
                     {
@@ -598,7 +599,7 @@ namespace ito
                                 fd->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                                 fd->m_name = it.key();
                                 m_filterList.insert(it.key(), fd);
-                                pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, QObject::tr("Filter %1 loaded").arg(it.key())));
+                                pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, QObject::tr("Filter %1 loaded").arg(it.key())));
 
                                 if (tags.size() == 0) tags.append("");
                                 foreach (const QString &tag, tags)
@@ -618,7 +619,7 @@ namespace ito
                                     message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded.";
                                 }
                                 qDebug() << message;
-                                pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                                pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                             }
                         }
                         else if (validRet.containsError() || fd->m_interface != 0) //the !=0 check is only to make sure that we always get into that case if the filter is somehow wrong
@@ -633,7 +634,7 @@ namespace ito
                                 message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface.";
                             }
                             qDebug() << message;
-                            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                         }
                     }
                     ++it;
@@ -679,7 +680,7 @@ namespace ito
                             ad->m_pBasePlugin = ain; //put pointer to corresponding AddInInterfaceBase to this filter
                             ad->m_name = jt.key();
                             m_algoWidgetList.insert(jt.key(), ad);
-                            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, QObject::tr("Widget %1 loaded").arg(jt.key())));
+                            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, QObject::tr("Widget %1 loaded").arg(jt.key())));
                         }
                         else if (validRet.containsError())
                         {
@@ -693,7 +694,7 @@ namespace ito
                                 message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface.";
                             }
                             qDebug() << message;
-                            pluginLoadStatus.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                            pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                         }
                     }
                     ++jt;

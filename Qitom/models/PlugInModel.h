@@ -38,11 +38,14 @@ namespace ito
     */
     enum tPluginLoadStatusFlag
     {
-        plsfOk       = 0x0,  /*!< ok */ 
-        plsfWarning  = 0x1,  /*!< warning */ 
-        plsfError    = 0x2,  /*!< error */ 
-        plsfIgnored  = 0x4   /*!< ignored */ 
+        plsfOk       = 0x001,  /*!< ok */ 
+        plsfWarning  = 0x002,  /*!< warning */ 
+        plsfError    = 0x004,  /*!< error */ 
+        plsfIgnored  = 0x008,  /*!< ignored */
+        plsfRelDbg   = 0x100   /*!< is Dbg version */
     };
+    Q_DECLARE_FLAGS(PluginLoadStatusFlags, tPluginLoadStatusFlag)
+    
 
     /*!
         \class PluginLoadStatus
@@ -52,7 +55,7 @@ namespace ito
     {
         PluginLoadStatus() : filename("") {}
         QString filename;
-        QList< QPair<tPluginLoadStatusFlag, QString> > messages;
+        QList< QPair<ito::PluginLoadStatusFlags, QString> > messages;
     };
 
     /** @class PlugInModel

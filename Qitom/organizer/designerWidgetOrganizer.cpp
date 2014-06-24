@@ -176,7 +176,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     {
                         message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
                         qDebug() << message;
-                        status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfError, message));
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     }
                     else
                     {
@@ -187,7 +187,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 {
                     message = QObject::tr("Unable to find translation file.");
                     qDebug() << message;
-                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(plsfWarning, message));
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
                 }
             }
 
@@ -204,11 +204,12 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
                 if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
                 {
-                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfWarning, message));
+                    ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
                 }
                 else
                 {
-                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                 }
                 
                 DELETE_AND_SET_NULL(loader);
@@ -249,14 +250,14 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
 
                         message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
-                        status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfOk, message));
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
                     }
                     else
                     {
 //                        delete instance;
                         loader->unload();
                         message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
-                        status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                         DELETE_AND_SET_NULL(loader);
                     }
                 }
@@ -272,7 +273,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     loader->unload();
 #endif
                     message = tr("Plugin in file '%1' is a Qt Designer widget but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
-                    status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfIgnored, message));
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
                     DELETE_AND_SET_NULL(loader);
                 }
             }
@@ -280,7 +281,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
             {
                 loader->unload();
                 message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
-                status.messages.append(QPair<ito::tPluginLoadStatusFlag, QString>(ito::plsfError, message));
+                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                 DELETE_AND_SET_NULL(loader);
             }
 
