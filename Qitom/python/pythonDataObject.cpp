@@ -1404,7 +1404,11 @@ int PythonDataObject::PyDataObject_setAxisScales(PyDataObject *self, PyObject *v
         }
         Py_XDECREF(tempObj);
 
-        self->dataObject->setAxisScale(i, scale);
+        if (self->dataObject->setAxisScale(i, scale))
+        {
+            PyErr_SetString(PyExc_ValueError, "invalid scale value");
+            return -1;
+        }
     }
 
     return 0;
@@ -1488,7 +1492,11 @@ int PythonDataObject::PyDataObject_setAxisOffsets(PyDataObject *self, PyObject *
         }
         Py_XDECREF(tempObj);
 
-        self->dataObject->setAxisOffset(i, offset);
+        if (self->dataObject->setAxisOffset(i, offset))
+        {
+            PyErr_SetString(PyExc_ValueError, "invalid offset value");
+            return -1;
+        }
     }
 
     return 0;
