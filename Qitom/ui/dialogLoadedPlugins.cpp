@@ -75,9 +75,13 @@ void DialogLoadedPlugins::init()
     }
 
     ui.tree->setColumnWidth(0, 42);
-    QStringList headers;
-    headers << "" << "i" << "w" << "e" << "ign" << "DLL / Plugin";
-    ui.tree->setHeaderLabels(headers);
+    QTreeWidgetItem *header = new QTreeWidgetItem();
+    header->setIcon(1, QIcon(":/application/icons/dialog-error-4.png"));
+    header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
+    header->setIcon(3, QIcon(":/application/icons/dialog-information-4.png"));
+    header->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
+    header->setText(5, "Test");
+    ui.tree->setHeaderItem(header);
 
     m_windowTitle = ui.groupBox_2->title();
     m_cmdMessage = ui.cmdMessage->text();
@@ -103,7 +107,7 @@ void DialogLoadedPlugins::init()
         plugin->setBackgroundColor(3, bckRnd);
         plugin->setBackgroundColor(4, bckRnd);
         plugin->setBackgroundColor(5, bckRnd);
-        bool pluginOK = true;
+        //bool pluginOK = true;
 
         QChar sortElement = ' '; // This character is only in a column if there is an icon... this makes it easy to sort with the standard function
 
@@ -121,16 +125,25 @@ void DialogLoadedPlugins::init()
             {
                 child->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
                 setSortChar(1, *child);
-                m_items.append(QPair<int,QTreeWidgetItem*>(8, child)); //plsfOk is 0, that is bad, therefore use another value for retOk
+                m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfOk, child)); //plsfOk is 0, that is bad, therefore use another value for retOk
+                plugin->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
+                setSortChar(1, *plugin);
             }
             else if (message->first & ito::plsfWarning)
             {
                 child->setIcon(2,  QIcon(":/application/icons/dialog-warning-4.png"));
                 setSortChar(2, *child);
-                m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfWarning, child));
+                if (message->first & ito::plsfRelDbg)
+                {
+                    m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfWarning | ito::plsfRelDbg, child));
+                }
+                else
+                {
+                    m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfWarning, child));
+                }
                 plugin->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
                 setSortChar(2, *plugin);
-                pluginOK = false;
+                //pluginOK = false;
             }
             else if (message->first & ito::plsfIgnored)
             {
@@ -139,7 +152,7 @@ void DialogLoadedPlugins::init()
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfIgnored, child));
                 plugin->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
                 setSortChar(4, *plugin);
-                pluginOK = false;
+                //pluginOK = false;
             }
             else
             {
@@ -148,14 +161,13 @@ void DialogLoadedPlugins::init()
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfError, child));
                 plugin->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
                 setSortChar(3, *plugin);
-                pluginOK = false;
+                //pluginOK = false;
             }
         }
 
-        if (pluginOK)
+        //if (pluginOK)
         {
-            plugin->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
-            setSortChar(1, *plugin);
+
         }
         m_items.append(QPair<int,QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
@@ -224,24 +236,24 @@ void DialogLoadedPlugins::filter()
 
     for (int i = 0; i < m_items.size(); i++)
     {
-        bool show = false;
-         
+        int first = m_items[i].first;
+        bool show = false; 
         // check if button is active for this type of message
-        if ((m_items[i].first & flag) != 0)
+        if ((first & flag) != 0)
         { 
             // Is compability checkbox set?
             if (ui.onlyComnpatibelCheck->checkState())
             {
-                if ((m_items[i].first & ito::plsfRelDbg) != 0) // if (dbg is incompatibel) (flag = 0)
+                if ((first & ito::plsfRelDbg) != 0) // if reldgb flag is set it큦 incompatibel, if 0 it큦 compatible
                 {
-                    // show stays false: Debug is incompatibel
+                    //show = false; // show stays false: Debug is incompatibel
                 }
                 else
                 {
                     show = true;
                 }
             }
-            // It큦 not, show the item
+            // It큦 not checked, show the item
             else
             {
                 show = true;
@@ -249,7 +261,7 @@ void DialogLoadedPlugins::filter()
         }
         else
         { 
-            // show stays false
+            //show = false;// show stays false
         }
 
         m_items[i].second->setHidden(!show);
@@ -257,7 +269,7 @@ void DialogLoadedPlugins::filter()
         // Count the item if it has a parent and is not hidden
         if (m_items[i].second->parent() && show)
         {
-            stateCount[int(log(double((m_items[i].first & 0xF)))/log(double(2)))]++;
+            stateCount[int(log(double((first & 0xF)))/log(double(2)))]++;
         }
 
 

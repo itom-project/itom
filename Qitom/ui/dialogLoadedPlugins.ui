@@ -60,6 +60,12 @@
       </item>
       <item>
        <widget class="QTreeWidget" name="tree">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="rootIsDecorated">
          <bool>true</bool>
         </property>
@@ -73,7 +79,7 @@
          <bool>false</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
-         <number>21</number>
+         <number>25</number>
         </attribute>
         <attribute name="headerMinimumSectionSize">
          <number>21</number>
@@ -316,6 +322,22 @@
     <hint type="destinationlabel">
      <x>309</x>
      <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>DialogLoadedPlugins</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>309</x>
+     <y>443</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>231</y>
     </hint>
    </hints>
   </connection>
