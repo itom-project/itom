@@ -2109,14 +2109,19 @@ PointCloud.");
 //---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.\n\
 \n\
+Creates a point cloud from the 2.5D data set given by the disparity dataObject. The x and y-components of each point are taken from the regular grid \n\
+values of 'disparity' (considering the scaling and offset of the object). The corresponding z-value is the disparity's value itself. \n\
+\n\
 Parameters \n\
 ----------- \n\
 disparity : {MxN data object, float32} \n\
     The values of this dataObject represent the disparity values.\n\
 intensity : {MxN data object, float32}, optional \n\
-    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject \n\
-    deleteNaN : {bool}, optional \n\
-    If true (default: false), all NaN-values in the disparity map will not be copied into the point cloud.\n\
+    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
+deleteNaN : {bool}, optional \n\
+    If true (default: false), NaN-values (z) in the disparity map will not be copied into the point cloud.\n\
+color : {MxN data object, rgba32}, optional \n\
+    If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2125,14 +2130,15 @@ PointCloud.");
 {
     PyObject *objDisp = NULL;
     PyObject *objI = NULL;
+    PyObject *objColor = NULL;
     bool deleteNaN = false;
-    const char *kwlist[] = {"disparity", "intensity", "deleteNaN", NULL};
+    const char *kwlist[] = {"disparity", "intensity", "deleteNaN", "color", NULL};
 
-    QSharedPointer<ito::DataObject> dispMap, IntMap;
+    QSharedPointer<ito::DataObject> dispMap, IntMap, colorMap;
     bool ok = true;
     ito::RetVal retval = ito::retOk;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Ob", const_cast<char**>(kwlist), &objDisp, &objI, &deleteNaN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ObO", const_cast<char**>(kwlist), &objDisp, &objI, &deleteNaN, &objColor))
     {
         return NULL; 
     }
@@ -2152,15 +2158,40 @@ PointCloud.");
             PyErr_SetString(PyExc_RuntimeError, "intensity map argument could not be converted to a data object");
             return NULL;
         }
+        colorMap = QSharedPointer<ito::DataObject>(NULL);
+    }
+    else if(objColor)
+    {
+        colorMap = QSharedPointer<ito::DataObject>( PythonQtConversion::PyObjGetDataObjectNewPtr( objColor, false, ok) );
+        if(!ok)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "color map argument could not be converted to a data object");
+            return NULL;
+        }
+        IntMap = QSharedPointer<ito::DataObject>(NULL);
+    }
+    else if (objI && objColor)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "either give an intensity map or a color map");
+        return NULL;
     }
     else
     {
         IntMap = QSharedPointer<ito::DataObject>(NULL);
+        colorMap = QSharedPointer<ito::DataObject>(NULL);
     }
 
     PyPointCloud *cloud = createEmptyPyPointCloud();
     cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
-    retval += ito::pclHelper::pointCloudFromDisparityI(dispMap.data(), IntMap.data(), *(cloud->data), deleteNaN);
+
+    if (!objColor)
+    {
+        retval += ito::pclHelper::pointCloudFromDisparityI(dispMap.data(), IntMap.data(), *(cloud->data), deleteNaN);
+    }
+    else
+    {
+        retval += ito::pclHelper::pointCloudFromDisparityRGBA(dispMap.data(), colorMap.data(), *(cloud->data), deleteNaN);
+    }
 
     if(PythonCommon::transformRetValToPyException( retval ) == false)
     {

@@ -692,6 +692,185 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObject *mapColor, PCLPointCloud &out, bool deleteNaN /*= false*/)
+{
+    RetVal retval = retOk;
+    float firstX = 0.0;
+    float stepX = 1.0;
+    float firstY = 0.0;
+    float stepY = 1.0;
+    bool isDense = true;
+
+    retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+    if (mapColor)
+    {
+        retval += ito::dObjHelper::verify2DDataObject(mapColor, "colorMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tRGBA32);
+
+        if (mapColor->getSize(0) != mapDisp->getSize(0) || mapColor->getSize(1) != mapDisp->getSize(1))
+        {
+            retval += ito::RetVal(ito::retError, 0, "disparityMap and colorMap must have the same size");
+        }
+    }
+
+    if (retval == retOk)
+    {
+        bool checkScale = true;
+        firstX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 0, checkScale));
+        stepX = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-1, 1, checkScale)) - firstX;
+        firstY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 0, checkScale));
+        stepY = cv::saturate_cast<float>(mapDisp->getPixToPhys(mapDisp->getDims()-2, 1, checkScale)) - firstY;
+    }
+
+    if (retval == ito::retOk)
+    {
+        uint32_t width, height;
+        ito::float32 *zRow;
+        ito::Rgba32 *cRow;
+
+        cv::Mat *z = reinterpret_cast<cv::Mat*>(mapDisp->get_mdata()[ mapDisp->seekMat(0) ]);
+
+        if (mapColor == NULL)
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+            pcl::PointXYZ point;
+            
+            width = mapDisp->getSize(1);
+            height = mapDisp->getSize(0);
+
+            if (deleteNaN)
+            {
+                out = ito::PCLPointCloud(ito::pclXYZ);
+                cloud = out.toPointXYZ();
+                out.reserve(width*height);
+                size_t counter = 0;
+
+                for (int i = 0; i < z->rows; i++)
+                {
+                    zRow = z->ptr<ito::float32>(i);
+
+                    for (int j = 0; j < z->cols; j++)
+                    {
+                        if (!(pcl_isnan(zRow[j])))
+                        {
+                            point.x = firstX + j * stepX;
+                            point.y = firstY + i * stepY;
+                            point.z = zRow[j];
+                            (*cloud).push_back(point);
+                            counter++;
+                        }
+                    }
+                }
+
+                cloud->is_dense = false;
+                cloud->resize(counter);
+            }
+            else
+            {
+                out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
+                cloud = out.toPointXYZ();
+                size_t counter = 0;
+
+                for (int i = 0; i < z->rows; i++)
+                {
+                    zRow = z->ptr<ito::float32>(i);
+
+                    for (int j = 0; j < z->cols; j++)
+                    {
+                        point.x = firstX + j * stepX;
+                        point.y = firstY + i * stepY;
+                        point.z = zRow[j];
+
+                        if (!pcl_isfinite(point.z))
+                        {
+                            isDense = false;
+                        }
+
+                        //cloud->at(j,i) = point;
+                        cloud->at(i * width + j) = point;
+                        counter++;
+                    }
+                }
+
+                cloud->is_dense = isDense;
+            }
+        }
+        else
+        {
+            cv::Mat *color = reinterpret_cast<cv::Mat*>(mapColor->get_mdata()[ mapColor->seekMat(0) ]);
+
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
+            pcl::PointXYZRGBA point;
+            
+            width = mapDisp->getSize(1);
+            height = mapDisp->getSize(0);
+
+            if (deleteNaN)
+            {
+                out = ito::PCLPointCloud(ito::pclXYZRGBA);
+                cloud = out.toPointXYZRGBA();
+                out.reserve(width*height);
+                size_t counter = 0;
+
+                for (int i = 0; i < z->rows; i++)
+                {
+                    zRow = z->ptr<ito::float32>(i);
+                    cRow = color->ptr<ito::Rgba32>(i);
+
+                    for (int j = 0; j < z->cols; j++)
+                    {
+                        if (!(pcl_isnan(zRow[j])))
+                        {
+                            point.x = firstX + j * stepX;
+                            point.y = firstY + i * stepY;
+                            point.z = zRow[j];
+                            point.rgba = cRow[j].rgba;
+                            (*cloud).push_back(point);
+                            counter++;
+                        }
+                    }
+                }
+
+                cloud->is_dense = false;
+                cloud->resize(counter);
+            }
+            else
+            {
+                out = ito::PCLPointCloud(width, height, ito::pclXYZRGBA, ito::PCLPoint(point));
+                cloud = out.toPointXYZRGBA();
+                size_t counter = 0;
+
+                for (int i = 0; i < z->rows; i++)
+                {
+                    zRow = z->ptr<ito::float32>(i);
+                    cRow = color->ptr<ito::Rgba32>(i);
+
+                    for (int j = 0; j < z->cols; j++)
+                    {
+                        point.x = firstX + j * stepX;
+                        point.y = firstY + i * stepY;
+                        point.z = zRow[j];
+                        point.rgba = cRow[j].rgba;
+
+                        if (!pcl_isfinite(point.z))
+                        {
+                            isDense = false;
+                        }
+
+                        //cloud->at(j,i) = point;
+                        cloud->at(i * width + j) = point;
+                        counter++;
+                    }
+                }
+
+                cloud->is_dense = isDense;
+            }
+        }
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
 {
     if (pc == NULL)

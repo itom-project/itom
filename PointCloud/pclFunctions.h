@@ -58,6 +58,7 @@ namespace pclHelper
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaN = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &out, bool deleteNaN = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject *mapI, PCLPointCloud &out, bool deleteNaN = false);
+    ito::RetVal POINTCLOUD_EXPORT pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObject *mapColor, PCLPointCloud &out, bool deleteNaN = false);
 
     ito::RetVal POINTCLOUD_EXPORT pointCloudToDObj(const PCLPointCloud *pc, DataObject &out);
 
