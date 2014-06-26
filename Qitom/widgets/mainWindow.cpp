@@ -48,6 +48,7 @@
 #include <qdesktopwidget.h>
 #include <qmessagebox.h>
 #include <qdir.h>
+#include "../organizer/scriptEditorOrganizer.h"
 
 namespace ito {
 
@@ -256,6 +257,10 @@ MainWindow::MainWindow() :
 
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
     connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+
+    // Signalmapper for dynamic lastFile Menu
+    m_lastFilesMapper = new QSignalMapper(this);
+    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
 
     //
     createActions();
@@ -661,6 +666,11 @@ void MainWindow::createMenus()
     m_pMenuFile->addAction(m_appFileNew);
     m_pMenuFile->addAction(m_appFileOpen);
 
+    // dynamically created Menu with the last files
+    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Open last files"));
+    connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
+    // Add these menus dynamically
+
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     if (uOrg->hasFeature(featUserManag))
     {
@@ -715,6 +725,66 @@ void MainWindow::createMenus()
     //linux: allow the menu to be in the native menu bar of the operating system
     menuBar()->setNativeMenuBar(true);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*Slot aboutToOpen*/
+void MainWindow::menuLastFilesAboutToShow()
+{
+    // Delete old actions
+    for(int i = 0; i < m_plastFilesMenu->actions().length(); ++i)
+    {
+        m_plastFilesMenu->actions().at(i)->deleteLater();
+    }
+    m_plastFilesMenu->clear();
+    
+    // Get StringList of last Files
+    QStringList fileList;
+    QObject *seoO = AppManagement::getScriptEditorOrganizer();
+    if (seoO)
+    {
+        ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+        if (sEO)
+        {
+            // Create new menus
+            foreach (const QString &path, sEO->m_lastUsedFiles) 
+            {
+                QString displayedPath = path;
+                IOHelper::shortenFilepathInMiddle(displayedPath, 200);
+                m_lastFileAct = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                m_plastFilesMenu->addAction(m_lastFileAct);
+                connect(m_lastFileAct, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
+                // m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
+                m_lastFilesMapper->setMapping(m_lastFileAct, path);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Slot that is invoked by the lastfile Buttons over the signalmapper
+void MainWindow::lastFileOpen(const QString &path)
+{
+    QString fileName;
+
+    fileName = path;
+
+    if (!fileName.isEmpty())
+    {
+        QDir::setCurrent(QFileInfo(fileName).path());
+        IOHelper::openGeneralFile(fileName, false, true, this);
+            QObject *seoO = AppManagement::getScriptEditorOrganizer();
+        if (seoO)
+        {
+            ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+            if (sEO)
+            {
+                sEO->fileOpenedOrSaved(path);
+            }
+        }
+            //emit (openScriptRequest(fileName, this));
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
@@ -869,6 +939,20 @@ void MainWindow::mnuOpenFile()
     QFileInfo info(fileName);
 
     if (fileName.isEmpty()) return;
+
+    if (QFileInfo(fileName).exists())
+    {
+        QObject *seoO = AppManagement::getScriptEditorOrganizer(); 
+        if (seoO)
+        {
+            ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+            if (sEO)
+            {
+                sEO->fileOpenedOrSaved(fileName);
+            }
+        }
+    }
+
 
     QDir::setCurrent(QFileInfo(fileName).path());
     IOHelper::openGeneralFile(fileName, false, true, this);

@@ -1021,7 +1021,7 @@ end:
     return filter.join(";;");
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ bool IOHelper::fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters)
 {
     QStringList allPatterns;
@@ -1038,6 +1038,45 @@ end:
         }
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Shortens paths so that menus can display them without becoming too big
+/*!
+    This functio is used to shorten paths so they fit into a menu or something
+    compareable.
+
+    Example: 
+    D:/testdir1/testdir2/file.py
+    becomes D:/...ir2/file.py
+
+    If the pixelLength is shorter than the filename a minimum is returned:
+    D:/...file.py
+    Even if the minimum is longer than the pixelLength.
+
+    \param path The path that is supposed to be shortened
+    \param pixelLength The length the path has to have after shortening
+*/
+/*static*/ void IOHelper::shortenFilepathInMiddle(QString &path, int pixelLength)
+{
+    QFont font;
+    QFontMetrics fontm(font);
+    int width = fontm.width(path);
+    if (width > pixelLength)
+    {
+        bool end = false;
+        while(width > pixelLength - fontm.width("...") && end == false)
+        {
+            int index = path.indexOf(QDir::separator(), 0)+1;
+            if (index == 0 || index == path.lastIndexOf(QDir::separator()))
+            {
+                end = true;
+            }
+            path.remove(index, 1);
+            width = fontm.width(path);
+        }
+        path.insert(path.indexOf(QDir::separator(),0)+1, "...");
+    }
 }
 
 } //end namespace ito

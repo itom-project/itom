@@ -71,6 +71,8 @@ public:
 
     static bool fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters);
 
+    static void shortenFilepathInMiddle(QString &path, int pixelLength);
+
 private:
     IOHelper() {};
     ~IOHelper() {};

@@ -42,6 +42,8 @@
 
 #include <qsharedpointer.h>
 
+class QSignalMapper; //forward declaration
+
 namespace ito {
 
 class WidgetInfoBox; //forward declaration
@@ -87,6 +89,8 @@ private:
 
     AIManagerWidget* m_pAIManagerWidget;
 
+    QSignalMapper *m_lastFilesMapper;       /*!<  Maps signal from the "last opened files" buttons */
+
     QToolBar* m_aboutToolBar;
     QToolBar* m_appToolBar;
     QToolBar* m_toolToolBar;
@@ -100,11 +104,13 @@ private:
     QAction *m_appFileOpen;
     QAction *m_aboutQt;
     QAction *m_aboutQitom;
+    QAction *m_lastFileAct;
 
     QMap<QString, QAction*> m_actions;
 
     QMenu *m_pMenuHelp;
     QMenu *m_pMenuFile;
+    QMenu *m_plastFilesMenu;
     QMenu *m_pMenuPython;
     QMenu *m_pMenuReloadModule;
     QMenu *m_pMenuView;
@@ -178,6 +184,9 @@ private slots:
     void userDefinedActionTriggered(const QString &pythonCode);
 
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
+
+    void menuLastFilesAboutToShow();
+    void lastFileOpen(const QString &path);
 
     //void mnuRestore()
     //{
