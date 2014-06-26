@@ -1582,7 +1582,12 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Filter the mainmodel
+//! slot invoked by toolbar 
+/*!
+    This is the Slot is called by the toolbar when the user enters a filter into the search edit.
+
+    \param filterText the text that the model is filtered with.
+*/
 void HelpTreeDockWidget::liveFilter(const QString &filterText)
 {
     showTreeview();
@@ -1635,7 +1640,15 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// This is the Slot that can be externally called by other widgets to display filter or widget help ... i.a. AIManagerWidget
+//! slot invoked by different widgets to display a help page from extern
+/*!
+    This is the Slot that can be externally called by other widgets to display filter or widget help ... i.a. AIManagerWidget
+
+    \param name name of the function that is supposed to be displayed
+    \param type it decides wheather the help is stored in a database (1) or calls showFilterWidgetPluginHelp(...) (2-8)
+    \param modelIndex that was clicked. If it´s empty, it´s a call from a link or from extern
+    \param fromLink if true, a link called that slot
+*/
 void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink)
 {
     // Check if it´s a click by the back or forward button

@@ -32,6 +32,7 @@
 #include <qsettings.h>
 #include <qfileinfo.h>
 #include <qmainwindow.h>
+#include <qdir.h>
 
 namespace ito
 {
@@ -76,6 +77,8 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
     connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
     connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(widgetFocusChanged(QWidget*,QWidget*)));
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -134,6 +137,19 @@ void ScriptEditorOrganizer::saveScriptState()
         settings.setValue("state", states);
     }
 
+    settings.endArray();
+
+    // Last opened files save
+    settings.beginWriteArray("lastScriptWidgets");
+    counter = 0;
+    foreach(const QString &path, m_lastUsedFiles)
+    {
+        if (path != "")
+        {
+            settings.setArrayIndex(counter++);
+            settings.setValue("path", path);
+        }
+    }
     settings.endArray();
     settings.endGroup();
 }
@@ -198,9 +214,40 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     }
 
     settings.endArray();
+
+    // Last used Files
+    counter = settings.beginReadArray("lastScriptWidgets");
+    QFileInfo fi;
+
+    for (int i = 0; i < counter; ++i)
+    {
+        settings.setArrayIndex(i);
+        fi.setFile(settings.value("path").toString());
+        if (fi.exists())
+        {
+            m_lastUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
+        }
+    }
+    settings.endArray();
+
     settings.endGroup();
 
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
+{
+    m_lastUsedFiles.insert(0, QDir::toNativeSeparators(filename));
+    m_lastUsedFiles.removeDuplicates();
+    int maxNumberLastFiles = 10;
+    if (m_lastUsedFiles.size() > maxNumberLastFiles) 
+    {
+        while (m_lastUsedFiles.size() > maxNumberLastFiles)
+        {
+            m_lastUsedFiles.removeLast();
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -718,6 +765,11 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(QString filename, S
         }
          widget->openScript(filename, true);
          tempWidget = widget;
+    }
+
+    if (QFileInfo(filename).exists())
+    {
+        fileOpenedOrSaved(filename);
     }
 
     return tempWidget;

@@ -68,13 +68,6 @@ private:
         bool DataIO;
     };
 
-    QString minText(int minimum) const;
-    QString minText(double minimum) const;
-    QString minText(char minimum) const;
-    QString maxText(int minimum) const;
-    QString maxText(double minimum) const;
-    QString maxText(char minimum) const;
-    
     static void createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
     static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
     static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
@@ -98,28 +91,35 @@ private:
     static const int m_urPath = Qt::UserRole + 1;
     static const int m_urType = Qt::UserRole + 2;
 
+    QString minText(int minimum) const;
+    QString minText(double minimum) const;
+    QString minText(char minimum) const;
+    QString maxText(int minimum) const;
+    QString maxText(double minimum) const;
+    QString maxText(char minimum) const;
+    
     // Variables
-    Ui::HelpTreeDockWidget ui;
+    Ui::HelpTreeDockWidget   ui;                
+    QStandardItemModel      *m_pMainModel;          /*!< Model to store the tree with all database entries*/
+    LeafFilterProxyModel    *m_pMainFilterModel;    /*!< Filtered Tree Model (between the model and the tree*/
+    ito::AbstractDockWidget *m_pParent;             /*!< pointer to helpDockWidget with Toolbar*/
+    QList<QModelIndex>       m_history;             /*!< List to store the adresses of the last visited pages */
+    QStringList              m_includedDBs; 
+    QString                  m_dbPath;              /*!< path from where the databases are loaded */
+    QMovie                  *m_previewMovie;        /*!< turning circle to show "wait" status*/    
+    QMap<int, QIcon>         m_iconGallery;
+    DisplayBool              m_showSelection;
+    int                      m_historyIndex;        
+    int                      m_autoCollTime;        /*!< after this time the tree automatically becomes smaller*/
+    double                   m_percWidthVi;         /*!< width of three while visible*/
+    double                   m_percWidthUn;         /*!< width of tree while small*/
+    bool                     m_treeVisible;
+    bool                     m_plaintext;           /*!< true: html code is displayed, false: normal help with style is displayed*/
+    bool                     m_openLinks;           /*!< decides if external links open when clicked*/
+    bool                     m_autoCollTree;
+    bool                     m_forced;
+    bool                     m_internalCall;        /*!< If a page is called by the history buttons, this bool prevents from that this page is stored in the historylist again*/
 
-    QStandardItemModel        *m_pMainModel;
-    LeafFilterProxyModel      *m_pMainFilterModel;
-    ito::AbstractDockWidget   *m_pParent;
-    QList<QModelIndex>         m_history;
-    QStringList                m_includedDBs;
-    QString                    m_dbPath;
-    QMovie                    *m_previewMovie;
-    QMap<int, QIcon> m_iconGallery;
-    DisplayBool m_showSelection;
-    int m_historyIndex;
-    int m_autoCollTime;
-    double m_percWidthVi;
-    double m_percWidthUn;
-    bool m_treeVisible;
-    bool m_plaintext;
-    bool m_openLinks;
-    bool m_autoCollTree;
-    bool m_forced;
-    bool m_internalCall;
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };

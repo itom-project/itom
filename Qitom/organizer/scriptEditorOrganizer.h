@@ -45,6 +45,9 @@ public:
     void saveScriptState();
     RetVal restoreScriptState();
 
+    // TODO: is it right here... or better with setter and getter
+    QStringList m_lastUsedFiles;
+
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
 
@@ -84,6 +87,8 @@ public slots:
     void pythonDebugFileRequested(QString filename);
 
     void pythonDebugPositionChanged(QString filename, int lineNo);
+
+    void fileOpenedOrSaved(const QString &filename);
 
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);

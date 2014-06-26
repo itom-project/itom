@@ -95,23 +95,23 @@ private:
     bool m_listChanged;
     bool m_treeIsUpdating;
     bool m_downloadTimeoutReached;
-    int  m_downloadTimeout;
-    QUrl m_serverAdress;
+    int  m_downloadTimeout;                         /*!< Timeout for downloading list of online availlable databases*/
+    QUrl m_serverAdress;                            /*!< Serveradress where the online databases are stored (Hardcoded) */
 
     // Lists and Co
-    QMap< int, DatabaseInfo > existingDBs;
-    QMap< int, DatabaseInfo > updatableDBs;
-    QList< int > checkedIdList;
+    QMap< int, DatabaseInfo > existingDBs;          /*!< List of all databases that are local */
+    QMap< int, DatabaseInfo > updatableDBs;         /*!< List of all databases that are aupdatable */
+    QList< int > checkedIdList;                     /*!< Contains IDs of Databases that are checked and displayed*/
 
     // Menu
-    QMenu* m_pContextMenu;
-    std::map<QString,QAction*> contextMenuActions;
+    QMenu* m_pContextMenu;                          /*!< Rightclick tree menu */
+    std::map<QString,QAction*> contextMenuActions;  /*!< Actions for the right click context menu in the tree (update, locate, etc) */
 
     // Consts
-    static const int m_urID = Qt::UserRole + 1; // ID
-    static const int m_urUD = Qt::UserRole + 2; // UpdateState
-    static const int m_urFD = Qt::UserRole + 3; // Path (FileDir)
-    static const int SCHEME_ID = 1; // Update available
+    static const int m_urID = Qt::UserRole + 1;     /*!< ID */
+    static const int m_urUD = Qt::UserRole + 2;     /*!< Updatestate */
+    static const int m_urFD = Qt::UserRole + 3;     /*!< Path (FileDir) */ 
+    static const int SCHEME_ID = 1;                 /*!< Update available */
     QString m_xmlFileName;
 
 signals:

@@ -35,6 +35,8 @@
 
 #include "../ui/widgetFindWord.h"
 
+class QSignalMapper; //forward declaration
+
 namespace ito {
 
 class DialogReplace; //forward declaration
@@ -92,6 +94,7 @@ private:
     QTabWidgetItom* m_tab;              /*!<  reference to QTabWidgetItom instance */
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
+    
 
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
@@ -136,14 +139,18 @@ private:
     ShortcutAction *m_bookmarkNext;
     ShortcutAction *m_bookmarkPrevious;
     ShortcutAction *m_bookmarkClearAll;
+    ShortcutAction *m_lastFileAct;
 
     QMenu *m_tabContextMenu;
     QMenu *m_fileMenu;
+    QMenu *m_lastFilesMenu;
     QMenu *m_viewMenu;
     QMenu *m_editMenu;
     QMenu *m_scriptMenu;
     QMenu *m_winMenu;
     QMenu *m_bookmark;
+
+    QSignalMapper *m_lastFilesMapper;
 
     QToolBar* m_fileToolBar;
     QToolBar* m_editToolBar;
@@ -163,6 +170,8 @@ signals:
     void pythonInterruptExecution();                                                            /*!<  will be received by PythonThread, directly */
     void pythonDebugCommand(tPythonDbgCmd cmd);                                                 /*!<  will be received by PythonThread, directly */
     void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
+
+    //void lastFileClicked(const QString &path);
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);
@@ -222,6 +231,9 @@ private slots:
     void mnuClearAllBookmarks();
     void mnuGotoNextBookmark();
     void mnuGotoPreviousBookmark();
+
+    void menuLastFilesAboutToShow();
+    void lastFileOpen(const QString &path);
 
 public slots:
     void editorMarginChanged();

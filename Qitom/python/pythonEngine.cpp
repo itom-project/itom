@@ -1643,6 +1643,16 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! public slot invoked by the scriptEditorWidget
+/*!
+    This function calls the frosted python module. This module is able to check the syntax.
+    It´s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
+    calling ScriptEditorWidget::syntaxCheckResult(...).
+
+    \param code This QString contains the code that frosted is supposed to check
+    \param sender this is a pointer to the object that called this method
+    \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
+*/
 void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
 {
     if (m_pyModSyntaxCheck)

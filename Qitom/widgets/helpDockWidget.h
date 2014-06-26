@@ -54,7 +54,7 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-            QAction *m_pActBackward;
+            QAction *m_pActBackward;            
             QAction *m_pActForward;
             QAction *m_pActExpand;
             QAction *m_pActCollapse;

@@ -1016,6 +1016,16 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     file.write(text().toLatin1());
     file.close();
 
+    QFileInfo fi(getFilename());
+    if (fi.exists())
+    {
+        QObject *seo = AppManagement::getScriptEditorOrganizer();
+        if (seo)
+        {
+            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, fi.absoluteFilePath()));
+        }
+    }
+
     setModified(false);
 
     m_pFileSysWatcher->addPath(getFilename());
@@ -1065,6 +1075,16 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     file.write(text().toLatin1());
     file.close();
 
+    QFileInfo fi(getFilename());
+    if (fi.exists())
+    {
+        QObject *seo = AppManagement::getScriptEditorOrganizer();
+        if (seo)
+        {
+            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, fi.absoluteFilePath()));
+        }
+    }
+
     changeFilename(tempFileName);
     setModified(false);
 
@@ -1075,7 +1095,12 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!< Syntax Checker
+//! slot invoked by pythonEnginge::pythonSyntaxCheck
+/*!
+    This function is automatically called to deliver the results of the syntax checker
+
+    \sa checkSyntax
+*/
 void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 { // this event occurs when the syntax checker is delivering results
     QStringList errorList = b.split("\n");
@@ -1088,8 +1113,12 @@ void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Updates the List of Bookmarks and Errors when new Errorlist appears
+/*!
+    \param errorList Error list of this editor. Including all bugs and bookmarks.
+*/
 void ScriptEditorWidget::errorListChange(QStringList errorList)
-{ // Updates the List of Bookmarks and Errors when new Errorlist appears
+{ 
     QList<BookmarkErrorEntry>::iterator it;
     it = bookmarkErrorHandles.begin();
     while (it != bookmarkErrorHandles.end())
@@ -1144,8 +1173,14 @@ void ScriptEditorWidget::errorListChange(QStringList errorList)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Sends the code to the Syntax Checker
+/*!
+    This function is called to send the content of this ScriptEditorWidget to the syntax checker
+
+    \sa syntaxCheckResult
+*/
 void ScriptEditorWidget::checkSyntax()
-{ // Sends the code to the Syntax Checker
+{
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng->pySyntaxCheckAvailable())
     {
@@ -1154,6 +1189,11 @@ void ScriptEditorWidget::checkSyntax()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! slot invoked by timer
+/*!
+    This slot is invoked by the timer to trigger the syntax check. The intervall is set in the option dialog.
+    \sa syntaxCheckResult, checkSyntax
+*/
 void ScriptEditorWidget::updateSyntaxCheck()
 {
     m_syntaxTimer->stop();

@@ -38,9 +38,12 @@
 
 //#include <QPrinter>
 //#include <QPrintDialog>
+#include <qsignalmapper.h>
 
 #include "../ui/dialogIconBrowser.h"
 #include "../Qitom/AppManagement.h"
+#include "../organizer/scriptEditorOrganizer.h"
+#include "../helper/IOHelper.h"
 
 namespace ito {
 
@@ -82,6 +85,10 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab->setTabsClosable(true);
     m_tab->setMovable(true);
     m_tab->setTabPosition(QTabWidget::South);
+
+    // Signalmapper for dynamic lastFile Menu
+    m_lastFilesMapper = new QSignalMapper(this);
+    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
 
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
@@ -989,6 +996,54 @@ void ScriptDockWidget::createActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*Slot aboutToOpen*/
+void ScriptDockWidget::menuLastFilesAboutToShow()
+{
+    // Delete old actions
+    for(int i = 0; i < m_lastFilesMenu->actions().length(); ++i)
+    {
+        m_lastFilesMenu->actions().at(i)->deleteLater();
+    }
+    m_lastFilesMenu->clear();
+    
+    // Get StringList of last Files
+    QStringList fileList;
+    QObject *seoO = AppManagement::getScriptEditorOrganizer();
+    if (seoO)
+    {
+        ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+        if (sEO)
+        {
+            // Create new menus
+            foreach (const QString &path, sEO->m_lastUsedFiles) 
+            {
+                QString displayedPath = path;
+                IOHelper::shortenFilepathInMiddle(displayedPath, 200);
+                m_lastFileAct = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                m_lastFilesMenu->addAction(m_lastFileAct->action());
+                m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
+                m_lastFilesMapper->setMapping(m_lastFileAct->action(), path);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Slot that is invoked by the lastfile Buttons over the signalmapper
+void ScriptDockWidget::lastFileOpen(const QString &path)
+{
+    QString fileName;
+
+    fileName = path;
+
+    if (!fileName.isEmpty())
+    {
+        QDir::setCurrent(QFileInfo(fileName).path());
+        emit (openScriptRequest(fileName, this));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
 //{
 //    //Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
@@ -1025,6 +1080,13 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_saveScriptAction->action());
     m_fileMenu->addAction(m_saveScriptAsAction->action());
     m_fileMenu->addAction(m_saveAllScriptsAction->action());
+
+    // dynamically created Menu with the last files
+    m_lastFilesMenu = m_fileMenu->addMenu(QIcon(":/files/icons/filePython.png"), tr("Open last files"));
+    connect(this->m_lastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
+    // Add these menus dynamically
+    
+    
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_printAction->action());
     m_fileMenu->addSeparator();

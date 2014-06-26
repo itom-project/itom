@@ -52,15 +52,13 @@ namespace ito
             void updatePythonActions(){ updateActions(); }
 
         private:
-            QTreeViewItom   *m_breakPointView;
+            QTreeViewItom   *m_breakPointView;      /*!< QTreeViewItom derived from QTreeView with some special selection behaviour (see QItomWidgets)*/
 
-            
-            // Toolbar
-            QToolBar    *m_pMainToolbar;
+            QToolBar    *m_pMainToolbar;            /*!< Toolbar with QActions */
 
-            QMenu *m_pContextMenu;
+            QMenu *m_pContextMenu;                  /*!< Contextmenu with the same actions as the toolbar */
             
-            bool m_enOrDisAbleAllBrakpoints;
+            bool m_enOrDisAbleAllBrakpoints;        /*!< This is a flag used to signalize the enableBP method that it has to select all entries or just the ones the user selected  */
 
             ShortcutAction* m_pActDelBP;
             ShortcutAction* m_pActDelAllBPs;
