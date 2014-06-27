@@ -398,7 +398,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent /*= NULL*/)
+RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent /*= NULL*/)
 {
     RetVal retValue = retOk;
     UiContainer *set = NULL;
@@ -476,7 +476,7 @@ RetVal UiOrganizer::getNewPluginWindow(QString pluginName, unsigned int &objectI
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringMap dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
     UiContainer *set = NULL;
@@ -496,8 +496,7 @@ RetVal UiOrganizer::createNewDialog(QString filename, int uiDescription, StringM
 
     if (filename.indexOf("itom://") == 0)
     {
-        filename = filename.mid(7); //cut "itom://"
-        if (filename == "matplotlib" || filename == "MatplotlibFigure" || filename == "MatplotlibPlot")
+        if (filename.toLower() == "itom://matplotlib" || filename.toLower() == "itom://matplotlibfigure" || filename.toLower() == "itom://matplotlibplot")
         {
             pluginClassName = "MatplotlibPlot";
 
@@ -1181,7 +1180,7 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetDouble(QString title, QString label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min, double max, int decimals, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetDouble(const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min, double max, int decimals, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1205,7 +1204,7 @@ RetVal UiOrganizer::showInputDialogGetDouble(QString title, QString label, doubl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetInt(QString title, QString label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min, int max, int step, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetInt(const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min, int max, int step, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1229,7 +1228,7 @@ RetVal UiOrganizer::showInputDialogGetInt(QString title, QString label, int defa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetItem(QString title, QString label, QStringList stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex, bool editable, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetItem(const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex, bool editable, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1253,7 +1252,7 @@ RetVal UiOrganizer::showInputDialogGetItem(QString title, QString label, QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetText(QString title, QString label, QString defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetText(const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1277,7 +1276,7 @@ RetVal UiOrganizer::showInputDialogGetText(QString title, QString label, QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString title, QString text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1354,7 +1353,7 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, QString titl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, QString caption, QSharedPointer<QString> directory, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, const QString &caption, QSharedPointer<QString> directory, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -1385,7 +1384,7 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, QString cap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -1425,7 +1424,7 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, QString caption, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -1508,7 +1507,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::readProperties(unsigned int handle, QString widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::readProperties(unsigned int handle, const QString &widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
     UiContainer* set = getUiDialogByHandle(handle);
@@ -1526,7 +1525,7 @@ RetVal UiOrganizer::readProperties(unsigned int handle, QString widgetName, QSha
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::writeProperties(unsigned int handle, QString widgetName, QVariantMap properties, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::writeProperties(unsigned int handle, const QString &widgetName, const QVariantMap &properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
     UiContainer* set = getUiDialogByHandle(handle);
@@ -1601,7 +1600,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::writeProperties(unsigned int objectID, QVariantMap properties, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &properties, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
     QObject *obj = getWeakObjectReference(objectID);
@@ -1876,7 +1875,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getChildObject(unsigned int uiHandle, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
     UiContainer *ptr = getUiDialogByHandle(uiHandle);
@@ -1924,7 +1923,7 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, QString objectName, QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -1972,7 +1971,7 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, QString objectN
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, QString objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -2023,7 +2022,7 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, QString objectN
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
 {
     *signalIndex = -1;
     argTypes->clear();
@@ -2072,7 +2071,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, QString signalSignatur
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, QString signalSignature, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore)
 {
     int signalIndex = -1;
     RetVal retValue(retOk);

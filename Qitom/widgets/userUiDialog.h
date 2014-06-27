@@ -25,6 +25,7 @@
 
 #include "../common/sharedStructuresQt.h"
 #include "../api/apiFunctionsGraph.h"
+#include "../global.h"
 
 #include <qdialog.h>
 
@@ -50,16 +51,16 @@ public:
         bbTypeVertical      = 0x0002
     };
 
-    UserUiDialog(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
-    UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
+    UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
+    UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
 
     ~UserUiDialog();
 
     const QMetaObject *getMetaObjectByWidgetName(QString name) const;
 
 protected:
-    RetVal init(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons);
-    RetVal init(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons);
+    RetVal init(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons);
+    RetVal init(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons);
 
 private:
     

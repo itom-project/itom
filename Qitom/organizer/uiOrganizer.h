@@ -306,9 +306,7 @@ public:
     ~UiOrganizer();
 
     void showDialog(QWidget *parent);
-    //inline QHash<QString, PluginInfo> & getLoadedPluginList(void) { return m_pluginInfoList; }
     inline QObject *getPluginReference(unsigned int objectID) { return getWeakObjectReference(objectID); }
-//    ito::RetVal getNewPluginWindow(const QString pluginName, ito::uint32 &objectID, QObject **newWidget);
 
     static inline void parseUiDescription(int uiDescription, int* uiType = NULL, int* buttonBarType = NULL, bool* childOfMainWindow = NULL, bool* deleteOnClose = NULL)
     {
@@ -327,7 +325,7 @@ public:
         return v;
     }
 
-    RetVal getNewPluginWindow(QString pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent = NULL);
+    RetVal getNewPluginWindow(const QString &pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent = NULL);
 
     QWidget* loadDesignerPluginWidget(const QString &name, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent = NULL);
 
@@ -344,7 +342,6 @@ private:
     void timerEvent(QTimerEvent *event);
 
     WidgetWrapper *m_widgetWrapper;                    /*!< singleton instance to WidgetWrapper in order to access some public methods of several widgets by python */
-    //QHash<QString, PluginInfo> m_pluginInfoList;
 
     QHash<unsigned int, UiContainerItem> m_dialogList; /*!< Hash-Table mapping a handle to an user interface to its corresponding instance of UiDialogSet */
     QHash<unsigned int, QPointer<QObject> > m_objectList;  /*!< Hash-Table containing weak references to child-objects of any user interface which have recently been accessed. This hash-table helps for faster access to these objects */
@@ -366,7 +363,7 @@ public slots:
 
     RetVal loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
     RetVal addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QWidget *parent = NULL, ItomSharedSemaphore *semaphore = NULL);
-    RetVal createNewDialog(QString filename, int uiDescription, StringMap dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
     RetVal deleteDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal showDialog(unsigned int handle, int modalLevel, QSharedPointer<int> retCodeIfModal, ItomSharedSemaphore *semaphore = NULL);
     RetVal hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
@@ -377,50 +374,44 @@ public slots:
     RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);
     RetVal setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal showInputDialogGetDouble(QString title, QString label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min = -2147483647, double max = 2147483647, int decimals = 1, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showInputDialogGetInt(QString title, QString label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showInputDialogGetItem(QString title, QString label, QStringList stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex = 0, bool editable = false, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showInputDialogGetText(QString title, QString label, QString defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showMessageBox(unsigned int uiHandle, int type, QString title, QString text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetDouble(const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min = -2147483647, double max = 2147483647, int decimals = 1, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetInt(const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetItem(const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex = 0, bool editable = false, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetText(const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showMessageBox(unsigned int uiHandle, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore = NULL );
 
-    RetVal showFileDialogExistingDir(unsigned int uiHandle, QString caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
-    RetVal showFileOpenDialog(unsigned int uiHandle, QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
-    RetVal showFileSaveDialog(unsigned int uiHandle, QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
+    RetVal showFileDialogExistingDir(unsigned int uiHandle, const QString &caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
+    RetVal showFileOpenDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
+    RetVal showFileSaveDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getPropertyInfos(unsigned int objectID, QSharedPointer<QVariantMap> retPropertyMap, ItomSharedSemaphore *semaphore = NULL);
     RetVal readProperties(unsigned int objectID, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore = NULL);
-    RetVal writeProperties(unsigned int objectID, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
-    RetVal readProperties(unsigned int handle, QString widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore = NULL);
-    RetVal writeProperties(unsigned int handle, QString widgetName, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
+    RetVal writeProperties(unsigned int objectID, const QVariantMap &properties, ItomSharedSemaphore *semaphore = NULL);
+    RetVal readProperties(unsigned int handle, const QString &widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore = NULL);
+    RetVal writeProperties(unsigned int handle, const QString &widgetName, const QVariantMap &properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal getAttribute(unsigned int objectID, int attributeNumber, QSharedPointer<bool> value, ItomSharedSemaphore *semaphore = NULL);
     RetVal setAttribute(unsigned int objectID, int attributeNumber, bool value, ItomSharedSemaphore *semaphore = NULL);
     RetVal getWindowFlags(unsigned int objectID, QSharedPointer<int> flags, ItomSharedSemaphore *semaphore = NULL);
     RetVal setWindowFlags(unsigned int objectID, int flags, ItomSharedSemaphore *semaphore = NULL);
     RetVal widgetMetaObjectCounts(unsigned int objectID, QSharedPointer<int> classInfoCount, QSharedPointer<int> enumeratorCount, QSharedPointer<int> methodCount, QSharedPointer<int> propertyCount, ItomSharedSemaphore *semaphore = NULL );
 
-    RetVal getChildObject(unsigned int uiHandle, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getChildObject2(unsigned int parentObjectID, QString objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getChildObject3(unsigned int parentObjectID, QString objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getSignalIndex(unsigned int objectID, QString signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getChildObject(unsigned int uiHandle, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getChildObject2(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getChildObject3(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getObjectInfo(unsigned int objectID, int type, QSharedPointer<QVariantMap> infoMap, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal connectWithKeyboardInterrupt(unsigned int objectID, QString signalSignature, ItomSharedSemaphore *semaphore = NULL);
+    RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
-    /*RetVal plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);    
-    RetVal liveData(AddInDataIO* dataIO, QString widget, QObject **window, ItomSharedSemaphore *semaphore = NULL);
-    RetVal liveImage(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);
-    RetVal liveLine(AddInDataIO* dataIO, QString plotClassName = "", ItomSharedSemaphore *semaphore = NULL);*/
-
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
-//    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     

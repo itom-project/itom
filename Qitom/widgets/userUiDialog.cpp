@@ -37,7 +37,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UserUiDialog::UserUiDialog(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
+UserUiDialog::UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),
@@ -47,7 +47,7 @@ UserUiDialog::UserUiDialog(QString filename, tButtonBarType buttonBarType, QMap<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UserUiDialog::UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
+UserUiDialog::UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),
@@ -76,7 +76,7 @@ UserUiDialog::~UserUiDialog()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons)
+RetVal UserUiDialog::init(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons)
 {
     RetVal retValue(retOk);
 
@@ -113,7 +113,7 @@ RetVal UserUiDialog::init(QString filename, tButtonBarType buttonBarType, QMap<Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, QMap<QString,QString> &dialogButtons)
+RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons)
 {
     RetVal retValue(retOk);
 
