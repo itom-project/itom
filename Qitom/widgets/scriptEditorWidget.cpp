@@ -58,15 +58,13 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent), 
     m_pFileSysWatcher(NULL), 
     contextMenuLine(-1), 
+    m_filename(QString()),
+    unnamedNumber(ScriptEditorWidget::unnamedAutoIncrement++),
     pythonBusy(false), 
     m_pythonExecutable(true),
     canCopy(false),
     m_syntaxTimer(NULL)
 {
-    filename = QString();
-
-    unnamedNumber = ScriptEditorWidget::unnamedAutoIncrement++;
-
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
 
@@ -939,40 +937,49 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     {
         QMessageBox::warning(this, tr("error while opening file"), tr("file %1 could not be loaded").arg(fileName));
     }
-
-    QString text(file.readAll());
-    file.close();
-
-    clearAllBookmarks();
-    clearAllBreakpoints();
-    setText(text);
-
-    this->filename = fileName;
-
-    QStringList watchedFiles = m_pFileSysWatcher->files();
-    if (watchedFiles.size() > 0)
+    else
     {
-        m_pFileSysWatcher->removePaths(watchedFiles);
-    }
-    m_pFileSysWatcher->addPath(this->filename);
 
-    //!< check if BreakPointModel already contains breakpoints for this editor and load them
-    if (getFilename() != "")
-    {
-        BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
-        if (bpModel)
+        QString text(file.readAll());
+        file.close();
+
+        clearAllBookmarks();
+        clearAllBreakpoints();
+        setText(text);
+
+        changeFilename(fileName);
+
+        QStringList watchedFiles = m_pFileSysWatcher->files();
+        if (watchedFiles.size() > 0)
         {
-            QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-            QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
+            m_pFileSysWatcher->removePaths(watchedFiles);
+        }
+        m_pFileSysWatcher->addPath(m_filename);
 
-            for (int i=0; i<bpItems.size(); i++)
+        //!< check if BreakPointModel already contains breakpoints for this editor and load them
+        if (getFilename() != "")
+        {
+            BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
+            if (bpModel)
             {
-                breakPointAdd(bpItems.at(i), i);
+                QModelIndexList modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+                QList<BreakPointItem> bpItems = bpModel->getBreakPoints(modelIndexList);
+
+                for (int i=0; i<bpItems.size(); i++)
+                {
+                    breakPointAdd(bpItems.at(i), i);
+                }
             }
         }
-    }
 
-    setModified(false);
+        setModified(false);
+
+        QObject *seo = AppManagement::getScriptEditorOrganizer();
+        if (seo)
+        {
+            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, m_filename));
+        }
+    }
 
     return RetVal(retOk);
 }
@@ -1022,7 +1029,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
         QObject *seo = AppManagement::getScriptEditorOrganizer();
         if (seo)
         {
-            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, fi.absoluteFilePath()));
+            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, m_filename));
         }
     }
 
@@ -1075,17 +1082,18 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     file.write(text().toLatin1());
     file.close();
 
+    changeFilename(tempFileName);
+
     QFileInfo fi(getFilename());
     if (fi.exists())
     {
         QObject *seo = AppManagement::getScriptEditorOrganizer();
         if (seo)
         {
-            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, fi.absoluteFilePath()));
+            QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, m_filename));
         }
     }
 
-    changeFilename(tempFileName);
     setModified(false);
 
     m_pFileSysWatcher->addPath(tempFileName);
@@ -1759,38 +1767,57 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::changeFilename(QString newFilename)
+RetVal ScriptEditorWidget::changeFilename(const QString &newFilename)
 {
-    BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
-    QModelIndexList modelIndexList;
-
-    if (newFilename == "" || newFilename.isNull())
+    QString oldFilename = getFilename();
+    
+    if (oldFilename.isNull())
     {
-        if (bpModel)
+        if (newFilename == "" || newFilename.isNull())
         {
-            modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-            bpModel->deleteBreakPoints(modelIndexList);
+            m_filename = QString();
         }
-        filename = QString();
+        else
+        {
+            QFileInfo newFileInfo(newFilename);
+            m_filename = newFileInfo.canonicalFilePath();
+        }
     }
     else
     {
-        if (bpModel)
+        BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
+        QModelIndexList modelIndexList;
+
+        if (newFilename == "" || newFilename.isNull())
         {
-            modelIndexList = bpModel->getBreakPointIndizes(getFilename());
-            QList<BreakPointItem> lists = bpModel->getBreakPoints(modelIndexList);
-            BreakPointItem temp;
-            QList<BreakPointItem> newList;
-            for (int i = 0; i < lists.size(); i++)
+            if (bpModel)
             {
-                temp = lists.at(i);
-                temp.filename = newFilename;
-                newList.push_back(temp);
+                modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+                bpModel->deleteBreakPoints(modelIndexList);
             }
-            bpModel->changeBreakPoints(modelIndexList, newList, false);
+            m_filename = QString();
         }
-        filename = newFilename;
+        else
+        {
+            QFileInfo newFileInfo(newFilename);
+            if (bpModel)
+            {
+                modelIndexList = bpModel->getBreakPointIndizes(getFilename());
+                QList<BreakPointItem> lists = bpModel->getBreakPoints(modelIndexList);
+                BreakPointItem temp;
+                QList<BreakPointItem> newList;
+                for (int i = 0; i < lists.size(); i++)
+                {
+                    temp = lists.at(i);
+                    temp.filename = newFileInfo.canonicalFilePath();
+                    newList.push_back(temp);
+                }
+                bpModel->changeBreakPoints(modelIndexList, newList, false);
+            }
+            m_filename = newFileInfo.canonicalFilePath();
+        }
     }
+
     return RetVal(retOk);
 }
 
@@ -1939,7 +1966,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
+void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 {
     if (fileSystemWatcherMutex.tryLock(1))
     {
@@ -2028,7 +2055,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString & path) //this 
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ItomQsciPrinter::formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr )
+void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
 {
     QString filename = this->docName();
     QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);

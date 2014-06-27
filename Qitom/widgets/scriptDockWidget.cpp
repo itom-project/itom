@@ -704,7 +704,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
     \param sew reference to ScriptEditorWidget
     \return tab-index of given ScriptEditorWidget or -1 if this widget could not be found
 */
-int ScriptDockWidget::getIndexByEditor(ScriptEditorWidget* sew) const
+int ScriptDockWidget::getIndexByEditor(const ScriptEditorWidget* sew) const
 {
     if (sew == NULL)
     {
@@ -1014,15 +1014,23 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
         ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
         if (sEO)
         {
-            // Create new menus
-            foreach (const QString &path, sEO->m_lastUsedFiles) 
+            if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QString displayedPath = path;
-                IOHelper::shortenFilepathInMiddle(displayedPath, 200);
-                m_lastFileAct = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
-                m_lastFilesMenu->addAction(m_lastFileAct->action());
-                m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
-                m_lastFilesMapper->setMapping(m_lastFileAct->action(), path);
+                QAction *a = m_lastFilesMenu->addAction("no entries");
+                a->setEnabled(false);
+            }
+            else
+            {
+                // Create new menus
+                foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
+                {
+                    QString displayedPath = path;
+                    IOHelper::elideFilepathMiddle(displayedPath, 200);
+                    m_lastFileAct = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    m_lastFilesMenu->addAction(m_lastFileAct->action());
+                    m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
+                    m_lastFilesMapper->setMapping(m_lastFileAct->action(), path);
+                }
             }
         }
     }
@@ -1082,7 +1090,7 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_saveAllScriptsAction->action());
 
     // dynamically created Menu with the last files
-    m_lastFilesMenu = m_fileMenu->addMenu(QIcon(":/files/icons/filePython.png"), tr("Open last files"));
+    m_lastFilesMenu = m_fileMenu->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently used files"));
     connect(this->m_lastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
     // Add these menus dynamically
     
@@ -1222,12 +1230,12 @@ void ScriptDockWidget::createStatusBar()
     \param line is the marked debugging line (default: -1, no arrow)
     \return true if filename has been found and activated, else false.
 */
-bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*/)
+bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /* = -1*/)
 {
     ScriptEditorWidget *sew = NULL;
     QString temp, temp2;
     QFileInfo finfo1(filename);
-    filename = finfo1.canonicalFilePath().toLower();
+    QString filename2 = finfo1.canonicalFilePath().toLower();
     QFileInfo finfo2;
 
     for (int i = 0; i < m_tab->count(); i++)
@@ -1239,14 +1247,14 @@ bool ScriptDockWidget::activateTabByFilename(QString filename, int line /* = -1*
             finfo2.setFile(sew->getFilename());
             temp = finfo1.canonicalFilePath().toLower();
                 temp2 = finfo2.canonicalFilePath().toLower();
-            if (filename == finfo2.canonicalFilePath().toLower())
+            if (filename2 == finfo2.canonicalFilePath().toLower())
             {
                 m_tab->setCurrentIndex(i);
                 raiseAndActivate();
 
                 if (line >= 0)
                 {
-                    sew->pythonDebugPositionChanged(filename, line);
+                    sew->pythonDebugPositionChanged(filename2, line);
                 }
 
                 return true;

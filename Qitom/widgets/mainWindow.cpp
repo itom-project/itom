@@ -667,7 +667,7 @@ void MainWindow::createMenus()
     m_pMenuFile->addAction(m_appFileOpen);
 
     // dynamically created Menu with the last files
-    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Open last files"));
+    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently used files"));
     connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
     // Add these menus dynamically
 
@@ -745,16 +745,23 @@ void MainWindow::menuLastFilesAboutToShow()
         ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
         if (sEO)
         {
-            // Create new menus
-            foreach (const QString &path, sEO->m_lastUsedFiles) 
+            if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QString displayedPath = path;
-                IOHelper::shortenFilepathInMiddle(displayedPath, 200);
-                m_lastFileAct = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
-                m_plastFilesMenu->addAction(m_lastFileAct);
-                connect(m_lastFileAct, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
-                // m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
-                m_lastFilesMapper->setMapping(m_lastFileAct, path);
+                QAction *a = m_plastFilesMenu->addAction("no entries");
+                a->setEnabled(false);
+            }
+            else
+            {
+                // Create new menus
+                foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
+                {
+                    QString displayedPath = path;
+                    IOHelper::elideFilepathMiddle(displayedPath, 200);
+                    m_lastFileAct = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    m_plastFilesMenu->addAction(m_lastFileAct);
+                    connect(m_lastFileAct, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
+                    m_lastFilesMapper->setMapping(m_lastFileAct, path);
+                }
             }
         }
     }
@@ -772,16 +779,6 @@ void MainWindow::lastFileOpen(const QString &path)
     {
         QDir::setCurrent(QFileInfo(fileName).path());
         IOHelper::openGeneralFile(fileName, false, true, this);
-            QObject *seoO = AppManagement::getScriptEditorOrganizer();
-        if (seoO)
-        {
-            ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
-            if (sEO)
-            {
-                sEO->fileOpenedOrSaved(path);
-            }
-        }
-            //emit (openScriptRequest(fileName, this));
     }
 }
 
@@ -939,20 +936,6 @@ void MainWindow::mnuOpenFile()
     QFileInfo info(fileName);
 
     if (fileName.isEmpty()) return;
-
-    if (QFileInfo(fileName).exists())
-    {
-        QObject *seoO = AppManagement::getScriptEditorOrganizer(); 
-        if (seoO)
-        {
-            ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
-            if (sEO)
-            {
-                sEO->fileOpenedOrSaved(fileName);
-            }
-        }
-    }
-
 
     QDir::setCurrent(QFileInfo(fileName).path());
     IOHelper::openGeneralFile(fileName, false, true, this);

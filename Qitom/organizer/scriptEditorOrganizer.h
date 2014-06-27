@@ -45,8 +45,7 @@ public:
     void saveScriptState();
     RetVal restoreScriptState();
 
-    // TODO: is it right here... or better with setter and getter
-    QStringList m_lastUsedFiles;
+    const QStringList &getRecentlyUsedFiles() const { return m_recentlyUsedFiles; }
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
@@ -64,6 +63,8 @@ private:
 
     QMutex m_scriptStackMutex;                        //! mutex locking any changes to scriptDockElements
 
+    QStringList m_recentlyUsedFiles;
+
 signals:
     void addScriptDockWidgetToMainWindow(AbstractDockWidget *dockWidget, Qt::DockWidgetArea area); //! signal emitted if dockWidget should be added to docking area in main window
     void removeScriptDockWidgetFromMainWindow(AbstractDockWidget *dockWidget);                     //! signal emitted if dockWidget should be removed from main window
@@ -79,9 +80,9 @@ public slots:
 
     void openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
-    RetVal openScript(QString filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1);
+    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1);
 
-    ScriptDockWidget* openScriptRequested(QString filename, ScriptDockWidget* widget);
+    ScriptDockWidget* openScriptRequested(const QString &filename, ScriptDockWidget* widget);
 
     void pythonRunFileRequested(QString filename);
     void pythonDebugFileRequested(QString filename);

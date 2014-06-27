@@ -80,8 +80,8 @@ public:
 
     RetVal openFile(QString file, bool ignorePresentDocument = false);
 
-    inline QString getFilename() const {return filename; }
-    inline bool hasNoFilename() const { return filename.isNull(); }
+    inline QString getFilename() const {return m_filename; }
+    inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
     inline bool isBookmarked() const { return !bookmarkErrorHandles.empty(); }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
@@ -140,7 +140,7 @@ private:
     
     bool lineAcceptsBPs(int line);
 
-    RetVal changeFilename(QString newFilename);
+    RetVal changeFilename(const QString &newFilename);
 
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex fileSystemWatcherMutex;
@@ -201,7 +201,7 @@ private:
 
     int contextMenuLine;
 
-    QString filename;
+    QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
     int unnamedNumber;
 
     bool pythonBusy; //!< true: python is executing or debugging a script, a command...

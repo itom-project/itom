@@ -142,7 +142,7 @@ void ScriptEditorOrganizer::saveScriptState()
     // Last opened files save
     settings.beginWriteArray("lastScriptWidgets");
     counter = 0;
-    foreach(const QString &path, m_lastUsedFiles)
+    foreach(const QString &path, m_recentlyUsedFiles)
     {
         if (path != "")
         {
@@ -225,7 +225,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
         fi.setFile(settings.value("path").toString());
         if (fi.exists())
         {
-            m_lastUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
+            m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
         }
     }
     settings.endArray();
@@ -238,14 +238,14 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 {
-    m_lastUsedFiles.insert(0, QDir::toNativeSeparators(filename));
-    m_lastUsedFiles.removeDuplicates();
+    m_recentlyUsedFiles.prepend(QDir::toNativeSeparators(filename));
+    m_recentlyUsedFiles.removeDuplicates();
     int maxNumberLastFiles = 10;
-    if (m_lastUsedFiles.size() > maxNumberLastFiles) 
+    if (m_recentlyUsedFiles.size() > maxNumberLastFiles) 
     {
-        while (m_lastUsedFiles.size() > maxNumberLastFiles)
+        while (m_recentlyUsedFiles.size() > maxNumberLastFiles)
         {
-            m_lastUsedFiles.removeLast();
+            m_recentlyUsedFiles.removeLast();
         }
     }
 }
@@ -665,7 +665,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
     \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore *semaphore, int visibleLineNr)
+RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr)
 {
     RetVal retValue(retOk);
 
@@ -680,6 +680,7 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore *
         if ((*it)->activateTabByFilename(filename))
         {
             exist = true;
+            fileOpenedOrSaved(filename);
             (*it)->raiseAndActivate();
             if (visibleLineNr >= 0)
             {
@@ -737,7 +738,7 @@ RetVal ScriptEditorOrganizer::openScript(QString filename, ItomSharedSemaphore *
     \param widget ScriptDockWidget where this macro should appear as new tab. If NULL, new script window will be created
     \sa ScriptDockWidget
 */
-ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(QString filename, ScriptDockWidget* widget)
+ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(const QString &filename, ScriptDockWidget* widget)
 {
     bool exist = false;
 
@@ -752,6 +753,7 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(QString filename, S
         {
             exist = true;
             tempWidget = *it;
+            fileOpenedOrSaved(filename);
         }
     }
 
@@ -765,11 +767,6 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(QString filename, S
         }
          widget->openScript(filename, true);
          tempWidget = widget;
-    }
-
-    if (QFileInfo(filename).exists())
-    {
-        fileOpenedOrSaved(filename);
     }
 
     return tempWidget;

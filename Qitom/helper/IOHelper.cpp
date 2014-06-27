@@ -1057,7 +1057,7 @@ end:
     \param path The path that is supposed to be shortened
     \param pixelLength The length the path has to have after shortening
 */
-/*static*/ void IOHelper::shortenFilepathInMiddle(QString &path, int pixelLength)
+/*static*/ void IOHelper::elideFilepathMiddle(QString &path, int pixelLength)
 {
     QFont font;
     QFontMetrics fontm(font);

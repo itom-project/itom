@@ -62,7 +62,7 @@ public:
 
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
-    bool activateTabByFilename(QString filename, int line = -1);
+    bool activateTabByFilename(const QString &filename, int line = -1);
     bool activeTabEnsureLineVisible(int lineNr);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
@@ -72,7 +72,7 @@ protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;
     ScriptEditorWidget* getCurrentEditor() const;
 
-    int getIndexByEditor(ScriptEditorWidget* sew) const;
+    int getIndexByEditor(const ScriptEditorWidget* sew) const;
 
 
     void createActions();
@@ -160,7 +160,7 @@ private:
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */
 
-    void openScriptRequest(QString filename, ScriptDockWidget* scriptDockWidget);               /*!<  signal emitted if script with given filename should be opened in scriptDockWidget */
+    void openScriptRequest(const QString &filename, ScriptDockWidget* scriptDockWidget);               /*!<  signal emitted if script with given filename should be opened in scriptDockWidget */
 
     void dockScriptTab(ScriptDockWidget* widget, int index, bool closeDockIfEmpty = false);     /*!<  signal emitted if tab with given index of given ScriptDockWidget should be docked in a docked ScriptDockWidget */
     void undockScriptTab(ScriptDockWidget* widget, int index, bool undockToNewScriptWindow = false, bool closeDockIfEmpty = false);   /*!<  signal emitted if tab with given index of given ScriptDockWidget should be undocked in an undocked ScriptDockWidget */
