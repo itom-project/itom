@@ -199,27 +199,30 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className]) -> plots a dataObject in a newly created figure \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject in a newly created figure \n\
 \n\
-Plot an existing dataObject in not dockable, not blocking window. \n\
-The style of the plot will depend on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
+Plot an existing dataObject in dockable, not blocking window. \n\
+The style of the plot depends on the object dimensions.\n\
+If x-dim or y-dim are equal to 1, plot will be a line-plot, else a 2D-plot.\n\
 \n\
 Parameters \n\
 ----------- \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)");
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = {"data", "className", NULL};
+    const char *kwlist[] = {"data", "className", "properties", NULL};
     PyObject *data = NULL;
+    PyObject *propDict = NULL;
 //    int areaIndex = 0;
     char* className = NULL;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|s", const_cast<char**>(kwlist), &data, &className))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|sO!", const_cast<char**>(kwlist), &data, &className, &PyDict_Type, &propDict))
     {
         return NULL;
     }
@@ -253,6 +256,32 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         return NULL;
     }
 
+    QVariantMap properties;
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        {
+            keyS = PythonQtConversion::PyObjGetString(key,true,ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if(valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                Py_DECREF(propDict);
+                return NULL;
+            }
+        }
+    }
+
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = 0;
     int areaRow = 0;
@@ -265,7 +294,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while plotting data object");
@@ -372,7 +401,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className]) -> show a camera live image in a newly created figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure\n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
@@ -382,18 +411,47 @@ Parameters \n\
 cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)");
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = {"cam", "className", NULL};
+    const char *kwlist[] = {"cam", "className", "properties", NULL};
     PythonPlugins::PyDataIOPlugin *cam = NULL;
+    PyObject *propDict = NULL;
     int areaIndex = 0;
     char* className = NULL;
     bool ok = true;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!|s", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &className))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!|sO!", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &className, &PyDict_Type, &propDict))
     {
         return NULL;
+    }
+
+    QVariantMap properties;
+    
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        {
+            keyS = PythonQtConversion::PyObjGetString(key,true,ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if(valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                Py_DECREF(propDict);
+                return NULL;
+            }
+        }
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -408,7 +466,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image of camera");

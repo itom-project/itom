@@ -2642,7 +2642,7 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
-ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -2694,6 +2694,11 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
                     retval += ito::RetVal(ito::retError, 0, tr("unsupported data type").toLatin1().data());
                                 
                 *objectID = addObjectToList(destWidget);
+
+                if (properties.size() > 0)
+                {
+                    retval += writeProperties(*objectID, properties, NULL);
+                }
             }
             else
             {
@@ -2716,7 +2721,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -2753,6 +2758,11 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
                 retval += fig->liveImage(dataIO, areaRow, areaCol, className, &destWidget);
 
                 *objectID = addObjectToList(destWidget);
+
+                if (properties.size() > 0)
+                {
+                    retval += writeProperties(*objectID, properties, NULL);
+                }
             }
             else
             {

@@ -7,8 +7,8 @@
 Automatic loading and saving of plugin parameters
 =================================================
 
-|itom| has the optional ability, that all plugin parameters (type *Param*), which are part of the **m_params** vector of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
-|itom| has the optional ability, that all plugin parameters (of type **Param** or **ParamBase**), which are part of the **m_params** vector of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
+|itom| has the optional ability, that all plugin parameters (type *Param*), which are part of the **m_params** map of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
+|itom| has the optional ability, that all plugin parameters (of type **Param** or **ParamBase**), which are part of the **m_params** map of the plugin-class and do not have the *typeNoAutoSave*-flag defined, can be stored in a plugin-specific xml-file when the plugin instance is closed. This saving is not only dependent on the plugin but also on its unique identifier.
 
 Additionally, the decision whether these parameters should be saved or not, is set by the member variable **m_autoSavePolicy** of the interface class of the plugin (see :ref:`plugin-interface-class`). This variable can have the following values:
 
@@ -19,7 +19,7 @@ Additionally, the decision whether these parameters should be saved or not, is s
         autoSaveNever           = 0x2  /*!< never saves parameters to xml-file at shutdown (default) */
     };
     
-If the member has the value *autoSaveAlways*, all parameters contained in the vector *m_params* of the plugin instance are saved in a xml-subtree. This subtree is dependent on the unique identifier of the plugin. Remember, that only plugins which do not have the flag *typeNoAutoSave* will be saved (see :ref:`plugin-params`).
+If the member has the value *autoSaveAlways*, all parameters contained in the map *m_params* of the plugin instance are saved in a xml-subtree. This subtree is dependent on the unique identifier of the plugin. Remember, that only plugins which do not have the flag *typeNoAutoSave* will be saved (see :ref:`plugin-params`).
 
 Inversely, saved parameters in a plugin specific xml-file can also be set after that the plugin instance has been created and initialized (with the mandatory and optional parameters given by the constructor in python). The loading of these xml-parameters is dependent on the value of the member variable **m_autoLoadPolicy** of the plugin's interface class. This variable can have the following values:
 

@@ -908,7 +908,7 @@ void AIManagerWidget::mnuShowLiveImage()
             QSharedPointer<unsigned int> figHandle(new unsigned int);
             *figHandle = 0; //new figure will be requested
 
-            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, NULL);
+            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, QVariantMap(), NULL);
 
 			if (retval.containsError())
 			{

@@ -26,7 +26,7 @@ or is not able to plot the type of data object, itom falls back to the default p
 
 .. code-block:: python
     
-    plot(data1d, "Itom1DQwtFigure")
+    plot(data1d, "Itom1DQwtPlot")
 
 The result of both examples can be like this:
 
@@ -78,7 +78,7 @@ You can also show the live image of any camera using the GUI. Right-click on the
 .. figure:: images/liveImageGUI.png
     :scale: 70%
 
-Changing properties of plots
+Properties of plots
 -----------------------------
 
 Any plots have properties defined, which indicate the appearance or currently depicted data object or camera. To access these cameras you need to get the
@@ -123,3 +123,11 @@ There are two other important properties that let you change the displayed data 
     h["camera"] = dataIO("DummyGrabber")
 
 These properties are also the way to set the content of plot widgets, that are integrated in your user-defined GUIs.
+
+The properties can also be changed using the properties toolbox of each plot or live image that is accessible via the menu *View >> Properties*. Furthermore it is possible to directly
+set some properties by passing a dictionary with all name, values pairs to the 'properties' argument of commands :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage`:
+
+.. code-block:: python  
+    
+    plot(data2d, properties={"yAxisFlipped":True, "title":"My self configured plot"})
+

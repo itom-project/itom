@@ -421,8 +421,8 @@ public slots:
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
 //    RetVal figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
-    RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
-    RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     
     RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
