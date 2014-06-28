@@ -96,6 +96,14 @@ public:
     virtual inline QString getColorMap(void) const { return QString(); }
     virtual inline void setColorMap(QString) { return; }
 
+    //! plot-specific render function to enable more complex printing in subfigures ...
+    virtual inline QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution) 
+    {
+        QPixmap emptyMap(xsize, ysize);
+        emptyMap.fill(Qt::green);
+        return emptyMap;
+    }
+
 protected:
     QHash<QString, QSharedPointer<ito::DataObject> > m_dataPointer;
     bool m_cameraConnected;

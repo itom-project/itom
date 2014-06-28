@@ -216,6 +216,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPclFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
 )
 
