@@ -80,6 +80,20 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
     public:
         enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
+        enum CompilerFeatures 
+        { 
+            tOpenCV        = 0x01,
+            tPointCloudLib = 0x02
+        };
+
+        int getCompilerFeatures(void) const 
+        {
+            int retval = tOpenCV;
+            #if defined USEPCL || ITOM_POINTCLOUDLIBRARY
+            retval |= tPointCloudLib;
+            #endif
+            return retval;
+        }
 
         struct ToolBarItem {
             ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}
