@@ -68,8 +68,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     m_itemHash.clear();
 
     m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
-    m_pyTypeBlacklist = QSet<QString>() << "builtin_function_or_method" << "module" << "type" << "function"; // << "dict"; //blacklist of python types, which should not be displayed in the workspace
-    
+  
    /* '__', 'NoneType', 'type',\
         'bool', 'int', 'long', 'float', 'complex',\
         'str', 'unicode', 'tuple', 'list',\
@@ -276,7 +275,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
-                name.prepend( "[" + item->text(0) + "]" );
+                name.prepend( "[" + tempItem->text(0) + "]" );
                 tempItem = tempItem->parent();
             }
             name.prepend( tempItem->text(0) );

@@ -30,6 +30,7 @@
 namespace ito
 {
 
+//-----------------------------------------------------------------------------------------------------------
 PyWorkspaceItem::~PyWorkspaceItem()
 {
     foreach(const PyWorkspaceItem *child, m_childs)
@@ -39,6 +40,7 @@ PyWorkspaceItem::~PyWorkspaceItem()
     m_childs.clear();
 }
 
+//-----------------------------------------------------------------------------------------------------------
 PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem &other)
 {
     m_name = other.m_name;
@@ -52,28 +54,31 @@ PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem &other)
     m_compatibleParamBaseType = other.m_compatibleParamBaseType;
 }
 
+//-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)
 {
     m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
-    m_blackListType = QSet<QString>() << "builtin_function_or_method" << "module" << "type" << "function"; // << "dict"; //blacklist of python types, which should not be displayed in the workspace
+    m_blackListType = QSet<QByteArray>() << "builtin_function_or_method" << "module" << "type" << "function"; // << "dict"; //blacklist of python types, which should not be displayed in the workspace
 
     dictUnicode = PyUnicode_FromString("__dict__");
 }
 
+//-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::~PyWorkspaceContainer()
 {
     Py_XDECREF(dictUnicode);
 }
 
+//-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::clear()
 {
     loadDictionary(NULL, "");
 }
 
+//-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentItem)
 {
     QStringList deleteList;
-    
     
     if(fullNameParentItem == "")
     {
@@ -103,9 +108,9 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentI
         loadDictionaryRec(obj, fullNameParentItem, parent, deleteList);
         emit updateAvailable(parent, fullNameParentItem, deleteList);
     }
-    
 }
 
+//-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
     PyObject* keys = NULL;
@@ -286,7 +291,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
     }
 }
 
-
+//-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int & /*m_compatibleParamBaseType*/)
 {
     Py_ssize_t size;
@@ -536,7 +541,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
     }
 }
 
-
+//-----------------------------------------------------------------------------------------------------------
 ito::PyWorkspaceItem* PyWorkspaceContainer::getItemByFullName(const QString &fullname)
 {
     PyWorkspaceItem* result = &m_rootItem;

@@ -117,7 +117,7 @@ private:
     void loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
     void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
 
-    QSet<QString> m_blackListType;
+    QSet<QByteArray> m_blackListType;
     bool m_globalNotLocal;
 
     QString m_delimiter;
