@@ -27,6 +27,7 @@
 
 namespace ito
 {
+    //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \class AlgoInterfaceValidator
         \brief The class AlgoInterfaceValidator provides validators and checks in order to verify that
@@ -39,6 +40,7 @@ namespace ito
         \sa AddInManager, AddInAlgo::tAlgoInterface, AddInAlgo::FilterDef, AddInAlgo::AlgoWidgetDef
     */
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! constructor
     /*!
         Calls method init in order to load the requirements and conditions for each interface, defined
@@ -50,6 +52,7 @@ namespace ito
         retValue += init();
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! destructor
     AlgoInterfaceValidator::~AlgoInterfaceValidator()
     {
@@ -57,6 +60,7 @@ namespace ito
     }
 
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AlgoInterfaceValidator::getInterfaceParameters(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::ParamBase> &mandParams, QVector<ito::ParamBase> &outParams) const
     {
         QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind( (int)iface );
@@ -80,6 +84,7 @@ namespace ito
         return ito::RetVal(ito::retError,0,tr("interface not found").toLatin1().data());
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! loads the requirements for every interface defined in the enumeration AddInAlgo::tAlgoInterface
     /*!
         The requirements of every interface can be given by several things:
@@ -159,6 +164,7 @@ namespace ito
         return retVal;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! verifies and parses the meta information string of any filter or algoWidget
     /*!
         Sometimes a certain algorithm interface needs that the user gives additional information about the 
@@ -220,6 +226,7 @@ namespace ito
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! addInterface
     /*!
         Registers the requirements for any interface given by the enumeration value AddInAlgo::tAlgoInterface.
@@ -255,6 +262,7 @@ namespace ito
     }
 
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! verifies a given filter with respect to its indicated interface
     /*!
         If the given filter pretends to implement a certain interface, the parameters of the filter are
@@ -285,6 +293,7 @@ namespace ito
         return valid && valid2;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! verifies a given algo-widget with respect to its indicated interface
     /*!
         If the given algo-widget pretends to implement a certain interface, the parameters of the algo-widget are
@@ -315,6 +324,15 @@ namespace ito
         return valid && valid2;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*!
+        \param iface
+        \param filterParamFunc
+        \param ret
+        \return bool
+
+        \sa isValid, getTags
+    */
     bool AlgoInterfaceValidator::isValid(const ito::AddInAlgo::tAlgoInterface iface, const ito::AddInAlgo::t_filterParam filterParamFunc, ito::RetVal &ret) const
     {
         if(iface == ito::AddInAlgo::iNotSpecified) return true;
@@ -380,6 +398,15 @@ namespace ito
         return true;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*!
+        \param paramTemplate
+        \param param
+        \param ret
+        \return AlgoInterfaceValidator::tCompareResult
+
+        \sa 
+    */
     AlgoInterfaceValidator::tCompareResult AlgoInterfaceValidator::compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret) const
     {
         //check whether type is equal
@@ -404,6 +431,17 @@ namespace ito
         return compareMetaParam(metaTemplate, meta, paramTemplate.getName(), param.getName(), ret);
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*!
+        \param metaTemplate
+        \param meta
+        \param nameTemplate
+        \param name
+        \param ret
+        \return AlgoInterfaceValidator::tCompareResult
+
+        \sa 
+    */
     AlgoInterfaceValidator::tCompareResult AlgoInterfaceValidator::compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret) const
     {
         if(metaTemplate == NULL && meta == NULL) 

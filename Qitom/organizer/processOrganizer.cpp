@@ -35,11 +35,13 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ProcessOrganizer::ProcessOrganizer()
 {
     m_processes.clear();    
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ProcessOrganizer::~ProcessOrganizer()
 {
     QMultiHash<QString, QPair<QProcess*, bool> >::iterator it = m_processes.begin();
@@ -101,7 +103,13 @@ ProcessOrganizer::~ProcessOrganizer()
     m_processes.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
 
+    \param binaryName
+    \return QString
+*/
 /*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
 {
 #ifdef linux
@@ -146,7 +154,13 @@ ProcessOrganizer::~ProcessOrganizer()
 #endif
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
 
+    \param forceToCloseAll
+    \return RetVal
+*/
 RetVal ProcessOrganizer::collectGarbage(bool forceToCloseAll /*= false*/)
 {
     QMultiHash<QString, QPair<QProcess*, bool> >::iterator it = m_processes.begin();
@@ -169,6 +183,13 @@ RetVal ProcessOrganizer::collectGarbage(bool forceToCloseAll /*= false*/)
     return retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param name
+    \return QProcess
+*/
 QProcess* ProcessOrganizer::getFirstExistingProcess(const QString &name)
 {
     QMultiHash<QString, QPair<QProcess*, bool> >::const_iterator i = m_processes.constFind(name);
@@ -179,6 +200,16 @@ QProcess* ProcessOrganizer::getFirstExistingProcess(const QString &name)
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param name
+    \param tryToUseExistingProcess
+    \param existingProcess
+    \param closeOnFinalize
+    \return QProcess
+*/
 QProcess* ProcessOrganizer::getProcess(const QString &name, bool tryToUseExistingProcess, bool &existingProcess, bool closeOnFinalize)
 {
     QProcess *process = NULL;
@@ -206,16 +237,36 @@ QProcess* ProcessOrganizer::getProcess(const QString &name, bool tryToUseExistin
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param exitCode
+    \param exitStatus
+*/
 void ProcessOrganizer::processFinished ( int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/ )
 {
     collectGarbage();
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param error
+*/
 void ProcessOrganizer::processError (QProcess::ProcessError /*error*/ )
 {
     collectGarbage();
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+*/
 void ProcessOrganizer::readyReadStandardOutput()
 {
     //the output message is mainly useful in order to get the socket-number of the designer (started as server)
@@ -243,6 +294,13 @@ void ProcessOrganizer::readyReadStandardOutput()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param windowName
+    \return bool
+*/
 bool ProcessOrganizer::bringWindowsOnTop(const QString &windowName)
 {
 #ifndef linux

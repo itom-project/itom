@@ -79,6 +79,11 @@ HelpSystem::~HelpSystem()
 }
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return RetVal
+*/
 RetVal HelpSystem::rebuildHelpIfNotUpToDate()
 {
     RetVal retValue(retOk);
@@ -116,6 +121,11 @@ RetVal HelpSystem::rebuildHelpIfNotUpToDate()
 }
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return QString
+*/
 QString HelpSystem::getHelpCollectionAbsFileName() const
 {
     if(m_upToDate)
@@ -130,6 +140,13 @@ QString HelpSystem::getHelpCollectionAbsFileName() const
 
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param qchFiles
+    \param checksum
+    \return RetVal
+*/
 RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checksum)
 {
     QStringList baseFolders;
@@ -182,6 +199,12 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
 }
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param checksum
+    \return RetVal
+*/
 RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
 {
     QStringList baseFolders;
@@ -229,6 +252,12 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
 }
 
 //---------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param checksum
+    \return RetVal
+*/
 RetVal HelpSystem::getCheckSumOfPluginBuild(quint16 &checksum)
 {
     ito::RetVal retval;
@@ -264,6 +293,14 @@ RetVal HelpSystem::getCheckSumOfPluginBuild(quint16 &checksum)
 }
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param helpDir
+    \param projectFileName
+    \param checksum
+    \return RetVal
+*/
 RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, quint16 &checksum)
 {
     if(helpDir.exists(projectFileName) == false)
@@ -336,6 +373,14 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
 }
 
 //-----------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param qchFiles
+    \param checksum
+    \param helpDir
+    \return RetVal
+*/
 RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum, QDir &helpDir)
 {
     helpDir.setNameFilters(QStringList("*.qch"));
@@ -443,6 +488,12 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param checksum
+    \return RetVal
+*/
 RetVal HelpSystem::buildPluginHelp(quint16 checksum)
 {
     RetVal retval;
@@ -681,6 +732,18 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param pluginFolder
+    \param buildDir
+    \param sourceDir
+    \param tocs
+    \param keywords
+    \param files
+    \param mainFileInfo
+    \return RetVal
+*/
 RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buildDir, QDir &sourceDir, QString &tocs, QString &keywords, QString &files, QPair<QString,QString> &mainFileInfo)
 {
     ito::RetVal retval;
@@ -728,6 +791,18 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param pluginFolder
+    \param qhpFile
+    \param tocs
+    \param keywords
+    \param files
+    \param filesToCopy
+    \param mainFileInfo
+    \return RetVal
+*/
 RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
     QRegExp regExp("^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$");
@@ -751,6 +826,14 @@ RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, Q
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param in
+    \param hrefPrefix
+    \param mainFile
+    \return QString
+*/
 QString HelpSystem::modifyTocs(const QString &in, const QString &hrefPrefix, QString &mainFile)
 {
 
@@ -785,6 +868,13 @@ QString HelpSystem::modifyTocs(const QString &in, const QString &hrefPrefix, QSt
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param in
+    \param hrefPrefix
+    \return QString
+*/
 QString HelpSystem::modifyKeywords(const QString &in, const QString &hrefPrefix)
 {
 
@@ -815,6 +905,15 @@ QString HelpSystem::modifyKeywords(const QString &in, const QString &hrefPrefix)
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param in
+    \param hrefPrefix
+    \param excludeContent
+    \param filesToCopy
+    \return QString
+*/
 QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, const QStringList &excludeContent, QStringList &filesToCopy)
 {
     //this file searches all ref="..." substrings and replaces ... by hrefPrefix\...
@@ -857,6 +956,13 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
 }
 
 //-----------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param htmlFile
+    \param prefix
+    \return RetVal
+*/
 RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &prefix)
 {
     ito::RetVal retval;
@@ -880,6 +986,12 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param directory
+    \return bool
+*/
 /*static*/ bool HelpSystem::removeDir(const QDir &directory)
 {
     bool result = true;
@@ -909,6 +1021,13 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param src
+    \param dst
+    \return bool
+*/
 /*static*/ bool HelpSystem::copyDir(const QDir &src, const QDir &dst)
 {
     removeDir(dst);
@@ -951,6 +1070,13 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
 }
 
 //-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param srcFileInfo
+    \param dstFolder
+    \return bool
+*/
 /*static*/ bool HelpSystem::copyFile(const QFileInfo &srcFileInfo, QDir &dstFolder)
 {
     //check if dstFolder exists

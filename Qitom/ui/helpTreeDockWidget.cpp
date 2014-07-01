@@ -39,7 +39,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// on_start
+// Constructor
 HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WindowFlags flags)
     : QWidget(parent, flags),
     m_historyIndex(-1),
@@ -105,14 +105,20 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// GUI-on_close
+// Destructor
 HelpTreeDockWidget::~HelpTreeDockWidget()
 {
     saveIni();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Get The Filters and put them into a node of the Tree
+//! Get The Filters and put them into a node of the Tree
+/*! 
+
+    \param fOrW
+    \param model
+    \param iconGallery
+*/
 void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery)
 {
     // Map der Plugin-Namen und Zeiger auf das Node des Plugins
@@ -296,7 +302,13 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Get the DocString from a Filter and parse is to html
+//! Get the DocString from a Filter and parse is to html
+/*! This function puts all information of a Widget or Plugin together and builds the html help text.
+
+    \param filterpath path with all parents
+    \param type the enumeration itemType is defined in the header file helpTreeDockWidget.h
+    \return ito::RetVal
+*/
 ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filterpath, itemType type)
 {
     ito::RetVal retval;
@@ -781,8 +793,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     return retval;
 }
 
-// changes the strings comming from the system
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Reformats all help strings that come from the widgets and plugins
+/*! All newLine characters are replaced by the html tag <br> 
+
+    \param input The text that is supposed to be reformated
+    \return QString contains the reformated text
+*/
 QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
 {
     QString output = input;
@@ -790,8 +807,15 @@ QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
     return output;
 }
 
-// Creates the Parameter and Return section in  html-Code
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Creates the Parameter- and Return- sections in  html-Code
+/*! 
+
+    \param sectionname
+    \param paramVector
+    \param content
+    \return RetVal
+*/
 ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content)
 {
     ito::RetVal retval;
@@ -832,8 +856,14 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
     return retval;
 }
 
-// Parses every single Parameter
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Parses a single Parameter to html code (called by parseParamVector)
+/*! 
+
+    \param tmpl
+    \param param
+    \return QString
+*/
 QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &param)
 {
     QString output = tmpl;
@@ -1054,6 +1084,12 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum of a variable is equal to the minimum of the type
+/*! For example if a range is min 0 and it큦 a byte, this function returns -inf
+
+    \param minimum
+    \return QString int as String or -inf
+*/
 QString HelpTreeDockWidget::minText(int minimum) const
 {
     if (minimum == std::numeric_limits<int>::min())
@@ -1064,6 +1100,12 @@ QString HelpTreeDockWidget::minText(int minimum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum of a variable is equal to the minimum of the type
+/*! For example if a range is min 0 and it큦 a byte, this function returns -inf
+
+    \param minimum
+    \return double as String or -inf
+*/
 QString HelpTreeDockWidget::minText(double minimum) const
 {
     if (std::abs(minimum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
@@ -1074,6 +1116,12 @@ QString HelpTreeDockWidget::minText(double minimum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum of a variable is equal to the minimum of the type
+/*! For example if a range is min 0 and it큦 a byte, this function returns -inf
+
+    \param minimum
+    \return char as String or -inf
+*/
 QString HelpTreeDockWidget::minText(char minimum) const
 {
     if (minimum == std::numeric_limits<char>::min())
@@ -1084,6 +1132,12 @@ QString HelpTreeDockWidget::minText(char minimum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range maximum of a variable is equal to the maximum of the type
+/*! For example if a range is max 255 and it큦 a byte, this function returns inf
+
+    \param maximum
+    \return maximum as String or inf
+*/
 QString HelpTreeDockWidget::maxText(int maximum) const
 {
     if (maximum == std::numeric_limits<int>::max())
@@ -1094,6 +1148,12 @@ QString HelpTreeDockWidget::maxText(int maximum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range maximum of a variable is equal to the maximum of the type
+/*! For example if a range is max 255 and it큦 a byte, this function returns inf
+
+    \param maximum
+    \return maximum as String or inf
+*/
 QString HelpTreeDockWidget::maxText(double maximum) const
 {
     if (std::abs(maximum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
@@ -1104,6 +1164,12 @@ QString HelpTreeDockWidget::maxText(double maximum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range maximum of a variable is equal to the maximum of the type
+/*! For example if a range is max 255 and it큦 a byte, this function returns inf
+
+    \param maximum
+    \return maximum as String or inf
+*/
 QString HelpTreeDockWidget::maxText(char maximum) const
 {
     if (maximum == std::numeric_limits<char>::max())
@@ -1114,7 +1180,11 @@ QString HelpTreeDockWidget::maxText(char maximum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Filter the events for showing and hiding the treeview
+//! Filter the events for showing and hiding the treeview
+/*! 
+    \param event
+    \return bool
+*/
 bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 {
     // = qobject_cast<ito::AbstractDockWidget*>(parent());
@@ -1142,7 +1212,9 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
  }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Save Gui positions to Main-ini-File
+//! Save Gui positions to Main-ini-File
+/*! 
+*/
 void HelpTreeDockWidget::saveIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -1153,7 +1225,9 @@ void HelpTreeDockWidget::saveIni()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Load Gui positions to Main-ini-File
+//! Load Gui positions to Main-ini-File
+/*! 
+*/
 void HelpTreeDockWidget::loadIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -1164,7 +1238,9 @@ void HelpTreeDockWidget::loadIni()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Load SQL-DatabasesList in m_ Variable when properties changed
+//! Load SQL-DatabasesList in m_ Variable when properties changed
+/*! 
+*/
 void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
     
@@ -1203,7 +1279,16 @@ void HelpTreeDockWidget::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Build Tree - Bekommt das Model, das zuletzt erstellte Item und eine Liste mit dem Pfad
+//! Creates the model (tree) from the given data. 
+/*! The function is recursiv. It always calles itself with the rest of the list that is not in the tree yet.
+
+    \param model main model of the Widget
+    \param parent parent that might have children. This function is going to find them and add them from the list.
+    \param parentPath absolute path of the parent
+    \param items list of all sql items that are not processed yet
+    \param iconGallery Gallery with icons for classes, modules etc.
+    
+*/
 /*static*/ void HelpTreeDockWidget::createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
 {
     SqlItem firstItem;
@@ -1262,7 +1347,17 @@ void HelpTreeDockWidget::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Get Data from SQL File and store it in a table
+//! Get Data from SQL File and store it in a table
+/*! This function openes a sql database that contains all the static help informations. All these informations are written into a list.
+    createItemRek creates the model from this list.
+
+    \param filter not used anymore
+    \param file the path of the sql database
+    \param items this parameter is  filled with a list of SqlItems (struct from the header file)
+    \return ito::RetVal
+
+    \sa createItemRek
+*/
 /*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<SqlItem> &items)
 {
     ito::RetVal retval = ito::retOk;
@@ -1313,7 +1408,11 @@ void HelpTreeDockWidget::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Reload Database and clear search-edit and start the new Thread
+//! Reload Database and clear search-edit and start the new Thread
+/*! This function starts a new thread that loads the database.
+  
+  \sa dbLoaderFinished
+*/
 void HelpTreeDockWidget::reloadDB()
 {
     if (dbLoaderWatcher.isRunning())
@@ -1343,6 +1442,11 @@ void HelpTreeDockWidget::reloadDB()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This slot is called when the loading thread is finished
+/*! When this slot is called, the database is loaded and the main model created
+  
+  \sa reloadDB, loadDBinThread
+*/
 void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 {
     ito::RetVal retval = dbLoaderWatcher.future().resultAt(0);
@@ -1378,7 +1482,18 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Load the Database in different Thread
+//! Load the Databases in different Thread
+/*! This function calls createItemRek for each Database. The show parameter is an enumeration from the headerfile.
+    It stores which kind of help is included into the model. The options can be set in the properties dialog.
+
+  \param path
+  \param includedDBs list of database files (paths)
+  \param mainModel pointer to the mainmodel
+  \param iconGallery the gallery is passed to createItemRek
+  \param show this parameter is an enumeration that is filled by the settings dialog.
+
+  \sa reloadDB, loadDBinThread, createItemRek
+*/
 /*static*/ ito::RetVal HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show)
 {
     QList<SqlItem> sqlList;
@@ -1527,7 +1642,12 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Display the Help-Text
+//! Displayes the help text in the textbrowser after an element from the tree was clicked.
+/*! This function looks for a entry in the database that is specified by the path parameter.
+    This text is afterwards passed to all the different parser functions in this class.
+  
+  \param path Path to the entry, read from the model.
+*/
 ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
 { 
     ito::RetVal retval = ito::retOk;
@@ -1596,8 +1716,14 @@ void HelpTreeDockWidget::liveFilter(const QString &filterText)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Returns a list containing the protocol[0] and the real link[1]
+// 
 // prot|||....link.....        
+//! Returns a list containing the protocol[0] and the real link[1]
+/*! This functions looks for different protocols in the links that can be clicked inside the textBrowser
+    
+    \param link link link that is analysed
+    \return returns a list of all parts of the link
+*/
 QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
     QStringList result;
@@ -1728,7 +1854,14 @@ void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelInde
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// finds a Modelindex related to MainModel (not FilterModel)belonging to an Itemname
+//! finds a Modelindex related to MainModel (not FilterModel)belonging to an Itemname
+/*!
+
+    \param type of the item (for more information see type enumeration in header file)
+    \param path path to the item splitted into a list
+    \param current item whose children are searched
+    \return QModelIndex
+*/
 QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, QStandardItem* current)
 {
     QStandardItem *temp;
@@ -1742,7 +1875,6 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
         for (int j = 0; j < counts; ++j)
         {
             temp = current->child(j,0);
-            QString Test = temp->text();
             if (temp->data(m_urType) == 1)
             {
                 if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
@@ -1756,7 +1888,6 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
             }
             else
             {
-                QString Test2 = temp->text();
                 if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
                 {
                     return temp->index();

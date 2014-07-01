@@ -82,6 +82,11 @@ BreakPointModel::~BreakPointModel()
 }
 
 //-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
+//! Saves the breakpoint model into the settings
+/*!
+    
+*/
 RetVal BreakPointModel::saveState()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -108,6 +113,10 @@ RetVal BreakPointModel::saveState()
 }
 
 //-------------------------------------------------------------------------------------------------------
+//! Restores the breakpoint model from the settings
+/*!
+
+*/
 RetVal BreakPointModel::restoreState()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -521,6 +530,10 @@ QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, i
 }
 
 //-------------------------------------------------------------------------------------------------------
+//! This function returns the number of breakpoints in the given File
+/*!
+    \return the number is returned as an integer
+*/
 int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
 {
     if (fileIdx >= 0 && fileIdx < m_scriptFiles.size())
@@ -542,9 +555,9 @@ int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
 }
 
 //-------------------------------------------------------------------------------------------------------
-//! returns the QModelindex of the given File
+//! This function returns the QModelindex of the given File
 /*!
-    
+    \return QModelIndex of the given file
 */
 QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) const
 {
@@ -645,8 +658,9 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
 }
 
 //-------------------------------------------------------------------------------------------------------
+//! returns a List of all Breakpoints, doesn't matter in which file they are.
 /*
-- returns a List of all Breakpoints, doesn't matter in which file they are
+    \return QModelIndexList of all Breakpoints whereever they are
 */
 QModelIndexList BreakPointModel::getAllBreakPointIndizes()
 {
@@ -672,12 +686,11 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineN
 }
 
 //-------------------------------------------------------------------------------------------------------
-//! returns ... for given QModelIndex
+//! returns BreakPointItem for given QModelIndex
 /*!
     \param index given QModelIndex
-    \return ...
+    \return BreakPointItem to the QModelIndex taht was given
 */
-//TODO: Change secondindex from i to j
 BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 {
     if (index.isValid() && index.internalPointer() != NULL)
@@ -690,12 +703,12 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
                 int breakpointIndex = index.row();
 
                 int count = -1;
-                for (int i = 0; i < m_breakpoints.size(); ++i)
+                for (int j = 0; j < m_breakpoints.size(); ++j)
                 {
-                    if (m_breakpoints[i].filename == filename) count++;
+                    if (m_breakpoints[j].filename == filename) count++;
                     if (count == breakpointIndex)
                     {
-                        return m_breakpoints[i];
+                        return m_breakpoints[j];
                     }
                 }
             }
@@ -706,10 +719,10 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 }
 
 //-------------------------------------------------------------------------------------------------------
-//! returns ... for given QModelIndex
+//! returns the index for given QModelIndex
 /*!
     \param index given QModelIndex
-    \return ...
+    \return index as an integer
 */
 int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
 {
@@ -739,6 +752,10 @@ int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
 }
 
 //-------------------------------------------------------------------------------------------------------
+//! This function returns a list of all files that contain breakpoints.
+/*!
+    \return QModelIndexList of all files that contain breakpoints.
+*/
 QModelIndexList BreakPointModel::getAllFileIndexes()
 {
     QModelIndexList retList;

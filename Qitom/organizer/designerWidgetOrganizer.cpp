@@ -100,6 +100,11 @@ DesignerWidgetOrganizer::~DesignerWidgetOrganizer()
 }
 
 //------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \return 
+*/
 RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 {
     QDir dir(QCoreApplication::applicationDirPath());
@@ -293,6 +298,12 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param className
+    \return bool
+*/
 bool DesignerWidgetOrganizer::figureClassExists(const QString &className)
 {
     foreach(const FigurePlugin &plugin, m_figurePlugins)
@@ -306,6 +317,16 @@ bool DesignerWidgetOrganizer::figureClassExists(const QString &className)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param className
+    \param plotDataTypesMask
+    \param plotDataFormatsMask
+    \param plotFeaturesMask
+    \param ok
+    \return ito::RetVal
+*/
 ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QString &className, int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask, bool *ok)
 {
     ito::RetVal retVal;
@@ -343,6 +364,14 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param plotDataTypesMask
+    \param plotDataFormatsMask
+    \param plotFeaturesMask
+    \return QList<FigurePlugin>
+*/
 QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask)
 {
     QList<FigurePlugin> figurePlugins;
@@ -360,6 +389,12 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(int plotDa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param figureCat
+    \return QList<FigurePlugin>
+*/
 QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(const FigureCategory &figureCat)
 {
     QList<FigurePlugin> figurePlugins;
@@ -385,6 +420,14 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(const Figu
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param figureCategory
+    \param defaultClassName
+    \param retVal
+    \return QString
+*/
 QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal)
 {
     if (!m_figureCategories.contains(figureCategory))
@@ -501,6 +544,13 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param figureCategory
+    \param defaultClassName
+    \return RetVal
+*/
 RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCategory, const QString &defaultClassName)
 {
     if (!m_figureCategories.contains(figureCategory))
@@ -516,6 +566,15 @@ RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCateg
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! short
+/*! long
+
+    \param className
+    \param parentWidget
+    \param name
+    \param winMode
+    \return QWidget
+*/
 QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget *parentWidget, const QString &name /*= QString()*/, AbstractFigure::WindowMode winMode /*= AbstractFigure::ModeStandaloneInUi*/)
 {
     QPluginLoader *factory = NULL;

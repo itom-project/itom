@@ -48,6 +48,7 @@ namespace ito
     wrappers for all public methods; here the class WidgetWrapper is a manually created wrapper for the most important methods.
 */
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
     initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed 
@@ -60,11 +61,13 @@ WidgetWrapper::WidgetWrapper() : initialized(false)
     initMethodHash();
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 WidgetWrapper::~WidgetWrapper()
 {
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! initializes the hash table containing information about all methods which should be wrapped.
 /*!
     Every public method of a class derived from QObject can be made available for access by Python if some information
@@ -135,6 +138,7 @@ void WidgetWrapper::initMethodHash()
     }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! returns a list of MethodDescription, which contains all wrapped methods of the given object and all its base classes.
 /*!
     Methods, contained in this list, can be accessed for example by python finally using the method call.
@@ -161,6 +165,7 @@ MethodDescriptionList WidgetWrapper::getMethodList(QObject *object)
     return list;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! creates an instance of MethodDescription which contains all necessary information in order to call the corresponding method at runtime using the method \sa call.
 /*!
     This method creates the neccesary input for the constructor of MethodDescription, which has pretty much the same functionality than
@@ -226,6 +231,7 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
     return method;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! call method which calls a wrapped method of any class derived from QObject at runtime. This call is for exampled executed by UiOrganizer::callMethod.
 /*!
     This method uses the class-name of object and checks if there is an call-implementation for the given methodIndex. If so, the
@@ -421,6 +427,7 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     return false;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 //! Method is able to handle unexisting properties and map them to existing ones (compatibility to QtDesigner)
 /*!
     In QtDesigner, sometimes it is possible to change properties that are not directly extracted from the QMetaObject-system.

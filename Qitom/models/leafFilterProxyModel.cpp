@@ -26,11 +26,30 @@
 namespace ito
 {
  
+/*!
+    \class LeafFilterProxyModel
+    \brief  This class provides a special search function to the help model. The normal filtermodel hides nodes if they don´t contain
+            the searched term, even though the children contain it.
+
+            Example
+            Searchtext = "Leaf1"
+            NodeA
+            +- Leaf1
+            +- NodeB
+
+            The standard model would hide the entire NodeA because NodeA != Leaf1
+
+            This Model here checks the children first and still shows the unmatching parent if a child matches the searched term.
+
+*/
+
+//----------------------------------------------------------------------------------------------------------------------------------
 LeafFilterProxyModel::LeafFilterProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
 }
  
+//----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     if (filterAcceptsRowItself(source_row, source_parent))
@@ -52,11 +71,13 @@ bool LeafFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &s
     return false;
 }
  
+//----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::filterAcceptsRowItself(int source_row, const QModelIndex &source_parent) const
 {
     return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
  
+//----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::hasAcceptedChildren(int source_row, const QModelIndex &source_parent) const
 {
     QModelIndex item = sourceModel()->index(source_row,0,source_parent);

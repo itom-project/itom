@@ -910,6 +910,15 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Returns a list of all file endings that correspond to itom
+/*!
+    This function returns a QString that contains a semicolon separated list of all fileendings
+    that were passed by the iofilters parameter
+
+    \param IOfilters filters that contain the filenendings
+    \param allPatterns Pointer to QStringList  (standard = 0)
+    \return returns a QString with fileendings (semicolon separated)
+*/
 /*static*/ QString IOHelper::getFileFilters(const IOFilters &IOfilters, QStringList *allPatterns /*= NULL*/)
 {
     QStringList filter;
@@ -1022,6 +1031,14 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Checks if a file fits to a filter
+/*!
+    This function checks if a fileending of a file fits to a given set of filters.
+
+    \param filename pass the filename as a QString
+    \param IOfilters pass the filterset that the filename shopuld be checked against
+    \return returns true if the file fits to the filters, else false is returned
+*/
 /*static*/ bool IOHelper::fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters)
 {
     QStringList allPatterns;

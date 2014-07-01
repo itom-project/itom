@@ -86,6 +86,10 @@ QModelIndex PlugInModel::getTypeNode(const int type) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param
+*   @return     
+*/
 Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -463,6 +467,14 @@ QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int r
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param index
+*   @param type
+*   @param internalData
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, size_t &internalData) const
 {
     type = itemUnknown;
@@ -597,6 +609,16 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param index
+*   @param name
+*   @param itemType
+*   @param role
+*   @param icon
+*   @return QVariant  
+*
+*
+*/
 QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant &name, const tItemType &itemType, const int &role, const QIcon icon) const
 {
     if (role == Qt::DisplayRole)
@@ -691,6 +713,13 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param index
+*   @param role
+*   @return QVariant  
+*
+*
+*/
 QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &role) const
 {
     ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
@@ -844,6 +873,13 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param index
+*   @param role
+*   @return QVariant  
+*
+*
+*/
 QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &role) const
 {
     //ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
@@ -935,6 +971,14 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param index
+*   @param role
+*   @param filterNotWidget
+*   @return QVariant  
+*
+*
+*/
 QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const
 {
     QString *name;
@@ -1196,6 +1240,12 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param ai
+*   @return QModelIndex  
+*
+*
+*/
 QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 {
     if (ai == NULL)
@@ -1223,6 +1273,12 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param aib
+*   @return QModelIndex  
+*
+*
+*/
 QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 {
     if (aib)
@@ -1314,6 +1370,13 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param itemType
+*   @param internalData
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) const
 {
     if(itemType == PlugInModel::itemPlugin)
@@ -1325,6 +1388,13 @@ bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param itemType
+*   @param internalData
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData) const
 {
     if(itemType == PlugInModel::itemInstance) //internalData can be casted to AddInBase
@@ -1341,6 +1411,13 @@ bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param addInInterface
+*   @param beginOperation
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool beginOperation)
 {
     if (beginOperation)
@@ -1362,6 +1439,14 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param addInInterface
+*   @param addInInstance
+*   @param beginOperation
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, bool beginOperation)
 {
     if (beginOperation)
@@ -1383,6 +1468,12 @@ bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, it
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** 
+*   @param beginOperation
+*   @return bool  
+*
+*
+*/
 bool PlugInModel::resetModel(bool beginOperation)
 {
     if (beginOperation)

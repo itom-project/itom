@@ -154,6 +154,12 @@ QModelIndex UserModel::index(int row, int column, const QModelIndex &parent) con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** Adds a user to the current model
+*   @param newUser Struct containing new User
+*   @return QModelIndex - index of the position in the list where the user was added
+*
+*   returns the passed row as index, as the users are arranged in a simple one dimensional list
+*/
 int UserModel::addUser(const UserInfoStruct &newUser)
 {
     foreach (const UserInfoStruct &userInfo, m_userInfo)

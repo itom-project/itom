@@ -68,15 +68,15 @@ QList<ito::PluginLoadStatus> ito::AddInManager::m_pluginLoadStatus = QList<ito::
 namespace ito
 {
 
-  //----------------------------------------------------------------------------------------------------------------------------------
-/** decrements the reference counter of arguments passed to a plugin if necessary
-*   @param [in] ai          AddIn to which the parameters are passed
-*   @param [in] paramsMand  mandatory argument parameters
-*   @param [in] paramsOpt   optional argument parameters
-*
-*   This function decrements the reference counter of plugins passed to other plugins as parameters, to enable
-*   a closing of the passed plugins when they are no longer used by any other plugin.
-*/
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /** decrements the reference counter of arguments passed to a plugin if necessary
+    *   @param [in] ai          AddIn to which the parameters are passed
+    *   @param [in] paramsMand  mandatory argument parameters
+    *   @param [in] paramsOpt   optional argument parameters
+    *
+    *   This function decrements the reference counter of plugins passed to other plugins as parameters, to enable
+    *   a closing of the passed plugins when they are no longer used by any other plugin.
+    */
     ito::RetVal decRefParamPlugins(ito::AddInBase *ai)
     {
         ito::RetVal retval(ito::retOk);
@@ -299,6 +299,10 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param filename 
+    *   @return RetVal    
+    */
     RetVal AddInManager::loadAddIn(QString &filename)
     {
         RetVal retValue(retOk);
@@ -495,6 +499,11 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param plugin 
+    *   @param pluginLoadStatus
+    *   @return RetVal    
+    */
     RetVal AddInManager::loadAddInDataIO(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         if (!m_addInListDataIO.contains(plugin))
@@ -511,6 +520,11 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param plugin 
+    *   @param pluginLoadStatus
+    *   @return RetVal    
+    */
     RetVal AddInManager::loadAddInActuator(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         if (!m_addInListAct.contains(plugin))
@@ -527,6 +541,11 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param plugin 
+    *   @param pluginLoadStatus
+    *   @return RetVal    
+    */
     RetVal AddInManager::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus &pluginLoadStatus)
     {
         QString message;
@@ -773,6 +792,7 @@ namespace ito
 
         return ret;
     }
+    
     //----------------------------------------------------------------------------------------------------------------------------------
     /** getPlugInInfo
     *   @param [in]  name               plugin name for which type and number should be retrieved
@@ -916,6 +936,7 @@ namespace ito
 
         return ret;
     }
+    
     //----------------------------------------------------------------------------------------------------------------------------------
     /** initAddIn initialize new instance of a dataIO addIn class
     *   @param [in]  addIn      pointer to newly initialized pluginIn
@@ -1710,6 +1731,10 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param name 
+    *   @return ito::RetVal    
+    */
     const ito::RetVal AddInManager::reloadAddIn(const QString &name)
     {
         ito::AddInInterfaceBase *aib = NULL;
@@ -1842,6 +1867,11 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param algoWidgetName algoPluginName
+    *   @param algoPluginName
+    *   @return ito::AddInAlgo::AlgoWidgetDef    
+    */
     const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString algoWidgetName, QString algoPluginName)
     {
         //at the moment algoPluginName do not really influence the search, but maybe it might become necessary to also search for plugin-widgets by "pluginName.widgetName"
@@ -1869,6 +1899,10 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param path filterParam
+    *   @return ito::FilterParams    
+    */
     const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const
     {
         QHash<void*,ito::FilterParams*>::ConstIterator it = AddInManager::filterParamHash.constFind((void*)filterParam);
@@ -1880,6 +1914,9 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @return RetVal    
+    */
     RetVal AddInManager::closeDeadPlugins()
     {
         RetVal retval(retOk);
@@ -1914,6 +1951,10 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param addIn 
+    *   @return RetVal    
+    */
     RetVal AddInManager::registerPluginAsDeadPlugin(ito::AddInBase *addIn)
     {
         QPointer<ito::AddInBase> ptr(addIn);
@@ -1927,6 +1968,10 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param plugin 
+    *   @return bool    
+    */
     bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
     {
         foreach (const QPointer<ito::AddInBase> ptr, m_deadPlugins)
@@ -1940,6 +1985,11 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param iface 
+    *   @param tag 
+    *   @return QList<ito::AddInAlgo::FilterDef *>    
+    */
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag) const
     {
         if (tag.isNull())
@@ -1961,6 +2011,10 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param cat 
+    *   @return QList<ito::AddInAlgo::FilterDef *>   
+    */
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const
     {
         QList<ito::AddInAlgo::FilterDef *> res;
@@ -1974,6 +2028,12 @@ end:
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    /** 
+    *   @param iface 
+    *   @param cat 
+    *   @param tag 
+    *   @return QList<ito::AddInAlgo::FilterDef    
+    */
     const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag) const
     {
         QList<ito::AddInAlgo::FilterDef *> res = getFilterByInterface(iface,tag);

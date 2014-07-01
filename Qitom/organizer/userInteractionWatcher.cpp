@@ -90,6 +90,11 @@ UserInteractionWatcher::~UserInteractionWatcher()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param obj
+*/
 void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
 {
     if (m_pSemaphore)
@@ -110,6 +115,13 @@ void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param type
+    \param aborted
+    \param points
+*/
 void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygonF points)
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;

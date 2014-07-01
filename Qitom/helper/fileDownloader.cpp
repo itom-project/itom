@@ -32,6 +32,10 @@ FileDownloader::~FileDownloader()
 }
 
 //-------------------------------------------------------------------------------------
+//! Aboarts a download
+/*!
+
+*/
 void FileDownloader::abortDownload()
 {
     if (m_pCurrentNetworkReply)
@@ -41,6 +45,12 @@ void FileDownloader::abortDownload()
 }
 
 //-------------------------------------------------------------------------------------
+//! This functions returns the downloadprogress of a file.
+/*!
+    The progress is returned in percent as an integer between 0 and 100.
+   
+    \return downloadprogress in percent.
+*/
 int FileDownloader::getDownloadProgress()
 {
     if (m_bytesTotal > 0)
@@ -51,6 +61,15 @@ int FileDownloader::getDownloadProgress()
 }
 
 //-------------------------------------------------------------------------------------
+//! Returns the status of a download.
+/*!
+    The status is returned as a Filedownloader::Status. This enumeration
+    has different states: sRunning, sAborted, sFinished, sError
+    This function also handles redirects!
+
+    \param errorMsg The function stores the message in Qstring thst it can be displayed
+    \return statusmessage of the downlaod
+*/
 FileDownloader::Status FileDownloader::getStatus(QString &errorMsg)
 {
     Status status;
@@ -94,6 +113,13 @@ FileDownloader::Status FileDownloader::getStatus(QString &errorMsg)
 }
 
 //-------------------------------------------------------------------------------------
+//! Setting method to set the meber variables.
+/*!
+    \param bytesReceived received bytes
+    \param bytesTotal total size of the downloading file bytes
+    
+    \sa getDownloadProgress
+*/
 void FileDownloader::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     m_bytesReceived = bytesReceived;
@@ -101,6 +127,13 @@ void FileDownloader::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 }
 
 //-------------------------------------------------------------------------------------
+//! This function is called when the download is finished. 
+/*!
+    It stores the downloaded data in a member variable and 
+
+    \param pReply
+    
+*/
 void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {
     if (pReply->error() == QNetworkReply::NoError)
@@ -116,12 +149,22 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 }
 
 //-------------------------------------------------------------------------------------
+//! This function returns the downloaded data. 
+/*! 
+
+    \return returns downloaded data as a QByteArray.
+*/
 QByteArray FileDownloader::downloadedData() const
 {
     return m_DownloadedData;
 }
 
 //-------------------------------------------------------------------------------------
+//! This function checks if the given error message is caused by a redirect 
+/*! 
+    \param errorMsg
+    \return returns status of redirection. 0 = ok (no redirection, 1 = redirection, -1 = number of redirections exceeded
+*/
 int FileDownloader::checkRedirect(QString &errorMsg)
 {
     if (m_pCurrentNetworkReply)

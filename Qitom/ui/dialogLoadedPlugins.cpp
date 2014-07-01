@@ -76,9 +76,9 @@ void DialogLoadedPlugins::init()
 
     ui.tree->setColumnWidth(0, 42);
     QTreeWidgetItem *header = new QTreeWidgetItem();
-    header->setIcon(1, QIcon(":/application/icons/dialog-error-4.png"));
+    header->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
     header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
-    header->setIcon(3, QIcon(":/application/icons/dialog-information-4.png"));
+    header->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
     header->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
     header->setText(5, "Test");
     ui.tree->setHeaderItem(header);

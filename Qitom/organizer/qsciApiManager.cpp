@@ -40,6 +40,12 @@ ito::QsciApiManager* ito::QsciApiManager::m_pQsciApiManager = NULL;
 namespace ito
 {
 
+//-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return QsciApiManager
+*/
 /*static*/ QsciApiManager * QsciApiManager::getInstance(void)
 {
     static QsciApiSingleton guard;
@@ -50,6 +56,7 @@ namespace ito
     return QsciApiManager::m_pQsciApiManager;
 }
 
+//-------------------------------------------------------------------------------------------
 QsciApiManager::QsciApiManager() :
     m_pApi(NULL),
     m_qSciLex(NULL),
@@ -80,6 +87,7 @@ QsciApiManager::QsciApiManager() :
     catch(...){}
 }
 
+//-------------------------------------------------------------------------------------------
 QsciApiManager::~QsciApiManager()
 {
     DELETE_AND_SET_NULL(m_pApi);
@@ -87,6 +95,14 @@ QsciApiManager::~QsciApiManager()
 }
 
 
+//-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param files
+    \param forcePreparation
+    \return int
+*/
 int QsciApiManager::updateAPI(QStringList files, bool forcePreparation)
 {
     //read checksum of all desired files
@@ -274,6 +290,11 @@ int QsciApiManager::updateAPI(QStringList files, bool forcePreparation)
 
 }
 
+//-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+*/
 void QsciApiManager::apiPreparationFinished()
 {
     QObject* mainWin = AppManagement::getMainWindow();
@@ -316,6 +337,11 @@ void QsciApiManager::apiPreparationFinished()
     }
 }
 
+//-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+*/
 void QsciApiManager::apiPreparationCancelled()
 {
     QObject* mainWin = AppManagement::getMainWindow();
@@ -332,6 +358,11 @@ void QsciApiManager::apiPreparationCancelled()
     m_loaded = false;
 }
 
+//-------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+*/
 void QsciApiManager::apiPreparationStarted()
 {
     QObject* mainWin = AppManagement::getMainWindow();

@@ -36,6 +36,12 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param pos
+    \return int
+*/
 inline int ItomPaletteBase::findUpper( double pos ) const
 {
     // This code is copied from QWT-PLOT.
@@ -63,7 +69,14 @@ inline int ItomPaletteBase::findUpper( double pos ) const
 
     return index;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param color
+    \return bool
+*/
 bool ItomPaletteBase::setInversColorOne(const QColor color)
 {
     if((m_type & ito::tPaletteReadOnly) && m_inverseColorOne.isValid())
@@ -76,7 +89,15 @@ bool ItomPaletteBase::setInversColorOne(const QColor color)
 
     return true;
 }
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param color
+    \return bool
+*/
 bool ItomPaletteBase::setInversColorTwo(const QColor color)
 {
     if((m_type & ito::tPaletteReadOnly) && m_inverseColorTwo.isValid())
@@ -89,7 +110,15 @@ bool ItomPaletteBase::setInversColorTwo(const QColor color)
 
     return true;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param pos
+    \param color
+    \return bool
+*/
 bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 {
     // This code is copied from QWT-PLOT.
@@ -133,26 +162,53 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
     m_colorStops[index].second = color;
     return true;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param color
+    \return double
+*/
 double ItomPaletteBase::getPos(unsigned int color) const
 {
     if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].first;
     return m_colorStops[color].first;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param color
+    \return QColor
+*/
 QColor ItomPaletteBase::getColor(unsigned int color) const
 {
     if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].second;
     return m_colorStops[color].second;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param inv1
+    \param inv2
+*/
 void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
 {
 
 
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param updateInverseColors
+*/
 void ItomPaletteBase::update(const bool updateInverseColors)
 {
     m_paletteStucture.name = m_name;
@@ -178,7 +234,13 @@ void ItomPaletteBase::update(const bool updateInverseColors)
 
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return ItomPalette
+*/
 ItomPalette ItomPaletteBase::getPalette()
 {
     if(m_paletteStucture.colorStops.isEmpty() || m_paletteStucture.colorVector256.isEmpty() || m_paletteStucture.type == ito::tPaletteNoType)
@@ -187,7 +249,13 @@ ItomPalette ItomPaletteBase::getPalette()
     }
     return m_paletteStucture;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return QVector<ito::uint32>
+*/
 QVector<ito::uint32> ItomPaletteBase::get256Colors() const
 {
     QVector<ito::uint32> colors(256);
@@ -240,7 +308,14 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors() const
 
     return colors;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return PaletteOrganizer
+*/
 PaletteOrganizer::PaletteOrganizer()
 {
     m_colorBars.clear();
@@ -360,7 +435,14 @@ PaletteOrganizer::PaletteOrganizer()
  //   restrictedKeyWords.append("256Colors");
  //   m_colorBarLookUp.insert("256Colors", 7);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param index
+    \return ItomPaletteBase
+*/
 ItomPaletteBase PaletteOrganizer::getColorBar(const int index) const
 {
     if(index < 0 || index >= m_colorBars.length())
@@ -370,6 +452,13 @@ ItomPaletteBase PaletteOrganizer::getColorBar(const int index) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param curindex
+    \param type
+    \return ItomPaletteBase
+*/
 ItomPaletteBase PaletteOrganizer::getNextColorBar(const int curindex, const int type) const
 {
     int nextIndex = (curindex + 1) % m_colorBars.length();
@@ -395,7 +484,15 @@ ItomPaletteBase PaletteOrganizer::getNextColorBar(const int curindex, const int 
         return m_colorBars[nextIndex];
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param name
+    \param found
+    \return ItomPaletteBase
+*/
 ItomPaletteBase PaletteOrganizer::getColorBar(const QString name, bool *found /*= NULL*/) const
 {
     for(int i = 0; i < m_colorBars.length(); i++)
@@ -409,7 +506,15 @@ ItomPaletteBase PaletteOrganizer::getColorBar(const QString name, bool *found /*
     if (found) *found = false;
     return noPalette;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param name
+    \param found
+    \return int
+*/
 int PaletteOrganizer::getColorBarIndex(const QString name, bool *found /*= NULL*/) const
 {
     if(m_colorBarLookUp.contains(name))
@@ -420,7 +525,14 @@ int PaletteOrganizer::getColorBarIndex(const QString name, bool *found /*= NULL*
     if (found) *found = false;
     return -1;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \param type
+    \return QList<QString>
+*/
 QList<QString> PaletteOrganizer::getColorBarList(const int type) const
 {
     QList<QString> outPut;

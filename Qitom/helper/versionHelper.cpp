@@ -175,7 +175,13 @@
 //}
 
 
+//! This function is called to get all version numbers that itom contains
+/*!
+    Use this function to get a map of all parts of itom that are used with 
+    their corresponding version.
 
+    \return returns a QMap<QString,QString> containing the module and the version of a module.
+*/
 QMap<QString, QString> ito::getItomVersionMap()
 {
     QMap<QString, QString> items;

@@ -105,6 +105,9 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function is called to save all the informations about widgets before itom is closed
+/*!
+*/
 void ScriptEditorOrganizer::saveScriptState()
 {
     QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
@@ -155,6 +158,9 @@ void ScriptEditorOrganizer::saveScriptState()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This function is called to get all the saved informations about widgets after itom starts
+/*!
+*/
 RetVal ScriptEditorOrganizer::restoreScriptState()
 {
     RetVal retval;
@@ -236,6 +242,14 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! This slot is called if a file is saved or stored in any widget
+/*!
+    This function is used to manage the "last used files" list. It stores all used 
+    files in the list and keeps it up to date. If the list is longer than 10 elements, 
+    the last ones are deleted.
+
+    \param filename filename of a saved or loaded file is insert into the list at first position
+*/
 void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 {
     m_recentlyUsedFiles.prepend(QDir::toNativeSeparators(filename));
@@ -483,6 +497,10 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! 
+/*!
+    \return ScriptDockWidget
+*/
 ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement()
 {
     QMutexLocker locker(&m_scriptStackMutex);
