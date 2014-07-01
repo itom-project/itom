@@ -7,7 +7,7 @@ Python tutorial
 .. sectionauthor:: PSchau
 
 
-The goal of this tutorial is to give prospective ITOM users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|. 
+The goal of this tutorial is to give prospective itom users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|. 
 
 **Content**
 
@@ -31,7 +31,7 @@ The goal of this tutorial is to give prospective ITOM users a quick overview abo
 The following resources have been used:
 
 * `Python-Kurs (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (German)
-* `Python Course (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (English)
+* `Python Course (v3) <http://www.python-kurs.eu/python3_course.php>`_ (English)
 * `Official Python v3.3.0 documentation <http://docs.python.org/3/>`_
 * `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
 * `Dive into Python (v2) <http://www.diveintopython.net/toc/index.html>`_
