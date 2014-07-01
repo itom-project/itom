@@ -1908,7 +1908,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 }
             }
 #if ITOM_POINTCLOUDLIBRARY > 0
-            else if (type == QMetaType::type("ito::PCLPointCloud"))
+            else if (type == QMetaType::type("ito::PCLPointCloud") || type == QMetaType::type("ito::PCLPointCloud&"))
             {
                 bool ok;
                 ito::PCLPointCloud pcl = PyObjGetPointCloud(val, strict, ok);
@@ -1934,7 +1934,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     #endif
                 }
             }
-            else if (type == QMetaType::type("ito::PCLPolygonMesh"))
+            else if (type == QMetaType::type("ito::PCLPolygonMesh") || type == QMetaType::type("ito::PCLPolygonMesh&"))
             {
                 bool ok;
                 ito::PCLPolygonMesh mesh = PyObjGetPolygonMesh(val, strict, ok);

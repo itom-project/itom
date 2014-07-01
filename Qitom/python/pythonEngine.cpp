@@ -158,6 +158,8 @@ PythonEngine::PythonEngine() :
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
+    qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud&");
+    qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh&");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
