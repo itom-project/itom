@@ -47,7 +47,6 @@
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 #include <qfiledialog.h>
-//#include <QtUiTools/quiloader.h>
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -2246,6 +2245,8 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
         QStringList slot;
         QString className;
 
+        QMap<QByteArray, QByteArray> propInfoMap;
+
         const QMetaObject *mo = obj->metaObject();
         className = mo->className();
 
@@ -2261,7 +2262,15 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 QMetaClassInfo ci = mo->classInfo(i);
                 if (i >= mo->classInfoOffset())
                 {
-                    classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
+                    if (strstr(ci.name(), "prop://") == ci.name())
+                    {
+                        QByteArray prop = QByteArray(&(ci.name()[7]));
+                        propInfoMap[prop] = ci.value();
+                    }
+                    else
+                    {
+                        classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
+                    }
                 }
             }
 
@@ -2270,7 +2279,14 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                 QMetaProperty prop = mo->property(i);
                 if (i >= mo->propertyOffset())
                 {
-                    properties.append(QString("%1 : %2").arg(prop.name()).arg(prop.typeName()));
+                    if (propInfoMap.contains(prop.name()))
+                    {
+                        properties.append(QString("%1 : %2; %3").arg(prop.name()).arg(prop.typeName()).arg(QString(propInfoMap[prop.name()])));
+                    }
+                    else
+                    {
+                        properties.append(QString("%1 : %2").arg(prop.name()).arg(prop.typeName()));
+                    }
                 }
             }
 
