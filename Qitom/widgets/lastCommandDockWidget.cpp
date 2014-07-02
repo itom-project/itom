@@ -246,7 +246,7 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
             m_lastTreeWidgetParent->addChild(childItem);
             m_lastTreeWidgetParent->setExpanded(true);
 
-            int barPos = m_lastCommandTreeWidget->verticalScrollBar().value();
+//            int barPos = m_lastCommandTreeWidget->verticalScrollBar().value();
             bool scroll = true;
             if (scroll)
             {
