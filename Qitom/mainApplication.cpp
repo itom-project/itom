@@ -217,7 +217,7 @@ void MainApplication::setupApplication()
     vendor.append((const char *)&cpuID.EDX(), 4);
     vendor.append((const char *)&cpuID.ECX(), 4);
     
-    if(vendor != "GenuineIntel")
+    if(strcmp(vendor.data(), "GenuineIntel") != 0)
     {
         _putenv_s("KMP_AFFINITY","none");
     }
