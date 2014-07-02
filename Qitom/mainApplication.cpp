@@ -47,6 +47,29 @@
 namespace ito
 {
 
+#if (defined WIN32 || defined WIN64)
+class CPUID {
+  ito::uint32 regs[4];
+
+public:
+  void load(unsigned i) {
+#ifdef WIN64
+    asm volatile
+      ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
+       : "a" (i), "c" (0));
+    // ECX is set to zero for CPUID function 4    
+#else
+    __cpuid((ito::int32 *)regs, (ito::int32)i);
+#endif
+  }
+
+  const ito::uint32 &EAX() const {return regs[0];}
+  const ito::uint32 &EBX() const {return regs[1];}
+  const ito::uint32 &ECX() const {return regs[2];}
+  const ito::uint32 &EDX() const {return regs[3];}
+};
+#endif
+
 /*!
     \class MainApplication
     \brief The MainApplication class is the basic management class for the entire application
@@ -184,6 +207,24 @@ void MainApplication::setupApplication()
         QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
+
+    CPUID cpuID;
+
+    cpuID.load(0); // Get CPU vendor
+
+    QByteArray vendor("");
+    vendor.append((const char *)&cpuID.EBX(), 4);
+    vendor.append((const char *)&cpuID.EDX(), 4);
+    vendor.append((const char *)&cpuID.ECX(), 4);
+    
+    if(vendor != "GenuineIntel")
+    {
+        _putenv_s("KMP_AFFINITY","none");
+    }
+    
+   
+    std::cout << "CPU vendor = " << vendor.data() << endl; 
+    
 #endif
 
     settings->beginGroup("Language");
