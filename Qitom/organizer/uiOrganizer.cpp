@@ -238,6 +238,16 @@ void UiOrganizer::timerEvent(QTimerEvent * /*event*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void UiOrganizer::startGarbageCollectorTimer()
+{
+    if (m_garbageCollectorTimer == 0)
+    {
+        //starts the timer to regularly check for remaining, non-deleted UIs
+        m_garbageCollectorTimer = startTimer(5000);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
 {
     if (m_dialogList.contains(uiHandle))
@@ -339,11 +349,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
             metaObject = metaObject->superClass();
         }
 
-
-        if (m_garbageCollectorTimer == 0)
-        {
-            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-        }
+        startGarbageCollectorTimer();
 
         switch(widgetType)
         {
@@ -402,7 +408,6 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
     UiContainer *set = NULL;
     QMainWindow *win = NULL;
     QDialog *dlg = NULL;
-//    bool found = false;
     int dialogHandle;
     UiContainerItem cItem;
 
@@ -437,10 +442,7 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
 
     if (!retValue.containsError())
     {
-        if (m_garbageCollectorTimer == 0)
-        {
-            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-        }
+        startGarbageCollectorTimer();
 
         if (win)
         {
@@ -466,9 +468,6 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
         *newWidget = NULL;
         objectID = -1;
     }
-
-    /*if (!retValue.containsError())
-        qobject_cast<QMainWindow*>(*newWidget)->show();*/
 
     return retValue;
 }
@@ -498,7 +497,6 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
         {
             pluginClassName = "MatplotlibPlot";
 
-            //NEW
             FigureWidget *fig = NULL;
 
             //create new figure and gives it its own reference, since no instance is keeping track of it
@@ -529,10 +527,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                         {
                             *objectID = addObjectToList(destWidget);
 
-                            if (m_garbageCollectorTimer == 0)
-                            {
-                                m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-                            }
+                            startGarbageCollectorTimer();
 
                             //destWidget->dumpObjectTree();
                             *className = destWidget->metaObject()->className();
@@ -548,20 +543,6 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                     retValue += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), *dialogHandle);
                 }
             }
-            //END NEW
-
-
-
-
-
-
-        //    pluginClassName = "MatplotlibPlot";
-        //    win = qobject_cast<QMainWindow*>(loadDesignerPluginWidget(pluginClassName,retValue,AbstractFigure::ModeStandaloneWindow, NULL));
-        //    if (win)
-        //    {
-        //        win->setWindowFlags(Qt::Window);
-        //        win->setAttribute(Qt::WA_DeleteOnClose, true);
-        //    }
         }
         else
         {
@@ -569,35 +550,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             retValue += ito::RetVal(retError, 0, errorMsg.toLatin1().data());
         }
 
-        if (!retValue.containsError())
-        {
-        //    if (m_garbageCollectorTimer == 0)
-        //    {
-        //        m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-        //    }
-
-        //    if (win)
-        //    {
-        //        set = new UiContainer(win);
-        //        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-        //        containerItem.container = set;
-        //        m_dialogList[*dialogHandle] = containerItem;
-        //        *initSlotCount = win->metaObject()->methodOffset();
-        //        *objectID = addObjectToList(win);
-        //        *className = win->metaObject()->className();
-        //    }
-        //    else
-        //    {
-        //        set = new UiContainer(dlg);
-        //        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-        //        containerItem.container = set;
-        //        m_dialogList[*dialogHandle] = containerItem;
-        //        *initSlotCount = dlg->metaObject()->methodOffset();
-        //        *objectID = addObjectToList(dlg);
-        //        *className = dlg->metaObject()->className();
-        //    }
-        }
-        else
+        if (retValue.containsError())
         {
             DELETE_AND_SET_NULL(dlg);
             DELETE_AND_SET_NULL(win);
@@ -637,10 +590,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                     //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
                     setApiPointersToWidgetAndChildren(wid);
 
-                    if (m_garbageCollectorTimer == 0)
-                    {
-                        m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-                    }
+                    startGarbageCollectorTimer();
 
                     if (deleteOnClose)
                     {
@@ -674,10 +624,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                         //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
                         setApiPointersToWidgetAndChildren(dialog);
 
-                        if (m_garbageCollectorTimer == 0)
-                        {
-                            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-                        }
+                        startGarbageCollectorTimer();
 
                         if (deleteOnClose)
                         {
@@ -703,10 +650,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                 //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
                 setApiPointersToWidgetAndChildren(wid);
 
-                if (m_garbageCollectorTimer == 0)
-                {
-                    m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-                }
+                startGarbageCollectorTimer();
 
                 win = qobject_cast<QMainWindow*>(wid);
                 if (win)
@@ -2860,10 +2804,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
 
     if (!found)
     {
-        if (m_garbageCollectorTimer == 0)
-        {
-            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
-        }
+        startGarbageCollectorTimer();
 
         FigureWidget *fig2 = new FigureWidget(tr("Figure"), false, true, *rows, *cols, NULL);
         //fig2->setAttribute(Qt::WA_DeleteOnClose); //always delete figure window, if user closes it

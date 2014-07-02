@@ -333,6 +333,8 @@ protected:
 
     static void threadSafeDeleteUi(unsigned int *handle);
 
+    void startGarbageCollectorTimer();
+
 private:
     void execGarbageCollection();
 
