@@ -31,7 +31,7 @@
 #include <qheaderview.h>
 #include <qsettings.h>
 #include <qmimedata.h>
-#include <QAbstractScrollArea.h>
+#include <QAbstractScrollArea>
 
 
 namespace ito {
