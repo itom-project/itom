@@ -374,7 +374,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
         }
         else
         {
-            emit setStatusInformation(tr("timeout while renaming variables"), 5000);
+            emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
         }
         QApplication::restoreOverrideCursor();
     }

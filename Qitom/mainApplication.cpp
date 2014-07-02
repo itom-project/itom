@@ -195,7 +195,7 @@ void MainApplication::setupApplication()
     //load timeouts
     settings->beginGroup("Application");
     AppManagement::timeouts.pluginInitClose = settings->value("timeoutInitClose", 10000).toInt();
-    AppManagement::timeouts.pluginGeneral = settings->value("timeoutGeneral", 5000).toInt();
+    AppManagement::timeouts.pluginGeneral = settings->value("timeoutGeneral", PLUGINWAIT).toInt();
     settings->endGroup();
 
     QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"

@@ -538,7 +538,7 @@ of itom, else it is a independent window. \n\
 
     QMetaObject::invokeMethod(uiOrga, "getDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if (!locker.getSemaphore()->wait(5000))
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
         return NULL;
@@ -588,7 +588,7 @@ of itom, else it is a independent window. \n\
 
     QMetaObject::invokeMethod(uiOrga, "setDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(bool, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if (!locker.getSemaphore()->wait(5000))
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
         return -1;

@@ -81,7 +81,7 @@ void DialogReloadModule::loadModules()
         ui.treeWidget->clear();
         m_items.clear();
 
-        if(!locker.getSemaphore()->waitAndProcessEvents(5000)) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
+        if(!locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT)) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
         {
             QMessageBox::critical(this, tr("connection problem"), tr("No information about loaded modules could be retrieved by python."));
             enableUI(false);
@@ -156,7 +156,7 @@ void DialogReloadModule::dialogAccepted()
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(pyEngine, "reloadSysModules", Q_ARG(QSharedPointer<QStringList>,mods), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-        if(locker.getSemaphore()->waitAndProcessEvents(5000) == false) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
+        if(locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT) == false) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
         {
             QMessageBox::critical(this, tr("connection problem"), tr("Timeout while forcing python to reload modules."));
         }

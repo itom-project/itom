@@ -649,7 +649,7 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
         {
             result = QSharedPointer<ito::Param>(new ito::Param(param));
             QMetaObject::invokeMethod(addIn, "getParam", Q_ARG(QSharedPointer<ito::Param>, result), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-            if (!locker.getSemaphore()->wait(5000))
+            if (!locker.getSemaphore()->wait(PLUGINWAIT))
             {
                 retval += RetVal::format(retError, 0, tr("timeout while getting parameter '%s' from plugin").toLatin1().data(), paramName.toLatin1().data());
             }

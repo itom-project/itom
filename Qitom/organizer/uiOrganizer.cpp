@@ -54,7 +54,6 @@
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
 
-
 namespace ito
 {
 
@@ -343,7 +342,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigne
 
         if (m_garbageCollectorTimer == 0)
         {
-            m_garbageCollectorTimer = startTimer(5000);
+            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
         }
 
         switch(widgetType)
@@ -440,7 +439,7 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
     {
         if (m_garbageCollectorTimer == 0)
         {
-            m_garbageCollectorTimer = startTimer(5000);
+            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
         }
 
         if (win)
@@ -532,7 +531,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
                             if (m_garbageCollectorTimer == 0)
                             {
-                                m_garbageCollectorTimer = startTimer(5000);
+                                m_garbageCollectorTimer = startTimer(PLUGINWAIT);
                             }
 
                             //destWidget->dumpObjectTree();
@@ -574,7 +573,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
         {
         //    if (m_garbageCollectorTimer == 0)
         //    {
-        //        m_garbageCollectorTimer = startTimer(5000);
+        //        m_garbageCollectorTimer = startTimer(PLUGINWAIT);
         //    }
 
         //    if (win)
@@ -640,7 +639,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
                     if (m_garbageCollectorTimer == 0)
                     {
-                        m_garbageCollectorTimer = startTimer(5000);
+                        m_garbageCollectorTimer = startTimer(PLUGINWAIT);
                     }
 
                     if (deleteOnClose)
@@ -677,7 +676,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
                         if (m_garbageCollectorTimer == 0)
                         {
-                            m_garbageCollectorTimer = startTimer(5000);
+                            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
                         }
 
                         if (deleteOnClose)
@@ -706,7 +705,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
                 if (m_garbageCollectorTimer == 0)
                 {
-                    m_garbageCollectorTimer = startTimer(5000);
+                    m_garbageCollectorTimer = startTimer(PLUGINWAIT);
                 }
 
                 win = qobject_cast<QMainWindow*>(wid);
@@ -2863,7 +2862,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     {
         if (m_garbageCollectorTimer == 0)
         {
-            m_garbageCollectorTimer = startTimer(5000);
+            m_garbageCollectorTimer = startTimer(PLUGINWAIT);
         }
 
         FigureWidget *fig2 = new FigureWidget(tr("Figure"), false, true, *rows, *cols, NULL);

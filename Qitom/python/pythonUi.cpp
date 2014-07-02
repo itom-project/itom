@@ -223,7 +223,7 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
 
     QMetaObject::invokeMethod(uiOrga, "widgetMetaObjectCounts", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QSharedPointer<int>, classInfoCount), Q_ARG(QSharedPointer<int>, enumeratorCount), Q_ARG(QSharedPointer<int>, methodCount),Q_ARG(QSharedPointer<int>, propertiesCount), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting number of properties");
         return 0;
@@ -269,7 +269,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
 
     QMetaObject::invokeMethod(uiOrga, "readProperties", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while reading property/properties");
         return NULL;
@@ -325,7 +325,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 
     QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, self->objectID), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while writing property");
         return -1;
@@ -628,7 +628,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
 
     QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
@@ -707,7 +707,7 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
 
     QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
@@ -778,7 +778,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 
     QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
         return NULL;
@@ -893,7 +893,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 
     QMetaObject::invokeMethod(uiOrga, "readProperties", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while reading property/properties");
         return NULL;
@@ -979,7 +979,7 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 
     QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while writing property/properties");
         return NULL;
@@ -1023,7 +1023,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     QSharedPointer<QVariantMap> retPropMap(new QVariantMap());
     QMetaObject::invokeMethod(uiOrga, "getPropertyInfos", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting property information");
         return NULL;
@@ -1151,7 +1151,7 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 
     QMetaObject::invokeMethod(uiOrga, "getAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(QSharedPointer<bool>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting attribute");
         return NULL;
@@ -1222,7 +1222,7 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 
     QMetaObject::invokeMethod(uiOrga, "setAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(bool, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while setting attribute");
         return NULL;
@@ -1293,7 +1293,7 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
 
     QMetaObject::invokeMethod(uiOrga, "setWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(int, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while setting window flags");
         return NULL;
@@ -1339,7 +1339,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     QMetaObject::invokeMethod(uiOrga, "getWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<int>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting window flag");
         return NULL;
@@ -1373,7 +1373,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting information");
         return NULL;
@@ -1416,7 +1416,7 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 
             QMetaObject::invokeMethod(uiOrga, "getMethodDescriptions", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<MethodDescriptionList>, methodList), Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-            if(!locker1.getSemaphore()->wait(5000))
+            if(!locker1.getSemaphore()->wait(PLUGINWAIT))
             {
                 PyErr_SetString(PyExc_RuntimeError, "timeout while analysing method description list");
                 return false;
@@ -1614,7 +1614,7 @@ void PythonUi::PyUi_dealloc(PyUi* self)
 
         QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-        if(!locker.getSemaphore()->wait(5000))
+        if(!locker.getSemaphore()->wait(PLUGINWAIT))
         {
             std::cerr << "timeout while closing dialog" << std::endl;
             //PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
@@ -1964,7 +1964,7 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 
     QMetaObject::invokeMethod(uiOrga, "isVisible", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(QSharedPointer<bool>, visible), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if(!locker.getSemaphore()->wait(5000))
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting visible status");
         return NULL;
@@ -2932,7 +2932,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-            if(!locker2.getSemaphore()->wait(5000))
+            if(!locker2.getSemaphore()->wait(PLUGINWAIT))
             {
                 PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
             }
