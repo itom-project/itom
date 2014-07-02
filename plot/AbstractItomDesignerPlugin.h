@@ -46,7 +46,7 @@ namespace ito {
         //! the classinfo ito.AbstractItomDesignerPlugin is the interface number of AbstractItomDesignerPlugin.
         //  increment this number if you changed something in this interface or other abstract classes of the
         //  plot designerPlugin system.
-        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.2.0")
+        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.2.1")
 
         public:
             AbstractItomDesignerPlugin(QObject *parent) :
@@ -78,6 +78,16 @@ namespace ito {
             const QString getLicenseInfo(void) const { return m_license; }
             //! returns a detailed description of the plugin compile informations
             const QString getAboutInfo(void) const { return m_aboutThis; }
+
+            //! returns information about the compiler settings for PCL, OpenCV, ... during build
+            int getCompilerFeatures(void) const 
+            {
+                int retval = AbstractFigure::tOpenCV;
+                #if defined USEPCL || ITOM_POINTCLOUDLIBRARY
+                retval |= AbstractFigure::tPointCloudLib;
+                #endif
+                return retval;
+            }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
 
