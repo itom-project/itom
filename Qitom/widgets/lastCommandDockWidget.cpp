@@ -31,6 +31,7 @@
 #include <qheaderview.h>
 #include <qsettings.h>
 #include <qmimedata.h>
+#include <QAbstractScrollArea.h>
 
 
 namespace ito {
@@ -244,7 +245,13 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
             childItem->setText(0, addCmd);
             m_lastTreeWidgetParent->addChild(childItem);
             m_lastTreeWidgetParent->setExpanded(true);
-            m_lastCommandTreeWidget->scrollToItem(childItem);
+
+            int barPos = m_lastCommandTreeWidget->verticalScrollBar().value();
+            bool scroll = true;
+            if (scroll)
+            {
+                m_lastCommandTreeWidget->scrollToItem(childItem);
+            }
         }
     }
 }
