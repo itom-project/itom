@@ -1,5 +1,5 @@
 project(itom)      
-#trigger update on 2014.06.28@11:26
+#trigger update on 2014.07.02@14:16
 cmake_minimum_required(VERSION 2.8)
  
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
