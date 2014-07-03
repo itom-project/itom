@@ -1717,12 +1717,14 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         }
 
         QString tempFilename = buf;
+#if !linux // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
         }
         
         tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+#endif
         QFile tempFile2;
 
         QVector<ito::ParamBase> paramsMand;
@@ -1816,12 +1818,14 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         }
 
         QString tempFilename = buf;
+#if !linux // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
         }
         
         tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+#endif
 
         QFile tempFile2(tempFilename);
         if(tempFile2.open( QIODevice::WriteOnly ) == false)
@@ -3657,12 +3661,14 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         }
 
         QString tempFilename = buf;
+#if !linux // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
         }
         
         tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+#endif
         QFile tempFile2;
 
         QVector<ito::ParamBase> paramsMand;
@@ -3731,12 +3737,14 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         }
 
         QString tempFilename = buf;
+#if !linux // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
         }
         
         tempFilename = QDir::temp().absoluteFilePath( tempFilename ); //creates unique, temporary filename
+#endif
 
         QFile tempFile2(tempFilename);
         if(tempFile2.open( QIODevice::WriteOnly ) == false)
