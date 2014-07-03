@@ -6,7 +6,7 @@ By using this template further packages, e.g. unified stitching shall be impleme
 This system has been developped by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
 '''
 
-from enum import Enum
+from itomEnum import ItomEnum
 from datetime import datetime
 import json
 import itom
@@ -33,7 +33,7 @@ class ProbingSystemType():
     This consist of a type-enumeration and an identification string.
     The entire type is based on the definition of the openGPS-project.
     '''
-    tType = Enum( "ProbingSystem", ("unknown","Contacting","NonContacting","Software") )
+    tType = ItomEnum( "ProbingSystem", ("unknown","Contacting","NonContacting","Software") )
     
     def __init__(self, type, identification):
         self.type = type
@@ -49,7 +49,7 @@ class MeasurementSystemBase():
     This system has been developped by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
     '''
     
-    tFeatureType = Enum("FeatureType", ("unknown","SUR","PRF","PCL"))
+    tFeatureType = ItomEnum("FeatureType", ("unknown","SUR","PRF","PCL"))
 
     def __init__(self, name, probingSystem, instrument, username):
         '''The basic constructor. In real implementations, it should verify parameters amd load configuration parameters.'''
@@ -95,6 +95,7 @@ class MeasurementSystemBase():
         
         dObj.setTag("calibrationDate", self.calibrationDate)
         dObj.setTag("probingSystemType", self.probingSystemType.tType.whatis( self.probingSystemType.type ))
+        #dObj.setTag("probingSystemType", self.probingSystemType.type.value)
         dObj.setTag("probingSystemID", self.probingSystemType.identification)
         dObj.setTag("manufacturer", self.instrumentType.manufacturer)
         dObj.setTag("model", self.instrumentType.model)
