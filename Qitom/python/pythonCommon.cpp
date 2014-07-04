@@ -86,6 +86,21 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
+    case ito::ParamBase::CharArray & ito::paramTypeMask:
+        {
+            if (PyByteArray_Check(pyObj))
+            {
+                char *buf  = (char *)PyByteArray_AsString(pyObj);
+                Py_ssize_t listlen = PyByteArray_Size(pyObj);
+                outParam.setVal<char*>(buf, listlen);
+            }
+            else
+            {
+                return ito::retError;
+            }
+        }
+    break;
+
     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
         {
             bool ok;

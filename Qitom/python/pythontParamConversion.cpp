@@ -67,10 +67,9 @@ namespace ito
         break;
 
         case (ito::ParamBase::CharArray & ito::paramTypeMask):
-            //result = PyTuple_New(1);
             carr = param.getVal<char*>();
             len = param.getLen();
-            //PyTuple_SetItem(result, 0, PyByteArray_FromStringAndSize(carr, len));
+            if (len < 0) len = 0;
             result = PyByteArray_FromStringAndSize(carr, len);
         break;
 
