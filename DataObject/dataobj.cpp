@@ -3090,8 +3090,17 @@ DataObject & DataObject::operator += (const DataObject &rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        return *this;
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+             rhs.calcNumMats() == 1 && 
+             this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+             this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+           )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
     }
 
     (fListAddFunc[m_type])(this, &rhs, this);
@@ -3114,19 +3123,29 @@ DataObject & DataObject::operator += (const float64 &value)
 */
 DataObject DataObject::operator + (const DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   DataObject result;
-   result.m_continuous = rhs.m_continuous;
-   copyTo(result, 1);
+    DataObject result;
+    result.m_continuous = rhs.m_continuous;
+    copyTo(result, 1);
 
-   (fListAddFunc[m_type])(this, &rhs, &result);
+    (fListAddFunc[m_type])(this, &rhs, &result);
 
-   return result;
+    return result;
 }
 
 DataObject DataObject::operator + (const float64 &value)
@@ -3190,15 +3209,24 @@ MAKEFUNCLIST(SubFunc);
 */
 DataObject & DataObject::operator -= (const DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
+    fListSubFunc[m_type](this, &rhs, this);
 
-   fListSubFunc[m_type](this, &rhs, this);
-
-   return *this;
+    return *this;
 }
 
 DataObject & DataObject::operator -= (const float64 &value)
@@ -3219,8 +3247,18 @@ DataObject DataObject::operator - (const DataObject &rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        return *this;
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
     }
 
     DataObject result;
@@ -3511,16 +3549,16 @@ MAKEFUNCLIST(CmpFunc);
 */
 DataObject DataObject::operator < (DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-   RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LT);
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LT);
 
-   return resMat;
+    return resMat;
 }
 
 //! compare operator, compares for "bigger than"
@@ -3544,16 +3582,16 @@ DataObject DataObject::operator > (DataObject &rhs)
 */
 DataObject DataObject::operator <= (DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-   RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LE);
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LE);
 
-   return resMat;
+    return resMat;
 }
 
 //! compare operator, compares for "bigger or equal than"
@@ -3577,16 +3615,16 @@ DataObject DataObject::operator >= (DataObject &rhs)
 */
 DataObject DataObject::operator == (DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-       cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-       return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-   RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_EQ);
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_EQ);
 
-   return resMat;
+    return resMat;
 }
 
 //! compare operator, compares for "unequal to"
@@ -3598,16 +3636,16 @@ DataObject DataObject::operator == (DataObject &rhs)
 */
 DataObject DataObject::operator != (DataObject &rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-   RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_NE);
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_NE);
 
-   return resMat;
+    return resMat;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3963,20 +4001,30 @@ MAKEFUNCLIST(BitAndFunc)
 */
 DataObject & DataObject::operator &= (const DataObject & rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   fListBitAndFunc[m_type](this, &rhs, this);
+    fListBitAndFunc[m_type](this, &rhs, this);
 
-   return (*this);
+    return (*this);
 }
 
 //! high-level operator, which executes the element-wise operation "bitwise and" between this data object and a given data object
@@ -3989,23 +4037,33 @@ DataObject & DataObject::operator &= (const DataObject & rhs)
 */
 DataObject DataObject::operator & (const DataObject & rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-      return *this;
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   DataObject result;
-   result.m_continuous |= rhs.m_continuous;
-   this->copyTo(result, 1);
+    DataObject result;
+    result.m_continuous |= rhs.m_continuous;
+    this->copyTo(result, 1);
 
-   result &= rhs;
-   return result;
+    result &= rhs;
+    return result;
 }
 
 
@@ -4098,19 +4156,30 @@ MAKEFUNCLIST(BitOrFunc)
 */
 DataObject & DataObject::operator |= (const DataObject & rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   fListBitOrFunc[m_type](this, &rhs, this);
+    fListBitOrFunc[m_type](this, &rhs, this);
 
-   return (*this);
+    return (*this);
 }
 
 //! high-level operator, which executes the element-wise operation "bitwise or" between this data object and a given data object
@@ -4123,22 +4192,33 @@ DataObject & DataObject::operator |= (const DataObject & rhs)
 */
 DataObject DataObject::operator | (const DataObject & rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   DataObject result;
-   result.m_continuous |= rhs.m_continuous;
-   this->copyTo(result, 1);
+    DataObject result;
+    result.m_continuous |= rhs.m_continuous;
+    this->copyTo(result, 1);
 
-   result |= rhs;
-   return result;
+    result |= rhs;
+    return result;
 }
 
 
@@ -4231,19 +4311,30 @@ MAKEFUNCLIST(BitXorFunc)
 */
 DataObject & DataObject::operator ^= (const DataObject & rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   fListBitXorFunc[m_type](this, &rhs, this);
+    fListBitXorFunc[m_type](this, &rhs, this);
 
-   return (*this);
+    return (*this);
 }
 
 //! high-level operator, which executes the element-wise operation "bitwise or" between this data object and a given data object
@@ -4256,17 +4347,28 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
 */
 DataObject DataObject::operator ^ (const DataObject & rhs)
 {
-   if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == rhs.calcNumMats() && 
+                rhs.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+            return *this;           
+        }
+        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+        //return *this;
+    }
 
-   DataObject result;
-   result.m_continuous |= rhs.m_continuous;
-   this->copyTo(result, 1);
+    DataObject result;
+    result.m_continuous |= rhs.m_continuous;
+    this->copyTo(result, 1);
 
-   result ^= rhs;
-   return result;
+    result ^= rhs;
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4880,10 +4982,23 @@ MAKEFUNCLIST(MulFunc)
 */
 DataObject DataObject::mul(const DataObject &mat2, const double scale)
 {
+    //if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
+    //{
+    //    cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+    //}
+
     if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
     {
-        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-    }  
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == mat2.calcNumMats() && 
+                mat2.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == mat2.getSize(mat2.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == mat2.getSize(mat2.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));     
+        }
+    }
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
@@ -5048,19 +5163,32 @@ MAKEFUNCLIST(DivFunc)
 */
 DataObject DataObject::div(const DataObject &mat2, const double scale)
 {
-   if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-   {
-        cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-   }  
+    //if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
+    //{
+    //    cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
+    //}
 
-   DataObject result;
-   this->copyTo(result, 1); 
+    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
+    {
+        // Added this to allow 1x1x1xMxN addition with 2D-Objects
+        if(!(this->calcNumMats() == mat2.calcNumMats() && 
+                mat2.calcNumMats() == 1 && 
+                this->getSize(this->getDims() - 1) == mat2.getSize(mat2.getDims() - 1) &&
+                this->getSize(this->getDims() - 2) == mat2.getSize(mat2.getDims() - 2))
+            )
+        {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));     
+        }
+    }
+
+    DataObject result;
+    this->copyTo(result, 1); 
                      
-   //int64 start = cv::getCPUTickCount();
-   fListDivFunc[m_type](this, &mat2, &result, scale);
-   //start = cv::getCPUTickCount() -start;
+    //int64 start = cv::getCPUTickCount();
+    fListDivFunc[m_type](this, &mat2, &result, scale);
+    //start = cv::getCPUTickCount() -start;
 
-   return result;
+    return result;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::squeeze() const
