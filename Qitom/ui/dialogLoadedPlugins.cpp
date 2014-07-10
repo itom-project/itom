@@ -224,15 +224,14 @@ void DialogLoadedPlugins::filter()
 {
     int stateCount[4] = { 0, 0, 0, 0}; // we need 1: plsfOK, 2: plsfWarning, 4: plsfError, 8: plsfIgnored
 
-    int flag = 0;
-    flag = ui.cmdMessage->isChecked() * ito::plsfOk      + 
-           ui.cmdWarning->isChecked() * ito::plsfWarning +
-           ui.cmdError->isChecked()   * ito::plsfError   +
-           ui.cmdIgnored->isChecked() * ito::plsfIgnored;
+    int flag =  ui.cmdMessage->isChecked() * ito::plsfOk      + 
+                ui.cmdWarning->isChecked() * ito::plsfWarning +
+                ui.cmdError->isChecked()   * ito::plsfError   +
+                ui.cmdIgnored->isChecked() * ito::plsfIgnored;
 
     bool filterEditNotEmpty = ui.filterEdit->text() != "";
-    QString filterEditText = "*" + ui.filterEdit->text() + "*";
-    QRegExp rx(filterEditText, Qt::CaseInsensitive, QRegExp::Wildcard);
+//    QString filterEditText = "*" + ui.filterEdit->text() + "*";
+    QRegExp rx("*" + ui.filterEdit->text() + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
 
     for (int i = 0; i < m_items.size(); i++)
     {
@@ -257,6 +256,11 @@ void DialogLoadedPlugins::filter()
             else
             {
                 show = true;
+            }
+
+            if (show && (m_items[i].second->childCount() > 0) && filterEditNotEmpty && !rx.exactMatch(m_items[i].second->text(5)))
+            {
+                show = false;
             }
         }
         else
