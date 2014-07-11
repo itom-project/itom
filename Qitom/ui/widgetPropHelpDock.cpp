@@ -508,7 +508,7 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
         }
         case  stateWrongScheme:
         {
-            widget->setText(3, tr("wrong Scheme: %1 (your scheme%2)").arg(QString::number(existingDBs[ID].schemeID)).arg(QString::number(SCHEME_ID)));
+            widget->setText(3, tr("wrong Scheme: %1 (your scheme %2)").arg(QString::number(existingDBs[ID].schemeID)).arg(QString::number(SCHEME_ID)));
             widget->setIcon(3, QIcon(":/helpTreeDockWidget/wrongScheme"));
             widget->setFlags(widget->flags() ^ Qt::ItemIsEnabled);
             break;

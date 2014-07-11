@@ -23,7 +23,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QCheckBox" name="onlyComnpatibelCheck">
+         <widget class="QCheckBox" name="onlyCompatibleCheck">
           <property name="text">
            <string>Only display compatible plugins (debug / release)</string>
           </property>

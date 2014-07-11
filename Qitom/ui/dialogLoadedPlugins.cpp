@@ -229,19 +229,24 @@ void DialogLoadedPlugins::filter()
                 ui.cmdError->isChecked()   * ito::plsfError   +
                 ui.cmdIgnored->isChecked() * ito::plsfIgnored;
 
-    bool filterEditNotEmpty = ui.filterEdit->text() != "";
-//    QString filterEditText = "*" + ui.filterEdit->text() + "*";
+    bool filterEditIsEmpty = ui.filterEdit->text() == "";
     QRegExp rx("*" + ui.filterEdit->text() + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
 
     for (int i = 0; i < m_items.size(); i++)
     {
         int first = m_items[i].first;
-        bool show = false; 
+        bool show = (first & flag) != 0 &&      // check if button is active for this type of message
+                    (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0) &&    // Isn't compability checkbox set OR if reldgb flag is set it큦 incompatibel, if 0 it큦 compatible
+                    ((m_items[i].second->childCount() == 0) || filterEditIsEmpty || rx.exactMatch(m_items[i].second->text(5))); // has no child OR filter text is empty OR filter text matches node text
+        m_items[i].second->setHidden(!show);
+    }
+
+
         // check if button is active for this type of message
-        if ((first & flag) != 0)
-        { 
+/*        if ((first & flag) != 0)
+        {
             // Is compability checkbox set?
-            if (ui.onlyComnpatibelCheck->checkState())
+            if (ui.onlyCompatibelCheck->checkState())
             {
                 if ((first & ito::plsfRelDbg) != 0) // if reldgb flag is set it큦 incompatibel, if 0 it큦 compatible
                 {
@@ -266,49 +271,16 @@ void DialogLoadedPlugins::filter()
         else
         { 
             //show = false;// show stays false
-        }
+        }*/
 
-        m_items[i].second->setHidden(!show);
-
-        // Count the item if it has a parent and is not hidden
-        if (m_items[i].second->parent() && show)
+    // to count the visible items we need a second loop
+    for (int i = 0; i < m_items.size(); i++)
+    {
+        // Count the item if it has a parent and is not hidden and parent is also not hidden
+        if (m_items[i].second->parent() && !m_items[i].second->isHidden() && !m_items[i].second->parent()->isHidden())
         {
-            stateCount[int(log(double((first & 0xF)))/log(double(2)))]++;
+            stateCount[int(log(double((m_items[i].first & 0xF)))/log(double(2)))]++;
         }
-
-
-
-        //// show compatible items if ( ... && 0 = no conflict, 1 = conflict)
-        //if (!ui.onlyComnpatibelCheck->checkState() || !(m_items[i].first & ito::plsfRelDbg) != 0) 
-        //{
-        //    hideItem = false;
-        //}
-        //else if (filterEditNotEmpty && hideItem) // If TextSearch is used and item is not hidden
-        //{
-        //    if (m_items[i].second->parent())
-        //    {
-        //        // if item has parent, set the parent hide status
-        //        if (!m_items[i].second->parent()->isHidden())
-        //        {
-        //            hideItem = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // if not, check if the filter search matches ... if not, hide it 
-        //        if (rx.exactMatch(m_items[i].second->text(5)))
-        //        {
-        //            hideItem = false;
-        //        }
-        //    }
-        //}
-
-
-
-        //// Hide the item
-        //m_items[i].second->setHidden(hideItem);
-
-
     }
     ui.groupBox_2->setTitle(QString("%1 (%2)").arg(m_windowTitle).arg(stateCount[0] + stateCount[1] + stateCount[2] + stateCount[3]));
     ui.cmdMessage->setText(QString("%1 (%2)").arg(m_cmdMessage).arg  (stateCount[0]));

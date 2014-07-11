@@ -458,11 +458,11 @@ ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
                 {
                     if (name)
                     {
-                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension  of data object '%s' exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, name, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension of data object '%s' exceeds the given boundaries [%i, %i]").toLatin1().data(), i+1, name, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
                     }
                     else
                     {
-                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exeeds the given boundaries [%i, %i]").toLatin1().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The size of the %i. dimension exceeds the given boundaries [%i, %i]").toLatin1().data(), i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
                     }
                     break;
                 }

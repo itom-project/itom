@@ -424,17 +424,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source>Only display compatible plugins (debug / release)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur kompatible Plugins anzeigen (debug/release)</translation>
     </message>
     <message>
         <location/>
         <source>Collapse all</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles reduzieren</translation>
     </message>
     <message>
         <location/>
         <source>Expand all</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles erweitern</translation>
     </message>
 </context>
 <context>
@@ -951,12 +951,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../helper/fileDownloader.cpp" line="+108"/>
         <location line="+101"/>
         <source>no network reply instance available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Herunterladen: Keine Antwort erhalten</translation>
     </message>
     <message>
         <location line="-13"/>
         <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
     </message>
 </context>
 <context>
@@ -1190,7 +1190,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-687"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1267,12 +1267,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+8"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>String &apos;%s&apos; does not fit to given string-constraints.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der String &apos;%s&apos; entspricht nicht den geforderten String-Bedingungen.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1292,7 +1292,7 @@ p, li { white-space: pre-wrap; }
         <location line="+23"/>
         <location line="+22"/>
         <source>value does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation>Wert entspricht nicht der angegebenen Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <source>Value out of range [%1, %2]</source>
@@ -1311,7 +1311,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+68"/>
         <source>Paramater is no array type. Indexing not possible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
         <source>value out of range [%1,%2]</source>
@@ -1329,7 +1329,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+4"/>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>Index value is out of range [0,%i]</source>
@@ -1353,7 +1353,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+88"/>
         <source>Name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Name des übergebenen Parameters ist leer.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1404,20 +1404,20 @@ Veralteter Parameter %1</translation>
     </message>
     <message>
         <location filename="../api/apiFunctions.cpp" line="+146"/>
-        <location filename="../python/pythonCommon.cpp" line="+216"/>
+        <location filename="../python/pythonCommon.cpp" line="+231"/>
         <source>Unknown parameter type</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbekannter Parametertyp</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Wrong number of parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Falsche Anzahl an Parametern</translation>
     </message>
     <message>
         <location line="+15"/>
         <location line="+14"/>
         <source>Wrong parameter type</source>
-        <translation type="unfinished"></translation>
+        <translation>Falscher Parametertyp</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -1443,20 +1443,20 @@ Veralteter Parameter %1</translation>
         <location line="-56"/>
         <location line="+48"/>
         <source>Vectors paramsMand, paramsOpt and paramsOut must not be NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Vektoren paramsMand, paramsOpt und paramsOut dürfen nicht NULL sein</translation>
     </message>
     <message>
         <location line="-33"/>
         <location line="+48"/>
         <source>Filter parameters not found in hash table.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter-Parameter wurde nicht in der Hash-Tabelle gefunden.</translation>
     </message>
     <message>
         <location line="+19"/>
         <location line="+19"/>
         <location line="+22"/>
         <source>Fatal error! Could not get addInManager instance!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fataler Fehler! Keine addInManager-Instanz gefunden!</translation>
     </message>
     <message>
         <location line="-36"/>
@@ -1466,32 +1466,32 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="+68"/>
         <source>The data object &apos;%s&apos; must have %i dimensions (%i given)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das DataObject &apos;%s&apos; muss %i Dimensionen besitzen (übergeben wurden %i)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The given data object must have %i dimensions (%i given)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das übergebene DataObject &apos;%s&apos; muss %i Dimensionen besitzen (übergeben wurden %i)</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>The size of the %i. dimension  of data object &apos;%s&apos; exeeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished"></translation>
+        <source>The size of the %i. dimension of data object &apos;%s&apos; exceeds the given boundaries [%i, %i]</source>
+        <translation type="unfinished">Die Größe der %i. Dimension des DataObjects &apos;%s&apos; übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>The size of the %i. dimension exeeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished"></translation>
+        <source>The size of the %i. dimension exceeds the given boundaries [%i, %i]</source>
+        <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
         <location filename="../python/pythonCommon.cpp" line="+1022"/>
         <source>Keyword autoLoadParams not of integer type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not delete Keyword: autoLoadParams</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schlüsselwort kann nicht gelöscht werden: autoLoadParams</translation>
     </message>
     <message>
         <source>- unknown message -</source>
@@ -1505,17 +1505,17 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="+42"/>
         <source>you must provide at least one parameter with the name of the function</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es muss mindestens ein Parameter für dem Funktionsnamen unterstützt werden</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>the first function name parameter can not be interpreted as string</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erste Parameter sollte der Funktionsname sein, kann jedoch nicht als String erkannt werden</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>plugin does not provide an execution of function &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin unterstützt nicht die Ausführung der Funktion &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -1701,7 +1701,7 @@ Veralteter Parameter %1</translation>
         <location line="+39"/>
         <source>Warning: The version contains locally changed code!
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung: Die Version enthält lokal geänderten Code!</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1750,7 +1750,7 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="-229"/>
         <source>Button must have a valid name.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Button muss einen gültigen Namen haben.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1834,12 +1834,12 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="+11"/>
         <source>error retrieving widget pointer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der Abfrage des Widget-Pointers</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>error closing dialog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schließen des Dialogs</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2681,12 +2681,12 @@ Veralteter Parameter %1</translation>
     <message>
         <location/>
         <source>Python Syntax-Checker (uses Python-Module &quot;frosted&quot;)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Python-Syntax-Checker (mit Python-Modul &quot;frosted&quot;)</translation>
     </message>
     <message>
         <location/>
         <source>Automatically include itom module for syntax checker</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">itom-Modul für den Syntax-Checker automatisch hinzufügen</translation>
     </message>
     <message>
         <location/>
@@ -2948,7 +2948,7 @@ Veralteter Parameter %1</translation>
     <message>
         <location/>
         <source>To change the order in which the items (files) are loaded, use Drag and Drop</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Um die Reihenfolger der geladenen Einträge zu ändern, bitte Drag and Drop benutzen</translation>
     </message>
 </context>
 <context>
@@ -3079,22 +3079,22 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="+48"/>
         <source>Warning while showing configuration dialog. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim Anzeigen des Konfigurationsdialogs ist eine Warnung aufgetreten. Nachricht: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning while showing configuration dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim Anzeigen des Konfigurationsdialogs ist eine Warnung aufgetreten</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Error while showing configuration dialog. Message: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Anzeigen des Konfigurationsdialogs. Nachricht: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error while showing configuration dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Anzeigen des Konfigurationsdialogs</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -3410,7 +3410,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../organizer/addInManager.cpp" line="-59"/>
         <source>no configuration dialog available</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Konfigurationsdialogs vorhanden</translation>
     </message>
 </context>
 <context>
@@ -3484,7 +3484,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+20"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -3561,7 +3561,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+8"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
 </context>
 <context>
@@ -3569,32 +3569,32 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/breakPointDockWidget.cpp" line="+93"/>
         <source>breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haltepunkte</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>delete Breakpoint</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haltepunkt löschen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>delete all Breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle Haltepunkte löschen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>edit Breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haltepunkte bearbeiten</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>En- or disable Breakpoint</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haltepunkt ein- und ausschalten</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>En- or disable all Breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle Haltepunkte ein- und ausschalten</translation>
     </message>
 </context>
 <context>
@@ -4390,12 +4390,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+222"/>
         <source>the selected items</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">der ausgewählte Eintrag</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Do you really want to delete %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Soll &apos;%1&apos; wirklich gelöscht werden?</translation>
     </message>
     <message>
         <source> the selected items</source>
@@ -4518,7 +4518,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+95"/>
         <source>unknown type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Unbekannter Typ</translation>
     </message>
     <message>
         <location line="+156"/>
@@ -4535,59 +4535,59 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+14"/>
         <location line="+15"/>
         <source>Range: [%1,%2], Default: %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bereich: [%1, %2], Voreinstellung: %3</translation>
     </message>
     <message>
         <location line="-25"/>
         <location line="+14"/>
         <location line="+15"/>
         <source>Default: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Voreinstellung: %1</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>RegExp: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RegAusdr.: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>RegExp: [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RegAusdr.: [%1]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>RegExp: &lt;no pattern given&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RegAusdr.: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Match: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Treffer: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Match: [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Treffer: [%1]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Match: &lt;no pattern given&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Treffer: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Wildcard: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Platzhalter: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Wildcard: [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Platzhalter: [%1]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wildcard: &lt;no pattern given&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Platzhalter: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
         <location line="+414"/>
@@ -4608,7 +4608,8 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+44"/>
         <source>No help database available! 
  go to Properties File -&gt; General -&gt; Helpviewer and check the selection</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keine Hilfe-Datenbank erreichbar!
+Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfen</translation>
     </message>
     <message>
         <location line="+495"/>
@@ -4899,26 +4900,26 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+139"/>
+        <location filename="../mainApplication.cpp" line="+162"/>
         <location line="+2"/>
         <source>Version %1
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-2"/>
         <source>64 bit (x64)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>32 bit (x86)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+82"/>
         <source>load translations...</source>
-        <translation type="unfinished">Übersetzungen wird geladen...</translation>
+        <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -5184,22 +5185,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+3"/>
         <source>autoreload modules</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatisch ladende Module</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>autoreload before script execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatisch laden vor der Skriptausführung</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>autoreload before single command</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatisch laden vor den Einzelbefehlen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>autoreload before events and function calls</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatisch laden vor den Ereignis- und Funktionsaufrufen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -5229,7 +5230,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+5"/>
         <source>Recently used files</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zuletzt verwendete Dateien</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -5255,7 +5256,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-10"/>
         <source>Reload modules</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Geladene Module</translation>
     </message>
     <message>
         <location line="+90"/>
@@ -5277,22 +5278,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+80"/>
         <source>Error when preparing help or showing assistant.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der Erstellung oder beim Anzeigen des Hilfeassistenten.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error while showing assistant.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Anzeigen des Hilfeassistenten.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Warning when preparing help or showing assistant.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung bei der Erstellung oder beim Anzeigen des Hilfeassistenten.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning while showing assistant.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Anzeigen des Hilfeassistenten.</translation>
     </message>
     <message>
         <location line="+34"/>
@@ -6071,7 +6072,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+103"/>
         <source>Recently used files</source>
-        <translation type="unfinished"></translation>
+        <translation>Zuletzt verwendete Dateien</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -6177,12 +6178,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../organizer/scriptEditorOrganizer.cpp" line="+289"/>
         <source>Script Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Skript-Editor</translation>
     </message>
     <message>
         <location line="+108"/>
         <source>The following files have been changed and should be safed:</source>
-        <translation type="unfinished">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
+        <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
 </context>
 <context>
@@ -6240,7 +6241,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>&amp;delete all breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -6391,7 +6392,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+263"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+273"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6401,27 +6402,27 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+57"/>
         <source>widgets of type QDockWidget are not yet implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+63"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+99"/>
         <source>figHandle %i is no handle for a figure window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+11"/>
         <source>No internal dialog or window with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+25"/>
         <source>ui-file &apos;%1&apos; could not be correctly parsed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6431,7 +6432,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Dateiname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+39"/>
         <source>dialog could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6444,7 +6445,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+77"/>
         <source>A widget inherited from QDialog cannot be docked into the main window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6542,14 +6543,14 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+31"/>
         <location line="+25"/>
         <location line="+24"/>
-        <location line="+1263"/>
+        <location line="+1260"/>
         <location line="+37"/>
         <location line="+36"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1276"/>
+        <location line="-1273"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6614,22 +6615,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+11"/>
         <location line="+64"/>
-        <location line="+188"/>
+        <location line="+185"/>
         <source>figHandle %i is not handle for a figure window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2423"/>
-        <location line="+2176"/>
+        <location line="-2369"/>
+        <location line="+2125"/>
         <location line="+64"/>
-        <location line="+154"/>
+        <location line="+151"/>
         <location line="+34"/>
         <location line="+36"/>
         <source>figHandle %i not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-172"/>
+        <location line="-169"/>
         <source>figure window is not available any more</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6644,7 +6645,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+13"/>
         <source>Figure</source>
         <translation>Abbildung</translation>
     </message>
@@ -6695,7 +6696,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../ui/widgetPropEditorAPI.cpp" line="+49"/>
         <source>base path for relative pathes: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Basispfad der relativen Pfade: </translation>
     </message>
     <message>
         <location line="+4"/>
@@ -6919,68 +6920,68 @@ Katesisch</translation>
     <message>
         <location filename="../ui/widgetPropHelpDock.cpp" line="+62"/>
         <source>Database</source>
-        <translation type="unfinished"></translation>
+        <translation>Datenbank</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Updates and Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Updates und Downloads</translation>
     </message>
     <message>
         <location line="+217"/>
         <location line="+459"/>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location line="-390"/>
         <source>Invalid type attribute of xml file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiges Typen-Attribut der XML-Datei</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Type attribute node &apos;database&apos; of xml file is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Typen-Attribut des Knotens &apos;database&apos; der XML-Dateien vermisst.</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>xml parsing error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>XML-Parserfehler: %1</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>xml error: node &apos;database&apos; is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>XML-Fehler: Knoten &apos;database&apos; nicht gefunden.</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuell</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Update to version: %1 (%2)</source>
-        <translation type="unfinished"></translation>
+        <translation>Update auf Version: %1 (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Download version: %1 (%2)</source>
-        <translation type="unfinished"></translation>
+        <translation>Download-Version: %1 (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>wrong Scheme: %1 (your scheme%2)</source>
-        <translation type="unfinished"></translation>
+        <source>wrong Scheme: %1 (your scheme %2)</source>
+        <translation>Falsches Schema: %1 (aktuelles Schema %2)</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -6990,37 +6991,37 @@ Katesisch</translation>
     <message>
         <location line="+143"/>
         <source>download error</source>
-        <translation type="unfinished"></translation>
+        <translation>Download-Fehler</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>&amp;update</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Update</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>locate on disk</source>
-        <translation type="unfinished">Verzeichnis anzeigen</translation>
+        <translation>Verzeichnis anzeigen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>remove from disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Auf der Festplatte löschen</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Remote database update...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Remote Datenbank-Update...</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>Timeout: Server is not responding in time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung: Server antwortet nicht</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Could not delete old local version of Database</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die alte Datenbankversion konnte nicht gelöscht werden</translation>
     </message>
 </context>
 <context>
@@ -7028,7 +7029,7 @@ Katesisch</translation>
     <message>
         <location filename="../ui/widgetPropPythonStartup.cpp" line="+42"/>
         <source>base path for relative pathes: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Basispfad der relativen Pfade: </translation>
     </message>
     <message>
         <location line="+53"/>
