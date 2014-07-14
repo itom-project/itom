@@ -208,8 +208,10 @@ void MainApplication::setupApplication()
         _putenv(newpath.data());
     }
 
+    //This check is done since the KMP_AFFINITY feature of OpenMP
+    //is only available on Intel CPUs and lead to a severe warning
+    //on other CPUs.
     CPUID cpuID;
-
     cpuID.load(0); // Get CPU vendor
 
     QByteArray vendor("");
@@ -222,8 +224,7 @@ void MainApplication::setupApplication()
         _putenv_s("KMP_AFFINITY","none");
     }
     
-   
-    std::cout << "CPU vendor = " << vendor.data() << endl; 
+    //std::cout << "CPU vendor = " << vendor.data() << endl; 
     
 #endif
 
