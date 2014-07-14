@@ -229,7 +229,6 @@ void DialogLoadedPlugins::filter()
                 ui.cmdError->isChecked()   * ito::plsfError   +
                 ui.cmdIgnored->isChecked() * ito::plsfIgnored;
 
-    bool filterEditIsEmpty = ui.filterEdit->text() == "";
     QRegExp rx("*" + ui.filterEdit->text() + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
 
     for (int i = 0; i < m_items.size(); i++)
@@ -237,7 +236,7 @@ void DialogLoadedPlugins::filter()
         int first = m_items[i].first;
         bool show = (first & flag) != 0 &&      // check if button is active for this type of message
                     (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0) &&    // Isn't compability checkbox set OR if reldgb flag is set it´s incompatibel, if 0 it´s compatible
-                    ((m_items[i].second->childCount() == 0) || filterEditIsEmpty || rx.exactMatch(m_items[i].second->text(5))); // has no child OR filter text is empty OR filter text matches node text
+                    ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.exactMatch(m_items[i].second->text(5))); // has no child OR filter text is empty OR filter text matches node text
         m_items[i].second->setHidden(!show);
     }
 
