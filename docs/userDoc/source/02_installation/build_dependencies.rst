@@ -192,8 +192,8 @@ You have different possibilities in order to get the binaries from OpenCV:
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. Then map **OpenCV_DIR** to the build-directory, indicated in CMake.
 
 Finally, add the appropriate bin-folder of OpenCV to the windows environment variable: 
-- VS2010, 32bit: Add to the path-variable: **;C:\OpenCV2.3\build\x86\vc10\bin** (or similar)
-- VS2010, 64bit: Add to the path-variable: **;C:\OpenCV2.3\build\x64\vc10\bin** (or similar)
+- VS2010, 32bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x86\\vc10\\bin** (or similar)
+- VS2010, 64bit: Add to the path-variable: **;C:\\OpenCV2.3\\build\\x64\\vc10\\bin** (or similar)
 
 Changes to the environment variable only become active after a re-login to windows.
 
@@ -206,14 +206,14 @@ Changes to the environment variable only become active after a re-login to windo
 The PointCloud-Library is a sister-project of OpenCV and is able to work with large point clouds. You can compile |itom| with support for the point cloud library. Then the python classes **itom.pointCloud**, **itom.point** and **itom.polygonMesh** are available and algorithm plugins can use point cloud functionalities. If you don't need anything like this, don't install the point cloud library and uncheck the option **BUILD_WITH_PCL** in the CMake configurations of |itom|.
 
 The binaries can be loaded from the website http://www.pointclouds.org/downloads/windows.html. Depending on 32bit or 64bit execute the **AllInOne-Installer for Visual Studio 2010**. 
-The installation directory may for example be **C:\PCL1.6.0**. Information: Please install the PCL base software including all 3rd-party packages, besides OpenNI. You don't have to install OpenNI, since this is only the binaries for the communication with commercial range sensors, like Kinect.
+The installation directory may for example be **C:\\PCL1.6.0**. Information: Please install the PCL base software including all 3rd-party packages, besides OpenNI. You don't have to install OpenNI, since this is only the binaries for the communication with commercial range sensors, like Kinect.
 
 If you want to debug the point cloud library (not necessary, optional) unpack the appropriate zip-archive with the pdb-files into the bin-folder of the point cloud library. 
 This is the folder where the dll's are located as well.
 
 Add the path to the bin-folder of PointCloud-library to the windows environment variable:
 
-- Add to the path-variable: **;C:\PCL\1.6.0\bin** (or similar)
+- Add to the path-variable: **;C:\\PCL\\1.6.0\\bin** (or similar)
 
 **Python** (mandatory, 3.2 or higher)
 
@@ -227,9 +227,9 @@ Get a version of NumPy that fits to your python version and install it. On Windo
 
 **Pip** is the new package installation tool for |python| packages. If you don't have **pip** already installed use the following hints to get **pip**. Download the file from https://raw.github.com/pypa/pip/master/contrib/get-pip.py and save it to any temporary directory. Then open the file **get-pip.py** with the python version used for compiling |itom| (e.g. python32.exe). As an alternative, open a command line and switch to the directory where you save the file **get-pip.py**.
 
-Assuming that Python is located under **C:\Python32**, execute the following command::
+Assuming that Python is located under **C:\\Python32**, execute the following command::
     
-    C:\python32\python.exe get-pip.py
+    C:\\python32\\python.exe get-pip.py
 
 **pip** is installed and you can use the **pip** tool (see **Sphinx** installation above).
 
