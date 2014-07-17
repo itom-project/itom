@@ -2,202 +2,16 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de_DE">
 <context>
-    <name>BreakPointModel</name>
-    <message>
-        <source>filename</source>
-        <translation type="obsolete">Dateiname</translation>
-    </message>
-    <message>
-        <source>line</source>
-        <translation type="obsolete">Zeile</translation>
-    </message>
-    <message>
-        <source>condition</source>
-        <translation type="obsolete">Anforderungen</translation>
-    </message>
-    <message>
-        <source>temporary</source>
-        <translation type="obsolete">Temporär</translation>
-    </message>
-    <message>
-        <source>enabled</source>
-        <translation type="obsolete">Aktiv</translation>
-    </message>
-    <message>
-        <source>ignore count</source>
-        <translation type="obsolete">Anzahl Ignorierungen</translation>
-    </message>
-    <message>
-        <source>py bp nr</source>
-        <translation type="obsolete">Ph HP Nr</translation>
-    </message>
-    <message>
-        <source>yes</source>
-        <translation type="obsolete">ja</translation>
-    </message>
-    <message>
-        <source>no</source>
-        <translation type="obsolete">nein</translation>
-    </message>
-</context>
-<context>
-    <name>ConsoleWidget</name>
-    <message>
-        <source>script execution</source>
-        <translation type="obsolete">Skript wird ausgeführt</translation>
-    </message>
-    <message>
-        <source>Python is not available</source>
-        <translation type="obsolete">Python ist nicht verfügbar</translation>
-    </message>
-</context>
-<context>
     <name>DialogAboutQItom</name>
-    <message>
-        <source>About ITOM</source>
-        <translation type="obsolete">Über ITOM</translation>
-    </message>
     <message>
         <location filename="../ui/dialogAbout.ui"/>
         <source>itom logo</source>
         <translation>ITOM Logo</translation>
     </message>
     <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Welcome to itom, the &lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; measurement programm.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your current itom-version ([itom_SysType]) is [itom_Version] which correspond to SVN-Revision [itom_SVNRevision] from [itom_SVNRevision_Date] located at SVN-reposetory at &lt;/span&gt;&lt;a href=&quot;[ito_SVNRevision_URL]&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;[ito_SVNRevision_URL]&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This itom-version is licensed unter &lt;/span&gt;&lt;a href=&quot;http://www.gnu.org/licenses/lgpl.html&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; vX.X&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please report bugs under: &lt;/span&gt;&lt;a href=&quot;http://obelix.ito.uni-stuttgart.de/mantis &quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://obelix.ito.uni-stuttgart.de/mantis &lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;[version_Warnings] Cheers your itom team&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your main programm of itom uses the following third party packages:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://opencv.willowgarage.com/wiki/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;openCV&lt;/span&gt;&lt;/a&gt; openCV in version [openCV_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.pointclouds.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;point cload library&lt;/span&gt;&lt;/a&gt; in version [PCL_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The &lt;a href=&quot;http://qt.nokia.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QT-Framework&lt;/span&gt;&lt;/a&gt; in version [QT_Your_Version] (Compile-Version [QT_Version]) by Nokia unter LGPL.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://qwt.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QwtPlot&lt;/span&gt;&lt;/a&gt; in version [QwtPlot_Version] by Uwe Rathmann and Josef Wilgen under LGPL with additional &lt;a href=&quot;http://qwt.sourceforge.net/qwtlicense.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;exceptions&lt;/span&gt;&lt;/a&gt;.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QPropertyEditor under LGPL  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.riverbankcomputing.co.uk/software/qscintilla/intro&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QScintilla&lt;/span&gt;&lt;/a&gt; in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QScintilla is a port to Qt of Neil Hodgson&apos;s  &lt;a href=&quot;http://www.scintilla.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Scintilla&lt;/span&gt;&lt;/a&gt; C++ editor control.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.python.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Python&lt;/span&gt;&lt;/a&gt; in version [Py_Version] by Python Software Foundation unter Python-License (similar to BSD license).  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Python-package &lt;a href=&quot;http://numpy.scipy.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;NumPy&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;http://www.scipy.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SciPy&lt;/span&gt;&lt;/a&gt; under BSD compatible license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://matplotlib.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;MatPlotLib&lt;/span&gt;&lt;/a&gt; under BSD compatible license.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;  Further used third party packages &lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Google test framework by Google under New BSD-license &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Some of the PlugIns may contain further third party packages, e.g.&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;NVidia CUDA SDK by NVidia unter NVidia CUDA SDK License, &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenMP, see &lt;a href=&quot;http://openmp.org/wp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://openmp.org/wp/&lt;/span&gt;&lt;/a&gt; &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hardware dependent third party driver and SDKs with different license models,&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;or my be published unter different terms or contitions than the main itom-programm. So please check plugin-license before distributing itom-plugins.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Willkommen zum ITOM, das  &lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; Messprogramm.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Die verwendete ITOM-Version ([itom_SysType]) ist [itom_Version], SVN-Revision [itom_SVNRevision] vom [itom_SVNRevision_Date], liegt auf SVN-reposetory at &lt;/span&gt;&lt;a href=&quot;[ito_SVNRevision_URL]&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;[ito_SVNRevision_URL]&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This itom-version is licensed unter &lt;/span&gt;&lt;a href=&quot;http://www.gnu.org/licenses/lgpl.html&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; vX.X&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please report bugs under: &lt;/span&gt;&lt;a href=&quot;http://obelix.ito.uni-stuttgart.de/mantis &quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://obelix.ito.uni-stuttgart.de/mantis &lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;[version_Warnings] Cheers your itom team&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your main programm of itom uses the following third party packages:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://opencv.willowgarage.com/wiki/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;openCV&lt;/span&gt;&lt;/a&gt; openCV in version [openCV_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.pointclouds.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;point cload library&lt;/span&gt;&lt;/a&gt; in version [PCL_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The &lt;a href=&quot;http://qt.nokia.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QT-Framework&lt;/span&gt;&lt;/a&gt; in version [QT_Your_Version] (Compile-Version [QT_Version]) by Nokia unter LGPL.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://qwt.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QwtPlot&lt;/span&gt;&lt;/a&gt; in version [QwtPlot_Version] by Uwe Rathmann and Josef Wilgen under LGPL with additional &lt;a href=&quot;http://qwt.sourceforge.net/qwtlicense.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;exceptions&lt;/span&gt;&lt;/a&gt;.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QPropertyEditor under LGPL  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.riverbankcomputing.co.uk/software/qscintilla/intro&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QScintilla&lt;/span&gt;&lt;/a&gt; in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QScintilla is a port to Qt of Neil Hodgson&apos;s  &lt;a href=&quot;http://www.scintilla.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Scintilla&lt;/span&gt;&lt;/a&gt; C++ editor control.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.python.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Python&lt;/span&gt;&lt;/a&gt; in version [Py_Version] by Python Software Foundation unter Python-License (similar to BSD license).  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Python-package &lt;a href=&quot;http://numpy.scipy.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;NumPy&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;http://www.scipy.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SciPy&lt;/span&gt;&lt;/a&gt; under BSD compatible license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://matplotlib.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;MatPlotLib&lt;/span&gt;&lt;/a&gt; under BSD compatible license.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;  Further used third party packages &lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Google test framework by Google under New BSD-license &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Some of the PlugIns may contain further third party packages, e.g.&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;NVidia CUDA SDK by NVidia unter NVidia CUDA SDK License, &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenMP, see &lt;a href=&quot;http://openmp.org/wp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://openmp.org/wp/&lt;/span&gt;&lt;/a&gt; &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hardware dependent third party driver and SDKs with different license models,&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;or my be published unter different terms or contitions than the main itom-programm. So please check plugin-license before distributing itom-plugins.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Welcome to itom, the &lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; measurement programm.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your current itom-version ([itom_SysType]) is [itom_Version] which correspond to SVN-Revision [itom_SVNRevision] from [itom_SVNRevision_Date] located at SVN-repository at &lt;/span&gt;&lt;a href=&quot;[ito_SVNRevision_URL]&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;[ito_SVNRevision_URL]&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This itom-version is licensed unter &lt;/span&gt;&lt;a href=&quot;http://www.gnu.org/licenses/lgpl.html&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; vX.X&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please report bugs under: &lt;/span&gt;&lt;a href=&quot;http://obelix.ito.uni-stuttgart.de/mantis &quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://obelix.ito.uni-stuttgart.de/mantis &lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;[version_Warnings] Cheers your itom team&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Your main programm of itom uses the following third party packages:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://opencv.willowgarage.com/wiki/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;openCV&lt;/span&gt;&lt;/a&gt; openCV in version [openCV_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.pointclouds.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;point cload library&lt;/span&gt;&lt;/a&gt; in version [PCL_Version] by Willow Garage unter BSD-license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The &lt;a href=&quot;http://qt.nokia.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QT-Framework&lt;/span&gt;&lt;/a&gt; in version [QT_Your_Version] (Compile-Version [QT_Version]) by Nokia unter LGPL.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://qwt.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QwtPlot&lt;/span&gt;&lt;/a&gt; in version [QwtPlot_Version] by Uwe Rathmann and Josef Wilgen under LGPL with additional &lt;a href=&quot;http://qwt.sourceforge.net/qwtlicense.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;exceptions&lt;/span&gt;&lt;/a&gt;.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QPropertyEditor under LGPL  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.riverbankcomputing.co.uk/software/qscintilla/intro&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QScintilla&lt;/span&gt;&lt;/a&gt; in version 2.6.0 by Riverbank Computed Limited under GPL with additional exceptions.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QScintilla is a port to Qt of Neil Hodgson&apos;s  &lt;a href=&quot;http://www.scintilla.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Scintilla&lt;/span&gt;&lt;/a&gt; C++ editor control.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.python.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Python&lt;/span&gt;&lt;/a&gt; in version [Py_Version] by Python Software Foundation unter Python-License (similar to BSD license).  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Python-package &lt;a href=&quot;http://numpy.scipy.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;NumPy&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;http://www.scipy.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SciPy&lt;/span&gt;&lt;/a&gt; under BSD compatible license.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://matplotlib.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;MatPlotLib&lt;/span&gt;&lt;/a&gt; under BSD compatible license.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;  Further used third party packages &lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Google test framework by Google under New BSD-license &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PythonQt, the python interaction with QT was inspired by PythonQt (under LGPL).&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Some of the PlugIns may contain further third party packages, e.g.&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;NVidia CUDA SDK by NVidia unter NVidia CUDA SDK License, &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenMP, see &lt;a href=&quot;http://openmp.org/wp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://openmp.org/wp/&lt;/span&gt;&lt;/a&gt; &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hardware dependent third party driver and SDKs with different license models,&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;or my be published unter different terms or contitions than the main itom-programm. So please check plugin-license before distributing itom-plugins.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Willkommen zum ITOM, das  &lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; Messprogramm.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Die verwendete ITOM-Version ([itom_SysType]) ist [itom_Version], SVN-Revision [itom_SVNRevision] vom [itom_SVNRevision_Date], SVN-Quelle auf &lt;/span&gt;&lt;a href=&quot;[ito_SVNRevision_URL]&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;[ito_SVNRevision_URL]&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Diese ITOM-Version ist als &lt;/span&gt;&lt;a href=&quot;http://www.gnu.org/licenses/lgpl.html&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; vX.X lizenziert.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Programmfehler bitte melden unter: &lt;/span&gt;&lt;a href=&quot;http://obelix.ito.uni-stuttgart.de/mantis &quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://obelix.ito.uni-stuttgart.de/mantis &lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;[version_Warnings] Bis dann, Euer ITOM-Team!&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Der Kern dieses ITOMs nutzt Pakete folgender Drittpartner:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://opencv.willowgarage.com/wiki/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;OpenCV&lt;/span&gt;&lt;/a&gt; Version [openCV_Version] von Willow Garage als BSD-Lizenz.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.pointclouds.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;point cload library&lt;/span&gt;&lt;/a&gt; Version [PCL_Version] von Willow Garage als BSD-Lizenz.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The &lt;a href=&quot;http://qt.nokia.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QT-Framework&lt;/span&gt;&lt;/a&gt; Version [QT_Your_Version] (Compile-Version [QT_Version]) von Nokia als LGPL.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://qwt.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QwtPlot&lt;/span&gt;&lt;/a&gt; Version [QwtPlot_Version] von Uwe Rathmann und Josef Wilgen als LGPL mit &lt;a href=&quot;http://qwt.sourceforge.net/qwtlicense.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Erweiterungen&lt;/span&gt;&lt;/a&gt;.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QPropertyEditor als LGPL  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.riverbankcomputing.co.uk/software/qscintilla/intro&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;QScintilla&lt;/span&gt;&lt;/a&gt; Version 2.6.0 von Riverbank Computed Limited als GPL mit Erweiterungen.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QScintilla ist ein Teill von Qt von Neil Hodgson&apos;s  &lt;a href=&quot;http://www.scintilla.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Scintilla&lt;/span&gt;&lt;/a&gt; C++ Editor Control.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.python.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Python&lt;/span&gt;&lt;/a&gt; Version [Py_Version] von Python Software Foundation als Python-License (entspricht der BSD-Lizenz).  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Python-Package &lt;a href=&quot;http://numpy.scipy.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;NumPy&lt;/span&gt;&lt;/a&gt; und &lt;a href=&quot;http://www.scipy.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SciPy&lt;/span&gt;&lt;/a&gt; als BSD-komplatible Lizenz.  &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://matplotlib.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;MatPlotLib&lt;/span&gt;&lt;/a&gt; als BSD-komplatible Lizenz.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Weitere verwendete Pakete Drittanbieter:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Google Test Framework von Google als New BSD-Lizenz &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PythonQt, die Python-Integration mit QT als LGPL.&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Einige der PlugIns können ebenfalls Pakete Dritter enthalten, z. B.:&lt;/span&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;NVidia CUDA SDK von NVidia als NVidia CUDA SDK Lizenz, &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenMP, siehe &lt;a href=&quot;http://openmp.org/wp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://openmp.org/wp/&lt;/span&gt;&lt;/a&gt; &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hardware-abhängige Treiber und SDKs von Drittanbietern mit unterschiedlichen Lizenzmodellen,&lt;/li&gt;&lt;/ul&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;oder wurden unter anderen Bestimmungen oder Konditionen als das ITOM-Programm veröffentlicht. Deshalb bitte vor der Veröffentlichung eines ITOM-PlugIns überprüfen!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
         <location/>
         <source>ito logo</source>
         <translation>ITO Logo</translation>
-    </message>
-    <message utf8="true">
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Institut für Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Universität Stuttgart&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Institut für Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Universität Stuttgart&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Deutschland&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location/>
@@ -240,25 +54,13 @@ p, li { white-space: pre-wrap; }
         <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
     </message>
     <message>
-        <source>Could not load file %1. Reason: %2.</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; kann nicht geladen werden. Grund: %2.</translation>
-    </message>
-    <message>
-        <source>The version string has been copied to the clipboard</source>
-        <translation type="obsolete">Die Versionsinformationen wurde in die Zwischenablage kopiert</translation>
-    </message>
-    <message>
-        <source>copy</source>
-        <translation type="obsolete">Kopieren</translation>
-    </message>
-    <message>
         <location/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message utf8="true">
         <location/>
@@ -270,7 +72,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Universität Stuttgart&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Prof. Dr. Wolfgang Osten&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -343,14 +145,6 @@ p, li { white-space: pre-wrap; }
         <source>Line number (0 - 0, current: 0)</source>
         <translation>Zeilennummer (0 - 0, aktuell: 0)</translation>
     </message>
-    <message>
-        <source>Line number (1 - %1, current: %2):</source>
-        <translation type="obsolete">Zeilennummer (1 - %1, aktuell: %2):</translation>
-    </message>
-    <message>
-        <source>Character number (0 - %1, current: %2):</source>
-        <translation type="obsolete">Zeichennummer (1 - %1, aktuell: %2):</translation>
-    </message>
 </context>
 <context>
     <name>DialogIconBrowser</name>
@@ -373,10 +167,6 @@ p, li { white-space: pre-wrap; }
         <location/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
-    </message>
-    <message>
-        <source>Icon Browser</source>
-        <translation type="obsolete">Icon-Suche</translation>
     </message>
 </context>
 <context>
@@ -498,50 +288,6 @@ p, li { white-space: pre-wrap; }
         <location/>
         <source>variable name:</source>
         <translation>Variablenname:</translation>
-    </message>
-    <message>
-        <source>QT error: Grid layout could not be identified</source>
-        <translation type="obsolete">QT-Fehler: Grid Layout kann nicht identifiziert werden</translation>
-    </message>
-    <message>
-        <source>hardware pointer for mandatory parameter must not be NULL</source>
-        <translation type="obsolete">Hardware-Zeiger für Pflichtparameter darf nicht NULL sein</translation>
-    </message>
-    <message>
-        <source>[Integer]</source>
-        <translation type="obsolete">Ganzzahl</translation>
-    </message>
-    <message>
-        <source>[Double]</source>
-        <translation type="obsolete">Kommazahl</translation>
-    </message>
-    <message>
-        <source>[String]</source>
-        <translation type="obsolete">Text</translation>
-    </message>
-    <message>
-        <source>[HW-Instance]</source>
-        <translation type="obsolete">[HW-Instanz]</translation>
-    </message>
-    <message>
-        <source>[unknown]</source>
-        <translation type="obsolete">[unbekannt]</translation>
-    </message>
-    <message>
-        <source>QT error: Spin box widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>QT error: Double spin box widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>QT error: String input widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>hardware pointer is empty</source>
-        <translation type="obsolete">Hardware-Zeiger ist leer</translation>
     </message>
 </context>
 <context>
@@ -707,47 +453,6 @@ p, li { white-space: pre-wrap; }
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
-    <message>
-        <source>Python Engine is invalid</source>
-        <translation type="obsolete">Python-Engine ist ungültig</translation>
-    </message>
-    <message>
-        <source>The Python Engine could not be found</source>
-        <translation type="obsolete">Python-Engine wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>connection problem</source>
-        <translation type="obsolete">Verbindungsproblem</translation>
-    </message>
-    <message>
-        <source>No information about loaded modules could be retrieved by python.</source>
-        <translation type="obsolete">Keine Informationen über geladene Module von Python verfügbar.</translation>
-    </message>
-    <message>
-        <source>error while getting module list</source>
-        <translation type="obsolete">Fehler beim Lesen der Modulliste</translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation type="obsolete">Unbekannter Fehler</translation>
-    </message>
-    <message>
-        <source>Timeout while forcing python to reload modules.</source>
-        <translation type="obsolete">Zeitüberschreitung beim erneuten Laden der Module.</translation>
-    </message>
-    <message>
-        <source>error while reloading modules</source>
-        <translation type="obsolete">Fehler beim erneuten Laden der Module</translation>
-    </message>
-    <message>
-        <source>Module reload</source>
-        <translation type="obsolete">Module erneut laden</translation>
-    </message>
-    <message>
-        <source>The following modules could not be reloaded:
-</source>
-        <translation type="obsolete">Folgende Module konnten nicht geladen werden:</translation>
-    </message>
 </context>
 <context>
     <name>DialogReplace</name>
@@ -849,10 +554,6 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>DialogSaveFileWithFilter</name>
-    <message>
-        <source>File Import Assistant</source>
-        <translation type="obsolete">Assistent für den Import von Dateien</translation>
-    </message>
     <message>
         <location filename="../ui/dialogSaveFileWithFilter.ui"/>
         <source>File Export Assistant</source>
@@ -981,164 +682,6 @@ p, li { white-space: pre-wrap; }
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
     </message>
-    <message>
-        <source>Database %s could not be opened</source>
-        <translation type="obsolete">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
-    </message>
-    <message>
-        <source>Database %s could not be found</source>
-        <translation type="obsolete">Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>No help database available</source>
-        <translation type="obsolete">Keine Hilfedatenbank verfügbar</translation>
-    </message>
-    <message>
-        <source>Parser: No Help available</source>
-        <translation type="obsolete">Parser: Keine Hilfe verfügbar</translation>
-    </message>
-    <message>
-        <source>Unknown filter name &apos;%1&apos;</source>
-        <translation type="obsolete">Unbekannter Filtername &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Unknown widget name &apos;%1&apos;</source>
-        <translation type="obsolete">Unbekannter Widget-Name &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Unknown algorithm plugin with name &apos;%1&apos;</source>
-        <translation type="obsolete">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>unknown filter type</source>
-        <translation type="obsolete">Unbekannter Filtertyp</translation>
-    </message>
-    <message>
-        <source>invalid Link</source>
-        <translation type="obsolete">ungültiger Link</translation>
-    </message>
-    <message>
-        <source>unknown protocol</source>
-        <translation type="obsolete">Unbekanntes Protokoll</translation>
-    </message>
-    <message>
-        <source>The protocol of the link is unknown. </source>
-        <translation type="obsolete">Das Protokoll des Links ist unbekannt. </translation>
-    </message>
-    <message>
-        <source>Do you want to try with the external browser?</source>
-        <translation type="obsolete">Soll versucht werden den Link mit dem Browser zu öffnen?</translation>
-    </message>
-</context>
-<context>
-    <name>MainApplication</name>
-    <message>
-        <source>load translations...</source>
-        <translation type="obsolete">Übersetzungen wird geladen...</translation>
-    </message>
-    <message>
-        <source>load style...</source>
-        <translation type="obsolete">Style wird geladen...</translation>
-    </message>
-    <message>
-        <source>load process organizer...</source>
-        <translation type="obsolete">&apos;Process Organizer&apos; wird geladen...</translation>
-    </message>
-    <message>
-        <source>scan and load plugins...</source>
-        <translation type="obsolete">Plugins werden gescannt und geladen...</translation>
-    </message>
-    <message>
-        <source>start python...</source>
-        <translation type="obsolete">Python wird gestartet...</translation>
-    </message>
-    <message>
-        <source>load main window...</source>
-        <translation type="obsolete">&apos;Main Window&apos; wird geladen...</translation>
-    </message>
-    <message>
-        <source>load ui organizer...</source>
-        <translation type="obsolete">&apos;UI Organizer&apos; wird geladen...</translation>
-    </message>
-    <message>
-        <source>scan and load designer widgets...</source>
-        <translation type="obsolete">&apos;Designer Widgets&apos; werden gescannt und geladen...</translation>
-    </message>
-    <message>
-        <source>load script editor organizer...</source>
-        <translation type="obsolete">&apos;Script Editor Organizer&apos; wird geladen...</translation>
-    </message>
-    <message>
-        <source>execute startup scripts...</source>
-        <translation type="obsolete">Startskripts werden ausgeführt...</translation>
-    </message>
-    <message>
-        <source>scan and run scripts in autostart folder...</source>
-        <translation type="obsolete">Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
-    </message>
-    <message>
-        <source>Do you really want to exit the application?</source>
-        <translation type="obsolete">Soll itom wirklich beendet werden?</translation>
-    </message>
-    <message>
-        <source>Python is still running. Please close it first before shutting down this application</source>
-        <translation type="obsolete">Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
-    </message>
-</context>
-<context>
-    <name>PythonEngine</name>
-    <message>
-        <source>deadlock in python setup.</source>
-        <translation type="obsolete">Deadlock in Python.</translation>
-    </message>
-    <message>
-        <source>Python not initialized</source>
-        <translation type="obsolete">Python ist nicht inizialisiert</translation>
-    </message>
-    <message>
-        <source>method name not found in builtin itom</source>
-        <translation type="obsolete">Die Methode wurde im ITOM-Builtin nicht gefunden</translation>
-    </message>
-    <message>
-        <source>main dictionary is empty</source>
-        <translation type="obsolete">Hauptwörterbuch ist leer</translation>
-    </message>
-    <message>
-        <source>error while evaluating python string.</source>
-        <translation type="obsolete">Fehler beim Evaluieren eines Python-Strings.</translation>
-    </message>
-    <message>
-        <source>file does not exist</source>
-        <translation type="obsolete">Datei existiert nicht</translation>
-    </message>
-    <message>
-        <source>file could not be opened in readonly-mode</source>
-        <translation type="obsolete">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
-    </message>
-    <message>
-        <source>Error while clearing all breakpoints in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Error while transmitting breakpoints to itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Error while editing breakpoint in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Editiern eines Haltepunktes im ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Error while clearing breakpoint in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Menu element must have a valid key.</source>
-        <translation type="obsolete">Menüelement muss einen gültigen Schlüssel haben.</translation>
-    </message>
-    <message>
-        <source>Dictionary is not available</source>
-        <translation type="obsolete">Wörterbuch ist nicht verfügbar</translation>
-    </message>
 </context>
 <context>
     <name>QLibrary</name>
@@ -1150,38 +693,6 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>parameter vector is not initialized</source>
-        <translation type="obsolete">Parametervektor wurde nicht inizialisiert</translation>
-    </message>
-    <message>
-        <source>mandatory parameter vector is not initialized</source>
-        <translation type="obsolete">Pflichtparametervektor wurde nicht inizialisiert</translation>
-    </message>
-    <message>
-        <source>optional parameter vector is not initialized</source>
-        <translation type="obsolete">Optionaler Parametervektor wurde nicht inizialisiert</translation>
-    </message>
-    <message>
-        <source>output parameter vector is not initialized</source>
-        <translation type="obsolete">Ausgabeparametervektor wurde nicht inizialisiert</translation>
-    </message>
-    <message>
-        <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation type="obsolete">Der Parameter &apos;%1&apos; wurde nicht im übergebenen Parametervektor gefunden</translation>
-    </message>
-    <message>
-        <source>name of requested parameter is empty.</source>
-        <translation type="obsolete">Name des Angefragten Parameter ist leer.</translation>
-    </message>
-    <message>
-        <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="obsolete">Der Parametername &apos;%1&apos; ist ungültig</translation>
-    </message>
-    <message>
-        <source>parameter not found in m_params.</source>
-        <translation type="obsolete">Parameter wurde nicht in m_params gefunden.</translation>
-    </message>
     <message>
         <location filename="../helper/paramHelper.cpp" line="+726"/>
         <source>invalid parameter name</source>
@@ -1295,10 +806,6 @@ p, li { white-space: pre-wrap; }
         <translation>Wert entspricht nicht der angegebenen Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
-        <source>Value out of range [%1, %2]</source>
-        <translation type="obsolete">Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
-    </message>
-    <message>
         <location line="+118"/>
         <source>Index value is out of range [0, %i]</source>
         <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
@@ -1314,14 +821,6 @@ p, li { white-space: pre-wrap; }
         <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
-        <source>value out of range [%1,%2]</source>
-        <translation type="obsolete">Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
-    </message>
-    <message>
-        <source>Value out of range [%1,%2]</source>
-        <translation type="obsolete">Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
-    </message>
-    <message>
         <location line="-385"/>
         <source>AddIn does not fit to minimum required type(s).</source>
         <translation type="unfinished"></translation>
@@ -1330,10 +829,6 @@ p, li { white-space: pre-wrap; }
         <location line="+4"/>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
         <translation type="unfinished">AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
-    </message>
-    <message>
-        <source>Index value is out of range [0,%i]</source>
-        <translation type="obsolete">Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+122"/>
@@ -1366,41 +861,9 @@ p, li { white-space: pre-wrap; }
         <translation>Parameter &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
-        <source>index is ouf of range [0,%i]</source>
-        <translation type="obsolete">Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
-    </message>
-    <message>
         <location line="+109"/>
         <source>param is no array</source>
         <translation>&apos;Param&apos; ist kein Array</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open xml file</source>
-        <translation type="obsolete">XML-Datei konnte nicht geöffnet werden</translation>
-    </message>
-    <message>
-        <source>%1
-Autosave parameter %2 not found</source>
-        <translation type="obsolete">%1
-Parameter %2 für die automatische Speicherung wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>XML-Import warnings:
-Autosave parameter %1 not found</source>
-        <translation type="obsolete">Warnung XML-Import:
-Parameter %1 für die automatische Speicherung wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>%1
-Obsolete parameter %2</source>
-        <translation type="obsolete">%1
-Veralteter Parameter %2</translation>
-    </message>
-    <message>
-        <source>XML-Import warnings:
-Obsolete parameter %1</source>
-        <translation type="obsolete">Warnung XML-Import:
-Veralteter Parameter %1</translation>
     </message>
     <message>
         <location filename="../api/apiFunctions.cpp" line="+146"/>
@@ -1492,10 +955,6 @@ Veralteter Parameter %1</translation>
         <location line="+4"/>
         <source>Could not delete Keyword: autoLoadParams</source>
         <translation type="unfinished">Schlüsselwort kann nicht gelöscht werden: autoLoadParams</translation>
-    </message>
-    <message>
-        <source>- unknown message -</source>
-        <translation type="obsolete">- unbekannte Meldung -</translation>
     </message>
     <message>
         <location filename="../python/pythonPlugins.cpp" line="+515"/>
@@ -1794,34 +1253,6 @@ Veralteter Parameter %1</translation>
         <translation type="unfinished">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
-        <source>invalid child pointer, in addChannel</source>
-        <translation type="obsolete">ungültiger Child-Pointer in &apos;addChannel&apos;</translation>
-    </message>
-    <message>
-        <source>channel does not exist</source>
-        <translation type="obsolete">Kanal existiert nicht</translation>
-    </message>
-    <message>
-        <source>home</source>
-        <translation type="obsolete">Ursprung</translation>
-    </message>
-    <message>
-        <source>save</source>
-        <translation type="obsolete">Speichern</translation>
-    </message>
-    <message>
-        <source>Parameter: does not exist in updateParam</source>
-        <translation type="obsolete">Parameter existiert nicht in &apos;updateParam&apos;</translation>
-    </message>
-    <message>
-        <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
-        <translation type="obsolete">Aktualisierung an einem gesperrten Eingabekanal, das heißt &apos;updatePending&apos;-Flag wurde nicht gesetzt</translation>
-    </message>
-    <message>
-        <source>Channel is already updating</source>
-        <translation type="obsolete">Kanal ist bereits aktualisiert</translation>
-    </message>
-    <message>
         <location filename="../api/apiFunctionsGraph.cpp" line="+261"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
@@ -1904,7 +1335,7 @@ Veralteter Parameter %1</translation>
     <message>
         <location line="+23"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für die veraltete Schnittstelle %2 erstellt. Die aktuelle Version der Schnittstelle ist %3.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2023,187 +1454,9 @@ Veralteter Parameter %1</translation>
         <source>plugin not available</source>
         <translation type="unfinished">Plugin ist nicht verfügbar</translation>
     </message>
-    <message>
-        <source>no dock widget available</source>
-        <translation type="obsolete">Keine Toolbar verfügbar</translation>
-    </message>
-    <message>
-        <source>addin not available</source>
-        <translation type="obsolete">AddIn ist nicht verfügbar</translation>
-    </message>
-    <message>
-        <source>timeout while getting numaxis parameter</source>
-        <translation type="obsolete">Zeitüberschreitung beim Lesen des &apos;numaxis&apos;-Parameters</translation>
-    </message>
-    <message>
-        <source>Motor not correctly initialized</source>
-        <translation type="obsolete">Der Motor wurde nicht korrekt inizialisiert</translation>
-    </message>
-</context>
-<context>
-    <name>ScriptEditorOrganizer</name>
-    <message>
-        <source>Script Editor</source>
-        <translation type="obsolete">Script-Editor</translation>
-    </message>
-    <message>
-        <source>The following files have been changed and should be safed:</source>
-        <translation type="obsolete">Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
-    </message>
-</context>
-<context>
-    <name>ScriptEditorWidget</name>
-    <message>
-        <source>Untitled%1</source>
-        <translation type="obsolete">Unbenannt%1</translation>
-    </message>
-    <message>
-        <source>&amp;toggle bookmark</source>
-        <translation type="obsolete">Lesezeichen ein-/aus&amp;schalten</translation>
-    </message>
-    <message>
-        <source>next bookmark</source>
-        <translation type="obsolete">Nächstes Lesezeichen</translation>
-    </message>
-    <message>
-        <source>previous bookmark</source>
-        <translation type="obsolete">Vorheriges Lesezeichen</translation>
-    </message>
-    <message>
-        <source>clear all bookmarks</source>
-        <translation type="obsolete">Alle Lesezeichen löschen</translation>
-    </message>
-    <message>
-        <source>&amp;toggle breakpoint</source>
-        <translation type="obsolete">Haltepunkt ein-/aus&amp;schalten</translation>
-    </message>
-    <message>
-        <source>&amp;disable breakpoint</source>
-        <translation type="obsolete">Haltepunkt &amp;deaktivieren</translation>
-    </message>
-    <message>
-        <source>&amp;edit condition</source>
-        <translation type="obsolete">Bedingungen &amp;bearbeiten</translation>
-    </message>
-    <message>
-        <source>&amp;next breakpoint</source>
-        <translation type="obsolete">&amp;Nächste Haltepunkt</translation>
-    </message>
-    <message>
-        <source>&amp;previous breakpoint</source>
-        <translation type="obsolete">&amp;Vorheriger Haltepunkt</translation>
-    </message>
-    <message>
-        <source>&amp;clear all breakpoint</source>
-        <translation type="obsolete">Alle Haltepunkte &amp;löschen</translation>
-    </message>
-    <message>
-        <source>&amp;cut</source>
-        <translation type="obsolete">&amp;Ausschneiden</translation>
-    </message>
-    <message>
-        <source>cop&amp;y</source>
-        <translation type="obsolete">&amp;Kopieren</translation>
-    </message>
-    <message>
-        <source>&amp;paste</source>
-        <translation type="obsolete">&amp;Einfügen</translation>
-    </message>
-    <message>
-        <source>&amp;indent</source>
-        <translation type="obsolete">Zeileneinzug ver&amp;größern</translation>
-    </message>
-    <message>
-        <source>&amp;unindent</source>
-        <translation type="obsolete">Zeileneinzug ver&amp;kleinern</translation>
-    </message>
-    <message>
-        <source>&amp;comment</source>
-        <translation type="obsolete">&amp;Kommentieren</translation>
-    </message>
-    <message>
-        <source>unc&amp;omment</source>
-        <translation type="obsolete">Kommentierung &amp;aufheben</translation>
-    </message>
-    <message>
-        <source>&amp;run script</source>
-        <translation type="obsolete">Skript &amp;starten</translation>
-    </message>
-    <message>
-        <source>&amp;debug script</source>
-        <translation type="obsolete">Skript im &amp;Debug-Modus starten</translation>
-    </message>
-    <message>
-        <source>sto&amp;p script</source>
-        <translation type="obsolete">Skript sto&amp;ppen</translation>
-    </message>
-    <message>
-        <source>&amp;enable breakpoint</source>
-        <translation type="obsolete">Haltepunkte d&amp;eaktivieren</translation>
-    </message>
-    <message>
-        <source>unsaved changes</source>
-        <translation type="obsolete">Ungespeicherte Änderungen</translation>
-    </message>
-    <message>
-        <source>there are unsaved changes in the current document. Do you want to save it first?</source>
-        <translation type="obsolete">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
-    </message>
-    <message>
-        <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
-        <translation type="obsolete">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
-    </message>
-    <message>
-        <source>error while opening file</source>
-        <translation type="obsolete">Fehler beim Öffnen der Datei</translation>
-    </message>
-    <message>
-        <source>run &amp;selection</source>
-        <translation type="obsolete">Auswahl &amp;starten</translation>
-    </message>
-    <message>
-        <source>file %1 could not be loaded</source>
-        <translation type="obsolete">Datei %1 konnte nicht geladen werden</translation>
-    </message>
-    <message>
-        <source>error while accessing file</source>
-        <translation type="obsolete">Fehler beim Zugriff auf die Datei</translation>
-    </message>
-    <message>
-        <source>file %1 could not be accessed</source>
-        <translation type="obsolete">Auf die Datei %1 konnte nicht zugegriffen werden</translation>
-    </message>
-    <message>
-        <source>save as...</source>
-        <translation type="obsolete">Speichern unter...</translation>
-    </message>
-    <message>
-        <source>The file &apos;%1&apos; does not exist any more.</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
-    </message>
-    <message>
-        <source>Keep this file in editor?</source>
-        <translation type="obsolete">Diese Datei im Editor belassen?</translation>
-    </message>
-    <message>
-        <source>The file &apos;%1&apos; has been modified by another programm.</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
-    </message>
-    <message>
-        <source>Do you want to reload it?</source>
-        <translation type="obsolete">Soll diese neu geladen werden?</translation>
-    </message>
 </context>
 <context>
     <name>UserUiDialog</name>
-    <message>
-        <source>filename does not exist</source>
-        <translation type="obsolete">Dateiname existiert nicht</translation>
-    </message>
-    <message>
-        <source>filename &apos;%1&apos; does not exist</source>
-        <translation type="obsolete">Dateiname &apos;%1&apos; existiert nicht</translation>
-    </message>
     <message>
         <location filename="../widgets/userUiDialog.cpp" line="+90"/>
         <source>filename &apos;%s&apos; does not exist</source>
@@ -2329,10 +1582,6 @@ Veralteter Parameter %1</translation>
         <translation>Anzahl zu speichernde Befehle</translation>
     </message>
     <message>
-        <source>show time stamp</source>
-        <translation type="obsolete">Uhrzeit anzeigen</translation>
-    </message>
-    <message>
         <location/>
         <source>do not add if the new command is equal to the last one</source>
         <translation>Nicht hinzufügen wenn der letzte Befehl in der Liste identisch ist</translation>
@@ -2401,10 +1650,6 @@ Veralteter Parameter %1</translation>
         <translation type="unfinished">Markierung am Ende jeder umgebrochenen Zeile</translation>
     </message>
     <message>
-        <source>Wrapped sub-lines are indented by number of characters:</source>
-        <translation type="obsolete">Umgebrochene Unterzeile um diese Anzahl Zeichen einrücken:</translation>
-    </message>
-    <message>
         <location/>
         <source>Number of characters a wrapped line is indented by</source>
         <translation type="unfinished">Anzahl Zeichen beim Einrücken einer umbegrochenen Zeile</translation>
@@ -2451,38 +1696,6 @@ Veralteter Parameter %1</translation>
         <location/>
         <source>base path: </source>
         <translation>Stammverzeichnis: </translation>
-    </message>
-    <message>
-        <source>generate lookup table by API files</source>
-        <translation type="obsolete">Generiere Umsetzungstabelle für die API-Dateien</translation>
-    </message>
-    <message>
-        <source>base path for relative pathes: </source>
-        <translation type="obsolete">Stammverzeichnis für relative Verzeichnisse: </translation>
-    </message>
-    <message>
-        <source>[does not exist]</source>
-        <translation type="obsolete">[existiert nicht]</translation>
-    </message>
-    <message>
-        <source>load python api file</source>
-        <translation type="obsolete">Pyhton API-Dateien laden</translation>
-    </message>
-    <message>
-        <source>python api file (*.api)</source>
-        <translation type="obsolete">Pyhton API-Dateien (*.api)</translation>
-    </message>
-    <message>
-        <source>The API generation has been finished</source>
-        <translation type="obsolete">Die API-Generierung ist beendet</translation>
-    </message>
-    <message>
-        <source>cancel preparation</source>
-        <translation type="obsolete">Erstellung abbrechen</translation>
-    </message>
-    <message>
-        <source>API files are already up-to-date</source>
-        <translation type="obsolete">API-Dateien sind bereits auf dem neusten Stand</translation>
     </message>
 </context>
 <context>
@@ -2728,18 +1941,6 @@ Veralteter Parameter %1</translation>
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <source>choose background color</source>
-        <translation type="obsolete">Hintergrundfarbe auswählen</translation>
-    </message>
-    <message>
-        <source>choose foreground color</source>
-        <translation type="obsolete">Vordergrundsfarbe auswählen</translation>
-    </message>
-    <message>
-        <source>Font Size general</source>
-        <translation type="obsolete">Generelle Schriftgröße</translation>
-    </message>
-    <message>
         <location/>
         <source>-</source>
         <translation></translation>
@@ -2814,17 +2015,9 @@ Veralteter Parameter %1</translation>
         <translation>Aktuelle Sprache:</translation>
     </message>
     <message>
-        <source>Current language:</source>
-        <translation type="obsolete">Aktuelle Sprache:</translation>
-    </message>
-    <message>
         <location/>
         <source>Affected after program restart!</source>
         <translation>Einstellung wird erst nach einem Programmneustart wirksam!</translation>
-    </message>
-    <message>
-        <source>Current Language: </source>
-        <translation type="obsolete">Aktuelle Sprache: </translation>
     </message>
 </context>
 <context>
@@ -2850,25 +2043,9 @@ Veralteter Parameter %1</translation>
         <translation>Externe Links öffnen</translation>
     </message>
     <message>
-        <source>Display plaintext instead of html</source>
-        <translation type="obsolete">Klartext statt HTML anzeigen</translation>
-    </message>
-    <message>
-        <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many Databases are loaded.</source>
-        <translation type="obsolete">Nach Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Je nach Anzahl der zu ladenden Datenbanken kann dies einige Sekunden benötigen.</translation>
-    </message>
-    <message>
-        <source>Show Filters</source>
-        <translation type="obsolete">Filter anzeigen</translation>
-    </message>
-    <message>
         <location/>
         <source>Show Modules and Packages</source>
         <translation>Module und Packages anzeigen</translation>
-    </message>
-    <message>
-        <source>After clicking the &quot;ok&quot; or &quot;Apply&quot; Button, the Databases will be reloaded. This might take a few seconds depending on how many databases are selected.</source>
-        <translation type="obsolete">Nach dem Klick auf &quot;Ok&quot; oder &quot;Übernehmen&quot; wird die Datenbank neu geladen. Abhängig von der Anzahl der gewählten Datenbanken kann dies einige Sekunden in Anspruch nehmen.</translation>
     </message>
     <message>
         <location/>
@@ -2934,44 +2111,9 @@ Veralteter Parameter %1</translation>
         <translation>Basis-Ordner: </translation>
     </message>
     <message>
-        <source>base path for relative pathes: </source>
-        <translation type="obsolete">Basis-Ordner für relative Verzeichnisse: </translation>
-    </message>
-    <message>
-        <source>load python script</source>
-        <translation type="obsolete">Pyhton-Skript laden</translation>
-    </message>
-    <message>
-        <source>python script (*.py)</source>
-        <translation type="obsolete">Python-Skript (*.py)</translation>
-    </message>
-    <message>
         <location/>
         <source>To change the order in which the items (files) are loaded, use Drag and Drop</source>
         <translation type="unfinished">Um die Reihenfolger der geladenen Einträge zu ändern, bitte Drag and Drop benutzen</translation>
-    </message>
-</context>
-<context>
-    <name>WorkspaceWidget</name>
-    <message>
-        <source>Globals</source>
-        <translation type="obsolete">Global</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="obsolete">Wert</translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="obsolete">Typ</translation>
-    </message>
-    <message>
-        <source>Locals</source>
-        <translation type="obsolete">Lokal</translation>
-    </message>
-    <message>
-        <source>timeout while asking python for detailed information</source>
-        <translation type="obsolete">Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>
 </context>
 <context>
@@ -3250,17 +2392,6 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
-    <name>ito::AbstractDObjFigure</name>
-    <message>
-        <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
-        <translation type="obsolete">Die Funktion &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
-    </message>
-    <message>
-        <source>Figure does not contain an input slot for live sources</source>
-        <translation type="obsolete">Abbildung enthält keinen Input-Slot für Livequellen</translation>
-    </message>
-</context>
-<context>
     <name>ito::AbstractDockWidget</name>
     <message>
         <location filename="../widgets/abstractDockWidget.cpp" line="+111"/>
@@ -3299,13 +2430,6 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
-    <name>ito::AbstractFigure</name>
-    <message>
-        <source>Properties</source>
-        <translation type="obsolete">Eigenschaften</translation>
-    </message>
-</context>
-<context>
     <name>ito::AbstractFilterDialog</name>
     <message>
         <location filename="../ui/abstractFilterDialog.cpp" line="+109"/>
@@ -3328,22 +2452,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInAlgo</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
     <message>
         <location filename="../../common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
@@ -3358,51 +2467,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation>Nicht inizialisierte Vektoren bei Rückgabeparametern!</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Diese Funktion wird in diesem Plugin nicht benutzt</translation>
-    </message>
-    <message>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="obsolete">Plugins unterstützen Dialog-Konfigurationen, die showConfDialog-Methode wurde jedoch nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>timer could not be set</source>
-        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
-    </message>
-    <message>
-        <source>not implemented</source>
-        <translation type="obsolete">Nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInGrabber</name>
-    <message>
-        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="obsolete">Der Slot &apos;setSource&apos; des Live-Quellenknotens konnte nicht aktiviert werden</translation>
-    </message>
-    <message>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="obsolete">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Das Objekt hat mehr als eine Ebene. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
-    </message>
-    <message>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="obsolete">Fehler bei der Überprüfung der Daten. Das externe Datenobjekt ist ungültig. Entweder müssen Größe und Typ übereinstimmen oder es darf noch nicht inizialisiert sein.</translation>
     </message>
 </context>
 <context>
@@ -3686,17 +2750,9 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Die Version von &apos;ito.AbstractItomDesignerPlugin&apos; in der Datei &apos;%1&apos; deckt sich nicht mit der erforderlichen Version (%2)</translation>
     </message>
     <message>
-        <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from AbstractItomDesignerPlugin</source>
-        <translation type="obsolete">Plugin in Datei &apos;%1&apos; ist kein von AbstractItomDesignerPlugin geerbtes Designer-Widget</translation>
-    </message>
-    <message>
         <location line="+24"/>
         <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget abgeleitetes QDesignerCustomWidgetInterface</translation>
-    </message>
-    <message>
-        <source>DesignerWidget in file &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="obsolete">Designer-Widget in Datei &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
         <location line="-8"/>
@@ -4287,10 +3343,6 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Pfad in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <source>set clipboard to path</source>
-        <translation type="obsolete">Pfad aus der Zwischenablage übernehmen</translation>
-    </message>
-    <message>
         <location line="+2"/>
         <source>get path from clipboard</source>
         <translation>Pfad aus der Zwischenablage übernehmen</translation>
@@ -4396,14 +3448,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+3"/>
         <source>Do you really want to delete %1?</source>
         <translation>Soll &apos;%1&apos; wirklich gelöscht werden?</translation>
-    </message>
-    <message>
-        <source> the selected items</source>
-        <translation type="obsolete">en die ausgewählten Objekte</translation>
-    </message>
-    <message>
-        <source>Do you really want to delete%1 ?</source>
-        <translation type="obsolete">Soll%1 wirklich gelöscht werden?</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -4625,14 +3669,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::IOHelper</name>
     <message>
-        <source>File &apos;%1&apos; does not exist</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; existiert nicht</translation>
-    </message>
-    <message>
-        <source>file does not exist</source>
-        <translation type="obsolete">Datei existiert nicht</translation>
-    </message>
-    <message>
         <location filename="../helper/IOHelper.cpp" line="+112"/>
         <location line="+717"/>
         <source>Multiple plugins</source>
@@ -4647,18 +3683,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+28"/>
         <source>File &apos;%1&apos; could not be opened with registered external application</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknüpften externen Anwendung geöffnet werden</translation>
-    </message>
-    <message>
-        <source>file could not be opened with external application</source>
-        <translation type="obsolete">Datei konnte nicht mit der externen Anwendung geöffnet werden</translation>
-    </message>
-    <message>
-        <source>File &apos;%1&apos; can not be opened with this application</source>
-        <translation type="obsolete">Die Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
-    </message>
-    <message>
-        <source>file can not be opened with this application</source>
-        <translation type="obsolete">Datei kan mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -4687,14 +3711,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+9"/>
         <source>the number of values returned from workspace does not correspond to requested number</source>
         <translation type="unfinished">Die Anzahl der zurückgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
-    </message>
-    <message>
-        <source>An error occurred while saving to file.</source>
-        <translation type="obsolete">Beim Speichern ist ein Fehler aufgetreten.</translation>
-    </message>
-    <message>
-        <source>Error while saving file</source>
-        <translation type="obsolete">Fehler beim Speichern</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -4876,14 +3892,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Itom Dateien (%1)</translation>
     </message>
     <message>
-        <source>Itom Files (*.py *.idc *.mat *.ui)</source>
-        <translation type="obsolete">ITOM-Dateien (*.py *.idc *.mat *.ui)</translation>
-    </message>
-    <message>
-        <source>Itom Files (*.idc *.mat)</source>
-        <translation type="obsolete">ITOM-Dateien (*.idc *.mat)</translation>
-    </message>
-    <message>
         <location line="+9"/>
         <source>All Files (*.*)</source>
         <translation type="unfinished">Alle Dateien (*.*)</translation>
@@ -5030,33 +4038,9 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
     <message>
-        <source>New Script</source>
-        <translation type="obsolete">Neues Skript</translation>
-    </message>
-    <message>
-        <source>Open File</source>
-        <translation type="obsolete">Datei öffnen</translation>
-    </message>
-    <message>
         <location line="+298"/>
         <source>Exit</source>
         <translation>Beenden</translation>
-    </message>
-    <message>
-        <source>Properties</source>
-        <translation type="obsolete">Optionen</translation>
-    </message>
-    <message>
-        <source>User Management</source>
-        <translation type="obsolete">Benutzerverwaltung</translation>
-    </message>
-    <message>
-        <source>About Qt</source>
-        <translation type="obsolete">Über QT</translation>
-    </message>
-    <message>
-        <source>About itom</source>
-        <translation type="obsolete">Über iTOM</translation>
     </message>
     <message>
         <location line="-9"/>
@@ -5092,10 +4076,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+3"/>
         <source>Loaded plugins...</source>
         <translation>Geladene Plugins...</translation>
-    </message>
-    <message>
-        <source>Assistant</source>
-        <translation type="obsolete">Assistent</translation>
     </message>
     <message>
         <location line="-413"/>
@@ -5259,7 +4239,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Geladene Module</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+45"/>
+        <source>no entries</source>
+        <translation type="unfinished">kein Eintrag</translation>
+    </message>
+    <message>
+        <location line="+45"/>
         <source>Ready</source>
         <translation type="unfinished">Fertig</translation>
     </message>
@@ -6070,7 +5055,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+29"/>
+        <source>no entries</source>
+        <translation>kein Eintrag</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Recently used files</source>
         <translation>Zuletzt verwendete Dateien</translation>
     </message>
@@ -6168,10 +5158,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <source>&amp;Windows</source>
         <translation>&amp;Fenster</translation>
     </message>
-    <message>
-        <source>script editor</source>
-        <translation type="obsolete">Skript-Editor</translation>
-    </message>
 </context>
 <context>
     <name>ito::ScriptEditorOrganizer</name>
@@ -6233,10 +5219,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+1"/>
         <source>&amp;previous breakpoint</source>
         <translation type="unfinished">&amp;Vorheriger Haltepunkt</translation>
-    </message>
-    <message>
-        <source>&amp;clear all breakpoint</source>
-        <translation type="obsolete">Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6435,14 +5417,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+39"/>
         <source>dialog could not be created</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>filename does not exist</source>
-        <translation type="obsolete">Dateiname existiert nicht</translation>
-    </message>
-    <message>
-        <source>ui-file could not be correctly parsed.</source>
-        <translation type="obsolete">UI-Datei konnte nicht korrekt geparst werden.</translation>
     </message>
     <message>
         <location line="+77"/>
@@ -7075,10 +6049,6 @@ Katesisch</translation>
         <translation>Arbeitsbereich</translation>
     </message>
     <message>
-        <source>script editor</source>
-        <translation type="obsolete">Skript-Editor</translation>
-    </message>
-    <message>
         <location line="+46"/>
         <source>Do you really want to delete the selected variables?</source>
         <translation>Sollen die markierten Variablen wirklich gelöscht werden?</translation>
@@ -7093,12 +6063,6 @@ Katesisch</translation>
         <source>Error while exporting variables:
 %1</source>
         <translation>Fehler beim exportieren der Variablen:
-%1</translation>
-    </message>
-    <message>
-        <source>Error while importing variables: 
-%1</source>
-        <translation type="obsolete">Fehler beim importieren der Variablen:
 %1</translation>
     </message>
     <message>
@@ -7129,29 +6093,29 @@ Katesisch</translation>
     <message>
         <location filename="../widgets/workspaceWidget.cpp" line="+56"/>
         <source>Globals</source>
-        <translation type="unfinished">Global</translation>
+        <translation>Global</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+4"/>
         <source>Value</source>
-        <translation type="unfinished">Wert</translation>
+        <translation>Wert</translation>
     </message>
     <message>
         <location line="-4"/>
         <location line="+4"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Locals</source>
-        <translation type="unfinished">Lokal</translation>
+        <translation>Lokal</translation>
     </message>
     <message>
         <location line="+237"/>
         <source>timeout while asking python for detailed information</source>
-        <translation type="unfinished">Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
+        <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>
 </context>
 <context>
@@ -7211,10 +6175,6 @@ Katesisch</translation>
         <location/>
         <source>Main Application Features</source>
         <translation>Hauptanwendung</translation>
-    </message>
-    <message>
-        <source>Script Editor</source>
-        <translation type="obsolete">Skript-Editor</translation>
     </message>
     <message>
         <location/>

@@ -759,7 +759,7 @@ void MainWindow::menuLastFilesAboutToShow()
         {
             if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QAction *a = m_plastFilesMenu->addAction("no entries");
+                QAction *a = m_plastFilesMenu->addAction(tr("no entries"));
                 a->setEnabled(false);
             }
             else

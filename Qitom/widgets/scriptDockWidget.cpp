@@ -1016,7 +1016,7 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
         {
             if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QAction *a = m_lastFilesMenu->addAction("no entries");
+                QAction *a = m_lastFilesMenu->addAction(tr("no entries"));
                 a->setEnabled(false);
             }
             else
