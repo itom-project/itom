@@ -60,7 +60,7 @@ protected:
     QString m_cmdIgnored;
 
 private slots:
-    void on_onlyComnpatibelCheck_clicked(bool /*value*/) { filter(); };
+    void on_onlyCompatibleCheck_clicked(bool /*value*/) { filter(); };
     void on_cmdError_clicked(bool /*value*/) { filter(); };
     void on_cmdWarning_clicked(bool /*value*/) { filter(); };
     void on_cmdMessage_clicked(bool /*value*/) { filter(); };

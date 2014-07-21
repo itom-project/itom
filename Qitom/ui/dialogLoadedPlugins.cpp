@@ -80,7 +80,7 @@ void DialogLoadedPlugins::init()
     header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
     header->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
     header->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
-    header->setText(5, "Test");
+    header->setText(5, "Library / Status");
     ui.tree->setHeaderItem(header);
 
     m_windowTitle = ui.groupBox_2->title();
