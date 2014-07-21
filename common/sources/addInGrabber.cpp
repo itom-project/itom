@@ -48,9 +48,6 @@ namespace ito
         AddInDataIO(),
         m_started(0)
     {
-        qRegisterMetaType<QMap<QString, ito::ParamBase> >("QMap<QString, ito::ParamBase>");
-        qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-        qRegisterMetaType<ito::DataObject>("ito::DataObject");
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

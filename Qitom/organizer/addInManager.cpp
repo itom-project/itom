@@ -1590,6 +1590,8 @@ end:
         id = qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
 
         id = qRegisterMetaType<ito::DataObject>("ito::DataObject");
+        id = qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
+        id = qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::ParamBase>");
 
 #if ITOM_POINTCLOUDLIBRARY > 0    
         id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
