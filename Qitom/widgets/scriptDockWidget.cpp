@@ -516,7 +516,7 @@ bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (withou
         editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(i));
         if (editorWidget)
         {
-            newScripts = newScripts | editorWidget->hasNoFilename();
+            newScripts = newScripts || editorWidget->hasNoFilename();
         }
     }
 
@@ -601,7 +601,7 @@ void ScriptDockWidget::tabCloseRequested(int index)
     ScriptEditorWidget *sew = getEditorByIndex(index);
     if (sew == NULL) return;
 
-    RetVal retValue = closeTab(index, true);
+    closeTab(index, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -610,8 +610,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
     if (sew == NULL) return;
     int index = getIndexByEditor(sew);
 
-    RetVal retValue = closeTab(index, ignoreModifications);
-    // TODO: What to do with retValue???
+    closeTab(index, ignoreModifications);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -628,6 +627,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
     {
         return RetVal(retError);
     }
+
     RetVal retValue(retOk);
 
     if (saveFirst)
@@ -641,6 +641,12 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
         sew->deleteLater();
         //delete sew;
         sew = NULL;
+    }
+
+    if (m_tab->count() == 0)
+    {
+        QCloseEvent evt;
+        QApplication::sendEvent(this, &evt);
     }
 
     return retValue;

@@ -223,7 +223,7 @@ public slots:
     void menuToggleBookmark();
     void checkSyntax();
     void syntaxCheckResult(QString a, QString b);
-    void errorListChange(QStringList errorList);
+    void errorListChange(const QStringList &errorList);
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();

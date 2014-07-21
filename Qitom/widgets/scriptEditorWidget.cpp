@@ -1125,7 +1125,7 @@ void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 /*!
     \param errorList Error list of this editor. Including all bugs and bookmarks.
 */
-void ScriptEditorWidget::errorListChange(QStringList errorList)
+void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 { 
     QList<BookmarkErrorEntry>::iterator it;
     it = bookmarkErrorHandles.begin();
