@@ -183,12 +183,11 @@ private:
     ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
     ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
 
-    
     ito::RetVal autoReloaderCheck();
 
     //member variables
     bool m_started;
-    QString m_itomMemberClasses;
+    //QString m_itomMemberClasses;
 
     //PyGILState_STATE threadState;
 
@@ -255,7 +254,6 @@ private:
     static PythonEngine* instance;
 
     // friend class
-    friend class PythonDataObject;
     friend class ito::PythonItom;
 
 signals:

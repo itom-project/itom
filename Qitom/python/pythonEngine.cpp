@@ -513,33 +513,33 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             runString("from itom import *");
 
-            // Setup for 
-            PyObject *itomDir = PyObject_Dir(itomModule); //new ref
-            if (itomDir && PyList_Check(itomDir))
-            {
-                Py_ssize_t len = PyList_GET_SIZE(itomDir);
+            //// Setup for 
+            //PyObject *itomDir = PyObject_Dir(itomModule); //new ref
+            //if (itomDir && PyList_Check(itomDir))
+            //{
+            //    Py_ssize_t len = PyList_GET_SIZE(itomDir);
 
-                
-                m_itomMemberClasses.clear();
+            //    
+            //    m_itomMemberClasses.clear();
 
-                for (Py_ssize_t l = 0; l < len; ++l)
-                {
-                    PyObject *dirItem = PyList_GET_ITEM(itomDir, l); //borrowed ref
-                    bool ok;
-                    QString string = PythonQtConversion::PyObjGetString(dirItem, false, ok);
+            //    for (Py_ssize_t l = 0; l < len; ++l)
+            //    {
+            //        PyObject *dirItem = PyList_GET_ITEM(itomDir, l); //borrowed ref
+            //        bool ok;
+            //        QString string = PythonQtConversion::PyObjGetString(dirItem, false, ok);
 
-                    if (ok)
-                    {
-                        if (!string.startsWith("__"))
-                        {
-                            m_itomMemberClasses.append(string + ",");
-                        }
-                    }
-                }
-                m_itomMemberClasses.remove(m_itomMemberClasses.length()-1, 1);
-            }
-               
-            Py_XDECREF(itomDir);
+            //        if (ok)
+            //        {
+            //            if (!string.startsWith("__"))
+            //            {
+            //                m_itomMemberClasses.append(string + ",");
+            //            }
+            //        }
+            //    }
+            //    m_itomMemberClasses.remove(m_itomMemberClasses.length()-1, 1);
+            //}
+            //   
+            //Py_XDECREF(itomDir);
 
             m_started = true;
         }
@@ -1662,7 +1662,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         QString firstLine;
         if (m_includeItom)
         {
-            firstLine = "from itom import " + m_itomMemberClasses + "\n" + code;
+            //add from itom import * as first line (this is afterwards removed from results)
+            firstLine = "from itom import *\n" + code; //+ m_itomMemberClasses + "\n" + code;
         }
         else
         {
