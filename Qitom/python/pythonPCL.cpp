@@ -411,6 +411,8 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
         PyObject *value = NULL;
         switch(type)
         {
+        default:
+            PyErr_SetString(PyExc_ValueError, "undefined type of point cloud detected.");
         case ito::pclInvalid:
             value = PyDict_GetItemString(dict, "PointInvalid");
             break;
@@ -2227,7 +2229,7 @@ PointCloud.");
 
 //---------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPointCloud_getseters[] = {
-    {"type",        (getter)PyPoint_GetType,            NULL,                           pyPointCloudType_doc,     NULL},
+    {"type",        (getter)PyPointCloud_GetType,       NULL,                           pyPointCloudType_doc,     NULL},
     {"size",        (getter)PyPointCloud_GetSize,       NULL,                           pyPointCloudSize_doc,     NULL},
     {"height",      (getter)PyPointCloud_GetHeight,     NULL,                           pyPointCloudHeight_doc,   NULL},
     {"width",       (getter)PyPointCloud_GetWidth,      NULL,                           pyPointCloudWidth_doc,    NULL},
@@ -3024,8 +3026,11 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
     if (PythonPCL::PyPointType.tp_dict != NULL)
     {
         dict = PythonPCL::PyPointType.tp_dict;
-        switch(self->point->getType())
+        int pType = self->point->getType(); 
+        switch(pType)
         {
+        default:
+            PyErr_SetString(PyExc_ValueError, "point type is not defined");
         case ito::pclInvalid:
             type = PyDict_GetItemString(dict, "PointInvalid");
             break;
