@@ -329,13 +329,13 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
         while(!xml.atEnd() && !xml.hasError())
         {
             QXmlStreamReader::TokenType token = xml.readNext();
-            if(token == QXmlStreamReader::StartDocument)
+            if (token == QXmlStreamReader::StartDocument)
             {
                 continue;
             }
-            if(token == QXmlStreamReader::StartElement)
+            if (token == QXmlStreamReader::StartElement)
             {
-                if(xml.name() == "databases")
+                if (xml.name() == "databases")
                 {
                     if (xml.attributes().hasAttribute("type"))
                     {
@@ -353,7 +353,7 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
                         dbError = tr("Type attribute node 'database' of xml file is missing.");
                     }
                 }
-                else if(dbFound && xml.name() == "file")
+                else if (dbFound && xml.name() == "file")
                 {
                     QPair <int, WidgetPropHelpDock::DatabaseInfo> p = this->parseFile(xml);
                     if (updatableDBs.contains(p.first))
@@ -412,7 +412,7 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
 {
     QPair<int, WidgetPropHelpDock::DatabaseInfo> file;
     int id = 0;
-    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file")
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "file")
     {
         return file;
     }
@@ -421,7 +421,7 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
 
     // Check for ID-Attribute
     QXmlStreamAttributes attributes = xml.attributes();
-    if(attributes.hasAttribute("id"))
+    if (attributes.hasAttribute("id"))
     {
         id = attributes.value("id").toString().toInt();
     }
@@ -430,35 +430,35 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
     int timeOut = 10;
     while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "file"))
     {
-        if(xml.tokenType() == QXmlStreamReader::StartElement)
+        if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if(xml.name() == "name")
+            if (xml.name() == "name")
             {
                 xml.readNext();
                 appendedItem->name = xml.text().toString();
             }
-            else if(xml.name() == "version")
+            else if (xml.name() == "version")
             {
                 xml.readNext();
                 appendedItem->version = xml.text().toString().toInt();
             }
-            else if(xml.name() == "date")
+            else if (xml.name() == "date")
             {
                 xml.readNext();
                 appendedItem->date = xml.text().toString();
             }
-            else if(xml.name() == "schemeID")
+            else if (xml.name() == "schemeID")
             {
                 xml.readNext();
                 appendedItem->schemeID = xml.text().toString().toInt();
             }
-            else if(xml.name() == "url")
+            else if (xml.name() == "url")
             {
                 xml.readNext();
                 appendedItem->url = QUrl(xml.text().toString());
             }
         }
-        else if(timeOut <= 0)
+        else if (timeOut <= 0)
         {
             break;
         }

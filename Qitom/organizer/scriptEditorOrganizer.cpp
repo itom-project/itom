@@ -145,7 +145,7 @@ void ScriptEditorOrganizer::saveScriptState()
     // Last opened files save
     settings.beginWriteArray("lastScriptWidgets");
     counter = 0;
-    foreach(const QString &path, m_recentlyUsedFiles)
+    foreach (const QString &path, m_recentlyUsedFiles)
     {
         if (path != "")
         {
@@ -166,13 +166,30 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     RetVal retval;
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("ScriptEditorOrganizer");
-    int counter = settings.beginReadArray("scriptWidgets");
 
     bool docked;
     QString objectName;
     QVariant scriptDockState;
     Qt::DockWidgetArea area;
     ScriptDockWidget *sdw;
+
+    // reading last used files
+    int counter = settings.beginReadArray("lastScriptWidgets");
+    QFileInfo fi;
+
+    for (int i = 0; i < counter; ++i)
+    {
+        settings.setArrayIndex(i);
+        fi.setFile(settings.value("path").toString());
+        if (fi.exists())
+        {
+            m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
+        }
+    }
+    settings.endArray();
+
+    // open script windows
+    counter = settings.beginReadArray("scriptWidgets");
 
     for (int i = 0; i < counter; ++i)
     {
@@ -220,23 +237,6 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     }
 
     settings.endArray();
-
-    // Last used Files
-    counter = settings.beginReadArray("lastScriptWidgets");
-    QFileInfo fi;
-
-    for (int i = 0; i < counter; ++i)
-    {
-        settings.setArrayIndex(i);
-        fi.setFile(settings.value("path").toString());
-        if (fi.exists())
-        {
-            m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
-        }
-    }
-    settings.endArray();
-
-    settings.endGroup();
 
     return retval;
 }

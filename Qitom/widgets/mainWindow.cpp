@@ -324,11 +324,11 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    if(m_fileSystemDock) m_fileSystemDock->saveState("itomFileSystemDockWidget");
-    if(m_helpDock) m_helpDock->saveState("itomHelpDockWidget");
-    if(m_globalWorkspaceDock) m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
-    if(m_localWorkspaceDock) m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
-    if(m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    if (m_fileSystemDock) m_fileSystemDock->saveState("itomFileSystemDockWidget");
+    if (m_helpDock) m_helpDock->saveState("itomHelpDockWidget");
+    if (m_globalWorkspaceDock) m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
+    if (m_localWorkspaceDock) m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
+    if (m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -375,32 +375,32 @@ MainWindow::~MainWindow()
 
 //    delete m_pAIManagerView;
 //    delete m_pAIManagerDock;
-    if(m_pAIManagerWidget)
+    if (m_pAIManagerWidget)
     {
         delete m_pAIManagerWidget;
         m_pAIManagerWidget = NULL;
     }
-    if(m_fileSystemDock)
+    if (m_fileSystemDock)
     {
         delete m_fileSystemDock;
         m_fileSystemDock = NULL;
     }
-    if(m_helpDock)
+    if (m_helpDock)
     {
         delete m_helpDock;
         m_helpDock = NULL;
     }
-    if(m_globalWorkspaceDock)
+    if (m_globalWorkspaceDock)
     {
         delete m_globalWorkspaceDock;
         m_globalWorkspaceDock = NULL;
     }
-    if(m_localWorkspaceDock)
+    if (m_localWorkspaceDock)
     {
         delete m_localWorkspaceDock;
         m_localWorkspaceDock = NULL;
     }
-    if(m_localWorkspaceDock)
+    if (m_localWorkspaceDock)
     {
         delete m_localWorkspaceDock;
         m_localWorkspaceDock = NULL;
@@ -427,7 +427,7 @@ MainWindow::~MainWindow()
 
     DELETE_AND_SET_NULL(m_userDefinedSignalMapper);
 
-    if(m_pHelpSystem)
+    if (m_pHelpSystem)
     {
         //delete m_pHelpSystem;
         m_pHelpSystem = NULL;
@@ -743,7 +743,7 @@ void MainWindow::createMenus()
 void MainWindow::menuLastFilesAboutToShow()
 {
     // Delete old actions
-    for(int i = 0; i < m_plastFilesMenu->actions().length(); ++i)
+    for (int i = 0; i < m_plastFilesMenu->actions().length(); ++i)
     {
         m_plastFilesMenu->actions().at(i)->deleteLater();
     }

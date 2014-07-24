@@ -1445,7 +1445,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+682"/>
+        <location line="+684"/>
         <source>no toolbox available</source>
         <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
@@ -3925,7 +3925,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+83"/>
         <source>load translations...</source>
         <translation>Übersetzungen werden geladen...</translation>
     </message>
@@ -4637,7 +4637,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+200"/>
+        <location line="+201"/>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
         <translation type="unfinished">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
@@ -4821,7 +4821,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+513"/>
+        <location line="+519"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>

@@ -1006,7 +1006,7 @@ void ScriptDockWidget::createActions()
 void ScriptDockWidget::menuLastFilesAboutToShow()
 {
     // Delete old actions
-    for(int i = 0; i < m_lastFilesMenu->actions().length(); ++i)
+    for (int i = 0; i < m_lastFilesMenu->actions().length(); ++i)
     {
         m_lastFilesMenu->actions().at(i)->deleteLater();
     }
