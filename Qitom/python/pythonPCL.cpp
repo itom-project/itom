@@ -1660,9 +1660,16 @@ PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
 //---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudToDataObject_doc,"toDataObject() -> returns a PxN data object, where P is determined by the point type in the point cloud. N is the number of points.\n\
 \n\
+The output has at least 3 elements per column. Onr got each coordinate (xyz). These will always be the first 3 elements. \n\
+If the pointcloud type has normals defined, these will be added in the next 4 columns as [nx, ny, nz, curvature]. \n\
+If the pointcloud type has an intensity, these will be added in the next 1 column as [intensity]. \n\
+If the pointcloud type has an RGB(A)-intensity, these will be added in the next 4 column as [r, g, b, a]. \n\
+Hence following combinations are possible [x,y,z], [x,y,z,i], [x,y,z,r,g,b,a], [x,y,z,nx,ny,nz, curvature], [x,y,z,nx,ny,nz, curvature, i], ...\n\
+\n\
 Returns \n\
 ------- \n\
-PxN : {float}\n\
+dObj : {dataObject}\n\
+    A dataObject with P (cols) by N elements (Points), where the elements per column depend on the point cloud type\n\
 \n\
 Notes \n\
 ----- \n\

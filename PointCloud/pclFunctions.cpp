@@ -918,11 +918,38 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             iRow[i] = point->intensity;
         }
     }
+    else if (pc->getType() == ito::pclXYZRGBA)
+    {
+        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud = pc->toPointXYZRGBA();
+        pcl::PointCloud<pcl::PointXYZRGBA>::VectorType points = cloud->points;
+        out = DataObject(7, (int)cloud->size(), ito::tFloat32);
+        pcl::PointXYZRGBA *point;
+
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
+        ito::float32 *rRow = (ito::float32*)out.rowPtr(0, 3);
+        ito::float32 *gRow = (ito::float32*)out.rowPtr(0, 4);
+        ito::float32 *bRow = (ito::float32*)out.rowPtr(0, 5);
+        ito::float32 *aRow = (ito::float32*)out.rowPtr(0, 6);
+
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            point = &(points[i]);
+            xRow[i] = point->x;
+            yRow[i] = point->y;
+            zRow[i] = point->z;
+            rRow[i] = point->r;
+            gRow[i] = point->g;
+            bRow[i] = point->b;
+            aRow[i] = point->a;
+        }
+    }
     else if (pc->getType() == ito::pclXYZNormal)
     {
         pcl::PointCloud<pcl::PointNormal>::Ptr cloud = pc->toPointXYZNormal();
         pcl::PointCloud<pcl::PointNormal>::VectorType points = cloud->points;
-        out = DataObject(6, (int)cloud->size(), ito::tFloat32);
+        out = DataObject(7, (int)cloud->size(), ito::tFloat32);
         pcl::PointNormal *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
@@ -931,6 +958,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
         ito::float32 *nxRow = (ito::float32*)out.rowPtr(0, 3);
         ito::float32 *nyRow = (ito::float32*)out.rowPtr(0, 4);
         ito::float32 *nzRow = (ito::float32*)out.rowPtr(0, 5);
+        ito::float32 *ncurvRow = (ito::float32*)out.rowPtr(0, 6);
 
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -941,13 +969,14 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             nxRow[i] = point->normal_x;
             nyRow[i] = point->normal_y;
             nzRow[i] = point->normal_z;
+            ncurvRow[i] = point->curvature;
         }
     }
     else if (pc->getType() == ito::pclXYZINormal)
     {
         pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud = pc->toPointXYZINormal();
         pcl::PointCloud<pcl::PointXYZINormal>::VectorType points = cloud->points;
-        out = DataObject(7, (int)cloud->size(), ito::tFloat32);
+        out = DataObject(8, (int)cloud->size(), ito::tFloat32);
         pcl::PointXYZINormal *point;
 
         ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
@@ -956,7 +985,8 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
         ito::float32 *nxRow = (ito::float32*)out.rowPtr(0, 3);
         ito::float32 *nyRow = (ito::float32*)out.rowPtr(0, 4);
         ito::float32 *nzRow = (ito::float32*)out.rowPtr(0, 5);
-        ito::float32 *iRow = (ito::float32*)out.rowPtr(0, 6);
+        ito::float32 *ncurvRow = (ito::float32*)out.rowPtr(0, 6);
+        ito::float32 *iRow = (ito::float32*)out.rowPtr(0, 7);
 
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -967,7 +997,45 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             nxRow[i] = point->normal_x;
             nyRow[i] = point->normal_y;
             nzRow[i] = point->normal_z;
+            ncurvRow[i] = point->curvature;
             iRow[i] = point->intensity;
+            
+        }
+    }
+    else if (pc->getType() == ito::pclXYZRGBNormal)
+    {
+        pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud = pc->toPointXYZRGBNormal();
+        pcl::PointCloud<pcl::PointXYZRGBNormal>::VectorType points = cloud->points;
+        out = DataObject(11, (int)cloud->size(), ito::tFloat32);
+        pcl::PointXYZRGBNormal *point;
+
+        ito::float32 *xRow = (ito::float32*)out.rowPtr(0, 0);
+        ito::float32 *yRow = (ito::float32*)out.rowPtr(0, 1);
+        ito::float32 *zRow = (ito::float32*)out.rowPtr(0, 2);
+        ito::float32 *nxRow = (ito::float32*)out.rowPtr(0, 3);
+        ito::float32 *nyRow = (ito::float32*)out.rowPtr(0, 4);
+        ito::float32 *nzRow = (ito::float32*)out.rowPtr(0, 5);
+        ito::float32 *ncurvRow = (ito::float32*)out.rowPtr(0, 6);
+        ito::float32 *rRow = (ito::float32*)out.rowPtr(0, 7);
+        ito::float32 *gRow = (ito::float32*)out.rowPtr(0, 8);
+        ito::float32 *bRow = (ito::float32*)out.rowPtr(0, 9);
+        ito::float32 *aRow = (ito::float32*)out.rowPtr(0, 10);
+
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            point = &(points[i]);
+            xRow[i] = point->x;
+            yRow[i] = point->y;
+            zRow[i] = point->z;
+            nxRow[i] = point->normal_x;
+            nyRow[i] = point->normal_y;
+            nzRow[i] = point->normal_z;
+            ncurvRow[i] = point->curvature;
+            rRow[i] = point->r;
+            gRow[i] = point->g;
+            bRow[i] = point->b;
+            aRow[i] = point->a;
+            
         }
     }
     else if (pc->getType() == ito::pclInvalid)
