@@ -941,6 +941,7 @@ const PCLPointCloud PCLPointCloud::operator+ (const PCLPointCloud &rhs)
 
 PCLPointCloud & PCLPointCloud::operator= (const PCLPointCloud &copy)
 {
+    // ToDo perhaps a check of identical object copy is necessary
     this->setInvalid();
 
     m_type = copy.getType();
