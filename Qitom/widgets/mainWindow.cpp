@@ -1640,11 +1640,14 @@ void MainWindow::mnuPyReloadModules()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyAutoReloadTriggered(bool checked)
 {
-    bool enabled = m_actions["py_autoReloadEnabled"]->isChecked();
-    bool checkFile = m_actions["py_autoReloadFile"]->isChecked();
-    bool checkCmd = m_actions["py_autoReloadCmd"]->isChecked();
-    bool checkFct = m_actions["py_autoReloadFunc"]->isChecked();
-    emit pythonSetAutoReloadSettings(enabled, checkFile, checkCmd, checkFct);
+    if(m_actions["py_autoReloadEnabled"] && m_actions["py_autoReloadFile"] && m_actions["py_autoReloadCmd"] && m_actions["py_autoReloadFunc"])
+    {
+        bool enabled = m_actions["py_autoReloadEnabled"]->isChecked();
+        bool checkFile = m_actions["py_autoReloadFile"]->isChecked();
+        bool checkCmd = m_actions["py_autoReloadCmd"]->isChecked();
+        bool checkFct = m_actions["py_autoReloadFunc"]->isChecked();
+        emit pythonSetAutoReloadSettings(enabled, checkFile, checkCmd, checkFct);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1694,15 +1697,15 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct)
 {
-    m_actions["py_autoReloadEnabled"]->setChecked(enabled);
+    if(m_actions["py_autoReloadEnabled"]) m_actions["py_autoReloadEnabled"]->setChecked(enabled);
 
-    m_actions["py_autoReloadFile"]->setChecked(checkFile);
-    m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
-    m_actions["py_autoReloadFunc"]->setChecked(checkFct);
+    if(m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setChecked(checkFile);
+    if(m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
+    if(m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setChecked(checkFct);
 
-    m_actions["py_autoReloadFile"]->setEnabled(enabled);
-    m_actions["py_autoReloadCmd"]->setEnabled(enabled);
-    m_actions["py_autoReloadFunc"]->setEnabled(enabled);
+    if(m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setEnabled(enabled);
+    if(m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setEnabled(enabled);
+    if(m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setEnabled(enabled);
 
 }
 
