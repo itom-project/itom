@@ -190,8 +190,8 @@ The title of the dialog can be assigned by the parameter *caption*. You can choo
 given or empty, the current working directory is taken. The possible file filters are set by the string **filters**. This is a double-semicolon
 separated list of entries. An example is::
     
-    Images(*.png *jpg)
-    Text Files (*.txt);;Itom Data Collection (*.idc);;Scripts (*.py *pyc)
+    Images(*.png *.jpg)
+    Text Files (*.txt);;Itom Data Collection (*.idc);;Scripts (*.py *.pyc)
 
 The selected, default index is given by *selectedFilterIndex*, where 0 selects the first item in *filters*.
 You can also pass some additional options to the dialog by the parameter *options*. This basically is an or-combination of the Qt-enumeration
@@ -200,7 +200,7 @@ You can also pass some additional options to the dialog by the parameter *option
 * 0x02, DontResolveSymlinks. If given, symbolic links are not shown in the dialog
 * 0x40, HideNameFilterDetails. This only shows the names of the filters, but not the pattern mask.
 
-The return value *ret* is *None*, if the dialog has been rejected, else it is the absolute filename of the selected file.
+The function returns *None* if the dialog has been rejected, else it is the absolute filename of the selected file.
 
 SaveFileName-Dialog
 ------------------------
