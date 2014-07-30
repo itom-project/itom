@@ -1511,7 +1511,7 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     else if (pythonCode == "")
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("there is no python code associated to this action."));
+        msgBox.setText(tr("there is no python code associated with this action."));
         msgBox.exec();
     }
     else
@@ -1543,8 +1543,7 @@ void MainWindow::mnuShowDesigner()
         if (existingProcess && process->state() == QProcess::Running)
         {
             //assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
-            QByteArray ba;
-            ba.append("activateIdentifier \n");
+            QByteArray ba("activateIdentifier \n");
             process->write(ba);
         }
         else
@@ -1562,8 +1561,12 @@ void MainWindow::mnuShowDesigner()
 
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
-            QString app = ProcessOrganizer::getAbsQtToolPath("designer");
-            process->start(app, QStringList());
+            po->clearStandardOutputBuffer("designer");
+
+            QStringList arguments;
+            arguments << "-server"/* << filename*/;
+            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            process->start(app, arguments);
         }
     }
 }

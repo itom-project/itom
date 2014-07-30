@@ -52,7 +52,7 @@
 
 namespace ito {
 
-/*static */RetVal IOHelper::openGeneralFile(QString generalFileName, bool openUnknownsWithExternalApp, bool showMessages, QWidget* parent, const char* errorSlotMemberOfParent, bool globalNotLocalWorkspace /*= true*/)
+/*static */RetVal IOHelper::openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp, bool showMessages, QWidget* parent, const char* errorSlotMemberOfParent, bool globalNotLocalWorkspace /*= true*/)
 {
     QFile file(generalFileName);
     ito::RetVal retval(ito::retOk);
@@ -169,7 +169,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::uiExportPyWorkspaceVars(bool globalNotLocal, QStringList varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath, QWidget* parent)
+/*static */RetVal IOHelper::uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath, QWidget* parent)
 {
     static QString uiExportPyWorkspaceDefaultPath;
 
@@ -280,7 +280,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::exportPyWorkspaceVars(QString filename, bool globalNotLocal, QStringList varNames)
+/*static */RetVal IOHelper::exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames)
 {
     RetVal retValue(retOk);
 
@@ -395,7 +395,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::importPyWorkspaceVars(QString filename, bool globalNotLocal)
+/*static */RetVal IOHelper::importPyWorkspaceVars(const QString &filename, bool globalNotLocal)
 {
     RetVal retValue(retOk);
 
@@ -487,7 +487,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::openPythonScript(QString filename)
+/*static */RetVal IOHelper::openPythonScript(const QString &filename)
 {
     QFile file(filename);
     RetVal retValue(retOk);
@@ -520,7 +520,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::openUIFile(QString filename, QWidget* parent, const char* errorSlotMemberOfParent)
+/*static */RetVal IOHelper::openUIFile(const QString &filename, QWidget* parent, const char* errorSlotMemberOfParent)
 {
     ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
     if (po)
@@ -546,8 +546,8 @@ end:
                     bool result = socket.waitForConnected(30000);
                     if (result)
                     {
-                        filename.append("\n");
-                        socket.write(filename.toLatin1().data());
+                        QByteArray filename_ = filename.toLatin1() + "\n";
+                        socket.write(filename_);
                         done = true;
                         socket.disconnectFromHost();
                         socket.waitForDisconnected(250);
@@ -622,7 +622,7 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ RetVal IOHelper::uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/, bool globalNotLocal /*= true*/)
+/*static*/ RetVal IOHelper::uiOpenFileWithFilter(const ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/, bool globalNotLocal /*= true*/)
 {
     RetVal retval;
     ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());

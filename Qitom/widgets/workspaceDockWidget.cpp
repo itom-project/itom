@@ -434,13 +434,13 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
 void WorkspaceDockWidget::dropEvent(QDropEvent *event)
 {
     QList<QUrl> urls = event->mimeData()->urls();
-//    bool ok = true;
-    QFileInfo finfo;
+    QString localFile;
 
     //check files
     foreach (const QUrl &url, urls)
     {
-        IOHelper::openGeneralFile(url.toLocalFile(), false, true, this, 0, m_globalNotLocal);
+        localFile = url.toLocalFile();
+        IOHelper::openGeneralFile(localFile, false, true, this, 0, m_globalNotLocal);
     }
 }
 

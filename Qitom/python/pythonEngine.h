@@ -117,10 +117,10 @@ public:
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
     inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
-    inline bool isPythonBusy() const { return pythonState != ito::pyStateIdle; }
-    inline bool isPythonDebugging() const { return (pythonState == ito::pyStateDebuggingWaitingButBusy || pythonState == ito::pyStateDebugging || pythonState == ito::pyStateDebuggingWaiting); }
+    inline bool isPythonBusy() const                { return pythonState != ito::pyStateIdle; }
+    inline bool isPythonDebugging() const           { return (pythonState == ito::pyStateDebuggingWaitingButBusy || pythonState == ito::pyStateDebugging || pythonState == ito::pyStateDebuggingWaiting); }
     inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
-    inline bool execInternalCodeByDebugger() const { return m_executeInternalPythonCodeInDebugMode; }
+    inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
 
     ito::RetVal checkForPyExceptions();
@@ -129,7 +129,7 @@ public:
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple);
 
-    inline PyObject *getGlobalDictionary()  { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
+    inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
 
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
 
@@ -155,15 +155,15 @@ private:
 
     inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
 
-    PyObject *getPyObjectByFullName(bool globalNotLocal, QStringList &fullName);
+    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName);
 
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
     void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict);
 
-    ito::RetVal pickleDictionary(PyObject *dict, QString filename);
-    ito::RetVal unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite);
+    ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
+    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
 
     //methods for maintaining python functionality
     ito::RetVal addMethodToModule(PyMethodDef* def);

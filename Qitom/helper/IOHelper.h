@@ -51,21 +51,21 @@ public:
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
 
-    static RetVal openGeneralFile(QString generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
+    static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
 
-    static RetVal uiExportPyWorkspaceVars(bool globalNotLocal, QStringList varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath = QString::Null(), QWidget* parent = NULL);
-    static RetVal exportPyWorkspaceVars(QString filename, bool globalNotLocal, QStringList varNames);
+    static RetVal uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath = QString::Null(), QWidget* parent = NULL);
+    static RetVal exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames);
 
     static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, IOFilters IOfilters, QString defaultPath = QString::Null(), QWidget* parent = NULL);
-    static RetVal importPyWorkspaceVars(QString filename, bool globalNotLocal);
+    static RetVal importPyWorkspaceVars(const QString &filename, bool globalNotLocal);
 
     static RetVal uiOpenPythonScript(QString defaultPath = QString::Null(), QWidget* parent = NULL);
-    static RetVal openPythonScript(QString filename);
+    static RetVal openPythonScript(const QString &filename);
 
-    static RetVal uiOpenFileWithFilter(ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent = NULL, bool globalNotLocal = true);
+    static RetVal uiOpenFileWithFilter(const ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent = NULL, bool globalNotLocal = true);
     static RetVal uiSaveFileWithFilter(QSharedPointer<ito::ParamBase> &value, const QString &filename, QWidget *parent = NULL);
 
-    static RetVal openUIFile(QString filename, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL);
+    static RetVal openUIFile(const QString &filename, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL);
 
     static QString getFileFilters(const IOFilters &IOfilters, QStringList *allPatterns = NULL);
 

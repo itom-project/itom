@@ -2533,7 +2533,7 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, QStringList &fullName)
+PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName)
 {
     PyObject *obj = NULL;
     QStringList items = fullName; //.split(".");
@@ -4030,7 +4030,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, QString filename)
+ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filename)
 {
     RetVal retval;
 
@@ -4202,7 +4202,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, QString filename, bool overwrite)
+ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite)
 {
     RetVal retval;
 
