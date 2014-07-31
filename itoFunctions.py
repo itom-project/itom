@@ -28,8 +28,11 @@ def reloadModules(modNames):
         if(sys.modules[i] != None):
             try:
                 imp.reload(sys.modules[i])
-            except:
-                print("error while reloading module", str(sys.modules[i]))
+            except SyntaxError as err:
+                s = "module %s could not be reloaded. Invalid syntax in file %s, line %i: %s (character %i)" % (str(sys.modules[i]), err.filename, err.lineno, err.text, err.offset)
+                print(s)
+            except Exception as err:
+                print("error while reloading module", str(sys.modules[i]), ":", str(err))
         else:
             res.append(i)
     return res
