@@ -583,10 +583,21 @@ namespace dObjHelper
 
     RetVal DATAOBJ_EXPORT calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise);
 
+    //! Check if the dataObject is of right type
     ito::RetVal DATAOBJ_EXPORT verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    
+    //! Check if the dataObject is of right type and if it is 2D and if it is of right size
     ito::RetVal DATAOBJ_EXPORT verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    
+    //! Check if the dataObject is of right type and if it is 2D or is 1x...xYxX and if it is of right size
+    //ito::RetVal DATAOBJ_EXPORT verify1PlaneDObject(const ito::DataObject* dObj, const char* name, int &yIdx, int sizeYMin, int sizeYMax, int &xIdx, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    
+    //! Check if the dataObject is of right type and if it is 3D and if it is of right size
     ito::RetVal DATAOBJ_EXPORT verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    
     ito::RetVal DATAOBJ_EXPORT verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
+
+    //! returns a shallow or deep copy of a given data object that fits to given requirements
     ito::DataObject DATAOBJ_EXPORT squeezeConvertCheck2DDataObject(const ito::DataObject *dObj, const char* name, const ito::Range &sizeY, const ito::Range &sizeX, ito::RetVal &retval, int convertToType, uint8 numberOfAllowedTypes, ...);
     
     //-----------------------------------------------------------------------------------------------

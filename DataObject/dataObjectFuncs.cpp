@@ -1838,6 +1838,17 @@ namespace dObjHelper
     }
     
     //-----------------------------------------------------------------------------------------------
+    /*!
+        This function checks if the dataObject pointer is valid and of the object is of right type.
+        If the type is not one of the given types, a specific error message containing the name is returned.
+
+        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
+        \param[in]  name                    the name of the dataObject, will be added to the error message
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+
+        \return retOk if valid and handle not NULL, else retError
+    */
     ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...) //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     {
         if(dObj == NULL)
@@ -1877,6 +1888,22 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
+    /*!
+        This function checks if the dataObject pointer is valid and of the object is of right type.
+        Further more this function checks if the object is truely 2D (dims == 2).
+        If the type is not one of the given types, a specific error message containing the name is returned.
+
+        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
+        \param[in]  name                    the name of the dataObject, will be added to the error message
+        \param[in]  sizeYMin                the minimum size in y direction
+        \param[in]  sizeYMax                the maximum size in y direction
+        \param[in]  sizeXMin                the minimum size in x direction
+        \param[in]  sizeXMax                the maximum size in x direction
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+
+        \return retOk if valid and handle not NULL, else retError
+    */
     ito::RetVal verify2DDataObject(const ito::DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...)
     {
         if(dObj == NULL)
@@ -1918,7 +1945,90 @@ namespace dObjHelper
         return retValue;
     }
 
+#if 0
     //-----------------------------------------------------------------------------------------------
+    /*!
+        This function checks if the dataObject pointer is valid and of the object is of right type.
+        Further more this function checks if the object is 2D (dims == 2 or number of planes == 1).
+        If the type is not one of the given types, a specific error message containing the name is returned.
+
+        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
+        \param[in]  name                    the name of the dataObject, will be added to the error message
+        \param[Out] yIdx                    the index of the y dimension
+        \param[in]  sizeYMin                the minimum size in y direction
+        \param[in]  sizeYMax                the maximum size in y direction
+        \param[Out] xIdx                    the index of the y dimension
+        \param[in]  sizeXMin                the minimum size in x direction
+        \param[in]  sizeXMax                the maximum size in x direction
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+
+        \return retOk if valid and handle not NULL, else retError
+    */
+    ito::RetVal verify1PlaneDObject(const ito::DataObject* dObj, const char* name, int &yIdx, int sizeYMin, int sizeYMax, int &xIdx, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...)
+    {
+        if(dObj == NULL)
+        {
+            return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
+        }
+
+        if(dObj->getDims() != 2 && dObj->calcNumMats() > 1)
+        {
+            return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object must be two-dimensional or at least consist of a single plane.", name);
+        }
+
+        bool found = false;
+        int type = dObj->getType();
+        int temp = 0;
+        va_list vl;
+        va_start(vl, numberOfAllowedTypes);
+        for(int i=0;i<numberOfAllowedTypes;i++)
+        {
+//            temp = va_arg(vl, ito::tDataType);
+            temp = va_arg(vl, int); //gcc complains that tio::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
+            if(temp == type)
+            {
+                found = true;
+                break;
+            }
+        }
+        va_end(vl);
+
+        if(!found)
+        {
+            return ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
+        }
+
+        ito::RetVal retValue;
+
+        yIdx = dObj->getDims() - 2;
+        xIdx = dObj->getDims() - 1;
+
+        retValue += verifySize(dObj->getSize(yIdx), sizeYMin, sizeYMax, "y-axis", name);
+        retValue += verifySize(dObj->getSize(xIdx), sizeXMin, sizeXMax, "x-axis", name);
+    
+        return retValue;
+    }
+#endif
+    //-----------------------------------------------------------------------------------------------
+    /*!
+        This function checks if the dataObject pointer is valid and of the object is of right type.
+        Further more this function checks if the object is truely 3D (dims == 3).
+        If the type is not one of the given types, a specific error message containing the name is returned.
+
+        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
+        \param[in]  name                    the name of the dataObject, will be added to the error message
+        \param[in]  sizeZMin                the minimum size in z direction
+        \param[in]  sizeZMax                the maximum size in z direction
+        \param[in]  sizeYMin                the minimum size in y direction
+        \param[in]  sizeYMax                the maximum size in y direction
+        \param[in]  sizeXMin                the minimum size in x direction
+        \param[in]  sizeXMax                the maximum size in x direction
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+
+        \return retOk if valid and handle not NULL, else retError
+    */
     ito::RetVal verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...)
     {
 
@@ -1984,7 +2094,6 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
-    //! returns a shallow or deep copy of a given data object that fits to given requirements
     /*!
         Use this method to test an incoming data object to be two-dimensional, have a certain width and height and types.
 
