@@ -90,8 +90,8 @@ SliderWidgetPrivate::SliderWidgetPrivate(SliderWidget& object)
   this->Changing = false;
   this->ValueBeforeChange = 0.;
   this->BlockSetSliderValue = false;
-  this->SynchronizeMode =
-    SliderWidget::SynchronizeWidth | SliderWidget::SynchronizeDecimals;
+  this->SynchronizeMode = SliderWidget::NoSynchronize;
+    //SliderWidget::SynchronizeWidth | SliderWidget::SynchronizeDecimals;
   this->SliderPopup = 0;
 }
 
