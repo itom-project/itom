@@ -146,8 +146,7 @@ namespace ito
             {
                 if (retValue.hasErrorMessage())
                 {
-                    std::cout << "warning while sending live image: \n" << "warning message: \n" << std::endl;
-                    std::cout << retValue.errorMessage() << std::endl;
+                    std::cout << "warning while sending live image: " << retValue.errorMessage() << std::endl;
                 }
                 else
                 {
@@ -159,8 +158,7 @@ namespace ito
             {
                 if (retValue.hasErrorMessage())
                 {
-                    std::cout << "error while sending live image: \n" << "error message: \n" << std::endl;
-                    std::cout << retValue.errorMessage() << std::endl;
+                    std::cout << "error while sending live image: " << retValue.errorMessage() << std::endl;
                 }
                 else
                 {
