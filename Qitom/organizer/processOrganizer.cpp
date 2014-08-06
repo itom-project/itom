@@ -113,6 +113,27 @@ ProcessOrganizer::~ProcessOrganizer()
 /*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
 {
 #ifdef linux
+    QDir dir;
+    QString binaryName2 = binaryName;
+
+    //1. first try: in this application dir
+    dir.setPath( QCoreApplication::applicationDirPath() );
+    QStringList entryList = dir.entryList(QDir::Executable | QDir::Files);
+    //qDebug() << dir << entryList << dir.entryList(QDir::Files);
+    if(entryList.contains(binaryName2)) //dir.exists(binaryName2))
+    {
+        return dir.absoluteFilePath( binaryName2 );
+    }
+
+    //2. next try: qt binary dir (when installing qt from sources)
+    dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
+    entryList = dir.entryList(QDir::Executable | QDir::Files);
+    //qDebug() << dir << entryList << dir.entryList(QDir::Files);
+    if(entryList.contains(binaryName2))
+    {
+        return dir.absoluteFilePath( binaryName2 );
+    }
+
     return binaryName;
 
 #else

@@ -1229,11 +1229,11 @@ void FileSystemDockWidget::removeActionFromDirList(const int &pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::processError(QProcess::ProcessError /*error*/)
+void FileSystemDockWidget::processError(QProcess::ProcessError error)
 {
     QMessageBox msgBox(this);
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setText("An external process could not be started.");
+    msgBox.setText(QString("An external process could not be started (%1).").arg(error));
     msgBox.exec();
 }
 

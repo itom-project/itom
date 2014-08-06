@@ -147,7 +147,12 @@ void AbstractDockWidget::init()
 
     m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
     
-    m_pWindow->menuBar()->setNativeMenuBar(true);
+    //linux: in some linux distributions, the menu bar did not appear if it is displayed
+    //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
+    //see: qt-project.org/forums/viewthread/7445
+    m_pWindow->menuBar()->setNativeMenuBar(false);
+
+    //m_pWindow->menuBar()->setNativeMenuBar(true);
     
     setWidget(m_pWindow);
 
@@ -790,7 +795,12 @@ void AbstractDockWidget::undockWidget()
 
     if (m_floatingStyle == floatingWindow)
     {
-        m_pWindow->menuBar()->setNativeMenuBar(true);
+        //linux: in some linux distributions, the menu bar did not appear if it is displayed
+        //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
+        //see: qt-project.org/forums/viewthread/7445
+        m_pWindow->menuBar()->setNativeMenuBar(false);
+
+        //m_pWindow->menuBar()->setNativeMenuBar(true);
         m_pWindow->menuBar()->show();
         if (m_actDock) m_actDock->setVisible(true);
         if (m_actUndock) m_actUndock->setVisible(false);

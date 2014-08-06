@@ -734,8 +734,10 @@ void MainWindow::createMenus()
     m_pMenuHelp->addAction(m_aboutQitom);
 //    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
     
-    //linux: allow the menu to be in the native menu bar of the operating system
-    menuBar()->setNativeMenuBar(true);
+    //linux: in some linux distributions, the menu bar did not appear if it is displayed
+    //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
+    //see: qt-project.org/forums/viewthread/7445
+    menuBar()->setNativeMenuBar(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1566,16 +1568,16 @@ void MainWindow::mnuShowDesigner()
             QStringList arguments;
             arguments << "-server"/* << filename*/;
             QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
-            process->start(app, arguments);
+            process->start(app); //, arguments);
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::designerError (QProcess::ProcessError /*error*/)
+void MainWindow::designerError (QProcess::ProcessError error)
 {
     QMessageBox msgBox(this);
-    msgBox.setText(tr("The UI designer (Qt designer) could not be started."));
+    msgBox.setText(tr("The UI designer (Qt designer) could not be started (%1).").arg(error));
     msgBox.exec();
 }
 

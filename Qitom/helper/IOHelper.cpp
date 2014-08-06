@@ -614,6 +614,7 @@ end:
             QStringList arguments;
             arguments << "-server" << filename;
             QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            //qDebug() << app << arguments;
             process->start(app, arguments);
         }
     }
