@@ -410,7 +410,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     
     if(possibleMethods.size() == 0)
     {
-        PyErr_Format(PyExc_RuntimeError, "No slot or method with name %s available.", slotName.data());
+        PyErr_Format(PyExc_RuntimeError, "No slot or method with name '%s' available.", slotName.data());
         return NULL;
     }
 

@@ -233,6 +233,9 @@
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
+            <property name="suffix">
+             <string> s</string>
+            </property>
             <property name="decimals">
              <number>1</number>
             </property>

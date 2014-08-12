@@ -187,4 +187,8 @@ For Windows users:
 
 Download the glew binaries from http://glew.sourceforge.net/index.html and unzip them to any folder. The CMake variable **GLEW_DIR** should then point to that folder.
 
+Known problems during CMake configuration
+---------------------------------------------
 
+* **Qt5 could not be detected**: Sometimes, Qt5 cannot be automatically detected. Then try to pass a directory similar to **G:\\Qt\\qtbase\\lib\\cmake\\Qt5** to **Qt5_DIR**.
+* **Linker error: Multiply defined symbols in msvcrt and similar libraries**: Make sure that OpenCV is not statically linked against itom. Make sure that **BUILD_OPENCV_SHARED** is True.
