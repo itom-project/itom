@@ -152,7 +152,7 @@ private slots:
 
 protected:
     QObject*    m_propertyObject;
-    QString        m_hints;
+    QString     m_hints;
     QString     m_info;
 
 };

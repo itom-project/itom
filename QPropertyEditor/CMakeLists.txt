@@ -8,28 +8,24 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
-
-#if(CMAKE_HOST_WIN32)
-#    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-#        string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
-#    else()
-#        #ok
-#    endif()
-#endif()
+OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
   
-#compile as static library (always)
-SET(LIBRARY_TYPE STATIC)
- 
-#if QPropertyEditor is static, add -fPIC as compiler flag for linux
-IF(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-ENDIF(UNIX)
+IF(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE SHARED)
+ELSE(BUILD_ITOMLIBS_SHARED)
+    SET(LIBRARY_TYPE STATIC)
+    
+    #if itomCommon is static, add -fPIC as compiler flag for linux
+    IF(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    ENDIF(UNIX)
+ENDIF(BUILD_ITOMLIBS_SHARED)
  
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
 
-FIND_PACKAGE_QT(ON PrintSupport Widgets)
+FIND_PACKAGE_QT(ON Core PrintSupport Widgets)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
@@ -71,10 +67,9 @@ set(qpropertyeditor_SOURCES
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC})
 
-#TARGET_LINK_LIBRARIES(${target_name} )
-
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES})
 IF (QT5_FOUND)
-    qt5_use_modules(${target_name} PrintSupport Widgets Svg)
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
@@ -91,5 +86,6 @@ FILE(COPY ${SOURCEFILE}/QVariantDelegate.h  DESTINATION ${CMAKE_CURRENT_BINARY_D
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-ADD_OUTPUTLIBRARY_TO_SDK_LIB(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#ADD_OUTPUTLIBRARY_TO_SDK_LIB(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
