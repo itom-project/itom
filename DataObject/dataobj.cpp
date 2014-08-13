@@ -3388,14 +3388,11 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
    int numMats = src->calcNumMats();
    int MatNum = 0;
 
-   _Tp factor2 = cv::saturate_cast<_Tp>(factor);
-
    cv::Mat_<_Tp> * tempMat = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
    for (int nmat = 0; nmat < numMats; nmat++)
    {
-      //TODO: check if non iterator version is working
        MatNum = src->seekMat(nmat, numMats);
        tempMat = ((cv::Mat_<_Tp> *)((src->get_mdata())[MatNum]));
 
@@ -3404,7 +3401,61 @@ template<typename _Tp> RetVal OpScalarMulFunc(const DataObject *src, const doubl
            _Tp* dstPtr = (_Tp*)tempMat->ptr(y);
            for (int x = 0; x < sizex; x++)
            {
-               dstPtr[x] *= (_Tp)factor2;
+               dstPtr[x] *= factor;
+           }
+       }
+   }
+
+   return 0;
+}
+
+template<> RetVal OpScalarMulFunc<ito::complex64>(const DataObject *src, const double &factor)
+{
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
+   ito::complex64 factor2 = ito::complex64(cv::saturate_cast<ito::float32>(factor), 0.0);
+
+   cv::Mat_<ito::complex64> * tempMat = NULL;
+   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
+   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+   for (int nmat = 0; nmat < numMats; nmat++)
+   {
+       MatNum = src->seekMat(nmat, numMats);
+       tempMat = ((cv::Mat_<ito::complex64> *)((src->get_mdata())[MatNum]));
+
+       for (int y = 0; y < sizey; y++)
+       {
+           ito::complex64* dstPtr = (ito::complex64*)tempMat->ptr(y);
+           for (int x = 0; x < sizex; x++)
+           {
+               dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
+           }
+       }
+   }
+
+   return 0;
+}
+
+template<> RetVal OpScalarMulFunc<ito::complex128>(const DataObject *src, const double &factor)
+{
+   int numMats = src->calcNumMats();
+   int MatNum = 0;
+   ito::complex128 factor2 = ito::complex128(cv::saturate_cast<ito::float64>(factor), 0.0);
+
+   cv::Mat_<ito::complex128> * tempMat = NULL;
+   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
+   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+   for (int nmat = 0; nmat < numMats; nmat++)
+   {
+       MatNum = src->seekMat(nmat, numMats);
+       tempMat = ((cv::Mat_<ito::complex128> *)((src->get_mdata())[MatNum]));
+
+       for (int y = 0; y < sizey; y++)
+       {
+           ito::complex128* dstPtr = (ito::complex128*)tempMat->ptr(y);
+           for (int x = 0; x < sizex; x++)
+           {
+               dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
            }
        }
    }

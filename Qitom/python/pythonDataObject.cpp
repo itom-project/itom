@@ -2897,6 +2897,53 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
+{
+    if (o1 == NULL || o2 == NULL)
+    {
+        return NULL;
+    }
+
+    if (Py_TYPE(o2) == &PyDataObjectType)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "division by a dataObject not implemented.");
+        return NULL;
+    }
+    if (Py_TYPE(o1) == &PyDataObjectType)
+    {
+        double factor = PyFloat_AsDouble((PyObject*)o2);
+        PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+        if (PyErr_Occurred())
+        {
+            return NULL;
+        }
+
+        PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+        dobj1->dataObject->lockRead();
+
+        try
+        {
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
+        catch(cv::Exception exc)
+        {
+            Py_DECREF(retObj);
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+            dobj1->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+
+        return (PyObject*)retObj;
+    }
+
+    return NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_nbRemainder(PyObject* /*o1*/, PyObject* /*o2*/)
 {
     Py_INCREF(Py_NotImplemented);
@@ -3417,6 +3464,54 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         try
         {
             *(dobj1->dataObject) *= factor;
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            dobj1->dataObject->unlock();
+            return NULL;
+        }
+
+        dobj1->dataObject->unlock();
+    }
+
+    Py_INCREF(o1);
+    return (PyObject*)o1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject* o2)
+{
+    if (o1 == NULL || o2 == NULL)
+    {
+        return NULL;
+    }
+
+    if (!checkPyDataObject(1,o1))
+    {
+        return NULL;
+    }
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+    if (Py_TYPE(o2) == &PyDataObjectType)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "division by another dataObject is not implemented.");
+        return NULL;
+    }
+    else
+    {
+        double factor = PyFloat_AsDouble((PyObject*)o2);
+
+        if (PyErr_Occurred())
+        {
+            return NULL;
+        }
+
+        dobj1->dataObject->lockWrite();
+        try
+        {
+            *(dobj1->dataObject) *= (1.0 / factor);
         }
         catch(cv::Exception exc)
         {
@@ -6766,39 +6861,39 @@ PyTypeObject PythonDataObject::PyDataObjectType = {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyNumberMethods PythonDataObject::PyDataObject_numberProtocol = {
-    (binaryfunc)PyDataObj_nbAdd,                    /* nb_add */
-    (binaryfunc)PyDataObj_nbSubtract,                    /* nb_subtract */
-    (binaryfunc)PyDataObj_nbMultiply,                    /* nb_multiply */
-    (binaryfunc)PyDataObj_nbRemainder,              /* nb_remainder */
-    (binaryfunc)PyDataObj_nbDivmod,                 /* nb_divmod */
-    (ternaryfunc)PyDataObj_nbPower,                   /* nb_power */
-    (unaryfunc)PyDataObj_nbNegative,                     /* nb_negative */
-    (unaryfunc)PyDataObj_nbPositive,                     /* nb_positive */
-    (unaryfunc)PyDataObj_nbAbsolute,                     /* nb_absolute */
-    (inquiry)0,                      /* nb_bool */
-    (unaryfunc)PyDataObj_nbInvert,                                          /* nb_invert */
-    (binaryfunc)PyDataObj_nbLshift,                                          /* nb_lshift */
-    (binaryfunc)PyDataObj_nbRshift,                                          /* nb_rshift */
-    (binaryfunc)PyDataObj_nbAnd,                                          /* nb_and */
-    (binaryfunc)PyDataObj_nbXor,                                          /* nb_xor */
-    (binaryfunc)PyDataObj_nbOr,                                          /* nb_or */
-    0,                                /* nb_int */
-    0,                                          /* nb_reserved */
-    0,                              /* nb_float */
-    (binaryfunc)PyDataObj_nbInplaceAdd,                                          /* nb_inplace_add */
-    (binaryfunc)PyDataObj_nbInplaceSubtract,                                          /* nb_inplace_subtract */
-    (binaryfunc)PyDataObj_nbInplaceMultiply,                                          /* nb_inplace_multiply*/
-    (binaryfunc)PyDataObj_nbInplaceRemainder,                                          /* nb_inplace_remainder */
-    (ternaryfunc)PyDataObj_nbInplacePower,                                          /* nb_inplace_power */
-    (binaryfunc)PyDataObj_nbInplaceLshift,                                          /* nb_inplace_lshift */
-    (binaryfunc)PyDataObj_nbInplaceRshift,                                          /* nb_inplace_rshift */
-    (binaryfunc)PyDataObj_nbInplaceAnd,                                          /* nb_inplace_and */
-    (binaryfunc)PyDataObj_nbInplaceXor,                                          /* nb_inplace_xor */
-    (binaryfunc)PyDataObj_nbInplaceOr,                                          /* nb_inplace_or */
-    (binaryfunc)0,                /* nb_floor_divide */
-    (binaryfunc)0,                    /* nb_true_divide */
-    0,                                          /* nb_inplace_floor_divide */
-    0,                                          /* nb_inplace_true_divide */
+    (binaryfunc)PyDataObj_nbAdd,                   /* nb_add */
+    (binaryfunc)PyDataObj_nbSubtract,              /* nb_subtract */
+    (binaryfunc)PyDataObj_nbMultiply,              /* nb_multiply */
+    (binaryfunc)PyDataObj_nbRemainder,             /* nb_remainder */
+    (binaryfunc)PyDataObj_nbDivmod,                /* nb_divmod */
+    (ternaryfunc)PyDataObj_nbPower,                /* nb_power */
+    (unaryfunc)PyDataObj_nbNegative,               /* nb_negative */
+    (unaryfunc)PyDataObj_nbPositive,               /* nb_positive */
+    (unaryfunc)PyDataObj_nbAbsolute,               /* nb_absolute */
+    (inquiry)0,                                    /* nb_bool */
+    (unaryfunc)PyDataObj_nbInvert,                 /* nb_invert */
+    (binaryfunc)PyDataObj_nbLshift,                /* nb_lshift */
+    (binaryfunc)PyDataObj_nbRshift,                /* nb_rshift */
+    (binaryfunc)PyDataObj_nbAnd,                   /* nb_and */
+    (binaryfunc)PyDataObj_nbXor,                   /* nb_xor */
+    (binaryfunc)PyDataObj_nbOr,                    /* nb_or */
+    0,                                             /* nb_int */
+    0,                                             /* nb_reserved */
+    0,                                             /* nb_float */
+    (binaryfunc)PyDataObj_nbInplaceAdd,            /* nb_inplace_add */
+    (binaryfunc)PyDataObj_nbInplaceSubtract,       /* nb_inplace_subtract */
+    (binaryfunc)PyDataObj_nbInplaceMultiply,       /* nb_inplace_multiply*/
+    (binaryfunc)PyDataObj_nbInplaceRemainder,      /* nb_inplace_remainder */
+    (ternaryfunc)PyDataObj_nbInplacePower,         /* nb_inplace_power */
+    (binaryfunc)PyDataObj_nbInplaceLshift,         /* nb_inplace_lshift */
+    (binaryfunc)PyDataObj_nbInplaceRshift,         /* nb_inplace_rshift */
+    (binaryfunc)PyDataObj_nbInplaceAnd,            /* nb_inplace_and */
+    (binaryfunc)PyDataObj_nbInplaceXor,            /* nb_inplace_xor */
+    (binaryfunc)PyDataObj_nbInplaceOr,             /* nb_inplace_or */
+    (binaryfunc)0,                                 /* nb_floor_divide */
+    (binaryfunc)PyDataObj_nbDivide,                /* nb_true_divide */
+    0,                                             /* nb_inplace_floor_divide */
+    (binaryfunc)PyDataObj_nbInplaceTrueDivide      /* nb_inplace_true_divide */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

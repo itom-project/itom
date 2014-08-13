@@ -204,17 +204,17 @@ TYPED_TEST(operatorTest, SubTest)
 */
 TYPED_TEST(operatorTest, MulFactor_test) 
 {
-		mat1_1d = cv::saturate_cast<TypeParam>(2);
-		mat1_2d = cv::saturate_cast<TypeParam>(5);
-		mat1_3d = cv::saturate_cast<TypeParam>(3);
+    mat1_1d = cv::saturate_cast<TypeParam>(2);
+    mat1_2d = cv::saturate_cast<TypeParam>(5);
+    mat1_3d = cv::saturate_cast<TypeParam>(3);
 		
-		mat3_1d =mat1_1d * 7;
-		mat3_2d =mat1_2d * 10;
-		mat3_3d =mat1_3d * 25;
+    mat3_1d =mat1_1d * 7;
+    mat3_2d =mat1_2d * 10;
+    mat3_3d =mat1_3d * 25;
 
-	EXPECT_EQ ( this->mat3_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(14));
-	EXPECT_EQ ( this->mat3_2d.at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(50));
-	EXPECT_EQ ( this->mat3_3d.at<TypeParam>(0,1,0) , cv::saturate_cast<TypeParam>(75));	 
+    EXPECT_EQ ( this->mat3_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(14));
+    EXPECT_EQ ( this->mat3_2d.at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(50));
+    EXPECT_EQ ( this->mat3_3d.at<TypeParam>(0,1,0) , cv::saturate_cast<TypeParam>(75));	 
 }
 
 //MulFactor1_test
@@ -223,17 +223,38 @@ TYPED_TEST(operatorTest, MulFactor_test)
 */
 TYPED_TEST(operatorTest, MulFactor1_test) 
 {
-		mat1_1d = cv::saturate_cast<TypeParam>(2);
-		mat1_2d = cv::saturate_cast<TypeParam>(5);
-		mat1_3d = cv::saturate_cast<TypeParam>(3);
+    mat1_1d = cv::saturate_cast<TypeParam>(2);
+    mat1_2d = cv::saturate_cast<TypeParam>(5);
+    mat1_3d = cv::saturate_cast<TypeParam>(3);
 		
-		mat1_1d *= 7;
-		mat1_2d *= 10;
-		mat1_3d *= 25;
+    mat1_1d *= 7;
+    mat1_2d *= 10;
+    mat1_3d *= 25;
 
-	EXPECT_EQ ( this->mat1_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(14));
-	EXPECT_EQ ( this->mat1_2d.at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(50));
-	EXPECT_EQ ( this->mat1_3d.at<TypeParam>(0,1,0) , cv::saturate_cast<TypeParam>(75));	 
+    EXPECT_EQ ( this->mat1_1d.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(14));
+    EXPECT_EQ ( this->mat1_2d.at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(50));
+    EXPECT_EQ ( this->mat1_3d.at<TypeParam>(0,1,0) , cv::saturate_cast<TypeParam>(75));	 
+}
+
+//MulFactor2_test
+/*!
+   This test checks that a scalar multiplication with a double value is casted in the right way 
+   (no rounding, double is multiplied at first with double precision, then the cast to the data type of the data object
+   should be executed)
+*/
+TYPED_TEST(operatorTest, MulFactor2_test) 
+{
+    mat1_1d = cv::saturate_cast<TypeParam>(2);
+    mat1_2d = cv::saturate_cast<TypeParam>(5);
+    mat1_3d = cv::saturate_cast<TypeParam>(3);
+		
+    mat1_1d *= 7.2;
+    mat1_2d *= 10.8;
+    mat1_3d *= 0.5;
+
+    EXPECT_EQ ( this->mat1_1d.at<TypeParam>(0,0) , (TypeParam)(2 * (double)7.2));
+    EXPECT_EQ ( this->mat1_2d.at<TypeParam>(1,1) , (TypeParam)(5 * (double)10.8));
+    EXPECT_EQ ( this->mat1_3d.at<TypeParam>(0,1,0) , (TypeParam)(3 * (double)0.5));	 
 }
 
 //MulCross_test
