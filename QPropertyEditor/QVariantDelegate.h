@@ -26,13 +26,14 @@
 #define COLORSELECTIONBUTTON_H_
 
 #include <qitemdelegate.h>
+#include "defines.h"
 
 class QSignalMapper;
 
 /**
  * This class is used to create the editor widgets for datatypes encapsulated in QVariant variables
  */
-class QVariantDelegate : public QItemDelegate
+class QPROPERTYEDITOR_EXPORT QVariantDelegate : public QItemDelegate
 {
     Q_OBJECT
 

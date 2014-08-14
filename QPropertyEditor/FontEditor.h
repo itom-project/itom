@@ -26,13 +26,14 @@
 #ifndef FONTEDITOR_H_
 #define FONTEDITOR_H_
 
+#include "defines.h"
 #include <qwidget.h>
 #include <qfont.h>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
 #include <qevent.h>
 
-class FontEditor : public QWidget
+class QPROPERTYEDITOR_EXPORT FontEditor : public QWidget
 {
     Q_OBJECT
 public:

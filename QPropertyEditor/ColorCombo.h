@@ -26,9 +26,10 @@
 #ifndef COLORCOMBO_H_
 #define COLORCOMBO_H_
 
+#include "defines.h"
 #include <qcombobox.h>
 
-class ColorCombo : public QComboBox
+class QPROPERTYEDITOR_EXPORT ColorCombo : public QComboBox
 {
     Q_OBJECT
 public:

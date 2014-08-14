@@ -25,6 +25,12 @@
 #ifndef QPROPERTYEDITORWIDGET_H_
 #define QPROPERTYEDITORWIDGET_H_
 
+#ifdef __APPLE__
+extern "C++" {
+#endif
+
+#include "defines.h"
+
 #if QT_VERSION < 0x050000
 #include <qtreeview.h>
 #else
@@ -57,7 +63,7 @@ class Property;
  * editor for QColor (based on the Color Editor Factory Example from Trolltech). But it can easily be extended by yourself
  * either within the library or for special datatypes also outside of the library in your application.
  */
-class QPropertyEditorWidget : public QTreeView
+class QPROPERTYEDITOR_EXPORT QPropertyEditorWidget : public QTreeView
 {
     Q_OBJECT
 public:
@@ -134,4 +140,9 @@ signals:
 
 
 };
+
+#ifdef __APPLE__
+}
+#endif
+
 #endif

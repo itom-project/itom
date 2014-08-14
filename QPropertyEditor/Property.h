@@ -26,6 +26,7 @@
 #ifndef PROPERTY_H_
 #define PROPERTY_H_
 
+#include "defines.h"
 #include <qwidget.h>
 #include <qstyleoption.h>
 #include <qvariant.h>
@@ -36,7 +37,7 @@
  * You can implement custom properties inherited from this class to further enhence the
  * functionality of the QPropertyEditor
  */
-class Property : public QObject
+class QPROPERTYEDITOR_EXPORT Property : public QObject
 {
     Q_OBJECT
 

@@ -1317,7 +1317,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+182"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+184"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -1907,6 +1907,11 @@ p, li { white-space: pre-wrap; }
         <extracomment>The timer is started when entering a new line</extracomment>
         <translation type="unfinished">Prüfintervall [Sek]:</translation>
     </message>
+    <message>
+        <location/>
+        <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WidgetPropEditorStyles</name>
@@ -2404,7 +2409,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+65"/>
         <source>docking toolbar</source>
         <translation>Symbolleiste Fenster andocken</translation>
     </message>
@@ -3670,12 +3675,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <name>ito::IOHelper</name>
     <message>
         <location filename="../helper/IOHelper.cpp" line="+112"/>
-        <location line="+717"/>
+        <location line="+718"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-717"/>
+        <location line="-718"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -3775,7 +3780,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+225"/>
+        <location line="+226"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
         <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
@@ -3810,7 +3815,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-697"/>
+        <location line="-698"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -3820,7 +3825,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+618"/>
+        <location line="+619"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
@@ -4228,7 +4233,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="-547"/>
+        <location line="+809"/>
+        <source>there is no python code associated with this action.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+64"/>
+        <source>The UI designer (Qt designer) could not be started (%1).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1420"/>
         <location line="+567"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
@@ -4239,7 +4254,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Geladene Module</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>no entries</source>
         <translation type="unfinished">kein Eintrag</translation>
     </message>
@@ -4347,14 +4362,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Python ist nicht verfügbar. Diese Anwendung kann nicht ausgeführt werden.</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>there is no python code associated to this action.</source>
-        <translation type="unfinished">Zu dieser &apos;Action&apos; existiert kein Python-Code.</translation>
+        <translation type="obsolete">Zu dieser &apos;Action&apos; existiert kein Python-Code.</translation>
     </message>
     <message>
-        <location line="+61"/>
         <source>The UI designer (Qt designer) could not be started.</source>
-        <translation type="unfinished">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
+        <translation type="obsolete">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
     </message>
 </context>
 <context>
