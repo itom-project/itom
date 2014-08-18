@@ -77,8 +77,8 @@ Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: prom
 Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\phonon4.dll"; DestDir: "{app}"; Flags: promptifolder
-;Source: "{#SourceDirQT}\Qt3Support4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtCLucene4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtCore4.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\QtDeclarative4.dll"; DestDir: "{app}"; Flags: promptifolder
