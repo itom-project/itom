@@ -44,6 +44,7 @@
 #include "pythonRgba.h"
 
 #include "../organizer/addInManager.h"
+#include "common/interval.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -121,7 +122,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<DataObject*>("DataObject*");
     qRegisterMetaType<ito::DataObject>("ito::DataObject");
     qRegisterMetaType<ito::DataObject*>("ito::DataObject*");
-    qRegisterMetaType<ito::DataObject>("ito::DataObject");
+    qRegisterMetaType<ito::AutoInterval>("ito::AutoInterval");
     qRegisterMetaType<QVariant*>("QVariant*");
     qRegisterMetaType<StringMap>("StringMap");
     qRegisterMetaType<AddInDataIO*>("AddInDataIO*");

@@ -418,16 +418,16 @@ Unfortunately, there are some methods of important widgets in |Qt|, which are no
 However, there are some exceptions defined in |itom| such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These exceptions are 
 contained in the following table:
 
-======================= ====================================================================================
+======================= ============================================================================================================================
 Widget / ClassName       Public Method
-======================= ====================================================================================
+======================= ============================================================================================================================
 QWidget                 void resize(int,int)
 QWidget                 void setGeometry(int,int,int,int)
 QListWidget             void addItem(QString)
 QListWidget             void addItems(QStringList)
 QListWidget             void selectedRows() returns a tuple of all selected row indices
 QListWidget             void selectedTexts() returns a tuple of all selected values (as strings)
-QListWidget             void selectRows(QVector<int>) select the rows with the given indices
+QListWidget             void selectRows(QVector<int>) select the rows with the given indices (ListWidget must be in multi-selection mode)
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
 QTabWidget              int isTabEnabled(int)
@@ -440,7 +440,7 @@ QTableWidget            QVariant getItem(int,int)
 QTableWidget            void setItem(int,int,QVariant)
 QTableView              uiItem horizontalHeader()
 QTableView              uiItem verticalHeader()
-======================= ====================================================================================
+======================= ============================================================================================================================
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
 hold for every other widget, since every widget is derived from *QWidget*.
