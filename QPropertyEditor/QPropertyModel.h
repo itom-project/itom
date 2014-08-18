@@ -35,7 +35,7 @@ class Property;
 /**
  * The QPropertyModel handles the user defined properties of QObjects
  */
-class QPROPERTYEDITOR_EXPORT QPropertyModel : public QAbstractItemModel
+class QPropertyModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

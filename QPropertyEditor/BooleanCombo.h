@@ -26,10 +26,9 @@
 #ifndef BOOLEANCOMBO_H_
 #define BOOLEANCOMBO_H_
 
-#include "defines.h"
 #include <qcombobox.h>
 
-class QPROPERTYEDITOR_EXPORT BooleanCombo : public QComboBox
+class BooleanCombo : public QComboBox
 {
     Q_OBJECT
 public:

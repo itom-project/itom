@@ -25,7 +25,6 @@
 #ifndef __ENUMPROPERTY_H__
 #define __ENUMPROPERTY_H__
 
-#include "defines.h"
 #include <qstringlist.h>
 #include <qmetaobject.h>
 #include <qmetatype.h>
@@ -40,7 +39,7 @@
 
     @author Roman Schmid
 */
-class QPROPERTYEDITOR_EXPORT EnumProperty : public Property
+class EnumProperty : public Property
 {
     Q_OBJECT
 

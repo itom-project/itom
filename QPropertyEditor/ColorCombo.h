@@ -26,10 +26,9 @@
 #ifndef COLORCOMBO_H_
 #define COLORCOMBO_H_
 
-#include "defines.h"
 #include <qcombobox.h>
 
-class QPROPERTYEDITOR_EXPORT ColorCombo : public QComboBox
+class ColorCombo : public QComboBox
 {
     Q_OBJECT
 public:
@@ -45,8 +44,6 @@ signals:
 
 private slots:
     void currentChanged(int index);    
-
-
 
 private:
     QColor    m_init;

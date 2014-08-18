@@ -12,7 +12,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
   
 include("../ItomBuildMacros.cmake")
-
+  
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
     
@@ -42,22 +42,24 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/param.h
     ${CMAKE_CURRENT_SOURCE_DIR}/color.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interval.h
 )
 
 set(itomCommon_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/retVal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/interval.cpp
 )
 
 if(MSVC)
-	list(APPEND itomCommon_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND itomCommon_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommon_SOURCES} ${itomCommon_HEADERS})

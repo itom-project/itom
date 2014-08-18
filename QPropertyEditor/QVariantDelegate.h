@@ -33,7 +33,7 @@ class QSignalMapper;
 /**
  * This class is used to create the editor widgets for datatypes encapsulated in QVariant variables
  */
-class QPROPERTYEDITOR_EXPORT QVariantDelegate : public QItemDelegate
+class QVariantDelegate : public QItemDelegate
 {
     Q_OBJECT
 
