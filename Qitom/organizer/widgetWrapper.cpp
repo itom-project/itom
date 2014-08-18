@@ -102,6 +102,9 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qListWidgetList;
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString)"), "void", 2001, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("addItems(QStringList)"), "void", 2002, ok );
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedRows()"), "QVector<int>", 2003, ok );
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedTexts()"), "QStringList", 2004, ok );
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
         methodHash["QListWidget"] = qListWidgetList;
 
         //QComboBox
@@ -269,6 +272,49 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 break;
             case 2002: //addItems
                 object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
+                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                return true;
+                break;
+            case 2003: //selectedRows
+                {
+                    QVector<int> _r;
+                    for (int i = 0; i < object2->count(); ++i)
+                    {
+                        if (object2->item(i)->isSelected())
+                        {
+                            _r.append(i);
+                        }
+                    }
+                    (*reinterpret_cast< QVector<int>*>(_a[0])) = _r;
+                }
+                return true;
+                break;
+            case 2004: //selectedTexts
+                {
+                    QStringList _r;
+                    QListWidgetItem *_item;
+                    for (int i = 0; i < object2->count(); ++i)
+                    {
+                        _item = object2->item(i);
+                        if (_item->isSelected())
+                        {
+                            _r.append(_item->text());
+                        }
+                    }
+                    (*reinterpret_cast< QStringList*>(_a[0])) = _r;
+                }
+                return true;
+                break;
+            case 2005: //selectRows
+                {
+                    const QVector<int> *vals = reinterpret_cast< const QVector<int>(*)>(_a[1]);
+                    QListWidgetItem *_item;
+                    for (int i = 0; i < object2->count(); ++i)
+                    {
+                        _item = object2->item(i);
+                        _item->setSelected(vals->contains(i));
+                    }
+                }
                 //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
                 return true;
                 break;

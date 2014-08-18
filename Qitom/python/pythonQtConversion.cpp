@@ -2397,6 +2397,26 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return DataObjectToPyObject(*(sharedPtr->data()));
         }
+        else if (strcmp(name, "QVector<int>") == 0)
+        {
+            QVector<int> *temp2 = (QVector<int>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, PyLong_FromLong(temp2->at(i)));
+            }
+            return temp;
+        }
+        else if (strcmp(name, "QVector<double>") == 0)
+        {
+            QVector<double> *temp2 = (QVector<double>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, PyLong_FromDouble(temp2->at(i)));
+            }
+            return temp;
+        }
     }
     else
     {

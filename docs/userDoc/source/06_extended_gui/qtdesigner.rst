@@ -425,6 +425,9 @@ QWidget                 void resize(int,int)
 QWidget                 void setGeometry(int,int,int,int)
 QListWidget             void addItem(QString)
 QListWidget             void addItems(QStringList)
+QListWidget             void selectedRows() returns a tuple of all selected row indices
+QListWidget             void selectedTexts() returns a tuple of all selected values (as strings)
+QListWidget             void selectRows(QVector<int>) select the rows with the given indices
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
 QTabWidget              int isTabEnabled(int)
