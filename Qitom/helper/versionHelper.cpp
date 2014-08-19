@@ -46,133 +46,11 @@
     #include "patchlevel.h"
 #endif
 
+#include <qsciglobal.h>
+
 #ifndef PCL_REVISION_VERSION
     #define PCL_REVISION_VERSION 0
 #endif
-
-//QList<QPair<QString, QString> > ito::retrieveITOMVERSIONMAP()
-//{
-//    QList<QPair<QString, QString> > newList;
-//    QPair<QString, QString> newPair;
-//
-//    char buf[7] = {0};
-//    _snprintf(buf, 7, "%i.%i.%i", ITOM_VERSION_MAJOR, ITOM_VERSION_MINOR, ITOM_VERSION_PATCH);
-//
-//    newPair.first = "itom_Version";
-//    newPair.second = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
-//    newList.append(newPair);
-//
-//    newPair.first = "itom_SysType";
-//    
-//#if (defined linux)
-//    newPair.second = "Q_OS_LINUX";
-//#elif (defined Q_OS_WIN32)
-//    #if (defined Q_OS_WIN64)
-//        newPair.second = "Windows 64-Bit";
-//    #else
-//        newPair.second = "Windows 32-Bit";
-//    #endif
-//    #if (defined _DEBUG) && (!defined linux)
-//        newPair.second.append(" DEBUG");
-//    #endif
-//#else
-//    newPair.second = "undefined system";
-//#endif
-//     
-//    newList.append(newPair);
-//
-//#ifdef USING_SVN
-//    newPair.first = "itom_SVNRevision";
-//    newPair.second = SVN_REVISION;
-//    newList.append(newPair);
-//
-//    newPair.first = "itom_SVNRevision_Date";
-//    newPair.second = SVN_REVISION_DATE;
-//    newList.append(newPair);
-//
-//    newPair.first = "ito_SVNRevision_URL";
-//    newPair.second = SVN_REPOSITORY_URL;
-//    newList.append(newPair);
-//
-//    newPair.first = "version_Warnings";
-//    QString warning("");
-//    bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
-//    if(!isClean)
-//    {
-//        warning.append(QObject::tr("Warning: The version contains locally changed code!\n"));
-//    }
-//    else
-//    {
-//        warning.append(QObject::tr("Build from a clean version.\n"));
-//    }
-//    newPair.second = warning;
-//    newList.append(newPair);
-//#elif (defined USING_GIT)
-//    newPair.first = "itom_GITHASH";
-//    newPair.second = GIT_HASHTAG;
-//    newList.append(newPair);
-//
-//    newPair.first = "itom_GIT_Date";
-//    newPair.second = GIT_REVISION_DATE;
-//    newList.append(newPair);
-//
-//    newPair.first = "ito_GIT_URL";
-//    newPair.second = GIT_REPOSITORY_URL;
-//    newList.append(newPair);
-//
-//    newPair.first = "version_Warnings";
-//    QString warning("");
-//    bool isClean = GIT_CLEAN_BUILD_FLAG > 0? false:true;
-//    if(!isClean)
-//    {
-//        warning.append(QObject::tr("Warning: The version contains locally changed and uncomitted code!\n"));
-//    }
-//    else
-//    {
-//        warning.append(QObject::tr("Build from a clean version.\n"));
-//    }
-//    newPair.second = warning;
-//    newList.append(newPair);
-//#else
-//    newPair.first = "version_Warnings";
-//    QString warning("");
-//    warning.append(QObject::tr("This version of itom not under version control (no GIT or SVN)!\n"));
-//    newPair.second = warning;
-//    newList.append(newPair);
-//#endif
-//    
-//    newPair.first = "openCV_Version";
-//    newPair.second = CV_VERSION;
-//    newList.append(newPair);
-//
-//#if ITOM_POINTCLOUDLIBRARY > 0
-//    _snprintf(buf, 7, "%i.%i.%i", PCL_MAJOR_VERSION, PCL_MINOR_VERSION, PCL_REVISION_VERSION);
-//    newPair.first = "PCL_Version";
-//    newPair.second = buf;
-//#else
-//    newPair.first = "PCL_Version";
-//    newPiar.second = "not compiled";
-//#endif
-//    newList.append(newPair);
-//    
-//    newPair.first = "QT_Version";
-//    newPair.second = QT_VERSION_STR;
-//    newList.append(newPair);
-//
-//    newPair.first = "QT_Your_Version";
-//    newPair.second = qVersion();
-//    newList.append(newPair);
-//
-//    newPair.first = "Py_Version";
-//    newPair.second = PY_VERSION;
-//    newList.append(newPair);
-//
-//    //newPair.first = "QwtPlot_Version";
-//    //newPair.second = QWT_VERSION_STR;
-//    //newList.append(newPair);
-//
-//    return newList;
-//}
 
 
 //! This function is called to get all version numbers that itom contains
@@ -277,6 +155,9 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //Python
     items["Py_Version"] = PY_VERSION;
+
+    //QScintilla
+    items["QScintilla_Version"] = QSCINTILLA_VERSION_STR;
 
     //newPair.first = "QwtPlot_Version";
     //newPair.second = QWT_VERSION_STR;
