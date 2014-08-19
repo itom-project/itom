@@ -1307,9 +1307,9 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
     {
         if (parsePyObject2StdString(key, keyString) >= 0)
         {
-            if (PyFloat_Check(value)||PyLong_Check(value))
+            if (PyFloat_Check(content)||PyLong_Check(content))
             {
-                self->dataObject->setTag(keyString, PyFloat_AsDouble(value));
+                self->dataObject->setTag(keyString, PyFloat_AsDouble(content));
             }
             else if (parsePyObject2StdString(content, contentString) >= 0)
             {
