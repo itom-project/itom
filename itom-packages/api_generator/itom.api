@@ -24,6 +24,7 @@ itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a butto
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom.
 itom.autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules
 itom.checkSignals
+itom.clc
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.compressData
 itom.dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name'
@@ -120,7 +121,7 @@ itom.getCurrentPath() -> returns absolute path of current working directory.
 itom.getDebugger() -> returns new reference to debugger instance
 itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units.
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
-itom.liveImage(cam, [className]) -> show a camera live image in a newly created figure
+itom.liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
 itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
 itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
@@ -128,7 +129,7 @@ itom.newScript() -> opens an empty, new script in the current script window.
 itom.npDataObject(??) [class]
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
-itom.plot(data, [className]) -> plots a dataObject in a newly created figure
+itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.drawAndPickElements
 itom.plotItem.pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this)

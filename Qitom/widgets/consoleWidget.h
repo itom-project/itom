@@ -79,6 +79,7 @@ public slots:
     void receiveStream(QString text, tMsgType msgType);
     void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
+    void clearCommandLine();
 
 signals:
     void wantToCopy();

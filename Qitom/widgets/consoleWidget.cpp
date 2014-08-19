@@ -759,6 +759,13 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::clearCommandLine()
+{
+    clear();
+    startLineBeginCmd = -1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::executeCmdQueue()
 {
     cmdQueueStruct value;
@@ -799,7 +806,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             //do nothing, emit end of command
             executeCmdQueue();
         }
-        else if (value.singleLine == "clc" || value.singleLine == "cls" || value.singleLine == "clear")
+        else if (value.singleLine == "clc" || value.singleLine == "clear")
         {
             clear();
             startLineBeginCmd = -1;

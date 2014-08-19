@@ -42,7 +42,7 @@ Debug-Tools
 Further commands
 ----------------
 .. automodule:: itom
-    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit
+    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, clc
       
 
 .. Defines

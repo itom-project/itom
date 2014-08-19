@@ -199,6 +199,18 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
+{
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    if (pyEngine)
+    {
+        emit pyEngine->clearCommandLine();
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject in a newly created figure \n\
 \n\
 Plot an existing dataObject in dockable, not blocking window. \n\
@@ -3591,6 +3603,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
     {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
     {"autoReloader", (PyCFunction)PythonItom::PyAutoReloader, METH_VARARGS | METH_KEYWORDS, autoReloader_doc},
+    {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, "clears the itom command line (if available)"},
     {NULL, NULL, 0, NULL}
 };
 

@@ -244,6 +244,11 @@ MainWindow::MainWindow() :
 
         connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
         connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
+
+        if (m_console)
+        {
+            connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
+        }
     }
     else
     {
@@ -1053,11 +1058,6 @@ void MainWindow::mnuAboutQitom()
 
     DialogAboutQItom *dlgAbout = new DialogAboutQItom(versionList);
     dlgAbout->exec();
-    if (dlgAbout->result() == QDialog::Accepted)
-    {
-
-    }
-
     DELETE_AND_SET_NULL(dlgAbout);
 }
 

@@ -272,6 +272,7 @@ signals:
     void pythonSetCursor(const Qt::CursorShape cursor);
     void pythonResetCursor();
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
+    void clearCommandLine();
 
 public slots:
     void pythonRunString(QString cmd);
