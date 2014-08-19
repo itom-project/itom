@@ -1725,7 +1725,7 @@ namespace dObjHelper
             
                 case ito::tFloat32:
                 {
-                    cvplaneIn = ((cv::Mat_<float64> *)(dObjIO->get_mdata())[0]);
+                    cvplaneIn = ((cv::Mat_<float32> *)(dObjIO->get_mdata())[0]);
                     cv::Mat planes[] = {cv::Mat_<ito::float32>(*cvplaneIn), cv::Mat::zeros(cvplaneIn->size(), CV_32F)};
 //                    cvplaneIn = NULL;
                     cvplaneIn = new cv::Mat;
