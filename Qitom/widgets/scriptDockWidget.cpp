@@ -85,6 +85,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab->setTabsClosable(true);
     m_tab->setMovable(true);
     m_tab->setTabPosition(QTabWidget::South);
+    m_tab->setContentsMargins(0,0,0,0);
 
     // Signalmapper for dynamic lastFile Menu
     m_lastFilesMapper = new QSignalMapper(this);
@@ -117,7 +118,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(mnuFindTextExpr()));
 
     m_pVBox = new QVBoxLayout();
-    m_pVBox->setContentsMargins(2,2,2,2);
+    m_pVBox->setContentsMargins(0,0,0,0);
     m_pVBox->addWidget(m_tab);
     m_pVBox->addWidget(m_pWidgetFindWord);
 
