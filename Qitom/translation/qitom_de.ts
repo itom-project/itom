@@ -1152,7 +1152,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+196"/>
+        <location filename="../helper/versionHelper.cpp" line="+74"/>
         <source>none</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1186,7 +1186,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+1923"/>
+        <location filename="../python/pythonItom.cpp" line="+1935"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1910,7 +1910,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source> s</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -2727,7 +2727,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+821"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+828"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -4038,7 +4038,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+45"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
@@ -4083,12 +4083,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-413"/>
+        <location line="-418"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+419"/>
+        <location line="+424"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4233,18 +4233,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="+809"/>
+        <location line="+804"/>
         <source>there is no python code associated with this action.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dieser Komponente wurde kein Python-Code hinterlegt.</translation>
     </message>
     <message>
         <location line="+64"/>
         <source>The UI designer (Qt designer) could not be started (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
         <location line="-1420"/>
-        <location line="+567"/>
+        <location line="+572"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -4296,7 +4296,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Warnung beim Anzeigen des Hilfeassistenten.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+29"/>
         <source>The help assistant could not be started.</source>
         <translation type="unfinished">Der Hilfeassistent konnte nicht gestartet werden.</translation>
     </message>
@@ -4553,7 +4553,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+267"/>
+        <location filename="../python/pythonEngine.cpp" line="+268"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>

@@ -973,7 +973,7 @@ void ScriptDockWidget::createActions()
 
     m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("quick search..."), this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
-    m_findTextExprAction->action()->setCheckable(true);
+//    m_findTextExprAction->action()->setCheckable(true);
 
     m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
@@ -1629,17 +1629,17 @@ void ScriptDockWidget::mnuScriptStepOut()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuFindTextExpr()
 {
-    if (!m_pWidgetFindWord->isVisible()) 
-    {
+//    if (!m_pWidgetFindWord->isVisible()) 
+//    {
         m_pWidgetFindWord->show();
         m_pWidgetFindWord->setCursorToTextField();
         m_findTextExprAction->action()->setChecked(true);
-    }
+/*    }
     else
     {
         m_pWidgetFindWord->hide();
         m_findTextExprAction->action()->setChecked(false);
-    }
+    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
