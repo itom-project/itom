@@ -2648,6 +2648,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
     double scalar = 0;
+    bool doneScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2699,6 +2700,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         }
         else
         {
+            doneScalar = true;
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
     }
@@ -2714,7 +2716,18 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     if (dobj1) dobj1->dataObject->unlock();
     if (dobj2) dobj2->dataObject->unlock();
 
-
+    if(doneScalar)
+    {
+        char buf[50] = {0};
+        _snprintf(buf, 50, "Added %g scalar to dataObject.", scalar);
+        if(retObj) retObj->dataObject->addToProtocol(buf);
+        
+    }
+    else
+    {
+        if(retObj) retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+    }
+    
     return (PyObject*)retObj;
 }
 
@@ -2724,6 +2737,7 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
     double scalar = 0;
+    bool doneScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2775,10 +2789,12 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else if (dobj1)
         {
+            doneScalar = true;
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
         else
         {
+            doneScalar = true;
             retObj->dataObject = new ito::DataObject((*(dobj2->dataObject)*(-1.0)) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
     }
@@ -2793,6 +2809,19 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     if (dobj1) dobj1->dataObject->unlock();
     if (dobj2) dobj2->dataObject->unlock();
+
+    if(doneScalar)
+    {
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Substracting %g scalar from dataObject or vice versa.", scalar);
+
+        if(retObj) retObj->dataObject->addToProtocol(buf);
+        
+    }
+    else
+    {
+        if(retObj) retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+    }
 
     return (PyObject*)retObj;
 }
@@ -2830,7 +2859,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
-
+        if(retObj) retObj->dataObject->addToProtocol("Multiplication of two dataObjects.");
         return (PyObject*)retObj;
     }
     else if (Py_TYPE(o1) == &PyDataObjectType)
@@ -2860,6 +2889,11 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+
+        if(retObj) retObj->dataObject->addToProtocol(buf);
 
         return (PyObject*)retObj;
     }
@@ -2891,6 +2925,11 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj2->dataObject->unlock();
 
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+
+        if(retObj) retObj->dataObject->addToProtocol(buf);
+
         return (PyObject*)retObj;
     }
     return NULL;
@@ -2913,7 +2952,19 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
     {
         double factor = PyFloat_AsDouble((PyObject*)o2);
         PyDataObject *dobj1 = (PyDataObject*)(o1);
+/*
+        if(!ito::dObjHelper::isNotZero(factor))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "division by zero not implemented.");
+            return NULL;        
+        }
 
+        if(!ito::dObjHelper::isFinite(factor))
+        {
+             PyErr_SetString(PyExc_RuntimeError, "division by a dataObject not implemented.");
+            return NULL;            
+        }
+*/
         if (PyErr_Occurred())
         {
             return NULL;
@@ -2936,6 +2987,12 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+
+        _snprintf(buf, 60, "Multiplied dataObject scalar with 1/%g.", factor);
+
+        if(retObj) retObj->dataObject->addToProtocol(buf);
 
         return (PyObject*)retObj;
     }
@@ -2996,6 +3053,8 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
 
+    if(retObj) retObj->dataObject->addToProtocol("Created by dataObject0 ** dataObject1");
+
     return (PyObject*)retObj;
 }
 
@@ -3026,6 +3085,8 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
     }
 
     dobj1->dataObject->unlock();
+
+    if(retObj) retObj->dataObject->addToProtocol("Created by scalar multiplication of dataObject with -1.0.");
 
     return (PyObject*)retObj;
 }
@@ -3063,6 +3124,8 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
 
     dobj1->dataObject->unlock();
 
+    if(retObj) retObj->dataObject->addToProtocol("Created python function positive.");
+
     return (PyObject*)retObj;
 }
 
@@ -3093,7 +3156,7 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
     }
 
     dobj1->dataObject->unlock();
-
+    retObj->dataObject->addToProtocol("Absolute values of calculated via abs(dataObject).");
     return (PyObject*)retObj;
 }
 
@@ -3140,7 +3203,11 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     }
 
     dobj1->dataObject->unlock();
+    
+    char buf[50] = {0};
+    _snprintf(buf, 50, "Left shift by %i on dataObject.", shift);
 
+    retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
 }
 
@@ -3184,6 +3251,11 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
 
+    char buf[50] = {0};
+
+    _snprintf(buf, 50, "Right shift by %i on dataObject.", shift);
+
+    retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
 }
 
@@ -3218,7 +3290,7 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
-
+    if(retObj) retObj->dataObject->addToProtocol("By elementwise AND comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
 
@@ -3253,7 +3325,7 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
-
+    if(retObj) retObj->dataObject->addToProtocol("By elementwise XOR comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
 
@@ -3288,7 +3360,7 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
-
+    if(retObj) retObj->dataObject->addToProtocol("By elementwise OR comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
 
@@ -3323,6 +3395,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
+        dobj1->dataObject->addToProtocol("Inplace addition of two dataObjects");
     }
     else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
@@ -3342,6 +3415,12 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Inplace scalar addition of %g.", val);
+
+        dobj1->dataObject->addToProtocol(buf);
+        
     }
     else
     {
@@ -3384,6 +3463,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
+        dobj1->dataObject->addToProtocol("Inplace substraction of two dataObjects.");
     }
     else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
@@ -3403,6 +3483,11 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Inplace scalar substraction of %g.", val);
+
+        dobj1->dataObject->addToProtocol(buf);
     }
     else
     {
@@ -3450,6 +3535,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
         dobj2->dataObject->unlock();
+        dobj1->dataObject->addToProtocol("Inplace multiplication of two dataObjects");
     }
     else
     {
@@ -3473,6 +3559,11 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Inplace scalar multiplication of %g.", factor);
+
+        dobj1->dataObject->addToProtocol(buf);
     }
 
     Py_INCREF(o1);
@@ -3497,6 +3588,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
     if (Py_TYPE(o2) == &PyDataObjectType)
     {
         PyErr_SetString(PyExc_RuntimeError, "division by another dataObject is not implemented.");
+        //dobj1->dataObject->addToProtocol("Inplace division of two dataObjects");
         return NULL;
     }
     else
@@ -3521,6 +3613,11 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         }
 
         dobj1->dataObject->unlock();
+
+        char buf[60] = {0};
+        _snprintf(buf, 60, "Inplace scalar devision of %g.", factor);
+
+        dobj1->dataObject->addToProtocol(buf);
     }
 
     Py_INCREF(o1);
@@ -3566,6 +3663,12 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
     *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
 
+    char buf[60] = {0};
+
+    _snprintf(buf, 60, "Inplace left shift by %i.", shift);
+
+    dobj1->dataObject->addToProtocol(buf);
+
     return (PyObject*)o1;
 }
 
@@ -3592,6 +3695,11 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
     dobj1->dataObject->lockWrite();
     *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
+
+    char buf[60] = {0};
+    _snprintf(buf, 60, "Inplace right shift by %i.", shift);
+
+    dobj1->dataObject->addToProtocol(buf);
 
     return (PyObject*)o1;
 }
@@ -3625,6 +3733,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
 
+    dobj1->dataObject->addToProtocol("Inplace elementwise AND comparison with second dataObject.");
+
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -3657,7 +3767,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
-
+    dobj1->dataObject->addToProtocol("Inplace elementwise XOR comparison with second dataObject.");
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -3690,7 +3800,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     dobj2->dataObject->unlock();
-
+    dobj1->dataObject->addToProtocol("Inplace elementwise OR comparison with second dataObject.");
     Py_INCREF(o1);
     return (PyObject*)o1;
 }
@@ -3890,6 +4000,8 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
         return NULL;
     }
     
+    self->dataObject->addToProtocol("Run inplace adjugate function on this dataObject.");
+
     Py_RETURN_NONE;
 }
 
@@ -3942,6 +4054,8 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
 
     self->dataObject->unlock();
 
+    if(retObj) retObj->dataObject->addToProtocol("Created by calculation of adjugate value from a dataObject.");
+
     return (PyObject*)retObj;
 }
 
@@ -3984,6 +4098,8 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     }
 
     self->dataObject->unlock();
+
+    if(retObj) retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
     return (PyObject*)retObj;
 
@@ -4051,6 +4167,8 @@ PyObject* PythonDataObject::PyDataObject_makeContinuous(PyDataObject *self)
     }
 
     self->dataObject->unlock();
+
+    if(retObj) retObj->dataObject->addToProtocol("Made dataObject continuous.");
 
     return (PyObject*)retObj;
 }
@@ -4163,6 +4281,14 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
 
     self->dataObject->unlock();
 
+    if (regionOnly)
+    {
+        if(retObj) retObj->dataObject->addToProtocol("Copied region of dataObject to new object.");
+    }
+    else
+    {
+        if(retObj) retObj->dataObject->addToProtocol("Copied dataObject to new object.");
+    }
     return (PyObject*)retObj;
 
 }
@@ -4212,6 +4338,8 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     self->dataObject->unlock();
     obj2->dataObject->unlock();
 
+    if(retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
+
     return (PyObject*)retObj;
 }
 
@@ -4259,6 +4387,8 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 
     self->dataObject->unlock();
     obj2->dataObject->unlock();
+
+    if(retObj) retObj->dataObject->addToProtocol("Created by elementwise division of two dataObjects.");
 
     return (PyObject*)retObj;
 }
@@ -4338,6 +4468,13 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
+
+    char buf[100] = {0};
+
+    _snprintf(buf, 100, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
+
+
+    if(retObj) retObj->dataObject->addToProtocol(buf);
 
     return (PyObject*)retObj;
 }
@@ -4422,6 +4559,12 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
+
+    char buf[200] = {0};
+
+    _snprintf(buf, 200, "Normalized from dataObject of type %s to type %s between %g and %g.", typeNumberToName(self->dataObject->getType()), type, dmin , dmax);
+
+    if(retObj) retObj->dataObject->addToProtocol(buf);
 
     return (PyObject*)retObj;
 }
@@ -4619,6 +4762,8 @@ PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
+
+    if(retObj) retObj->dataObject->addToProtocol("Squeezed dataObject.");
 
     return (PyObject*)retObj;
 }
@@ -6127,6 +6272,180 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
+\n\
+This method calculates the abs value of each element in source and writes the result to the output object.\
+In case of floating point or real object, the type of the output will not change. For complex values\
+the type is changes to the corresponding floating type value.\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type may be changed.");
+PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    ito::DataObject *d = self->dataObject;
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    d->lockRead();
+
+    try
+    {
+        retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        d->unlock();
+        return NULL;
+    }
+
+    d->unlock();
+    retObj->dataObject->addToProtocol("Absolute values of calculated via abs().");
+    return (PyObject*)retObj;
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectArg_doc, "arg() -> return a new data object with the argument values of the source\n\
+\n\
+This method calculates the argument value of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type is changed.");
+PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    ito::DataObject *d = self->dataObject;
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    d->lockRead();
+
+    try
+    {
+        retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        d->unlock();
+        return NULL;
+    }
+
+    d->unlock();
+    retObj->dataObject->addToProtocol("Extracted phase/argument of a complex dataObject via arg().");
+    return (PyObject*)retObj;
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectReal_doc, "real() -> return a new data object with the real part of the source\n\
+\n\
+This method extracts the real part of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type is changed.");
+PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    ito::DataObject *d = self->dataObject;
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    d->lockRead();
+
+    try
+    {
+        retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        d->unlock();
+        return NULL;
+    }
+
+    d->unlock();
+
+    retObj->dataObject->addToProtocol("Extracted real part of a complex dataObject via real().");
+
+    return (PyObject*)retObj;
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectImag_doc, "imag() -> return a new data object with the imaginary part of the source\n\
+\n\
+This method extracts the imaginary part of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type is changed.");
+PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    ito::DataObject *d = self->dataObject;
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    d->lockRead();
+
+    try
+    {
+        retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+    }
+    catch(cv::Exception exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        d->unlock();
+        return NULL;
+    }
+
+    d->unlock();
+
+    retObj->dataObject->addToProtocol("Extracted imaginary part of a complex dataObject via imag().");
+
+    return (PyObject*)retObj;
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray([destinationType='uint8']) -> returns the rgba32 color data object as a gray-scale object\n\
 \n\
 The destination data object has the same size than this data object and the real type given by destinationType. The pixel-wise \
@@ -6177,6 +6496,8 @@ dataObj : {dataObject} \n\
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
+
+    if(retObj) retObj->dataObject->addToProtocol("Extracted gray-Value from RGBA32-type dataObject.");
 
     return (PyObject*)retObj;
 }
@@ -6769,6 +7090,11 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
+
+        {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
+        {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
+        {"real", (PyCFunction)PythonDataObject::PyDataObject_real, METH_NOARGS, pyDataObjectReal_doc},
+        {"imag", (PyCFunction)PythonDataObject::PyDataObject_imag, METH_NOARGS, pyDataObjectImag_doc},
 
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},

@@ -183,6 +183,11 @@ class PythonDataObject
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
         static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
 
+        static PyObject* PyDataObject_abs(PyDataObject *self);
+        static PyObject* PyDataObject_arg(PyDataObject *self);
+        static PyObject* PyDataObject_real(PyDataObject *self);
+        static PyObject* PyDataObject_imag(PyDataObject *self);
+
         static PyObject* PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
