@@ -747,7 +747,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_toGray_Test)
     mat1_2d.copyTagMapTo(dTempTest1);
     mat1_2d.copyAxisTagsTo(dTempTest1);
 
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128 || mat1_2d.getType() == ito::tRGBA32)
     {
         EXPECT_ANY_THROW(dTempTest1.toGray(mat1_2d.getType()););
     }
