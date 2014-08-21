@@ -699,6 +699,7 @@ DObjIterator DObjIterator::operator ++(int)
 };
 
 #define TYPE_OFFSET_COMPLEX  8
+#define TYPE_OFFSET_RGBA  10
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns pointer to vector of cv::_Mat-matrices
@@ -5699,7 +5700,7 @@ DataObject abs(const DataObject &dObj)
 {
     //resObj must be allocated with pysical data size of dObj since iterators in AbsFunc doesn't know anything about transpose-flag.
     //afterwards the transpose flag of resObj is set to this of dObj.
-    if(dObj.getType() >= TYPE_OFFSET_COMPLEX)
+    if(dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
     {
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
         fListAbsFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
@@ -5791,7 +5792,7 @@ MAKEFUNCLIST_CMPLX_TO_REAL(ArgFunc)
 */
 DataObject arg(const DataObject &dObj)
 {
-    if(dObj.getType() >= TYPE_OFFSET_COMPLEX)
+    if(dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
     {
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
@@ -5863,7 +5864,7 @@ MAKEFUNCLIST_CMPLX_TO_REAL(RealFunc)
 */
 DataObject real(const DataObject &dObj)
 {
-    if(dObj.getType() >= TYPE_OFFSET_COMPLEX)
+    if(dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
     {
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
@@ -5935,7 +5936,7 @@ MAKEFUNCLIST_CMPLX_TO_REAL(ImagFunc)
 */
 DataObject imag(const DataObject &dObj)
 {
-    if(dObj.getType() >= TYPE_OFFSET_COMPLEX)
+    if(dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
     {
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
