@@ -5283,6 +5283,8 @@ DataObject DataObject::squeeze() const
 
     if(!copyTagMapTo(resObj).containsError())   // Now deal with the tagspace
     {
+        resObj.setXYRotationalMatrix(m_pDataObjectTags->m_rotMatrix[0], m_pDataObjectTags->m_rotMatrix[1], m_pDataObjectTags->m_rotMatrix[2], m_pDataObjectTags->m_rotMatrix[3], m_pDataObjectTags->m_rotMatrix[4], m_pDataObjectTags->m_rotMatrix[5], m_pDataObjectTags->m_rotMatrix[6], m_pDataObjectTags->m_rotMatrix[7], m_pDataObjectTags->m_rotMatrix[8]);
+
         unsigned int counter = 0;
         for(int i = 0; i < m_dims - 2 ; i++)
         {
