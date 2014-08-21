@@ -672,7 +672,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_conj_Test)
     {
         dTempTest1.conj();
         validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1, true);
+        validAxisTags(mat1_2d, dTempTest1);
 
     }
     else
@@ -859,7 +859,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_abs_Test)
     ito::DataObject dTempTest1;
 
     mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tRGBA32 )
+    if(mat1_2d.getType() == ito::tRGBA32 || mat1_2d.getType() == ito::tUInt8 || mat1_2d.getType() == ito::tUInt16)
     {
         EXPECT_ANY_THROW(ito::abs(dTempTest1););
     }
