@@ -471,3 +471,4 @@ TYPED_TEST(dataObjectTag_Test,delete_existTag_Test)
 	Delete1 = mat1_1d.deleteTag("creator1");
 	EXPECT_FALSE(Delete1);					//because there was no tag created for empty matrix, value of Delete1 is False as expected.
 };
+
