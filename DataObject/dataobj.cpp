@@ -5605,6 +5605,9 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/)
 */
 template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj, DataObject *resObj)
 {
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
     int numMats = dObj->calcNumMats();
     int srcMatNum = 0;
     int dstMatNum = 0;
@@ -5648,6 +5651,9 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
 */
 template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *resObj)
 {
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
     int numMats = dObj->calcNumMats();
     int srcMatNum = 0;
     int dstMatNum = 0;
@@ -5738,6 +5744,10 @@ DataObject abs(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj, DataObject *resObj)
 {
+
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
     int numMats = dObj->calcNumMats();
     int srcMatNum = 0;
     int dstMatNum = 0;
@@ -5806,6 +5816,10 @@ DataObject arg(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj, DataObject *resObj)
 {
+
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
     int numMats = dObj->calcNumMats();
     int srcMatNum = 0;
     int dstMatNum = 0;
@@ -5852,6 +5866,7 @@ DataObject real(const DataObject &dObj)
         DataObject resObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
         fListRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
+
         return resObj;
     }
     else
@@ -5873,6 +5888,10 @@ DataObject real(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj, DataObject *resObj)
 {
+
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
     int numMats = dObj->calcNumMats();
     int srcMatNum = 0;
     int dstMatNum = 0;
