@@ -4804,7 +4804,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+274"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+275"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
