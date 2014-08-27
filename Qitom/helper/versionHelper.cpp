@@ -46,7 +46,7 @@
     #include "patchlevel.h"
 #endif
 
-#include <qsciglobal.h>
+#include <Qsci/qsciglobal.h>
 
 #ifndef PCL_REVISION_VERSION
     #define PCL_REVISION_VERSION 0
