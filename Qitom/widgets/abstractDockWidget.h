@@ -177,19 +177,24 @@ namespace ito
                 ShortcutAction(const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     m_action = new QAction(text, parent);
-                    m_action->setToolTip(text);
+                    QString toolTipText = text;
+                    toolTipText.replace("&", "");
+                    m_action->setToolTip(toolTipText);
                 }
 
                 ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     m_action = new QAction(icon, text, parent);
-                    m_action->setToolTip(text);
+                    QString toolTipText = text;
+                    toolTipText.replace("&", "");
+                    m_action->setToolTip(toolTipText);
                 }
 
                 ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent, const QKeySequence &key, Qt::ShortcutContext context = Qt::WindowShortcut) : QObject(parent), m_action(NULL), m_shortcut(NULL)
                 {
                     QString text2 = text;
                     QString text3 = text;
+                    text3.replace("&", "");
 
                     //some key sequences do not exist as default on all operating systems
                     if (key.isEmpty() == false)
