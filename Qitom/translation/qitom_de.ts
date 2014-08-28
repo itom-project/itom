@@ -3905,7 +3905,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::LastCommandDockWidget</name>
     <message>
-        <location filename="../widgets/lastCommandDockWidget.cpp" line="+189"/>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+190"/>
         <source>clear list</source>
         <translation>Liste löschen</translation>
     </message>
