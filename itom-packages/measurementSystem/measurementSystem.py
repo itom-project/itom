@@ -3,7 +3,7 @@
 This file contains a template class for measurement systems used under itom. 
 By using this template further packages, e.g. unified stitching shall be implemented.
 
-This system has been developped by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
+This system has been developed by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
 '''
 
 from itomEnum import ItomEnum
