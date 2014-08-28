@@ -239,6 +239,12 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
                 m_lastTreeWidgetParent = parentItem;
             }
 
+            int m_lastTreeWidgetChildIndex = m_lastTreeWidgetParent->childCount();
+            if (m_lastTreeWidgetChildIndex > 0)
+            {
+                m_lastTreeWidgetChildIndex--;
+            }
+
             QTreeWidgetItem *childItem = new QTreeWidgetItem(m_lastTreeWidgetParent);
             QString addCmd;
             addCmd = cmd;
@@ -246,6 +252,20 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
             m_lastTreeWidgetParent->addChild(childItem);
             m_lastTreeWidgetParent->setExpanded(true);
 
+//            QModelIndex index = m_lastCommandTreeWidget->indexFromItem(m_lastTreeWidgetParent->child(m_lastTreeWidgetChildIndex));
+            QRect rect = m_lastCommandTreeWidget->visualItemRect(childItem);
+//            int y = m_lastCommandTreeWidget->viewport()->pos().x();
+            int vpHeight = m_lastCommandTreeWidget->maximumViewportSize().height();
+            QRect pp0 = m_lastCommandTreeWidget->viewport()->rect();
+            QPoint pp1 = m_lastCommandTreeWidget->viewport()->pos();
+            QRect pp2 = m_lastCommandTreeWidget->contentsRect();
+            QRect pp3 = m_lastCommandTreeWidget->viewport()->contentsRect();
+            QScrollBar *psb = m_lastCommandTreeWidget->verticalScrollBar();
+//            QScrollBar sb = (QScrollBar)(psb);
+            if (vpHeight == 1)
+            {
+                bool scroll = false;
+            }
 //            int barPos = m_lastCommandTreeWidget->verticalScrollBar().value();
             bool scroll = true;
             if (scroll)
