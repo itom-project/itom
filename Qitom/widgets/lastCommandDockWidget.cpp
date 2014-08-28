@@ -247,8 +247,7 @@ void LastCommandDockWidget::addLastCommand(const QString cmd)
             m_lastTreeWidgetParent->addChild(childItem);
             m_lastTreeWidgetParent->setExpanded(true);
 
-            bool scroll = m_lastCommandTreeWidget->verticalScrollBar()->value() == m_lastCommandTreeWidget->verticalScrollBar()->maximum();
-            if (scroll)
+            if (m_lastCommandTreeWidget->verticalScrollBar()->value() == m_lastCommandTreeWidget->verticalScrollBar()->maximum())
             {
                 m_lastCommandTreeWidget->scrollToItem(childItem);
             }
