@@ -4,6 +4,7 @@ project(${target_name})
 cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -123,7 +124,15 @@ if(MSVC)
 	list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC})
+#handle translations BEGIN STEP 1
+set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
+set (TRANSLATION_OUTPUT_FILES)
+set (TRANSLATIONS_FILES)
+
+file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+#handle translations END STEP 1
+
+add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
 
@@ -131,8 +140,33 @@ IF (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
+#handle translations BEGIN STEP 2
+if (UPDATE_TRANSLATIONS)
+    if (QT5_FOUND)
+        QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    else (QT5_FOUND)
+        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    endif (QT5_FOUND)
+    
+    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    add_dependencies(${target_name} _${target_name}_translation)
+    
+    if (QT5_FOUND)
+        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    else (QT5_FOUND)
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    endif (QT5_FOUND)
+else (UPDATE_TRANSLATIONS)
+    if (QT5_FOUND)
+        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    else (QT5_FOUND)
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    endif (QT5_FOUND)
+endif (UPDATE_TRANSLATIONS)
+#handle translations END STEP 2
+
 # COPY SECTION
-set(COPY_SOURCES "")
-set(COPY_DESTINATIONS "")
+set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomCommonQtLib_de.qm")
+set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

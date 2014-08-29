@@ -82,6 +82,7 @@ class MainApplication : public QObject
 
         QTranslator m_Translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;
+        QTranslator m_commonQtTranslator;
 
         QSplashScreen *m_splashScreen;
 

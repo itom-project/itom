@@ -3935,7 +3935,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>load style...</source>
         <translation type="unfinished">Style wird geladen...</translation>
     </message>

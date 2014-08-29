@@ -260,6 +260,9 @@ void MainApplication::setupApplication()
     m_Translator.load("qitom_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_Translator);
 
+    m_commonQtTranslator.load("itomCommonQtLib_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_commonQtTranslator);
+
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
     if (textCodec == NULL)
@@ -272,8 +275,6 @@ void MainApplication::setupApplication()
     // we need to find another solution here
 //    QTextCodec::setCodecForCStrings(textCodec);
 //    QTextCodec::setCodecForLocale(textCodec);
-
-    
 
     if (m_guiType == standard || m_guiType == console)
     {
