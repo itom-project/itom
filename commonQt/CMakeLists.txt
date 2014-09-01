@@ -36,7 +36,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
     
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core Xml PrintSupport Svg Designer)
+FIND_PACKAGE_QT(ON Core Xml PrintSupport Svg Designer LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
