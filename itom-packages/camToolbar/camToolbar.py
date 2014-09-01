@@ -389,6 +389,6 @@ class camToolbar(abstractObjInteractionToolBar):
     
 
 if(__name__ == '__main__'):
-    toolBarCam = camToolbar("Camera Access")
+    toolBarCam = camToolbar("Camera Access", not(userIsUser()))
 
 # Tobias Boettcher, ITO, & Wolfram Lyda, twip optical solutions 

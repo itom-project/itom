@@ -444,4 +444,4 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         return check
     
 if(__name__ == '__main__'):
-    toolsSurfaceAnalysis = surfaceAnalysisTools("Surface analysis")
+    toolsSurfaceAnalysis = surfaceAnalysisTools("Surface analysis", not(userIsUser()))

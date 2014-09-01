@@ -406,7 +406,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         return [check, result]
 
 if(__name__ == '__main__'):
-    toolBarQuickPlot = quickPlotToolBar('Plotting Tools', hasMatPlotLib or True, hasMCPPFILTERS)
+    toolBarQuickPlot = quickPlotToolBar('Plotting Tools', hasMatPlotLib or True, hasMCPPFILTERS, not(userIsUser()))
     
 del hasMatPlotLib
 del hasMCPPFILTERS
