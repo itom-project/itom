@@ -3124,7 +3124,7 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
 
     dobj1->dataObject->unlock();
 
-    if(retObj) retObj->dataObject->addToProtocol("Created python function positive.");
+    if(retObj) retObj->dataObject->addToProtocol("Created by python function positive.");
 
     return (PyObject*)retObj;
 }

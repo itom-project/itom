@@ -12,9 +12,9 @@ from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
 reloadModules = 1
 
-if not (pluginLoaded("M++Filter")):
+if not (itom.pluginLoaded("M++Filter")):
     raise RuntimeError("M++Filter-plugin not available. Loading roughness toolbar canceld")
-if not (pluginLoaded("FittingFilters")):
+if not (itom.pluginLoaded("FittingFilters")):
     raise RuntimeError("FittingFilters-plugin not available. Loading roughness toolbar canceld")
 
 class surfaceAnalysisTools(abstractObjInteractionToolBar):
@@ -23,19 +23,20 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
     It wrapps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
     '''
     
-    def __init__(self, myName, appendMenu = True, defPrecision = 3, defaultVar = 'dObj'):
+    def __init__(self, myName, appendButtons = True, appendMenu = True, defPrecision = 3, defaultVar = 'dObj'):
         
         #self.defaultVarName = defaultVar
         self.defaultPrecision = defPrecision
         self.defXGradPoly = 3
         self.defYGradPoly = 3
         #self.myNameDelete = myName
-        
+        self.myNameDelete = myName
         abstractObjInteractionToolBar.__init__(self, myName, defaultVar)
         
         hashName = str(hash(self.myNameDelete))
         
         self.hasMenu = appendMenu
+        self.hasButtons = appendButtons
         
         if appendMenu == True:
             addMenu(MENU, hashName, self.myNameDelete)
@@ -52,13 +53,15 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         #addButton("toolBarRoughnesStatistics","Rz/Sz","surfaceAnalysisTools.calcRzSz()", "")
         #addButton("toolBarRoughnesStatistics","Ra/Sa","surfaceAnalysisTools.calcRaSa()", "")
         #addButton("toolBarRoughnesStatistics","Rq/Sq","surfaceAnalysisTools.calcRqSq()", "")
-        addButton(self.myNameDelete,"Substract Plane","toolsSurfaceAnalysis.planefit()", ":/misc/icons/itom_icons/linelev.png")
-        addButton(self.myNameDelete,"Substract Polynome","toolsSurfaceAnalysis.polyfit()", ":/misc/icons/itom_icons/polylev.png")
+        if self.hasButtons == True:
+            addButton(self.myNameDelete,"Substract Plane", self.planefit, ":/misc/icons/itom_icons/linelev.png")
+            addButton(self.myNameDelete,"Substract Polynome", self.polyfit, ":/misc/icons/itom_icons/polylev.png")
         
     def __del__(self):
         #removeButton("roughness","Rz/Sz")
         #removeButton("roughness","Ra/Sa")
         #removeButton("roughness","Rq/Sq")
+        
         #removeButton("roughness","Substract Plane")
         #removeButton("roughness","Substract Polynome")
         
@@ -68,6 +71,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         if self.hasMenu == True:
             hashName = str(hash(self.myNameDelete))
             removeMenu(hashName)
+        
+        if self.hasButtons == True:
             removeButton(self.myNameDelete,"Substract Plane")
             removeButton(self.myNameDelete,"Substract Polynome")
     

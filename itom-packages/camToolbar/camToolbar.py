@@ -3,17 +3,42 @@
 This file contains a toolbar with basic live image and snap shot interactions
 '''
 
-class camToolbar():
+from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
+import itom
+reloadModules = 1
+
+class camToolbar(abstractObjInteractionToolBar):
     '''
     This is the basic camera toolbar.
     '''
-    def __init__(self, myName, defaultCam = "cam", defaultVar = "dObj"):
+    def __init__(self, myName, appendButtons = True, appendMenu = True, defaultCam = "cam", defaultVar = "dObj"):
         '''
         Initialisation of camera toolbar
         '''
+        
+        abstractObjInteractionToolBar.__init__(self, myName, defaultVar)
         self.defaultCamName = defaultCam
         self.defaultVarName = defaultVar
         self.myNameDelete = myName
+        hashName = str(hash(self.myNameDelete))
+        
+        self.hasMenu = appendMenu
+        self.hasButtons = appendButtons
+        
+        if appendMenu == True:
+            addMenu(MENU, hashName, self.myNameDelete)
+            addMenu(BUTTON, hashName + "/LiveImage", "Open live image", self.live)
+            addMenu(BUTTON, hashName + "/TakeImage", "Take image(s)", self.takeSnapshot)
+            addMenu(BUTTON, hashName + "/Quikesnap", "Take a snap shot", self.takeSpeedShot)
+        
+        #addButton("toolBarRoughnesStatistics","Rz/Sz","surfaceAnalysisTools.calcRzSz()", "")
+        #addButton("toolBarRoughnesStatistics","Ra/Sa","surfaceAnalysisTools.calcRaSa()", "")
+        #addButton("toolBarRoughnesStatistics","Rq/Sq","surfaceAnalysisTools.calcRqSq()", "")
+        if self.hasButtons == True:
+            addButton(self.myNameDelete,"Live Image", self.live, ":/plots/icons/itom_icons/monitor.png")
+            addButton(self.myNameDelete,"Snapshot", self.takeSnapshot, ":/measurement/icons/itom_icons/snap.png")
+            addButton(self.myNameDelete,"Speed Shot",self.takeSpeedShot, ":/measurement/icons/itom_icons/snapQuick.png")
+        
         
     def __del__(self):
         '''
@@ -22,10 +47,17 @@ class camToolbar():
         #removeButton("toolBarCam","Live Image")
         #removeButton("toolBarCam","Snapshot")
         #removeButton("toolBarCam","Speed Shot")
-        removeButton(self.myNameDelete,"Live Image")
-        removeButton(self.myNameDelete,"Snapshot")
-        removeButton(self.myNameDelete,"Speed Shot")        
+        if self.hasMenu == True:
+            hashName = str(hash(self.myNameDelete))
+            removeMenu(hashName)
         
+        try:
+            if self.hasButtons == True:
+                removeButton(self.myNameDelete,"Live Image")
+                removeButton(self.myNameDelete,"Snapshot")
+                removeButton(self.myNameDelete,"Speed Shot")
+        except:
+            pass
         
     def getCamName(self, defaultCamName, valuename, textstring = "{} for Camera:"):
         '''
@@ -357,10 +389,6 @@ class camToolbar():
     
 
 if(__name__ == '__main__'):
-    toolBarCam = camToolbar("toolBarCam")
-    addButton("toolBarCam","Live Image","toolBarCam.live()", ":/plots/icons/itom_icons/monitor.png")
-    addButton("toolBarCam","Snapshot","toolBarCam.takeSnapshot()", ":/measurement/icons/itom_icons/snap.png")
-    addButton("toolBarCam","Speed Shot","toolBarCam.takeSpeedShot()", ":/measurement/icons/itom_icons/snapQuick.png")
+    toolBarCam = camToolbar("Camera Access")
 
-
-# Tobias Boettcher, ITO, 2012 
+# Tobias Boettcher, ITO, & Wolfram Lyda, twip optical solutions 
