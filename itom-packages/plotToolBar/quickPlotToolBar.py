@@ -15,11 +15,11 @@ reloadModules = 1
 hasMatPlotLib = False
 hasMCPPFILTERS = True
 
-if not (pluginLoaded("M++Filter")):
-    print('Not fully compatible. M++Filter-DLL not present')
+if not (itom.pluginLoaded("BasicFilters")):
+    print('Not fully compatible. BasicFilter-DLL not present')
     hasMCPPFILTERS = False
 
-#if not (pluginLoaded("M++Filter")):
+#if not (itom.pluginLoaded("M++Filter")):
     #print('Not fully compatible. M++Filter-DLL not present')
     #hasMCPPFILTERS = False
 
@@ -42,7 +42,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
     This is toolbar for plotting dataObjects.
     '''
     
-    def __init__(self, myName, hasISO, hasMCPP, defaultVar = "dObj"):
+    def __init__(self, myName, hasISO, hasMCPP, appendButtons = True, appendMenu = True, defaultVar = "dObj"):
         '''
         set up the basic variable, this means the default dObj
         '''
@@ -50,21 +50,46 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         self.hasISO = hasISO
         self.hasMCPP = hasMCPP
         
+        self.myNameDelete = myName
+        hashName = str(hash(self.myNameDelete))
+        
+        self.hasMenu = appendMenu
+        self.hasButtons = appendButtons
+        
+        if appendMenu == True:
+            addMenu(MENU, hashName, self.myNameDelete)
+            addMenu(BUTTON, hashName + "/ShowImage", "2D-Plot", self.show2D)
+            addMenu(BUTTON, hashName + "/ShowLine", "Line-Plot", self.show1D)
+            addMenu(BUTTON, hashName + "/ShowISO", "Iso-Plot", self.show25D)
+            if hasMCPPFILTERS == True:
+                addMenu(BUTTON, hashName + "/ShowHistogramm", "Histogramm", self.showHist)
+        if self.hasButtons == True:
+            addButton(self.myNameDelete,"Show Image", self.show2D, ":/plots/icons/itom_icons/2d.png")
+            addButton(self.myNameDelete,"Show Line", self.show1D, ":/plots/icons/itom_icons/1d.png")
+            addButton(self.myNameDelete,"Show ISO", self.show25D, ":/plots/icons/itom_icons/3d.png")
+            if hasMCPPFILTERS == True:
+                addButton(self.myNameDelete,"Show Histogramm", self.showHist, ":/plots/icons/itom_icons/histogra.png")
+            
+        
+        
     def __del__(self):
         '''
         Delete the toolBar content before getting killed
         '''
-        #removeButton("camTools","Show Image")
-        removeButton(self.myNameDelete,"Show Image")
-        removeButton(self.myNameDelete,"Show Line")
-        
-        if self.hasISO == True:
-            removeButton(self.myNameDelete,"Show ISO")
             
-        if self.hasMCPP == True:
-            removeButton(self.myNameDelete,"Show Histogramm")
-            
+        if self.hasMenu == True:
+            hashName = str(hash(self.myNameDelete))
+            removeMenu(hashName)
         
+        try:
+            if self.hasButtons == True:
+                removeButton(self.myNameDelete,"Show Image")
+                removeButton(self.myNameDelete,"Show Line")
+                removeButton(self.myNameDelete,"Show ISO")
+                if self.hasMCPP == True:
+                    removeButton(self.myNameDelete,"Show Histogramm")
+        except:
+            pass
     
     def __getVarNameOld(self, title, VarName, objType = '2D'):
         '''
@@ -381,18 +406,8 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         return [check, result]
 
 if(__name__ == '__main__'):
-    toolBarQuickPlot = quickPlotToolBar('toolBarQuickPlot', hasMatPlotLib or True, hasMCPPFILTERS)
-    addButton("toolBarQuickPlot","Show Image","toolBarQuickPlot.show2D()", ":/plots/icons/itom_icons/2d.png")
-    addButton("toolBarQuickPlot","Show Line","toolBarQuickPlot.show1D()", ":/plots/icons/itom_icons/1d.png")
+    toolBarQuickPlot = quickPlotToolBar('Plotting Tools', hasMatPlotLib or True, hasMCPPFILTERS)
     
-    if hasMatPlotLib == True:
-        addButton("toolBarQuickPlot","Show ISO","toolBarQuickPlot.show25D()", ":/plots/icons/itom_icons/3d.png")
-    else:
-        addButton("toolBarQuickPlot","Show ISO","toolBarQuickPlot.show25D()", ":/plots/icons/itom_icons/3d.png")
-    
-    if hasMCPPFILTERS == True:
-        addButton("toolBarQuickPlot","Show Histogramm","toolBarQuickPlot.showHist()", ":/plots/icons/itom_icons/histogra.png")
-        
 del hasMatPlotLib
 del hasMCPPFILTERS
 # Wolfram Lyda, ITO, 2012 
