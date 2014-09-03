@@ -596,42 +596,89 @@ template<typename _TpM> ito::RetVal fromDataObj(const cv::Mat *mapDisp, const it
     {
         case ito::tUInt8:
         {
-            fromDataObj<_TpM, ito::uint8>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            // 8 bit intensity we always scale between 0 - 255
+            fromDataObj<_TpM, ito::uint8>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / 255.0, deleteNaN, out, isDense);
         }
         break;
         case ito::tInt8:
         {
-            fromDataObj<_TpM, ito::int8>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            fromDataObj<_TpM, ito::int8>(mapDisp, intensity, firstX, stepX, firstY, stepY, -128.0, 1.0 / 255.0, deleteNaN, out, isDense);
         }
         break;
         case ito::tUInt16:
         {
-            fromDataObj<_TpM, ito::uint16>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
+            if (maxVal <= 1024.0)       //guess 10 bit image
+                maxVal = 1024.0;
+            else if (maxVal <= 4096.0)  //guess 12 bit image
+                maxVal = 4096.0;
+            else if (maxVal <= 16384.0) //guess 14 bit image
+                maxVal = 16384.0;
+            else
+                maxVal = 65535.0;       //guess 16 bit image
+            fromDataObj<_TpM, ito::uint16>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / maxVal, deleteNaN, out, isDense);
         }
         break;
         case ito::tInt16:
         {
-            fromDataObj<_TpM, ito::int16>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[3]);
+            if (maxVal <= 511.0)       //guess 10 bit image
+            {
+                minVal = -512.0;
+                maxVal = 1024.0;
+            }
+            else if (maxVal <= 2047.0)  //guess 12 bit image
+            {
+                minVal = -2048.0;
+                maxVal = 4096.0;
+            }
+            else if (maxVal <= 8191.0) //guess 14 bit image
+            {
+                minVal = -8192.0;
+                maxVal = 16384.0;
+            }
+            else
+            {
+                minVal = -32768.0;
+                maxVal = 65536.0;      //guess 16 bit image
+            }
+            fromDataObj<_TpM, ito::int16>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / maxVal, deleteNaN, out, isDense);
         }
         break;
         case ito::tUInt32:
         {
-            fromDataObj<_TpM, ito::uint32>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
+            fromDataObj<_TpM, ito::uint32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaN, out, isDense);
         }
         break;
         case ito::tInt32:
         {
-            fromDataObj<_TpM, ito::int32>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
+            fromDataObj<_TpM, ito::int32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaN, out, isDense);
         }
         break;
         case ito::tFloat32:
         {
-            fromDataObj<_TpM, ito::float32>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
+            fromDataObj<_TpM, ito::float32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaN, out, isDense);
         }
         break;
         case ito::tFloat64:
         {
-            fromDataObj<_TpM, ito::float64>(mapDisp, intensity, firstX, stepX, firstY, stepY, deleteNaN, out, isDense);
+            ito::float64 minVal, maxVal;
+            ito::uint32 minLoc[3], maxLoc[3];
+            ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
+            fromDataObj<_TpM, ito::float64>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaN, out, isDense);
         }
         break;
         default:
@@ -641,7 +688,10 @@ template<typename _TpM> ito::RetVal fromDataObj(const cv::Mat *mapDisp, const it
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, const cv::Mat *mapInt, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaN, ito::PCLPointCloud &out, bool &isDense)
+template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, const cv::Mat *mapInt, const ito::float32 firstX, const ito::float32 stepX, 
+    const ito::float32 firstY, const ito::float32 stepY, 
+    const ito::float32 minI, const ito::float32 scaleI,
+    const bool deleteNaN, ito::PCLPointCloud &out, bool &isDense)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
     pcl::PointXYZI point;
@@ -668,7 +718,7 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
                     point.x = firstX + j * stepX;
                     point.y = firstY + i * stepY;
                     point.z = zRow[j];
-                    point.intensity = iRow[j];
+                    point.intensity = (iRow[j] - minI) * scaleI;
                     (*cloud).push_back(point);
                     counter++;
                 }
@@ -698,7 +748,7 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
                 point.x = firstX + j * stepX;
                 point.y = firstY + i * stepY;
                 point.z = zRow[j];
-                point.intensity = iRow[j];
+                point.intensity = (iRow[j] - minI) * scaleI;
 
                 if (!pcl_isfinite(point.z))
                 {
