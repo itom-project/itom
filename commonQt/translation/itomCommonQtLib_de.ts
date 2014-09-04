@@ -10,24 +10,24 @@
         <location line="+20"/>
         <location line="+20"/>
         <source>timeout while getting numaxis parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung bei der Übergabe des numaxis-Parameters</translation>
     </message>
     <message>
         <location line="+54"/>
         <source>Motor not correctly initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Motor wurde nicht korrekt inizialisiert</translation>
     </message>
     <message>
         <location line="+9"/>
         <location line="+179"/>
         <location filename="../../common/sources/helperGrabber.cpp" line="-271"/>
         <source>Timeout while Waiting for Semaphore</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitunng beim Warten auf Semaphore</translation>
     </message>
     <message>
         <location line="-172"/>
         <source>Semaphore contained error</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Semaphore enthält Fehler</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -39,45 +39,45 @@
         <location line="+96"/>
         <location filename="../../common/sources/helperGrabber.cpp" line="-5"/>
         <source>Semaphore not correctly initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Semaphore wurde nicht korrekt inizialisiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/helperCommon.cpp" line="+47"/>
         <source>parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>mandatory parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pflichtparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>optional parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Optionaler Parametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>output parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ausgabeparametervektor wurde nicht inizialisiert</translation>
     </message>
     <message>
         <location line="+30"/>
         <location line="+21"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Parameter &apos;%1&apos; wurde im übergebenen Parametervektor nicht gefunden</translation>
     </message>
     <message>
         <location line="+78"/>
         <location line="+125"/>
         <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Name des erwarteten Parameters ist leer.</translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
         <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
         <location line="-101"/>
@@ -491,55 +491,55 @@ Type conflict for %1</source>
     <message>
         <location filename="../../common/abstractAddInConfigDialog.cpp" line="+82"/>
         <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;setParam&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+69"/>
         <source>pointer to plugin is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Pointer des Plugins ist ungültig.</translation>
     </message>
     <message>
         <location line="-55"/>
         <source>Error while setting parameter &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Setzen des Parameters &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+62"/>
         <source>Error while setting parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Parametersetzen</translation>
     </message>
     <message>
         <location line="-48"/>
         <source>Warning while setting parameter &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Setzen des Parameters &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+55"/>
         <source>Warning while setting parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Parametersetzen</translation>
     </message>
     <message>
         <location line="-27"/>
         <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;setParamVector&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Error while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Ausführen</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Warning while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung während der Ausführung</translation>
     </message>
 </context>
 <context>
@@ -547,7 +547,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../../common/abstractAddInDockWidget.cpp" line="+82"/>
         <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;setParam&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -557,84 +557,84 @@ Type conflict for %1</source>
         <location line="+50"/>
         <location line="+46"/>
         <source>pointer to plugin is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Pointer des Plugins ist ungültig.</translation>
     </message>
     <message>
         <location line="-312"/>
         <location line="+49"/>
         <source>Error while setting parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Parametersetzen</translation>
     </message>
     <message>
         <location line="-38"/>
         <location line="+49"/>
         <source>Warning while setting parameter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Parametersetzen</translation>
     </message>
     <message>
         <location line="-22"/>
         <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;setParamVector&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="+50"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Error while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Ausführen</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Warning while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung während der Ausführung</translation>
     </message>
     <message>
         <location line="+24"/>
         <location line="+59"/>
         <location line="+57"/>
         <source>setActuatorPosition can only be called for actuator plugins</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;setActuatorPosition&apos; kann nur für Aktuator-Plugins aufgerufen werden</translation>
     </message>
     <message>
         <location line="-103"/>
         <location line="+59"/>
         <source>slot &apos;%1&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;%1&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="-47"/>
         <location line="+59"/>
         <source>Error while calling %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Aufruf von %1</translation>
     </message>
     <message>
         <location line="-48"/>
         <location line="+59"/>
         <source>Warning while calling %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Aufruf von %1</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>slot &apos;requestStatusAndPosition&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slot &apos;requestStatusAndPosition&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Error while calling &apos;requestStatusAndPosition&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Aufruf von &apos;requestStatusAndPosition&apos;</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Warning while calling &apos;requestStatusAndPosition&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Warnung beim Aufruf von &apos;requestStatusAndPosition&apos;</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>setActuatorInterrupt can only be called for actuator plugins</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;setActuatorInterrupt&apos; kann nur für Aktuator-Plugins aufgerufen werden</translation>
     </message>
 </context>
 <context>

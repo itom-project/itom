@@ -149,6 +149,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     foreach(const QString &plugin, candidates)
     {
+//        if (plugin.indexOf("itomWidgets", 0, Qt::CaseInsensitive) > 0)
         absolutePluginPath = QDir::cleanPath(dir.absoluteFilePath(plugin));
         status.filename = absolutePluginPath;
         status.messages.clear();

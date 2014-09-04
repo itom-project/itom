@@ -833,17 +833,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+122"/>
         <source>Index-based parameter name requires an array-type parameter.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Indexbasierter Parametername erwartet einen Parameter vom Typ Array.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Parameter could not be converted to destination type.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter kann nicht in den benötigten Zielparametertyp umgewandelt werden.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>type of parameter does not fit to requested parameter type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parametertyp entspricht nicht dem erwarteten Typ</translation>
     </message>
     <message>
         <location line="+88"/>
@@ -1317,7 +1317,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+184"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+185"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -1335,7 +1335,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+23"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AddIn &apos;%1&apos; ist neuer als die veraltete AddIn-Schnittstelle %2. Die AddIn-Schnittstelle dieser itom-Version ist %3.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2740,12 +2740,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-48"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-49"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="+113"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
