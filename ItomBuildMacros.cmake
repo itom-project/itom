@@ -1,4 +1,5 @@
 #SET(ITOM_SDK_DIR "${ITOM_DIR}/SDK" CACHE PATH "base path to the sdk directory of itom")
+#SET(ITOM_SDK_DIR "${ITOM_DIR}/SDK" CACHE PATH "base path to the sdk directory of itom")
 
 #########################################################################
 #set general things
@@ -253,6 +254,7 @@ ENDMACRO (FIND_PACKAGE_QT)
 MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
     SET(TRANSLATIONS_FILES)
     SET(TRANSLATION_OUTPUT_FILES)
+    SET(QMFILES)
 
     if (${force_translation_update})
         if (QT5_FOUND)
