@@ -108,6 +108,10 @@ public:
     QList<FigurePlugin> getPossibleFigureClasses( const FigureCategory &figureCat );
     QString getFigureClass( const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal );
     RetVal setFigureDefaultClass( const QString &figureCategory, const QString &defaultClassName);
+    QStringList getPlotInputTypes(const int plotInputType);
+    QStringList getPlotType(const int plotType);
+    QStringList getPlotFeatures(const int plotFeatures);
+    QStringList getPlotDataFormats(const int plotDataFormats);
 
     QWidget* createWidget(const QString &className, QWidget *parentWidget, const QString &name = QString(), AbstractFigure::WindowMode winMode = AbstractFigure::ModeStandaloneInUi);
 

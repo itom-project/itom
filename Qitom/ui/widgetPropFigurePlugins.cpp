@@ -82,122 +82,22 @@ void WidgetPropFigurePlugins::init()
             i = new QStandardItem(QIcon(":/application/icons/itomicon/q_itoM32.png") /*f.icon*/, f.classname);
             m_loadedFiguresModel->setItem(row,0,i);
 
-            if (f.plotDataTypes & ito::DataObjLine)
-            {
-                sl.append(tr("DataObject - Line"));
-            }
-            if (f.plotDataTypes & ito::DataObjPlane)
-            {
-                sl.append(tr("DataObject - Plane"));
-            }
-            if (f.plotDataTypes & ito::DataObjPlaneStack)
-            {
-                sl.append(tr("DataObject - Plane Stack"));
-            }
-            if (f.plotDataTypes & ito::PointCloud)
-            {
-                sl.append(tr("Point Cloud"));
-            }
-            if (f.plotDataTypes & ito::PolygonMesh)
-            {
-                sl.append(tr("PolygonMesh"));
-            }
+            sl = dwo->getPlotInputTypes(f.plotDataTypes);
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 1, i);
 
             sl.clear();
-            if (f.plotDataFormats & ito::Format_Gray8)
-            {
-                sl.append(tr("Gray8"));
-            }
-            if (f.plotDataFormats & ito::Format_Gray16)
-            {
-                sl.append(tr("Gray16"));
-            }
-            if (f.plotDataFormats & ito::Format_Gray32)
-            {
-                sl.append(tr("Gray32"));
-            }
-            if (f.plotDataFormats & ito::Format_RGB32)
-            {
-                sl.append(tr("RGB32"));
-            }
-            if (f.plotDataFormats & ito::Format_ARGB32)
-            {
-                sl.append(tr("ARGB32"));
-            }
-            if (f.plotDataFormats & ito::Format_CMYK32)
-            {
-                sl.append(tr("CMYK32"));
-            }
-            if (f.plotDataFormats & ito::Format_Float32)
-            {
-                sl.append(tr("Float32"));
-            }
-            if (f.plotDataFormats & ito::Format_Float64)
-            {
-                sl.append(tr("Float64"));
-            }
-            if (f.plotDataFormats & ito::Format_Complex)
-            {
-                sl.append(tr("Complex"));
-            }
+            sl = dwo->getPlotDataFormats(f.plotDataFormats);
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 2, i);
             
             sl.clear();
-            if (f.plotFeatures & ito::Static)
-            {
-                sl.append(tr("Static"));
-            }
-            if (f.plotFeatures & ito::Live)
-            {
-                sl.append(tr("Live"));
-            }
-            if (f.plotFeatures & ito::Cartesian)
-            {
-                sl.append(tr("Cartesian"));
-            }
-            if (f.plotFeatures & ito::Polar)
-            {
-                sl.append(tr("Polar"));
-            }
-            if (f.plotFeatures & ito::Cylindrical)
-            {
-                sl.append(tr("Cylindrical"));
-            }
-            if (f.plotFeatures & ito::OpenGl)
-            {
-                sl.append(tr("OpenGl"));
-            }
-            if (f.plotFeatures & ito::Cuda)
-            {
-                sl.append(tr("Cuda"));
-            }
-            if (f.plotFeatures & ito::X3D)
-            {
-                sl.append(tr("X3D"));
-            }
+            sl = dwo->getPlotFeatures(f.plotFeatures);
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 3, i);
 
             sl.clear();
-            if (f.plotFeatures & ito::PlotLine)
-            {
-                sl.append(tr("Line Plot"));
-            }
-            if (f.plotFeatures & ito::PlotImage)
-            {
-                sl.append(tr("Image Plot"));
-            }
-            if (f.plotFeatures & ito::PlotISO)
-            {
-                sl.append(tr("Isometric Plot"));
-            }
-            if (f.plotFeatures & ito::Plot3D)
-            {
-                sl.append(tr("3D Plot"));
-            }
+            sl = dwo->getPlotType(f.plotFeatures);
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 4, i);
 

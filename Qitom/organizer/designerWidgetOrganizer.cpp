@@ -599,6 +599,182 @@ QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Return plot input types as string list
+/*! Return plot input types from plot type identifier to string list.
+
+    \param plotInputType
+    \return QStringList
+*/
+QStringList DesignerWidgetOrganizer::getPlotInputTypes(const int plotInputTypes)
+{
+
+    QStringList sl;
+
+    if (plotInputTypes & ito::DataObjLine)
+    {
+        sl.append(tr("DataObject - Line"));
+    }
+    if (plotInputTypes & ito::DataObjPlane)
+    {
+        sl.append(tr("DataObject - Plane"));
+    }
+    if (plotInputTypes & ito::DataObjPlaneStack)
+    {
+        sl.append(tr("DataObject - Plane Stack"));
+    }
+    if (plotInputTypes & ito::PointCloud)
+    {
+        sl.append(tr("Point Cloud"));
+    }
+    if (plotInputTypes & ito::PolygonMesh)
+    {
+        sl.append(tr("PolygonMesh"));
+    }
+
+    if (sl.length() == 0)
+        sl.append(tr("invalid type or no type defined"));
+
+    return sl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Return plot data formats as string list
+/*! Return plot data formats from plot data format identifier to string list.
+
+    \param plotDataFormat
+    \return QStringList
+*/
+QStringList DesignerWidgetOrganizer::getPlotDataFormats(const int plotDataFormats)
+{
+    QStringList sl;
+
+    if (plotDataFormats & ito::Format_Gray8)
+    {
+        sl.append(tr("Gray8"));
+    }
+    if (plotDataFormats & ito::Format_Gray16)
+    {
+        sl.append(tr("Gray16"));
+    }
+    if (plotDataFormats & ito::Format_Gray32)
+    {
+        sl.append(tr("Gray32"));
+    }
+    if (plotDataFormats & ito::Format_RGB32)
+    {
+        sl.append(tr("RGB32"));
+    }
+    if (plotDataFormats & ito::Format_ARGB32)
+    {
+        sl.append(tr("ARGB32"));
+    }
+    if (plotDataFormats & ito::Format_CMYK32)
+    {
+        sl.append(tr("CMYK32"));
+    }
+    if (plotDataFormats & ito::Format_Float32)
+    {
+        sl.append(tr("Float32"));
+    }
+    if (plotDataFormats & ito::Format_Float64)
+    {
+        sl.append(tr("Float64"));
+    }
+    if (plotDataFormats & ito::Format_Complex)
+    {
+        sl.append(tr("Complex"));
+    }
+
+    if (sl.length() == 0)
+        sl.append(tr("invalid type or no type defined"));
+
+    return sl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Return plot features as string list
+/*! Return plot features from plot features identifier to string list.
+
+    \param plotFeatures
+    \return QStringList
+*/
+QStringList DesignerWidgetOrganizer::getPlotFeatures(const int plotFeatures)
+{
+    QStringList sl;
+
+    if (plotFeatures & ito::Static)
+    {
+        sl.append(tr("Static"));
+    }
+    if (plotFeatures & ito::Live)
+    {
+        sl.append(tr("Live"));
+    }
+    if (plotFeatures & ito::Cartesian)
+    {
+        sl.append(tr("Cartesian"));
+    }
+    if (plotFeatures & ito::Polar)
+    {
+        sl.append(tr("Polar"));
+    }
+    if (plotFeatures & ito::Cylindrical)
+    {
+        sl.append(tr("Cylindrical"));
+    }
+    if (plotFeatures & ito::OpenGl)
+    {
+        sl.append(tr("OpenGl"));
+    }
+    if (plotFeatures & ito::Cuda)
+    {
+        sl.append(tr("Cuda"));
+    }
+    if (plotFeatures & ito::X3D)
+    {
+        sl.append(tr("X3D"));
+    }
+
+    if (sl.length() == 0)
+        sl.append(tr("invalid type or no type defined"));
+
+    return sl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Return plot input types as string list
+/*! Return plot input types from plot type identifier to string list.
+
+    \param plotInputType
+    \return QStringList
+*/
+QStringList DesignerWidgetOrganizer::getPlotType(const int plotType)
+{
+    QStringList sl;
+
+    if (plotType & ito::PlotLine)
+    {
+        sl.append(tr("Line Plot"));
+    }
+    if (plotType & ito::PlotImage)
+    {
+        sl.append(tr("Image Plot"));
+    }
+    if (plotType & ito::PlotISO)
+    {
+        sl.append(tr("Isometric Plot"));
+    }
+    if (plotType & ito::Plot3D)
+    {
+        sl.append(tr("3D Plot"));
+    }
+
+    if (sl.length() == 0)
+        sl.append(tr("invalid type or no type defined"));
+
+    return sl;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

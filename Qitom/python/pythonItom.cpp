@@ -39,10 +39,12 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/addInManager.h"
 #include "../organizer/userOrganizer.h"
+#include "../organizer/designerWidgetOrganizer.h"
 
 #include <qdir.h>
 #include <qcoreapplication.h>
 #include <qdesktopwidget.h>
+#include <qstringlist.h>
 
 QHash<size_t, QString> ito::PythonItom::m_gcTrackerList;
 
@@ -1073,6 +1075,474 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPlotLoaded_doc,"plotLoaded(plotName) -> check if a certain plot widget is loaded.\n\
+\n\
+Checks if a specified plot widget is loaded and returns the result as a boolean expression. \n\
+\n\
+Parameters \n\
+----------- \n\
+pluginName :  {str} \n\
+    The name of a specified plot widget as displayed in the preferences window.\n\
+\n\
+Returns \n\
+------- \n\
+result : {bool} \n\
+    True, if the plot has been loaded and can be used, else False.");
+PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    const char* plotName = NULL;
+    ito::RetVal retval = ito::retOk;
+    
+    if (!PyArg_ParseTuple(pArgs, "s", &plotName))
+    {
+        return NULL;
+    }
+
+    ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+    if (!dwo)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "no ui-manager found");
+        return NULL;
+    }
+
+    QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
+
+    foreach (const FigurePlugin &f, plugins)
+    {
+        if (QString::compare(f.classname, QString::fromLatin1(plotName), Qt::CaseInsensitive) == 0)
+        {
+            Py_RETURN_TRUE;
+        }
+    }
+
+    Py_RETURN_FALSE;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.\n\
+                              Gets (also print to console) the available slots / properties of the plot specified by plotName (str, as specified in the properties window).\n\
+If `dictionary == True`, a dict with all plot slots / properties is returned and nothing is printed to the console.\n\
+\n\
+Parameters \n\
+----------- \n\
+plotName : {str} \n\
+    is the fullname of a plot as specified in the properties window (case insensitive).\n\
+dictionary : {bool}, optional \n\
+    if `dictionary == True`, function returns a dict with plot slots and properties and does not print anything to the console (default: False)\n\
+\n\
+Returns \n\
+------- \n\
+out : {None or dict} \n\
+    Returns None or a dict depending on the value of parameter `dictionary`.");
+PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = {"plotName", "dictionary", NULL};
+    const char* plotName = NULL;
+
+#if PY_VERSION_HEX < 0x03030000
+    unsigned char retDict = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &plotName, &retDict))
+    {
+        return NULL;
+    }
+#else //only python 3.3 or higher has the 'p' (bool, int) type string
+    int retDict = 0; //this must be int, not bool!!! (else crash)
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &plotName, &retDict))
+    {
+        return NULL;
+    }
+#endif
+
+    ito::RetVal retval = 0;
+    int pluginNum = -1;
+    int plugtype = -1;
+    int version = -1;
+    QString pTypeString;
+    QString pAuthor;
+    QString pDescription;
+    QString pDetailDescription;
+    QString pLicense;
+    QString pAbout;
+    PyObject *result = NULL;
+    PyObject *item = NULL;    
+
+
+    ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
+    if (!dwo)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "no ui-manager found");
+        Py_RETURN_NONE;
+    }
+    else
+    {
+        bool found = false;
+        QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
+
+        FigurePlugin fig;
+        foreach (fig, plugins)
+        {
+            if (QString::compare(fig.classname, QString::fromLatin1(plotName), Qt::CaseInsensitive) == 0)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "figure not found");
+            Py_RETURN_NONE;
+        }
+
+        result = PyDict_New();
+        if (!retDict) std::cout << "\n";
+
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(fig.classname); //new ref
+            PyDict_SetItemString(result, "name", item);
+            Py_DECREF(item);
+        }
+        else
+        {
+            std::cout << "NAME:\t " << fig.classname.toLatin1().data() << "\n";
+        }
+
+        QStringList sl;
+        sl = dwo->getPlotInputTypes(fig.plotDataTypes);
+
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(sl.join(", ")); //new ref
+            PyDict_SetItemString(result, "inputtype", item);
+            Py_DECREF(item);
+        }
+
+        else
+        {
+            std::cout << "INPUT TYPE:\t " << sl.join(", ").toLatin1().data() << "\n";
+        }
+
+        sl.clear();
+        sl = dwo->getPlotDataFormats(fig.plotDataFormats);
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(sl.join(", ")); //new ref
+            PyDict_SetItemString(result, "dataformats", item);
+            Py_DECREF(item);
+        }
+
+        else
+        {
+            std::cout << "DATA FORMATS:\t " << sl.join(", ").toLatin1().data() << "\n";
+        }
+            
+        sl.clear();
+        sl = dwo->getPlotFeatures(fig.plotFeatures);
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(sl.join(", ")); //new ref
+            PyDict_SetItemString(result, "features", item);
+            Py_DECREF(item);
+        }
+
+        else
+        {
+            std::cout << "FEATURES:\t " << sl.join(", ").toLatin1().data() << "\n";
+        }
+
+        sl.clear();
+        sl = dwo->getPlotType(fig.plotFeatures);
+        if (retDict)
+        {
+            item = PythonQtConversion::QStringToPyObject(sl.join(", ")); //new ref
+            PyDict_SetItemString(result, "type", item);
+            Py_DECREF(item);
+        }
+
+        else
+        {
+            std::cout << "TYPE:\t " << sl.join(", ").toLatin1().data() << "\n";
+        }
+
+        if (fig.factory)
+        {
+            //qDebug() << "create instance\n";
+            ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)(fig.factory->instance());
+
+            int version = fac->getVersion();
+            QString versionStr = QString("%1.%2.%3").arg(MAJORVERSION(version)).arg(MINORVERSION(version)).arg(PATCHVERSION(version));
+            
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(versionStr); //new ref
+                PyDict_SetItemString(result, "version", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
+            }
+            
+
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fac->getAuthor()); //new ref
+                PyDict_SetItemString(result, "author", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "AUTHOR:\t " << fac->getAuthor().toLatin1().data() << "\n";
+            }
+
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fac->getDescription()); //new ref
+                PyDict_SetItemString(result, "description", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "INFO:\t\t " << fac->getDescription().toLatin1().data() << "\n";
+            }
+
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fac->getLicenseInfo()); //new ref
+                PyDict_SetItemString(result, "license", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "LICENSE:\t\t " << fac->getLicenseInfo().toLatin1().data() << "\n";
+            }
+
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fac->getAboutInfo()); //new ref
+                PyDict_SetItemString(result, "about", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "ABOUT:\t\t " << fac->getAboutInfo().toLatin1().data() << "\n";
+            }
+                
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fac->getDetailDescription()); //new ref
+                PyDict_SetItemString(result, "detaildescription", item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "\nDETAILS:\n" << fac->getDetailDescription().toLatin1().data() << "\n";
+            }  
+        
+        }
+        else
+        {
+        
+        }
+    }
+/*
+    PyObject *noneText = PyUnicode_FromString("None");
+
+    switch(plugtype)
+    {
+        default:
+        break;
+        case ito::typeDataIO:
+        case ito::typeActuator:
+            retval = AIM->getInitParams(pluginName, plugtype, &pluginNum, paramsMand, paramsOpt);
+            if (retval.containsWarningOrError())
+            {
+                Py_DECREF(result);
+
+                PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
+                return NULL;
+            }
+
+            if (retDict == 0)
+            {
+                std::cout << "\nINITIALISATION PARAMETERS:\n";
+            }
+
+            if (paramsMand)
+            {
+                if ((*paramsMand).size())
+                {
+                    if (retDict)
+                    {
+                        resultmand = PrntOutParams(paramsMand, false, true, -1, false);
+                        PyDict_SetItemString(result, "Mandatory Parameters", resultmand);
+                        Py_DECREF(resultmand);
+                    }
+                    else
+                    {
+                        std::cout << "\n Mandatory parameters:\n";
+                        resultmand = PrntOutParams(paramsMand, false, true, -1);
+                        Py_DECREF(resultmand);
+                    }
+                  
+                }
+                else if (!retDict)
+                {
+                    std::cout << "  Initialisation function has no mandatory parameters \n";
+                }
+            }
+            else if (!retDict)
+            {
+                   std::cout << "  Initialisation function has no mandatory parameters \n";
+            }
+
+            if (paramsOpt)
+            {
+                if ((*paramsOpt).size())
+                {
+                    if (retDict)
+                    {
+                        resultopt = PrntOutParams(paramsOpt, false, true, -1, false);
+                        PyDict_SetItemString(result, "Optional Parameters", resultopt);
+                        Py_DECREF(resultopt);
+                    }
+                    else
+                    {
+                        std::cout << "\n Optional parameters:\n";
+                        resultopt = PrntOutParams(paramsOpt, false, true, -1);
+                        Py_DECREF(resultopt);
+                    }                    
+                }
+                else if (!retDict)
+                {
+                    std::cout << "  Initialisation function has no optional parameters \n";
+                }
+            }
+            else if (!retDict)
+            {
+                    std::cout << "  Initialisation function has no optional parameters \n";
+            }
+
+            if (!retDict)
+            {
+                std::cout << "\n";
+                std::cout << "\nFor more information use the member functions 'getParamListInfo()' and 'getExecFuncInfo()'\n\n";
+            }
+            break;
+
+        case ito::typeAlgo:
+        {
+            
+            if (pluginNum >= 0 && pluginNum < AIM->getAlgList()->size())
+            {
+                pluginNum += AIM->getActList()->size();
+
+                ito::AddInAlgo *algoInst = (ito::AddInAlgo *)((ito::AddInInterfaceBase *)AIM->getAddInPtr(pluginNum))->getInstList()[0];
+
+                QHash<QString, ito::AddInAlgo::FilterDef *> funcList;
+                algoInst->getFilterList(funcList);
+
+                if (funcList.size() > 0)
+                {
+                    if (!retDict)
+                    {
+                        std::cout << "\nThis is the container for following filters:\n";
+                    }
+                    QStringList keyList = funcList.keys();
+                    keyList.sort();
+
+                    if (retDict)
+                    {
+                        PyObject *algorithmlist = PyDict_New();
+                        for (int algos = 0; algos < keyList.size(); algos++)
+                        {
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toLatin1());
+                            PyDict_SetItemString(algorithmlist, keyList.value(algos).toLatin1().data(), item);
+                            Py_DECREF(item);
+                        }
+                        PyDict_SetItemString(result, "filter", algorithmlist);
+                        Py_DECREF(algorithmlist);
+                    }
+                    else
+                    {
+                        for (int algos = 0; algos < keyList.size(); algos++)
+                        {
+                            std::cout << "> " << algos << "  " << keyList.value(algos).toLatin1().data() << "\n";
+                        }
+
+                        std::cout << "\nFor more information use 'filterHelp(\"filterName\")'\n\n";
+                    }
+                }
+                else if (retDict)
+                {
+                    Py_INCREF(Py_None);
+                    PyDict_SetItemString(result, "filter", Py_None);
+                }
+
+                QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
+                algoInst->getAlgoWidgetList(widgetList);
+
+                if (widgetList.size() > 0)
+                {
+                    if (!retDict)
+                    {
+                        std::cout << "\nThis is the container for following widgets:\n";
+                    }
+
+                    QStringList keyList = widgetList.keys();
+                    keyList.sort();
+
+                    if (retDict)
+                    {
+                        PyObject *widgetlist = PyDict_New();
+                        for (int widgets = 0; widgets < keyList.size(); widgets++)
+                        {
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toLatin1());
+                            PyDict_SetItemString(widgetlist, keyList.value(widgets).toLatin1().data(), item);
+                            Py_DECREF(item);
+                        }
+                        PyDict_SetItemString(result, "widgets", widgetlist);
+                        Py_DECREF(widgetlist);
+                    }
+                    else
+                    {
+                        for (int widgets = 0; widgets < keyList.size(); widgets++)
+                        {
+                            std::cout << "> " << widgets << "  " << keyList.value(widgets).toLatin1().data() << "\n";
+                        }
+                        std::cout << "\nFor more information use 'widgetHelp(\"widgetName\")'\n";
+                    }
+                }
+                else
+                {
+                    Py_INCREF(Py_None);
+                    PyDict_SetItemString(result, "widgets", Py_None);
+                }
+
+            }
+        }
+        break;
+    }
+
+    Py_DECREF(noneText);
+*/
+    if (retDict > 0)
+    {
+        return result;
+    }
+    else
+    {
+        Py_DECREF(result);
+        Py_RETURN_NONE;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.\n\
                               Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
 If `dictionary == True`, a dict with all plugin parameters is returned and nothing is printed to the console.\n\
@@ -1432,6 +1902,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         Py_RETURN_NONE;
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers\n\
 \n\
@@ -3572,6 +4043,8 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS | METH_KEYWORDS, pyWidgetHelp_doc},
     {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
+    {"plotHelp", (PyCFunction)PythonItom::PyPlotHelp, METH_VARARGS | METH_KEYWORDS, pyPlotHelp_doc},
+    {"plotLoaded", (PyCFunction)PythonItom::PyPlotLoaded, METH_VARARGS, pyPlotLoaded_doc},
     {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
     {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS | METH_KEYWORDS, pySaveDataObject_doc},
     {"loadDataObject", (PyCFunction)PythonItom::PyLoadDataObject, METH_VARARGS | METH_KEYWORDS, pyLoadDataObject_doc},

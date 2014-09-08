@@ -72,6 +72,7 @@ public:
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyWidgetHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyPluginHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+    static PyObject* PyPlotHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyITOMVersion(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
@@ -79,6 +80,7 @@ public:
 
     static PyObject* PyPluginLoaded(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PyFilterLoaded(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyPlotLoaded(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* PySaveDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyLoadDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
