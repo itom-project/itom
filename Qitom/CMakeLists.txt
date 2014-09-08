@@ -387,11 +387,11 @@ endif(MSVC)
 #    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
 #)
 
-if (QT5_FOUND)
-    qt5_add_translation(qitom_qm ${qitom_ts})
-else (QT5_FOUND)
-    QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
-endif (QT5_FOUND)
+#if (QT5_FOUND)
+#    qt5_add_translation(qitom_qm ${qitom_ts})
+#else (QT5_FOUND)
+#    QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
+#endif (QT5_FOUND)
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
