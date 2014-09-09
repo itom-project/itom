@@ -1341,7 +1341,61 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 std::cout << "\nDETAILS:\n" << fac->getDetailDescription().toLatin1().data() << "\n";
             }  
-        
+
+            UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+            ito::UiOrganizer::tQMapArg objInfo;
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(ito::UiOrganizer::tQMapArg*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            locker.getSemaphore()->wait(-1);
+            retval += locker.getSemaphore()->returnValue;
+
+
+            QMap<QString, QString>::iterator mapIter;
+            std::cout << "\nCLASSINFO:\n";
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            {
+                if (mapIter.key().startsWith("ci_"))
+                {
+                    QString key = mapIter.key();
+                    std::cout << key.remove(0, 3).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                }
+            }
+            std::cout << "\nPROPERTIES:\n";
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            {
+                if (mapIter.key().startsWith("prop_"))
+                {
+                    QString key = mapIter.key();
+                    std::cout << key.remove(0, 5).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                }
+            }
+            std::cout << "\nSIGNALS:\n";
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            {
+                if (mapIter.key().startsWith("signal_"))
+                {
+                    QString key = mapIter.key();
+                    std::cout << key.remove(0, 7).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                }
+            }
+            std::cout << "\nSLOTS:\n";
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            {
+                if (mapIter.key().startsWith("slot_"))
+                {
+                    QString key = mapIter.key();
+                    std::cout << key.remove(0, 5).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                }
+            }
+            std::cout << "\nINHERITANCE:\n";
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            {
+                if (mapIter.key().startsWith("inheritance_"))
+                {
+                    QString key = mapIter.key();
+                    std::cout << key.remove(0, 12).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                }
+            }
         }
         else
         {

@@ -56,7 +56,6 @@
 
 namespace ito
 {
-
 class WidgetWrapper; //forward declaration
 
 /*!
@@ -301,6 +300,7 @@ public:
         infoShowItomInheritance = 0x0002,
         infoShowAllInheritance =0x0004 | infoShowItomInheritance
     };
+    typedef QMap<QString,QString> tQMapArg;
 
     UiOrganizer();
     ~UiOrganizer();
@@ -403,13 +403,16 @@ public slots:
     RetVal getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal getObjectInfo(unsigned int objectID, int type, QSharedPointer<QVariantMap> infoMap, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectInfo(const QObject *obj, int type, ito::UiOrganizer::tQMapArg* propMap, ItomSharedSemaphore *semaphore = NULL);
+    inline RetVal getObjectInfo(unsigned int objectID, int type, ito::UiOrganizer::tQMapArg *propMap, ItomSharedSemaphore *semaphore = NULL)
+    {
+        return getObjectInfo(getWeakObjectReference(objectID), type, propMap, semaphore);
+    }
+    RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore = NULL);
-
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
-
-    RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
@@ -432,6 +435,8 @@ private slots:
     void watcherThreadFinished();
 
 };
+
+Q_DECLARE_METATYPE(ito::UiOrganizer::tQMapArg*)
 
 } //namespace ito
 

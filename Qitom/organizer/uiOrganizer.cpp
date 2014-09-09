@@ -116,6 +116,8 @@ UiOrganizer::UiOrganizer() :
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
+    qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg*");
+    qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg&");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1790,33 +1792,6 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
-{
-    RetVal retValue(retOk);
-
-    QObject *obj = getWeakObjectReference(objectID);
-
-    if (obj)
-    {
-        *objectName = obj->objectName().toLatin1();
-        *widgetClassName = obj->metaObject()->className();
-    }
-    else
-    {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object ID is not available").toLatin1().data());
-    }
-
-    if (semaphore)
-    {
-        semaphore->returnValue = retValue;
-        semaphore->release();
-        semaphore->deleteSemaphore();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getChildObject(unsigned int uiHandle, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
@@ -2175,10 +2150,85 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointer<QVariantMap> infoMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
+
     QObject *obj = getWeakObjectReference(objectID);
+
+    if (obj)
+    {
+        *objectName = obj->objectName().toLatin1();
+        *widgetClassName = obj->metaObject()->className();
+    }
+    else
+    {
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("object ID is not available").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QWidget* newWidget = uiOrg->loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::WindowMode::ModeStandaloneWindow, NULL);
+    if (newWidget)
+    {
+        retval += uiOrg->getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, objInfo);
+
+        const QMetaObject *mo = newWidget->metaObject();
+        QMetaProperty prop;
+        int flags;
+
+        for (int i = 0 ; i < mo->propertyCount() ; i++)
+        {
+            prop = mo->property(i);
+            flags = 0;
+            if (prop.isValid()) flags |= UiOrganizer::propValid;
+            if (prop.isReadable()) flags |= UiOrganizer::propReadable;
+            if (prop.isWritable()) flags |= UiOrganizer::propWritable;
+            if (prop.isResettable()) flags |= UiOrganizer::propResettable;
+            if (prop.isFinal()) flags |= UiOrganizer::propFinal;
+            if (prop.isConstant()) flags |= UiOrganizer::propConstant;
+            if (objInfo)
+            {
+                objInfo->insert(QString("prop_").append(prop.name()), prop.name());
+            }
+            else
+            {
+                std::cout << prop.name() << "\n";
+            }
+        }
+
+        delete newWidget;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer::tQMapArg *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+    QMap<QString, QString> tmpPropMap;
 
     if (obj)
     {
@@ -2213,6 +2263,11 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                     else
                     {
                         classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
+                        tmpPropMap.insert(QString("ci: ").append(ci.name()), ci.value());
+                        QString str1("ci_");
+                        str1.append(ci.name());
+                        QString str2(ci.value());
+                        tmpPropMap.insert(str1, str2);
                     }
                 }
             }
@@ -2225,10 +2280,20 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                     if (propInfoMap.contains(prop.name()))
                     {
                         properties.append(QString("%1 : %2; %3").arg(prop.name()).arg(prop.typeName()).arg(QString(propInfoMap[prop.name()])));
+                        QString str1("prop_");
+                        str1.append(prop.name());
+                        QString str2(prop.typeName());
+                        str2.append("; ");
+                        str2.append(QString("%1").arg(QString(propInfoMap[prop.name()])));
+                        tmpPropMap.insert(str1, str2);
                     }
                     else
                     {
                         properties.append(QString("%1 : %2").arg(prop.name()).arg(prop.typeName()));
+                        QString str1("prop_");
+                        str1.append(prop.name());
+                        QString str2(prop.typeName());
+                        tmpPropMap.insert(str1, str2);
                     }
                 }
             }
@@ -2243,8 +2308,16 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                     {
                         #if QT_VERSION >= 0x050000
                         signal.append(meth.methodSignature());
+                        QString str1("signal_");
+                        str1.append(meth.name());
+                        QString str2(meth.methodSignature());
+                        tmpPropMap.insert(str1, str2);
                         #else
                         signal.append(meth.signature());
+                        QString str1("signal_");
+                        str1.append(meth.name());
+                        QString str2(meth.signature());
+                        tmpPropMap.insert(str1, str2);
                         #endif
                     }
                 }
@@ -2254,17 +2327,25 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
                     {
                         #if (QT_VERSION >= 0x050000)
                             slot.append(meth.methodSignature());
+                            QString str1("slot_");
+                            str1.append(meth.name());
+                            QString str2(meth.methodSignature());
+                            tmpPropMap.insert(str1, str2);
                         #else
                             slot.append(meth.signature());
+                            QString str1("slot_");
+                            str1.append(meth.name());
+                            QString str2(meth.signature());
+                            tmpPropMap.insert(str1, str2);
                         #endif
                     }
                 }
             }
-            
 
             if (type & infoShowItomInheritance)
             {
                 mo = mo->superClass();
+                tmpPropMap.insert(QString("inheritance"), mo->className());
             }
             else
             {
@@ -2272,55 +2353,61 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, int type, QSharedPointe
             }
         }
 
-        std::cout << "WIDGET '" << className.toLatin1().data() << "'\n--------------------------\n\n" << std::endl;
-
-        if (classInfo.size() > 0)
+        if (!propMap)
         {
-            std::cout << "Class Info\n---------------\n";
-
-            foreach(const QString &i, classInfo)
+            std::cout << "WIDGET '" << className.toLatin1().data() << "'\n--------------------------\n\n" << std::endl;
+            if (classInfo.size() > 0)
             {
-                std::cout << " " << i.toLatin1().data() << "\n";
+                std::cout << "Class Info\n---------------\n";
+
+                foreach(const QString &i, classInfo)
+                {
+                    std::cout << " " << i.toLatin1().data() << "\n";
+                }
+
+                std::cout << "\n" << std::endl;
             }
 
-            std::cout << "\n" << std::endl;
-        }
-
-        if (properties.size() > 0)
-        {
-            std::cout << "Properties\n---------------\n";
-
-            foreach(const QString &i, properties)
+            if (properties.size() > 0)
             {
-                std::cout << " " << i.toLatin1().data() << "\n";
+                std::cout << "Properties\n---------------\n";
+
+                foreach(const QString &i, properties)
+                {
+                    std::cout << " " << i.toLatin1().data() << "\n";
+                }
+
+                std::cout << "\n" << std::endl;
             }
 
-            std::cout << "\n" << std::endl;
-        }
-
-        if (signal.size() > 0)
-        {
-            std::cout << "Signals\n---------------\n";
-
-            foreach(const QString &i, signal)
+            if (signal.size() > 0)
             {
-                std::cout << " " << i.toLatin1().data() << "\n";
+                std::cout << "Signals\n---------------\n";
+
+                foreach(const QString &i, signal)
+                {
+                    std::cout << " " << i.toLatin1().data() << "\n";
+                }
+
+                std::cout << "\n" << std::endl;
             }
-
-            std::cout << "\n" << std::endl;
-        }
-        if (slot.size() > 0)
-        {
-            std::cout << "Slots\n---------------\n";
-
-            foreach(const QString &i, slot)
+            if (slot.size() > 0)
             {
-                std::cout << " " << i.toLatin1().data() << "\n";
+                std::cout << "Slots\n---------------\n";
+
+                foreach(const QString &i, slot)
+                {
+                    std::cout << " " << i.toLatin1().data() << "\n";
+                }
+
+                std::cout << "\n" << std::endl;
             }
-
-            std::cout << "\n" << std::endl;
         }
-
+        else
+        {
+            propMap->clear();
+            *propMap = tmpPropMap;
+        }
     }
     else
     {
