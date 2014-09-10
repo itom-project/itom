@@ -1167,7 +1167,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     QString pAbout;
     PyObject *result = NULL;
     PyObject *item = NULL;    
-
+    PyObject *itemsDict = NULL;
 
     ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     if (!dwo)
@@ -1350,51 +1350,162 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             retval += locker.getSemaphore()->returnValue;
 
 
+
             QMap<QString, QString>::iterator mapIter;
-            std::cout << "\nCLASSINFO:\n";
+            
+
+            if (retDict)
+            {
+                itemsDict = PyDict_New();
+            }
+            else
+            {
+                std::cout << "\nCLASSINFO:\n";
+            }
+
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
             {
+
                 if (mapIter.key().startsWith("ci_"))
                 {
-                    QString key = mapIter.key();
-                    std::cout << key.remove(0, 3).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                    QString name = QString(mapIter.key()).remove(0, 3);
+                    QString value = mapIter.value();
+                    if (retDict)
+                    {
+                        item = PythonQtConversion::QStringToPyObject(value); //new ref
+                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        Py_DECREF(item);
+                    }
+                    else
+                    {
+                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                    }
                 }
             }
-            std::cout << "\nPROPERTIES:\n";
+
+            if (retDict)
+            {
+                PyDict_SetItemString(result, "classinfo", itemsDict);
+                Py_DECREF(itemsDict);
+                itemsDict = PyDict_New();
+            }
+            else
+            {
+                std::cout << "\nPROPERTIES:\n";
+            }
+            
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
             {
                 if (mapIter.key().startsWith("prop_"))
                 {
-                    QString key = mapIter.key();
-                    std::cout << key.remove(0, 5).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                    QString name = QString(mapIter.key()).remove(0, 5);
+                    QString value = mapIter.value();
+                    if (retDict)
+                    {
+                        item = PythonQtConversion::QStringToPyObject(value); //new ref
+                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        Py_DECREF(item);
+                    }
+                    else
+                    {
+                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                    }
                 }
             }
-            std::cout << "\nSIGNALS:\n";
+
+            if (retDict)
+            {
+                PyDict_SetItemString(result, "properties", itemsDict);
+                Py_DECREF(itemsDict);
+                itemsDict = PyDict_New();
+            }
+            else
+            {
+                std::cout << "\nSIGNALS:\n";            
+            }
+
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
             {
                 if (mapIter.key().startsWith("signal_"))
                 {
-                    QString key = mapIter.key();
-                    std::cout << key.remove(0, 7).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                    QString name = QString(mapIter.key()).remove(0, 7);
+                    QString value = mapIter.value();
+                    if (retDict)
+                    {
+                        item = PythonQtConversion::QStringToPyObject(value); //new ref
+                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        Py_DECREF(item);
+                    }
+                    else
+                    {
+                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                    }
                 }
             }
-            std::cout << "\nSLOTS:\n";
+
+            if (retDict)
+            {
+                PyDict_SetItemString(result, "signals", itemsDict);
+                Py_DECREF(itemsDict);
+                itemsDict = PyDict_New();
+            }
+            else
+            {
+                std::cout << "\nSLOTS:\n";  
+            }
+
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
             {
                 if (mapIter.key().startsWith("slot_"))
                 {
-                    QString key = mapIter.key();
-                    std::cout << key.remove(0, 5).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                    QString name = QString(mapIter.key()).remove(0, 5);
+                    QString value = mapIter.value();
+                    if (retDict)
+                    {
+                        item = PythonQtConversion::QStringToPyObject(value); //new ref
+                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        Py_DECREF(item);
+                    }
+                    else
+                    {
+                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                    }
                 }
             }
-            std::cout << "\nINHERITANCE:\n";
+
+            if (retDict)
+            {
+                PyDict_SetItemString(result, "slots", itemsDict);
+                Py_DECREF(itemsDict);
+                itemsDict = PyDict_New();
+            }
+            else
+            {
+                std::cout << "\nINHERITANCE:\n";
+            }
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
             {
                 if (mapIter.key().startsWith("inheritance_"))
                 {
-                    QString key = mapIter.key();
-                    std::cout << key.remove(0, 12).toLatin1().data() << " : " << mapIter.value().toLatin1().data() << "\n";
+                    QString name = QString(mapIter.key()).remove(0, 12);
+                    QString value = mapIter.value();
+                    if (retDict)
+                    {
+                        item = PythonQtConversion::QStringToPyObject(value); //new ref
+                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        Py_DECREF(item);
+                    }
+                    else
+                    {
+                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                    }
                 }
+            }
+
+            if (retDict)
+            {
+                PyDict_SetItemString(result, "inheritances", itemsDict);
+                Py_DECREF(itemsDict);
             }
         }
         else

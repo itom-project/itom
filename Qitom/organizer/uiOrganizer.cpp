@@ -2189,7 +2189,7 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQ
         const QMetaObject *mo = newWidget->metaObject();
         QMetaProperty prop;
         int flags;
-
+        /*
         for (int i = 0 ; i < mo->propertyCount() ; i++)
         {
             prop = mo->property(i);
@@ -2202,14 +2202,14 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQ
             if (prop.isConstant()) flags |= UiOrganizer::propConstant;
             if (objInfo)
             {
-                objInfo->insert(QString("prop_").append(prop.name()), prop.name());
+                objInfo->insert(QString("prop_").append(prop.name()), prop.value());
             }
             else
             {
                 std::cout << prop.name() << "\n";
             }
         }
-
+        */
         delete newWidget;
     }
 
