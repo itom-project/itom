@@ -2315,7 +2315,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                         #else
                         signal.append(meth.signature());
                         QString str1("signal_");
-                        str1.append(meth.name());
+                        str1.append(meth.chop(meth.length() - meth.indexOf('(')));
                         QString str2(meth.signature());
                         tmpPropMap.insert(str1, str2);
                         #endif
@@ -2334,7 +2334,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                         #else
                             slot.append(meth.signature());
                             QString str1("slot_");
-                            str1.append(meth.name());
+                            str1.append(meth.chop(meth.length() - meth.indexOf('(')));
                             QString str2(meth.signature());
                             tmpPropMap.insert(str1, str2);
                         #endif
