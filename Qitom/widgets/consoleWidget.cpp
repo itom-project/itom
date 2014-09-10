@@ -1045,7 +1045,8 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     const QMimeData *md = event->mimeData();
 
     //check if a local python file will be dropped -> allow this
-    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
+//    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
+    if ((md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     {
         QObject *sew = AppManagement::getScriptEditorOrganizer();
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
@@ -1124,7 +1125,7 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
     const QMimeData *md = event->mimeData();
 
     //check if a local python file will be dropped -> allow this
-    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
+    if ((md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     {
         event->accept();
     }

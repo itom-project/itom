@@ -493,7 +493,7 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     //test = source->has
     //qDebug() << "MIME-Type:" << source->formats();
 //    qDebug() << "URL:" << source->urls();
-    if (source->hasText() == false && (source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
+    if ((source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
     {
         if (source->urls().length() == 1)
         {
@@ -520,7 +520,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
 
     if (sew != NULL)
     {
-        if (event->mimeData()->hasText() == false && (event->mimeData()->hasFormat("FileName") || event->mimeData()->hasFormat("text/uri-list")))
+        if ((event->mimeData()->hasFormat("FileName") || event->mimeData()->hasFormat("text/uri-list")))
         {
             if (event->mimeData()->urls().length() == 1)
             {
