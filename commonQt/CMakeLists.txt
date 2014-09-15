@@ -9,31 +9,30 @@ SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-    
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-       
+
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
-    
+
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
-    
+
     #if itomCommon is static, add -fPIC as compiler flag for linux
     IF(UNIX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     ENDIF(UNIX)
-    
+
     ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
                                                #published with void** only one (!) time. if this lib is statically linked to itom, it is already
                                                #defined within itom and must not be defined in this lib but with extern void**. If this lib is
                                                #shared, it also needs to be defined there.
 ENDIF(BUILD_ITOMLIBS_SHARED)
-    
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(ON Core Xml PrintSupport Svg Designer LinguistTools)
@@ -65,6 +64,8 @@ IF(BUILD_WITH_PCL)
 ELSE(BUILD_WITH_PCL)
     SET(POINTCLOUD_LIBRARIES "")
 ENDIF(BUILD_WITH_PCL)
+
+message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES( 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
@@ -125,9 +126,9 @@ if(MSVC)
 endif(MSVC)
 
 #handle translations BEGIN STEP 1
-set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
-set (TRANSLATION_OUTPUT_FILES)
-set (TRANSLATIONS_FILES)
+#set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
+#set (TRANSLATION_OUTPUT_FILES)
+#set (TRANSLATIONS_FILES)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
@@ -140,29 +141,33 @@ IF (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
+#translation
+set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
+PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+
 #handle translations BEGIN STEP 2
-if (UPDATE_TRANSLATIONS)
-    if (QT5_FOUND)
-        QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    else (QT5_FOUND)
-        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    endif (QT5_FOUND)
-    
-    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-    add_dependencies(${target_name} _${target_name}_translation)
-    
-    if (QT5_FOUND)
-        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-    else (QT5_FOUND)
-        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-    endif (QT5_FOUND)
-else (UPDATE_TRANSLATIONS)
-    if (QT5_FOUND)
-        QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-    else (QT5_FOUND)
-        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-    endif (QT5_FOUND)
-endif (UPDATE_TRANSLATIONS)
+# if (UPDATE_TRANSLATIONS)
+    # if (QT5_FOUND)
+        # QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    # else (QT5_FOUND)
+        # QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    # endif (QT5_FOUND)
+
+    # add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    # add_dependencies(${target_name} _${target_name}_translation)
+
+    # if (QT5_FOUND)
+        # QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    # else (QT5_FOUND)
+        # QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    # endif (QT5_FOUND)
+# else (UPDATE_TRANSLATIONS)
+    # if (QT5_FOUND)
+        # QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    # else (QT5_FOUND)
+        # QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    # endif (QT5_FOUND)
+# endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
