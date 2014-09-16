@@ -1368,7 +1368,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         }
         else
         {
-            std::cout << "Warning: " << msg.data() << std::endl;
+            std::cout << "Warning: " << msg.data() << "\n" << std::endl;
         }
     }
 

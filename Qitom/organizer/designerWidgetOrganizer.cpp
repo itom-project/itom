@@ -492,6 +492,8 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
                 }
             }
         }
+
+        retVal += ito::RetVal::format(ito::retWarning, 0, tr("The figure class '%1' could not be found or does not support displaying the given type of data. The default class for the given data is used instead.").arg(defaultClassName).toLatin1().data());
     }
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
