@@ -4,8 +4,8 @@ Plugin documentation
 ==========================
 
 Besides the user documentation, there is also a plugin documentation for all currently available plugins. On a setup installation, the main files
-for the plugin documentation is contained in the subfolders *doc* of each plugin in the plugin directory of |itom|. Based on these files, |itom| scans
-their modification date when the |itom| interal help is called for the first time. If the help needs to be rebuild, a bundle is collected from all plugin 
+for the plugin documentation are contained in the subfolders *doc* of each plugin in the plugin directory of |itom|. Based on these files, |itom| scans
+their modification date when the |itom| internal help is called for the first time. If the help needs to be rebuild, a bundle is collected from all plugin 
 sub-documentations and saved in the *docs/pluginDoc/build* directory of the build directory of |itom|. Finally this bundle is packed and prepared for the
 help assistant of |itom|.
 
@@ -21,14 +21,31 @@ be written in the so called reStructured-Text format rst (see http://sphinx-doc.
     
     PLUGIN_DOCUMENTATION(${target_name} <filenameOfTheRstFile>) #the filename must not contain the suffix .rst.
 
-3. If the plugin is build, its build folder with have a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
-
+3. If the plugin is build, its build folder will get a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
 
 If these requirements are given, start |itom| and execute the script **create_plugin_doc.py** in the **docs/pluginDoc** directory of the build directory of |itom|.
 Then select the *.cfg-file describing the plugin documentation in its specific build folder.
 
 In order to simultaneously create the documentations of many plugins, execute **create_all_plugin_docs.py** and indicate the build folder that contains the build-subfolders
 of many plugins. These subfolders are searched for appropriate \*.cfg files and all sub-documentations are created.
+
+.. note::
+    
+    **How does this work under the hood?**
+    
+    The most important file for generating the necessary html and QtHelp files from the given rst-files, that are located in the source folder of a plugin, is the configuration file
+    with suffix *cfg* that is located in the build folder of the specific plugin.
+    
+    This file is generated when CMake executes the CMakeLists.txt file of the plugin and if this file contains the macro **PLUGIN_DOCUMENTATION** like stated above. This macro
+    generates the configuration file based on the template **plugin_doc_config.cfg.in** located in **itom/SDK/docs/pluginDoc**.
+    
+    The configuration file then consists of the name of the plugin, the located where the source rst-file is located, the plugin build directory where the intermediate files of each
+    single plugin documentation are generated and finally the installation path of each plugin (subfolder plugin of the itom build directory) where important components of the plugin
+    documentation will be copied after having been build.
+    
+    When executing the script **create_plugin_doc.py** like described above, the plugin documentation (rst-file) is compiled and build in the QtHelp format in the build directory of the plugin. Afterwards the important components are copied into the documentation installation path of the plugin, given by its configuration file.
+    
+    For creating the final file **itomPluginDoc.qch** in the help subfolder of itom, itom reads all docs subfolder of plugins lying in the plugin subfolder of itom. Then all plugin documentations are collected in the itom subfolder **docs/pluginDoc/build**. From all plugins, the startsite **index.html** is created and the file list, search indices, keywords... from the single plugin qhp-files are merged into the file **itomPluginDoc.qhp**. Finally the Qt Help is created using the qhelpgenerator and qcollectiongenerator tool and copied into the help subfolder of itom.
     
     
 plugin documentation source files
