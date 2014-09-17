@@ -119,6 +119,7 @@ MainWindow::MainWindow() :
         qDebug(".. before loading console widget");
         //console (central widget):
         m_console = new ConsoleWidget(this);
+        m_console->setObjectName("console"); //if a drop event onto a scripteditor comes from this object name, the drop event is always executed as copy event such that no text is deleted in the console.
         //setCentralWidget(m_console);
         qDebug(".. console widget loaded");
         m_contentLayout->addWidget(m_console);
@@ -274,13 +275,26 @@ MainWindow::MainWindow() :
     createStatusBar();
     updatePythonActions();
 
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
     if (pyEngine)
     {
         connect(pyEngine, SIGNAL(pythonAutoReloadChanged(bool,bool,bool,bool)), this, SLOT(pythonAutoReloadChanged(bool,bool,bool,bool)));
         connect(this, SIGNAL(pythonSetAutoReloadSettings(bool,bool,bool,bool)), pyEngine, SLOT(setAutoReloader(bool,bool,bool,bool)));
+
+        settings.beginGroup("Python");
+
+        bool pyReloadEnabled = settings.value("pyReloadEnabled", false).toBool();
+        bool pyReloadCheckFile = settings.value("pyReloadCheckFile", true).toBool();
+        bool pyReloadCheckCmd = settings.value("pyReloadCheckCmd", true).toBool();
+        bool pyReloadCheckFct = settings.value("pyReloadCheckFct", false).toBool();
+
+        emit pythonSetAutoReloadSettings(pyReloadEnabled, pyReloadCheckFile, pyReloadCheckCmd, pyReloadCheckFct);
+
+        settings.endGroup();
     }
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    
     settings.beginGroup("MainWindow");
 
     //restoreGeometry(settings.value("geometry").toByteArray());
@@ -336,6 +350,13 @@ MainWindow::~MainWindow()
     if (m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+    settings->beginGroup("Python");
+    settings->setValue("pyReloadEnabled", m_actions["py_autoReloadEnabled"]->isChecked());
+    settings->setValue("pyReloadCheckFile", m_actions["py_autoReloadFile"]->isChecked());
+    settings->setValue("pyReloadCheckCmd", m_actions["py_autoReloadCmd"]->isChecked());
+    settings->setValue("pyReloadCheckFct", m_actions["py_autoReloadFunc"]->isChecked());
+    settings->endGroup();
 
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
