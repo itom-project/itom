@@ -149,151 +149,153 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     foreach(const QString &plugin, candidates)
     {
-//        if (plugin.indexOf("itomWidgets", 0, Qt::CaseInsensitive) > 0)
-        absolutePluginPath = QDir::cleanPath(dir.absoluteFilePath(plugin));
-        status.filename = absolutePluginPath;
-        status.messages.clear();
-        if (QLibrary::isLibrary(absolutePluginPath))
+        if (plugin.indexOf("itomWidgets", 0, Qt::CaseInsensitive) == -1)
         {
-            //load translation file
-            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-            QStringList startupScripts;
-
-            settings.beginGroup("Language");
-            QString language = settings.value("language", "en").toString();
-            QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
-            settings.endGroup();
-
-            QFileInfo fileInfo(absolutePluginPath);
-            QDir fileInfoDir = fileInfo.dir();
-            fileInfoDir.cdUp();
-            if (language != "en_US" && fileInfoDir.absolutePath() == qApp->applicationDirPath())
+            absolutePluginPath = QDir::cleanPath(dir.absoluteFilePath(plugin));
+            status.filename = absolutePluginPath;
+            status.messages.clear();
+            if (QLibrary::isLibrary(absolutePluginPath))
             {
-                QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
-                QString translationPath = fileInfo.path() + "/translation";
-                QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
-                QString baseFileName = fileInfo.baseName();
-                baseFileName.replace("d", "*");
-                QDirIterator it(translationPath, QStringList(baseFileName + "_" + languageStr + ".qm"), QDir::Files);
-                if (it.hasNext())
+                //load translation file
+                QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+                QStringList startupScripts;
+
+                settings.beginGroup("Language");
+                QString language = settings.value("language", "en").toString();
+                QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
+                settings.endGroup();
+
+                QFileInfo fileInfo(absolutePluginPath);
+                QDir fileInfoDir = fileInfo.dir();
+                fileInfoDir.cdUp();
+                if (language != "en_US" && fileInfoDir.absolutePath() == qApp->applicationDirPath())
                 {
-                    QString translationLocal = it.next();
-                    m_Translator.append(new QTranslator);
-                    m_Translator.last()->load(translationLocal, translationPath);
-                    if (m_Translator.last()->isEmpty())
+                    QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+                    QString translationPath = fileInfo.path() + "/translation";
+                    QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
+                    QString baseFileName = fileInfo.baseName();
+                    baseFileName.replace("d", "*");
+                    QDirIterator it(translationPath, QStringList(baseFileName + "_" + languageStr + ".qm"), QDir::Files);
+                    if (it.hasNext())
                     {
-                        message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
-                        qDebug() << message;
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
-                    }
-                    else
-                    {
-                        QCoreApplication::instance()->installTranslator(m_Translator.last());
-                    }
-                }
-                else
-                {
-                    message = QObject::tr("Unable to find translation file.");
-                    qDebug() << message;
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
-                }
-            }
-
-            loader = new QPluginLoader(absolutePluginPath);
-
-
-            QDesignerCustomWidgetInterface *iface = NULL;
-            QObject *instance = loader->instance();
-
-            if (instance == NULL)
-            {
-                message = loader->errorString();
-                loader->unload();
-
-                if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
-                {
-                    ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
-                }
-                else
-                {
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
-                }
-                
-                DELETE_AND_SET_NULL(loader);
-            }
-            // try with a normal plugin, we do not support collections
-            else if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
-            {
-                if (instance->inherits("ito::AbstractItomDesignerPlugin"))
-                {
-                    allowedInterface = false;
-
-                    //check interface
-                    metaObj = ((ito::AbstractItomDesignerPlugin*)instance)->metaObject();
-                    for (int i = 0; i < metaObj->classInfoCount() ; i++)
-                    {
-                        if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
+                        QString translationLocal = it.next();
+                        m_Translator.append(new QTranslator);
+                        m_Translator.last()->load(translationLocal, translationPath);
+                        if (m_Translator.last()->isEmpty())
                         {
-                            if (requiredInterface == metaObj->classInfo(i).value())
-                            {
-                                allowedInterface = true;
-                            }
-                            break;
+                            message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
+                            qDebug() << message;
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                        }
+                        else
+                        {
+                            QCoreApplication::instance()->installTranslator(m_Translator.last());
                         }
                     }
-
-                    if (allowedInterface)
+                    else
                     {
-                        ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
-                        infoStruct.filename = absolutePluginPath;
-                        infoStruct.classname = iface->name();
-                        infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
-                        infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
-                        infoStruct.plotFeatures = absIDP->getPlotFeatures();
-                        infoStruct.icon = iface->icon();
-                        infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
-                        m_figurePlugins.append(infoStruct);
+                        message = QObject::tr("Unable to find translation file.");
+                        qDebug() << message;
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
+                    }
+                }
 
-                        absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
+                loader = new QPluginLoader(absolutePluginPath);
 
-                        message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
+
+                QDesignerCustomWidgetInterface *iface = NULL;
+                QObject *instance = loader->instance();
+
+                if (instance == NULL)
+                {
+                    message = loader->errorString();
+                    loader->unload();
+
+                    if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
+                    {
+                        ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
                     }
                     else
                     {
-//                        delete instance;
-                        loader->unload();
-                        message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
                         status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
+                    }
+                
+                    DELETE_AND_SET_NULL(loader);
+                }
+                // try with a normal plugin, we do not support collections
+                else if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
+                {
+                    if (instance->inherits("ito::AbstractItomDesignerPlugin"))
+                    {
+                        allowedInterface = false;
+
+                        //check interface
+                        metaObj = ((ito::AbstractItomDesignerPlugin*)instance)->metaObject();
+                        for (int i = 0; i < metaObj->classInfoCount() ; i++)
+                        {
+                            if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
+                            {
+                                if (requiredInterface == metaObj->classInfo(i).value())
+                                {
+                                    allowedInterface = true;
+                                }
+                                break;
+                            }
+                        }
+
+                        if (allowedInterface)
+                        {
+                            ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
+                            infoStruct.filename = absolutePluginPath;
+                            infoStruct.classname = iface->name();
+                            infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
+                            infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
+                            infoStruct.plotFeatures = absIDP->getPlotFeatures();
+                            infoStruct.icon = iface->icon();
+                            infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
+                            m_figurePlugins.append(infoStruct);
+
+                            absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
+
+                            message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
+                        }
+                        else
+                        {
+//                            delete instance;
+                            loader->unload();
+                            message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
+                            DELETE_AND_SET_NULL(loader);
+                        }
+                    }
+                    else
+                    {
+
+#if QT_VERSION >= 0x040800 
+                        /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here, 
+                           since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO 
+
+                           \todo this bug seems only to be there with Qt 4.7.x
+                        */
+                        loader->unload();
+#endif
+                        message = tr("Plugin in file '%1' is a Qt Designer widget but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
                         DELETE_AND_SET_NULL(loader);
                     }
                 }
                 else
                 {
-
-#if QT_VERSION >= 0x040800 
-                    /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here, 
-                       since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO 
-
-                       \todo this bug seems only to be there with Qt 4.7.x
-                    */
                     loader->unload();
-#endif
-                    message = tr("Plugin in file '%1' is a Qt Designer widget but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
+                    message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                     DELETE_AND_SET_NULL(loader);
                 }
-            }
-            else
-            {
-                loader->unload();
-                message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
-                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
-                DELETE_AND_SET_NULL(loader);
-            }
 
-            m_pluginLoadStatus.append(status);
+                m_pluginLoadStatus.append(status);
+            }
         }
     }
 
