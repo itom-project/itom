@@ -1139,7 +1139,9 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
         //!< check, that selections are only in valid area
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-        if (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2))
+        bool dragFromConsole = (event->source() == this);
+
+        if (dragFromConsole && (lineFrom < startLineBeginCmd || (lineFrom == startLineBeginCmd && indexFrom < 2)))
         {
             if (event->dropAction() & Qt::MoveAction)
             {
@@ -1182,7 +1184,7 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
 
         pos2.setX(1+ margin);
 
-        position = SendScintilla(SCI_POSITIONFROMPOINTCLOSE, pos2.x(), pos2.y());
+        position = SendScintilla(SCI_POSITIONFROMPOINT, pos2.x(), pos2.y());
         if (position>=0)
         {
             lineIndexFromPosition(position, &line, &index);
@@ -1206,7 +1208,7 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
             }
             else
             {
-                position = SendScintilla(SCI_POSITIONFROMPOINTCLOSE, pos.x(),pos.y());
+                position = SendScintilla(SCI_POSITIONFROMPOINT, pos.x(),pos.y());
 
                 if (position == -1)
                 {
