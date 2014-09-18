@@ -534,6 +534,18 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
         else
         {
             AbstractPyScintillaWidget::dropEvent(event);
+
+            //this snipped is based on a QScintilla mailing list thread:
+            //http://www.riverbankcomputing.com/pipermail/qscintilla/2014-September/000996.html
+            if (event->source()->objectName() == "console")
+            {
+                //we never want to move text out of the console, text should always be copied
+                if (event->dropAction() == Qt::MoveAction)
+                {
+                    event->setDropAction(Qt::CopyAction);
+                    event->accept();
+                }
+            }
         }
     }
 }
