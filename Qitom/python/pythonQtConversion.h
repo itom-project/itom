@@ -27,6 +27,7 @@
 #include "pythonPlugins.h"
 #include "pythonRegion.h"
 #include "pythonPCL.h"
+#include "datetime.h"
 
 #include "../global.h"
 
@@ -63,6 +64,15 @@ public:
 
     //! converts QStringList to Python list
     static PyObject* QStringListToPyList(const QStringList& list);
+
+    //! converts QDate to Python datetime.date object
+    static PyObject* QDateToPyDate(const QDate& date);
+
+    //! converts QDateTime to Python datetime.datetime object
+    static PyObject* QDateTimeToPyDateTime(const QDateTime& datetime);
+
+    //! converts QTime to Python datetime.time object
+    static PyObject* QTimeToPyTime(const QTime& time);
 
     //! get string representation of py object
     static QString PyObjGetRepresentation(PyObject* val);

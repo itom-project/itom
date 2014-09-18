@@ -29,6 +29,7 @@
 #include <qstringlist.h>
 #include <qurl.h>
 #include <qtextcodec.h>
+#include <qdatetime.h>
 
 #include "pythonSharedPointerGuard.h"
 
@@ -855,6 +856,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     QVariant v;
     bool ok = true;
 
+    //initialize datetime api that is used for date, time, datetime conversion
+    if (!PyDateTimeAPI)
+    {
+        PyDateTime_IMPORT;
+    }
+
     if (type==-1) 
     {
         //guess type by PyObject's type
@@ -904,6 +911,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::Region;
         }
+        else if (PyDateTime_Check(val)) //must be checked before PyDate_Check since PyDateTime is derived from PyDate
+        {
+            type = QVariant::DateTime;
+        } 
+        else if (PyTime_Check(val))
+        {
+            type = QVariant::Time;
+        }
+        else if (PyDate_Check(val))
+        {
+            type = QVariant::Date;
+        }     
 
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
@@ -1109,6 +1128,30 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
     }
     break;
+
+    case QVariant::Time:
+    {
+        PyDateTime_Time *o = (PyDateTime_Time*)val;
+        v = QTime(PyDateTime_TIME_GET_HOUR(o), PyDateTime_TIME_GET_MINUTE(o), PyDateTime_TIME_GET_SECOND(o), PyDateTime_TIME_GET_MICROSECOND(o));
+    }
+    break;
+
+    case QVariant::Date:
+    {
+        PyDateTime_Date *o = (PyDateTime_Date*)val;
+        v = QDate(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+    }
+    break;
+
+    case QVariant::DateTime:
+    {
+        PyDateTime_DateTime *o = (PyDateTime_DateTime*)val;
+        QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+        QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
+        v = QDateTime(date, time);
+    }
+    break;
+
 
     default:
     {
@@ -1468,6 +1511,12 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         type = -1; //let guess the type and finally transform to QVariant
     }
 
+    //initialize datetime api that is used for date, time, datetime conversion
+    if (!PyDateTimeAPI)
+    {
+        PyDateTime_IMPORT;
+    }
+
     if (type==-1) 
     {
         //guess type by PyObject's type
@@ -1525,6 +1574,18 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             type = QMetaType::QColor;
         }
+        else if (PyDateTime_Check(val)) //must be checked before PyDate_Check since PyDateTime is derived from PyDate
+        {
+            type = QVariant::DateTime;
+        } 
+        else if (PyTime_Check(val))
+        {
+            type = QVariant::Time;
+        }
+        else if (PyDate_Check(val))
+        {
+            type = QVariant::Date;
+        }  
     }
 
     *retPtr = NULL; //invalidate it first
@@ -1863,7 +1924,41 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             break;
         }
-
+        case QVariant::Time:
+        {
+            PyDateTime_Time *o = (PyDateTime_Time*)val;
+            QTime l = QTime(PyDateTime_TIME_GET_HOUR(o), PyDateTime_TIME_GET_MINUTE(o), PyDateTime_TIME_GET_SECOND(o), PyDateTime_TIME_GET_MICROSECOND(o));
+            #if QT_VERSION >= 0x050000
+            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
+            #else
+            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
+            #endif
+            break;
+        }
+        case QVariant::Date:
+        {
+            PyDateTime_Date *o = (PyDateTime_Date*)val;
+            QDate l = QDate(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+            #if QT_VERSION >= 0x050000
+            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
+            #else
+            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
+            #endif
+            break;
+        }
+        case QVariant::DateTime:
+        {
+            PyDateTime_DateTime *o = (PyDateTime_DateTime*)val;
+            QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+            QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
+            QDateTime l = QDateTime(date, time);
+            #if QT_VERSION >= 0x050000
+            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
+            #else
+            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
+            #endif
+            break;
+        }
         default:
         //check user defined types
         {
@@ -2101,6 +2196,38 @@ PyObject* PythonQtConversion::QStringListToPyList(const QStringList& list)
         i++;
     }
     return result;
+}
+
+//! converts QDate to Python datetime.date object
+PyObject* PythonQtConversion::QDateToPyDate(const QDate& date)
+{
+    if (!PyDateTimeAPI)
+    {
+        PyDateTime_IMPORT;
+    }
+    return PyDate_FromDate(date.year(),date.month(),date.day()); //new reference
+}
+
+//! converts QDateTime to Python datetime.datetime object
+PyObject* PythonQtConversion::QDateTimeToPyDateTime(const QDateTime& datetime)
+{
+    if (!PyDateTimeAPI)
+    {
+        PyDateTime_IMPORT;
+    }
+    QTime time = datetime.time();
+    QDate date = datetime.date();
+    return PyDateTime_FromDateAndTime(date.year(),date.month(),date.day(), time.hour(), time.minute(), time.second(), time.msec()); //new reference
+}
+
+//! converts QTime to Python datetime.time object
+PyObject* PythonQtConversion::QTimeToPyTime(const QTime& time)
+{
+    if (!PyDateTimeAPI)
+    {
+        PyDateTime_IMPORT;
+    }
+    return PyTime_FromTime(time.hour(), time.minute(), time.second(), time.msec()); //new reference
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2342,6 +2469,21 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
                 //rgba->a = color->alpha();
             }
             return (PyObject*)rgba;
+        }
+    case QMetaType::QTime:
+        {
+            QTime temp = *(QTime*)data;
+            return PythonQtConversion::QTimeToPyTime(temp);
+        }
+    case QMetaType::QDate:
+        {
+            QDate temp = *(QDate*)data;
+            return PythonQtConversion::QDateToPyDate(temp);
+        }
+    case QMetaType::QDateTime:
+        {
+            QDateTime temp = *(QDateTime*)data;
+            return PythonQtConversion::QDateTimeToPyDateTime(temp);
         }
     case QMetaType::QVariant:
         {

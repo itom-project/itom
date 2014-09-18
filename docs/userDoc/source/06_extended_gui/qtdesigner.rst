@@ -291,6 +291,9 @@ QVariantList      any sequence whose items can be convertable.
 QRegion           :py:class:`~itom.region`
 QColor            string with color name or hex-value or :py:class:`~itom.rgba`
 Enumeration       integer with value or string with key (setter only)
+QTime             datetime.time object
+QDate             datetime.date object
+QDateTime         datetime.datetime object
 ================= ===========================================================================
 
 If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converter for them. It only becomes a little bit more difficult for pointers to
