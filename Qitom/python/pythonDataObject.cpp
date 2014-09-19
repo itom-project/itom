@@ -916,6 +916,7 @@ int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if ITOM_NPDATAOBJECT
 int PythonDataObject::parsePyObject2StdString(PyObject* pyObj, std::string &str)
 {
     PyObject* temp = NULL;
@@ -972,6 +973,7 @@ int PythonDataObject::parsePyObject2StdString(PyObject* pyObj, std::string &str)
     }
     return 0;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
@@ -1302,23 +1304,29 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
     PyObject *content;
     std::string keyString, contentString;
     Py_ssize_t pos = 0;
+    bool stringOk;
 
     while (PyDict_Next(value, &pos, &key, &content))
     {
-        if (parsePyObject2StdString(key, keyString) >= 0)
+        keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+        if (stringOk)
         {
             if (PyFloat_Check(content)||PyLong_Check(content))
             {
                 self->dataObject->setTag(keyString, PyFloat_AsDouble(content));
             }
-            else if (parsePyObject2StdString(content, contentString) >= 0)
-            {
-                self->dataObject->setTag(keyString, contentString);
-            }
             else
             {
-                PyErr_SetString(PyExc_TypeError, "tags must be convertable into strings");
-                return -1;
+                contentString = PythonQtConversion::PyObjGetStdString(content, false, stringOk);
+                if (stringOk)
+                {
+                    self->dataObject->setTag(keyString, contentString);
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "tags must be convertable into strings");
+                    return -1;
+                }
             }
         }
     }
@@ -1553,6 +1561,7 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
 {
     std::string tempString;
     PyObject *seqItem = NULL;
+    bool ok;
 
     if (value == NULL)
     {
@@ -1577,13 +1586,13 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        if (PythonDataObject::parsePyObject2StdString(PySequence_GetItem(value,i), tempString) == -1)
+        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        Py_XDECREF(seqItem);
+        if (!ok)
         {
-            Py_XDECREF(seqItem);
-            PyErr_SetString(PyExc_TypeError, "elements of axis description vector must be a string");
+            PyErr_SetString(PyExc_TypeError, "elements of axis description vector must be string types");
             return -1;
         }
-        Py_XDECREF(seqItem);
         self->dataObject->setAxisDescription(i, tempString);
     }
 
@@ -1636,6 +1645,7 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
 {
     std::string tempString;
     PyObject *seqItem = NULL;
+    bool ok;
 
     if (value == NULL)
     {
@@ -1660,13 +1670,13 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        if (PythonDataObject::parsePyObject2StdString(seqItem, tempString) == -1)
+        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        Py_XDECREF(seqItem);
+        if (!ok)
         {
-            Py_XDECREF(seqItem);
-            PyErr_SetString(PyExc_TypeError, "elements of axis unit vector must be a string");
+            PyErr_SetString(PyExc_TypeError, "elements of axis unit vector must be string types");
             return -1;
         }
-        Py_XDECREF(seqItem);
         self->dataObject->setAxisUnit(i, tempString);
     }
 
@@ -1691,16 +1701,18 @@ PyObject* PythonDataObject::PyDataObject_getValueUnit(PyDataObject *self, void *
 
 int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
-    std::string unit;
     if (value == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "Cannot delete this attribute");
         return -1;
     }
 
-    if (PythonDataObject::parsePyObject2StdString(value, unit) == -1)
+    bool ok;
+    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+
+    if (!ok)
     {
-        PyErr_SetString(PyExc_TypeError, "The value unit must be a string");
+        PyErr_SetString(PyExc_TypeError, "unit value is no string type.");
         return -1;
     }
 
@@ -1737,16 +1749,18 @@ PyObject* PythonDataObject::PyDataObject_getValueDescription(PyDataObject *self,
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
-    std::string unit;
     if (value == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "Cannot delete this attribute");
         return -1;
     }
 
-    if (PythonDataObject::parsePyObject2StdString(value, unit) == -1)
+    bool ok;
+    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+
+    if (!ok)
     {
-        PyErr_SetString(PyExc_TypeError, "The value unit must be a string");
+        PyErr_SetString(PyExc_TypeError, "value description is no string type.");
         return -1;
     }
 
@@ -2284,7 +2298,7 @@ axisDescriptions : this attribute can directly be used to read/write the axis de
 PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject *self, PyObject *args)
 {
     int axisNum = 0;
-    const char *tagvalue = NULL;
+    PyObject *tagvalue = NULL;
 
     if (self->dataObject == NULL)
     {
@@ -2292,13 +2306,20 @@ PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject *self, PyO
         return NULL;
     }
 
-    if (!PyArg_ParseTuple(args, "is", &axisNum, &tagvalue))
+    if (!PyArg_ParseTuple(args, "iO", &axisNum, &tagvalue))
     {
-        PyErr_SetString(PyExc_ValueError, "Inputarguments are axisnumber and  value description");
         return NULL;
     }
 
-    std::string tagValString(tagvalue);
+    bool ok;
+    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "axis description value is no string type.");
+        return NULL;
+    }
+
     if (self->dataObject->setAxisDescription(axisNum, tagValString))
     {
         PyErr_SetString(PyExc_RuntimeError, "set axis description failed");
@@ -2330,7 +2351,7 @@ axisUnits : this attribute can directly be used to read/write the axis unit(s) o
 PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *args)
 {
     int axisNum = 0;
-    const char *tagvalue = NULL;
+    PyObject *tagvalue = NULL;
 
     if (self->dataObject == NULL)
     {
@@ -2338,12 +2359,20 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
         return NULL;
     }
 
-    if (!PyArg_ParseTuple(args, "is", &axisNum, &tagvalue))
+    if (!PyArg_ParseTuple(args, "iO", &axisNum, &tagvalue))
     {
         return NULL;
     }
 
-    std::string tagValString(tagvalue);
+    bool ok;
+    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "axis unit value is no string type.");
+        return NULL;
+    }
+
     if (self->dataObject->setAxisUnit(axisNum, tagValString))
     {
         PyErr_SetString(PyExc_RuntimeError, "set axis unit failed");
@@ -2371,7 +2400,7 @@ Do NOT use 'special character' within the tag key because they are not XML-save.
 PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
 {
     const char *tagName = NULL;
-    const char *tagvalue = NULL;
+    PyObject *tagvalue = NULL;
     double tagvalueD = 0;
     bool dType = true;
 
@@ -2379,9 +2408,8 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
     {
         PyErr_Clear();
         dType = false;
-        if (!PyArg_ParseTuple(args, "ss", &tagName, &tagvalue))
+        if (!PyArg_ParseTuple(args, "sO", &tagName, &tagvalue))
         {
-            PyErr_SetString(PyExc_ValueError, "input must be key (string) of tag and new tagvalue (str or double)");
             return NULL;
         }
     }
@@ -2397,7 +2425,15 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
     }
     else
     {
-        std::string tagValString(tagvalue);
+        bool ok;
+        std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_TypeError, "unit value is no string type.");
+            return NULL;
+        }
+
         if (self->dataObject->setTag(tagNameString, tagValString))
         {
             PyErr_SetString(PyExc_RuntimeError, "set tag value string failed");
@@ -2503,7 +2539,7 @@ newLine : {str}\n\
     The text to be added to the protocol.");
 PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject *args)
 {
-    const char *unit = NULL;
+    PyObject *unit = NULL;
 
     if (self->dataObject == NULL)
     {
@@ -2511,12 +2547,20 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject
         return NULL;
     }
 
-    if (!PyArg_ParseTuple(args, "s", &unit))
+    if (!PyArg_ParseTuple(args, "O", &unit))
     {
         return NULL;
     }
+
+    bool ok;
+    std::string unitString = PythonQtConversion::PyObjGetStdString(unit,true,ok);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "unit value is no string type.");
+        return NULL;
+    }
     
-    std::string unitString(unit);
     if (self->dataObject->addToProtocol(unitString))
     {
         PyErr_SetString(PyExc_RuntimeError, "Add line to protocol unit failed");
@@ -6124,6 +6168,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     PyObject *seqItem = NULL;
+    bool stringOk;
 
     if (dims == 1)
     {
@@ -6176,15 +6221,20 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             while (PyDict_Next(tempTag, &pos, &key, &value))
             {
-                if (parsePyObject2StdString(key, keyString) == 0)
+                keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+                if (stringOk)
                 {
                     if (PyFloat_Check(value)||PyLong_Check(value))
                     {
                         self->dataObject->setTag(keyString, PyFloat_AsDouble(value));
                     }
-                    else if (parsePyObject2StdString(value, tempString) == 0)
+                    else
                     {
-                        self->dataObject->setTag(keyString, tempString);
+                        tempString = PythonQtConversion::PyObjGetStdString(value, false, stringOk);
+                        if (stringOk)
+                        {
+                            self->dataObject->setTag(keyString, tempString);
+                        }
                     }
                 }
             }
@@ -6221,7 +6271,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                if (parsePyObject2StdString(seqItem, tempString) == 0)
+                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                if (stringOk)
                 {
                     self->dataObject->setAxisDescription(i, tempString);
                 }
@@ -6236,7 +6287,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                if (parsePyObject2StdString(seqItem, tempString) == 0)
+                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                if (stringOk)
                 {
                     self->dataObject->setAxisUnit(i, tempString);
                 }
@@ -6245,15 +6297,17 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         }
 
         // 6. valueUnit
-        tempTag = PyTuple_GetItem(tagTuple,6);
-        if (parsePyObject2StdString(tempTag, tempString) == 0)
+        tempTag = PyTuple_GetItem(tagTuple,6); //borrowed
+        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        if (stringOk)
         {
             self->dataObject->setValueUnit(tempString);
         }
 
         // 7. valueDescription
-        tempTag = PyTuple_GetItem(tagTuple,7);
-        if (PythonDataObject::parsePyObject2StdString(tempTag, tempString) == 0)
+        tempTag = PyTuple_GetItem(tagTuple,7); //borrowed
+        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        if (stringOk)
         {
             self->dataObject->setValueDescription(tempString);
         }

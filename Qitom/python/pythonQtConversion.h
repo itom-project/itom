@@ -81,6 +81,8 @@ public:
     static QString PyObjGetString(PyObject* val) { bool ok; QString s = PyObjGetString(val, false, ok); return s; }
     //! get string value from py object
     static QString PyObjGetString(PyObject* val, bool strict, bool &ok);
+    //! get std::string value from py object
+    static std::string PyObjGetStdString(PyObject* val, bool strict, bool &ok);
     //! get bytes from py object
     static QByteArray PyObjGetBytes(PyObject* val, bool strict, bool &ok);
     //! get int from py object
@@ -144,7 +146,6 @@ public:
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
 
     static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
-    static PyObject* convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg);
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");
     static PyObject* QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");

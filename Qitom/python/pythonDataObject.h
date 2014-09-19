@@ -103,7 +103,9 @@ class PythonDataObject
         static int PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static int copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObject* dataObj);
+#if ITOM_NPDATAOBJECT //parsePyObject2StdString is deprecated and only used in old npDataObject. Replace it by PythonQtConversion::PyObjToStdString
         static int parsePyObject2StdString(PyObject* pyObj, std::string &str);
+#endif
 
         //-------------------------------------------------------------------------------------------------
         // general members

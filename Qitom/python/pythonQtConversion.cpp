@@ -163,6 +163,56 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! conversion from PyObject* to std::string
+/*!
+    If val is a byte-object, it is directly converted into a std::string. If val is an unicode-object,
+    its value is converted using the current encoding and returned. In any other case the string-like-representation is only
+    returned if strict is set to false.
+
+    \param val is the given python object
+    \param strict indicates if only real byte or unicode objects can be converted to string
+    \param ok (ByRef) is set to true if conversion succeeded.
+    \return resulting QString
+*/
+std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bool& ok) 
+{
+    std::string r;
+    ok = true;
+    if (PyBytes_Check(val))
+    {
+        r = std::string(PyObjGetBytes(val, strict, ok));
+    }
+    else if (PyUnicode_Check(val))
+    {
+        PyObject *repr2 = PyUnicodeToPyByteObject(val);
+        if (repr2 != NULL)
+        {
+            r = std::string(PyObjGetBytes(repr2, strict, ok));
+            Py_XDECREF(repr2);
+        }
+    } 
+    else if (!strict) 
+    {
+        // EXTRA: could also use _Unicode, but why should we?
+        PyObject* str =  PyObject_Str(val);
+        if (str) 
+        {
+            r = PyObjGetStdString(str, strict, ok);
+            Py_DECREF(str);
+        } 
+        else 
+        {
+            ok = false;
+        }
+    } 
+    else 
+    {
+        ok = false;
+    }
+    return r;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to QString
 /*!
     If val is a byte-object, it is directly converted into a QString. If val is an unicode-object,
@@ -2568,84 +2618,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 
     PyErr_SetString(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
     return NULL;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonQtConversion::convertPyObjectToQVariant(PyObject *argument, QVariant &qVarArg)
-{
-    if (PyList_Check(argument))
-    {
-        PyObject* tempArg = NULL;
-        PyObject* retValue = NULL;
-        QVariantList list;
-        for (Py_ssize_t i = 0; i < PyList_Size(argument); i++)
-        {
-            tempArg = PyList_GetItem(argument, i);
-            list.append(QVariant());
-            retValue = convertPyObjectToQVariant(tempArg, list[i]);
-
-            if (PyErr_Occurred())
-            {
-                return NULL;
-            }
-            if (retValue != NULL) Py_DECREF(retValue);
-        }
-
-        qVarArg = list;
-
-        Py_RETURN_NONE;
-    }
-
-    //check for elementary types char*, int, double
-    char* textArg;
-    if (PyLong_Check(argument))
-    {
-        qVarArg = (int)PyLong_AsLong(argument); //overflow error is checked here and returned as error.
-    }
-    else if (PyFloat_Check(argument))
-    {
-        qVarArg = PyFloat_AsDouble(argument);
-    }
-    else if (PyArg_Parse(argument, "s", &textArg))
-    {
-        qVarArg = QString(textArg);
-    }
-    else if ((Py_TYPE(argument) == &ito::PythonDataObject::PyDataObjectType))
-    {
-        ito::PythonDataObject::PyDataObject *dataObj = (ito::PythonDataObject::PyDataObject*)argument;
-        if (dataObj)
-        {
-            if (dataObj->dataObject == NULL)
-            {
-                PyErr_SetString(PyExc_ValueError, "internal dataObject is NULL");
-            }
-            else
-            {
-                QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
-                qVarArg = QVariant::fromValue(value);
-                if (qVarArg.isNull())
-                {
-                    PyErr_SetString(PyExc_ValueError, "dataObject could not be converted to QVariant (QSharedPointer<ito::DataObject>)");
-                }
-            }
-        }
-        else
-        {
-            PyErr_SetString(PyExc_ValueError, "Cannot cast to python dataObject instance");
-        }
-    }
-    else
-    {
-        PyErr_SetString(PyExc_ValueError, "argument does not fit to char*, int, long or double");
-        qVarArg = QVariant();
-    }
-
-    if (PyErr_Occurred())
-    {
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
