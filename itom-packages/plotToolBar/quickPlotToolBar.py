@@ -13,15 +13,14 @@ import itom
 reloadModules = 1
 
 hasMatPlotLib = False
-hasMCPPFILTERS = True
+hasBASICFILTERS = True
+
+if not (plotLoaded("twipOGLFigure")):
+    print('Trying to use depreceated ItomIsoGLWidget')
 
 if not (itom.pluginLoaded("BasicFilters")):
     print('Not fully compatible. BasicFilter-DLL not present')
-    hasMCPPFILTERS = False
-
-#if not (itom.pluginLoaded("M++Filter")):
-    #print('Not fully compatible. M++Filter-DLL not present')
-    #hasMCPPFILTERS = False
+    hasBASICFILTERS = False
 
 if hasMatPlotLib == True:
     try:
@@ -60,14 +59,20 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             addMenu(MENU, hashName, self.myNameDelete)
             addMenu(BUTTON, hashName + "/ShowImage", "2D-Plot", self.show2D)
             addMenu(BUTTON, hashName + "/ShowLine", "Line-Plot", self.show1D)
-            addMenu(BUTTON, hashName + "/ShowISO", "Iso-Plot", self.show25D)
-            if hasMCPPFILTERS == True:
+            
+            if(plotLoaded("ItomIsoGLWidget") or plotLoaded("twipOGLFigure")):
+                addMenu(BUTTON, hashName + "/ShowISO", "Iso-Plot", self.show25D)
+                
+            if self.hasMCPP == True:
                 addMenu(BUTTON, hashName + "/ShowHistogramm", "Histogramm", self.showHist)
         if self.hasButtons == True:
             addButton(self.myNameDelete,"Show Image", self.show2D, ":/plots/icons/itom_icons/2d.png")
             addButton(self.myNameDelete,"Show Line", self.show1D, ":/plots/icons/itom_icons/1d.png")
-            addButton(self.myNameDelete,"Show ISO", self.show25D, ":/plots/icons/itom_icons/3d.png")
-            if hasMCPPFILTERS == True:
+            
+            if(plotLoaded("ItomIsoGLWidget") or plotLoaded("twipOGLFigure")):
+                addButton(self.myNameDelete,"Show ISO", self.show25D, ":/plots/icons/itom_icons/3d.png")
+            
+            if self.hasMCPP == True:
                 addButton(self.myNameDelete,"Show Histogramm", self.showHist, ":/plots/icons/itom_icons/histogra.png")
             
         
@@ -85,7 +90,8 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             if self.hasButtons == True:
                 removeButton(self.myNameDelete,"Show Image")
                 removeButton(self.myNameDelete,"Show Line")
-                removeButton(self.myNameDelete,"Show ISO")
+                if(plotLoaded("ItomIsoGLWidget") or plotLoaded("twipOGLFigure")):
+                    emoveButton(self.myNameDelete,"Show ISO")
                 if self.hasMCPP == True:
                     removeButton(self.myNameDelete,"Show Histogramm")
         except:
@@ -239,7 +245,10 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         result = 0
         
         try:
-            s="plot({},\"ItomIsoGLWidget\")"
+            if(plotLoaded("twipOGLFigure")):
+                s="plot({},\"twipOGLFigure\")"
+            else:
+                s="plot({},\"ItomIsoGLWidget\")"
             result = eval(s.format(dataObj))
         except:
             result = 0
@@ -406,8 +415,8 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         return [check, result]
 
 if(__name__ == '__main__'):
-    toolBarQuickPlot = quickPlotToolBar('Plotting Tools', hasMatPlotLib or True, hasMCPPFILTERS, not(userIsUser()))
+    toolBarQuickPlot = quickPlotToolBar('Plotting Tools', hasMatPlotLib or True, hasBASICFILTERS, not(userIsUser()))
     
 del hasMatPlotLib
-del hasMCPPFILTERS
+del hasBASICFILTERS
 # Wolfram Lyda, ITO, 2012 
