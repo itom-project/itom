@@ -359,8 +359,9 @@ namespace ito {
         {
             double minVal = meta->getMin();
             double maxVal = meta->getMax();
+            double eps = std::numeric_limits<double>::epsilon();
 
-            if (value < minVal || value > maxVal)
+            if (value <= (minVal - eps) || value >= (maxVal + eps))
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
             }
@@ -378,6 +379,92 @@ namespace ito {
                 {
                     return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
                 }
+            }
+        }
+        return ito::retOk;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding /*= true*/)
+    {
+        if (meta)
+        {
+            double value = doubleParam.getVal<double>();
+            double minVal = meta->getMin();
+            double maxVal = meta->getMax();
+            double eps = std::numeric_limits<double>::epsilon();
+            double step = meta->getStepSize();
+
+            if (value <= (minVal - eps) || value >= (maxVal + eps))
+            {
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+            }
+
+            if (!allowRounding || step < eps)
+            {
+                if (step >= eps)   
+                {
+                    //the following inequation must hold for an integer value R:
+                    //minVal - eps + R(step - eps) < value < minVal + eps + R(step + eps)
+                    //this leads to a comparison of R1 and R2 as follows:
+                    double eps = std::numeric_limits<double>::epsilon();
+                    int R1 = std::floor( (value - minVal + eps) / (step - eps)); //R for left inequation
+                    int R2 = std::ceil( (value - minVal -eps) / (step + eps)); //R for right inequation
+                    if (R1 != R2)
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                    }
+                }
+            }
+            else
+            {
+                double step = meta->getStepSize();
+                int multiple = qRound((value - minVal) / step);
+                value = minVal + multiple * step;
+                value = qBound(minVal, value, maxVal);
+                doubleParam.setVal<double>(value);
+            }
+        }
+        return ito::retOk;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding /*= true*/)
+    {
+        if (meta)
+        {
+            double minVal = meta->getMin();
+            double maxVal = meta->getMax();
+            double eps = std::numeric_limits<double>::epsilon();
+            double step = meta->getStepSize();
+
+            if (value <= (minVal - eps) || value >= (maxVal + eps))
+            {
+                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+            }
+
+            if (!allowRounding || step < eps)
+            {
+                if (step >= eps)   
+                {
+                    //the following inequation must hold for an integer value R:
+                    //minVal - eps + R(step - eps) < value < minVal + eps + R(step + eps)
+                    //this leads to a comparison of R1 and R2 as follows:
+                    double eps = std::numeric_limits<double>::epsilon();
+                    int R1 = std::floor( (value - minVal + eps) / (step - eps)); //R for left inequation
+                    int R2 = std::ceil( (value - minVal -eps) / (step + eps)); //R for right inequation
+                    if (R1 != R2)
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                    }
+                }
+            }
+            else
+            {
+                double step = meta->getStepSize();
+                int multiple = qRound((value - minVal) / step);
+                value = minVal + multiple * step;
+                value = qBound(minVal, value, maxVal);
             }
         }
         return ito::retOk;
@@ -487,7 +574,7 @@ namespace ito {
             case ito::ParamBase::CharArray:
                 {
                     const ito::CharMeta *meta = dynamic_cast<const ito::CharMeta*>(templateParam.getMeta());
-                    char* vals = param.getVal<char*>();
+                    const char* vals = param.getVal<const char*>();
                     if (meta)
                     {
                         for (int i = 0; i < param.getLen(); i++)
@@ -500,7 +587,7 @@ namespace ito {
             case ito::ParamBase::IntArray:
                 {
                     const ito::IntMeta *meta = dynamic_cast<const ito::IntMeta*>(templateParam.getMeta());
-                    int* vals = param.getVal<int*>();
+                    const int* vals = param.getVal<const int*>();
                     if (meta)
                     {
                         for (int i = 0; i < param.getLen(); i++)
@@ -513,7 +600,7 @@ namespace ito {
             case ito::ParamBase::DoubleArray:
                 {
                     const ito::DoubleMeta *meta = dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta());
-                    double* vals = param.getVal<double*>();
+                    const double* vals = param.getVal<const double*>();
                     if (meta)
                     {
                         for (int i = 0; i < param.getLen(); i++)
@@ -573,6 +660,144 @@ namespace ito {
             if (ok)
             {
                 retVal += validateParam(templateParam, p, true);
+            }
+            else
+            {
+                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Parameter could not be converted to destination type.").toLatin1().data());
+            }
+        }
+        else
+        {
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("type of parameter does not fit to requested parameter type").toLatin1().data());
+        }
+
+        return retVal;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal ParamHelper::validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict /*= true*/, bool mandatory /*= false*/, bool roundToSteps /*= false*/)
+    {
+        ito::RetVal retVal;
+        bool hasIndex = false;
+        int index;
+
+        //check whether param has an index
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
+        if (rx.indexIn(param.getName()) >= 0)
+        {
+            hasIndex = true;
+            index = rx.capturedTexts()[3].toInt();
+        }
+
+        if (!hasIndex && (templateParam.getType() == param.getType()))
+        {
+            switch(templateParam.getType())
+            {
+            case ito::ParamBase::Char:
+                {
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
+                }
+                break;
+            case ito::ParamBase::Int:
+                {
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
+                }
+                break;
+            case ito::ParamBase::Double:
+                {
+                    retVal += validateDoubleMetaAndRoundToStepSize(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param, roundToSteps); 
+                }
+                break;
+            case ito::ParamBase::CharArray:
+                {
+                    const ito::CharMeta *meta = dynamic_cast<const ito::CharMeta*>(templateParam.getMeta());
+                    const char* vals = param.getVal<const char*>();
+                    if (meta)
+                    {
+                        for (int i = 0; i < param.getLen(); i++)
+                        {
+                            retVal += validateCharMeta(meta, vals[i]);
+                        }
+                    }
+                }
+                break;
+            case ito::ParamBase::IntArray:
+                {
+                    const ito::IntMeta *meta = dynamic_cast<const ito::IntMeta*>(templateParam.getMeta());
+                    const int* vals = param.getVal<const int*>();
+                    if (meta)
+                    {
+                        for (int i = 0; i < param.getLen(); i++)
+                        {
+                            retVal += validateIntMeta(meta, vals[i]);
+                        }
+                    }
+                }
+                break;
+            case ito::ParamBase::DoubleArray:
+                {
+                    const ito::DoubleMeta *meta = dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta());
+                    double* vals = param.getVal<double*>();
+                    if (meta)
+                    {
+                        for (int i = 0; i < param.getLen(); i++)
+                        {
+                            retVal += validateDoubleMetaAndRoundToStepSize(meta, vals[i], roundToSteps);
+                        }
+                    }
+                }
+                break;
+            case ito::ParamBase::String:
+                {
+                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory); 
+                }
+                break;
+            case ito::ParamBase::HWRef & ito::paramTypeMask:
+                {
+                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory);
+                }
+                break;
+            }
+        }
+        else if (hasIndex && (templateParam.getType() & ito::ParamBase::Pointer) && (templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)))
+        {
+            if (index < 0 || index >= templateParam.getLen())
+            {
+                retVal += ito::RetVal::format(ito::retError, 0, QObject::tr("Index value is out of range [0, %i]").toLatin1().data(), templateParam.getLen()-1);
+            }
+
+            switch(templateParam.getType())
+            {
+            case ito::ParamBase::CharArray:
+                {
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
+                }
+                break;
+            case ito::ParamBase::IntArray:
+                {
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
+                }
+                break;
+            case ito::ParamBase::DoubleArray:
+                {
+                    retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>()); 
+                }
+                break;
+            default:
+                {
+                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Index-based parameter name requires an array-type parameter.").toLatin1().data());
+                }
+                break;
+            }
+        }
+        else if (!strict)
+        {
+            bool ok = false;
+            ito::ParamBase p = convertParam(param, templateParam.getType(), &ok);
+            if (ok)
+            {
+                retVal += validateAndCastParam(templateParam, p, true, roundToSteps);
+                param = p;
             }
             else
             {

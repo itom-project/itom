@@ -42,10 +42,13 @@ namespace ito
 
         static ito::RetVal validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory = false);
         static ito::RetVal validateDoubleMeta(const ito::DoubleMeta *meta, double value);
+        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding = true);
+        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding = true);
         static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value);
         static ito::RetVal validateCharMeta(const ito::CharMeta *meta, char value);
         static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false);
         static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false);
+        static ito::RetVal validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict = true, bool mandatory = false, bool roundToSteps = false);
         static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = NULL);
         static ito::RetVal getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly);
         static ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);

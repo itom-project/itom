@@ -61,6 +61,7 @@ namespace ito
         (void*)&ApiFunctions::mshowConfigurationDialog, /* [22] */
         (void*)&ParamHelper::updateParameters,           /* [23] */
         (void*)&ApiFunctions::mcreateFromNamedDataObject,    /* [24] */
+        (void*)&ParamHelper::validateAndCastParam,           /* [25] */
         NULL
     };
 

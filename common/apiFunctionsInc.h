@@ -172,10 +172,32 @@ namespace ito
         \param strict indicates whether the types of param and templateParam must exactly fit (true) or if compatible types (e.g. int vs. double) are allowed as well (false).
         \param mandatory is a boolean value indicating if the given parameter must contain a value (NULL as value for strings or dataObjects is no value).
         \return ito::RetVal (ito::retOk if the given instance fits the requirements, else ito::retError)
-        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta
+        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta, apiValidateAndCastParam
     */
     #define apiValidateParam \
         (*(ito::RetVal (*)(const ito::Param &templateParam, const ito::ParamBase &param, bool strict, bool mandatory)) ito::ITOM_API_FUNCS[13])
+
+    //! checks whether a given parameter fits to a template parameter and possibly casts the param to the required type.
+    /*!
+        This method checks whether a parameter param fits to the requirements of a template parameter.
+
+        At first the types of param and templateParam are checked. If they are not equal or not compatible (in case of strict==false), an
+        error with an appropriate error message is returned. After this, the value of param is checked with respect to the meta information,
+        that are optionally given in templateParam. If param does not fit to these requirements, an error is returned, too.
+
+        If templateParam is an array type and param is the corresponding non-array type, the validation succeeds if the name of param
+        is an index-base name, e.g. myParam[0]. Then it is assumed, that param is the value at the first position of templateParam.
+
+        \param templateParam is the template parameter. Its type as well as optionally available meta information is used for the check
+        \param param is the parameter to check. Only the current value and its type is used.
+        \param strict indicates whether the types of param and templateParam must exactly fit (true) or if compatible types (e.g. int vs. double) are allowed as well (false).
+        \param mandatory is a boolean value indicating if the given parameter must contain a value (NULL as value for strings or dataObjects is no value).
+        \param roundToStep if true, double parameters are checked with respect to the given min,max and increment. If the given value does not fit to the increment, it is cast to the next allowed value.
+        \return ito::RetVal (ito::retOk if the given instance fits the requirements, else ito::retError)
+        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta, apiValidateParam
+    */
+    #define apiValidateAndCastParam \
+        (*(ito::RetVal (*)(const ito::Param &templateParam, const ito::ParamBase &param, bool strict, bool mandatory, bool roundToStep)) ito::ITOM_API_FUNCS[25])
     
     //! Finds reference to desired parameter in parameter map of any plugin
     /*!
