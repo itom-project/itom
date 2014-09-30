@@ -52,7 +52,11 @@
     #define ITOM_POINTCLOUDLIBRARY 0
 #endif
 
-#define ITOM_PYTHONMATLAB 0
+#ifdef USEPYMATLAB
+    #define ITOM_PYTHONMATLAB 1
+#else
+    #define ITOM_PYTHONMATLAB 0
+#endif
 
 #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};
 #define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != NULL) { delete[] pointer; pointer = NULL;};
