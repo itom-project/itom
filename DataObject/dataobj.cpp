@@ -1467,6 +1467,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
         return 0;
     }
 
+    //check if the data has been allocated "en bloc" and delete the data first.
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
@@ -2624,6 +2625,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
    m_type = rhs.m_type;
    m_continuous = rhs.m_continuous;
    m_pRefCount = rhs.m_pRefCount;
+   m_owndata = rhs.m_owndata; //if the rhs object already shared its data with another owner, this object will also shared data with the original owner!
 
    if(rhs.m_dims > 0 || m_pRefCount)
    {

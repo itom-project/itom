@@ -1315,6 +1315,10 @@ class DATAOBJ_EXPORT DataObject
 
         DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0)
         {
+            //usually it is dangerous to say that m_owndata is 1 in this case, since we cannot be sure if the given planes are the owner of their data.
+            //however, in this case, owndata is unimportant since the created dataObject is always not continuous, therefore owndata will never
+            //be analyzed and the destructor of the dataObject never tries to delete the continuous data block. The underlying cv::Mats however still know
+            //whether they can or can't delete their data.
             this->create(dimensions, sizes, type, planes, nrOfPlanes);
         }
 
