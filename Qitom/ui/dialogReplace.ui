@@ -107,12 +107,12 @@
         <string>Find in</string>
        </property>
        <property name="buddy">
-        <cstring>comboBox</cstring>
+        <cstring>comboBoxFindIn</cstring>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="comboBoxFindIn">
        <property name="minimumSize">
         <size>
          <width>200</width>
@@ -284,7 +284,7 @@
   <tabstop>comboBoxFindText</tabstop>
   <tabstop>checkBoxReplaceWith</tabstop>
   <tabstop>comboBoxReplacedText</tabstop>
-  <tabstop>comboBox</tabstop>
+  <tabstop>comboBoxFindIn</tabstop>
   <tabstop>pushButtonFindNext</tabstop>
   <tabstop>pushButtonReplace</tabstop>
   <tabstop>pushButtonReplaceAll</tabstop>

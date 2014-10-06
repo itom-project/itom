@@ -40,7 +40,8 @@ public:
     DialogReplace(QWidget *parent = 0);
     ~DialogReplace() {}
 
-    void setData( const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo );
+//    void setData(const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo);
+    void setData(const QString &defaultText, const bool &rowSelected);
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -52,10 +53,10 @@ private:
     int comboBoxGetIndex(const QString text, QComboBox *comboBox);
     void setRegularMode(const bool isRegularMode);
 
-    int m_lineFrom;
+/*    int m_lineFrom;
     int m_indexFrom;
     int m_lineTo;
-    int m_indexTo;
+    int m_indexTo;*/
 
 private slots:
     void on_pushButtonFindNext_clicked();
@@ -70,8 +71,7 @@ public slots:
 signals:
     void findNext(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward = true, bool isQuickSeach = false);
     void replaceSelection(QString expr, QString replace);
-//    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int m_lineFrom, int m_indexFrom, int m_lineTo, int m_indexTo);
-    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord);
+    void replaceAll(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int findIn);
 };
 
 } //end namespace ito

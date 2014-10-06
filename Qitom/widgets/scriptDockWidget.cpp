@@ -1687,12 +1687,13 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     {
         m_pDialogReplace = new DialogReplace(getCanvas());
         m_pDialogReplace->setModal(false);
-        connect(m_pDialogReplace, SIGNAL(findNext(QString,bool,bool,bool,bool,bool,bool)), this, SLOT(findTextExpr(QString,bool,bool,bool,bool,bool,bool)));
-        connect(m_pDialogReplace, SIGNAL(replaceSelection(QString,QString)), this, SLOT(replaceTextExpr(QString,QString)));
-        connect(m_pDialogReplace, SIGNAL(replaceAll(QString,QString,bool,bool,bool)), this, SLOT(replaceAllExpr(QString,QString,bool,bool,bool)));
+        connect(m_pDialogReplace, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findTextExpr(QString, bool, bool, bool, bool, bool, bool)));
+        connect(m_pDialogReplace, SIGNAL(replaceSelection(QString, QString)), this, SLOT(replaceTextExpr(QString, QString)));
+        connect(m_pDialogReplace, SIGNAL(replaceAll(QString, QString, bool, bool, bool, int)), this, SLOT(replaceAllExpr(QString, QString, bool, bool, bool, int)));
     }
 
-    m_pDialogReplace->setData(defaultText, lineFrom, indexFrom, lineTo, indexTo);
+    m_pDialogReplace->setData(defaultText, (lineTo == -1) || (lineTo == lineFrom));
+//    m_pDialogReplace->setData(defaultText, lineFrom, indexFrom, lineTo, indexTo);
     m_pDialogReplace->show();
 }
 
@@ -1834,25 +1835,74 @@ void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord)
+void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int findIn)
 {
     bool success = true;
+    bool inRange = true;
     int count = 0;
 
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew != NULL)
     {
+        int tempLineFrom, tempIndexFrom, tempLineTo, tempIndexTo;
+        int lastLineFrom = -1;
+        int lastIndexFrom = -1;
+        int lastLineTo = -1;
+        int lastIndexTo = -1;
+        int lineFrom = -1;
+        int indexFrom = -1;
+        int lineTo = -1;
+        int indexTo = -1;
+        if (findIn)
+        {
+            sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+        }
+
         sew->beginUndoAction();
         sew->setCursorPosition(0, 0);
-        success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, false, true, -1, -1, true);
+        success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, false, true, lineFrom, indexFrom, true);
 
-        while (success)
+        if (findIn)
+        {
+            sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
+            inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));
+
+            if (inRange)
+            {
+                lastLineFrom= tempLineFrom;
+                lastIndexFrom = tempIndexFrom;
+                lastLineTo = tempLineTo;
+                lastIndexTo = tempIndexTo;
+            }
+        }
+
+        while (success && inRange)
         {
             sew->replace(replace);
             success = sew->findNext();
+
+            if (findIn)
+            {
+                sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
+                inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));
+
+                if (inRange)
+                {
+                    lastLineFrom= tempLineFrom;
+                    lastIndexFrom = tempIndexFrom;
+                    lastLineTo = tempLineTo;
+                    lastIndexTo = tempIndexTo;
+                }
+            }
+
             count++;
         }
         sew->endUndoAction();
+
+        if (!inRange && lastLineFrom > -1)
+        {
+            sew->setSelection(lastLineFrom, lastIndexFrom, lastLineTo, lastIndexTo);
+        }
     }
 
     QMessageBox::information(m_pDialogReplace, tr("find and replace"), tr("%1 occurrence(s) was replaced").arg(count));

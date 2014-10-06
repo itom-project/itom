@@ -152,19 +152,23 @@ DialogReplace::DialogReplace(QWidget *parent) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogReplace::setData( const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo )
+//void DialogReplace::setData(const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo)
+void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
 {
-    if (lineTo == lineFrom)
+//    if (lineTo == lineFrom)
+    if (rowSelected)
     {
-        m_lineFrom = -1;
+//        m_lineFrom = -1;
+        ui.comboBoxFindIn->setCurrentIndex(0);
     }
     else
     {
-        m_lineFrom = lineFrom;
+//        m_lineFrom = lineFrom;
+        ui.comboBoxFindIn->setCurrentIndex(1);
     }
-    m_indexFrom = indexFrom;
+/*    m_indexFrom = indexFrom;
     m_lineTo = lineTo;
-    m_indexTo = indexTo;
+    m_indexTo = indexTo;*/
 
     int index = comboBoxGetIndex(defaultText, ui.comboBoxFindText);
     if (index != -1)
@@ -266,9 +270,9 @@ void DialogReplace::on_pushButtonReplaceAll_clicked()
     bool regExpr = ui.checkBoxRegular->isChecked();
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
+    int findIn = ui.comboBoxFindIn->currentIndex();
 
-//    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, m_lineFrom, m_indexFrom, m_lineTo, m_indexTo);
-    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord);
+    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, findIn);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
