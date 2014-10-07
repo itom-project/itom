@@ -32,7 +32,6 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPointer>
-#include <QDoubleSpinBox>
 
 // CTK includes
 #include "popupWidget.h"
@@ -90,8 +89,7 @@ SliderWidgetPrivate::SliderWidgetPrivate(SliderWidget& object)
   this->Changing = false;
   this->ValueBeforeChange = 0.;
   this->BlockSetSliderValue = false;
-  this->SynchronizeMode = SliderWidget::NoSynchronize;
-    //SliderWidget::SynchronizeWidth | SliderWidget::SynchronizeDecimals;
+  this->SynchronizeMode = SliderWidget::SynchronizeWidth;
   this->SliderPopup = 0;
 }
 
@@ -332,8 +330,6 @@ void SliderWidget::startChanging()
     {
     return;
     }
-  //itom bugfix: d->ValueBeforeChange will never be changed if d->Changing is set to true before.
-  //bugfix: the two following lines have been swapped
   d->ValueBeforeChange = this->value();
   d->Changing = true;
 }
@@ -563,7 +559,6 @@ void SliderWidget::setTracking(bool enable)
 {
   Q_D(SliderWidget);
   d->Tracking = enable;
-  d->SpinBox->spinBox()->setKeyboardTracking(enable);
 }
 
 // -------------------------------------------------------------------------

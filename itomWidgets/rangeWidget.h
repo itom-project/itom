@@ -81,8 +81,8 @@ public:
   /// When setting this property, the maximum is adjusted if necessary
   /// to ensure that the range remains valid.
   /// Also the slider's current value is adjusted to be within the new range.
-  int minimum()const;
-  void setMinimum(int minimum);
+  virtual int minimum()const;
+  virtual void setMinimum(int minimum);
 
   ///
   /// This property holds the sliders and spinbox minimum value.
@@ -90,73 +90,73 @@ public:
   /// When setting this property, the maximum is adjusted if necessary
   /// to ensure that the range remains valid.
   /// Also the slider's current value is adjusted to be within the new range.
-  int maximum()const;
-  void setMaximum(int maximum);
+  virtual int maximum()const;
+  virtual void setMaximum(int maximum);
   /// Description
   /// Utility function that set the min/max in once
-  void setRange(int min, int max);
-  void range(int minimumAndMaximum[2])const;
+  virtual void setRange(int min, int max);
+  virtual void range(int minimumAndMaximum[2])const;
 
   ///
   /// This property holds the slider and spinbox minimum value.
   /// RangeWidget forces the value to be within the
   /// legal range: minimum <= minimumValue <= maximumValue <= maximum.
-  int minimumValue()const;
+  virtual int minimumValue()const;
 
   ///
   /// This property holds the slider and spinbox maximum value.
   /// RangeWidget forces the value to be within the
   /// legal range: minimum <= minimumValue <= maximumValue <= maximum.
-  int maximumValue()const;
+  virtual int maximumValue()const;
 
   ///
   /// Utility function that returns both values at the same time
   /// Returns minimumValue and maximumValue
-  void values(int &minValue, int &maxValue)const;
+  virtual void values(int &minValue, int &maxValue)const;
 
   ///
   /// This property holds the single step.
   /// The smaller of two natural steps that the
   /// slider provides and typically corresponds to the
   /// user pressing an arrow key.
-  int singleStep()const;
-  void setSingleStep(int step);
+  virtual int singleStep()const;
+  virtual void setSingleStep(int step);
 
   ///
   /// This property holds the spin box's prefix.
   /// The prefix is prepended to the start of the displayed value.
   /// Typical use is to display a unit of measurement or a currency symbol
-  QString prefix()const;
-  void setPrefix(const QString& prefix);
+  virtual QString prefix()const;
+  virtual void setPrefix(const QString& prefix);
 
   ///
   /// This property holds the spin box's suffix.
   /// The suffix is appended to the end of the displayed value.
   /// Typical use is to display a unit of measurement or a currency symbol
-  QString suffix()const;
-  void setSuffix(const QString& suffix);
+  virtual QString suffix()const;
+  virtual void setSuffix(const QString& suffix);
 
   ///
   /// This property holds the interval between tickmarks.
   /// This is a value interval, not a pixel interval.
   /// If it is 0, the slider will choose between lineStep() and pageStep().
   /// The default value is 0.
-  int tickInterval()const;
-  void setTickInterval(int ti);
+  virtual int tickInterval()const;
+  virtual void setTickInterval(int ti);
 
   ///
   /// This property holds the alignment of the spin boxes.
   /// Possible Values are Qt::AlignTop, Qt::AlignBottom, and Qt::AlignVCenter.
   /// By default, the alignment is Qt::AlignVCenter
-  void setSpinBoxAlignment(Qt::Alignment alignment);
-  Qt::Alignment spinBoxAlignment()const;
+  virtual void setSpinBoxAlignment(Qt::Alignment alignment);
+  virtual Qt::Alignment spinBoxAlignment()const;
 
   ///
   /// This property holds the alignment of the text inside the spin boxes.
   /// Possible Values are Qt::AlignLeft, Qt::AlignRight, and Qt::AlignHCenter.
   /// By default, the alignment is Qt::AlignLeft
-  void setSpinBoxTextAlignment(Qt::Alignment alignment);
-  Qt::Alignment spinBoxTextAlignment()const;
+  virtual void setSpinBoxTextAlignment(Qt::Alignment alignment);
+  virtual Qt::Alignment spinBoxTextAlignment()const;
 
   ///
   /// This property holds whether slider tracking is enabled.
@@ -164,42 +164,42 @@ public:
   /// signal while the slider or spinbox is being dragged. If tracking is
   /// disabled, the widget emits the valueChanged() signal only when the user
   /// releases the slider or spinbox.
-  void setTracking(bool enable);
-  bool hasTracking()const;
+  virtual void setTracking(bool enable);
+  virtual bool hasTracking()const;
 
   ///
   /// Set/Get the auto spinbox width
   /// When the autoSpinBoxWidth property is on, the width of the SpinBox is
   /// set to the same width of the largest QSpinBox of its
   // RangeWidget siblings.
-  bool isAutoSpinBoxWidth()const;
-  void setAutoSpinBoxWidth(bool autoWidth);
+  virtual bool isAutoSpinBoxWidth()const;
+  virtual void setAutoSpinBoxWidth(bool autoWidth);
   
   ///
   /// When symmetricMoves is true, moving a handle will move the other handle
   /// symmetrically, otherwise the handles are independent. False by default
-  bool symmetricMoves()const;
-  void setSymmetricMoves(bool symmetry);
+  virtual bool symmetricMoves()const;
+  virtual void setSymmetricMoves(bool symmetry);
 
   /// Return the slider of the range widget.
   /// \sa minimumSpinBox(), maximumSpinBox()
-  RangeSlider* slider()const;
+  virtual RangeSlider* slider()const;
   /// Return the minimum spinbox.
   /// \sa maximumSpinBox(), slider()
-  QSpinBox* minimumSpinBox()const;
+  virtual QSpinBox* minimumSpinBox()const;
   /// Return the maximum spinbox.
   /// \sa minimumSpinBox(), slider()
-  QSpinBox* maximumSpinBox()const;
+  virtual QSpinBox* maximumSpinBox()const;
 
 public Q_SLOTS:
   ///
   /// Reset the slider and spinbox to zero (value and position)
-  void reset();
-  void setMinimumValue(int value);
-  void setMaximumValue(int value);
+  virtual void reset();
+  virtual void setMinimumValue(int value);
+  virtual void setMaximumValue(int value);
   ///
   /// Utility function that set the min and max values at once
-  void setValues(int minValue, int maxValue);
+  virtual void setValues(int minValue, int maxValue);
 
 Q_SIGNALS:
   /// Use with care:
@@ -213,16 +213,16 @@ Q_SIGNALS:
   void rangeChanged(int min, int max);
 
 protected Q_SLOTS:
-  void startChanging();
-  void stopChanging();
-  void changeValues(int newMinValue, int newMaxValue);
-  void changeMinimumValue(int value);
-  void changeMaximumValue(int value);
+  virtual void startChanging();
+  virtual void stopChanging();
+  virtual void changeValues(int newMinValue, int newMaxValue);
+  virtual void changeMinimumValue(int value);
+  virtual void changeMaximumValue(int value);
   /// A spinbox value has been modified, update the slider.
-  void setSliderValues();
-  void setMinimumToMaximumSpinBox(int minimum);
-  void setMaximumToMinimumSpinBox(int maximum);
-  void onSliderRangeChanged(int min, int max);
+  virtual void setSliderValues();
+  virtual void setMinimumToMaximumSpinBox(int minimum);
+  virtual void setMaximumToMinimumSpinBox(int maximum);
+  virtual void onSliderRangeChanged(int min, int max);
 
 protected:
   virtual bool eventFilter(QObject *obj, QEvent *event);

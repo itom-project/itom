@@ -1143,10 +1143,14 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
     "ito.AddIn.InterfaceBase/1.1.24",//version until 2014-02-09 (outdated: restructuring to itomCommonLib and itomCommonQtLib for a better binary compatibility)
     "ito.AddIn.InterfaceBase/1.2.0", //outdated on 2014-03-14 due to change in AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL); (const void *data changed to const char *data) (Qt5 bugfix)
+    "ito.AddIn.InterfaceBase/1.2.1", //outdated on 2014-10-06 due to changes in APIs, retVal.h and itomWidgets-project. The next version 1.3.0 is the version for the setup 1.3.0.
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.2.1";
+static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.3.0";
+
+//this define exists since itom 1.3.0
+#define ITOM_ADDININTERFACE_VERSION 0x010300
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

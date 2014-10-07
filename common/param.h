@@ -803,11 +803,9 @@ namespace ito
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<int>: non existent parameter");
-                    return 0;
 
                 default:
                     throw std::logic_error("Param::getVal<int>: Non-matching type!");
-                    return 0;
             }
         }
     };
@@ -846,11 +844,9 @@ namespace ito
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<char>: non existent parameter");
-                    return 0;
 
                 default:
                     throw std::logic_error("Param::getVal<char>: Non-matching type!");
-                    return 0;
             }
         }
     };

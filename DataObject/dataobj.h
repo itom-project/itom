@@ -1897,7 +1897,6 @@ static ito::tDataType convertCmplxTypeToRealType(ito::tDataType cmplxType)
 */
 static ito::tDataType guessDataTypeFromCVMat(const cv::Mat* mat, ito::RetVal &retval)
 {
-    //this method was added 2014-05-09 without changing the binary compatibility of the dataObject library
     if (mat)
     {
         switch(mat->type())
