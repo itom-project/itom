@@ -2321,10 +2321,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                         QString str1("signal_");
                         str1.append(meth.name());
                         QString str2(meth.methodSignature());
-                        if (propInfoMap.contains(meth.name().toLatin1()) && !propInfoMap[methName.toLatin1()].isEmpty())
+                        if (propInfoMap.contains(meth.name()) && !propInfoMap[meth.name()].isEmpty())
                         {
                             str2.append(" -> ");
-                            str2.append(propInfoMap[meth.name().toLatin1()]);
+                            str2.append(propInfoMap[meth.name()]);
                         }
                         tmpPropMap.insert(str1, str2);
                         #else
@@ -2354,10 +2354,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             QString str1("slot_");
                             str1.append(meth.name());
                             QString str2(meth.methodSignature());
-                            if (propInfoMap.contains(meth.name().toLatin1()) && !propInfoMap[methName.toLatin1()].isEmpty())
+                            if (propInfoMap.contains(meth.name()) && !propInfoMap[meth.name()].isEmpty())
                             {
                                 str2.append(" -> ");
-                                str2.append(propInfoMap[meth.name().toLatin1()]);
+                                str2.append(propInfoMap[meth.name()]);
                             }
                             tmpPropMap.insert(str1, str2);
                         #else

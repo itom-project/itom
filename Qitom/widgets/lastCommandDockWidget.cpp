@@ -32,7 +32,7 @@
 #include <qsettings.h>
 #include <qmimedata.h>
 #include <QAbstractScrollArea>
-#include <QScrollBar.h>
+#include <qscrollbar.h>
 
 
 namespace ito {
