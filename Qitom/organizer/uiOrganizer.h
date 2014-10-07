@@ -300,6 +300,7 @@ public:
         infoShowItomInheritance = 0x0002,
         infoShowAllInheritance =0x0004 | infoShowItomInheritance
     };
+
     typedef QMap<QString,QString> tQMapArg;
 
     UiOrganizer();
@@ -436,8 +437,8 @@ private slots:
 
 };
 
-Q_DECLARE_METATYPE(ito::UiOrganizer::tQMapArg*)
-
 } //namespace ito
+
+Q_DECLARE_METATYPE(ito::UiOrganizer::tQMapArg*)
 
 #endif

@@ -2181,7 +2181,7 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQ
 {
     ito::RetVal retval;
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QWidget* newWidget = uiOrg->loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::WindowMode::ModeStandaloneWindow, NULL);
+    QWidget* newWidget = uiOrg->loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::ModeStandaloneWindow, NULL);
     if (newWidget)
     {
         retval += uiOrg->getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, objInfo);
