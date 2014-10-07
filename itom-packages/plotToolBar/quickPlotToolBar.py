@@ -15,11 +15,13 @@ reloadModules = 1
 hasMatPlotLib = False
 hasBASICFILTERS = True
 
+loadWarnings = []
+
 if not (plotLoaded("twipOGLFigure")):
-    print('Trying to use depreceated ItomIsoGLWidget')
+    loadWarnings.append("- 3D plot 'twipOGLFigure' not found. Try to use deprecated 'ItomIsoGLWidget' instead.")
 
 if not (itom.pluginLoaded("BasicFilters")):
-    print('Not fully compatible. BasicFilter-DLL not present')
+    loadWarnings.append("- Not all functions available since plugin 'BasicFilters' not available.")
     hasBASICFILTERS = False
 
 if hasMatPlotLib == True:
@@ -27,7 +29,7 @@ if hasMatPlotLib == True:
         import matplotlib
         matplotlib.use('module://mpl_itom.backend_itomagg', False)
     except:
-        print('Not fully compatible. MatPlotLib not present')
+        loadWarnings.append("- Not all functions available since Python package 'matplotlib' not available.")
         hasMatPlotLib = False
 
 if hasMatPlotLib == True:
@@ -35,6 +37,9 @@ if hasMatPlotLib == True:
     import numpy as np
     from matplotlib import cm
     from matplotlib import pyplot as plt
+    
+if len(loadWarnings) > 0:
+    print("Warning while loading 'QuickPlotToolBar':\n", "\n".join(loadWarnings))
 
 class quickPlotToolBar(abstractObjInteractionToolBar):
     '''
