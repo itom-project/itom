@@ -21,7 +21,7 @@ You are welcome to use and test **itom**. If you want to you are invited to part
 
 ### Contact ###
 
-**itom** is being developped since 2011 by
+**itom** is being developed since 2011 by
 
 > [Institut für Technische Optik](http://www.uni-stuttgart.de/ito)
 
