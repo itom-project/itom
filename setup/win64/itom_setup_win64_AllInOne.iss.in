@@ -195,7 +195,9 @@ Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\glDisplay\*.*"; DestDir: "{app}\plugins\glDisplay"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\*.*"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\IDSuEye\*.*"; DestDir: "{app}\plugins\IDSuEye"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\*.*"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\plugins\MSMediaFoundation"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder recursesubdirs
@@ -207,6 +209,7 @@ Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugi
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Vistek\*.*"; DestDir: "{app}\plugins\Vistek"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio"; Flags: promptifolder recursesubdirs
