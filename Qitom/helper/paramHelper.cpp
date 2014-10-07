@@ -361,7 +361,7 @@ namespace ito {
             double maxVal = meta->getMax();
             double eps = std::numeric_limits<double>::epsilon();
 
-            if (value <= (minVal - eps) || value >= (maxVal + eps))
+            if (value < (minVal - eps) || value > (maxVal + eps))
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
             }
