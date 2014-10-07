@@ -10,7 +10,6 @@ addButton("toolBarQuickPlot","Show Line","toolBarQuickPlot.show1D()", "icons_m/1
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 
 import itom
-reloadModules = 1
 
 hasMatPlotLib = False
 hasBASICFILTERS = True
@@ -424,4 +423,5 @@ if(__name__ == '__main__'):
     
 del hasMatPlotLib
 del hasBASICFILTERS
+del loadWarnings
 # Wolfram Lyda, ITO, 2012 
