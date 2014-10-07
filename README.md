@@ -23,13 +23,12 @@ You are welcome to use and test **itom**. If you want to you are invited to part
 
 **itom** is being developped since 2011 by
 
-[Institut für Technische Optik](http://www.uni-stuttgart.de/ito)
-University of Stuttgart
-Stuttgart
-Germany
+> [Institut für Technische Optik](http://www.uni-stuttgart.de/ito)
+> University of Stuttgart
+> Stuttgart
+> Germany
 
 in co-operation with 
-[twip Optical Solutions GmbH](http://www.twip-os.com)
-Stuttgart
-Germany
-
+> [twip Optical Solutions GmbH](http://www.twip-os.com)
+> Stuttgart
+> Germany
