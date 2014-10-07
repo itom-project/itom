@@ -8,7 +8,63 @@ This changelog only contains the most important changes taken from the commit-me
 itom
 ********
 
-**Head Revision (2014-05-18)**
+**Version 1.3.0 (2014-10-07)**
+
+(more than 150 commits in itom repository)
+
+* fixes big bug in assignment operator of dataObjects if d2=d1 and d1 shares its data with an external object (owndata=0). In the fixed version, d2 also has the owndata flag set to 0 (before 1 in any cases!)
+* replace dialog for replacing text within a selection fixed
+* API function apiValidateAndCastParam added. This is an enhanced version of apiValidateParam used in setParam of plugins. The enhanced version is able to modify possible double parameters in order to fit to possibly given step sizes.
+* support of PyMatlab integrated into CMake system (check BUILD_WITH_PYMATLAB to enable the python module 'matlab' and indicate the include directory and some libraries of Matlab)
+* Add twipOGL-Plugin (from twip Optical Solutions GmbH) to plotToolBar if present
+* dataObject: axisUnits, axisDescriptions, valueUnit and valueDescription can now handle encoded strings (different than UTF8)
+* QDate, QDateTime and QTime are now marshalled to python datetime.date, datetime.datetime and datetime.time (useful for QDateTimeEdit or QDateEdit widgets)
+* text from console widget is never deleted when drag&dropping it to any script widget
+* state of python reloader is stored and restored using the settings
+* warning is displayed if figure class could not be found and default fallback is applied
+* :py:func:`itom.plotLoaded` and :py:func:`plotHelp` added
+* Improved protocol functionality for dataObject related python functions
+* Fixed missing copy of rotationMatrix metadata for squeeze() function in dataobj.cpp
+* Added copyAxisTagsTo and copyTagMapTo to ito::absFunc, ito::realFunc, ito::imagFunc, ito::argFunc to keep dataTags
+* example about modal property dialogs added to demo folder
+* QScintilla version string added to version helper and about dialog
+* :py:func:`itom.clc` added to clear the command line from a script (useful for overfull command line output)
+* AutoInterval class published in common-SDK. This class can be used as datatype for an min/max-interval (floats) with an additional auto-flag.
+* public methods **selectedRows**, **selectedTexts** and **selectRows** of QListWidget can now be called via :py:meth:`itom.uiItem.call`
+* itom.dataObject operator / and /= for scalar operand implemented (via inverse multiplication operator) fixed casting issue in multiplication operator for double scalar (multiply with double precision -> then cast)
+* configured QPropertyEditor as shared library (dll) instead of static library. This was the last library that was not shared yet.
+* reduced size of error messages during live image grab
+* fix when reloading module, that contains syntax or other errors: these errors are displayed for better handling
+* If an instance of QtDesigner is opened and then an ui-file is loaded, this file was opened in a new instance of QtDesigner. This is fixed now.
+* some crashes when not starting with full user rights are fixed
+* Added demofile for data fitting
+* if last tab in script window is closed, the entire window is closed as well
+* types ito::DataObject, QMap<QString, ito::Param>... are no registered for signal/slot in addInManager such that this needs not to be done in plugins any more.
+* class **enum** in *itomPackages* renamed to **itomEnum** since Python 3.3 introduces its own class **enum**.
+* check for AMD-CPUs and adjust environment variable for these processors in order to avoid a KMP_AFFINITY error using Matplotlib (and OpenMP).
+* enhanced output for class function :py:meth:`itom.ui.info`.
+* optional properties argument added to commands :py:func:`itom.plot` and :py:func:`itom.liveImage`. Pass a dictionary with properties that are directly applied to the plot widget at startup.
+* recently opened file menu added to itom main window and script windows
+* improved loaded plugins dialog
+* some fixes in data object: fixed constructor for existing cv::Mat and type RGBA32, fixed bug in assignment operator for rhs-dataObjects that do not own their data block.
+* property dialog documented
+* improved python module auto reloader integrated into itom (based on iPython implementation). This reloader can be enabled by the menu script >> reload modules.
+* some examples from the matplotlib gallery added to the demo scripts
+* bugfix when changing the visibility of undocked plots
+* the designer plugin *matplotlib* has now the same behaviour than other plot widgets (can be docked into main window, property toolbox available...)
+* some improvements with tooltip texts displaying optional python syntax bugs (python module frosted required)
+* unified signatures passed to Q_ARG-macro of Qt.
+* the search bar is not hidden again if Ctrl-F is pressed another time.
+* detailed descriptions of plugins are now also displayed in help toolbox
+* improvements to reject the insertion of breakpoints in commented or empty lines
+* improved breakpoint toolbox that allows en-/disabling single or all breakpoints, deleting breakpoints... Breakpoints are reloaded at new startup.
+* unused or duplicated code removed and cleaned
+* project *itomWidgets* synchronized to changes in mother project commonCTK 
+* german translations improved
+* itom and the plugins now support a build with Qt5. The setup is still compiled with Qt4.8.
+* support for CMake 3.0 added
+
+**Version 1.2.0 (2014-05-18)**
 
 (more than 300 commits in itom repository)
 
@@ -84,7 +140,32 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
-**Head Revision (2014-05-18)**
+**Version 1.3.0 (2014-10-07)**
+
+(more than 100 commits in plugins repository)
+
+* plugin *Thorlabs CCS* for spectrometers from Thorlabs added (dataIO plugin). This plugin requires further drivers from the Thorlabs device.
+* plugin *AerotechA3200* added to support the deprecated A3200 interface from company Aerotech.
+* fixes in plugin *PIPiezoCtrl*: parameters delayOffset, delayProp and async are now really transmitted to the device (did nothing before)
+* fixes in *PCOCamera* plugin with camera *PCO.1200s* that does not support the setPoint temperature.
+* all plugins adapted for Qt4 and Qt5.
+* plugin *dispWindow* adapted to OpenGL 3.1 and 4.0. Deprecated shader commands replaced. Parameters 'lut' and 'gamma' are now working and the gamma correction is enabled if parameter *gamma*=1
+* filter *cvUndistort* in *OpenCVFilters* can now handle every data type as input.
+* fixes some bugs when importing csv files
+* filter *cvFlipFilter* also supports multi plane flipping for 3D data objects.
+* plugin *GLDisplay* added that allows displaying one or multiple arrays on the screen using OpenGL to provide a very fast flip between several images.
+* many enhancements and improvments in plugin *pclTools* (mainly done by company twip optical solutions GmbH): filter for fitting spheres to point clouds added, filter to calculate distances to a given model added, filter to prepare a display of these distances added, methods partially OpenMP parallelized, filter for fitting cones to point clouds added, filter for projecting point clouds to models added.
+* plugin *PGRFlyCapture* now runs under linux, general changes to support Grasshopper3 cameras (color supported as well).
+* some fixes in plugin *cmu1394* and optional byte swapping for 16bit camera added
+* improvements in camera plugin *Vistek*
+* improved error handling when trying to load unsupported tiff formats
+* filters *gaussianFilter* and *gaussianFilterEpsilon* added to plugin *BasicFilters*
+* filters *cvRotate180*, *cvRotateM90* and *cvRotateP90* added to *OpenCVFilters*
+* improvements and better synchronization to camera in plugin *Ximea*. Experimental shading correction added.
+* bugfix when loading a x3p file -> yscale has not been loaded correctly
+* camera plugin *IDS uEye* added to support cameras from company IDS Imaging (based on their driver 4.41)
+
+**Version 1.2.0 (2014-05-18)**
 
 (more than 200 commits in plugins repository)
 
@@ -119,7 +200,28 @@ there is no continuous changelog for these version
 Designer Plugins
 ******************
 
-**Head Revision (2014-05-18)**
+**Version 1.3.0 (2014-10-07)**
+
+(more than 40 commits in designerPlugins repository)
+
+* The properties *xAxisInterval* and *yAxisInterval* return the currently visible or set interval (bugfix)
+* overlay image of *itom2dqwtplot* can now be read out by the property *overlayImage*
+* Firsts steps for an auto-documentation of designer plugins
+* Linecut of *itom2dqwtplot* can now also be set to the horizontal / vertical line containing the global minimum or maximum
+* Some bugfixes concerning the display of dataObjects that are shallow copies from numpy arrays
+* Fixes a bug that showed errors when a linecut and a z-stack-cut of *itom2dqwtplot* and a 3d data object is visible at the same time
+* Mode for single and multi row or column display of *itom1dqwtplot* for 2d data objects as input
+* Center marker in *itom2dqwtplot* can be adjusted in size and pen using the general style settings for designer plugins (itom.ini setting file only)
+* improvements and rework of zoomer, panner and magnifier with or without fixed aspect ratio for *itom2dqwtplot* and *itom1dqwtplot* 
+* magnifier of *itom2dqwtplot* and *itom1dqwtplot* now also works with Ctrl+mousewheel
+* pickPoints event now also works in *itom2dqwtplot* if the zoomed rectangle or the magnification is changed during interaction
+* improved unit switches in GUI in *motorController*
+* slots added for saving and rendering to pixmap for *itom2dqwtplot*
+* property *grid* added to *itom1dqwtplot* to show/hide a grid
+* some problems fixed with point selectors in *itom1dqwtplot*
+* matplotlib is now a designer plugin based on AbstractFigure like other plots as well. It can then be docked into the main window.
+
+**Version 1.2.0 (2014-05-18)**
 
 (more than 80 commits in designerPlugins repository)
 
