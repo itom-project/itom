@@ -78,6 +78,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
     Q_CLASSINFO("prop://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
     Q_CLASSINFO("prop://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
 
+    Q_CLASSINFO("slot://refreshPlot", "Triggeres an update of the current plot window.")
+
     public:
         enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
         enum CompilerFeatures 

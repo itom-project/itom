@@ -59,6 +59,8 @@ class ITOMCOMMONQT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
     
+    Q_CLASSINFO("slot://setSource", "The (virtual) slot source is usually invoked by any connected camera.")
+    Q_CLASSINFO("slot://setLinePlot", "This (virtual) slot can be invoked by python to trigger a lineplot.")
 
 public:
     AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) : 
