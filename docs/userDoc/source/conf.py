@@ -210,7 +210,7 @@ latex_paper_size = 'a4'
 
 latex_documents = [
   # Gesam: FEHLER
-  ('index', 'itom_doc.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
+  ('index', 'itom_doc.tex', u'itom Documentation', u'Institut fuer Technische Optik (ITO), University Stuttgart', 'manual'),
   
   # script-language: FEHLER
   #('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
