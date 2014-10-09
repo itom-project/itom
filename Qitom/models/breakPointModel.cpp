@@ -345,6 +345,13 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
     else // second level item
     {
         int breakPointIndex = getBreakPointIndex(index);
+
+        //security check (the case already occurred that breakPointIndex returned -1)
+        if (breakPointIndex < 0 || breakPointIndex >= m_breakpoints.size()) 
+        {
+            return QVariant();
+        }
+
         const BreakPointItem item = m_breakpoints[breakPointIndex];
 
         if(role == Qt::DisplayRole)
