@@ -3021,7 +3021,7 @@ buffer : {`dataObject`, `bytearray`, `bytes` or `str`} \n\
     \n\
     * cameras, grabber: the buffer must be a `dataObject` (no length parameter): A reference (shallow copy) to the internal memory of the camera plugin is set to the given data object. \
     Therefore its content may change if a new image is being acquired by the camera. Consider taking a deep copy if the image (`dataObject.copy`) or use the method `copyVal`. \n\
-    * other IO-devices (AD-converters): The buffer must be an object of type bytearray, bytes or unicode string. The length parameter is then set to the size of the buffers. The effective \
+    * other IO-devices (AD-converters): The buffer must be an object of type `dataObject`, bytearray, bytes or unicode string. The length parameter is then set to the size of the buffers. The effective \
     size of the used memory in buffer is returned. \n\
 length : {int}, optional \n\
     size of the given buffer. This value is usually automatically determined and must not be given. \n\
@@ -3306,7 +3306,7 @@ Parameters \n\
 ----------- \n\
 dataObjectOrBuffer : {`dataObject`, `bytearray`, `bytes`, `str`}\n\
     value to send to plugin. For an ADDA plugin, a `dataObject` is required whose content is sent to the analogous outputs of the device. For other dataIO \n\
-    plugins buffer values like `bytearray`, `bytes` or `unicode string` is required. \n\
+    plugins buffer values like `bytearray`, `bytes` or `unicode string` are required. \n\
 length : {int}, optional \n\
     usually this value is not required, since the length of the buffer is automatically extracted from the given objects and 1 for a `dataObject`");
 

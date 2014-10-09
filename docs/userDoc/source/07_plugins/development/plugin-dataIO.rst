@@ -10,15 +10,14 @@ Plugin class - DataIO
 Base idea behind any DataIO
 -----------------------------
 
-* The DataIO operates with plugged systems require input and output, in generally cameras and frame grabbers but also serial ports or AD-DA-converter.
-* One opened DataIO handles only one connected device. More cameras or ADDA-converter of the same type should be managed with a corresponding number of DataIO-ports.
+* Plugins of class **dataIO** operate systems that have input or output data, e.g. frame grabbers, cameras, serial ports, AD-DA-converters...
+* Every single instance of class *dataIO* has an exclusive communication with one connected device. More cameras or ADDA-converter of the same type should be managed with a corresponding number of instances.
 * Depending on the plugin, more than one DataIO can be separately controlled by the plug-number or the vendor/camera-ID.
 * Like any other plugin, every DataIO has a set of parameters, which can be set/get using python by the commands **setParam** and **getParam**.
 * Every DataIO is executed in its own thread.
-* Every DataIO can have one configuration dialog and one docking widget toolbox.
-* All parameters are stored in **m_params**. They can be read or changed by methods **getParam** and **setParam**. Some parameters are read only!
-* If parameters of DataIO changes, they also must be updated in the **m_params**-map.
-* To connection between the dataIO-device (e.g. the camera) is done within the c++-method **init**. The initialization parameter should be given to **m_params**. In the end it must be disconnected by method **close**.
+* Every DataIO can have one configuration dialog and one toolbox (dockWidget).
+* All parameters are stored in the member **m_params** of type QMap. They can be read or changed by methods **getParam** and **setParam**. Some parameters are read only!
+* If parameters of DataIO change, they also must be updated in the **m_params**-map and the signal **parametersChanged** must be emitted.
 * The data acquisition is performed according to the grabber subtype. These subtypes are 'typeGrabber', 'typeADDA' and 'typeRawIO'.
 
 Grabber plugin
@@ -26,7 +25,7 @@ Grabber plugin
 
 This is a subtype of DataIO for camera / framegrabber communication. Plugins of this type are inherited from **ito::AddInGrabber**. The data acquisition is managed as follows:
 
-* The methods **startDevice** and **stopDevice** opens and closes the capture logic of the devices to reduce CPU-load. For serial ports these functions are unnecessary. 
+* The methods **startDevice** and **stopDevice** open and close the capture logic of the devices to reduce CPU-load. For serial ports these functions are unnecessary. 
 * The method **acquire** starts the DataIO grabbing a frame with the current parameters. The function returns after sending the trigger. The function should be callable several times without calling get-/copyVal().
 * The methods **getVal** and **copyVal** are the external interfaces for data grabbing. They call **retrieveData**. The function should not be callable without a previous call of **acquire** and than only once.
 * In **retrieveData** the data transfer is done and frame has to copied. The function blocks until the triggered data is copied. In case retrieveData is called by getVal the frame has to be copied to **m_data**, an internal **dataObject**.
@@ -47,7 +46,7 @@ A typical sequence in python is
     device.stopDevice()
 
     
-A sample header file of the DataIO's plugin class is illustrated in the following code snippet:
+A sample header file of the DataIO's plugin class might look like the following snippet:
 
 .. code-block:: c++
     :linenos:
@@ -155,11 +154,80 @@ If desired implement the following optional parameters in the map **m_params**:
 AD-Converters
 -------------------------------------
 
-AD-Converter plugins are directly inherited from **ito::AddInDataIO**.
+AD-Converter plugins are directly inherited from **ito::AddInDataIO**. An AD-DA-converter plugin has the following characteristics:
 
-.. todo::
+* It can communicate with 1 or multiple input and/or output channels. To set the number of total channels and to define if a channel is an incoming or outgoing channel, the plugin's parameters or initialization parameters should be used. Sometimes it is not possible to change the direction after initialization, this depends on the device.
+* The method **startDevice** must be called like in a camera before the first usage of the device in order to establish the connection. Create a no-operation method, if this is not necessary for your device. It is possible, that startDevice is called multiple time, therefore count the number of starts and only establish the connection upon the first call.
+* As counterpart to **startDevice**, the method **stopDevice** disconnects the device. For every call of **startDevice**, **stopDevice** must be called and at the last call, the connection should be interrupted.
+* In difference to a camera dataIO plugin, the method **acquire** can be used to start the acquisition of a serie of input data values at all previously selected input channels. It is also possible to create an empty function here. Then the reading-process of new single data values for each input channel is totally executed in the method **getVal**.
+* The method **copyVal** needs not to be implemented for AD-DA-converters.
+* Method **getVal**: This method registers input values from all previously selected input channels (depending on your implementation and parametrization it is also possible to register multiple values per channel) and returns these values to the user. 
+
+    * If you have one or multiple input channels, use the definition **getVal(void \*dObj, ItomSharedSemaphore \*waitCond)**. The parameter dObj is then a pointer to ito::DataObject and can be cast to this class. Return an MxN data object, where M corresponds to the number of read input channels and N corresponds to the data samples per channel. If you want to, you can also force the user to previously allocate the given data object such that you can get a hint how many samples should be registered.
+    * For only one input channel, it is also possible to implement the definition **getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL)** where an allocated char-buffer whose size is defined by *length* is given. Fill in the data samples into the buffer (considering the given length) or use the length value to see how many samples are requested.
     
-    documentation for AD-converters
+* Method **setVal**: This method is called if the user wants the plugin to set data to all selected output channels. The definition is **setVal(const char \*data, const int length, ItomSharedSemaphore \*waitCond = NULL)**. In case of AD-DA-converter plugins, length is always 1 and *data* must be cast to **ito::DataObject\***. The given data object must then have a size of MxN where M denotes the number of output channels (must correspond to the number of channels to write data) and N is the number of samples. You can then send all samples to each channel either as fast as possible or using a timer, using the timer of the device. This depends on its abilities.
+
+A sample header file of the DataIO's plugin class for AD-converters might look like the following snippet:
+
+.. code-block:: c++
+    :linenos:
+
+    #include "common/addInInterface.h"
+    #include <qsharedpointer.h>
+
+    class MyADConverter : public ito::AddInDataIO
+    {
+        Q_OBJECT
+
+        protected:
+            ~MyADConverter(); /*! < Destructor*/
+            MyADConverter();    /*! < Constructor*/
+
+        public:
+            friend class MyADConverterInterface;
+            const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+            int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+
+        private:
+
+        public slots:
+            ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+            ito::RetVal setParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+
+            ito::RetVal init(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+            ito::RetVal close(ItomSharedSemaphore *waitCond);
+
+            ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
+            ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+
+            ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+            ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL);
+            ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
+
+        private slots:
+            void dockWidgetVisibilityChanged(bool visible);
+    };
+
+    class MyADConverterInterface : public ito::AddInInterfaceBase
+    {
+        Q_OBJECT
+    #if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
+        Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+    #endif
+        Q_INTERFACES(ito::AddInInterfaceBase)
+        PLUGIN_ITOM_API
+        
+        protected:
+
+        public:
+            MyADConverterInterface();
+            ~MyADConverterInterface();
+            ito::RetVal getAddInInst(ito::AddInBase **addInInst);
+
+        private:
+            ito::RetVal closeThisInst(ito::AddInBase **addInInst);
+    };
 
 RawIO-Plugins
 -------------------------------------
