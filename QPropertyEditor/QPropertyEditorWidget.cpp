@@ -30,6 +30,8 @@
 #include <qevent.h>
 #include <qheaderview.h>
 
+#include "itomCustomTypes.h"
+
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
     m_model = new QPropertyModel(this);    
@@ -41,6 +43,9 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
     setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
+
+    ito::itomCustomTypes::registerTypes();
+    registerCustomPropertyCB(ito::itomCustomTypes::createCustomProperty);
 }
 
 
