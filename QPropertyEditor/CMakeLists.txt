@@ -49,6 +49,7 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.h
 )
 
 IF (QT5_FOUND)
@@ -66,11 +67,12 @@ set(qpropertyeditor_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.cpp
 )
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib)
 IF (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)

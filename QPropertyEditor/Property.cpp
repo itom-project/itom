@@ -31,9 +31,14 @@
 #include <qspinbox.h>
 
 Property::Property(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : QObject(parent), 
-m_propertyObject(propertyObject)
+m_propertyObject(propertyObject), m_enabled(true)
 {
     setObjectName(name);
+}
+
+void Property::setEnabled(bool enabled)
+{
+    m_enabled = enabled;
 }
 
 QVariant Property::value(int /*role = Qt::UserRole*/) const
@@ -52,12 +57,22 @@ void Property::setValue(const QVariant &value)
 
 bool Property::isReadOnly()
 {
-    if( m_propertyObject->dynamicPropertyNames().contains( objectName().toLocal8Bit() ) )
-        return false;
-    if (m_propertyObject && m_propertyObject->metaObject()->property(m_propertyObject->metaObject()->indexOfProperty(qPrintable(objectName()))).isWritable())
-        return false;
-    else
+    if (!m_enabled)
+    {
         return true;
+    }
+    else if( m_propertyObject->dynamicPropertyNames().contains( objectName().toLocal8Bit() ) )
+    {
+        return false;
+    }
+    if (m_propertyObject && m_propertyObject->metaObject()->property(m_propertyObject->metaObject()->indexOfProperty(qPrintable(objectName()))).isWritable())
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)

@@ -101,6 +101,9 @@ public:
 
     QString info() { return m_info; }
     virtual void setInfo(const QString& info) {m_info = info;}
+
+    bool enabled() { return m_enabled; }
+    virtual void setEnabled(bool enabled);
     
     /**
      * Creates an editor for the data managed by this instance
@@ -155,6 +158,7 @@ protected:
     QObject*    m_propertyObject;
     QString     m_hints;
     QString     m_info;
+    bool        m_enabled;
 
 };
 

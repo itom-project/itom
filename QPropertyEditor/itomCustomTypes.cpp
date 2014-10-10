@@ -1,0 +1,230 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2014, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom and its software development toolkit (SDK).
+
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+   
+    In addition, as a special exception, the Institut für Technische
+    Optik (ITO) gives you certain additional rights.
+    These rights are described in the ITO LGPL Exception version 1.0,
+    which can be found in the file LGPL_EXCEPTION.txt in this package.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "itomCustomTypes.h"
+
+#include "../common/interval.h"
+
+//#include "Vec3fProperty.h"
+
+#include "Property.h"
+
+#include <qmetatype.h>
+
+Q_DECLARE_METATYPE(ito::AutoInterval)
+
+namespace ito
+{
+    namespace itomCustomTypes
+    {
+        void registerTypes()
+        {
+            static bool registered = false;
+            if (!registered)
+            {
+                qRegisterMetaType<ito::AutoInterval>("ito::AutoInterval");
+                registered = true;
+            }
+        }
+
+        Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
+        {
+            int userType = propertyObject->property(qPrintable(name)).userType();
+            /*if (userType == QMetaType::type("Vec3f"))
+            {
+                return new Vec3fProperty(name, propertyObject, parent);
+            }*/
+            if (userType == QMetaType::type("ito::AutoInterval"))
+            {
+                return new AutoIntervalProperty(name, propertyObject, parent);
+            }
+            else
+            {
+                return new Property(name, propertyObject, parent);
+            }
+        }
+    } //end namespace itomCustomTypes
+
+
+
+    AutoIntervalProperty::AutoIntervalProperty(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : Property(name, propertyObject, parent)
+    {
+	    m_minimum = new Property("minimum", this, this);
+	    m_maximum = new Property("maximum", this, this);
+	    m_autoScaling = new Property("autoScaling", this, this);
+        //m_autoScaling->setInfo("auto Scaling");
+
+        ito::AutoInterval ai = propertyObject->property(name.toLatin1().data()).value<ito::AutoInterval>();
+        m_minimum->setEnabled(!ai.isAuto());
+        m_maximum->setEnabled(!ai.isAuto());
+	    //setEditorHints("minimum=-2147483647;maximumX=2147483647;minimumY=-2147483647;maximumY=2147483647;minimumZ=-2147483647;maximumZ=2147483647;");
+    }
+
+    QVariant AutoIntervalProperty::value(int role) const
+    {
+	    QVariant data = Property::value();
+	    if (data.isValid() && role != Qt::UserRole)
+	    {
+            ito::AutoInterval ai = qvariant_cast<ito::AutoInterval>(data); //data.value<ito::AutoInterval>();
+		    switch (role)
+		    {
+		    case Qt::DisplayRole:
+                if (ai.isAuto())
+                {
+                    return tr("auto");
+                }
+                else
+                {
+                    return tr("[%1; %2]").arg(ai.minimum()).arg(ai.maximum());
+                }
+		    case Qt::EditRole:
+                if (ai.isAuto())
+                {
+                    return tr("auto");
+                }
+                else
+                {
+                    return tr("%1; %2").arg(ai.minimum()).arg(ai.maximum());
+                }
+		    };
+	    }
+	    return data;
+    }
+
+    void AutoIntervalProperty::setValue(const QVariant& value)
+    {
+	    if (value.type() == QVariant::String)
+	    {
+		    QString v = value.toString();	
+            bool autoScaling;
+            float min = minimum();
+            float max = maximum();
+
+            if (QString::compare(v,"auto",Qt::CaseInsensitive) == 0 || QString::compare(v, "<auto>", Qt::CaseInsensitive) == 0)
+            {
+                autoScaling = true;
+            }
+            else
+            {
+                autoScaling = false;
+
+		        QRegExp rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)");
+		        rx.setCaseSensitivity(Qt::CaseInsensitive);
+		        int count = 0;
+		        int pos = 0;
+		        float x = 0.0f, y = 0.0f, z = 0.0f;
+		        while ((pos = rx.indexIn(v, pos)) != -1) 
+		        {
+			        if (count == 0)
+				        min = rx.cap(1).toDouble();
+			        else if (count == 1)
+				        max = rx.cap(1).toDouble();
+			        else
+				        break;
+			        ++count;
+			        pos += rx.matchedLength();
+		        }
+            }
+
+		    m_minimum->setProperty("minimum", min);
+		    m_maximum->setProperty("maximum", max);
+		    m_autoScaling->setProperty("autoScaling", autoScaling);
+            m_minimum->setEnabled(!autoScaling);
+            m_maximum->setEnabled(!autoScaling);
+		    Property::setValue(QVariant::fromValue(ito::AutoInterval(min, max, autoScaling)));
+	    }
+	    else if (value.userType() == QMetaType::type("ito::AutoInterval"))
+        {
+            ito::AutoInterval ai = value.value<ito::AutoInterval>();
+            m_minimum->setProperty("minimum", ai.minimum());
+		    m_maximum->setProperty("maximum", ai.maximum());
+            m_minimum->setEnabled(!ai.isAuto());
+            m_maximum->setEnabled(!ai.isAuto());
+            m_autoScaling->setProperty("autoScaling", ai.isAuto());
+            Property::setValue(value);
+        }
+        else
+        {
+		    Property::setValue(value);
+        }
+    }
+
+    void AutoIntervalProperty::setEditorHints(const QString& hints)
+    {
+	    m_minimum->setEditorHints(""); //parseHints(hints, 'X'));
+	    m_maximum->setEditorHints(""); //parseHints(hints, 'Y'));
+	    m_autoScaling->setEditorHints(""); //parseHints(hints, 'Z'));
+    }
+
+    float AutoIntervalProperty::minimum() const
+    {
+	    return value().value<ito::AutoInterval>().minimum();
+    }
+
+    void AutoIntervalProperty::setMinimum(float minimum)
+    {
+	    AutoIntervalProperty::setValue(QVariant::fromValue(ito::AutoInterval(minimum, maximum(), autoScaling())));
+    }
+
+    float AutoIntervalProperty::maximum() const
+    {
+	    return value().value<ito::AutoInterval>().maximum();
+    }
+
+    void AutoIntervalProperty::setMaximum(float maximum)
+    {
+	    AutoIntervalProperty::setValue(QVariant::fromValue(ito::AutoInterval(minimum(), maximum, autoScaling())));
+    }
+
+    bool AutoIntervalProperty::autoScaling() const
+    {
+	    return value().value<ito::AutoInterval>().isAuto();
+    }
+
+    void AutoIntervalProperty::setAutoScaling(bool autoScaling)
+    {
+	    AutoIntervalProperty::setValue(QVariant::fromValue(ito::AutoInterval(minimum(), maximum(), autoScaling)));
+    }
+
+    QString AutoIntervalProperty::parseHints(const QString& hints, const QChar component )
+    {
+	    QRegExp rx(QString("(.*)(")+component+QString("{1})(=\\s*)(.*)(;{1})"));
+	    rx.setMinimal(true);
+	    int pos = 0;
+	    QString componentHints;
+	    while ((pos = rx.indexIn(hints, pos)) != -1) 
+	    {
+		    // cut off additional front settings (TODO create correct RegExp for that)
+		    if (rx.cap(1).lastIndexOf(';') != -1)			
+			    componentHints += QString("%1=%2;").arg(rx.cap(1).remove(0, rx.cap(1).lastIndexOf(';')+1)).arg(rx.cap(4));
+		    else
+			    componentHints += QString("%1=%2;").arg(rx.cap(1)).arg(rx.cap(4));
+		    pos += rx.matchedLength();
+	    }
+	    return componentHints;
+    }
+}

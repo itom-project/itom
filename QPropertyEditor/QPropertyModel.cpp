@@ -181,7 +181,17 @@ bool QPropertyModel::setData(const QModelIndex & index, const QVariant & value, 
     {
         Property *item = static_cast<Property*>(index.internalPointer());
         item->setValue(value);
-        emit dataChanged(index, index);
+
+        QModelIndex p = index.parent();
+
+        if (p.isValid())
+        {   
+            emit dataChanged(p.child(0,0), p.child(rowCount(p)-1,1));
+        }
+        else
+        {
+            emit dataChanged(index, index);
+        }
         return true;
     }
     return false;
