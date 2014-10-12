@@ -28,6 +28,7 @@
 #include "../interval.h"
 
 #include <limits>
+#include <algorithm>
 
 namespace ito {
 
@@ -38,6 +39,10 @@ AutoInterval::AutoInterval()
     m_max(std::numeric_limits<float>::infinity()),
     m_auto(true)
 {
+    if (m_min > m_max)
+    {
+        std::swap(m_min, m_max);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -57,6 +62,18 @@ AutoInterval::~AutoInterval()
 void AutoInterval::setRange(float min, float max)
 {
     m_min = min;
+    m_max = max;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AutoInterval::setMinimum(float min)
+{
+    m_min = min;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AutoInterval::setMaximum(float max)
+{
     m_max = max;
 }
 

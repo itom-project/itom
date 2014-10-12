@@ -35,9 +35,15 @@
 #endif
 #include "../common/sharedStructuresQt.h"
 #include "../common/addInInterface.h"
+#include "../common/interval.h"
 
 #include <qpointer.h>
-#include <QPixmap>
+#include <qpixmap.h>
+
+#if defined(Q_MOC_RUN)
+    Q_DECLARE_METATYPE(ito::AutoInterval);
+#endif
+
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -54,9 +60,9 @@ class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
     Q_PROPERTY(QSharedPointer<ito::PCLPolygonMesh> polygonMesh READ getPolygonMesh WRITE setPolygonMesh DESIGNABLE false USER false)
 #endif
 
-    Q_PROPERTY(QPointF xAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true USER true)
-    Q_PROPERTY(QPointF yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true USER true)
-    Q_PROPERTY(QPointF zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(ito::AutoInterval xAxisInterval READ getXAxisInterval WRITE setXAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(ito::AutoInterval yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true USER true)
+    Q_PROPERTY(ito::AutoInterval zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true USER true)
     Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true USER true)
 
     Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
@@ -92,14 +98,14 @@ public:
     virtual void setDataObject(QSharedPointer<ito::DataObject>);
     virtual QSharedPointer<ito::DataObject> getDataObject(void) const;
 
-    virtual inline QPointF getXAxisInterval(void) const { return QPointF(); }
-    virtual inline void setXAxisInterval(QPointF) { return; }
+    virtual inline ito::AutoInterval getXAxisInterval(void) const { return ito::AutoInterval(); }
+    virtual inline void setXAxisInterval(ito::AutoInterval) { return; }
         
-    virtual inline QPointF getYAxisInterval(void) const { return QPointF(); }
-    virtual inline void setYAxisInterval(QPointF) { return; }
+    virtual inline ito::AutoInterval getYAxisInterval(void) const { return ito::AutoInterval(); }
+    virtual inline void setYAxisInterval(ito::AutoInterval) { return; }
         
-    virtual inline QPointF getZAxisInterval(void) const { return QPointF(); }
-    virtual inline void setZAxisInterval(QPointF) { return; }
+    virtual inline ito::AutoInterval getZAxisInterval(void) const { return ito::AutoInterval(); }
+    virtual inline void setZAxisInterval(ito::AutoInterval) { return; }
         
     virtual inline QString getColorMap(void) const { return QString(); }
     virtual inline void setColorMap(QString) { return; }

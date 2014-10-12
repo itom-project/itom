@@ -25,6 +25,7 @@
 #include "pythonUi.h"
 #include "pythonCommon.h"
 #include "pythonRgba.h"
+#include "pythonAutoInterval.h"
 
 #include <qstringlist.h>
 #include <qurl.h>
@@ -1004,6 +1005,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::List;
         }
+        else if (Py_TYPE(val) == &ito::PythonAutoInterval::PyAutoIntervalType)
+        {
+            type = QMetaType::type("ito::AutoInterval");
+        }
     }
 
     // special type request:
@@ -1337,6 +1342,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 v = QVariant();
             }
         }
+        else if (type == QMetaType::type("ito::AutoInterval"))
+        {
+            ito::PythonAutoInterval::PyAutoInterval *ai = (ito::PythonAutoInterval::PyAutoInterval*)val;
+            if (ai)
+            {
+                v = qVariantFromValue<ito::AutoInterval>(ai->interval);
+            }
+            else
+            {
+                v = QVariant();
+            }
+        }
         else
         {
             v = QVariant();
@@ -1349,7 +1366,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval)
+/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, int userType, ito::RetVal &retval)
 {
     if (item.type() == destType)
     {
@@ -1461,7 +1478,44 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Size: 2 values required.");
             }
         }
+        else if (destType == QVariant::UserType && userType == QMetaType::type("ito::AutoInterval"))
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 2)
+            {
+                bool ok2;
+                result = QVariant::fromValue<ito::AutoInterval>(ito::AutoInterval(list[0].toFloat(&ok), list[1].toFloat(&ok2)));
+                ok &= ok2;
+            
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: 2 values required.");
+            }
+        }
     } //end item.type() == QVariant::List
+    else if (item.type() == QVariant::String)
+    {
+        if (destType == QVariant::UserType && userType == QMetaType::type("ito::AutoInterval"))
+        {
+            const QString str = item.toString();
+            if (QString::compare(str, "auto", Qt::CaseInsensitive) == 0 || QString::compare(str, "<auto>", Qt::CaseInsensitive) == 0)
+            {
+                ito::AutoInterval ival;
+                ival.setAuto(true);
+                result = QVariant::fromValue<ito::AutoInterval>(ival);
+                ok = true;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: value must be [min,max] or 'auto'.");
+            }
+        }
+    } //end item.type() == QVariant::String
     
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
@@ -1474,7 +1528,14 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %i to %i is possible", item.type(), destType);
+            if (destType == QVariant::UserType)
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.type()), QMetaType::typeName(userType));
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.type()), QVariant::typeToName(destType));
+            }
         }
     }
 
@@ -2554,6 +2615,14 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
                 Py_RETURN_NONE;
             }
             return NULL;
+        }
+        if (strcmp(name, "ito::AutoInterval") == 0)
+        {
+            ito::AutoInterval *v = (ito::AutoInterval*)data;
+            ito::PythonAutoInterval::PyAutoInterval *ai = ito::PythonAutoInterval::createEmptyPyAutoInterval();
+            ai->interval = *v;
+            return (PyObject*)ai;
+
         }
         if (strcmp(name, "ito::DataObject") == 0)
         {

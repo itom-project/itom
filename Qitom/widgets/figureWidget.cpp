@@ -363,7 +363,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         //get grabDepth
         bool setDepth = false;
         bool isLine = false;
-        QPointF bitRange (0.0, 1.0);
+        ito::AutoInterval bitRange (0.0, 1.0);
         QSharedPointer<ito::Param> bpp = getParamByInvoke(cam.data(), "bpp", retval);
         
         if (!retval.containsError())
@@ -371,12 +371,12 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
             if (bpp->getVal<int>() == 8)
             {
                 setDepth = true;
-                bitRange.setY(255.0);
+                bitRange.setMaximum(255.0);
             }
             else if (bpp->getVal<int>() < 17) 
             {
                 setDepth = true;
-                bitRange.setY((float)((1 << bpp->getVal<int>())-1));
+                bitRange.setMaximum((float)((1 << bpp->getVal<int>())-1));
             }
             else if (bpp->getVal<int>() == 32)
             {

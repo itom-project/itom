@@ -1580,7 +1580,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     }
                     else
                     {
-                        item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
+                        item = PythonQtConversion::QVariantCast(i.value(), prop.type(), prop.userType(), tempRet);
                     }
 
                     if (tempRet.containsError())
@@ -1609,7 +1609,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                 }
                 else
                 {
-                    item = PythonQtConversion::QVariantCast(i.value(), prop.type(), tempRet);
+                    item = PythonQtConversion::QVariantCast(i.value(), prop.type(), prop.userType(), tempRet);
                 }
 
                 if (tempRet.containsError())

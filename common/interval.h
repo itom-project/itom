@@ -60,9 +60,15 @@ class ITOMCOMMON_EXPORT AutoInterval
 
         inline float minimum() const { return m_min; }
         inline float maximum() const { return m_max; }
+        inline float & rmin() { return m_min; }
+        inline float & rmax() { return m_max; }
+
         inline bool isAuto() const { return m_auto; }
+        inline bool &rauto() { return m_auto; }
 
         void setRange(float min, float max);
+        void setMinimum(float min);
+        void setMaximum(float max);
         void setAuto(bool autoInterval);
 
         bool operator==( const AutoInterval & ) const;
