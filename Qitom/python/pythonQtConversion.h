@@ -27,6 +27,7 @@
 #include "pythonPlugins.h"
 #include "pythonRegion.h"
 #include "pythonPCL.h"
+#include "pythonAutoInterval.h"
 #include "datetime.h"
 
 #include "../global.h"
@@ -47,6 +48,7 @@ Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
+Q_DECLARE_METATYPE(ito::AutoInterval)
 
 namespace ito
 {
@@ -122,7 +124,7 @@ public:
     //! it will guess from the python type
     static QVariant PyObjToQVariant(PyObject* val, int type = -1);
 
-    static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, ito::RetVal &retval);
+    static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, int userType, ito::RetVal &retval);
 
     static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
 

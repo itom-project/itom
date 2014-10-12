@@ -42,6 +42,7 @@
 #include "pythontParamConversion.h"
 #include "pythonRegion.h"
 #include "pythonRgba.h"
+#include "pythonAutoInterval.h"
 
 #include "../organizer/addInManager.h"
 #include "common/interval.h"
@@ -393,6 +394,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonRgba::PyRgbaType);
                 //PythonRgba::PyRegion_addTpDict(PythonRegion::PyRgbaType.tp_dict);
                 PyModule_AddObject(itomModule, "rgba", (PyObject *)&PythonRgba::PyRgbaType);
+            }
+
+            if (PyType_Ready(&PythonAutoInterval::PyAutoIntervalType) >= 0)
+            {
+                Py_INCREF(&PythonAutoInterval::PyAutoIntervalType);
+                //PythonRgba::PyRegion_addTpDict(PythonRegion::PyRgbaType.tp_dict);
+                PyModule_AddObject(itomModule, "autoInterval", (PyObject *)&PythonAutoInterval::PyAutoIntervalType);
             }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
