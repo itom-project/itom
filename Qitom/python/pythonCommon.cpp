@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "pythonCommon.h"
-
+#include "pythonRgba.h"
 #include "pythonQtConversion.h"
 
 #include "helper/paramHelper.h"
@@ -62,6 +62,11 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         {
             *set = 1;
             outParam.setVal<int>(PyLong_AsLong(pyObj));
+        }
+        else if (PyRgba_Check(pyObj))
+        {
+            PythonRgba::PyRgba *pyRgba = (PythonRgba::PyRgba*)(pyObj);
+            outParam.setVal<int>((int)(pyRgba->rgba.rgba));
         }
         else
         {
