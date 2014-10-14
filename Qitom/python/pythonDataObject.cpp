@@ -436,13 +436,13 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         {
                             PyErr_Print();
                             PyErr_Clear();
-                            PyErr_Format(PyExc_TypeError,"Element %d of dimension-list is no integer number", i+1);
+                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number", i+1);
                             retValue += RetVal(retError);
                             break;
                         }
                         else if (tempSizes <= 0)
                         {
-                            PyErr_SetString(PyExc_TypeError,"Element %d must be bigger than 1");
+                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension must be bigger than 1", i+1);
                             retValue += RetVal(retError);
                             break;
                         }
