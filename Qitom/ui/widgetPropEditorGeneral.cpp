@@ -49,15 +49,23 @@ void WidgetPropEditorGeneral::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
+    // EOL-Mode
     QString eolMode = settings.value("eolMode", "EolUnix").toString();
     ui.radioEOL1->setChecked(eolMode == "EolWindows");
     ui.radioEOL2->setChecked(eolMode == "EolUnix");
     ui.radioEOL3->setChecked(eolMode == "EolMac");
 
+    // Syntax Checker
     ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
     ui.checkIncludeItom->setChecked(settings.value("syntaxIncludeItom", true).toBool());
-    ui.spinSyntaxIntervall->setValue(settings.value("syntaxIntervall", 1.00).toDouble());
+    ui.spinSyntaxInterval->setValue(settings.value("syntaxInterval", 1.00).toDouble());
 
+    // Class Navigator
+    ui.groupClassNavigator->setChecked(settings.value("classNavigator", true).toBool());
+    ui.checkActiveClassNavigatorTimer->setChecked(settings.value("classNavigatorTimerActive", true).toBool());
+    ui.spinClassNavigatorInterval->setValue(settings.value("classNavigatorInterval", 2.00).toDouble());
+    
+    // Indentation
     ui.checkAutoIndent->setChecked(settings.value("autoIndent", true).toBool());
     ui.checkIndentUseTabs->setChecked(settings.value("indentationUseTabs", false).toBool());
     ui.spinIndentWidth->setValue(settings.value("indentationWidth", 4).toInt());
@@ -78,6 +86,7 @@ void WidgetPropEditorGeneral::readSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorGeneral::writeSettings()
 {
+    // EOL-Mode
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
@@ -94,9 +103,17 @@ void WidgetPropEditorGeneral::writeSettings()
         settings.setValue("eolMode", "EolMac");
     }
 
-    settings.setValue("syntaxIntervall", ui.spinSyntaxIntervall->value());
+    // Syntax Checker
+    settings.setValue("syntaxInterval", ui.spinSyntaxInterval->value());
     settings.setValue("syntaxChecker", ui.groupSyntaxCheck->isChecked());
     settings.setValue("syntaxIncludeItom", ui.checkIncludeItom->isChecked());
+
+    // Class Navigator
+    settings.setValue("classNavigator", ui.groupClassNavigator->isChecked());
+    settings.setValue("classNavigatorTimerActive", ui.checkActiveClassNavigatorTimer->isChecked());
+    settings.setValue("classNavigatorInterval", ui.spinClassNavigatorInterval->value());
+
+    // Indentation
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
     settings.setValue("indentationWidth", ui.spinIndentWidth->value());

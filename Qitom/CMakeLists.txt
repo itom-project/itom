@@ -146,6 +146,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
+	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
@@ -314,6 +315,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp

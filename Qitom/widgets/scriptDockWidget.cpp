@@ -85,7 +85,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab->setTabsClosable(true);
     m_tab->setMovable(true);
     m_tab->setTabPosition(QTabWidget::South);
-    m_tab->setContentsMargins(0,0,0,0);
+    m_tab->setContentsMargins(2,0,2,0);
 
     // Signalmapper for dynamic lastFile Menu
     m_lastFilesMapper = new QSignalMapper(this);
@@ -116,20 +116,59 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pWidgetFindWord = new WidgetFindWord(this);
     connect(m_pWidgetFindWord, SIGNAL(findNext(QString,bool,bool,bool,bool,bool,bool)), this, SLOT(findTextExpr(QString,bool,bool,bool,bool,bool,bool)));
     connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(mnuFindTextExpr()));
-
+   
+    // Layoutbox
     m_pVBox = new QVBoxLayout();
     m_pVBox->setContentsMargins(0,0,0,0);
+    m_pVBox->setSpacing(1);
+
+    // Create new Widget for Class Navigation (Bar)
+    m_classMenuBar = new QWidget(this);
+    m_classMenuBar->setContentsMargins(0,0,0,0);
+
+    // These two Comboboxes go inside
+    m_classBox = new QComboBox(m_classMenuBar);
+    m_methodBox = new QComboBox(m_classMenuBar);
+    m_classBox->setMinimumHeight(20);
+    m_classBox->setContentsMargins(2,0,2,0);
+    m_classBox->setStyleSheet("QComboBox {  border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+    m_methodBox->setMinimumHeight(20);
+    m_methodBox->setContentsMargins(2,0,2,0);
+    m_methodBox->setStyleSheet("QComboBox { border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+
+    // Layout inside the Widget (two comboBoxes)
+    QHBoxLayout *hLayoutBox = new QHBoxLayout();
+    hLayoutBox->setSpacing(0);
+    hLayoutBox->addWidget(m_classBox);
+    hLayoutBox->addWidget(m_methodBox);
+    hLayoutBox->setContentsMargins(0,0,0,0);
+    m_classMenuBar->setLayout(hLayoutBox);
+
+    // Set Size for Widget
+    m_classMenuBar->setMinimumHeight(20);
+    m_classMenuBar->setMaximumHeight(20);
+    m_pVBox->addWidget(m_classMenuBar, 1);
+
+    connect(m_classBox, SIGNAL(activated(QString)), this, SLOT(classChosen(QString)));
+    connect(m_methodBox, SIGNAL(activated(QString)), this, SLOT(methodChosen(QString)));
+
+    // Add EditorTab
     m_pVBox->addWidget(m_tab);
     m_pVBox->addWidget(m_pWidgetFindWord);
 
     m_pCenterWidget = new QWidget();
     m_pCenterWidget->setLayout(m_pVBox);
+    m_pCenterWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setContentWidget(m_pCenterWidget);
     //setContentWidget(m_tab);
 
     setFocusPolicy(Qt::StrongFocus);
 //    setAcceptDrops(true);
+
+    loadSettings();
+
+    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(loadSettings()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -152,12 +191,160 @@ ScriptDockWidget::~ScriptDockWidget()
         closeTab(i, false);
     }
 
+    foreach (int key, m_rootElements.keys())
+    {
+        delete m_rootElements.value(key);
+    }
+    m_rootElements.clear();
+
+
     DELETE_AND_SET_NULL(m_tab);
     DELETE_AND_SET_NULL(m_pWidgetFindWord);
     DELETE_AND_SET_NULL(m_pVBox);
     DELETE_AND_SET_NULL(m_pCenterWidget);
     DELETE_AND_SET_NULL(m_pDialogReplace);
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::loadSettings()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("PyScintilla");
+
+    // Class Navigator
+    m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
+    showClassNavigator(m_ClassNavigatorEnabled);
+
+    settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString prefix)
+{
+    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "{Global Scope}") // ^= prefix == ""
+    {
+        m_classBox->addItem(parent->m_icon, parent->m_name, (int)((void*)parent));
+    }
+    else 
+    {
+        m_classBox->addItem(parent->m_icon, prefix+"::"+parent->m_name, (int)((void*)parent));
+    }
+    for (int i = 0; i < parent->m_member.length(); ++i)
+    {
+        if (parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass ||
+            parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyGlobal||
+            parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyRoot)
+        {
+            fillClassBox(parent->m_member[i], parent->m_name);
+        }   
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
+{
+    // insert empty dummy item
+    m_methodBox->addItem(QIcon(), "", (int)((void*)NULL));
+    
+    ClassNavigatorItem const *item;
+    for (int i = 0; i < parent->m_member.length(); ++i)
+    {
+        item = parent->m_member[i];
+        if (item->m_internalType == ClassNavigatorItem::typePyDef ||
+            item->m_internalType == ClassNavigatorItem::typePyGlobal)
+        {
+            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")", (int)((void*)item));
+        }
+        else if (item->m_internalType == ClassNavigatorItem::typePyStaticDef)                 
+        {
+            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")  [static]", (int)((void*)item));
+        }
+        else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
+        {
+            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")  [classmember]", (int)((void*)item));
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
+void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
+{ 
+    if (m_ClassNavigatorEnabled)
+    {
+        if (m_tab->currentIndex() == m_tab->indexOf(editor))
+        {
+            m_methodBox->setEnabled(false);
+            m_classBox->setEnabled(false);
+            disconnect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));
+            disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
+            m_classBox->clear();
+            m_methodBox->clear();
+        
+            if (m_rootElements.contains(m_tab->indexOf(editor)))
+            {
+                delete m_rootElements.value(m_tab->indexOf(editor));
+            }
+
+            // Request new RootItem from EditorWidget                    // This code is good for storage and fast tab switching without rebuild of the model
+            ClassNavigatorItem *root = editor->getPythonNavigatorRoot(); // m_rootElements.value(m_tab->indexOf(editor));
+            m_rootElements.insert(m_tab->indexOf(editor), root);  // value(m_tab->indexOf(editor)) 
+
+            // Use new RootItem to fill comboBoxes
+            fillClassBox(root, "");
+
+            connect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));  
+            connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
+            m_classBox->setEnabled(true);
+            m_methodBox->setEnabled(true);
+        }
+        // else the request is from an inactive tab by timer or so. 
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// private Slot invoked by ScriptEditorWidget when class from classCombobox is chosen to display the subelements in second combobox
+void ScriptDockWidget::classChosen(const QString &text)
+{
+    ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).toInt());
+    if (classItem)
+    {
+        m_methodBox->setEnabled(false);
+        disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
+        m_methodBox->clear();
+        if (classItem->m_lineno >= 0)
+        {
+            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, classItem->m_name);
+        }
+        fillMethodBox(classItem);
+        connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
+        m_methodBox->setEnabled(true);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::methodChosen(const QString &text)
+{
+    // When method is chosen, set CursorPosition to "method" definition position
+    ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).toInt());
+    if (methodItem)
+    {
+        if (methodItem->m_lineno >= 0)
+        {
+            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, methodItem->m_name);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::showClassNavigator(bool show)
+{
+    m_classMenuBar->setVisible(show);
+}
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
@@ -457,6 +644,11 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+    
+    // Load the right Class->Method model for this Editor
+    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+
+    updateClassesBox(editorWidget);
 
     updateEditorActions();
     updatePythonActions();
@@ -486,6 +678,10 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+
+    // Class Navigator
+    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+    disconnect(removedWidget, SIGNAL(showClassNavigator(bool)), this, SLOT(showClassNavigator(bool)));
 
     updateEditorActions();
     updatePythonActions();
@@ -539,6 +735,9 @@ void ScriptDockWidget::currentTabChanged(int index)
     {
         ScriptEditorWidget *editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(m_actTabIndex));
         setWindowModified(editorWidget->isModified());
+
+        // ClassNavigator: set the right classes in comboboxes
+        updateClassesBox(editorWidget);
 
         if (editorWidget->hasNoFilename())
         {
