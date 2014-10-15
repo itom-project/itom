@@ -1667,7 +1667,11 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 {
     int newHandle = -1;
 
-    if (bp.filename == getFilename() && bp.filename != "")
+#if linux
+    if (bp.filename != "" && bp.filename == getFilename())
+#else
+    if (bp.filename != "" && QString::compare(bp.filename, getFilename(), Qt::CaseInsensitive) == 0)
+#endif
     {
         std::list<QPair<int, int> >::iterator it;
         bool found = false;
@@ -1720,7 +1724,12 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*pyBpNumber*/)
 {
     bool found = false;
-    if (filename == getFilename() && filename != "")
+
+#if defined linux
+    if (filename != "" && filename == getFilename())
+#else
+    if (filename != "" && QString::compare(filename, getFilename(), Qt::CaseInsensitive) == 0)
+#endif
     {
         QList<BPMarker>::iterator it = m_breakPointMap.begin();
 
@@ -1762,11 +1771,20 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem newBp)
 {
+#if defined linux
     if (oldBp.filename == getFilename())
+#else
+    if (QString::compare(oldBp.filename, getFilename(), Qt::CaseInsensitive) == 0)
+#endif
     {
         breakPointDelete(oldBp.filename, oldBp.lineno, oldBp.pythonDbgBpNumber);
     }
+
+#if defined linux
     if (newBp.filename == getFilename())
+#else
+    if (QString::compare(newBp.filename, getFilename(), Qt::CaseInsensitive) == 0)
+#endif
     {
         breakPointAdd(newBp, -1); //!< -1 has no task
     }

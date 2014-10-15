@@ -28,6 +28,7 @@
 
 
 #include <qfileinfo.h>
+#include <qdir.h>
 #include <qsize.h>
 #include <qsettings.h>
 #include <qdatastream.h>
@@ -70,6 +71,12 @@ BreakPointModel::BreakPointModel() : QAbstractItemModel()
 
     m_headers   << tr("line")          << tr("condition")         << tr("temporary")            << tr("enabled")              << tr("ignore count");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignRight);
+
+#if defined linux
+    m_filenameCaseSensitivity = Qt::CaseSensitive;
+#else
+    m_filenameCaseSensitivity = Qt::CaseInsensitive;
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -156,18 +163,39 @@ RetVal BreakPointModel::restoreState()
 */
 RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
 {
-    if (!m_scriptFiles.contains(bp.filename))
-    { // Parent does not exist yet, so create it
-        beginInsertRows(QModelIndex(), m_scriptFiles.size(), m_scriptFiles.size());
+#if defined linux
+    //in linux bp.filename is casesensitive and must fit
+#else
+    //correct incoming filename with respect to the real case-sensitive version:
+    QFileInfo fi(bp.filename);
+    QDir folder = fi.dir();
+    QString filenameCaseInsensitive = fi.fileName();
+    QStringList filesInDirectory = folder.entryList(QDir::Files);
+    foreach (const QString &file, filesInDirectory)
+    {
+        if (QString::compare(file, filenameCaseInsensitive, Qt::CaseInsensitive) == 0)
+        {
+            bp.filename =  folder.absoluteFilePath(file);
+            break;
+        }
+    }
+#endif
+
+    if (!m_scriptFiles.contains(bp.filename, m_filenameCaseSensitivity))
+    { 
+        // Parent does not exist yet, so create it
+        beginInsertRows(QModelIndex(), m_scriptFiles.size(), m_scriptFiles.size() + 1);
         m_scriptFiles.append(bp.filename);
         endInsertRows();
     }
+
     // now append the bp to the file:
     QModelIndex parent = getFilenameModelIndex(bp.filename);
+
     if (parent.isValid())
     {
-        int nrOfBpts = 0;
-        beginInsertRows(parent, nrOfBpts, nrOfBpts);
+        int nrOfExistingBreakpoints = nrOfBreakpointsInFile(parent.row());
+        beginInsertRows(parent, nrOfExistingBreakpoints, nrOfExistingBreakpoints + 1);
         m_breakpoints.append(bp);
         emit(breakPointAdded(bp, m_breakpoints.size()-1));
         endInsertRows();
@@ -550,7 +578,7 @@ int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
 
         foreach(const BreakPointItem &item, m_breakpoints)
         {
-            if (QString::compare(item.filename, filename, Qt::CaseInsensitive) == 0)
+            if (QString::compare(item.filename, filename, m_filenameCaseSensitivity) == 0)
             {
                 count++;
             }
@@ -570,7 +598,7 @@ QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) cons
 {
     for(int i = 0; i < m_scriptFiles.size(); ++i)
     {
-        if (QString::compare(m_scriptFiles[i], filename, Qt::CaseInsensitive) == 0)
+        if (QString::compare(m_scriptFiles[i], filename, m_filenameCaseSensitivity) == 0)
         {
             return createIndex(i, 0, (void*)NULL);
         }
@@ -592,7 +620,7 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
     //first find filename in m_scriptFiles
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
-        if (QString::compare(m_scriptFiles[i], filename) == 0)
+        if (QString::compare(m_scriptFiles[i], filename, m_filenameCaseSensitivity) == 0)
         {
             filePointer = (void*)(&(m_scriptFiles[i]));
             break;
@@ -605,7 +633,7 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
 
         for (int row = 0; row < m_breakpoints.size(); ++row)
         {
-            if (QString::compare(m_breakpoints[row].filename, filename) == 0)
+            if (QString::compare(m_breakpoints[row].filename, filename, m_filenameCaseSensitivity) == 0)
             {
                 count++;
 
@@ -636,7 +664,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
     //first find filename in m_scriptFiles
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
-        if (QString::compare(m_scriptFiles[i], filename) == 0)
+        if (QString::compare(m_scriptFiles[i], filename, m_filenameCaseSensitivity) == 0)
         {
             filePointer = (void*)(&(m_scriptFiles[i]));
             break;
@@ -712,7 +740,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
                 int count = -1;
                 for (int j = 0; j < m_breakpoints.size(); ++j)
                 {
-                    if (m_breakpoints[j].filename == filename) count++;
+                    if (QString::compare(m_breakpoints[j].filename, filename, m_filenameCaseSensitivity) == 0) count++;
                     if (count == breakpointIndex)
                     {
                         return m_breakpoints[j];
@@ -745,7 +773,7 @@ int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
                 int count = -1;
                 for (int i = 0; i < m_breakpoints.size(); ++i)
                 {
-                    if (m_breakpoints[i].filename == filename) count++;
+                    if (QString::compare(m_breakpoints[i].filename, filename, m_filenameCaseSensitivity) == 0) count++;
                     if (count == breakpointIndex)
                     {
                         return i;
@@ -768,6 +796,7 @@ QModelIndexList BreakPointModel::getAllFileIndexes()
     QModelIndexList retList;
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
+        // TODO: Case Sensitivity chekcen
         retList.append(this->getFilenameModelIndex(m_scriptFiles.at(i)));
     }
     return retList;
@@ -840,7 +869,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) c
     //first find filename in m_scriptFiles
     for (int i = 0; i < m_scriptFiles.size(); ++i)
     {
-        if (QString::compare(m_scriptFiles[i], filename) == 0)
+        if (QString::compare(m_scriptFiles[i], filename, m_filenameCaseSensitivity) == 0)
         {
             filePointer = (void*)(&(m_scriptFiles[i]));
             break;
@@ -853,7 +882,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) c
 
         for (int row = 0; row < m_breakpoints.size(); ++row)
         {
-            if (QString::compare(m_breakpoints[row].filename, filename) == 0)
+            if (QString::compare(m_breakpoints[row].filename, filename, m_filenameCaseSensitivity) == 0)
             {
                 count++;
                 list.push_back(createIndex(count, 0, filePointer));
