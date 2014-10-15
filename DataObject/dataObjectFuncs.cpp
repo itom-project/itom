@@ -2093,7 +2093,7 @@ namespace dObjHelper
         {
             retval += ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
         }
-        else
+        else if (numberOfAllowedTypes > 0)
         {
             va_list vl;
             va_start(vl, numberOfAllowedTypes);
