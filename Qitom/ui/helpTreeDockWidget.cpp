@@ -868,7 +868,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 {
     QString output = tmpl;
     QString name = param.getName();
-    QString info = param.getInfo() ? parseFilterWidgetContent(param.getInfo()) : "";
+    QString info = param.getInfo() ? param.getInfo() /*parseFilterWidgetContent(param.getInfo())*/ : "";
     QString meta;
     
     QString type;
@@ -1071,12 +1071,12 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 #if QT_VERSION < 0x050000
     output.replace("%PARAMNAME%", Qt::escape(name));
     output.replace("%PARAMTYPE%", Qt::escape(type));
-    output.replace("%PARAMINFO%", Qt::escape(info));
+    output.replace("%PARAMINFO%", parseFilterWidgetContent(Qt::escape(info)));
     output.replace("%PARAMMETA%", Qt::escape(meta));
 #else
     output.replace("%PARAMNAME%", QString(name).toHtmlEscaped());
     output.replace("%PARAMTYPE%", QString(type).toHtmlEscaped());
-    output.replace("%PARAMINFO%", QString(info).toHtmlEscaped());
+    output.replace("%PARAMINFO%", parseFilterWidgetContent(QString(info).toHtmlEscaped()));
     output.replace("%PARAMMETA%", QString(meta).toHtmlEscaped());
 #endif
 

@@ -222,7 +222,7 @@ RetVal ScriptEditorWidget::initEditor()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::loadSettings()
 {
-    // TODO: Diese methode wir nach Apply druecken 3x hintereinander aufgerufen! Einmal sollte genuegen
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
@@ -256,6 +256,8 @@ void ScriptEditorWidget::loadSettings()
     m_classNavigatorInterval = (int)(settings.value("classNavigatorInterval", 2.00).toDouble()*1000);
     m_classNavigatorTimer->stop();
     m_classNavigatorTimer->setInterval(m_classNavigatorInterval);
+
+    settings.endGroup();
 
     AbstractPyScintillaWidget::loadSettings();
 }
