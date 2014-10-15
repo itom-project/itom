@@ -1838,17 +1838,7 @@ namespace dObjHelper
     }
     
     //-----------------------------------------------------------------------------------------------
-    /*!
-        This function checks if the dataObject pointer is valid and of the object is of right type.
-        If the type is not one of the given types, a specific error message containing the name is returned.
-
-        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
-        \param[in]  name                    the name of the dataObject, will be added to the error message
-        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
-        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
-
-        \return retOk if valid and handle not NULL, else retError
-    */
+    //this is a private function and not exported
     ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, va_list types) //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     {
         if(dObj == NULL)
@@ -1940,6 +1930,28 @@ namespace dObjHelper
 
         return retValue;
     }
+
+    //-----------------------------------------------------------------------------------------------
+    /*!
+        This function checks if the dataObject pointer is valid and of the object is of right type.
+        If the type is not one of the given types, a specific error message containing the name is returned.
+
+        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
+        \param[in]  name                    the name of the dataObject, will be added to the error message
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+
+        \return retOk if valid and handle not NULL, else retError
+    */
+    ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...)
+    {
+        ito::RetVal retval;
+        va_list va;
+        va_start(va, numberOfAllowedTypes);
+        retval = verifyDataObjectType(dObj, name, numberOfAllowedTypes, va);
+        va_end(va);
+        return retval;
+    };
 
     //-----------------------------------------------------------------------------------------------
     /*!
