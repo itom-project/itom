@@ -63,7 +63,8 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     pythonBusy(false), 
     m_pythonExecutable(true),
     canCopy(false),
-    m_syntaxTimer(NULL)
+    m_syntaxTimer(NULL),
+    m_classNavigatorTimer(NULL)
 {
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
@@ -71,6 +72,10 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_syntaxTimer = new QTimer(this);
     connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
     m_syntaxTimer->setInterval(1000);
+
+    m_classNavigatorTimer = new QTimer(this);
+    connect(m_classNavigatorTimer, SIGNAL(timeout()), this, SLOT(classNavTimerElapsed()));
+    m_classNavigatorTimer->setInterval(2000);
 
     initEditor();
 
@@ -146,7 +151,7 @@ ScriptEditorWidget::~ScriptEditorWidget()
             QModelIndexList list = bpModel->getBreakPointIndizes(getFilename());
             bpModel->deleteBreakPoints(list);
         }*/
-    }
+    }   
 
     disconnect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
     disconnect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -217,6 +222,7 @@ RetVal ScriptEditorWidget::initEditor()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::loadSettings()
 {
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
@@ -231,17 +237,27 @@ void ScriptEditorWidget::loadSettings()
 
     // SyntaxChecker
     m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
-    m_syntaxCheckerIntervall = (int)(settings.value("syntaxIntervall", 1).toDouble()*1000);
+    m_syntaxCheckerInterval = (int)(settings.value("syntaxInterval", 1).toDouble()*1000);
     m_syntaxTimer->stop();
-    m_syntaxTimer->setInterval(m_syntaxCheckerIntervall);
+    m_syntaxTimer->setInterval(m_syntaxCheckerInterval);
     if (m_syntaxCheckerEnabled)
-    { // empy call: all bugs disappear
+    { // empty call: all bugs disappear
         checkSyntax();
     }
     else
     {
         errorListChange(QStringList());
     }
+
+    // Class Navigator
+    m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
+
+    m_classNavigatorTimerEnabled = settings.value("classNavigatorTimerActive", true).toBool();
+    m_classNavigatorInterval = (int)(settings.value("classNavigatorInterval", 2.00).toDouble()*1000);
+    m_classNavigatorTimer->stop();
+    m_classNavigatorTimer->setInterval(m_classNavigatorInterval);
+
+    settings.endGroup();
 
     AbstractPyScintillaWidget::loadSettings();
 }
@@ -579,6 +595,18 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
     setCursorPosition(line, 0);
     ensureLineVisible(line);
     ensureCursorVisible();
+    return retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, QString name)
+{
+    setCursorPosAndEnsureVisible(line);
+    // regular expression for Classes and Methods
+    QRegExp reg("(\\s*)(class||def)\\s(.+)\\((.*)\\):\\n");
+    reg.setMinimal(true);
+    reg.indexIn(this->text(line), 0);
+    this->setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
     return retOk;
 }
 
@@ -1259,12 +1287,18 @@ bool ScriptEditorWidget::event (QEvent * event)
             }
         }
     }
-    else if(event->type() == QEvent::KeyRelease && m_pythonExecutable && m_syntaxCheckerEnabled)
+    else if(event->type() == QEvent::KeyRelease)
     {
         // SyntaxCheck   
-        m_syntaxTimer->start(); //starts or restarts the timer
+        if (m_pythonExecutable && m_syntaxCheckerEnabled)
+        {
+            m_syntaxTimer->start(); //starts or restarts the timer
+        }
+        if(m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
+        {   // Class Navigator if Timer is active
+            m_classNavigatorTimer->start();
+        }
     }
-
     return QsciScintilla::event(event);
 }
 
@@ -1910,6 +1944,10 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         m_syntaxTimer->start(); //starts or restarts the timer
     }
+    if (m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
+    {
+        m_classNavigatorTimer->start(); //starts or restarts the timer
+    }
     autoAdaptLineNumberColumnWidth();
 }
 
@@ -2032,6 +2070,187 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
+{
+    QString filename = this->docName();
+    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString page = QString::number(pagenr);
+    int width = area.width();
+    int dateWidth = painter.fontMetrics().width(date);
+    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
+        
+    painter.save();
+    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
+    painter.setPen(QColor(Qt::black)); 
+    if (drawing)
+    {
+        //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
+        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
+        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
+        painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
+    }
+    area.setTop(area.top() + painter.fontMetrics().height() + 30);
+    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
+    painter.restore();
+}
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Class-Navigator
+//----------------------------------------------------------------------------------------------------------------------------------
+int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber)
+{
+    int i = lineNumber;
+    int depth = parentDepth;
+    // read from settings
+    int tabLength = 4;
+    QString line = "";
+    QString decoLine;   // @-Decorator Line in previous line of a function
+    
+    // regular expression for Classes
+    QRegExp classes("(\\s*)(class)\\s(.+)\\((.*)\\):\\n");
+    classes.setMinimal(true);
+
+    // regular expression for methods
+    QRegExp methods("(\\s*)(def)\\s(_*)?(.+)\\((.+)\\):\\n");
+    methods.setMinimal(true);
+
+    // regular expresseion for decorator
+    QRegExp decorator("(\\s*)(@)(.+)\\n");
+    methods.setMinimal(true);
+    int size = this->lines();
+    while(i < size)
+    {
+        decoLine = this->text(i-1);
+        line = this->text(i);
+
+        // CLASS
+        if (classes.indexIn(line) != -1)
+        {
+            if (classes.cap(1).length() >= depth*tabLength)
+            { 
+                ClassNavigatorItem *classt = new ClassNavigatorItem();
+                // Line indented => Subclass of parent
+                ++depth;
+                classt->m_name = classes.cap(3);
+                // classt->m_args = classes.cap(4); // normally not needed
+                classt->setInternalType(ClassNavigatorItem::typePyClass);
+                classt->m_priv = false; // Class is usually not private
+                classt->m_lineno = i;
+                parent->m_member.append(classt);
+                ++i;
+                i = buildClassTree(classt, depth, i);
+                --depth;
+                continue;
+            }
+            else 
+            {
+                return i;
+            }
+        }
+        // METHOD
+        else if (methods.indexIn(line) != -1)
+        {
+            // Methode
+            //checken ob line-1 == @declarator besitzt
+            ClassNavigatorItem *meth = new ClassNavigatorItem();
+            meth->m_name = methods.cap(3) + methods.cap(4);
+            meth->m_args = methods.cap(5);
+            meth->m_lineno = i;
+            if (methods.cap(3) == "_" || methods.cap(3) == "__")
+            {
+                meth->m_priv = true;                    
+            }
+            else
+            {
+                meth->m_priv = false;
+            }
+            // Check for indentation
+            if (methods.cap(1).length() == depth*tabLength)
+            {
+                // Child des parents
+                if (decorator.indexIn(decoLine) != -1)
+                {
+                    if (decorator.cap(3) == "staticmethod")
+                    {
+                        meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
+                    }
+                    else if (decorator.cap(3) == "classmethod")
+                    {
+                        meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
+                    }
+                }
+                else
+                {
+                    meth->setInternalType(ClassNavigatorItem::typePyDef);
+                }
+                parent->m_member.append(meth);
+                ++i;
+                continue;
+            }
+            // No indentation => Global Method
+            else if (methods.cap(1).length() == 0)
+            {
+                if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+                {
+                    meth->setInternalType(ClassNavigatorItem::typePyGlobal);
+                    parent->m_member.append(meth);
+                }
+                else
+                {
+                    DELETE_AND_SET_NULL(meth);
+                    return i;
+                }
+            }
+            // Negativ indentation => it must be a child of a parental class
+            else if (methods.cap(1).length() < depth*tabLength)
+            {
+                DELETE_AND_SET_NULL(meth);
+                return i;
+            }
+        }
+        ++i;
+    }
+    return i;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// This function is just a workaround because the elapsed timer and requestClassModel cannot connect because of parameterset
+void ScriptEditorWidget::classNavTimerElapsed()
+{
+    m_classNavigatorTimer->stop();
+    emit requestModelRebuild(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Slot invoked by Dockwidget when Tabs change (new Tab, other Tab selected, etc)
+// This method is used to start the build process of the class tree and the linear model or update the Comboboxes after a Tab change
+ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
+{
+    if (m_ClassNavigatorEnabled)
+    {
+        // create new Root-Element
+        ClassNavigatorItem *rootElement = new ClassNavigatorItem();
+        rootElement->m_name = "{Global Scope}";
+        rootElement->m_lineno = 0;
+        rootElement->setInternalType(ClassNavigatorItem::typePyRoot);
+
+        // create Class-Tree
+        buildClassTree(rootElement, 0, 0);
+
+        // send rootItem to DockWidget
+        return rootElement;
+    }
+    else // Otherwise the ClassNavigator is Disabled
+    {
+        return NULL;
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //void ScriptEditorWidget::keyPressEvent (QKeyEvent *event)
 //{
 //    int key = event->key();
@@ -2066,29 +2285,10 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
 //
 //}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
-{
-    QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
-    QString page = QString::number(pagenr);
-    int width = area.width();
-    int dateWidth = painter.fontMetrics().width(date);
-    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
-        
-    painter.save();
-    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
-    painter.setPen(QColor(Qt::black)); 
-    if (drawing)
-    {
-        //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
-        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
-        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
-        painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
-    }
-    area.setTop(area.top() + painter.fontMetrics().height() + 30);
-    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
-    painter.restore();
-}
+
+
+
+
+
 
 } // end namespace ito

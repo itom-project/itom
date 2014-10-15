@@ -31,6 +31,8 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 
+#include "../models/classNavigatorItem.h"
+
 #include <qevent.h>
 
 #include "../ui/widgetFindWord.h"
@@ -157,6 +159,16 @@ private:
     QToolBar* m_scriptToolBar;
     QToolBar* m_bookmarkToolBar;
 
+    // ClassNavigator
+    QWidget *m_classMenuBar;
+    QComboBox *m_classBox;
+    QComboBox *m_methodBox;
+    bool m_ClassNavigatorEnabled;
+    void fillClassBox(const ClassNavigatorItem *parent, QString prefix);
+    void fillMethodBox(const ClassNavigatorItem *parent);
+    void showClassNavigator(bool show);
+    QMap<int, ClassNavigatorItem*> m_rootElements;
+
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */
 
@@ -235,8 +247,15 @@ private slots:
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
 
+    // Class Navigator
+    void classChosen(const QString &text);
+    void methodChosen(const QString &text);
+
+    void loadSettings();
+
 public slots:
     void editorMarginChanged();
+    void updateClassesBox(ScriptEditorWidget *editor);
 };
 
 } //end namespace ito

@@ -34,6 +34,7 @@
 #include <qmenu.h>
 #include <qevent.h>
 #include <qmetaobject.h>
+#include "../models/classNavigatorItem.h"
 
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprinter.h>
@@ -87,6 +88,7 @@ public:
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
 
     RetVal setCursorPosAndEnsureVisible(int line);
+    RetVal setCursorPosAndEnsureVisibleWithSelection(int line, QString name);
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
@@ -99,6 +101,8 @@ protected:
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
     bool event (QEvent * event);
+
+
 
 private:
     enum msgType
@@ -158,9 +162,9 @@ private:
     int syntaxErrorHandle;
 
     bool m_syntaxCheckerEnabled;
-    int m_syntaxCheckerIntervall;
+    int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
-    int m_lastTipLine;
+    // int m_lastTipLine; // TODO: not used anymore?
 
     struct BPMarker
     {
@@ -212,12 +216,21 @@ private:
     static const QString lineBreak;
     static int unnamedAutoIncrement;
 
+    // Class Navigator
+    bool m_ClassNavigatorEnabled;               // Enable Class-Navigator
+    QTimer *m_classNavigatorTimer;              // Class Navigator Timer
+    bool m_classNavigatorTimerEnabled;          // Class Navigator Timer Enable
+    int m_classNavigatorInterval;               // Class Navigator Timer Interval
+
+    int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber);
+
 signals:
     void pythonRunFile(QString filename);
     void pythonRunSelection(QString selectionText);
     void pythonDebugFile(QString filename);
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
-    void marginChanged();    
+    void marginChanged();
+    void requestModelRebuild(ScriptEditorWidget *editor);
 
 public slots:
     void menuToggleBookmark();
@@ -257,12 +270,17 @@ public slots:
 
     void updateSyntaxCheck();
 
+    // Class Navigator  
+    ClassNavigatorItem* getPythonNavigatorRoot(); //creates new tree of current python code structure and returns its root pointer. Caller must delete the root pointer after usage.
+
     void print();
 
 
 private slots:
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
     void copyAvailable(bool yes);
+
+    void classNavTimerElapsed();
 
     void nrOfLinesChanged();
 

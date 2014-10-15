@@ -1849,41 +1849,95 @@ namespace dObjHelper
 
         \return retOk if valid and handle not NULL, else retError
     */
-    ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...) //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
+    ito::RetVal verifyDataObjectType(const ito::DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, va_list types) //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
     {
         if(dObj == NULL)
         {
             return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
         }
 
-        if(dObj->getDims() < 2)
+        if (numberOfAllowedTypes > 12)
         {
-            return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object must be at least 2D-dimensional.", name);
+            return ito::RetVal::format(ito::retError, 0, "error in 'verifyDataObjectType': numberOfAllowedTypes must be in range [0,12]");
         }
 
         bool found = false;
         int type = dObj->getType();
         int temp = 0;
-        va_list vl;
-        va_start(vl, numberOfAllowedTypes);
-        for(int i = 0; i < numberOfAllowedTypes; i++)
+        ito::uint8 types_[12];
+        memset(types_, 0, 12 * sizeof(ito::uint8));
+
+        for (int i = 0; i < numberOfAllowedTypes; ++i)
         {
-            temp = va_arg(vl, int); //gcc complains that tio::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
+            temp = va_arg(types, int); //gcc complains that tio::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
+            types_[i] = temp;
             if(temp == type)
             {
                 found = true;
                 break;
             }
         }
-        va_end(vl);
+
+        ito::RetVal retValue;
 
         if(!found)
         {
-            return ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
+            char expected[160]; //max 12 types * 12 characters
+            expected[0] = '\0';
+
+            for (int i=0; i < numberOfAllowedTypes; ++i)
+            {
+                switch (types_[i])
+                {
+                case ito::tUInt8:
+                    strcat (expected, "uint8, ");
+                    break;
+                case ito::tInt8:
+                    strcat (expected, "int8, ");
+                    break;
+                case ito::tUInt16:
+                    strcat (expected, "uint16, ");
+                    break;
+                case ito::tInt16:
+                    strcat (expected, "int16, ");
+                    break;
+                case ito::tUInt32:
+                    strcat (expected, "uint32, ");
+                    break;
+                case ito::tInt32:
+                    strcat (expected, "int32, ");
+                    break;
+                case ito::tFloat32:
+                    strcat (expected, "float32, ");
+                    break;
+                case ito::tFloat64:
+                    strcat (expected, "float64, ");
+                    break;
+                case ito::tComplex64:
+                    strcat (expected, "complex64, ");
+                    break;
+                case ito::tComplex128:
+                    strcat (expected, "complex128, ");
+                    break;
+                case ito::tRGBA32:
+                    strcat (expected, "rgba32, ");
+                    break;
+                }
+            }
+
+            int len = strlen(expected);
+            if (len > 2)
+            {
+                expected[len - 2] = '\0'; //cut last ', '
+            }
+            else if (len == 0)
+            {
+                strcat (expected, "[none]");
+            }
+
+            retValue += ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type. Expected: %s", name, expected);
         }
 
-        ito::RetVal retValue;
-    
         return retValue;
     }
 
@@ -1916,100 +1970,19 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object must be two-dimensional.", name);
         }
 
-        bool found = false;
-        int type = dObj->getType();
-        int temp = 0;
+        ito::RetVal retValue;
+
         va_list vl;
         va_start(vl, numberOfAllowedTypes);
-        for(int i=0;i<numberOfAllowedTypes;i++)
-        {
-//            temp = va_arg(vl, ito::tDataType);
-            temp = va_arg(vl, int); //gcc complains that tio::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
-            if(temp == type)
-            {
-                found = true;
-                break;
-            }
-        }
+        retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
         va_end(vl);
 
-        if(!found)
-        {
-            return ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
-        }
-
-        ito::RetVal retValue;
         retValue += verifySize(dObj->getSize(0), sizeYMin, sizeYMax, "y-axis", name);
         retValue += verifySize(dObj->getSize(1), sizeXMin, sizeXMax, "x-axis", name);
     
         return retValue;
     }
 
-#if 0
-    //-----------------------------------------------------------------------------------------------
-    /*!
-        This function checks if the dataObject pointer is valid and of the object is of right type.
-        Further more this function checks if the object is 2D (dims == 2 or number of planes == 1).
-        If the type is not one of the given types, a specific error message containing the name is returned.
-
-        \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
-        \param[in]  name                    the name of the dataObject, will be added to the error message
-        \param[Out] yIdx                    the index of the y dimension
-        \param[in]  sizeYMin                the minimum size in y direction
-        \param[in]  sizeYMax                the maximum size in y direction
-        \param[Out] xIdx                    the index of the y dimension
-        \param[in]  sizeXMin                the minimum size in x direction
-        \param[in]  sizeXMax                the maximum size in x direction
-        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
-        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
-
-        \return retOk if valid and handle not NULL, else retError
-    */
-    ito::RetVal verify1PlaneDObject(const ito::DataObject* dObj, const char* name, int &yIdx, int sizeYMin, int sizeYMax, int &xIdx, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...)
-    {
-        if(dObj == NULL)
-        {
-            return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
-        }
-
-        if(dObj->getDims() != 2 && dObj->calcNumMats() > 1)
-        {
-            return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object must be two-dimensional or at least consist of a single plane.", name);
-        }
-
-        bool found = false;
-        int type = dObj->getType();
-        int temp = 0;
-        va_list vl;
-        va_start(vl, numberOfAllowedTypes);
-        for(int i=0;i<numberOfAllowedTypes;i++)
-        {
-//            temp = va_arg(vl, ito::tDataType);
-            temp = va_arg(vl, int); //gcc complains that tio::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
-            if(temp == type)
-            {
-                found = true;
-                break;
-            }
-        }
-        va_end(vl);
-
-        if(!found)
-        {
-            return ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
-        }
-
-        ito::RetVal retValue;
-
-        yIdx = dObj->getDims() - 2;
-        xIdx = dObj->getDims() - 1;
-
-        retValue += verifySize(dObj->getSize(yIdx), sizeYMin, sizeYMax, "y-axis", name);
-        retValue += verifySize(dObj->getSize(xIdx), sizeXMin, sizeXMax, "x-axis", name);
-    
-        return retValue;
-    }
-#endif
     //-----------------------------------------------------------------------------------------------
     /*!
         This function checks if the dataObject pointer is valid and of the object is of right type.
@@ -2031,7 +2004,6 @@ namespace dObjHelper
     */
     ito::RetVal verify3DDataObject(const ito::DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...)
     {
-
         if(dObj == NULL)
         {
             return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);
@@ -2042,28 +2014,13 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object must be three-dimensional.", name);
         }
 
-        bool found = false;
-        int type = dObj->getType();
-        int temp = 0;
+        ito::RetVal retValue;
+
         va_list vl;
         va_start(vl, numberOfAllowedTypes);
-        for(int i=0;i<numberOfAllowedTypes;i++)
-        {
-            temp = va_arg(vl,int);
-            if(temp == type)
-            {
-                found = true;
-                break;
-            }
-        }
+        retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
         va_end(vl);
 
-        if(!found)
-        {
-            return ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
-        }
-
-        ito::RetVal retValue;
         retValue += verifySize(dObj->getSize(0), sizeZMin, sizeZMax, "z-axis", name);
         retValue += verifySize(dObj->getSize(1), sizeYMin, sizeYMax, "y-axis", name);
         retValue += verifySize(dObj->getSize(2), sizeXMin, sizeXMax, "x-axis", name);
@@ -2126,28 +2083,10 @@ namespace dObjHelper
         }
         else
         {
-            //type checking
-            if (numberOfAllowedTypes > 0)
-            {
-                bool found = false;
-                int type = dObj->getType();
-                va_list vl;
-                va_start(vl, numberOfAllowedTypes);
-                for(int i=0;i<numberOfAllowedTypes;i++)
-                {
-                    if(va_arg(vl, int) == type) //gcc complains that ito::tDataType is defaulted to int when passed to va_arg so the function call should be with in effectively
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                va_end(vl);
-
-                if(!found)
-                {
-                    retval += ito::RetVal::format( ito::retError, 0, "DataObject '%s': wrong type", name);
-                }
-            }
+            va_list vl;
+            va_start(vl, numberOfAllowedTypes);
+            retval += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
+            va_end(vl);
         }
 
         if (!retval.containsError())

@@ -33,9 +33,20 @@
         <file alias="localDatabase">icons/localDatabase.png</file>
         <file alias="upToDate">icons/upToDate.png</file>
         <file alias="downloadUpdate">icons/downloadUpdate.png</file>
-      <file alias="deleteDatabase">icons/delete_database.png</file>
-
+        <file alias="deleteDatabase">icons/delete_database.png</file>
     </qresource>
+
+    <qresource prefix="/classNavigator">
+      <file>icons/class.png</file>
+      <file>icons/method.png</file>
+      <file>icons/method_private.png</file>
+      <file>icons/method_clmethod.png</file>
+      <file>icons/method_clmethod_private.png</file>
+      <file>icons/method_static.png</file>
+      <file>icons/method_static_private.png</file>
+      <file>icons/global.png</file>
+    </qresource>
+  
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
