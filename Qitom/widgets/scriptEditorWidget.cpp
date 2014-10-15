@@ -603,7 +603,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, Q
 {
     setCursorPosAndEnsureVisible(line);
     // regular expression for Classes and Methods
-    QRegExp reg("(\\s*)(class||def)\\s(.+)\\((.*)\\):\\n");
+    QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
     reg.setMinimal(true);
     reg.indexIn(this->text(line), 0);
     this->setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
@@ -2110,15 +2110,15 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     QString decoLine;   // @-Decorator Line in previous line of a function
     
     // regular expression for Classes
-    QRegExp classes("(\\s*)(class)\\s(.+)\\((.*)\\):\\n");
+    QRegExp classes("(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
 
-    // regular expression for methods
-    QRegExp methods("(\\s*)(def)\\s(_*)?(.+)\\((.+)\\):\\n");
+    // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
+    QRegExp methods("(\\s*)(def)\\s(_*)?(.+)\\((.*)(\\):\\s*(#?.*))?");
     methods.setMinimal(true);
 
     // regular expresseion for decorator
-    QRegExp decorator("(\\s*)(@)(.+)\\n");
+    QRegExp decorator("(\\s*)(@)(.+)\\s*(#?.*)");
     methods.setMinimal(true);
     int size = this->lines();
     while(i < size)
@@ -2167,10 +2167,22 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             {
                 meth->m_priv = false;
             }
-            // Check for indentation
-            if (methods.cap(1).length() == depth*tabLength)
-            {
-                // Child des parents
+            // Check for indentation:
+            if (methods.cap(1).length() == 0)
+            {// No indentation => Global Method
+                if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+                {
+                    meth->setInternalType(ClassNavigatorItem::typePyGlobal);
+                    parent->m_member.append(meth);
+                }
+                else
+                {
+                    DELETE_AND_SET_NULL(meth);
+                    return i;
+                }
+            }            
+            else if (methods.cap(1).length() == depth*tabLength)
+            {// Child des parents
                 if (decorator.indexIn(decoLine) != -1)
                 {
                     if (decorator.cap(3) == "staticmethod")
@@ -2190,23 +2202,9 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 ++i;
                 continue;
             }
-            // No indentation => Global Method
-            else if (methods.cap(1).length() == 0)
-            {
-                if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
-                {
-                    meth->setInternalType(ClassNavigatorItem::typePyGlobal);
-                    parent->m_member.append(meth);
-                }
-                else
-                {
-                    DELETE_AND_SET_NULL(meth);
-                    return i;
-                }
-            }
-            // Negativ indentation => it must be a child of a parental class
+            
             else if (methods.cap(1).length() < depth*tabLength)
-            {
+            {// Negativ indentation => it must be a child of a parental class
                 DELETE_AND_SET_NULL(meth);
                 return i;
             }
