@@ -410,8 +410,8 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+68"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+76"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+70"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+77"/>
         <location line="+2"/>
         <location line="+2"/>
         <source>Source data for plot</source>
