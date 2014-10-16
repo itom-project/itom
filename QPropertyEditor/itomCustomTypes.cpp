@@ -29,8 +29,6 @@
 
 #include "../common/interval.h"
 
-//#include "Vec3fProperty.h"
-
 #include "Property.h"
 
 #include <qmetatype.h>
@@ -54,17 +52,13 @@ namespace ito
         Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
         {
             int userType = propertyObject->property(qPrintable(name)).userType();
-            /*if (userType == QMetaType::type("Vec3f"))
-            {
-                return new Vec3fProperty(name, propertyObject, parent);
-            }*/
             if (userType == QMetaType::type("ito::AutoInterval"))
             {
                 return new AutoIntervalProperty(name, propertyObject, parent);
             }
             else
             {
-                return new Property(name, propertyObject, parent);
+                return NULL;
             }
         }
     } //end namespace itomCustomTypes
