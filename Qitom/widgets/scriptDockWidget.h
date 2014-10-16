@@ -30,6 +30,7 @@
 #include <qaction.h>
 #include <qstring.h>
 #include <qtoolbar.h>
+#include <qcombobox.h>
 
 #include "../models/classNavigatorItem.h"
 

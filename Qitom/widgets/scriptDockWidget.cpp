@@ -221,13 +221,14 @@ void ScriptDockWidget::loadSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString prefix)
 {
+    QVariant parentPointer = qVariantFromValue((void *)parent);
     if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "{Global Scope}") // ^= prefix == ""
     {
-        m_classBox->addItem(parent->m_icon, parent->m_name, (int)((void*)parent));
+        m_classBox->addItem(parent->m_icon, parent->m_name, parentPointer);
     }
     else 
     {
-        m_classBox->addItem(parent->m_icon, prefix+"::"+parent->m_name, (int)((void*)parent));
+        m_classBox->addItem(parent->m_icon, prefix+"::"+parent->m_name, parentPointer);
     }
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
@@ -243,24 +244,27 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString pr
 void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 {
     // insert empty dummy item
-    m_methodBox->addItem(QIcon(), "", (int)((void*)NULL));
+    QVariant nullPointer = qVariantFromValue((void *)NULL);
+    m_methodBox->addItem(QIcon(), "", nullPointer);
     
     ClassNavigatorItem const *item;
+    QVariant itemPointer;
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         item = parent->m_member[i];
+        itemPointer = qVariantFromValue((void *)item);
         if (item->m_internalType == ClassNavigatorItem::typePyDef ||
             item->m_internalType == ClassNavigatorItem::typePyGlobal)
         {
-            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")", (int)((void*)item));
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")"), itemPointer);
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyStaticDef)                 
         {
-            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")  [static]", (int)((void*)item));
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [static]"), itemPointer);
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
         {
-            m_methodBox->addItem(item->m_icon, item->m_name+"("+item->m_args+")  [classmember]", (int)((void*)item));
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [classmember]"), itemPointer);
         }
     }
 }
@@ -271,8 +275,8 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 { 
     QString lastClass;
     QString lastMethod;
-    ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).toInt());
-    ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).toInt());
+    ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+    ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
     if (lastClassItem)
     {
         lastClass = lastClassItem->m_name;
@@ -318,7 +322,7 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
                 bool lastClassFound = false;
                 for (int i = 0; i < m_classBox->count(); ++i)
                 {
-                    lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(i, Qt::UserRole).toInt());
+                    lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(i, Qt::UserRole).value<void*>());
                     if (lastClassItem)
                     {
                         if (lastClassItem->m_name == lastClass)
@@ -335,7 +339,7 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
                 {
                     for (int j = 0; j < m_methodBox->count(); ++j)
                     {
-                        lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(j, Qt::UserRole).toInt());
+                        lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(j, Qt::UserRole).value<void*>());
                         if (lastMethodItem)
                         {
                             if (lastMethodItem->m_name == lastMethod)
@@ -363,7 +367,7 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 // will be selected in the Combobox but the editor is not going to jump to the corresponding position
 void ScriptDockWidget::classChosen(const QString &text)
 {
-    ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).toInt());
+    ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
     if (classItem)
     {
         m_methodBox->setEnabled(false);
@@ -383,7 +387,7 @@ void ScriptDockWidget::classChosen(const QString &text)
 void ScriptDockWidget::methodChosen(const QString &text)
 {
     // When method is chosen, set CursorPosition to "method" definition position
-    ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).toInt());
+    ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
     if (methodItem)
     {
         if (methodItem->m_lineno >= 0)

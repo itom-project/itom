@@ -694,12 +694,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+726"/>
+        <location filename="../helper/paramHelper.cpp" line="+951"/>
         <source>invalid parameter name</source>
         <translation>Ungültiger Parametername</translation>
     </message>
     <message>
-        <location line="-687"/>
+        <location line="-912"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
@@ -787,31 +787,36 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+7"/>
-        <location line="+98"/>
+        <location line="+185"/>
         <source>AddIn must not be NULL</source>
         <translation>AddIn muss NULL sein</translation>
     </message>
     <message>
-        <location line="-82"/>
-        <location line="+31"/>
+        <location line="-168"/>
+        <location line="+34"/>
+        <location line="+43"/>
+        <location line="+40"/>
         <location line="+22"/>
         <source>value out of range [%1, %2]</source>
         <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
-        <location line="-39"/>
-        <location line="+23"/>
+        <location line="-125"/>
+        <location line="+35"/>
+        <location line="+43"/>
+        <location line="+31"/>
         <location line="+22"/>
         <source>value does not fit to given step size [%1:%2:%3]</source>
         <translation>Wert entspricht nicht der angegebenen Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+118"/>
+        <location line="+137"/>
         <source>Index value is out of range [0, %i]</source>
         <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+213"/>
+        <location line="+214"/>
         <source>index is ouf of range [0, %i]</source>
         <translation>Index liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
@@ -821,7 +826,7 @@ p, li { white-space: pre-wrap; }
         <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-523"/>
         <source>AddIn does not fit to minimum required type(s).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -832,16 +837,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+122"/>
+        <location line="+137"/>
         <source>Index-based parameter name requires an array-type parameter.</source>
         <translation type="unfinished">Indexbasierter Parametername erwartet einen Parameter vom Typ Array.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="-122"/>
+        <location line="+138"/>
         <source>Parameter could not be converted to destination type.</source>
         <translation type="unfinished">Der Parameter kann nicht in den benötigten Zielparametertyp umgewandelt werden.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-133"/>
+        <location line="+138"/>
         <source>type of parameter does not fit to requested parameter type</source>
         <translation type="unfinished">Der Parametertyp entspricht nicht dem erwarteten Typ</translation>
     </message>
@@ -866,8 +874,8 @@ p, li { white-space: pre-wrap; }
         <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+146"/>
-        <location filename="../python/pythonCommon.cpp" line="+231"/>
+        <location filename="../api/apiFunctions.cpp" line="+147"/>
+        <location filename="../python/pythonCommon.cpp" line="+236"/>
         <source>Unknown parameter type</source>
         <translation>Unbekannter Parametertyp</translation>
     </message>
@@ -1042,7 +1050,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2835"/>
+        <location filename="../python/pythonUi.cpp" line="+2837"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
@@ -1186,7 +1194,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+1935"/>
+        <location filename="../python/pythonItom.cpp" line="+2571"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1283,8 +1291,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+68"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+76"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+70"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+77"/>
         <location line="+2"/>
         <location line="+2"/>
         <source>Source data for plot</source>
@@ -1317,7 +1325,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+28"/>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+185"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+186"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
@@ -1902,15 +1910,38 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">itom-Modul für den Syntax-Checker automatisch hinzufügen</translation>
     </message>
     <message>
-        <location/>
         <source>Check intervall [sec]:</source>
         <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="unfinished">Prüfintervall [Sek]:</translation>
+        <translation type="obsolete">Prüfintervall [Sek]:</translation>
     </message>
     <message>
         <location/>
-        <source> s</source>
+        <source>Check interval:</source>
+        <extracomment>The timer is started when entering a new line</extracomment>
+        <translation type="unfinished">Prüfintervall:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>[sec]</source>
         <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Class Navigator</source>
+        <translation type="unfinished">Klassennavigator</translation>
+    </message>
+    <message>
+        <location/>
+        <source>This feature enables two comboboxes with 
+ class- and method-navigation above the editor.</source>
+        <translation type="unfinished">Diese Funktion blendet zwei Combo-Boxen zur 
+Navigation der Klassen und Methoden über 
+dem Editor ein.</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Activate timer</source>
+        <translation type="unfinished">Timer aktivieren</translation>
     </message>
 </context>
 <context>
@@ -2669,7 +2700,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::BreakPointModel</name>
     <message>
-        <location filename="../models/breakPointModel.cpp" line="+71"/>
+        <location filename="../models/breakPointModel.cpp" line="+72"/>
         <source>line</source>
         <translation type="unfinished">Zeile</translation>
     </message>
@@ -2694,7 +2725,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Anzahl Ignorierungen</translation>
     </message>
     <message>
-        <location line="+288"/>
+        <location line="+322"/>
         <location line="+2"/>
         <source>yes</source>
         <translation type="unfinished">ja</translation>
@@ -2740,12 +2771,12 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-49"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-50"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+114"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation type="unfinished">Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
     </message>
@@ -2765,7 +2796,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Das Plugin in der Datei &apos;%1&apos; ist ein Qt Designer-Widget, aber kein von &apos;ito.AbtractItomDesignerPlugin&apos; abgeleitetes itom-Plot-Widget</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+61"/>
         <location line="+5"/>
         <location line="+5"/>
         <source>Figure &apos;%s&apos; does not correspond to the minimum requirements</source>
@@ -2778,14 +2809,158 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+76"/>
-        <location line="+123"/>
+        <location line="+125"/>
         <source>The figure category &apos;%s&apos; is unknown</source>
         <translation type="unfinished">Die Figure-Kategorie &apos;%s&apos; ist unbekannt</translation>
     </message>
     <message>
-        <location line="-16"/>
+        <location line="-67"/>
+        <source>The figure class &apos;%1&apos; could not be found or does not support displaying the given type of data. The default class for the given data is used instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
         <source>no plot figure plugin could be found that fits to the given category.</source>
         <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie übereinstimmt.</translation>
+    </message>
+    <message>
+        <location line="+71"/>
+        <source>DataObject - Line</source>
+        <translation type="unfinished">Datenobjekt - Linie</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>DataObject - Plane</source>
+        <translation type="unfinished">Datenobjekt - Fläche</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>DataObject - Plane Stack</source>
+        <translation type="unfinished">Datenobjekt - Fläschenstapel</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Point Cloud</source>
+        <translation type="unfinished">Punktewolke</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>PolygonMesh</source>
+        <translation type="unfinished">Polygon</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+54"/>
+        <location line="+50"/>
+        <location line="+34"/>
+        <source>invalid type or no type defined</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <source>Gray8</source>
+        <translation type="unfinished">Grau8</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Gray16</source>
+        <translation type="unfinished">Grau16</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Gray32</source>
+        <translation type="unfinished">Grau32</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>RGB32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>ARGB32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>CMYK32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Float32</source>
+        <translation type="unfinished">Fließkomma32</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Float64</source>
+        <translation type="unfinished">Fließkomma64</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Complex</source>
+        <translation type="unfinished">Komplex</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Static</source>
+        <translation type="unfinished">Statisch</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Live</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Cartesian</source>
+        <translation type="unfinished">
+Katesisch</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Polar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Cylindrical</source>
+        <translation type="unfinished">Zylindrisch</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>OpenGl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Cuda</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>X3D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Line Plot</source>
+        <translation type="unfinished">Linien-Plot</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Image Plot</source>
+        <translation type="unfinished">Bild-Plot</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Isometric Plot</source>
+        <translation type="unfinished">Isometrischer Plot</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>3D Plot</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3157,7 +3332,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogReplace</name>
     <message>
-        <location filename="../ui/dialogReplace.cpp" line="+281"/>
+        <location filename="../ui/dialogReplace.cpp" line="+285"/>
         <source>Expand</source>
         <translation type="unfinished">Erweitert</translation>
     </message>
@@ -4003,7 +4178,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>itom</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>Breakpoints</source>
         <translation type="unfinished">Haltepunkte</translation>
     </message>
@@ -4013,12 +4188,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-38"/>
         <source>itom (x64)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+68"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -4043,7 +4218,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
     <message>
-        <location line="+298"/>
+        <location line="+318"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4083,12 +4258,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-418"/>
+        <location line="-438"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+424"/>
+        <location line="+444"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4243,8 +4418,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1420"/>
-        <location line="+572"/>
+        <location line="-1440"/>
+        <location line="+592"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -4804,7 +4979,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+275"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+519"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -4834,7 +5009,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+519"/>
+        <location line="+531"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -5103,23 +5278,23 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+602"/>
-        <location line="+38"/>
+        <location line="+603"/>
+        <location line="+87"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
-        <location line="-38"/>
+        <location line="-87"/>
         <source>&apos;%1&apos; was not found</source>
         <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+87"/>
         <source>%1 occurrence(s) was replaced</source>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-879"/>
+        <location line="-929"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5188,7 +5363,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+253"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+269"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -5299,7 +5474,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+452"/>
+        <location line="+476"/>
         <location line="+80"/>
         <location line="+47"/>
         <source>unsaved changes</source>
@@ -5344,7 +5519,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+672"/>
+        <location line="+696"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -5359,7 +5534,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>unbenannt</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+240"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -5379,7 +5554,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Soll diese neu geladen werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+87"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+88"/>
         <source>Untitled%1</source>
         <translation type="unfinished">Unbenannt%1</translation>
     </message>
@@ -5387,7 +5562,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+273"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+275"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5492,7 +5667,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+93"/>
         <location line="+102"/>
         <location line="+146"/>
-        <location line="+57"/>
+        <location line="+30"/>
         <location line="+51"/>
         <location line="+51"/>
         <location line="+64"/>
@@ -5503,7 +5678,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-648"/>
+        <location line="-621"/>
         <location line="+56"/>
         <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished"></translation>
@@ -5530,19 +5705,19 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+31"/>
         <location line="+25"/>
         <location line="+24"/>
-        <location line="+1260"/>
+        <location line="+1383"/>
         <location line="+37"/>
         <location line="+36"/>
         <source>the objectID cannot be cast to a widget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1273"/>
+        <location line="-1038"/>
         <source>object ID is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-343"/>
         <source>could not get reference to main dialog or window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5590,7 +5765,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+386"/>
         <source>There exists no object with the given id.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5607,8 +5782,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2369"/>
-        <location line="+2125"/>
+        <location line="-2492"/>
+        <location line="+2248"/>
         <location line="+64"/>
         <location line="+151"/>
         <location line="+34"/>
@@ -5747,138 +5922,76 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Plugin-Datei</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>DataObject - Line</source>
-        <translation type="unfinished">Datenobjekt - Linie</translation>
+        <translation type="obsolete">Datenobjekt - Linie</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>DataObject - Plane</source>
-        <translation type="unfinished">Datenobjekt - Fläche</translation>
+        <translation type="obsolete">Datenobjekt - Fläche</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>DataObject - Plane Stack</source>
-        <translation type="unfinished">Datenobjekt - Fläschenstapel</translation>
+        <translation type="obsolete">Datenobjekt - Fläschenstapel</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Point Cloud</source>
-        <translation type="unfinished">Punktewolke</translation>
+        <translation type="obsolete">Punktewolke</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>PolygonMesh</source>
-        <translation type="unfinished">Polygon</translation>
+        <translation type="obsolete">Polygon</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Gray8</source>
-        <translation type="unfinished">Grau8</translation>
+        <translation type="obsolete">Grau8</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Gray16</source>
-        <translation type="unfinished">Grau16</translation>
+        <translation type="obsolete">Grau16</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Gray32</source>
-        <translation type="unfinished">Grau32</translation>
+        <translation type="obsolete">Grau32</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>RGB32</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>ARGB32</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>CMYK32</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
         <source>Float32</source>
-        <translation type="unfinished">Fließkomma32</translation>
+        <translation type="obsolete">Fließkomma32</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Float64</source>
-        <translation type="unfinished">Fließkomma64</translation>
+        <translation type="obsolete">Fließkomma64</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Complex</source>
-        <translation type="unfinished">Komplex</translation>
+        <translation type="obsolete">Komplex</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Static</source>
-        <translation type="unfinished">Statisch</translation>
+        <translation type="obsolete">Statisch</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Live</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
         <source>Cartesian</source>
-        <translation type="unfinished">
+        <translation type="obsolete">
 Katesisch</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Polar</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
         <source>Cylindrical</source>
-        <translation type="unfinished">Zylindrisch</translation>
+        <translation type="obsolete">Zylindrisch</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>OpenGl</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Cuda</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>X3D</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+8"/>
         <source>Line Plot</source>
-        <translation type="unfinished">Linien-Plot</translation>
+        <translation type="obsolete">Linien-Plot</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Image Plot</source>
-        <translation type="unfinished">Bild-Plot</translation>
+        <translation type="obsolete">Bild-Plot</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Isometric Plot</source>
-        <translation type="unfinished">Isometrischer Plot</translation>
+        <translation type="obsolete">Isometrischer Plot</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>3D Plot</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+38"/>
         <source>category</source>
         <translation type="unfinished">Kategorie</translation>
     </message>
