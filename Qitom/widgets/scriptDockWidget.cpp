@@ -248,10 +248,11 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
     m_methodBox->addItem(QIcon(), "", nullPointer);
     
     ClassNavigatorItem const *item;
-    QVariant itemPointer = qVariantFromValue((void *)item);
+    QVariant itemPointer;
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         item = parent->m_member[i];
+        itemPointer = qVariantFromValue((void *)item);
         if (item->m_internalType == ClassNavigatorItem::typePyDef ||
             item->m_internalType == ClassNavigatorItem::typePyGlobal)
         {
