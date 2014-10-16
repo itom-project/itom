@@ -2128,15 +2128,15 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     QString decoLine;   // @-Decorator Line in previous line of a function
     
     // regular expression for Classes
-    QRegExp classes("(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
+    QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
 
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-    QRegExp methods("(\\s*)(def)\\s(_*)?(.+)\\((.*)(\\):\\s*(#?.*))?");
+    QRegExp methods("^(\\s*)(def)\\s(_*)?(.+)\\((.*)(\\):\\s*(#?.*))?");
     methods.setMinimal(true);
 
     // regular expresseion for decorator
-    QRegExp decorator("(\\s*)(@)(.+)\\s*(#?.*)");
+    QRegExp decorator("^(\\s*)(@)(.+)\\s*(#?.*)");
     methods.setMinimal(true);
     int size = this->lines();
     while(i < size)
@@ -2211,6 +2211,10 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
                     }
+                    else // some other decorator
+                    {
+                        meth->setInternalType(ClassNavigatorItem::typePyDef);
+                    }
                 }
                 else
                 {
@@ -2249,7 +2253,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     {
         // create new Root-Element
         ClassNavigatorItem *rootElement = new ClassNavigatorItem();
-        rootElement->m_name = "{Global Scope}";
+        rootElement->m_name = tr("{Global Scope}");
         rootElement->m_lineno = 0;
         rootElement->setInternalType(ClassNavigatorItem::typePyRoot);
 
