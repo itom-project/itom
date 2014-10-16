@@ -742,7 +742,6 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 
     // Class Navigator
     disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
-    disconnect(removedWidget, SIGNAL(showClassNavigator(bool)), this, SLOT(showClassNavigator(bool)));
 
     updateEditorActions();
     updatePythonActions();
