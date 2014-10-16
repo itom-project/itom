@@ -2253,7 +2253,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     {
         // create new Root-Element
         ClassNavigatorItem *rootElement = new ClassNavigatorItem();
-        rootElement->m_name = "{Global Scope}";
+        rootElement->m_name = tr("{Global Scope}");
         rootElement->m_lineno = 0;
         rootElement->setInternalType(ClassNavigatorItem::typePyRoot);
 

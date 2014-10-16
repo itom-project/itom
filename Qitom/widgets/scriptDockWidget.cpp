@@ -222,7 +222,7 @@ void ScriptDockWidget::loadSettings()
 void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString prefix)
 {
     QVariant parentPointer = qVariantFromValue((void *)parent);
-    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "{Global Scope}") // ^= prefix == ""
+    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "") // ^= prefix == ""
     {
         m_classBox->addItem(parent->m_icon, parent->m_name, parentPointer);
     }
@@ -232,10 +232,17 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString pr
     }
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
-        if (parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass ||
-            parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyRoot)
+        if ((parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass) ||
+            (parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyRoot))
         {
-            fillClassBox(parent->m_member[i], parent->m_name);
+            if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+            {
+                fillClassBox(parent->m_member[i], "");
+            }
+            else
+            {
+                fillClassBox(parent->m_member[i], parent->m_name);
+            }
         }   
     }
 }
