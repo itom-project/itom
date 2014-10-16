@@ -27,6 +27,7 @@
 
 #include <qabstractitemmodel.h>
 #include <qlist.h>
+#include <qstringlist.h>
 
 #include <qstring.h>
 #include <QDebug>
@@ -123,7 +124,8 @@ private:
     QList<BreakPointItem> m_breakpoints;    /*!<  list of breakpoints (BreakPointItem) which are currently available in this application */
     QList<QString> m_headers;               /*!<  string list of names of column headers */
     QList<QVariant> m_alignment;            /*!<  list of alignments for the corresponding headers */
-    QList<QString> m_scriptFiles;
+    QStringList m_scriptFiles;
+    Qt::CaseSensitivity m_filenameCaseSensitivity;
 
 signals:
     void breakPointAdded(BreakPointItem bp, int row);                       /*!<  emitted if breakpoint has been added to model at position row */

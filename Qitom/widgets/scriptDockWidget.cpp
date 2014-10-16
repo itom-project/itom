@@ -232,7 +232,6 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString pr
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         if (parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass ||
-            parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyGlobal||
             parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyRoot)
         {
             fillClassBox(parent->m_member[i], parent->m_name);
@@ -270,6 +269,20 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 { 
+    QString lastClass;
+    QString lastMethod;
+    ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).toInt());
+    ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).toInt());
+    if (lastClassItem)
+    {
+        lastClass = lastClassItem->m_name;
+    }
+    if (lastMethodItem)
+    {
+        lastMethod = lastMethodItem->m_name;
+    }
+
+
     if (m_ClassNavigatorEnabled)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
@@ -297,6 +310,48 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
             connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
             m_classBox->setEnabled(true);
             m_methodBox->setEnabled(true);
+
+            // This part is responsible for the reselection of the item that was selected before the refresh
+            int iClass = m_classBox->findText(lastClass);
+            if (iClass != -1)
+            {
+                bool lastClassFound = false;
+                for (int i = 0; i < m_classBox->count(); ++i)
+                {
+                    lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(i, Qt::UserRole).toInt());
+                    if (lastClassItem)
+                    {
+                        if (lastClassItem->m_name == lastClass)
+                        {
+                            m_classBox->setCurrentIndex(i);
+                            classChosen(""); // This empty cal avoids the jump to the position
+                            lastClassFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*int iMethod = m_methodBox->findText(lastMethod);*/
+                if (lastClassFound)
+                {
+                    for (int j = 0; j < m_methodBox->count(); ++j)
+                    {
+                        lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(j, Qt::UserRole).toInt());
+                        if (lastMethodItem)
+                        {
+                            if (lastMethodItem->m_name == lastMethod)
+                            {
+                                m_methodBox->setCurrentIndex(j);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Otherwise choose global skope
+                classChosen("");
+            }
         }
         // else the request is from an inactive tab by timer or so. 
     }
@@ -304,6 +359,8 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // private Slot invoked by ScriptEditorWidget when class from classCombobox is chosen to display the subelements in second combobox
+// The parameter is just for signal->slot compability. If an empty string is passed (computer selection of an item) the item
+// will be selected in the Combobox but the editor is not going to jump to the corresponding position
 void ScriptDockWidget::classChosen(const QString &text)
 {
     ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).toInt());
@@ -312,7 +369,7 @@ void ScriptDockWidget::classChosen(const QString &text)
         m_methodBox->setEnabled(false);
         disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->clear();
-        if (classItem->m_lineno >= 0)
+        if (text != "" && classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
         {
             this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, classItem->m_name);
         }

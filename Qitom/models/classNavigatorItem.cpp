@@ -61,7 +61,7 @@ void ClassNavigatorItem::setIcon(t_type t)
         // TODO ICONS dynamisch erstellen und code anpassen (paint priv. Lock on top)
         case typePyRoot:
             {this->m_icon = QIcon(":/classNavigator/icons/global.png"); break;}
-        case typePyGlobal:
+        case typePyGlobal: //TODO: Maybe change Icon of global methods to normal method-icon
             {this->m_icon = QIcon(":/classNavigator/icons/global.png"); break;}
         case typePyClass:
             {this->m_icon = QIcon(":/classNavigator/icons/class.png"); break;}
