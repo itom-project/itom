@@ -618,7 +618,9 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
         }
     }
-    if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
+
+    QByteArray name_ba = name.toLatin1();
+    if (!PythonCommon::setReturnValueMessage(ret, name_ba.data(), PythonCommon::execFunc))
     {
         return NULL;
     }
@@ -631,7 +633,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         else if (paramsOut->size() == 1)
         {
             PyObject* out = PythonParamConversion::ParamBaseToPyObject((*paramsOut)[0]); //new ref
-            if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
+            if (!PythonCommon::setReturnValueMessage(ret, name_ba.data(), PythonCommon::execFunc))
             {
                 return NULL;
             }
@@ -660,7 +662,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     break;
                 }
             }
-            if (!PythonCommon::setReturnValueMessage(ret, "exec", PythonCommon::execFunc))
+            if (!PythonCommon::setReturnValueMessage(ret, name_ba.data(), PythonCommon::execFunc))
             {
                 Py_DECREF(out);
                 return NULL;
