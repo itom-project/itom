@@ -130,9 +130,11 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_classBox = new QComboBox(m_classMenuBar);
     m_methodBox = new QComboBox(m_classMenuBar);
     m_classBox->setMinimumHeight(20);
+    m_classBox->setMaxCount(500000);
     m_classBox->setContentsMargins(2,0,2,0);
     m_classBox->setStyleSheet("QComboBox {  border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
     m_methodBox->setMinimumHeight(20);
+    m_methodBox->setMaxCount(500000);
     m_methodBox->setContentsMargins(2,0,2,0);
     m_methodBox->setStyleSheet("QComboBox { border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
 
@@ -222,7 +224,7 @@ void ScriptDockWidget::loadSettings()
 void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString prefix)
 {
     QVariant parentPointer = qVariantFromValue((void *)parent);
-    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "") // ^= prefix == ""
+    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "")
     {
         m_classBox->addItem(parent->m_icon, parent->m_name, parentPointer);
     }
