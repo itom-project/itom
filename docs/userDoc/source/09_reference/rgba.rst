@@ -1,4 +1,4 @@
-rgba32
+rgba
 =======
 
 .. currentmodule:: itom
