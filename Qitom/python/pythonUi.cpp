@@ -1388,6 +1388,46 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists, else false.");
+/*static*/ PyObject* PythonUi::PyUiItem_exists(PyUiItem *self)
+{
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+    QSharedPointer< bool > exists(new bool );
+
+    //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
+    QMetaObject::invokeMethod(uiOrga, "exists", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<bool>,exists), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting information");
+        return NULL;
+    }
+
+    retValue += locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (*exists)
+    {
+        Py_RETURN_TRUE;
+    }
+    Py_RETURN_FALSE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
     if(self->methodList == NULL)
@@ -1524,6 +1564,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
         {"info", (PyCFunction)PyUiItem_info, METH_NOARGS, NULL},
+        {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {NULL}  /* Sentinel */
 };
 

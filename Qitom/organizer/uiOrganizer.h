@@ -372,6 +372,7 @@ public slots:
     RetVal hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on = true, ItomSharedSemaphore *semaphore = NULL);
     RetVal isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore = NULL);
+    
     UiContainer* getUiDialogByHandle(unsigned int uiHandle);
 
     RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);
@@ -387,6 +388,7 @@ public slots:
     RetVal showFileOpenDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
     RetVal showFileSaveDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
 
+    RetVal exists(unsigned int objectID, QSharedPointer<bool> exists, ItomSharedSemaphore *semaphore = NULL);
     RetVal getPropertyInfos(unsigned int objectID, QSharedPointer<QVariantMap> retPropertyMap, ItomSharedSemaphore *semaphore = NULL);
     RetVal readProperties(unsigned int objectID, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal writeProperties(unsigned int objectID, const QVariantMap &properties, ItomSharedSemaphore *semaphore = NULL);
