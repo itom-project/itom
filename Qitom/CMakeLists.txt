@@ -529,6 +529,7 @@ ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HE
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
 set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
+ADD_DEPENDENCIES(${target_name} itomWidgets)
 
 IF (QT5_FOUND)
     qt5_use_modules(${target_name} Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools)

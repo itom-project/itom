@@ -22,11 +22,9 @@
 
 #include "pythonEngineInc.h"
 #include "pythonDataObject.h"
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
+
+#include "structmember.h"
+
 #include "../global.h"
 
 #include "pythonCommon.h"
@@ -35,9 +33,6 @@
 
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
-
-//PyDataObject
-using namespace ito;
 
 namespace ito
 {
@@ -2763,7 +2758,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[50] = {0};
-        _snprintf(buf, 50, "Added %g scalar to dataObject.", scalar);
+        sprintf_s(buf, 50, "Added %g scalar to dataObject.", scalar);
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
@@ -2857,7 +2852,7 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[60] = {0};
-        _snprintf(buf, 60, "Substracting %g scalar from dataObject or vice versa.", scalar);
+        sprintf_s(buf, 60, "Substracting %g scalar from dataObject or vice versa.", scalar);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
@@ -2935,7 +2930,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         dobj1->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -2970,7 +2965,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         dobj2->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3034,7 +3029,7 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
 
         char buf[60] = {0};
 
-        _snprintf(buf, 60, "Multiplied dataObject scalar with 1/%g.", factor);
+        sprintf_s(buf, 60, "Multiplied dataObject scalar with 1/%g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3249,7 +3244,7 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     dobj1->dataObject->unlock();
     
     char buf[50] = {0};
-    _snprintf(buf, 50, "Left shift by %i on dataObject.", shift);
+    sprintf_s(buf, 50, "Left shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3297,7 +3292,7 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     char buf[50] = {0};
 
-    _snprintf(buf, 50, "Right shift by %i on dataObject.", shift);
+    sprintf_s(buf, 50, "Right shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3461,7 +3456,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         dobj1->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Inplace scalar addition of %g.", val);
+        sprintf_s(buf, 60, "Inplace scalar addition of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
         
@@ -3529,7 +3524,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         dobj1->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Inplace scalar substraction of %g.", val);
+        sprintf_s(buf, 60, "Inplace scalar substraction of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3605,7 +3600,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         dobj1->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Inplace scalar multiplication of %g.", factor);
+        sprintf_s(buf, 60, "Inplace scalar multiplication of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3659,7 +3654,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         dobj1->dataObject->unlock();
 
         char buf[60] = {0};
-        _snprintf(buf, 60, "Inplace scalar devision of %g.", factor);
+        sprintf_s(buf, 60, "Inplace scalar devision of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3709,7 +3704,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
 
     char buf[60] = {0};
 
-    _snprintf(buf, 60, "Inplace left shift by %i.", shift);
+    sprintf_s(buf, 60, "Inplace left shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -3741,7 +3736,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
     dobj1->dataObject->unlock();
 
     char buf[60] = {0};
-    _snprintf(buf, 60, "Inplace right shift by %i.", shift);
+    sprintf_s(buf, 60, "Inplace right shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -4515,7 +4510,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
 
     char buf[100] = {0};
 
-    _snprintf(buf, 100, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
+    sprintf_s(buf, 100, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
 
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
@@ -4606,7 +4601,7 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
 
     char buf[200] = {0};
 
-    _snprintf(buf, 200, "Normalized from dataObject of type %s to type %s between %g and %g.", typeNumberToName(self->dataObject->getType()), type, dmin , dmax);
+    sprintf_s(buf, 200, "Normalized from dataObject of type %s to type %s between %g and %g.", typeNumberToName(self->dataObject->getType()), type, dmin , dmax);
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -5300,6 +5295,7 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char &typekind, int &itemsi
         itemsize = sizeof(int16);
         break;
     case ito::tUInt32:
+    case ito::tRGBA32:
         typekind = 'u';
         itemsize = sizeof(uint32);
         break;
@@ -5322,9 +5318,6 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char &typekind, int &itemsi
     case ito::tComplex128:
         typekind = 'c';
         itemsize = sizeof(complex128);
-        break;
-    case ito::tRGBA32:
-        return RetVal(retError, 0, "rgba32 cannot be converted to a numpy type");
         break;
     default:
         return RetVal(retError, 0, "type conversion failed");

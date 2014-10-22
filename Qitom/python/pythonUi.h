@@ -109,6 +109,7 @@ public:
     static PyObject* PyUiItem_getWindowFlags(PyUiItem *self);
 
     static PyObject* PyUiItem_info(PyUiItem *self);
+    static PyObject* PyUiItem_exists(PyUiItem *self);
 
     //-------------------------------------------------------------------------------------------------
     // helpers

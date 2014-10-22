@@ -2125,19 +2125,18 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     // read from settings
     int tabLength = 4;
     QString line = "";
-    QString decoLine;   // @-Decorator Line in previous line of a function
+    QString decoLine;   // @-Decorato(@)r Line in previous line of a function
     
     // regular expression for Classes
     QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
 
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-    QRegExp methods("^(\\s*)(def)\\s(_*)?(.+)\\((.*)(\\):\\s*(#?.*))?");
+    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)\\):\\s*(#?.*)?");
     methods.setMinimal(true);
 
     // regular expresseion for decorator
-    QRegExp decorator("^(\\s*)(@)(.+)\\s*(#?.*)");
-    methods.setMinimal(true);
+    QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
     int size = this->lines();
     while(i < size)
     {
@@ -2203,7 +2202,9 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             {// Child des parents
                 if (decorator.indexIn(decoLine) != -1)
                 {
-                    if (decorator.cap(3) == "staticmethod")
+                    QString TODO = decorator.cap(3);
+                    //if (decorator.cap(3) == "staticmethod")
+                    if (TODO == "staticmethod")
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
                     }

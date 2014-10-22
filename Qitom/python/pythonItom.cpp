@@ -2181,7 +2181,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     int first = MAJORVERSION(val);              
                     int middle =MINORVERSION(val);               
                     int last =PATCHVERSION(val); 
-                    _snprintf(buf, 7, "%i.%i.%i", first, middle, last);
+                    sprintf_s(buf, 7, "%i.%i.%i", first, middle, last);
                     value = PyUnicode_FromString(buf);
 
                     ret = PyDict_SetItemString(info, "version", value);
@@ -3107,7 +3107,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
             saveDict = PyDict_New();
             int sizeIter = 32; //max buffer length for number in key "matrix%i" with i being number
-            
+            int keyLength;
 
             for (Py_ssize_t i = 0; i < PySequence_Size(element); i++)
             {
@@ -3115,8 +3115,9 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
                 if (tempName == matrixName)
                 {
-                    key = (char*)calloc(strlen(tempName) + sizeIter + 1, sizeof(char));
-                    snprintf(key, strlen(tempName) + sizeIter, "%s%i", matrixName, ((size_t)i + 1));
+                    keyLength = strlen(tempName) + sizeIter + 1;
+                    key = (char*)calloc(keyLength, sizeof(char));
+                    sprintf_s(key, keyLength, "%s%i", matrixName, ((size_t)i + 1));
                     matlabData = PyMatlabMatDataObjectConverter(tempItem);
                     PyDict_SetItemString(saveDict, key, matlabData);
                     Py_DECREF(matlabData);

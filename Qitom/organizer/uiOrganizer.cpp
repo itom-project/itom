@@ -1124,6 +1124,31 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::exists(unsigned int objectID, QSharedPointer<bool> exists, ItomSharedSemaphore *semaphore)
+{
+    RetVal retValue = RetVal(retOk);
+    QObject *obj = getWeakObjectReference(objectID);
+
+    if (obj)
+    {
+        *exists = true;
+    }
+    else
+    {
+        *exists = false;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::showInputDialogGetDouble(const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min, double max, int decimals, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);

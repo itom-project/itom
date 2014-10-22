@@ -443,14 +443,14 @@ PyObject* PythonRgba::PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2)
 PyObject* PythonRgba::PyRgba_name(PyRgba* /*self*/)
 {
     PyObject *result;
-    result = PyUnicode_FromString("Rgba");
+    result = PyUnicode_FromString("rgba");
     return result;
 };
 
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_repr(PyRgba *self)
 {
-    PyObject *result = PyUnicode_FromFormat("Rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
+    PyObject *result = PyUnicode_FromFormat("rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
     return result;
 };
 
