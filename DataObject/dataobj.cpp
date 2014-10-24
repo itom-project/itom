@@ -1084,7 +1084,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                 }
                 else //!continuous
                 {
-                    int matSize = dObj->m_osize.m_p[dimensions - 2] * dObj->m_osize.m_p[dimensions - 1] * sizeof(_Tp);
+                    size_t matSize = static_cast<size_t>(dObj->m_osize.m_p[dimensions - 2]) * static_cast<size_t>(dObj->m_osize.m_p[dimensions - 1]) * sizeof(_Tp);
 
                     if(continuousDataPtr)
                     {
@@ -1098,7 +1098,13 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                     }
                     else
                     {
-                        char *dataPtr = (char*)malloc(numMats * matSize);
+                        if (numMats > 0 && (std::numeric_limits<size_t>::max() / numMats) < matSize)
+                        {
+                            cv::error(cv::Exception(CV_StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__));
+                        }
+
+                        size_t bytesToAllocate = static_cast<size_t>(numMats) * matSize;
+                        char *dataPtr = (char*)malloc(bytesToAllocate);
                         if(dataPtr == NULL)
                         {
                             cv::error(cv::Exception(CV_StsNoMem, ("Failed to allocate memory"),"", __FILE__, __LINE__));
